@@ -55,7 +55,6 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuItem;
 import org.eclipse.stardust.ui.web.common.spi.menu.CommonMenuProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
@@ -114,7 +113,7 @@ public class PortalUiController
    
    private UserProvider userProvider;
 
-   private CommonMenuProvider commonMenuProvider;
+   private CommonMenuIframeHandler commonMenuIframeHandler;
    
    private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
    
@@ -386,48 +385,6 @@ public class PortalUiController
    public List<MenuItem> getPerspectiveItems()
    {
       return perspectiveItems;
-   }
-
-   /**
-    * @return the items contained in the Common Menu
-    */
-   public List<MenuItem> getCommonMenuItems()
-   {
-      String idPrefix = "commonMnuItem";
-      String linkTarget = "_blank";
-      String styleClass = "commonMenuItem";
-
-      List<MenuItem> menuItems = null;
-
-      List<CommonMenuItem> commonMenuItems = commonMenuProvider.getMenuItems();
-
-      if (null != commonMenuItems)
-      {
-         menuItems = new ArrayList<MenuItem>();
-         for (CommonMenuItem commonMenuItem : commonMenuItems)
-         {
-            MenuItem menuItem = new MenuItem();
-
-            menuItem.setId(idPrefix + commonMenuItem.getId());
-            menuItem.setValue(commonMenuItem.getTitle());
-            menuItem.setTitle(commonMenuItem.getTitle());
-            menuItem.setIcon(commonMenuItem.getIconPath());
-            menuItem.setLink(commonMenuItem.getURL());
-            if (null == commonMenuItem.getURL())
-            {
-               menuItem.setDisabled(true);
-            }
-            else
-            {
-               menuItem.setTarget(linkTarget);
-            }
-            menuItem.setStyleClass(styleClass);
-
-            menuItems.add(menuItem);
-         }
-      }
-      
-      return menuItems;
    }
 
    private class PerspectiveMenuListener implements ActionListener
@@ -1423,9 +1380,16 @@ public class PortalUiController
     */
    public void setCommonMenuProvider(CommonMenuProvider commonMenuProvider)
    {
-      this.commonMenuProvider = commonMenuProvider;
+      this.commonMenuIframeHandler = new CommonMenuIframeHandler(commonMenuProvider);
    }
    
+   /**
+    * @param commonMenuProvider Implementation class providing the Common Menu 
+    */
+   public CommonMenuIframeHandler getCommonMenuIframeHandler()
+   {
+      return this.commonMenuIframeHandler;
+   }
    
    /**
     * @param perspectiveDef
