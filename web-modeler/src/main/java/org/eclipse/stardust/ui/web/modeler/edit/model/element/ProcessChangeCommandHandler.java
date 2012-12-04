@@ -88,7 +88,8 @@ public class ProcessChangeCommandHandler
 
       laneSymbol.setElementOid(++maxOid);
       laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
-      laneSymbol.setName(DefaultNames.getString("views.modelView.defaultLane"));
+      laneSymbol.setName(DefaultNames.getString("views.diagram.defaultLane"));
+
       // Setting the x,y for default swimlane
       //TODO - Move this code to javascript
       laneSymbol.setXPos(12);
