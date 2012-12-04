@@ -14,6 +14,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
+import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
@@ -350,7 +351,6 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                      intermediateThrowEvent = (IntermediateThrowEvent) event;
                   }    
                   
-                  
                   intermediateThrowEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
                }
                else
@@ -375,6 +375,19 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.STOP_EVENT))
          {            
+            EndEvent endEvent = null;
+            
+            if ( !(event instanceof EndEvent))
+            {
+               endEvent = (EndEvent) switchElementType(event,
+                     bpmn2Package().getEndEvent());
+            }
+            else
+            {
+               endEvent = (EndEvent) event;
+            }               
+            
+            endEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
          }
       }
 
