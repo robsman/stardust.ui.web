@@ -186,6 +186,11 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
+				$("#datatableid")
+						.find("#structuredDataTypeRow label[for='structuredDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.structuredType"));
 
 				$("#datatableid")
 						.find(
