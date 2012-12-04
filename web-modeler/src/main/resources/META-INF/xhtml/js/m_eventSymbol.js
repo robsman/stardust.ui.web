@@ -446,12 +446,17 @@ define(
 				EventSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 
+					m_utils.debug("EventSymbol.onComplete");
+					
 					if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						var hitSymbol = this.diagram
 								.getSymbolOverlappingWithSymbol(this);
 
+						m_utils.debug("Symbol hit");
+
 						if (hitSymbol != null
 								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+							m_utils.debug("Add boundary");
 							hitSymbol.addBoundaryEvent(this);
 							// TODO Submit Change
 						}

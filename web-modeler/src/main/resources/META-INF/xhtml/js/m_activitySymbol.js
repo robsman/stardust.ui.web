@@ -688,9 +688,11 @@ define(
 				/**
 				 * 
 				 */
-				ActivitySymbol.prototype.postMove = function(x, y, originalX, originalY) {
+				ActivitySymbol.prototype.postMove = function(x, y, originalX,
+						originalY) {
 					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
-						this.boundaryEventSymbols[n].moveBy(x - originalX, y - originalY);
+						this.boundaryEventSymbols[n].moveBy(x - originalX, y
+								- originalY);
 						this.boundaryEventSymbols[n].toFront();
 					}
 				};
@@ -709,13 +711,21 @@ define(
 
 					eventSymbol.bindingActivity = this;
 
-					// Move Event Symbol to Activity symbol boundary
-					eventSymbol.moveTo(this.x + this.width - 20 - 0.5
-							* eventSymbol.width, this.y + this.height - 0.5
-							* eventSymbol.height);
-
 					eventSymbol.modelElement
 							.bindWithActivity(this.modelElement);
+
+					// Align all boundary events on the symbol boundary
+					
+					var x = this.x + this.width;
+
+					for ( var i = 0; i < this.boundaryEventSymbols.length; ++i) {
+						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
+
+						eventSymbol.moveTo(x - 0.5 * eventSymbol.width, this.y
+								+ this.height - 0.5 * eventSymbol.height);
+						
+						x-= eventSymbol.width;
+					}
 				};
 
 				/**
