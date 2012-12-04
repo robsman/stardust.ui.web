@@ -220,7 +220,7 @@ define(
 									"Last Modified Date",
 									"CamelFileLastModified", "String"));
 
-					this.submitEventClassChanges(parameterMappings);
+					this.submitOverlayChanges(parameterMappings);
 				};
 
 				/**

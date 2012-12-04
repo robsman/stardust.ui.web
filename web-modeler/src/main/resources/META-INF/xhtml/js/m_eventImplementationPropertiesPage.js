@@ -49,7 +49,7 @@ define(
 				 */
 				EventImplementationPropertiesPage.prototype.initialize = function() {
 					this.noImplementationPanel = this
-					.mapInputId("noImplementationPanel");
+							.mapInputId("noImplementationPanel");
 					this.implementationPanel = this
 							.mapInputId("implementationPanel");
 					this.eventIntegrationOverlaySelect = this
@@ -119,11 +119,6 @@ define(
 									function(event) {
 										page.overlayControllers[page.eventIntegrationOverlaySelect
 												.val()].activate();
-										page
-												.setOverlay(page.eventIntegrationOverlaySelect
-														.val());
-										page.getModelElement().eventClass = page.extensions[page.eventIntegrationOverlaySelect
-												.val()];
 									});
 				};
 
@@ -132,6 +127,14 @@ define(
 				 */
 				EventImplementationPropertiesPage.prototype.populateOverlaySelect = function() {
 					this.eventIntegrationOverlaySelect.empty();
+
+					this.eventIntegrationOverlaySelect
+					.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>"
+							+ m_i18nUtils
+									.getProperty("modeler.general.toBeDefined")
+							+ "</option>");
 
 					// Add only those overlays, being supported for the event
 					// class of the event
@@ -160,16 +163,18 @@ define(
 				 */
 				EventImplementationPropertiesPage.prototype.setOverlay = function(
 						overlay) {
-
 					for ( var id in this.overlays) {
 						m_dialog.makeInvisible(this.overlays[id]);
 					}
 
+					// TODO Review - may not be needed anymore
 					if (overlay == null) {
 						if (this.getModelElement().eventType == m_constants.START_EVENT) {
-							this.setOverlay("manualTrigger");
 							this.overlayControllers["manualTrigger"].activate();
+							this.setOverlay("manualTrigger");
 						} else {
+							this.eventIntegrationOverlaySelect.val(m_constants.TO_BE_DEFINED);
+							
 							return;
 						}
 					}
@@ -177,8 +182,6 @@ define(
 					this.eventIntegrationOverlaySelect.val(overlay);
 
 					m_dialog.makeVisible(this.overlays[overlay]);
-
-					// TODO Distinguish from activate; update only on change
 					this.overlayControllers[overlay].update();
 				};
 
@@ -191,31 +194,27 @@ define(
 
 					this.populateOverlaySelect();
 
-					if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE
-							|| this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
-					} else {
-					}
-
-					if (this.propertiesPanel.element.modelElement.eventType == m_constants.START_EVENT_TYPE
-							&& m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
+					if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
 						m_dialog.makeInvisible(this.noImplementationPanel);
 						m_dialog.makeVisible(this.implementationPanel);
 
 						if (this.getModelElement().attributes["carnot:engine:camel::camelContextId"] != null) {
-							this.setOverlay("genericCamelRouteEvent");
 							this.overlayControllers["genericCamelRouteEvent"]
 									.activate();
+							this.setOverlay("genericCamelRouteEvent");
 						} else if (this.getModelElement().documentDataId != null) {
-							this.setOverlay("scanEvent");
 							this.overlayControllers["scanEvent"].activate();
+							this.setOverlay("scanEvent");
 						} else {
-							var overlay = this.getModelElement().attributes["carnot:engine:eventIntegrationOverlay"];
+							var overlay = this.getModelElement().attributes["carnot:engine:integration::overlay"];
 
 							this.setOverlay(overlay);
 						}
 					} else {
 						this.noImplementationPanel.empty();
-						this.noImplementationPanel.append("No implementation available."); // TODO I18N
+						this.noImplementationPanel
+								.append("No implementation available."); // TODO
+																			// I18N
 						m_dialog.makeVisible(this.noImplementationPanel);
 						m_dialog.makeInvisible(this.implementationPanel);
 					}

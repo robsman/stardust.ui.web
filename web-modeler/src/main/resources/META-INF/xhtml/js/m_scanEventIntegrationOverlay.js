@@ -48,7 +48,7 @@ define(
 				/**
 				 * 
 				 */
-				ScanEventIntegrationOverlay.prototype.submitEventClassChanges = function(
+				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {
 						parameterMappings = [];
@@ -56,8 +56,10 @@ define(
 
 					this.submitChanges({
 						modelElement : {
-							eventClass : this.id,
-							parameterMappings : parameterMappings
+							parameterMappings : parameterMappings,
+							attributes : {
+								"carnot:engine:integration::overlay" : this.id
+							}
 						}
 					});
 				};
@@ -66,7 +68,7 @@ define(
 				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.activate = function() {
-					this.submitEventClassChanges();
+					this.submitOverlayChanges();
 				};
 
 				/**

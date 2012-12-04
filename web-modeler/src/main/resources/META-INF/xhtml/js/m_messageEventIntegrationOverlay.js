@@ -142,7 +142,7 @@ define(
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
 
-					this.submitEventClassChanges(parameterMappings);
+					this.submitOverlayChanges(parameterMappings);
 				};
 
 				/**

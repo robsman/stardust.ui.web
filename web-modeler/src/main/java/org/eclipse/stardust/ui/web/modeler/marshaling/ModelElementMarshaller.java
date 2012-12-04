@@ -1047,7 +1047,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       // Load BPMN attributes
       
       Object attribute = getModelBuilderFacade().getAttribute(event,
-            "stardust::bpmn:eventClass");
+            "stardust:bpmn::eventClass");
 
       // TODO We need a better convenience function to access attributes
       
@@ -1063,11 +1063,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       // TODO Validate defaults (e.g. Start Events cannot be throwing
       eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
-            getModelBuilderFacade().getBooleanAttribute(event, "stardust::bpmn:throwing"));
+            getModelBuilderFacade().getBooleanAttribute(event, "stardust:bpmn::throwing"));
       eventJson.addProperty(
             ModelerConstants.INTERRUPTING_PROPERTY,
             getModelBuilderFacade().getBooleanAttribute(event,
-                  "stardust::bpmn:interrupting"));
+                  "stardust:bpmn::interrupting"));
 
       JsonArray parameterMappingsJson = new JsonArray();
 

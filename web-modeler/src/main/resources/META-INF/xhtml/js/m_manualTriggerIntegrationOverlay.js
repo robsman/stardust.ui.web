@@ -49,7 +49,7 @@ define(
 				/**
 				 * 
 				 */
-				ManualTriggerIntegrationOverlay.prototype.submitEventClassChanges = function(
+				ManualTriggerIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {
 						parameterMappings = [];
@@ -57,8 +57,10 @@ define(
 
 					this.submitChanges({
 						modelElement : {
-							eventClass : this.id,
-							parameterMappings : parameterMappings
+							parameterMappings : parameterMappings,
+							attributes : {
+								"carnot:engine:integration::overlay" : this.id
+							}
 						}
 					});
 				};
@@ -67,7 +69,7 @@ define(
 				 * 
 				 */
 				ManualTriggerIntegrationOverlay.prototype.activate = function() {
-					this.submitEventClassChanges();
+					this.submitOverlayChanges();
 				};
 
 				/**

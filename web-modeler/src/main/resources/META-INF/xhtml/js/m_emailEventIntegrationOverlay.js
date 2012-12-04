@@ -164,7 +164,7 @@ define(
 									"Mail Attachments", "mailAttachments",
 									"String"));
 
-					this.submitEventClassChanges(parameterMappings);
+					this.submitOverlayChanges(parameterMappings);
 				};
 
 				/**

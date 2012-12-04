@@ -148,7 +148,7 @@ define(
 							.createPrimitiveParameterMapping("Trigger Group",
 									"triggerGroup", "String"));
 
-					this.submitEventClassChanges(parameterMappings);
+					this.submitOverlayChanges(parameterMappings);
 				};
 
 				/**

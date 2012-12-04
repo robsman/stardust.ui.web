@@ -93,7 +93,7 @@ define(
 				/**
 				 * 
 				 */
-				GenericCamelRouteEventIntegrationOverlay.prototype.submitEventClassChanges = function(
+				GenericCamelRouteEventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {
 						parameterMappings = [];
@@ -101,8 +101,10 @@ define(
 
 					this.submitChanges({
 						modelElement : {
-							eventClass : this.id,
-							parameterMappings : parameterMappings
+							parameterMappings : parameterMappings,
+							attributes : {
+								"carnot:engine:integration::overlay" : this.id
+							}
 						}
 					});
 				};
@@ -117,7 +119,7 @@ define(
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
 
-					this.submitEventClassChanges(parameterMappings);
+					this.submitOverlayChanges(parameterMappings);
 				};
 
 				/**

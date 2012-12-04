@@ -126,7 +126,7 @@ define(
 				/**
 				 * 
 				 */
-				EventIntegrationOverlay.prototype.submitEventClassChanges = function(
+				EventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {
 						parameterMappings = [];
@@ -140,9 +140,9 @@ define(
 
 					this.submitChanges({
 						modelElement : {
-							eventClass : this.id,
 							parameterMappings : parameterMappings,
 							attributes : {
+								"carnot:engine:integration::overlay" : this.id,
 								"carnot:engine:camel::camelRouteExt" : route
 							}
 						}
