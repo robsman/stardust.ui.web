@@ -68,7 +68,6 @@ define(
 					this.borderRectangle = null;
 					this.topRectangle = null;
 					this.text = null;
-					this.name = "Default Pool";
 				};
 
 				/**
