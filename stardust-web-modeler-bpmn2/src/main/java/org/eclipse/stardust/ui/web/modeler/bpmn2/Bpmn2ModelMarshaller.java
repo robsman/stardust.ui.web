@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
@@ -841,7 +842,13 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
          jto.eventType = ModelerConstants.INTERMEDIATE_EVENT;
          jto.eventClass = encodeEventClass(boundaryEvent.getEventDefinitions());
-         jto.bindingActivityUuid = boundaryEvent.getAttachedToRef().getId();
+         
+         // TODO Temporary
+         if (boundaryEvent.getAttachedToRef() != null)
+         {
+            jto.bindingActivityUuid = boundaryEvent.getAttachedToRef().getId();
+         }
+         
          jto.interrupting = boundaryEvent.isCancelActivity();
          jto.throwing = false;
       }
@@ -988,15 +995,20 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    public String encodeEventClass(List<EventDefinition> eventDefinitions)
    {
       Set<String> eventClasses = newHashSet();
+      
       for (EventDefinition eventDefinition : eventDefinitions)
       {
          if (eventDefinition instanceof TimerEventDefinition)
          {
-            eventClasses.add("timerEvent");
+            eventClasses.add(ModelerConstants.TIMER_EVENT_CLASS_KEY);
          }
          else if (eventDefinition instanceof MessageEventDefinition)
          {
-            eventClasses.add("messageEvent");
+            eventClasses.add(ModelerConstants.MESSAGE_EVENT_CLASS_KEY);
+         }
+         else if (eventDefinition instanceof ErrorEventDefinition)
+         {
+            eventClasses.add(ModelerConstants.ERROR_EVENT_CLASS_KEY);
          }
          else
          {

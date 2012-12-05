@@ -11,6 +11,7 @@ import java.util.Set;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
@@ -321,7 +322,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                if ( !(event instanceof BoundaryEvent))
                {
                   boundaryEvent = (BoundaryEvent) switchElementType(event,
-                        bpmn2Package().getBoundaryEvent());
+                        bpmn2Package().getBoundaryEvent());                  
                }
                else
                {
@@ -444,15 +445,15 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    {
       if (ModelerConstants.TIMER_EVENT_CLASS_KEY.equals(eventClass))
       {
-         return (EventDefinition) bpmn2Package().getTimerEventDefinition();
+         return (EventDefinition) Bpmn2Utils.bpmn2Factory().createTimerEventDefinition();
       }
       else if (ModelerConstants.MESSAGE_EVENT_CLASS_KEY.equals(eventClass))
       {
-         return (EventDefinition) bpmn2Package().getMessageEventDefinition();
+         return (EventDefinition) Bpmn2Utils.bpmn2Factory().createMessageEventDefinition();
       }
       else if (ModelerConstants.ERROR_EVENT_CLASS_KEY.equals(eventClass))
       {
-         return (EventDefinition) bpmn2Package().getErrorEventDefinition();
+         return (EventDefinition) Bpmn2Utils.bpmn2Factory().createErrorEventDefinition();
       }
       else
       {
