@@ -50,7 +50,7 @@ define(
 
 				jQuery
 						.each(
-								m_utils.convertToSortedArray(m_model.getModels(), "name", true),//m_model.getModels(),
+								m_utils.convertToSortedArray(m_model.getModels(), "name", true),
 								function(index, model) {
 
 									jQuery("#outline").jstree("create",
