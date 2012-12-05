@@ -53,7 +53,6 @@ define(
 			var Y_OFFSET = canvasPos.top; // Set for #toolbar +
 			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
-			var WIDTH_ADJUSTMENT = 60;
 
 			return {
 				createDiagram : function(divId) {
@@ -1596,6 +1595,7 @@ define(
 				 * should be created before createConnection)
 				 */
 				Diagram.prototype.placeNewSymbol = function(x, y, sync) {
+					sync = true;
 					this.newSymbol.complete(sync);
 					// If symbol is not contained in swimlane, return
 					if (!this.newSymbol.isCompleted()) {
@@ -1889,60 +1889,11 @@ define(
 				 *
 				 */
 				Diagram.prototype.showEditable = function(textPrimitive) {
-					this.currentTextPrimitive = textPrimitive;
-					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Use the Symbol's x co-ordinate to decide the width of
 					// textbox
 					m_utils.debug("text primitive set");
-					var name = null;
-					if (m_constants.ANNOTATION_SYMBOL == textPrimitive.auxiliaryProperties.callbackScope.type) {
-						name = textPrimitive.auxiliaryProperties.callbackScope.content;
-						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.text
-								.getBBox().width + 20;
-						var textboxHeight = textPrimitive.auxiliaryProperties.callbackScope.text
-								.getBBox().height + 20;
-						this.editableTextArea.css("width",
-								parseInt(textboxWidth.valueOf()));
-						this.editableTextArea.css("height",
-								parseInt(textboxHeight.valueOf()));
 
-						this.editableTextArea
-								.css("visibility", "visible")
-								.html(name)
-								.moveDiv(
-										{
-											"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-													+ X_OFFSET
-													+ textPrimitive.auxiliaryProperties.callbackScope.width
-													/ 5 - scrollPos.left,
-											"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-													+ Y_OFFSET
-													+ textPrimitive.auxiliaryProperties.callbackScope.height
-													/ 8 - scrollPos.top
-										}).show().trigger("dblclick");
-
-					} else {
-						name = textPrimitive.auxiliaryProperties.callbackScope.modelElement.name;
-						var textboxWidth = textPrimitive.auxiliaryProperties.callbackScope.width
-								- WIDTH_ADJUSTMENT;
-						this.editableText.css("width", parseInt(textboxWidth
-								.valueOf()));
-
-						this.editableText
-								.css("visibility", "visible")
-								.html(name)
-								.moveDiv(
-										{
-											"x" : textPrimitive.auxiliaryProperties.callbackScope.x
-													+ X_OFFSET
-													+ textPrimitive.auxiliaryProperties.callbackScope.width
-													/ 5 - scrollPos.left,
-											"y" : textPrimitive.auxiliaryProperties.callbackScope.y
-													+ Y_OFFSET
-													+ textPrimitive.auxiliaryProperties.callbackScope.height
-													/ 3 - scrollPos.top
-										}).show().trigger("dblclick");
-					}
+					this.currentTextPrimitive = textPrimitive.auxiliaryProperties.callbackScope.showEditable();
 
 					this.symbolEditMode = true;
 					m_utils.debug("editable activated");
@@ -1959,12 +1910,8 @@ define(
 								.trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("text set");
-						var changes;
-						changes = {
-							modelElement : {
-								name : this.currentTextPrimitive.attr("text")
-							}
-						}
+						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+
 						m_commandsController
 								.submitCommand(m_command
 										.createUpdateModelElementCommand(
@@ -1987,10 +1934,7 @@ define(
 								.hide().trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("textarea set");
-						var changes;
-						changes = {
-							content : this.currentTextPrimitive.attr("text")
-						}
+						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges();
 
 						m_commandsController
 								.submitCommand(m_command

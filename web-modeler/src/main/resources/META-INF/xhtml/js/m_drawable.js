@@ -530,7 +530,6 @@ define(
 				 */
 				Drawable.prototype.doubleClickEditableTextPrimitive = function(
 						element) {
-					element.hide();
 					this.diagram.showEditable(element);
 				};
 

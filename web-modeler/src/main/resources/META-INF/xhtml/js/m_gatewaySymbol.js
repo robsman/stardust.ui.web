@@ -3,20 +3,18 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
-				"bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_activity",
-				"bpm-modeler/js/m_gatewayPropertiesPanel" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command", "bpm-modeler/js/m_activity",
+				"bpm-modeler/js/m_gatewayPropertiesPanel", "bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_canvasManager, m_symbol,
 				m_commandsController, m_command, m_activity,
-				m_gatewayPropertiesPanel) {
+				m_gatewayPropertiesPanel, m_modelerUtils) {
 
 			return {
 				createGatewaySymbol : function(diagram) {
@@ -74,14 +72,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.toString = function() {
 					return "Lightdust.GatewaySymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.initializeFromJson = function(lane) {
 					if (!this.modelElement.prototype) {
@@ -107,7 +105,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -126,7 +124,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -141,7 +139,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createPrimitives = function() {
 					this.path = m_canvasManager
@@ -154,6 +152,7 @@ define(
 										'stroke-width' : m_constants.GATEWAY_SYMBOL_DEFAULT_STROKE_WIDTH
 									});
 					this.addToPrimitives(this.path);
+					this.addToEditableTextPrimitives(this.path);
 
 					this.andPath = m_canvasManager
 							.drawPath(
@@ -208,16 +207,17 @@ define(
 					});
 
 					this.addToPrimitives(this.text);
+					this.addToEditableTextPrimitives(this.text);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPathSvgString = function() {
 					return "M "
@@ -243,7 +243,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getPlusPathSvgString = function() {
 					return "M "
@@ -267,7 +267,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.getCrossPathSvgString = function() {
 					return "M "
@@ -293,7 +293,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.text.animate({
@@ -341,7 +341,7 @@ define(
 
 				/**
 				 * Overrides Drawable.prototype.adjustFlyOutMenu
-				 * 
+				 *
 				 * TODO - this can be the default implementation as it
 				 * caclulates the height dynamically. Will also need to
 				 * determine width dynamically if moved to Diagram as default
@@ -435,7 +435,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.showPrimitives = function() {
 					this.path.show();
@@ -443,7 +443,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.refreshFromModelElement = function() {
 					if (this.modelElement.name
@@ -475,7 +475,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -530,7 +530,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.highlight = function() {
 					this.path.attr({
@@ -548,7 +548,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				GatewaySymbol.prototype.dehighlight = function() {
 					this.path.attr({
@@ -591,10 +591,60 @@ define(
 									this.diagram.modelId,
 									this.modelElement.oid, changes));
 				};
+
+				GatewaySymbol.prototype.showEditable = function() {
+					this.text.hide();
+					var editableText = this.diagram.editableText;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
+					var name = this.modelElement.name;
+					var textboxWidth = this.text.getBBox().width + 20;
+					var textboxHeight = this.text.getBBox().height;
+
+					if (textboxWidth < m_constants.DEFAULT_TEXT_WIDTH
+							|| textboxHeight < m_constants.DEFAULT_TEXT_HEIGHT) {
+						textboxWidth = m_constants.DEFAULT_TEXT_WIDTH;
+						textboxHeight = m_constants.DEFAULT_TEXT_HEIGHT;
+					}
+
+					editableText.css("width", parseInt(textboxWidth.valueOf()));
+					editableText.css("height",
+							parseInt(textboxHeight.valueOf()));
+
+					editableText.css("visibility", "visible").html(name)
+							.moveDiv(
+									{
+										"x" : this.x + this.diagram.X_OFFSET
+												+ this.width / 5
+												- scrollPos.left - 30,
+										"y" : this.y + this.diagram.Y_OFFSET
+												+ (this.height) + 5
+												- scrollPos.top
+									}).show().trigger("dblclick");
+
+					return this.text;
+				};
+
+				GatewaySymbol.prototype.postComplete = function() {
+					this.select();
+					this.diagram.showEditable(this.text);
+				};
+
+				GatewaySymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
+					if (this.text) {
+						if (this.text.getBBox().width > (4.0 * this.width)) {
+							var words = this.text.attr("text");
+							m_utils.textWrap(this.text, 4.0 * this.width);
+						}
+					}
+				};
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -602,7 +652,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -610,7 +660,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -618,7 +668,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -626,7 +676,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -634,14 +684,14 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_switchToXorGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToXorGateway();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function GatewaySymbol_switchToAndGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToAndGateway();

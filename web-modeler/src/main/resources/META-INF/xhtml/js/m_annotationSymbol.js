@@ -10,9 +10,9 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_annotationPropertiesPanel" ],
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_annotationPropertiesPanel", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_command, m_messageDisplay,
-				m_canvasManager, m_symbol, m_annotationPropertiesPanel) {
+				m_canvasManager, m_symbol, m_annotationPropertiesPanel, m_modelerUtils) {
 			return {
 				create : function(diagram) {
 					var annotationSymbol = new AnnotationSymbol();
@@ -257,6 +257,60 @@ define(
 						x : this.x + 8,
 						y : this.y + 0.5 * this.height
 					});
+				};
+
+				AnnotationSymbol.prototype.showEditable = function() {
+					this.text.hide();
+					var editableTextArea = this.diagram.editableTextArea;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
+					var name = this.content;
+					var textboxWidth = this.text.getBBox().width + 20;
+					var textboxHeight = this.text.getBBox().height + 20;
+
+					editableTextArea.css("width", parseInt(textboxWidth
+							.valueOf()));
+					editableTextArea.css("height", parseInt(textboxHeight
+							.valueOf()));
+
+					editableTextArea.css("visibility", "visible").html(
+							name).moveDiv(
+							{
+								"x" : this.x + this.diagram.X_OFFSET
+										+ this.width / 5 - scrollPos.left,
+								"y" : this.y + this.diagram.Y_OFFSET
+										+ this.height / 8 - scrollPos.top
+							}).show().trigger("dblclick");
+					return this.text;
+				};
+
+				AnnotationSymbol.prototype.postComplete = function() {
+					this.select();
+					this.diagram.showEditable(this.text);
+				};
+
+				AnnotationSymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
+					if (this.text.getBBox().width > this.width) {
+						var words = this.text.attr("text");
+						m_utils.textWrap(this.text, this.width);
+					}
+
+					if (this.icon.getBBox().width > this.width) {
+						this.icon.hide();
+					} else {
+						this.icon.show();
+					}
+				};
+
+				AnnotationSymbol.prototype.getEditedChanges = function(text) {
+					return {
+						modelElement : {
+							content : text
+						}
+					};
 				};
 
 				/**

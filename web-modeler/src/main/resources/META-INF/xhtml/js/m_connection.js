@@ -61,7 +61,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Connection() {
 				var drawable = m_drawable.createDrawable();
@@ -99,7 +99,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.toString = function() {
 					return "Lightdust.Connection";
@@ -207,7 +207,7 @@ define(
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				Connection.prototype.initializeAnchorPoints = function() {
 					if (this.toModelElementType == m_constants.ACTIVITY) {
@@ -236,7 +236,7 @@ define(
 				 * undefined orientation. Orientation string returned follows
 				 * syntax - FromAnchopointOrientation(N/E/W/S) followed by
 				 * ToAnchopointOrientation(N/E/W/S)
-				 * 
+				 *
 				 * e.g. Orientation NE means From anchorpoint orientation is
 				 * North and to-anchorpoint orientation is East
 				 */
@@ -363,7 +363,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setFirstAnchorPoint = function(anchorPoint) {
 					this.fromAnchorPoint = anchorPoint;
@@ -372,7 +372,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setSecondAnchorPointNoComplete = function(
 						anchorPoint) {
@@ -516,7 +516,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -560,7 +560,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -575,28 +575,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.refresh = function() {
 					this.adjustGeometry();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isUnknownFlow = function() {
 					return this.getToSymbol() == null;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isPoolSymbol = function() {
 					return false;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isDataFlow = function() {
 					// TODO Need better type indication
@@ -606,28 +606,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.allowsCondition = function() {
 					return this.fromModelElementType == m_constants.GATEWAY;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isControlFlow = function() {
 					return !this.isDataFlow();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getFromSymbol = function() {
 					return this.fromAnchorPoint.symbol;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getToSymbol = function() {
 					return this.toAnchorPoint == null ? null
@@ -635,7 +635,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.setDummySecondAnchorPoint = function() {
 					this.setSecondAnchorPoint(this.fromAnchorPoint
@@ -645,7 +645,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.prepare = function() {
 					this.createPathPrimitives();
@@ -672,21 +672,21 @@ define(
 				// TODO Move to drawable
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isPrepared = function() {
 					return this.state == m_constants.SYMBOL_PREPARED_STATE;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.isCompleted = function() {
 					return this.state == m_constants.SYMBOL_COMPLETED_STATE;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.completeNoTransfer = function() {
 					this.register();
@@ -719,7 +719,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.register = function() {
 					this.diagram.connections.push(this);
@@ -732,7 +732,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createPathPrimitives = function() {
 					this.path = m_canvasManager.drawPath("", {
@@ -763,8 +763,8 @@ define(
 							});
 
 					this.addToPrimitives(this.conditionExpressionText);
-					this
-							.addToEditableTextPrimitives(this.conditionExpressionText);
+					this.addToEditableTextPrimitives(this.conditionExpressionText);
+
 					this.conditionExpressionText.hide();
 
 					this.defaultIndicatorPath = m_canvasManager.drawPath("", {
@@ -777,14 +777,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.initializePrepareEventHandling = function() {
 					this.path.click(Connection_clickClosure);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.initializeEventHandling = function() {
 					this.auxiliaryPickPath.click(Connection_clickClosure);
@@ -816,7 +816,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.refreshFromModelElement = function() {
 					this.conditionExpressionText.hide();
@@ -915,7 +915,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.reroute = function() {
 					if (this.isControlFlow()) {
@@ -1174,7 +1174,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.findPath = function(startSegment, targetX,
 						targetY) {
@@ -1506,7 +1506,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.getSvgString = function() {
 					var svgString = "M " + this.fromAnchorPoint.x + " "
@@ -1525,7 +1525,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.select = function() {
 					this.selected = true;
@@ -1541,7 +1541,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.deselect = function() {
 					this.selected = false;
@@ -1554,7 +1554,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragMove = function(dX, dY, x, y, event) {
 					if (this.clickedSegmentIndex > 0
@@ -1605,7 +1605,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.click = function(x, y, event) {
 					m_utils.debug("Connection.prototype.click");
@@ -1633,27 +1633,27 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStart = function(x, y, event) {
 					this.clickedSegmentIndex = this.findClickedSegment(x, y);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStop = function(x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStartConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragConditionExpressionText = function(dX,
 						dY, x, y, event) {
@@ -1673,14 +1673,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.dragStopConditionExpressionText = function(
 						x, y, event) {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverInConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1690,7 +1690,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverOutConditionExpressionText = function() {
 					this.conditionExpressionText.attr({
@@ -1701,7 +1701,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverIn = function() {
 					this.path.attr({
@@ -1711,7 +1711,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hoverOut = function() {
 					this.path
@@ -1723,7 +1723,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [], [ {
@@ -1743,7 +1743,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -1771,7 +1771,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.proximityHoverOut = function(event) {
 					if (this.diagram.isInNormalMode()) {
@@ -1780,7 +1780,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
@@ -1810,7 +1810,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.adjustFlyOutMenu = function(x, y, width,
 						height) {
@@ -1825,7 +1825,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.adjustFlyOutMenuItems = function(x, y,
 						width, height) {
@@ -1843,7 +1843,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.remove = function() {
 					this.removePrimitives();
@@ -1876,7 +1876,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.removePrimitives = function() {
 					var n = 0;
@@ -1904,7 +1904,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.createUpdateCommand = function(changes) {
 					var command = m_command.createUpdateModelElementCommand(
@@ -1920,7 +1920,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
@@ -1929,7 +1929,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.show = function() {
 					this.path.show();
@@ -2055,7 +2055,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Connection.prototype.flipFlowOrientation = function(
 						flowOrientation) {
@@ -2097,6 +2097,69 @@ define(
 						newOrientation = m_constants.NORTH;
 					}
 					return newOrientation;
+				};
+
+				Connection.prototype.showEditable = function() {
+					this.conditionExpressionText.hide();
+					var editableText = this.diagram.editableText;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
+					var name = this.conditionExpressionText.attr("text");
+
+					var textboxWidth = this.conditionExpressionText.getBBox().width + 20;
+					var textboxHeight = this.conditionExpressionText.getBBox().height;
+
+					if (textboxWidth < m_constants.DEFAULT_TEXT_WIDTH
+							|| textboxHeight < m_constants.DEFAULT_TEXT_HEIGHT) {
+						textboxWidth = m_constants.DEFAULT_TEXT_WIDTH;
+						textboxHeight = m_constants.DEFAULT_TEXT_HEIGHT;
+					}
+
+					editableText.css("width", parseInt(textboxWidth.valueOf()));
+					editableText.css("height",
+							parseInt(textboxHeight.valueOf()));
+
+					editableText.css("visibility", "visible").html(name)
+							.moveDiv(
+									{
+										"x" : this.conditionExpressionText
+												.getBBox().x
+												+ this.diagram.X_OFFSET
+												- scrollPos.left,
+										"y" : this.conditionExpressionText
+												.getBBox().y
+												+ this.diagram.Y_OFFSET
+												- scrollPos.top
+									}).show().trigger("dblclick");
+
+					return this.conditionExpressionText;
+				};
+
+				Connection.prototype.postComplete = function() {
+					this.select();
+					this.diagram.showEditable(this.text);
+				};
+
+				Connection.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
+					if (this.conditionExpressionText) {
+						if (this.conditionExpressionText.getBBox().width > (4.0 * this.width)) {
+							var words = this.conditionExpressionText
+									.attr("text");
+							m_utils.textWrap(this.conditionExpressionText,
+									4.0 * this.width);
+						}
+					}
+				};
+
+				Connection.prototype.getEditedChanges = function(content) {
+					return {
+						modelElement : {
+							conditionExpression : content
+						}
+					};
 				};
 			}
 
@@ -2186,7 +2249,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Segment.prototype.toString = function() {
 					return "[object Lightdust.Segment()]";
@@ -2230,7 +2293,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Segment.prototype.getSvgString = function() {
 					var previousXOffset = 0;

@@ -13,9 +13,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_dataPropertiesPanel", "bpm-modeler/js/m_data" ],
+				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_dataPropertiesPanel", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_command, m_canvasManager, m_model,
-				m_symbol, m_connection, m_dataPropertiesPanel, m_data) {
+				m_symbol, m_connection, m_dataPropertiesPanel, m_data, m_modelerUtils) {
 
 			return {
 				/**
@@ -177,7 +177,7 @@ define(
 					});
 
 					this.addToPrimitives(this.text);
-					// this.addToEditableTextPrimitives(this.text);
+					this.addToEditableTextPrimitives(this.text);
 				};
 
 				/**
@@ -364,6 +364,50 @@ define(
 					}
 
 					return true;
+				};
+
+				DataSymbol.prototype.showEditable = function() {
+					this.text.hide();
+					var editableText = this.diagram.editableText;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
+					var name = this.modelElement.name;
+
+					var textboxWidth = this.text.getBBox().width + 20;
+					var textboxHeight = this.text.getBBox().height;
+
+					editableText.css("width", parseInt(textboxWidth.valueOf()));
+					editableText.css("height",
+							parseInt(textboxHeight.valueOf()));
+
+					editableText.css("visibility", "visible").html(name)
+							.moveDiv(
+									{
+										"x" : this.x + this.diagram.X_OFFSET
+												+ this.width / 5
+												- scrollPos.left,
+										"y" : this.y + this.diagram.Y_OFFSET
+												+ (this.height) + 5
+												- scrollPos.top
+									}).show().trigger("dblclick");
+					return this.text;
+				};
+
+				DataSymbol.prototype.postComplete = function() {
+					this.select();
+					this.diagram.showEditable(this.text);
+				};
+
+				DataSymbol.prototype.adjustPrimitivesOnShrink = function() {
+					if (this.parentSymbol && this.parentSymbol.minimized) {
+						return;
+					}
+					if (this.text) {
+						if (this.text.getBBox().width > (4.0 * this.width)) {
+							var words = this.text.attr("text");
+							m_utils.textWrap(this.text, 4.0 * this.width);
+						}
+					}
 				};
 			}
 

@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -14,10 +14,10 @@ define(
 				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
 				"bpm-modeler/js/m_gatewaySymbol",
 				"bpm-modeler/js/m_eventPropertiesPanel",
-				"bpm-modeler/js/m_event" ],
+				"bpm-modeler/js/m_event", "bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_command, m_messageDisplay,
 				m_canvasManager, m_symbol, m_gatewaySymbol,
-				m_eventPropertiesPanel, m_event) {
+				m_eventPropertiesPanel, m_event, m_modelerUtils) {
 
 			return {
 				createStartEventSymbol : function(diagram) {
@@ -62,7 +62,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -103,14 +103,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.toString = function() {
 					return "Lightdust.EventSymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.initializeFromJson = function(lane) {
 					m_event.typeObject(this.modelElement);
@@ -129,7 +129,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -150,7 +150,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -165,7 +165,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createPrimitives = function() {
 					this.circle = m_canvasManager.drawCircle(this.x
@@ -177,6 +177,7 @@ define(
 							});
 
 					this.addToPrimitives(this.circle);
+					this.addToEditableTextPrimitives(this.circle);
 
 					this.innerCircle = m_canvasManager.drawCircle(this.x
 							+ m_constants.EVENT_DEFAULT_RADIUS, this.y
@@ -199,6 +200,7 @@ define(
 
 					this.addToPrimitives(this.image);
 
+
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + this.height + 1.2
@@ -209,6 +211,7 @@ define(
 					});
 
 					this.addToPrimitives(this.text);
+					this.addToEditableTextPrimitives(this.text);
 				};
 
 				/**
@@ -221,13 +224,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.initializeEventHandling = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.refreshFromModelElement = function() {
 					if (this.modelElement.name
@@ -305,7 +308,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.createFlyOutMenu = function() {
 					// For stop event, right menu will be empty.
@@ -341,7 +344,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.highlight = function() {
 					this.circle.attr({
@@ -353,7 +356,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.dehighlight = function() {
 					this.circle.attr({
@@ -365,7 +368,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.adjustPrimitives = function(dX, dY) {
 					this.circle.animate({
@@ -422,14 +425,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.recalculateBoundingBox = function() {
 					// Noting to be done here
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.validateCreateConnection = function(conn) {
 					if (this.connections.length > 0
@@ -445,7 +448,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
@@ -467,8 +470,47 @@ define(
 					}
 				};
 
+				EventSymbol.prototype.showEditable = function() {
+					this.text.hide();
+					var editableText = this.diagram.editableText;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+
+					var name = this.modelElement.name;
+
+					var textboxWidth = this.text.getBBox().width + 20;
+					var textboxHeight = this.text.getBBox().height;
+
+					if (textboxWidth < m_constants.DEFAULT_TEXT_WIDTH
+							|| textboxHeight < m_constants.DEFAULT_TEXT_HEIGHT) {
+						textboxWidth = m_constants.DEFAULT_TEXT_WIDTH;
+						textboxHeight = m_constants.DEFAULT_TEXT_HEIGHT;
+					}
+
+					editableText.css("width", parseInt(textboxWidth.valueOf()));
+					editableText.css("height",
+							parseInt(textboxHeight.valueOf()));
+
+					editableText.css("visibility", "visible").html(name)
+							.moveDiv(
+									{
+										"x" : this.x + this.diagram.X_OFFSET
+												+ this.width / 5
+												- scrollPos.left - 30,
+										"y" : this.y + this.diagram.Y_OFFSET
+												+ (this.height) + 5
+												- scrollPos.top
+									}).show().trigger("dblclick");
+
+					return this.text;
+				};
+
+				EventSymbol.prototype.postComplete = function() {
+					this.select();
+					this.diagram.showEditable(this.text);
+				};
+
 				/*
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.onParentSymbolChange = function() {
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
@@ -478,7 +520,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.postMove = function() {
 					var hitSymbol = this.diagram
@@ -493,7 +535,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.postDrag = function(dX, dY, x, y) {
 					var hitSymbol = this.diagram
@@ -508,7 +550,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.postDragStop = function() {
 					var hitSymbol = this.diagram
@@ -525,7 +567,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventSymbol.prototype.resolveNonHierarchicalRelationships = function() {
 					if (this.modelElement.isBoundaryEvent()) {
@@ -536,7 +578,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -544,7 +586,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -552,7 +594,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -560,7 +602,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function EventSymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
