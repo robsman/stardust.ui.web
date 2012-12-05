@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -25,19 +25,19 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
-					
-					
+
+
 				}
 			};
 
-								
+
 			function i18uimashupproperties() {
-               
+
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
@@ -115,10 +115,11 @@ define(
 				primitiveDataTypeSelect.append("<option value=\"double\">"
 						+ selectdata + "</option>");
 
-				selectdata = m_i18nUtils
-						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
-				primitiveDataTypeSelect.append("<option value=\"Decimal\">"
-						+ selectdata + "</option>");
+				// Commented as we don't support Money values yet.
+//				selectdata = m_i18nUtils
+//						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+//				primitiveDataTypeSelect.append("<option value=\"Decimal\">"
+//						+ selectdata + "</option>");
 
 				selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
@@ -152,7 +153,7 @@ define(
 
 			}
 			/**
-			 * 
+			 *
 			 */
 			function UiMashupApplicationView() {
 				var view = m_modelElementView.create();
@@ -161,7 +162,7 @@ define(
 				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
@@ -186,7 +187,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.setModelElement = function(
 						application) {
@@ -214,14 +215,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.toString = function() {
 					return "Lightdust.UiMashupApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -244,7 +245,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {

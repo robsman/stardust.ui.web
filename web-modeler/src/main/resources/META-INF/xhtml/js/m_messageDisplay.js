@@ -44,7 +44,7 @@ define(
 				if (lastSaveDate) {
 					updateLastSavedLabel(m_utils.prettyDateTime(lastSaveDate));
 				} else {
-					var selectdata = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.notsavedata");
+					var selectdata = m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title");
 					updateLastSavedLabel(selectdata);
 				}
 			}

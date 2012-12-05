@@ -152,11 +152,12 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"double\">" + selectdata
 									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Decimal\">" + selectdata
-									+ "</option>");
+					// Commented as we don't support Money values yet.
+//					selectdata = m_i18nUtils
+//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+//					this.primitiveDataTypeSelect
+//							.append("<option value=\"Decimal\">" + selectdata
+//									+ "</option>");
 					selectdata = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
 					this.primitiveDataTypeSelect
