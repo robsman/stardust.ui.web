@@ -500,6 +500,26 @@ public class ModelerResource
       }
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{modelId}/configurationVariables")
+   public Response getConfigurationVariables(@PathParam("modelId") String modelId)
+   {
+      try
+      {
+         System.out.println("Rainer, bearbeite mich!");
+         
+         return Response.ok("{}",
+               APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)

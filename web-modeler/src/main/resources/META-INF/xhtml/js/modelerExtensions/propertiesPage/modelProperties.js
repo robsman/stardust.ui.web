@@ -8,8 +8,8 @@
  * documentation
  ******************************************************************************/
 
-define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',"bpm-modeler/js/m_i18nUtils"], function(
-        		 m_modelElementCommentsPropertiesPage,m_i18nUtils) {
+define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',"bpm-modeler/js/m_i18nUtils", 'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage'], function(
+        		 m_modelElementCommentsPropertiesPage, m_i18nUtils, m_modelConfigurationVariablesPropertiesPage) {
 	return {
 		propertiesPage : [ {
 			panelId: "modelView",
@@ -19,6 +19,15 @@ define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',"bpm-modeler/js/m
 			visibility: "always",
 			pageName: m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments") ,
 			pageIconUrl: "../../images/icons/comments-properties-page.png"
-		} ]
+		},
+		{
+			panelId: "modelView",
+			pageId: "configurationVariablesPropertiesPage",
+			pageHtmlUrl: "modelConfigurationVariablesPropertiesPage.html",
+			provider: m_modelConfigurationVariablesPropertiesPage,
+			visibility: "preview",
+			pageName: "Configuration Variables", // TODO I18N
+			pageIconUrl: "../../images/icons/basic-properties-page.png"
+		}]
 	};
 });
