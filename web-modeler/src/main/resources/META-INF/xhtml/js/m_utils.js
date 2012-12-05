@@ -10,7 +10,7 @@
 
 /**
  * Helper functions for object inspection and object initialization.
- *
+ * 
  * @author Marc.Gille
  */
 define(
@@ -25,7 +25,7 @@ define(
 				removeItemFromArray : function(array, item) {
 					removeItemFromArray(array, item);
 				},
-
+				convertToSortedArray : convertToSortedArray,
 				isItemInArray : function(array, item) {
 					return isItemInArray(array, item);
 				},
@@ -68,7 +68,7 @@ define(
 
 				textWrap : textWrap,
 
-				xmlToString: xmlToString,
+				xmlToString : xmlToString,
 
 				contentWrap : contentWrap
 			};
@@ -86,7 +86,7 @@ define(
 				return index;
 			}
 			/**
-			 *
+			 * 
 			 * @param from
 			 * @param to
 			 * @returns
@@ -96,10 +96,9 @@ define(
 				array.length = from < 0 ? array.length + from : from;
 				return array.push.apply(array, rest);
 			}
-			;
 
 			/**
-			 *
+			 * 
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
@@ -114,12 +113,11 @@ define(
 					++n;
 				}
 			}
-			;
 
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
-			 *
+			 * 
 			 * @param t :
 			 *            textNode element for Symbol
 			 * @param width :
@@ -155,7 +153,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param array
 			 * @param item
 			 */
@@ -169,6 +167,54 @@ define(
 				return false;
 			}
 
+			/**
+			 * 
+			 */
+			function convertToSortedArray(obj, field, ascending) {
+				var sortedObjects = [];
+
+				for ( var key in obj) {
+					if (obj.hasOwnProperty(key)) {
+						sortedObjects.push(obj[key]);
+					}
+				}
+
+				var ascendingFactor = ascending ? -1 : 1;
+				
+				sortedObjects.sort(function(left, right) {
+					var leftValue = left[field].toLowerCase();
+					var rightValue = right[field].toLowerCase();
+
+					if (leftValue < rightValue) {
+						return -1 * ascendingFactor;
+					}
+					if (leftValue > rightValue) {
+						return 1 * ascendingFactor;
+					}
+
+					return 0;
+				});
+
+				return sortedObjects;
+			}
+
+			/**
+			 * 
+			 */
+			function lexicalSort(left, right) {
+				left = left.toLowerCase();
+				right = right.toLowerCase();
+
+				if (left < right) {
+					return -1;
+				}
+				if (left > right) {
+					return 1;
+				}
+
+				return 0;
+			}
+
 			function debug(obj) {
 				if (typeof console == "object") {
 					console.log(obj);
@@ -176,34 +222,34 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function typeObject(proto, untypedObject) {
 				var typedObject = Object.create(proto);
-			    for(prop in untypedObject) {
-			        if(untypedObject.hasOwnProperty(prop)) {
-			            typedObject[prop] = untypedObject[prop];
-			        }
-			    }
-			    return typedObject;
+				for (prop in untypedObject) {
+					if (untypedObject.hasOwnProperty(prop)) {
+						typedObject[prop] = untypedObject[prop];
+					}
+				}
+				return typedObject;
 			}
 
 			/**
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
-			 *
+			 * 
 			 * Arrays however will be overwritten.
-			 *
-			 * TODO - review behaviour for attributes:
-			 * Attributes also will be over written, like arrays, as in some cases attributes don't
+			 * 
+			 * TODO - review behaviour for attributes: Attributes also will be
+			 * over written, like arrays, as in some cases attributes don't
 			 * switch between different values (like true and false), but they
 			 * either exist or they don't. In such cases it is necessary to
 			 * remove the attributes from child if they don't exist in the
 			 * parent.
-			 *
+			 * 
 			 * The function will not check for cyclic dependencies.
-			 *
+			 * 
 			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
@@ -226,7 +272,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function isAttribute(member) {
 				if (member == "attributes") {
@@ -237,11 +283,12 @@ define(
 			}
 
 			/**
-			 * See http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+			 * See
+			 * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
 			 */
 			function isArray(o) {
-				  return Object.prototype.toString.call(o) === '[object Array]';
-				}
+				return Object.prototype.toString.call(o) === '[object Array]';
+			}
 
 			/**
 			 * Copies all methods of and object into another object.
@@ -255,7 +302,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
@@ -285,28 +332,30 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function prettyDateTime(date) {
 				if (date == null) {
 					return "-";
 				}
 
-				var time_formats = [ [ 60, 'Less than a Minute' ], [ 90, '1 Minute' ], // 60*1.5
-				[ 3600, 'Minutes', 60 ], // 60*60, 60
-				[ 5400, '1 Hour' ], // 60*60*1.5
-				[ 86400, 'Hours', 3600 ], // 60*60*24, 60*60
-				[ 129600, '1 Day' ], // 60*60*24*1.5
-				[ 604800, 'Days', 86400 ], // 60*60*24*7, 60*60*24
-				[ 907200, '1 Week' ], // 60*60*24*7*1.5
-				[ 2628000, 'Weeks', 604800 ], // 60*60*24*(365/12), 60*60*24*7
-				[ 3942000, '1 Month' ], // 60*60*24*(365/12)*1.5
-				[ 31536000, 'Months', 2628000 ], // 60*60*24*365,
-				// 60*60*24*(365/12)
-				[ 47304000, '1 Year' ], // 60*60*24*365*1.5
-				[ 3153600000, 'Years', 31536000 ], // 60*60*24*365*100,
-				// 60*60*24*365
-				[ 4730400000, '1 Century' ], // 60*60*24*365*100*1.5
+				var time_formats = [ [ 60, 'Less than a Minute' ],
+						[ 90, '1 Minute' ], // 60*1.5
+						[ 3600, 'Minutes', 60 ], // 60*60, 60
+						[ 5400, '1 Hour' ], // 60*60*1.5
+						[ 86400, 'Hours', 3600 ], // 60*60*24, 60*60
+						[ 129600, '1 Day' ], // 60*60*24*1.5
+						[ 604800, 'Days', 86400 ], // 60*60*24*7, 60*60*24
+						[ 907200, '1 Week' ], // 60*60*24*7*1.5
+						[ 2628000, 'Weeks', 604800 ], // 60*60*24*(365/12),
+						// 60*60*24*7
+						[ 3942000, '1 Month' ], // 60*60*24*(365/12)*1.5
+						[ 31536000, 'Months', 2628000 ], // 60*60*24*365,
+						// 60*60*24*(365/12)
+						[ 47304000, '1 Year' ], // 60*60*24*365*1.5
+						[ 3153600000, 'Years', 31536000 ], // 60*60*24*365*100,
+						// 60*60*24*365
+						[ 4730400000, '1 Century' ], // 60*60*24*365*100*1.5
 				];
 
 				var seconds = (new Date().getTime() - date.getTime()) / 1000;
@@ -349,7 +398,7 @@ define(
 					'Friday', 'Saturday', 'Sunday' ];
 
 			/**
-			 *
+			 * 
 			 */
 			function formatDate(date, s, utc) {
 				s = s.split('');
@@ -608,7 +657,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getDaySuffix(date, utc) {
 				var n = utc ? date.getUTCDate() : date.getDate();
@@ -639,7 +688,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getISOWeek(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
@@ -687,7 +736,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -699,7 +748,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -711,7 +760,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getTimezoneOffset(date) {
 				return date.getTimezoneOffset() * -1;
@@ -729,30 +778,32 @@ define(
 			/**
 			 * Stringifies the content of an entire XML tag.
 			 */
-			function xmlToString(xmlData)
-			{
-			    var xmlString;
+			function xmlToString(xmlData) {
+				var xmlString;
 
-			    // IE
-			    if (window.ActiveXObject){
-			        xmlString = xmlData.xml;
-			    }
-			    // Code for Mozilla, Firefox, Opera, etc.
-			    else{
-			        xmlString = (new XMLSerializer()).serializeToString(xmlData[0]);
-			    }
+				// IE
+				if (window.ActiveXObject) {
+					xmlString = xmlData.xml;
+				}
+				// Code for Mozilla, Firefox, Opera, etc.
+				else {
+					xmlString = (new XMLSerializer())
+							.serializeToString(xmlData[0]);
+				}
 
-			    return xmlString;
+				return xmlString;
 			}
 
-			/** wraps String
+			/**
+			 * wraps String
+			 * 
 			 * @param content :
-			 *           	string to be wrapped
+			 *            string to be wrapped
 			 * @param maxLength :
-			 * 				max number of characters in one line
+			 *            max number of characters in one line
 			 * @param brk :
-			 * 				The character(s) to be inserted at every break
-			 *
+			 *            The character(s) to be inserted at every break
+			 * 
 			 */
 			function contentWrap(content, maxLength, brk) {
 				if (!content) {
