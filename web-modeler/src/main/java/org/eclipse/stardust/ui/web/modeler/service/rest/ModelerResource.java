@@ -14,6 +14,9 @@ package org.eclipse.stardust.ui.web.modeler.service.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -35,7 +38,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.emf.ecore.EObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
@@ -43,13 +56,6 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.orion.UriModelManagementStrategy;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 @Path("/modeler/{randomPostFix}")
 public class ModelerResource
@@ -507,8 +513,25 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Rainer, bearbeite mich!");
-         
+         System.out.println("Configuration Variables:");
+         ModelType model = this.getModelService().findModel(modelId);
+         VariableContext vc = new VariableContext();
+         vc.initializeVariables(model);
+         vc.refreshVariables(model);
+         vc.saveVariables();
+         for (Iterator<ModelVariable> i = vc.getVariables().iterator(); i.hasNext();) {
+            ModelVariable mv = i.next();
+            System.out.println();
+            System.out.println("Model Variable: " + mv.getName());
+            System.out.println("    Default Value: " + mv.getDefaultValue());
+            System.out.println("    Referenced by: ");
+            List<EObject> refList = vc.getVariableReferences().get(mv.getName());
+            for (Iterator<EObject> j = refList.iterator(); j.hasNext();) {
+               System.out.println("       -->" + j.next().toString());
+            }
+            System.out.println();
+         }
+
          return Response.ok("{}",
                APPLICATION_JSON_TYPE).build();
       }
@@ -790,7 +813,7 @@ public class ModelerResource
    {
       try
       {
-         JsonObject json = jsonIo.readJsonObject(postedData);         
+         JsonObject json = jsonIo.readJsonObject(postedData);
          UriModelManagementStrategy modelManagementStrategy = getUriModelManagementStrategy();
 
          modelManagementStrategy.setFileUri(json.get("fileUri").getAsString());
