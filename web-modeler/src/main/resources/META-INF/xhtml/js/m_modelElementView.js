@@ -12,10 +12,15 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_command,
-				m_commandsController, m_user, m_dialog, m_view, m_i18nUtils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
+				"bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_extensionManager, m_session,
+				m_command, m_commandsController, m_user, m_dialog, m_view,
+				m_i18nUtils) {
 			return {
 				create : function(id) {
 					var view = new ModelElementView();
@@ -24,9 +29,7 @@ define(
 				}
 			};
 
-
-					function i18modelelement() {
-
+			function i18modelelement() {
 				jQuery("#name")
 						.text(
 								m_i18nUtils
@@ -105,7 +108,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function ModelElementView() {
 				// Inheritance
@@ -116,7 +119,7 @@ define(
 				m_utils.inheritMethods(ModelElementView.prototype, view);
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.initializeModelElementView = function(
 						modelElement) {
@@ -162,7 +165,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.loadPropertiesPage = function(
 						modelElement, extensions, propertiesPagesExtensions, n) {
@@ -176,6 +179,18 @@ define(
 					var extension = propertiesPagesExtensions[n];
 
 					extensions[extension.pageId] = extension;
+
+					if (!m_session.initialize().technologyPreview
+							&& extension.visibility == "preview") {
+						// Skip page
+
+						n += 1;
+
+						this.loadPropertiesPage(modelElement, extensions,
+								propertiesPagesExtensions, n);
+
+						return;
+					}
 
 					var propertiesTabHeader = "";
 
@@ -221,8 +236,9 @@ define(
 
 								m_utils.debug("Page loaded");
 								m_utils.debug(view.propertiesPages);
-								view.loadPropertiesPage(modelElement, extensions,
-										propertiesPagesExtensions, ++n);
+								view.loadPropertiesPage(modelElement,
+										extensions, propertiesPagesExtensions,
+										++n);
 							}
 						});
 					} else {
@@ -236,7 +252,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.initializeModelElement = function(
 						modelElement) {
@@ -267,33 +283,33 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.getModelElement = function() {
 					return this.modelElement;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.getModel = function() {
 					return this.getModelElement().model;
 				};
 
 				/**
-				 * All Model Elements managed via Model Views should have a UUID.
+				 * All Model Elements managed via Model Views should have a
+				 * UUID.
 				 */
 				ModelElementView.prototype.getElementUuid = function() {
 					return this.getModelElement().uuid;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
-					var element = {
-					};
+					var element = {};
 
 					element[property] = value;
 
@@ -301,12 +317,12 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
 					var element = {
-							attributes : {}
+						attributes : {}
 					};
 
 					element.attributes[attribute] = value;
@@ -315,7 +331,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.renameModelElement = function(name) {
 					this.submitChanges({
@@ -324,7 +340,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.submitChanges = function(changes) {
 					// Generic attributes
@@ -341,7 +357,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -366,7 +382,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -398,7 +414,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -430,10 +446,10 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ModelElementView.prototype.processCommand = function(command) {
-					m_utils.debug("===> Process Command for "+ this.id);
+					m_utils.debug("===> Process Command for " + this.id);
 					m_utils.debug(command);
 
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
@@ -448,7 +464,7 @@ define(
 							.parseJSON(command) : command;
 
 					if (object && object.changes && object.changes.modified) {
-						for (var i = 0; i < object.changes.modified.length; i++) {
+						for ( var i = 0; i < object.changes.modified.length; i++) {
 							if (this.getModelElement().uuid == object.changes.modified[i].uuid) {
 								m_utils.inheritFields(this.getModelElement(),
 										object.changes.modified[i]);
