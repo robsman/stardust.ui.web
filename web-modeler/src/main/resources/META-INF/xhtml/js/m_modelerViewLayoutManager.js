@@ -329,16 +329,6 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.processdefination.propertyPages.processInterface.type.noProcessInterface");
 				processdefinationselect.append("<option value=\"noProcessInterface\">"+selectdata+"</option>" );
 
-				selectdata = m_i18nUtils
-						.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.and");
-				gatewayTypeInputselect.append("<option value=\"and\">"
-						+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
-				gatewayTypeInputselect.append("<option value=\"xor\">"
-						+ selectdata + "</option>");
-
 				var processdefinationselect = $("#processdefinationselect")
 						.find("#processInterfaceTypeSelectInput");
 
