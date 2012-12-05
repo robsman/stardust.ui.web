@@ -56,7 +56,7 @@ define(
 					var index = process.getNewGatewayIndex();
 					var activity = new Activity("Gateway" + index);
 
-					activity.initialize("Gateway " + index,
+					activity.initialize("",
 							m_constants.GATEWAY_ACTIVITY_TYPE);
 
 					activity.type = m_constants.GATEWAY;
