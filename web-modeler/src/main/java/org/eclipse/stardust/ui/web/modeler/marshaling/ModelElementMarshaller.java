@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.emf.common.util.ECollections.sort;
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
@@ -9,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.ChangeDescription;
 
@@ -39,6 +39,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
@@ -1128,13 +1129,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
+         String dataId = null;
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
-         dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
          dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(data));
          dataJson.addProperty(ModelerConstants.OID_PROPERTY, data.getElementOid());
          ModelType model = ModelUtils.findContainingModel(data);
+         
          dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          setContainingModelIdProperty(dataJson, data);
@@ -1144,7 +1146,31 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
                this.getModelBuilderFacade().isExternalReference(data));
+         
+         String dataUri = AttributeUtil.getAttributeValue(
+               (IExtensibleElement) data,
+               IConnectionManager.URI_ATTRIBUTE_NAME);
+         
+         if (!StringUtils.isEmpty(dataUri))
+         {
+            URI createURI = URI.createURI(dataUri);
+            String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+               + createURI.authority() + "/"; //$NON-NLS-1$         
+            ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            
+            if(referencedModel != null)
+            {
+               dataId = getModelBuilderFacade().createFullId(referencedModel, data);
+            }         
+         }
 
+         if(dataId == null)
+         {
+            dataId = getModelBuilderFacade().createFullId(model, data);            
+         }
+         
+         dataJson.addProperty(ModelerConstants.ID_PROPERTY, dataId);         
+         
          if (null != data.getType()
                && data.getType()
                      .getId()
@@ -1156,7 +1182,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   IConnectionManager.URI_ATTRIBUTE_NAME);
             if (null != model)
             {
-               IConnectionManager manager = model.getConnectionManager();
+               IConnectionManager manager = model.getConnectionManager();                           
                if (manager != null & uri != null)
                {
                   EObject eObject = manager.find(uri);
@@ -1309,7 +1335,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toRoleJson(RoleType role)
    {
       JsonObject roleJson = new JsonObject();
-      roleJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
+      String roleId = null;      
+      
       roleJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -1327,7 +1354,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          roleJson.addProperty(ModelerConstants.CARDINALITY, "");
       }
 
-      if (null != model)
+      if(model != null)
       {
          List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(
                model, role);
@@ -1358,6 +1385,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       roleJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
             this.getModelBuilderFacade().isExternalReference(role));
 
+      String roleUri = AttributeUtil.getAttributeValue(
+            (IExtensibleElement) role,
+            IConnectionManager.URI_ATTRIBUTE_NAME);
+      
+      if (!StringUtils.isEmpty(roleUri))
+      {
+         URI createURI = URI.createURI(roleUri);
+         String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+            + createURI.authority() + "/"; //$NON-NLS-1$         
+         ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+         if(referencedModel != null)
+         {
+            roleId = getModelBuilderFacade().createFullId(referencedModel, role);
+         }         
+      }
+
+      if(roleId == null)
+      {
+         roleId = getModelBuilderFacade().createFullId(model, role);         
+      }
+
+      roleJson.addProperty(ModelerConstants.ID_PROPERTY, roleId);
+      
+      
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
 
