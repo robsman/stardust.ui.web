@@ -25,7 +25,8 @@ define(
 				createSwimlaneSymbol : function(diagram, parentSymbol) {
 					var laneSymbol = new SwimlaneSymbol();
 					var laneIndex = parentSymbol.getLaneIndex();
-					laneSymbol.name = "Lane " + laneIndex;
+					var laneNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newLane.namePrefix");
+					laneSymbol.name = laneNamePrefix + " " + laneIndex;
 					laneSymbol.bind(diagram, parentSymbol);
 
 					return laneSymbol;

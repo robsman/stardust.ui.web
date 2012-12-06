@@ -1811,7 +1811,7 @@ define(
 				 */
 				function createModel() {
 					var modelName = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.model");
+							.getProperty("modeler.outline.newModel.namePrefix");
 					var count = 0;
 					var name = modelName + " " + (++count);
 
@@ -1851,7 +1851,7 @@ define(
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
-					var name = namePrefix + (++suffix);
+					var name = namePrefix + " " + (++suffix);
 					var model = m_model.findModel(modelId);
 					if (model) {
 						while (model.findModelElementByName(name)) {
@@ -1866,7 +1866,8 @@ define(
 				 *
 				 */
 				function createProcess(modelId) {
-					var name = getUniqueNameForElement(modelId, "Process ");
+					var procNamePrefix = m_i18nUtils.getProperty("modeler.outline.newProcess.namePrefix");
+					var name = getUniqueNameForElement(modelId, procNamePrefix);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {

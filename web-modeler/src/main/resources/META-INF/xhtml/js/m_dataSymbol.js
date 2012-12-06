@@ -13,9 +13,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_dataPropertiesPanel", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_dataPropertiesPanel", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_command, m_canvasManager, m_model,
-				m_symbol, m_connection, m_dataPropertiesPanel, m_data, m_modelerUtils) {
+				m_symbol, m_connection, m_dataPropertiesPanel, m_data, m_modelerUtils, m_i18nUtils) {
 
 			return {
 				/**
@@ -34,8 +34,9 @@ define(
 
 					// TODO Need to create data before!
 
-					dataSymbol.dataId = "Data_" + index;
-					dataSymbol.dataName = "Data " + index;
+					var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
+					dataSymbol.dataId = dataNamePrefix + "_" + index;
+					dataSymbol.dataName = dataNamePrefix + " " + index;
 					// Data is not present at server side, using DataIndex and
 					// modelId to create dataId
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,

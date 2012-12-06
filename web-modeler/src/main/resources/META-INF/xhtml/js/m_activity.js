@@ -10,8 +10,8 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_accessPoint" ],
-		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint) {
+				"bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint, m_i18nUtils) {
 
 			return {
 				create : function() {
@@ -21,7 +21,8 @@ define(
 					var index = process.getNewActivityIndex();
 					var activity = new Activity();
 
-					activity.initialize("Activity " + index, type);
+					var actNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newActivity.namePrefix");
+					activity.initialize(actNamePrefix + " " + index, type);
 
 					activity.activityType == m_constants.MANUAL_ACTIVITY_TYPE
 

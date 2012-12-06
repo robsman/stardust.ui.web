@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_elementConfiguration" ], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController, m_elementConfiguration) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_i18nUtils" ], function(m_utils, m_constants, m_modelElement, m_command, m_commandsController, m_elementConfiguration, m_i18nUtils) {
 	return {
 		/**
 		 * @deprecated Is this still needed?
@@ -21,7 +21,8 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 			var data = new Data();
 			var index = model.getNewDataIndex();
 
-			data.initialize(model, "Data " + index);
+			var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
+			data.initialize(model, dataNamePrefix + " " + index);
 
 			data.dataType = m_constants.PRIMITIVE_DATA_TYPE;
 			data.primitiveDataType = m_constants.STRING_PRIMITIVE_DATA_TYPE;
