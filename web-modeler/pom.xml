@@ -18,7 +18,7 @@
 -->
 
    <properties>
-      <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
+		<ipp.version>7.1.1-NIGHTLY-SNAPSHOT</ipp.version>
 		<atmosphere.version>1.0.4</atmosphere.version>
    </properties>
 
@@ -180,13 +180,13 @@
                <groupId>org.slf4j</groupId>
                <artifactId>slf4j-api</artifactId>
             </exclusion>
-				<!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
+				<!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId>
+					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId>
+					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId>
 					</exclusion> -->
          </exclusions>
       </dependency>
-		<!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
+		<!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId>
 			<version>1.7.4</version> </dependency> -->
 
    </dependencies>
