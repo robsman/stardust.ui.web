@@ -57,6 +57,8 @@ define(
 				 * 
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariables = function() {
+					var page = this;
+
 					m_communicationController
 							.syncGetData(
 									{
@@ -86,12 +88,15 @@ define(
 												input
 														.change(
 																{
-																	page : this
+																	page : page,
+																	variableName : json[n].name
 																},
 																function(event) {
-																	m_utils
-																			.debug("Changed value "
-																					+ jQuery(this)
+																	event.data.page
+																			.modifyConfigurationVariable(
+																					event.data.variableName,
+																					jQuery(
+																							this)
 																							.val());
 																});
 
@@ -108,8 +113,28 @@ define(
 
 													list.append(item);
 
-													item
-															.append(json[n].references[m].name);
+													var info = "";
+
+													info += json[n].references[m].elementType; // I18N
+
+													if (json[n].references[m].elementName) {
+														info += " <span class='emphasis'>";
+														info += json[n].references[m].elementName;
+														info += "</span>";
+													}
+
+													if (json[n].references[m].scopeType) {
+														info += " of "; // I18N
+														info += json[n].references[m].scopeType; // I18N
+
+														if (json[n].references[m].scopeType) {
+															info += " <span class='emphasis'>";
+															info += json[n].references[m].scopeName;
+															info += "</span>";
+														}
+													}
+
+													item.append(info);
 												}
 
 												jQuery(
@@ -121,6 +146,27 @@ define(
 											m_utils.debug("Error");
 										}
 									});
+				};
+
+				/**
+				 * 
+				 */
+				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVariable = function(
+						variableName, defaultValue) {
+					m_communicationController.postData({
+						url : m_communicationController.getEndpointUrl()
+								+ "/models/" + this.getModel().id
+								+ "/configurationVariables/" + variableName
+					}, JSON.stringify({
+						variableName : variableName,
+						defaultValue : defaultValue
+					}), {
+						"success" : function() {
+						},
+						"error" : function() {
+							m_utils.debug("Error");
+						}
+					});
 				};
 			}
 		});
