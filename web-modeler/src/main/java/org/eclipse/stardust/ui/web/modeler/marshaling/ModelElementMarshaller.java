@@ -1129,7 +1129,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
-         String dataId = null;
+         dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());         
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
          dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -1160,16 +1160,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             
             if(referencedModel != null)
             {
-               dataId = getModelBuilderFacade().createFullId(referencedModel, data);
+               String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
+               dataJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);         
             }         
          }
-
-         if(dataId == null)
-         {
-            dataId = getModelBuilderFacade().createFullId(model, data);            
-         }
-         
-         dataJson.addProperty(ModelerConstants.ID_PROPERTY, dataId);         
          
          if (null != data.getType()
                && data.getType()
@@ -1335,8 +1329,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toRoleJson(RoleType role)
    {
       JsonObject roleJson = new JsonObject();
-      String roleId = null;      
-      
+      roleJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());      
       roleJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -1397,16 +1390,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
          if(referencedModel != null)
          {
-            roleId = getModelBuilderFacade().createFullId(referencedModel, role);
+            String roleId = getModelBuilderFacade().createFullId(referencedModel, role);
+            roleJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
          }         
       }
-
-      if(roleId == null)
-      {
-         roleId = getModelBuilderFacade().createFullId(model, role);         
-      }
-
-      roleJson.addProperty(ModelerConstants.ID_PROPERTY, roleId);
       
       
       loadDescription(roleJson, role);
