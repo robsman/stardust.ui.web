@@ -37,7 +37,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "implementationPropertiesPage",
 						"Implementation", // TODO I18N
-						"../../images/icons/basic-properties-page.png");
+						"../../images/icons/event-implementation-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
