@@ -469,9 +469,13 @@ define(
 				 * Brings the symbol to the front.
 				 */
 				Symbol.prototype.toFront = function() {
-					for ( var n in this.primitives) {
-						this.primitives[n].toFront();
-					}
+					//Following delay is added specifically for Chorme/IE Browser.
+					//RaphaelJs .toFront() causes loss of double click event.
+					setTimeout(function(){
+						for ( var n in this.primitives) {
+							this.primitives[n].toFront();
+						}
+				    }, 600);
 				};
 
 				/**
