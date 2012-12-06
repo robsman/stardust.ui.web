@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newStructVariable;
@@ -27,6 +28,8 @@ import java.util.concurrent.Future;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 import javax.wsdl.*;
 import javax.wsdl.Service;
 import javax.xml.namespace.QName;
@@ -45,6 +48,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.model.utils.IdentifiableElement;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -57,6 +61,8 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
@@ -83,9 +89,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- *
+ * 
  * @author Shrikant.Gangal, Marc.Gille
- *
+ * 
  */
 public class ModelService
 {
@@ -282,6 +288,7 @@ public class ModelService
    private QueryService queryService;
 
    private String currentUserId;
+
    // Modeling Session Management
 
    /**
@@ -309,9 +316,9 @@ public class ModelService
    }
 
    /**
-    * Removes the modelling session from cached list when user session ends.
-    * TODO - commented pending review by Robert S
-    *
+    * Removes the modelling session from cached list when user session ends. TODO -
+    * commented pending review by Robert S
+    * 
     */
    @PreDestroy
    public void destroyModelingSession()
@@ -323,7 +330,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -338,6 +345,7 @@ public class ModelService
 
    /**
     * Only used for ORION integration
+    * 
     * @param modelManagementStrategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
@@ -351,7 +359,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param attrs
     * @param attrType
     */
@@ -368,14 +376,14 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
     */
    private void storeAttributes(JsonObject json, IIdentifiableModelElement element)
    {
-      if (!json.has(ATTRIBUTES_PROPERTY))
+      if ( !json.has(ATTRIBUTES_PROPERTY))
       {
          return;
       }
@@ -403,7 +411,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param model
     * @param processDefinition
     * @return
@@ -414,7 +422,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -437,7 +445,8 @@ public class ModelService
       allInvitedUsers.addProperty("account", account);
       allInvitedUsers.addProperty("timestamp", System.currentTimeMillis());
       allInvitedUsers.addProperty("path", "users");
-      allInvitedUsers.addProperty("ownerColor", Integer.toHexString( currentSession.getOwnerColor().getRGB() & 0x00ffffff));
+      allInvitedUsers.addProperty("ownerColor",
+            Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
       allInvitedUsers.addProperty("operation", "updateCollaborators");
 
       JsonObject old = new JsonObject();
@@ -451,8 +460,10 @@ public class ModelService
          userJson.addProperty("lastName", user.getLastName());
          userJson.addProperty("email", user.getEMail());
          userJson.addProperty("imageUrl", "");
-         trace.info(">>>>>>>>>>>>>>>> usercolour: " +Integer.toHexString(currentSession.getColor(user).getRGB()));
-         userJson.addProperty("color", Integer.toHexString( currentSession.getColor(user).getRGB() & 0x00ffffff));
+         trace.info(">>>>>>>>>>>>>>>> usercolour: "
+               + Integer.toHexString(currentSession.getColor(user).getRGB()));
+         userJson.addProperty("color",
+               Integer.toHexString(currentSession.getColor(user).getRGB() & 0x00ffffff));
 
          allUsers.add(userJson);
       }
@@ -465,7 +476,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param account
     * @return
     */
@@ -501,21 +512,24 @@ public class ModelService
       old.add("users", allUsers);
       allProspectUsers.add("oldObject", old);
       allProspectUsers.add("newObject", new JsonObject());
-      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "+allProspectUsers.toString());
+      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "
+            + allProspectUsers.toString());
       return allProspectUsers.toString();
 
    }
 
    /**
     * Invite Mechanism works the following:
-    *
-    * When the user is logged in any messages can be broadcasted directly to
-    * him. The user recives a broadcast about a notification that he was in
-    * invited. He can decide now if he really wants to join the session or not.
-    * It broadcasts a JsonObject to every user online directly.
-    *
-    * @param userAccountList A list of all invited users provided by the icefaces backing bean
-    * @param sessionOwnerId The user who invited everyone in userAccountList
+    * 
+    * When the user is logged in any messages can be broadcasted directly to him. The user
+    * recives a broadcast about a notification that he was in invited. He can decide now
+    * if he really wants to join the session or not. It broadcasts a JsonObject to every
+    * user online directly.
+    * 
+    * @param userAccountList
+    *           A list of all invited users provided by the icefaces backing bean
+    * @param sessionOwnerId
+    *           The user who invited everyone in userAccountList
     */
    public void requestInvite(List<String> userAccountList, String sessionOwnerId)
    {
@@ -537,7 +551,8 @@ public class ModelService
          JsonObject oldObject = new JsonObject();
          String inviteeUniqueId = ModelingSessionManager.getUniqueId(invitee);
          if ( !currentSession.participantContainsUser(invitee)
-               && !currentSession.prospectContainsUser(invitee) && !currentSession.isOwner(inviteeUniqueId))
+               && !currentSession.prospectContainsUser(invitee)
+               && !currentSession.isOwner(inviteeUniqueId))
          {
             requestJoinJson.addProperty(TYPE_PROPERTY, "REQUEST_JOIN_COMMAND");
 
@@ -547,42 +562,48 @@ public class ModelService
             oldObject.addProperty("lastName", invitee.getLastName());
             oldObject.addProperty("email", invitee.getEMail());
             oldObject.addProperty("imageUrl", "");
-            //newJson.addProperty("modelSession", sessionManager.currentSession(account).getId());
+            // newJson.addProperty("modelSession",
+            // sessionManager.currentSession(account).getId());
             JsonObject newObject = new JsonObject();
 
             requestJoinJson.add("newObject", newObject);
             requestJoinJson.add("oldObject", oldObject);
 
-            trace.info(">>>>>>>Created Join Json Object the following way: "+ requestJoinJson.toString());
+            trace.info(">>>>>>>Created Join Json Object the following way: "
+                  + requestJoinJson.toString());
 
             Broadcaster inviteBroadcaster = lookupInviteBroadcaster(inviteeId);
-            if((null != inviteBroadcaster) && (inviteeId != sessionOwnerId))
+            if ((null != inviteBroadcaster) && (inviteeId != sessionOwnerId))
             {
-               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to invitee " + inviteeId);
+               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to invitee "
+                     + inviteeId);
                inviteBroadcaster.broadcast(requestJoinJson.toString());
             }
             currentSession.inviteUser(invitee);
 
          }
-         else if(!currentSession.participantContainsUser(invitee)
+         else if ( !currentSession.participantContainsUser(invitee)
                && currentSession.prospectContainsUser(invitee))
          {
             requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty("errormessage", "You are trying to invite a user already invited. Please confirm the pending invite or decline it");
+            oldObject.addProperty(
+                  "errormessage",
+                  "You are trying to invite a user already invited. Please confirm the pending invite or decline it");
             requestJoinJson.add("newObject", new JsonObject());
             requestJoinJson.add("oldObject", oldObject);
 
          }
-         else if(currentSession.participantContainsUser(invitee)
+         else if (currentSession.participantContainsUser(invitee)
                && !currentSession.prospectContainsUser(invitee))
          {
             requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty("errormessage", "You are trying to invite a user who has already joined the session.");
+            oldObject.addProperty("errormessage",
+                  "You are trying to invite a user who has already joined the session.");
             requestJoinJson.add("newObject", new JsonObject());
             requestJoinJson.add("oldObject", oldObject);
 
          }
-         else if(currentSession.isOwner(inviteeUniqueId))
+         else if (currentSession.isOwner(inviteeUniqueId))
          {
             requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
             oldObject.addProperty("errormessage", "You are trying to invite yourself.");
@@ -598,7 +619,8 @@ public class ModelService
          }
 
          Broadcaster ownerBroadcaster = lookupInviteBroadcaster(sessionOwnerId);
-         trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner " + sessionOwnerId);
+         trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner "
+               + sessionOwnerId);
          ownerBroadcaster.broadcast(requestJoinJson.toString());
       }
 
@@ -606,7 +628,8 @@ public class ModelService
 
    public String getLoggedInUser(ServletContext context)
    {
-      PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(context).getBean(PortalApplication.class);
+      PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(context)
+            .getBean(PortalApplication.class);
       org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
       JsonObject currentUserJson = new JsonObject();
       currentUserJson.addProperty(TYPE_PROPERTY, "WHO_AM_I");
@@ -619,7 +642,8 @@ public class ModelService
    public String getSessionOwner(String sessionId)
    {
       ModelingSession currentSession = sessionManager.findById(sessionId);
-      User currentUser = getUserService().getUser(unwrapUsername(currentSession.getOwnerId()));
+      User currentUser = getUserService().getUser(
+            unwrapUsername(currentSession.getOwnerId()));
       JsonObject currentUserJson = new JsonObject();
       currentUserJson.addProperty(TYPE_PROPERTY, "UPDATE_OWNER");
       currentUserJson.addProperty("firstName", currentUser.getFirstName());
@@ -630,12 +654,12 @@ public class ModelService
    }
 
    /**
-    * Uses the ModelingSessionManager to check whether a given user was invited
-    * to session while he was offline. Broadcasts a REQUEST_JOIN_JSON Object
-    * back to the requester specified through the username.
-    *
+    * Uses the ModelingSessionManager to check whether a given user was invited to session
+    * while he was offline. Broadcasts a REQUEST_JOIN_JSON Object back to the requester
+    * specified through the username.
+    * 
     * @param username
-    *
+    * 
     */
    public void getOfflineInvites(String username)
    {
@@ -670,32 +694,35 @@ public class ModelService
             Broadcaster b = lookupInviteBroadcaster(username);
             if (null != b)
             {
-               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to " +username);
+               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to "
+                     + username);
                Future<String> myFuture = b.broadcast(offlineInvite.toString());
             }
             else
             {
-               trace.info(">>>>>>>>>>>>> Broadcaster null for " +username);
+               trace.info(">>>>>>>>>>>>> Broadcaster null for " + username);
             }
          }
       }
       else
       {
-         trace.info(">>>>>>>>>>>>> No current Session found where user" +username +" was invited");
+         trace.info(">>>>>>>>>>>>> No current Session found where user" + username
+               + " was invited");
       }
    }
 
-   private String unwrapUsername(String owner){
+   private String unwrapUsername(String owner)
+   {
       String username = null;
       String[] parts = owner.split(":");
 
-      return parts[parts.length-1];
+      return parts[parts.length - 1];
    }
 
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    *
+    * 
     * @return
     */
    public String getAllModels(boolean reload)
@@ -714,8 +741,11 @@ public class ModelService
          ModelRepository modelRepository = currentSession().modelRepository();
          for (EObject model : modelRepository.getAllModels())
          {
-            JsonObject modelJson = modelRepository.getModelBinding(model).getMarshaller().toModelJson(model);
-            modelsJson.add(extractString(modelJson, ModelerConstants.ID_PROPERTY), modelJson);
+            JsonObject modelJson = modelRepository.getModelBinding(model)
+                  .getMarshaller()
+                  .toModelJson(model);
+            modelsJson.add(extractString(modelJson, ModelerConstants.ID_PROPERTY),
+                  modelJson);
          }
 
          return modelsJson.toString();
@@ -729,7 +759,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param httpRequest
     * @param modelId
     * @return
@@ -756,7 +786,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       *
+       * 
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -780,7 +810,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param id
     * @return
     */
@@ -791,7 +821,7 @@ public class ModelService
 
    /**
     * TODO - This should probably be delegated to the model management strategy?
-    *
+    * 
     * @param id
     * @return
     */
@@ -802,7 +832,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param id
     * @param postedData
@@ -837,7 +867,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param activityId
@@ -848,8 +878,8 @@ public class ModelService
          JsonObject commandJson)
    {
       ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, processId);
       ActivityType activity = getModelBuilderFacade().findActivity(processDefinition,
             activityId);
       EditingSession editingSession = getEditingSession(model);
@@ -872,7 +902,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -931,7 +961,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -940,8 +970,8 @@ public class ModelService
    {
       if (null != element.getDescription())
       {
-         modelElementJson.addProperty(DESCRIPTION_PROPERTY, (String) element
-               .getDescription().getMixed().get(0).getValue());
+         modelElementJson.addProperty(DESCRIPTION_PROPERTY,
+               (String) element.getDescription().getMixed().get(0).getValue());
       }
       else
       {
@@ -950,7 +980,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -977,9 +1007,9 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
@@ -1021,7 +1051,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1033,11 +1063,10 @@ public class ModelService
    {
       // TODO - Not used, ModelElementUnmarshaller contains relevant code to update
       // connections , can be removed from here
-      JsonObject modelElementJson = connectionJson
-            .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      JsonObject modelElementJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
       ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, processId);
       EditingSession editSession = getEditingSession(model);
 
       synchronized (model)
@@ -1049,8 +1078,8 @@ public class ModelService
 
          if (extractString(modelElementJson, TYPE_PROPERTY).equals(CONTROL_FLOW_LITERAL))
          {
-            TransitionConnectionType transitionConnection = getModelBuilderFacade()
-                  .findTransitionConnectionByModelOid(processDefinition, connectionOid);
+            TransitionConnectionType transitionConnection = getModelBuilderFacade().findTransitionConnectionByModelOid(
+                  processDefinition, connectionOid);
             transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
                   connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
             transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
@@ -1067,8 +1096,7 @@ public class ModelService
                {
                   transitionConnection.getTransition().setCondition(CONDITION_KEY);
 
-                  XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE
-                        .createXmlTextNode();
+                  XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
 
                   ModelUtils.setCDataString(expression.getMixed(),
                         extractString(modelElementJson, CONDITION_EXPRESSION_PROPERTY),
@@ -1083,8 +1111,8 @@ public class ModelService
          }
          else
          {
-            DataMappingConnectionType dataMappingConnection = getModelBuilderFacade()
-                  .findDataMappingConnectionByModelOid(processDefinition, connectionOid);
+            DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
+                  processDefinition, connectionOid);
 
             dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
                   connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -1099,7 +1127,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1135,7 +1163,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1145,8 +1173,8 @@ public class ModelService
          JsonObject laneSymbolJson)
    {
       ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, processId);
       LaneSymbol laneSymbol = getModelBuilderFacade().findLaneSymbolById(
             processDefinition, laneId);
 
@@ -1165,7 +1193,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1201,43 +1229,42 @@ public class ModelService
          }
 
          ModelType participantModel = model;
-         if (!participantModelID.equals(model.getId()))
+         if ( !participantModelID.equals(model.getId()))
          {
             participantModel = findModel(participantModelID);
          }
 
          String participantId = getModelBuilderFacade().stripFullId(
-               extractString(laneSymbolJson,
-                     ModelerConstants.PARTICIPANT_FULL_ID));
+               extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
 
-         IModelParticipant modelParticipant = getModelBuilderFacade()
-               .findParticipant(
-                     findModel(participantModelID),
-                     participantId);
+         IModelParticipant modelParticipant = getModelBuilderFacade().findParticipant(
+               findModel(participantModelID), participantId);
 
-         if (!participantModelID.equals(model.getId()))
+         if ( !participantModelID.equals(model.getId()))
          {
-            String fileConnectionId = WebModelerConnectionManager.createFileConnection(model,
-                  participantModel);
+            String fileConnectionId = WebModelerConnectionManager.createFileConnection(
+                  model, participantModel);
 
             String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
-            ModelType loadModel = getModelManagementStrategy().loadModel(participantModelID + ".xpdl");
-            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);
-            if(participantCopy == null)
+            ModelType loadModel = getModelManagementStrategy().loadModel(
+                  participantModelID + ".xpdl");
+            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
+                  loadModel, participantId);
+            if (participantCopy == null)
             {
                ElementCopier copier = new ElementCopier(loadModel, null);
                participantCopy = (IModelParticipant) copier.copy(modelParticipant);
             }
 
-
             ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
                   uri, participantCopy, bundleId, null, true);
             PepperIconFactory iconFactory = new PepperIconFactory();
             descriptor.importElements(iconFactory, model, true);
-            modelParticipant = getModelBuilderFacade().findParticipant(model, participantId);
-         }         
+            modelParticipant = getModelBuilderFacade().findParticipant(model,
+                  participantId);
+         }
          LaneParticipantUtil.setParticipant(laneSymbol, modelParticipant);
       }
 
@@ -1320,8 +1347,8 @@ public class ModelService
          xpdlModel = getModelManagementStrategy().attachModel(modelId);
       }
 
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(xpdlModel, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            xpdlModel, processId);
 
       return modelElementMarshaller().toProcessDefinitionDiagram(processDefinition)
             .toString();
@@ -1334,8 +1361,8 @@ public class ModelService
          JsonObject diagramJson)
    {
       ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, processId);
       DiagramType diagram = processDefinition.getDiagram().get(0);
       EditingSession editSession = getEditingSession(model);
 
@@ -1359,7 +1386,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1369,8 +1396,8 @@ public class ModelService
          JsonObject dataSymbolJson)
    {
       ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model, processId);
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, processId);
       EditingSession editSession = getEditingSession(model);
 
       synchronized (model)
@@ -1399,16 +1426,14 @@ public class ModelService
 
       JsonObject wizardParameterJson = (JsonObject) json.get(NEW_OBJECT_PROPERTY);
       JsonObject processDefinitionJson = (JsonObject) createProcessJson(modelId, json);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade()
-            .findProcessDefinition(model,
-                  extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
+            model, extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
       LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
       // Create Start Event
 
-      StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM
-            .createStartEventSymbol();
+      StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
       startEventSymbol.setElementOid(++maxOid);
 
       startEventSymbol.setXPos(250);
@@ -1427,16 +1452,15 @@ public class ModelService
       //
       // model.getDataType().add(structuredDataType);
 
-      DataType data = newStructVariable(model)
-            .withIdAndName(
-                  getModelBuilderFacade().createIdFromName(
-                        extractString(wizardParameterJson,
-                              "requestParameterDataNameInput")),
-                  extractString(wizardParameterJson, "requestParameterDataNameInput"))
+      DataType data = newStructVariable(model).withIdAndName(
+            getModelBuilderFacade().createIdFromName(
+                  extractString(wizardParameterJson, "requestParameterDataNameInput")),
+            extractString(wizardParameterJson, "requestParameterDataNameInput"))
             .ofType(
                   /* Dummy */getModelBuilderFacade().stripFullId(
                         extractString(wizardParameterJson,
-                              "serviceRequestParameterTypeId"))).build();
+                              "serviceRequestParameterTypeId")))
+            .build();
 
       model.getData().add(data);
 
@@ -1453,21 +1477,19 @@ public class ModelService
 
       // Create Request Transformation Activity
 
-      ActivityType activity = newApplicationActivity(processDefinition)
-            .withIdAndName(
-                  getModelBuilderFacade().createIdFromName(
-                        extractString(wizardParameterJson,
-                              "requestTransformationActivityName")),
-                  extractString(wizardParameterJson, "requestTransformationActivityName"))
+      ActivityType activity = newApplicationActivity(processDefinition).withIdAndName(
+            getModelBuilderFacade().createIdFromName(
+                  extractString(wizardParameterJson, "requestTransformationActivityName")),
+            extractString(wizardParameterJson, "requestTransformationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId"))).build();
+                        extractString(wizardParameterJson, "applicationId")))
+            .build();
 
       // setDescription(activity,
       // "Invocation of wrapped application.");
 
-      ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM
-            .createActivitySymbolType();
+      ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
       activitySymbol.setElementOid(++maxOid);
 
@@ -1483,13 +1505,14 @@ public class ModelService
 
       // Request data
 
-      data = newStructVariable(model)
-            .withIdAndName(getModelBuilderFacade().createIdFromName("Service Request"),
-                  "Service Request")
+      data = newStructVariable(model).withIdAndName(
+            getModelBuilderFacade().createIdFromName("Service Request"),
+            "Service Request")
             .ofType(
                   getModelBuilderFacade().stripFullId(
                         extractString(wizardParameterJson,
-                              "serviceRequestParameterTypeId"))).build();
+                              "serviceRequestParameterTypeId")))
+            .build();
 
       model.getData().add(data);
 
@@ -1506,15 +1529,14 @@ public class ModelService
 
       // Create Application Activity
 
-      activity = newApplicationActivity(processDefinition)
-            .withIdAndName(
-                  getModelBuilderFacade().createIdFromName(
-                        extractString(wizardParameterJson,
-                              "serviceInvocationActivityName")),
-                  extractString(wizardParameterJson, "serviceInvocationActivityName"))
+      activity = newApplicationActivity(processDefinition).withIdAndName(
+            getModelBuilderFacade().createIdFromName(
+                  extractString(wizardParameterJson, "serviceInvocationActivityName")),
+            extractString(wizardParameterJson, "serviceInvocationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId"))).build();
+                        extractString(wizardParameterJson, "applicationId")))
+            .build();
 
       // setDescription(activity,
       // "Invocation of wrapped application.");
@@ -1535,13 +1557,14 @@ public class ModelService
 
       // Response data
 
-      data = newStructVariable(model)
-            .withIdAndName(getModelBuilderFacade().createIdFromName("Service Response"),
-                  "Service Response")
+      data = newStructVariable(model).withIdAndName(
+            getModelBuilderFacade().createIdFromName("Service Response"),
+            "Service Response")
             .ofType(
                   getModelBuilderFacade().stripFullId(
                         extractString(wizardParameterJson,
-                              "serviceResponseParameterTypeId"))).build();
+                              "serviceResponseParameterTypeId")))
+            .build();
 
       model.getData().add(data);
 
@@ -1558,15 +1581,14 @@ public class ModelService
 
       // Create Response Transformation Activity
 
-      activity = newApplicationActivity(processDefinition)
-            .withIdAndName(
-                  getModelBuilderFacade().createIdFromName(
-                        extractString(wizardParameterJson,
-                              "responseTransformationActivityName")),
-                  extractString(wizardParameterJson, "responseTransformationActivityName"))
+      activity = newApplicationActivity(processDefinition).withIdAndName(
+            getModelBuilderFacade().createIdFromName(
+                  extractString(wizardParameterJson, "responseTransformationActivityName")),
+            extractString(wizardParameterJson, "responseTransformationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId"))).build();
+                        extractString(wizardParameterJson, "applicationId")))
+            .build();
 
       // setDescription(activity,
       // "Invocation of wrapped application.");
@@ -1595,16 +1617,15 @@ public class ModelService
       //
       // model.getDataType().add(structuredDataType);
 
-      data = newStructVariable(model)
-            .withIdAndName(
-                  getModelBuilderFacade().createIdFromName(
-                        extractString(wizardParameterJson,
-                              "responseParameterDataNameInput")),
-                  extractString(wizardParameterJson, "responseParameterDataNameInput"))
+      data = newStructVariable(model).withIdAndName(
+            getModelBuilderFacade().createIdFromName(
+                  extractString(wizardParameterJson, "responseParameterDataNameInput")),
+            extractString(wizardParameterJson, "responseParameterDataNameInput"))
             .ofType(
                   /* Dummy */getModelBuilderFacade().stripFullId(
                         extractString(wizardParameterJson,
-                              "serviceResponseParameterTypeId"))).build();
+                              "serviceResponseParameterTypeId")))
+            .build();
 
       dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1635,7 +1656,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -1649,7 +1670,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private UserService getUserService()
@@ -1663,7 +1684,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private QueryService getQueryService()
@@ -1692,7 +1713,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @return
     */
@@ -1703,15 +1724,14 @@ public class ModelService
       ModelType model = findModel(modelId);
 
       ValidatorRegistry.setFilters(new HashMap<String, String>());
-      ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry
-            .getInstance());
+      ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
       ValidationService validationService = ValidationService.getInstance();
 
       JsonArray issuesJson = new JsonArray();
 
       Issue[] issues = validationService.validateModel(model);
 
-      for (int i = 0; i < issues.length; i++)
+      for (int i = 0; i < issues.length; i++ )
       {
          Issue issue = issues[i];
          JsonObject issueJson = new JsonObject();
@@ -1740,43 +1760,63 @@ public class ModelService
    }
 
    /**
-    * Returns a JSON representation of the service structure underneath the <code>wsdlUrl</code> provided with the input JSON.
+    * Returns a JSON representation of the service structure underneath the
+    * <code>wsdlUrl</code> provided with the input JSON.
     * <p>
     * <b>Members:</b>
     * <ul>
-    *   <li><code>WSConstants.WS_WSDL_URL_ATT</code> a string containing the URL from which the WSDL document was loaded.</li>
-    *   <li><code>"services"</code> a JsonArray of JsonObjects each containing specification of one service, including the
-    *     dynamically bound meta service, having the structure:
-    *     <ul>
-    *     <li><code>"name"</code> a string containing the local name of the service (for display purposes).</li>
-    *     <li><code>WSConstants.WS_SERVICE_NAME_ATT</code> a string containing the qualified name of the service.</li>
-    *     <li><code>"ports"</code> a JsonArray of JsonObjects each containing specification of one port, with the structure:
-    *       <ul>
-    *       <li><code>"name"</code> a string containing the local name of the port (for display purposes).</li>
-    *       <li><code>WSConstants.WS_PORT_NAME_ATT</code> a string containing the qualified name of the port.</li>
-    *       <li><code>"style"</code> a string containing the binding style, i.e. "document" (for display purposes).
-    *               This may be displayed if the operation does not provide a style</li>
-    *       <li><code>"operations"</code> a JsonArray of JsonObjects each containing specification of one operation, with the structure:
-    *         <ul>
-    *         <li><code>"name"</code> a string containing the operation name (for display purposes).</li>
-    *         <li><code>WSConstants.WS_OPERATION_NAME_ATT</code> a string containing the qualified operation name.</li>
-    *         <li><code>"style"</code> a string containing the operation style, i.e. "document" (for display purposes).</li>
-    *         <li><code>"use"</code> a string containing the operation use, i.e. "literal" (for display purposes).</li>
-    *         <li><code>WSConstants.WS_OPERATION_INPUT_NAME_ATT</code> a string containing the input name.</li>
-    *         <li><code>WSConstants.WS_OPERATION_OUTPUT_NAME_ATT</code> a string containing the output name.</li>
-    *         <li><code>WSConstants.WS_SOAP_ACTION_URI_ATT</code> a string containing the SOAP action URI.</li>
-    *         <li><code>WSConstants.WS_SOAP_PROTOCOL_ATT</code> a string containing the SOAP protocol.</li>
-    *         <li><code>WSConstants.WS_INPUT_ORDER_ATT</code> a string containing the list of parts composing the input message.</li>
-    *         <li><code>WSConstants.WS_OUTPUT_ORDER_ATT</code> a string containing the list of parts composing the output message.</li>
-    *         </ul>
-    *       </li>
-    *       </ul>
-    *     </li>
-    *     </ul>
-    *   </li>
+    * <li><code>WSConstants.WS_WSDL_URL_ATT</code> a string containing the URL from which
+    * the WSDL document was loaded.</li>
+    * <li><code>"services"</code> a JsonArray of JsonObjects each containing specification
+    * of one service, including the dynamically bound meta service, having the structure:
+    * <ul>
+    * <li><code>"name"</code> a string containing the local name of the service (for
+    * display purposes).</li>
+    * <li><code>WSConstants.WS_SERVICE_NAME_ATT</code> a string containing the qualified
+    * name of the service.</li>
+    * <li><code>"ports"</code> a JsonArray of JsonObjects each containing specification of
+    * one port, with the structure:
+    * <ul>
+    * <li><code>"name"</code> a string containing the local name of the port (for display
+    * purposes).</li>
+    * <li><code>WSConstants.WS_PORT_NAME_ATT</code> a string containing the qualified name
+    * of the port.</li>
+    * <li><code>"style"</code> a string containing the binding style, i.e. "document" (for
+    * display purposes). This may be displayed if the operation does not provide a style</li>
+    * <li><code>"operations"</code> a JsonArray of JsonObjects each containing
+    * specification of one operation, with the structure:
+    * <ul>
+    * <li><code>"name"</code> a string containing the operation name (for display
+    * purposes).</li>
+    * <li><code>WSConstants.WS_OPERATION_NAME_ATT</code> a string containing the qualified
+    * operation name.</li>
+    * <li><code>"style"</code> a string containing the operation style, i.e. "document"
+    * (for display purposes).</li>
+    * <li><code>"use"</code> a string containing the operation use, i.e. "literal" (for
+    * display purposes).</li>
+    * <li><code>WSConstants.WS_OPERATION_INPUT_NAME_ATT</code> a string containing the
+    * input name.</li>
+    * <li><code>WSConstants.WS_OPERATION_OUTPUT_NAME_ATT</code> a string containing the
+    * output name.</li>
+    * <li><code>WSConstants.WS_SOAP_ACTION_URI_ATT</code> a string containing the SOAP
+    * action URI.</li>
+    * <li><code>WSConstants.WS_SOAP_PROTOCOL_ATT</code> a string containing the SOAP
+    * protocol.</li>
+    * <li><code>WSConstants.WS_INPUT_ORDER_ATT</code> a string containing the list of
+    * parts composing the input message.</li>
+    * <li><code>WSConstants.WS_OUTPUT_ORDER_ATT</code> a string containing the list of
+    * parts composing the output message.</li>
     * </ul>
-    * @param postedData a JsonObject that contains a primitive (String) member with the
-    *        name "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
+    * </li>
+    * </ul>
+    * </li>
+    * </ul>
+    * </li>
+    * </ul>
+    * 
+    * @param postedData
+    *           a JsonObject that contains a primitive (String) member with the name
+    *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
     * @return the JsonObject containing the representation of the services.
     */
    public JsonObject getWebServiceStructure(JsonObject postedData)
@@ -1799,12 +1839,16 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    *
-    * @param webServiceJson the parent json object.
-    * @param services the list of services declared in the wsdl document.
-    * @param bindings the list of bindings declared in the wsdl document.
+    * 
+    * @param webServiceJson
+    *           the parent json object.
+    * @param services
+    *           the list of services declared in the wsdl document.
+    * @param bindings
+    *           the list of bindings declared in the wsdl document.
     */
-   private void addServices(JsonObject webServiceJson, Collection<Service> services, Collection<Binding> bindings)
+   private void addServices(JsonObject webServiceJson, Collection<Service> services,
+         Collection<Binding> bindings)
    {
       JsonObject servicesJson = new JsonObject();
       webServiceJson.add("services", servicesJson);
@@ -1826,18 +1870,21 @@ public class ModelService
 
       JsonObject serviceJson = new JsonObject();
       serviceJson.addProperty("name", DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart());
-      serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT, DYNAMIC_BOUND_SERVICE_QNAME.toString());
+      serviceJson.addProperty(WSConstants.WS_SERVICE_NAME_ATT,
+            DYNAMIC_BOUND_SERVICE_QNAME.toString());
       addPorts(serviceJson, bindings);
       servicesJson.add(DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart(), serviceJson);
    }
 
    /**
     * Adds port or binding definitions to the service json.
-    *
-    * @param serviceJson the json object representing the parent service.
-    * @param ports the list of ports or bindings declared for the service.
+    * 
+    * @param serviceJson
+    *           the json object representing the parent service.
+    * @param ports
+    *           the list of ports or bindings declared for the service.
     */
-   private void addPorts(JsonObject serviceJson, Collection<?> ports)
+   private void addPorts(JsonObject serviceJson, Collection<? > ports)
    {
       JsonObject portsJson = new JsonObject();
 
@@ -1845,8 +1892,12 @@ public class ModelService
 
       for (Object port : ports)
       {
-         String name = port instanceof Port ? ((Port) port).getName() : ((Binding) port).getQName().getLocalPart();
-         Binding binding = port instanceof Port ? ((Port) port).getBinding() : (Binding) port;
+         String name = port instanceof Port
+               ? ((Port) port).getName()
+               : ((Binding) port).getQName().getLocalPart();
+         Binding binding = port instanceof Port
+               ? ((Port) port).getBinding()
+               : (Binding) port;
 
          @SuppressWarnings("unchecked")
          Collection<BindingOperation> operations = binding.getBindingOperations();
@@ -1864,18 +1915,27 @@ public class ModelService
     * Duplicated from WSConstants in 7.1
     */
    public static final String WS_OPERATION_INPUT_NAME_ATT = "carnot:engine:wsOperationInputName";
+
    public static final String WS_OPERATION_OUTPUT_NAME_ATT = "carnot:engine:wsOperationOutputName";
+
    public static final String WS_SOAP_ACTION_URI_ATT = "carnot:engine:wsSoapActionUri";
+
    public static final String WS_SOAP_PROTOCOL_ATT = "carnot:engine:wsSoapProtocol";
+
    public static final String WS_INPUT_ORDER_ATT = "carnot:engine:wsInputOrder";
+
    public static final String WS_OUTPUT_ORDER_ATT = "carnot:engine:wsOutputOrder";
-   public static final QName DYNAMIC_BOUND_SERVICE_QNAME = new QName("http://www.carnot.ag/ws", "Dynamically bound Service");
+
+   public static final QName DYNAMIC_BOUND_SERVICE_QNAME = new QName(
+         "http://www.carnot.ag/ws", "Dynamically bound Service");
 
    /**
     * Adds operation definitions to the port json.
-    *
-    * @param portJson the json object representing the parent port.
-    * @param operations the list of operations declared for the port.
+    * 
+    * @param portJson
+    *           the json object representing the parent port.
+    * @param operations
+    *           the list of operations declared for the port.
     */
    private void addOperations(JsonObject portJson, Collection<BindingOperation> operations)
    {
@@ -1901,19 +1961,27 @@ public class ModelService
          operationJson.addProperty("use", JaxWSResource.getOperationUse(operation));
          operationJson.addProperty(WS_OPERATION_INPUT_NAME_ATT, inputName);
          operationJson.addProperty(WS_OPERATION_OUTPUT_NAME_ATT, outputName);
-         operationJson.addProperty(WS_SOAP_ACTION_URI_ATT, JaxWSResource.getSoapActionUri(operation));
-         operationJson.addProperty(WS_SOAP_PROTOCOL_ATT, JaxWSResource.getOperationProtocol(operation));
-         operationJson.addProperty(WS_INPUT_ORDER_ATT, getPartsOrder(input == null ? null : input.getMessage()));
-         operationJson.addProperty(WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null ? null : output.getMessage()));
+         operationJson.addProperty(WS_SOAP_ACTION_URI_ATT,
+               JaxWSResource.getSoapActionUri(operation));
+         operationJson.addProperty(WS_SOAP_PROTOCOL_ATT,
+               JaxWSResource.getOperationProtocol(operation));
+         operationJson.addProperty(WS_INPUT_ORDER_ATT, getPartsOrder(input == null
+               ? null
+               : input.getMessage()));
+         operationJson.addProperty(WS_OUTPUT_ORDER_ATT, getPartsOrder(output == null
+               ? null
+               : output.getMessage()));
 
          operationsJson.add(name, operationJson);
       }
    }
 
    /**
-    * Computes a string containing a comma separated list of the parts composing the message.
-    *
-    * @param message the Message
+    * Computes a string containing a comma separated list of the parts composing the
+    * message.
+    * 
+    * @param message
+    *           the Message
     * @return the computed list of parts
     */
    private String getPartsOrder(Message message)
@@ -1946,9 +2014,11 @@ public class ModelService
    }
 
    /**
-    * Computes a unique label for the operation by appending the input and output names to the operation name.
-    *
-    * @param operation the BindingOperation
+    * Computes a unique label for the operation by appending the input and output names to
+    * the operation name.
+    * 
+    * @param operation
+    *           the BindingOperation
     * @return the computed label
     */
    private String getOperationName(BindingOperation operation)
@@ -1993,59 +2063,73 @@ public class ModelService
     * <p>
     * <b>Members:</b>
     * <ul>
-    *   <li><code>targetNamespace</code> the schema namespace.</li>
-    *   <li><code>elements</code> a list of elements declared in the schema.</li>
-    *   <li><code>types</code> a list of types declared in the schema.</li>
+    * <li><code>targetNamespace</code> the schema namespace.</li>
+    * <li><code>elements</code> a list of elements declared in the schema.</li>
+    * <li><code>types</code> a list of types declared in the schema.</li>
     * </ul>
     * <p>
     * Each <b>element</b> declaration has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
-    *   <li><code>type</code> the xsd type of the element (optional).</li>
-    *   <li><code>attributes</code> a list of attributes (optional).</li>
-    *   <li><code>body</code> the body of the element (optional).</li>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the element (optional).</li>
+    * <li><code>attributes</code> a list of attributes (optional).</li>
+    * <li><code>body</code> the body of the element (optional).</li>
     * </ul>
     * <p>
     * Each <b>type</b> declaration has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
-    *   <li><code>attributes</code> a list of attributes (optional).</li>
-    *   <li><code>facets</code> the constraining facets if the type is a simple type (optional).</li>
-    *   <li><code>body</code> the body of the type (optional).</li>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>attributes</code> a list of attributes (optional).</li>
+    * <li><code>facets</code> the constraining facets if the type is a simple type
+    * (optional).</li>
+    * <li><code>body</code> the body of the type (optional).</li>
     * </ul>
     * <p>
     * Each <b>attribute</b> declaration has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
-    *   <li><code>type</code> the xsd type of the attribute.</li>
-    *   <li><code>cardinality</code> the cardinality of the attribute (<code>required</code> | <code>optional</code>).</li>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the attribute.</li>
+    * <li><code>cardinality</code> the cardinality of the attribute (<code>required</code>
+    * | <code>optional</code>).</li>
     * </ul>
     * <p>
     * Each <b>body</b> declaration has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
-    *   <li><code>classifier</code> a string identifying the category of the item (<code>sequence</code> | <code>choice</code> | <code>all</code>).</li>
-    *   <li><code>elements</code> a list containing element references.</li>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>classifier</code> a string identifying the category of the item (
+    * <code>sequence</code> | <code>choice</code> | <code>all</code>).</li>
+    * <li><code>elements</code> a list containing element references.</li>
     * </ul>
     * <p>
     * Each <b>element</b> reference has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the name of the item (for display purposes).</li>
-    *   <li><code>type</code> the xsd type of the element reference.</li>
-    *   <li><code>cardinality</code> the cardinality of the element reference (<code>required</code> | <code>optional</code> | <code>many</code> | <code>at least one</code>).</li>
-    *   <li><code>body</code> the body of the element reference (optional).</li>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the element reference.</li>
+    * <li><code>cardinality</code> the cardinality of the element reference (
+    * <code>required</code> | <code>optional</code> | <code>many</code> |
+    * <code>at least one</code>).</li>
+    * <li><code>body</code> the body of the element reference (optional).</li>
     * </ul>
     * Each <b>facet</b> has the following structure:
     * <ul>
-    *   <li><code>name</code> a string containing the value of the facet.</li>
-    *   <li><code>classifier</code> a string identifying the type of the facet, i.e. <code>enumeration</code>, <code>pattern</code>, etc.</li>
+    * <li><code>name</code> a string containing the value of the facet.</li>
+    * <li><code>classifier</code> a string identifying the type of the facet, i.e.
+    * <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    *
-    * Each item described above has a member <code>icon</code> that specifies the corresponding icon.
-    *
-    * @param postedData a JsonObject that contains a primitive (String) member with the
-    *        name "url" that specifies the URL from where the XSD should be loaded.
-    * @return the JsonObject containing the representation of the element and type declarations.
+    * 
+    * Each item described above has a member <code>icon</code> that specifies the
+    * corresponding icon.
+    * 
+    * @param postedData
+    *           a JsonObject that contains a primitive (String) member with the name "url"
+    *           that specifies the URL from where the XSD should be loaded.
+    * @return the JsonObject containing the representation of the element and type
+    *         declarations.
     */
    public JsonObject getXsdStructure(JsonObject postedData)
    {
@@ -2079,7 +2163,8 @@ public class ModelService
       json.addProperty("targetNamespace", schema.getTargetNamespace());
       json.addProperty("icon", ip.doSwitch(schema).getSimpleName());
       JsonObject nsMappings = new JsonObject();
-      for (Map.Entry<String, String> mapping : schema.getQNamePrefixToNamespaceMap().entrySet())
+      for (Map.Entry<String, String> mapping : schema.getQNamePrefixToNamespaceMap()
+            .entrySet())
       {
          if ( !isEmpty(mapping.getKey()))
          {
@@ -2117,7 +2202,9 @@ public class ModelService
       }
    }
 
-   private static void addChildren(JsonElement parentNodeJs, EObject component, XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip, Predicate<EObject> filter)
+   private static void addChildren(JsonElement parentNodeJs, EObject component,
+         XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip,
+         Predicate<EObject> filter)
    {
       EObject[] children = cp.doSwitch(component);
       if (children.length > 0)
@@ -2135,13 +2222,13 @@ public class ModelService
                childJs.addProperty("icon", ip.doSwitch(child).getSimpleName());
                lp.setColumn(1);
                String type = lp.doSwitch(child);
-               if (!type.isEmpty())
+               if ( !type.isEmpty())
                {
                   childJs.addProperty("type", type);
                }
                lp.setColumn(2);
                String cardinality = lp.doSwitch(child);
-               if (!cardinality.isEmpty())
+               if ( !cardinality.isEmpty())
                {
                   childJs.addProperty("cardinality", cardinality);
                }
@@ -2151,24 +2238,30 @@ public class ModelService
 
                   if (null != ((XSDSimpleTypeDefinition) child).getMinLengthFacet())
                   {
-                     childJs.addProperty("minLength", ((XSDSimpleTypeDefinition) child).getMinLengthFacet().getValue());
+                     childJs.addProperty("minLength",
+                           ((XSDSimpleTypeDefinition) child).getMinLengthFacet()
+                                 .getValue());
                   }
                   if (null != ((XSDSimpleTypeDefinition) child).getMaxLengthFacet())
                   {
-                     childJs.addProperty("maxLength", ((XSDSimpleTypeDefinition) child).getMaxLengthFacet().getValue());
+                     childJs.addProperty("maxLength",
+                           ((XSDSimpleTypeDefinition) child).getMaxLengthFacet()
+                                 .getValue());
                   }
                }
 
                if (child instanceof XSDFacet)
                {
-                  if ((child instanceof XSDMinLengthFacet) || (child instanceof XSDMaxLengthFacet))
+                  if ((child instanceof XSDMinLengthFacet)
+                        || (child instanceof XSDMaxLengthFacet))
                   {
                      childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
                   }
                   childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
                   if (parentNodeJs.isJsonObject())
                   {
-                     JsonArray enumFacetsJs = parentNodeJs.getAsJsonObject().getAsJsonArray("facets");
+                     JsonArray enumFacetsJs = parentNodeJs.getAsJsonObject()
+                           .getAsJsonArray("facets");
                      enumFacetsJs.add(childJs);
                   }
                }
@@ -2183,7 +2276,8 @@ public class ModelService
                }
                else if (child instanceof XSDModelGroup)
                {
-                  childJs.addProperty("classifier", ((XSDModelGroup) child).getCompositor().getLiteral());
+                  childJs.addProperty("classifier",
+                        ((XSDModelGroup) child).getCompositor().getLiteral());
                   addChild(parentNodeJs, "body", childJs);
 
                   JsonArray elementsJs = new JsonArray();
@@ -2204,7 +2298,8 @@ public class ModelService
       }
    }
 
-   private static void addNamedChild(JsonElement parentNodeJs, String childName, JsonElement childJs)
+   private static void addNamedChild(JsonElement parentNodeJs, String childName,
+         JsonElement childJs)
    {
       if (parentNodeJs instanceof JsonObject)
       {
@@ -2216,7 +2311,8 @@ public class ModelService
       }
    }
 
-   private static void addChild(JsonElement parentNodeJs, String childName, JsonElement childJs)
+   private static void addChild(JsonElement parentNodeJs, String childName,
+         JsonElement childJs)
    {
       if (parentNodeJs instanceof JsonObject)
       {
@@ -2228,13 +2324,16 @@ public class ModelService
       }
       else
       {
-         throw new IllegalArgumentException("Expected an array or object, but got " + parentNodeJs);
+         throw new IllegalArgumentException("Expected an array or object, but got "
+               + parentNodeJs);
       }
    }
 
-   /* remove */ private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
-   /* remove */ private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
-   /* remove */ private static final ClasspathUriConverter CLASSPATH_URI_CONVERTER = new ClasspathUriConverter();
+   /* remove */private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
+
+   /* remove */private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
+
+   /* remove */private static final ClasspathUriConverter CLASSPATH_URI_CONVERTER = new ClasspathUriConverter();
 
    /**
     * Duplicate of StructuredTypeRtUtils.getSchema(String, String).
@@ -2247,18 +2346,18 @@ public class ModelService
       Map<String, Object> loadedSchemas = null;
       synchronized (StructuredTypeRtUtils.class)
       {
-          loadedSchemas = parameters.getObject(EXTERNAL_SCHEMA_MAP);
-          if (loadedSchemas == null)
-          {
-             // (fh) using Hashtable to avoid concurrency problems.
-             loadedSchemas = new Hashtable<String, Object>();
-             parameters.set(EXTERNAL_SCHEMA_MAP, loadedSchemas);
-          }
+         loadedSchemas = parameters.getObject(EXTERNAL_SCHEMA_MAP);
+         if (loadedSchemas == null)
+         {
+            // (fh) using Hashtable to avoid concurrency problems.
+            loadedSchemas = new Hashtable<String, Object>();
+            parameters.set(EXTERNAL_SCHEMA_MAP, loadedSchemas);
+         }
       }
       Object o = loadedSchemas.get(location);
       if (o != null)
       {
-          return o instanceof XSDSchema ? (XSDSchema) o : null;
+         return o instanceof XSDSchema ? (XSDSchema) o : null;
       }
 
       ResourceSetImpl resourceSet = new ResourceSetImpl();
@@ -2266,15 +2365,20 @@ public class ModelService
       if (uri.scheme() == null)
       {
          resourceSet.setURIConverter(CLASSPATH_URI_CONVERTER);
-         if(location.startsWith("/"))
+         if (location.startsWith("/"))
          {
             location = location.substring(1);
          }
          uri = URI.createURI(ClasspathUriConverter.CLASSPATH_SCHEME + ":/" + location);
       }
-      // (fh) register the resource factory directly with the resource set and do not tamper with the global registry.
-      resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put(uri.scheme(), XSD_RESOURCE_FACTORY);
-      resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xsd", XSD_RESOURCE_FACTORY);
+      // (fh) register the resource factory directly with the resource set and do not
+      // tamper with the global registry.
+      resourceSet.getResourceFactoryRegistry()
+            .getProtocolToFactoryMap()
+            .put(uri.scheme(), XSD_RESOURCE_FACTORY);
+      resourceSet.getResourceFactoryRegistry()
+            .getExtensionToFactoryMap()
+            .put("xsd", XSD_RESOURCE_FACTORY);
       org.eclipse.emf.ecore.resource.Resource resource = resourceSet.createResource(uri);
       Map<Object, Object> options = new HashMap<Object, Object>();
       options.put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
@@ -2288,7 +2392,8 @@ public class ModelService
             resolveImports(schema);
             if (trace.isDebugEnabled())
             {
-               trace.debug("Found schema for namespace: " + schema.getTargetNamespace() + " at location: " + uri.toString());
+               trace.debug("Found schema for namespace: " + schema.getTargetNamespace()
+                     + " at location: " + uri.toString());
             }
             loadedSchemas.put(location, schema);
             return schema;
@@ -2320,7 +2425,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public JsonObject getPreferences()
@@ -2333,182 +2438,261 @@ public class ModelService
       return preferencesJson;
    }
 
-   /*public static void main(String[] args)
-   {
-      JsonObject postedData = new JsonObject();
-      postedData.addProperty("wsdlUrl",
-                             "file:/development/wks/trunk/runtime-blank/testprj/src/wsdl/hello_world_wssec.wsdl");
-      postedData.addProperty("url",
-                             "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd");
-
-      //ModelService ms = new ModelService();
-      JsonMarshaller m = new JsonMarshaller();
-      //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
-      //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-
-      org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
-      try
-      {
-         wmm.load(new java.io.File("C:\\development\\wks\\trunk\\runtime-blank\\testprj\\models\\Provider.xpdl"));
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
-      ModelType model = wmm.getModel();
-      ModelElementMarshaller mem = new ModelElementMarshaller()
-      {
-         EObjectUUIDMapper mapper = new EObjectUUIDMapper();
-
-         @Override
-         protected EObjectUUIDMapper eObjectUUIDMapper()
-         {
-            return mapper;
-         }
-
-         @Override
-         protected ModelManagementStrategy modelManagementStrategy()
-         {
-            // TODO Auto-generated method stub
-            return null;
-         }
-      };
-
-      System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().getTypeDeclaration("Pattern1"))));
-
-      TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Composite1");
-      JsonObject json = mem.toJson(typeDeclaration);
-      System.out.println(m.writeJsonObject(json));
-
-      //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
-      //json = mem.toJson(typeDeclaration);
-      //System.out.println(m.writeJsonObject(json));
-
-      modifyComplexType(json);
-      //modifyEnumType(json);
-
-      ModelElementUnmarshaller um = new ModelElementUnmarshaller()
-      {
-         @Override
-         protected ModelManagementStrategy modelManagementStrategy()
-         {
-            // TODO Auto-generated method stub
-            return null;
-         }
-      };
-      um.populateFromJson(typeDeclaration, json);
-      System.out.println(typeDeclaration);
-  }*/
-
-   /*private static void modifyEnumType(JsonObject json)
-   {
-      JsonObject tds = json.getAsJsonObject("typeDeclaration");
-      JsonObject ss = tds.getAsJsonObject("schema");
-      JsonObject ts = ss.getAsJsonObject("types");
-      JsonObject cs = ts.getAsJsonObject("Enumeration1");
-      JsonObject es = cs.getAsJsonObject("facets");
-
-      JsonObject d = new JsonObject();
-      d.addProperty("name", "4");
-      d.addProperty("icon", "XSDEnumerationFacet.gif");
-      d.addProperty("classifier", "enumeration");
-      es.add("4", d);
-   }*/
-
-   /*private static void modifyComplexType(JsonObject json)
-   {
-      JsonObject tds = json.getAsJsonObject("typeDeclaration");
-      JsonObject ss = tds.getAsJsonObject("schema");
-      JsonObject ts = ss.getAsJsonObject("types");
-      JsonObject cs = ts.getAsJsonObject("Composite1");
-      JsonObject bs = cs.getAsJsonObject("body");
-      JsonObject es = bs.getAsJsonObject("elements");
-
-      es.remove("b");
-
-      JsonObject c = es.getAsJsonObject("c");
-      c.addProperty("name", "NewC");
-
-      JsonObject d = new JsonObject();
-      d.addProperty("name", "NewD");
-      d.addProperty("icon", "XSDElementDeclaration.gif");
-      d.addProperty("type", "xsd:string");
-      d.addProperty("cardinality", "required");
-      es.add("NewD", d);
-   }*/
+   /*
+    * public static void main(String[] args) { JsonObject postedData = new JsonObject();
+    * postedData.addProperty("wsdlUrl",
+    * "file:/development/wks/trunk/runtime-blank/testprj/src/wsdl/hello_world_wssec.wsdl"
+    * ); postedData.addProperty("url",
+    * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
+    * );
+    * 
+    * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
+    * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
+    * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
+    * 
+    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
+    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
+    * wmm.load(new java.io.File(
+    * "C:\\development\\wks\\trunk\\runtime-blank\\testprj\\models\\Provider.xpdl")); }
+    * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
+    * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
+    * = new EObjectUUIDMapper();
+    * 
+    * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
+    * 
+    * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
+    * Auto-generated method stub return null; } };
+    * 
+    * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
+    * getTypeDeclaration("Pattern1"))));
+    * 
+    * TypeDeclarationType typeDeclaration =
+    * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
+    * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
+    * 
+    * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
+    * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
+    * 
+    * modifyComplexType(json); //modifyEnumType(json);
+    * 
+    * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
+    * 
+    * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
+    * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
+    * json); System.out.println(typeDeclaration); }
+    */
 
    /*
-   public static void testTD()
+    * private static void modifyEnumType(JsonObject json) { JsonObject tds =
+    * json.getAsJsonObject("typeDeclaration"); JsonObject ss =
+    * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
+    * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
+    * cs.getAsJsonObject("facets");
+    * 
+    * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
+    * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
+    * d); }
+    */
+
+   /*
+    * private static void modifyComplexType(JsonObject json) { JsonObject tds =
+    * json.getAsJsonObject("typeDeclaration"); JsonObject ss =
+    * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
+    * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
+    * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
+    * 
+    * es.remove("b");
+    * 
+    * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
+    * 
+    * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
+    * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
+    * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
+    */
+
+   /*
+    * public static void testTD() { DataChangeCommandHandler handler = new
+    * DataChangeCommandHandler();
+    * 
+    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
+    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
+    * wmm.load(new
+    * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
+    * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
+    * 
+    * String structId = "Composite3", structName = "Composite3";
+    * 
+    * JsonObject structJson = new JsonObject();
+    * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
+    * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
+    * typeDeclarationJson = new JsonObject();
+    * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
+    * 
+    * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
+    * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
+    * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
+    * schema.add("types", types); JsonObject typesType = new JsonObject();
+    * types.add(structId, typesType); typesType.addProperty("name", structId);
+    * 
+    * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
+    * facet = new JsonObject(); facet.addProperty("name", "abceee");
+    * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
+    */
+   /*
+    * JsonObject body = new JsonObject(); body.addProperty("classifier", "sequence");
+    * typesType.add("body", body); JsonObject elements = new JsonObject();
+    * body.add("elements", elements); JsonObject element = new JsonObject();
+    * element.addProperty("type", "xsd:string"); element.addProperty("name", "abceee");
+    * element.addProperty("cardinality", "at least one"); elements.add("element",
+    * element); element = new JsonObject(); element.addProperty("type", "xsd:int");
+    * element.addProperty("name", "integer_test"); element.addProperty("cardinality",
+    * "at least one");
+    */
+   /*
+    * 
+    * handler.createTypeDeclaration(model, structJson);
+    * 
+    * try { wmm.save(URI.createFileURI(new
+    * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
+    * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block
+    * e.printStackTrace(); } }
+    */
+
+   /**
+    * 
+    */
+   public JsonArray getConfigurationVariables(String modelId)
    {
-      DataChangeCommandHandler handler = new DataChangeCommandHandler();
+      JsonArray variablesJson = new JsonArray();
 
-      org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager();
-      try
+      System.out.println("Configuration Variables:");
+
+      ModelType model = findModel(modelId);
+      VariableContext variableContext = new VariableContext();
+
+      variableContext.initializeVariables(model);
+      variableContext.refreshVariables(model);
+      variableContext.saveVariables();
+
+      for (Iterator<ModelVariable> i = variableContext.getVariables().iterator(); i.hasNext();)
       {
-         wmm.load(new java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"));
+         ModelVariable modelVariable = i.next();
+         JsonObject variableJson = new JsonObject();
+
+         variablesJson.add(variableJson);
+
+         variableJson.addProperty("name", modelVariable.getName());
+         variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
+
+         List<EObject> refList = variableContext.getVariableReferences().get(
+               modelVariable.getName());
+
+         JsonArray referencesJson = new JsonArray();
+
+         variableJson.add("references", referencesJson);
+
+         // TODO Why is there no empty list
+
+         if (refList != null)
+         {
+            for (Iterator<EObject> j = refList.iterator(); j.hasNext();)
+            {
+               Object reference = j.next();
+               JsonObject referenceJson = new JsonObject();
+
+               referencesJson.add(referenceJson);
+
+               String info = "";
+
+               if (reference instanceof AttributeType)
+               {
+                  AttributeType attribute = (AttributeType) reference;
+
+                  info += "Attribute "; // I18N
+                  info += attribute.getName();
+                  info += " of "; // I18N
+
+                  if (attribute.eContainer() instanceof IIdentifiableModelElement)
+                  {
+                     info += ((IIdentifiableModelElement) attribute.eContainer()).getName();
+                  }
+                  else if (attribute.eContainer()instanceof ModelType)
+                  {
+                     info += model.getName();
+                  }
+                  else
+                  {
+                     info += attribute.eContainer().getClass().getName();
+                  }
+               }
+               else if (reference instanceof DescriptionType)
+               {
+                  DescriptionType description = (DescriptionType) reference;
+
+                  info += "Description of "; // I18N
+
+                  if (description.eContainer() instanceof IIdentifiableModelElement)
+                  {
+                     info += ((IIdentifiableModelElement) description.eContainer()).getName();
+                  }
+                  else if (description.eContainer()instanceof ModelType)
+                  {
+                     info += model.getName();
+                  }
+                  else
+                  {
+                     info += description.eContainer().getClass().getName();
+                  }
+               }
+               else
+               {
+                  info += "Other Reference"; // I18N
+               }
+
+               referenceJson.addProperty("name", info);
+            }
+         }
       }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
-      ModelType model = wmm.getModel();
 
-      String structId = "Composite3", structName = "Composite3";
-
-      JsonObject structJson = new JsonObject();
-      structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
-      structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName);
-      JsonObject typeDeclarationJson = new JsonObject();
-      structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-
-      JsonObject type = new JsonObject();
-      typeDeclarationJson.add("type", type);
-      type.addProperty("classifier", "SchemaType");
-      JsonObject schema = new JsonObject();
-      typeDeclarationJson.add("schema", schema);
-      JsonObject types = new JsonObject();
-      schema.add("types", types);
-      JsonObject typesType = new JsonObject();
-      types.add(structId, typesType);
-      typesType.addProperty("name", structId);
-
-      JsonObject facets = new JsonObject();
-      typesType.add("facets", facets);
-      JsonObject facet = new JsonObject();
-      facet.addProperty("name", "abceee");
-      facet.addProperty("classifier", "enumeration");
-      facets.add("facet", facet);
-
-      */
-      /*
-      JsonObject body = new JsonObject();
-      body.addProperty("classifier", "sequence");
-      typesType.add("body", body);
-      JsonObject elements = new JsonObject();
-      body.add("elements", elements);
-      JsonObject element = new JsonObject();
-      element.addProperty("type", "xsd:string");
-      element.addProperty("name", "abceee");
-      element.addProperty("cardinality", "at least one");
-      elements.add("element", element);
-      element = new JsonObject();
-      element.addProperty("type", "xsd:int");
-      element.addProperty("name", "integer_test");
-      element.addProperty("cardinality", "at least one");
-      */
-      /*
-
-      handler.createTypeDeclaration(model, structJson);
-
-      try
-      {
-         wmm.save(URI.createFileURI(new java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl").getAbsolutePath()));
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+      return variablesJson;
    }
-   */
+   
+   /**
+    * 
+    */
+   public void updateConfigurationVariable(String modelId, String postedData)
+   {
+      ModelType model = findModel(modelId);
+      VariableContext variableContext = new VariableContext();
+
+      variableContext.initializeVariables(model);
+      variableContext.refreshVariables(model);
+      variableContext.saveVariables();
+      
+      ModelVariable modelVariable = getModelVariableByName(variableContext, ""); 
+      
+      modelVariable.setDefaultValue("bla");
+      variableContext.saveVariables();
+   }
+   
+   /**
+    * @deprecated Workaround for method in VariableContext being private.
+    * TODO: Remove
+    * @return
+    * 
+    */
+   private static ModelVariable getModelVariableByName(VariableContext variableContext, String value)
+   {
+      for (Iterator<ModelVariable> i = variableContext.getVariables().iterator(); i.hasNext();)
+      {
+         ModelVariable modelVariable = i.next();
+         
+         if (modelVariable.getName().equals(value))
+         {
+            return modelVariable;
+         }
+      }
+      
+      return null;
+   }
 }

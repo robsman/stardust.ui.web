@@ -13,11 +13,11 @@ define(
 				"bpm-modeler/js/m_extensionManager",
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_user",
 				"bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_event", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage",
 				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
-				m_commandsController, m_command, m_dialog,
+				m_commandsController, m_command, m_event, m_dialog,
 				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
@@ -146,31 +146,16 @@ define(
 				EventBasicPropertiesPage.prototype.populateEventClassSelect = function() {
 					this.eventClassSelect.empty();
 
-					if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE) {
+					var eventClasses = m_event.getPossibleEventClasses(this.getModelElement().eventType, this.getModelElement().interrupting, 
+							this.getModelElement().throwing, 
+							this.getModelElement().isBoundaryEvent(), false/* subProcess */);
+							
+					for (var n = 0; n < eventClasses.length; ++n)
+						{
 						this.eventClassSelect
-								.append("<option value='none'>None</option>");
-						this.eventClassSelect
-								.append("<option value='message'>Message</option>");
-						this.eventClassSelect
-								.append("<option value='timer'>Timer</option>");
-					} else if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-						this.eventClassSelect
-								.append("<option value='message'>Message</option>");
-						this.eventClassSelect
-								.append("<option value='timer'>Timer</option>");
-
-						if (this.getModelElement()) {
-							this.eventClassSelect
-									.append("<option value='error'>Error</option>");
+						.append("<option value='" + eventClasses[n] + "'>" + m_i18nUtils
+								.getProperty("modeler.eventPropertiesPanel.basicPropertiesPage.eventClass." + eventClasses[n]) + "</option>");						
 						}
-					} else if (this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
-						this.eventClassSelect
-								.append("<option value='none'>None</option>");
-						this.eventClassSelect
-								.append("<option value='message'>Message</option>");
-						this.eventClassSelect
-								.append("<option value='error'>Error</option>");
-					}
 				};
 
 				/**

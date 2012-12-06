@@ -513,26 +513,7 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Configuration Variables:");
-         ModelType model = this.getModelService().findModel(modelId);
-         VariableContext vc = new VariableContext();
-         vc.initializeVariables(model);
-         vc.refreshVariables(model);
-         vc.saveVariables();
-         for (Iterator<ModelVariable> i = vc.getVariables().iterator(); i.hasNext();) {
-            ModelVariable mv = i.next();
-            System.out.println();
-            System.out.println("Model Variable: " + mv.getName());
-            System.out.println("    Default Value: " + mv.getDefaultValue());
-            System.out.println("    Referenced by: ");
-            List<EObject> refList = vc.getVariableReferences().get(mv.getName());
-            for (Iterator<EObject> j = refList.iterator(); j.hasNext();) {
-               System.out.println("       -->" + j.next().toString());
-            }
-            System.out.println();
-         }
-
-         return Response.ok("{}",
+         return Response.ok(getModelService().getConfigurationVariables(modelId).toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
