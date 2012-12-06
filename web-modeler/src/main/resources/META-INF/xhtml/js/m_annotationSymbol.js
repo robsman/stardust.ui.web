@@ -121,6 +121,7 @@ define(
 									});
 
 					this.addToPrimitives(this.rect);
+					this.addToEditableTextPrimitives(this.rect);
 
 					this.path = m_canvasManager
 							.drawPath(

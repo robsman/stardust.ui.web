@@ -196,6 +196,7 @@ define(
 									});
 
 					this.addToPrimitives(this.rectangle);
+					this.addToEditableTextPrimitives(this.rectangle);
 
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,

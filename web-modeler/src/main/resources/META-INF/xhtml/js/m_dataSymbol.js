@@ -168,6 +168,7 @@ define(
 										'stroke-width' : m_constants.DATA_SYMBOL_DEFAULT_STROKE_WIDTH
 									});
 					this.addToPrimitives(this.path);
+					this.addToEditableTextPrimitives(this.path);
 
 					this.text = m_canvasManager.drawTextNode(this.x + 15,
 							this.y + 50, this.dataName).attr({

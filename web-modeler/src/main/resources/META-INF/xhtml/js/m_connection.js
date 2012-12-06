@@ -745,6 +745,7 @@ define(
 					});
 
 					this.addToPrimitives(this.path);
+					this.addToEditableTextPrimitives(this.path);
 
 					this.path.auxiliaryProperties = {
 						callbackScope : this
