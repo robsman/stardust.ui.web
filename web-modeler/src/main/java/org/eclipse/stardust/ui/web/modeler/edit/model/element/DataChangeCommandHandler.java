@@ -247,8 +247,12 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = getModelBuilderFacade().createIdFromName(name);
       String dataFullID = extractString(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
-      String stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
-            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY));
+
+      String stripFullId_ = null;
+      if (request.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)) {
+         stripFullId_ = getModelBuilderFacade().getModelId(extractString(request,
+               ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY));
+      }
 
       if (StringUtils.isEmpty(stripFullId_))
       {
@@ -256,7 +260,7 @@ public class DataChangeCommandHandler
       }
 
       DataType data = getModelBuilderFacade().createStructuredData(model, id, name,
-            dataFullID);
+            stripFullId_ + ":" + id);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);

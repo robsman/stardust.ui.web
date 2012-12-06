@@ -1831,8 +1831,7 @@ define(
 
 					m_commandsController.submitCommand(m_command
 							.createCreateModelCommand({
-								"name" : name,
-								"id" : id
+								"name" : name
 							}));
 					isElementCreatedViaOutline = true;
 				}
@@ -1879,12 +1878,10 @@ define(
 				 */
 				function createProcess(modelId) {
 					var name = getUniqueNameForElement(modelId, "Process ");
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {
-								"name" : name,
-								"id" : id
+								"name" : name
 							}));
 					isElementCreatedViaOutline = true;
 				}
@@ -1984,7 +1981,6 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newPrimitivedata.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController
 							.submitCommand(m_command
@@ -1993,7 +1989,6 @@ define(
 											model.id,
 											{
 												"name" : name,
-												"id" : id,
 												"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
 											}));
 					isElementCreatedViaOutline = true;
@@ -2007,13 +2002,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newDocumentdata.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateDocumentDataCommand(model.id,
 									model.id, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2026,15 +2019,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newStructureddata.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
-					var fullId = model.id + ":" + id;
 
 					m_commandsController.submitCommand(m_command
 							.createCreateStructuredDataCommand(model.id,
 									model.id, {
-										"name" : name,
-										"id" : id,
-										"structuredDataTypeFullId" : fullId
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2068,7 +2057,6 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newConditionalperformer.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
@@ -2076,8 +2064,7 @@ define(
 					m_commandsController.submitCommand(m_command
 							.createCreateConditionalPerformerCommand(model.id,
 									targetOid, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2106,7 +2093,6 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newOrganization.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
@@ -2114,8 +2100,7 @@ define(
 					m_commandsController.submitCommand(m_command
 							.createCreateOrganizationCommand(model.id,
 									targetOid, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2128,13 +2113,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newWebservice.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateWebServiceAppCommand(model.id,
 									model.id, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2147,13 +2130,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newMsgTransformation.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateMessageTransfromationAppCommand(
 									model.id, model.id, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2166,12 +2147,10 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newCamelroute.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateCamelAppCommand(model.id, model.id, {
-								"name" : name,
-								"id" : id
+								"name" : name
 							}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2184,13 +2163,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newUimashup.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateUiMashupAppCommand(model.id, model.id,
 									{
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}
@@ -2205,13 +2182,11 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newXsddatastructure.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateStructuredDataTypeCommand(model.id,
 									model.id, {
-										"name" : name,
-										"id" : id
+										"name" : name
 									}));
 					isElementCreatedViaOutline = true;
 				}

@@ -75,11 +75,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		Data.prototype.initialize = function(model, name) {
 			this.type = m_constants.DATA;
 			this.model = model;
-			this.id = m_utils.generateIDFromName(name);
 			this.name = name;
-
-			// TODO This implies that even data created implicitly from data symbol creation would remain in the model
-			this.model.dataItems[this.id] = this;
 		};
 
 		/**
@@ -113,7 +109,6 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 					.createCreateStructuredDataCommand(this.model.id, this.model.id,
 							{
 								"name" : this.name,
-								"id" : this.id,
 								"structuredDataTypeFullId" : this.structuredDataTypeFullId
 							});
 			command.sync = true; // sync submit

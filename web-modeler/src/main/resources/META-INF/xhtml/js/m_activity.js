@@ -19,7 +19,7 @@ define(
 				},
 				createActivity : function(process, type) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
+					var activity = new Activity();
 
 					activity.initialize("Activity " + index, type);
 
@@ -30,7 +30,7 @@ define(
 
 				createActivityFromProcess : function(process, subprocess) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
+					var activity = new Activity();
 
 					activity.initialize(subprocess.name + index,
 							m_constants.SUBPROCESS_ACTIVITY_TYPE);
@@ -42,7 +42,7 @@ define(
 
 				createActivityFromApplication : function(process, application) {
 					var index = process.getNewActivityIndex();
-					var activity = new Activity(m_utils.generateIDFromName("Activity " + index));
+					var activity = new Activity();
 
 					activity.initialize(application.name + index,
 							m_constants.APPLICATION_ACTIVITY_TYPE);

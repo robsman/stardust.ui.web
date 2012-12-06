@@ -10,7 +10,7 @@
 
 /**
  * Helper functions for object inspection and object initialization.
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -57,9 +57,7 @@ define(
 				},
 
 				generateIDFromName : function(name) {
-					// Added toUpperCase for compatibility with server side Id
-					// generation logic
-					return name.replace(/ /g, '_').toUpperCase();
+					return name.replace(/ /g, '_');
 				},
 
 				prettyDateTime : prettyDateTime,
@@ -86,7 +84,7 @@ define(
 				return index;
 			}
 			/**
-			 * 
+			 *
 			 * @param from
 			 * @param to
 			 * @returns
@@ -98,7 +96,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
@@ -117,7 +115,7 @@ define(
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
-			 * 
+			 *
 			 * @param t :
 			 *            textNode element for Symbol
 			 * @param width :
@@ -153,7 +151,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param array
 			 * @param item
 			 */
@@ -168,7 +166,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function convertToSortedArray(obj, field, ascending) {
 				var sortedObjects = [];
@@ -180,7 +178,7 @@ define(
 				}
 
 				var ascendingFactor = ascending ? -1 : 1;
-				
+
 				sortedObjects.sort(function(left, right) {
 					var leftValue = left[field].toLowerCase();
 					var rightValue = right[field].toLowerCase();
@@ -199,7 +197,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function lexicalSort(left, right) {
 				left = left.toLowerCase();
@@ -222,7 +220,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(proto, untypedObject) {
 				var typedObject = Object.create(proto);
@@ -238,18 +236,18 @@ define(
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
-			 * 
+			 *
 			 * Arrays however will be overwritten.
-			 * 
+			 *
 			 * TODO - review behaviour for attributes: Attributes also will be
 			 * over written, like arrays, as in some cases attributes don't
 			 * switch between different values (like true and false), but they
 			 * either exist or they don't. In such cases it is necessary to
 			 * remove the attributes from child if they don't exist in the
 			 * parent.
-			 * 
+			 *
 			 * The function will not check for cyclic dependencies.
-			 * 
+			 *
 			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
@@ -272,7 +270,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function isAttribute(member) {
 				if (member == "attributes") {
@@ -302,7 +300,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
@@ -332,7 +330,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function prettyDateTime(date) {
 				if (date == null) {
@@ -398,7 +396,7 @@ define(
 					'Friday', 'Saturday', 'Sunday' ];
 
 			/**
-			 * 
+			 *
 			 */
 			function formatDate(date, s, utc) {
 				s = s.split('');
@@ -657,7 +655,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getDaySuffix(date, utc) {
 				var n = utc ? date.getUTCDate() : date.getDate();
@@ -688,7 +686,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getISOWeek(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
@@ -736,7 +734,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -748,7 +746,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -760,7 +758,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getTimezoneOffset(date) {
 				return date.getTimezoneOffset() * -1;
@@ -796,14 +794,14 @@ define(
 
 			/**
 			 * wraps String
-			 * 
+			 *
 			 * @param content :
 			 *            string to be wrapped
 			 * @param maxLength :
 			 *            max number of characters in one line
 			 * @param brk :
 			 *            The character(s) to be inserted at every break
-			 * 
+			 *
 			 */
 			function contentWrap(content, maxLength, brk) {
 				if (!content) {

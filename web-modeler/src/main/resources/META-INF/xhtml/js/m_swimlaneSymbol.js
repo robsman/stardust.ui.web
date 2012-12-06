@@ -26,7 +26,6 @@ define(
 					var laneSymbol = new SwimlaneSymbol();
 					var laneIndex = parentSymbol.getLaneIndex();
 					laneSymbol.name = "Lane " + laneIndex;
-					laneSymbol.id = m_utils.generateIDFromName(laneSymbol.name);
 					laneSymbol.bind(diagram, parentSymbol);
 
 					return laneSymbol;
@@ -39,7 +38,6 @@ define(
 					laneSymbol.bind(diagram, parentSymbol);
 					var laneIndex = parentSymbol.getLaneIndex();
 					laneSymbol.name = "Lane " + laneIndex;
-					laneSymbol.id = m_utils.generateIDFromName(laneSymbol.name)
 					laneSymbol.participantFullId = participant.getFullId();
 
 					return laneSymbol;
@@ -70,7 +68,6 @@ define(
 
 				this.width = 0;
 				this.height = 0;
-				this.id = "DefaultLane";
 				this.text ="Default Lane";
 				this.description = null;
 				this.participantFullId = null;

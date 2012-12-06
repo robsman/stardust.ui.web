@@ -37,6 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
@@ -81,7 +82,7 @@ public class ModelChangeCommandHandler
    {
       ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
-      String modelID = generateId(modelName);
+      String modelID = getModelBuilderFacade().createIdFromName(modelName);
       ModelType model = facade.createModel(modelID, modelName);
       modelService().getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -155,7 +156,7 @@ public class ModelChangeCommandHandler
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
 
-         model.setId(generateId(model.getName()));
+         model.setId(getModelBuilderFacade().createIdFromName(model.getName()));
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
@@ -222,20 +223,11 @@ public class ModelChangeCommandHandler
    }
 
    /**
-    * @param modelName
     * @return
     */
-   private String generateId(String modelName)
+   private ModelBuilderFacade getModelBuilderFacade()
    {
-      String id = modelService().getModelBuilderFacade().createIdFromName(modelName);
-      String newId = id;
-      int postFix = 1;
-      while (null != modelService().getModelBuilderFacade().findModel(newId))
-      {
-         newId = id + "_" + postFix++ ;
-      }
-
-      return newId;
+      return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 }
 
