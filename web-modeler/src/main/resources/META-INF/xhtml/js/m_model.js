@@ -352,6 +352,46 @@ define(
 				};
 
 				/**
+				 * Used to identify if an element with same name exists,
+				 * used while determining name for newly created element.
+				 */
+				Model.prototype.findModelElementByName = function(name) {
+					var n;
+
+					for (n in this.processes) {
+						if (this.processes[n].name == name) {
+							return this.processes[n];
+						}
+					}
+
+					for (n in this.applications) {
+						if (this.applications[n].name == name) {
+							return this.applications[n];
+						}
+					}
+
+					for (n in this.dataItems) {
+						if (this.dataItems[n].name == name) {
+							return this.dataItems[n];
+						}
+					}
+
+					for (n in this.participants) {
+						if (this.participants[n].name == name) {
+							return this.participants[n];
+						}
+					}
+
+					for (n in this.typeDeclarations) {
+						if (this.typeDeclarations[n].name == name) {
+							return this.typeDeclarations[n];
+						}
+					}
+
+					return null;
+				};
+
+				/**
 				 *
 				 */
 				Model.prototype.findTypeDeclarationBySchemaName = function(

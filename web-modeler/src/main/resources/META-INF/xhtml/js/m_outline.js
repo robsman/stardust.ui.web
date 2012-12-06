@@ -1815,18 +1815,9 @@ define(
 					var count = 0;
 					var name = modelName + " " + (++count);
 
-					// This check is needed as model with same name but not
-					// following convention for ID may exist causing new model
-					// to be created with same name.
+					// Check if model name exists already.
 					while (modelNameExists(name)) {
 						name = modelName + " " + (++count);
-					}
-
-					// alert(name);
-					var id = m_utils.generateIDFromName(name);
-					while (m_model.findModel(id)) {
-						name = modelName + " " + (++count);
-						id = m_utils.generateIDFromName(name);
 					}
 
 					m_commandsController.submitCommand(m_command
@@ -1861,12 +1852,10 @@ define(
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
 					var name = namePrefix + (++suffix);
-					var id = m_utils.generateIDFromName(name);
 					var model = m_model.findModel(modelId);
 					if (model) {
-						while (model.findModelElementById(id.toUpperCase())) {
+						while (model.findModelElementByName(name)) {
 							var name = namePrefix + (++suffix);
-							var id = m_utils.generateIDFromName(name);
 						}
 					}
 
