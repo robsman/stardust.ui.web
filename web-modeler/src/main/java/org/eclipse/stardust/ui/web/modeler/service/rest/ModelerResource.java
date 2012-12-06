@@ -527,6 +527,25 @@ public class ModelerResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{modelId}/configurationVariables/{variableName}")
+   public Response updateConfigurationVariable(@PathParam("modelId") String modelId, String postedData)
+   {
+      try
+      {
+         return Response.ok(getModelService().updateConfigurationVariable(modelId, jsonIo.readJsonObject(postedData)).toString(),
+               APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/processes/{processId}/decorations/{decorationId}")
    public Response getDecoration(@PathParam("modelId") String modelId,
          @PathParam("processId") String processId,

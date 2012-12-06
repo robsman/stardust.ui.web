@@ -2608,48 +2608,49 @@ public class ModelService
                {
                   AttributeType attribute = (AttributeType) reference;
 
-                  info += "Attribute "; // I18N
-                  info += attribute.getName();
-                  info += " of "; // I18N
+                  referenceJson.addProperty("elementName", attribute.getName());
+                  referenceJson.addProperty("elementType", "attribute");
 
                   if (attribute.eContainer() instanceof IIdentifiableModelElement)
                   {
-                     info += ((IIdentifiableModelElement) attribute.eContainer()).getName();
+                     referenceJson.addProperty("scopeName", ((IIdentifiableModelElement) attribute.eContainer()).getName());
+                     referenceJson.addProperty("scopeType", "modelElement");
                   }
                   else if (attribute.eContainer()instanceof ModelType)
                   {
-                     info += model.getName();
+                     referenceJson.addProperty("scopeName", model.getName());
+                     referenceJson.addProperty("scopeType", "model");
                   }
                   else
                   {
-                     info += attribute.eContainer().getClass().getName();
+                     referenceJson.addProperty("scopeType", "other");
                   }
                }
                else if (reference instanceof DescriptionType)
                {
                   DescriptionType description = (DescriptionType) reference;
 
-                  info += "Description of "; // I18N
+                  referenceJson.addProperty("elementType", "description");
 
                   if (description.eContainer() instanceof IIdentifiableModelElement)
                   {
-                     info += ((IIdentifiableModelElement) description.eContainer()).getName();
+                     referenceJson.addProperty("scopeName", ((IIdentifiableModelElement) description.eContainer()).getName());
+                     referenceJson.addProperty("scopeType", "modelElement");
                   }
                   else if (description.eContainer()instanceof ModelType)
                   {
-                     info += model.getName();
+                     referenceJson.addProperty("scopeName", model.getName());
+                     referenceJson.addProperty("scopeType", "model");
                   }
                   else
                   {
-                     info += description.eContainer().getClass().getName();
+                     referenceJson.addProperty("scopeType", "other");
                   }
                }
                else
                {
-                  info += "Other Reference"; // I18N
+                  referenceJson.addProperty("elementType", "other");
                }
-
-               referenceJson.addProperty("name", info);
             }
          }
       }
@@ -2660,7 +2661,7 @@ public class ModelService
    /**
     * 
     */
-   public void updateConfigurationVariable(String modelId, String postedData)
+   public JsonObject updateConfigurationVariable(String modelId, JsonObject postedData)
    {
       ModelType model = findModel(modelId);
       VariableContext variableContext = new VariableContext();
@@ -2669,10 +2670,12 @@ public class ModelService
       variableContext.refreshVariables(model);
       variableContext.saveVariables();
       
-      ModelVariable modelVariable = getModelVariableByName(variableContext, ""); 
+      ModelVariable modelVariable = getModelVariableByName(variableContext, postedData.get("variableName").getAsString()); 
       
-      modelVariable.setDefaultValue("bla");
+      modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
       variableContext.saveVariables();
+      
+      return postedData;
    }
    
    /**
