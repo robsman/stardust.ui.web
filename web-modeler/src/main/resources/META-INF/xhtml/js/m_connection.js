@@ -745,7 +745,6 @@ define(
 					});
 
 					this.addToPrimitives(this.path);
-					this.addToEditableTextPrimitives(this.path);
 
 					this.path.auxiliaryProperties = {
 						callbackScope : this
@@ -2131,7 +2130,7 @@ define(
 												.getBBox().y
 												+ this.diagram.Y_OFFSET
 												- scrollPos.top
-									}).show().trigger("dblclick");
+							}).show().trigger("dblclick");
 
 					return this.conditionExpressionText;
 				};
