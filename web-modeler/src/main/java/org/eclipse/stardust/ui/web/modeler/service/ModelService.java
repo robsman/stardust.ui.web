@@ -843,14 +843,13 @@ public class ModelService
       ModelType model = findModel(modelId);
       String name = extractString(postedData, NEW_OBJECT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
-            model, name, id);
+            model, name, null);
 
       JsonObject processDefinitionJson = new JsonObject();
 
       processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
-      processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY, id);
+      processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
       processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
       processDefinitionJson.addProperty(MODEL_ID_PROPERTY, modelId);
       processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
@@ -1452,9 +1451,7 @@ public class ModelService
       //
       // model.getDataType().add(structuredDataType);
 
-      DataType data = newStructVariable(model).withIdAndName(
-            getModelBuilderFacade().createIdFromName(
-                  extractString(wizardParameterJson, "requestParameterDataNameInput")),
+      DataType data = newStructVariable(model).withIdAndName(null,
             extractString(wizardParameterJson, "requestParameterDataNameInput"))
             .ofType(
                   /* Dummy */getModelBuilderFacade().stripFullId(
@@ -1478,8 +1475,7 @@ public class ModelService
       // Create Request Transformation Activity
 
       ActivityType activity = newApplicationActivity(processDefinition).withIdAndName(
-            getModelBuilderFacade().createIdFromName(
-                  extractString(wizardParameterJson, "requestTransformationActivityName")),
+            null,
             extractString(wizardParameterJson, "requestTransformationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
@@ -1505,8 +1501,7 @@ public class ModelService
 
       // Request data
 
-      data = newStructVariable(model).withIdAndName(
-            getModelBuilderFacade().createIdFromName("Service Request"),
+      data = newStructVariable(model).withIdAndName(null,
             "Service Request")
             .ofType(
                   getModelBuilderFacade().stripFullId(
@@ -1530,8 +1525,7 @@ public class ModelService
       // Create Application Activity
 
       activity = newApplicationActivity(processDefinition).withIdAndName(
-            getModelBuilderFacade().createIdFromName(
-                  extractString(wizardParameterJson, "serviceInvocationActivityName")),
+            null,
             extractString(wizardParameterJson, "serviceInvocationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
@@ -1557,8 +1551,7 @@ public class ModelService
 
       // Response data
 
-      data = newStructVariable(model).withIdAndName(
-            getModelBuilderFacade().createIdFromName("Service Response"),
+      data = newStructVariable(model).withIdAndName(null,
             "Service Response")
             .ofType(
                   getModelBuilderFacade().stripFullId(
@@ -1581,9 +1574,7 @@ public class ModelService
 
       // Create Response Transformation Activity
 
-      activity = newApplicationActivity(processDefinition).withIdAndName(
-            getModelBuilderFacade().createIdFromName(
-                  extractString(wizardParameterJson, "responseTransformationActivityName")),
+      activity = newApplicationActivity(processDefinition).withIdAndName(null,
             extractString(wizardParameterJson, "responseTransformationActivityName"))
             .invokingApplication(
                   getModelBuilderFacade().getApplication(modelId,
@@ -1617,9 +1608,7 @@ public class ModelService
       //
       // model.getDataType().add(structuredDataType);
 
-      data = newStructVariable(model).withIdAndName(
-            getModelBuilderFacade().createIdFromName(
-                  extractString(wizardParameterJson, "responseParameterDataNameInput")),
+      data = newStructVariable(model).withIdAndName(null,
             extractString(wizardParameterJson, "responseParameterDataNameInput"))
             .ofType(
                   /* Dummy */getModelBuilderFacade().stripFullId(

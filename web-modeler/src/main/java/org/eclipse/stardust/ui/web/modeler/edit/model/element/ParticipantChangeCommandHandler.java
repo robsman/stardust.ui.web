@@ -56,11 +56,10 @@ public class ParticipantChangeCommandHandler
    public void createRole(ModelType model, JsonObject request)
    {
       String roleName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String roleID = getModelBuilderFacade().createIdFromName(roleName);
       RoleType role = null;
       synchronized (model)
       {
-         role = getModelBuilderFacade().createRole(model, roleID, roleName);
+         role = getModelBuilderFacade().createRole(model, null, roleName);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       role.setElementOid(++maxOid);
@@ -78,11 +77,10 @@ public class ParticipantChangeCommandHandler
    public void createOrganization(ModelType model, JsonObject request)
    {
       String orgName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String orgID = getModelBuilderFacade().createIdFromName(orgName);
       OrganizationType org = null;
       synchronized (model)
       {
-         org = getModelBuilderFacade().createOrganization(model, orgID, orgName);
+         org = getModelBuilderFacade().createOrganization(model, null, orgName);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       org.setElementOid(++maxOid);
@@ -101,12 +99,11 @@ public class ParticipantChangeCommandHandler
    {
       String conditionalPerformerName = extractString(request,
             ModelerConstants.NAME_PROPERTY);
-      String conditionalPerformerID = getModelBuilderFacade().createIdFromName(conditionalPerformerName);
       ConditionalPerformerType conditionalPerformer = null;
       synchronized (model)
       {
          conditionalPerformer = getModelBuilderFacade().createConditionalPerformer(model,
-               conditionalPerformerID, conditionalPerformerName);
+               null, conditionalPerformerName);
       }
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       conditionalPerformer.setElementOid(++maxOid);

@@ -52,8 +52,7 @@ public class ProcessChangeCommandHandler
    public void createProcess(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
-      ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(id, name).build();
+      ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(null, name).build();
       //Added process definition to UUID map.
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(processDefinition);
@@ -103,7 +102,7 @@ public class ProcessChangeCommandHandler
       JsonObject processDefinitionJson = new JsonObject();
 
       processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");
-      processDefinitionJson.addProperty(ID_PROPERTY, id);
+      processDefinitionJson.addProperty(ID_PROPERTY, processDefinition.getId());
       processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
       processDefinitionJson.addProperty(MODEL_ID_PROPERTY, model.getId());
       processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");

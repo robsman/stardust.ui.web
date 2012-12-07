@@ -35,12 +35,11 @@ public class ApplicationTypeChangeCommandHandler
    public void createWebServiceApp(ModelType model, JsonObject request)
    {
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            applicationID, applicationName,
-            ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
-
+            null, applicationName,
+            ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);      
+      
       // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
@@ -50,10 +49,9 @@ public class ApplicationTypeChangeCommandHandler
    public void createMessageTransformationApp(ModelType model, JsonObject request)
    {
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            applicationID, applicationName,
+            null, applicationName,
             ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID);
 
       // Map newly created application to a UUID
@@ -66,10 +64,9 @@ public class ApplicationTypeChangeCommandHandler
    public void createCamelApp(ModelType model, JsonObject request)
    {
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String applicationID = getModelBuilderFacade().createIdFromName(applicationName);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            applicationID, applicationName,
+            null, applicationName,
             ModelerConstants.CAMEL_APPLICATION_TYPE_ID);
 
       // Map newly created application to a UUID
@@ -81,10 +78,9 @@ public class ApplicationTypeChangeCommandHandler
    public void createUiMashupApp(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            id, name, ModelerConstants.EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY);
+            null, name, ModelerConstants.EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY);
 
       //Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();

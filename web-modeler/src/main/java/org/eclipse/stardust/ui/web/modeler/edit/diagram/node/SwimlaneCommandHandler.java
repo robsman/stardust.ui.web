@@ -62,7 +62,6 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String laneId = getModelBuilderFacade().createIdFromName(laneName);
       int xPos = extractInt(request, X_PROPERTY);
       int yPos = extractInt(request, Y_PROPERTY);
       int width = extractInt(request, WIDTH_PROPERTY);
@@ -74,9 +73,10 @@ public class SwimlaneCommandHandler
       synchronized (model)
       {
          LaneSymbol laneSymbol = getModelBuilderFacade().createLane(model,
-               processDefinition, participantFullID, laneId, laneName, orientation, xPos, yPos,
+               processDefinition, participantFullID, null, laneName, orientation, xPos, yPos,
                width, height, parentSymbol);
 
+         
          PoolSymbol containingPool = parentSymbol;
          int poolWidth = containingPool.getWidth();
          containingPool.setWidth(poolWidth + width);

@@ -51,6 +51,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -148,33 +149,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
-   public static String deriveElementIdFromName(String name)
-   {
-      StringBuilder idBuilder = new StringBuilder(name.length());
-      boolean firstWord = true;
-      boolean newWord = true;
-      for (int i = 0; i < name.length(); ++i)
-      {
-         char nameChar = name.charAt(i);
-         if (Character.isLetterOrDigit(nameChar))
-         {
-            if (newWord && !firstWord)
-            {
-               // append underscore for each first illegal character
-               idBuilder.append('_');
-            }
-            idBuilder.append(Character.toUpperCase(nameChar));
-            firstWord &= false;
-            newWord = false;
-         }
-         else
-         {
-            newWord = true;
-         }
-      }
-
-      return idBuilder.toString();
-   }
 
    /**
 	 *
@@ -796,40 +770,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             if (isEmpty(newId))
             {
-               // compute ID from name
-               String generatedId = deriveElementIdFromName(newName);
-               if ((null != element.eContainer())
-                     && element.eContainingFeature().isMany())
+               if(element instanceof IIdentifiableElement)
                {
-                  newId = generatedId;
-                  int counter = 0;
-                  while (true)
-                  {
-                     @SuppressWarnings("unchecked")
-                     List<? extends EObject> domain = (List<? extends EObject>) element.eContainer()
-                           .eGet(element.eContainingFeature());
-
-                     boolean isConflict = false;
-                     for (EObject peer : domain)
-                     {
-                        if ((peer != element) && (newId.equals(peer.eGet(eFtrId))))
-                        {
-                           isConflict = true;
-                           break;
-                        }
-                     }
-
-                     if (isConflict)
-                     {
-                        // there is a conflict, resolve by appending a counter
-                        newId = generatedId + "_" + (++counter);
-                        continue;
-                     }
-                     else
-                     {
-                        break;
-                     }
-                  }
+                  newId = NameIdUtils.createIdFromName(null, (IIdentifiableElement) element);
+               }
+               else
+               {
+                  newId = NameIdUtils.createIdFromName(newName);                  
                }
             }
          }
@@ -908,7 +855,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                getModelBuilderFacade().createPrimitiveParameter(
                      processDefinition,
                      data,
-                     getModelBuilderFacade().createIdFromName(
+                     NameIdUtils.createIdFromName(
                            formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                                  .getAsString()),
                      formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
@@ -932,10 +879,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                getModelBuilderFacade().createStructuredParameter(
                      processDefinition,
-                     data,
-                     getModelBuilderFacade().createIdFromName(
-                           formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
-                                 .getAsString()),
+                     data, NameIdUtils.createIdFromName(formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
+                           .getAsString()),
                      formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                            .getAsString(), structuredDataTypeFullId, mode);
             }
@@ -976,10 +921,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
             DataPathType dataPath = getModelBuilderFacade().createDataPath();
 
-            dataPath.setId(getModelBuilderFacade().createIdFromName(
-                  dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
             dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
+            dataPath.setId(NameIdUtils.createIdFromName(
+                  dataPathJson.get(ModelerConstants.NAME_PROPERTY).getAsString()));
 
             if (dataPathJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
                   && !dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)

@@ -33,7 +33,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -86,9 +85,8 @@ public class DataChangeCommandHandler
    public void createPrimitiveData(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
-      DataType data = getModelBuilderFacade().createPrimitiveData(model, id, name, primitiveType);
+      DataType data = getModelBuilderFacade().createPrimitiveData(model, null, name, primitiveType);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);
@@ -245,7 +243,6 @@ public class DataChangeCommandHandler
    public void createStructuredData(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
 
       String dataFullID = null;
       if (request.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
@@ -255,10 +252,10 @@ public class DataChangeCommandHandler
       }
       else
       {
-         dataFullID = model.getId() + ":" + id;
+         dataFullID = model.getId() + ":";
       }
 
-      DataType data = getModelBuilderFacade().createStructuredData(model, id, name,
+      DataType data = getModelBuilderFacade().createStructuredData(model, null, name,
             dataFullID);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -277,9 +274,8 @@ public class DataChangeCommandHandler
    public void createDocumentData(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String id = getModelBuilderFacade().createIdFromName(name);
 
-      DataType data = getModelBuilderFacade().createDocumentData(model, id, name, null);
+      DataType data = getModelBuilderFacade().createDocumentData(model, null, name, null);
 
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       data.setElementOid(++maxOid);

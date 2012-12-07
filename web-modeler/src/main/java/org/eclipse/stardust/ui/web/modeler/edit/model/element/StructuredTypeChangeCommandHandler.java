@@ -41,12 +41,11 @@ public class StructuredTypeChangeCommandHandler
 	@OnCommand(commandId = "structuredDataType.create")
 	public void createStructuredDataType(ModelType model, JsonObject request) {
 		String typeName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String typeId = getModelBuilderFacade().createIdFromName(typeName);
 
       synchronized (model)
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
-         mapper.map(getModelBuilderFacade().createTypeDeclaration(model, typeId, typeName));
+         mapper.map(getModelBuilderFacade().createTypeDeclaration(model, null, typeName));
       }
 	}
 

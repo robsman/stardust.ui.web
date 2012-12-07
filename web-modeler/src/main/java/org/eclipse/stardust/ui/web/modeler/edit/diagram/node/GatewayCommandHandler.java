@@ -58,12 +58,11 @@ public class GatewayCommandHandler
 
          // encode Gateway as Route Activity (default configuration)
          String name = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
-         String id = getModelBuilderFacade().createIdFromName(name);
          ActivityType gateway = newRouteActivity(processDefinition) //
-               .withIdAndName(id, name)
+               .withIdAndName(null, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
          gateway.setElementOid(++maxOid);
-
+         
          // add gateway to model
          processDefinition.getActivity().add(gateway);
 

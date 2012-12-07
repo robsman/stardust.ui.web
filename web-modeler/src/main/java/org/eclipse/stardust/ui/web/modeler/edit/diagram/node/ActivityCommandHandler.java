@@ -62,7 +62,6 @@ public class ActivityCommandHandler
             ModelerConstants.ACTIVITY_TYPE);
       String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
-      String activityId = getModelBuilderFacade().createIdFromName(activityName);
       String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.PARTICIPANT_FULL_ID);
       String applicationFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
@@ -77,7 +76,7 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          ActivityType activity = getModelBuilderFacade().createActivity(model, processDefinition,
-               activityType, activityId, activityName, participantFullID,
+               activityType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
 
          ModelService.setDescription(activity,
