@@ -469,7 +469,7 @@ define(
 				 * Brings the symbol to the front.
 				 */
 				Symbol.prototype.toFront = function() {
-					//Following delay is added specifically for Chorme/IE Browser.
+					//Following delay is added specifically for Chrome / IE browsers.
 					//RaphaelJs .toFront() causes loss of double click event.
 					setTimeout(function(){
 						for ( var n in this.primitives) {

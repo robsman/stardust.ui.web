@@ -425,6 +425,7 @@ define(
 									event : "dblclick",
 									placeholder : "",
 									onblur : "submit",
+									select: "true",
 									onreset : function(settings, value) { // On
 										// Reset
 										// hide
@@ -452,6 +453,7 @@ define(
 							event : "dblclick",
 							placeholder : "",
 							onblur : "submit",
+							select: "true",
 							onreset : function(settings, value) { // On
 								// Reset
 								// hide
@@ -1791,7 +1793,7 @@ define(
 
 							this.currentConnection
 									.setSecondAnchorPoint(anchorPoint);
-							
+
 
 							if (!this.currentConnection.isCompleted()) {
 								this.currentConnection.remove();
