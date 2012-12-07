@@ -1869,9 +1869,14 @@ define(
 					var procNamePrefix = m_i18nUtils.getProperty("modeler.outline.newProcess.namePrefix");
 					var name = getUniqueNameForElement(modelId, procNamePrefix);
 
+					// TODO
+					// Temporarily added I18n FOR default pool and lane names on client side,
+					// till this is handled on server side.
 					m_commandsController.submitCommand(m_command
 							.createCreateProcessCommand(modelId, modelId, {
-								"name" : name
+								"name" : name,
+								"defaultPoolName" : m_i18nUtils.getProperty("modeler.diagram.defaultPoolName"),
+								"defaultLaneName" : m_i18nUtils.getProperty("modeler.diagram.defaultLaneName")
 							}));
 					isElementCreatedViaOutline = true;
 				}
