@@ -49,6 +49,13 @@ define(
 				this.topSelectFrame = null;
 				this.rightSelectFrame = null;
 				this.bottomSelectFrame = null;
+				// Hidden select frames with thick margin for selection for
+				// Stretch/Shrink
+				this.leftSelectHiddenFrame = null;
+				this.topSelectHiddenFrame = null;
+				this.rightSelectHiddenFrame = null;
+				this.bottomSelectHiddenFrame = null;
+
 				this.dragStartX = 0;
 				this.dragStartY = 0;
 				this.visible = true;
@@ -96,6 +103,10 @@ define(
 					transferObject.rightSelectFrame = null;
 					transferObject.bottomSelectFrame = null;
 					transferObject.leftSelectFrame = null;
+					transferObject.topSelectHiddenFrame = null;
+					transferObject.rightSelectHiddenFrame = null;
+					transferObject.bottomSelectHiddenFrame = null;
+					transferObject.leftSelectHiddenFrame = null;
 					transferObject.flyOutMenuBackground = null;
 					transferObject.bottomFlyOutMenuItems = null;
 					transferObject.rightFlyOutMenuItems = null;
@@ -776,6 +787,16 @@ define(
 							.getRightSelectFramePath());
 					this.bottomSelectFrame.attr("path", this
 							.getBottomSelectFramePath());
+
+					this.leftSelectHiddenFrame.attr("path", this
+							.getLeftSelectFramePath());
+					this.topSelectHiddenFrame.attr("path", this
+							.getTopSelectFramePath());
+					this.rightSelectHiddenFrame.attr("path", this
+							.getRightSelectFramePath());
+					this.bottomSelectHiddenFrame.attr("path", this
+							.getBottomSelectFramePath());
+
 				};
 
 				/**
@@ -818,6 +839,87 @@ define(
 				 *
 				 */
 				Symbol.prototype.createSelectFrame = function() {
+					// Create hidden select frames, with thick width for ease to
+					// selection
+					this.leftSelectHiddenFrame = m_canvasManager.drawPath(this
+							.getLeftSelectFramePath(), {
+						"stroke" : "white",
+						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
+						"stroke-dasharray" : ""
+					});
+
+					this.leftSelectHiddenFrame.auxiliaryProperties = {
+						callbackScope : this
+					};
+					this.leftSelectHiddenFrame.mouseover(function() {
+						this.attr("cursor", "w-resize");
+					});
+					this.leftSelectHiddenFrame.drag(Symbol_stretchLeftClosure,
+							Symbol_stretchStartClosure,
+							Symbol_stretchStopClosure);
+
+					this.leftSelectHiddenFrame.hide();
+
+					this.topSelectHiddenFrame = m_canvasManager.drawPath(this
+							.getTopSelectFramePath(), {
+						"stroke" : "white",
+						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
+						"stroke-dasharray" : ""
+					});
+
+					this.topSelectHiddenFrame.auxiliaryProperties = {
+						callbackScope : this
+					};
+					this.topSelectHiddenFrame.mouseover(function() {
+						this.attr("cursor", "n-resize");
+					});
+					this.topSelectHiddenFrame.drag(Symbol_stretchTopClosure,
+							Symbol_stretchStartClosure,
+							Symbol_stretchStopClosure);
+
+					this.topSelectHiddenFrame.hide();
+
+					this.rightSelectHiddenFrame = m_canvasManager.drawPath(this
+							.getRightSelectFramePath(), {
+						"stroke" : "white",
+						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
+						"stroke-dasharray" : ""
+					});
+
+					this.rightSelectHiddenFrame.auxiliaryProperties = {
+						callbackScope : this
+					};
+					this.rightSelectHiddenFrame.mouseover(function() {
+						this.attr("cursor", "e-resize");
+					});
+					this.rightSelectHiddenFrame.drag(
+							Symbol_stretchRightClosure,
+							Symbol_stretchStartClosure,
+							Symbol_stretchStopClosure);
+					this.rightSelectHiddenFrame.hide();
+
+					this.bottomSelectHiddenFrame = m_canvasManager
+							.drawPath(
+									this.getBottomSelectFramePath(),
+									{
+										"stroke" : "white",
+										"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
+										"stroke-dasharray" : ""
+									});
+
+					this.bottomSelectHiddenFrame.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					this.bottomSelectHiddenFrame.mouseover(function() {
+						this.attr("cursor", "s-resize");
+					});
+					this.bottomSelectHiddenFrame.drag(
+							Symbol_stretchBottomClosure,
+							Symbol_stretchStartClosure,
+							Symbol_stretchStopClosure);
+					this.bottomSelectHiddenFrame.hide();
+
 					this.leftSelectFrame = m_canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
@@ -828,12 +930,6 @@ define(
 						callbackScope : this
 					};
 
-					this.leftSelectFrame.mouseover(function() {
-						this.attr("cursor", "w-resize");
-					});
-					this.leftSelectFrame.drag(Symbol_stretchLeftClosure,
-							Symbol_stretchStartClosure,
-							Symbol_stretchStopClosure);
 					this.leftSelectFrame.hide();
 
 					this.topSelectFrame = m_canvasManager.drawPath(this
@@ -846,12 +942,6 @@ define(
 						callbackScope : this
 					};
 
-					this.topSelectFrame.mouseover(function() {
-						this.attr("cursor", "n-resize");
-					});
-					this.topSelectFrame.drag(Symbol_stretchTopClosure,
-							Symbol_stretchStartClosure,
-							Symbol_stretchStopClosure);
 					this.topSelectFrame.hide();
 
 					this.rightSelectFrame = m_canvasManager.drawPath(this
@@ -864,12 +954,6 @@ define(
 						callbackScope : this
 					};
 
-					this.rightSelectFrame.mouseover(function() {
-						this.attr("cursor", "e-resize");
-					});
-					this.rightSelectFrame.drag(Symbol_stretchRightClosure,
-							Symbol_stretchStartClosure,
-							Symbol_stretchStopClosure);
 					this.rightSelectFrame.hide();
 
 					this.bottomSelectFrame = m_canvasManager.drawPath(this
@@ -882,12 +966,6 @@ define(
 						callbackScope : this
 					};
 
-					this.bottomSelectFrame.mouseover(function() {
-						this.attr("cursor", "s-resize");
-					});
-					this.bottomSelectFrame.drag(Symbol_stretchBottomClosure,
-							Symbol_stretchStartClosure,
-							Symbol_stretchStopClosure);
 					this.bottomSelectFrame.hide();
 				};
 
@@ -984,6 +1062,10 @@ define(
 					this.topSelectFrame.show();
 					this.rightSelectFrame.show();
 					this.bottomSelectFrame.show();
+					this.leftSelectHiddenFrame.show();
+					this.topSelectHiddenFrame.show();
+					this.rightSelectHiddenFrame.show();
+					this.bottomSelectHiddenFrame.show();
 				};
 
 				/**
@@ -994,6 +1076,10 @@ define(
 					this.topSelectFrame.hide();
 					this.rightSelectFrame.hide();
 					this.bottomSelectFrame.hide();
+					this.leftSelectHiddenFrame.hide();
+					this.topSelectHiddenFrame.hide();
+					this.rightSelectHiddenFrame.hide();
+					this.bottomSelectHiddenFrame.hide();
 				};
 
 				/**
@@ -1748,6 +1834,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchStart = function() {
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					this.preDragSymbolState = {
 						x : this.x,
 						y : this.y,
@@ -1815,8 +1902,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchLeft = function(dX, dY, x, y) {
-					this.width += this.x - (x - this.diagram.X_OFFSET);
-					this.x = x - this.diagram.X_OFFSET;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+					this.width += this.x - scrollPos.left
+							- (x - this.diagram.X_OFFSET);
+					this.x = x - this.diagram.X_OFFSET + scrollPos.left;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -1826,8 +1915,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchTop = function(dX, dY, x, y) {
-					this.height += this.y - (y - this.diagram.Y_OFFSET);
-					this.y = y - this.diagram.Y_OFFSET;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+					this.height += this.y - (y - this.diagram.Y_OFFSET)
+							- scrollPos.top;
+					this.y = y + scrollPos.top - this.diagram.Y_OFFSET;
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -1837,7 +1928,9 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchRight = function(dX, dY, x, y) {
-					this.width = x - this.diagram.X_OFFSET - this.x;
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+					this.width = x - this.diagram.X_OFFSET - this.x
+							+ scrollPos.left;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -1847,7 +1940,8 @@ define(
 				 *
 				 */
 				Symbol.prototype.stretchBottom = function(dX, dY, x, y) {
-					this.height += ((y - this.diagram.Y_OFFSET) - (this.y + this.height));
+					var scrollPos = m_modelerUtils.getModelerScrollPosition();
+					this.height += ((y + scrollPos.top - this.diagram.Y_OFFSET) - (this.y + this.height));
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
