@@ -380,7 +380,7 @@ define(function() {
 		NEW_LINE : 	"\n",
 		EXTERNAL_REFERENCE_PROPERTY : "externalReference",
 		VIEW_ICON_PARAM_KEY : "viewIcon",
-		DEFAULT_TEXT_WIDTH : 90,
+		DEFAULT_TEXT_WIDTH : 50,
 		DEFAULT_TEXT_HEIGHT : 15
 
 	};

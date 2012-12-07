@@ -387,7 +387,7 @@ define(
 									{
 										"x" : this.x + this.diagram.X_OFFSET
 												+ this.width / 5
-												- scrollPos.left,
+												- scrollPos.left - 10,
 										"y" : this.y + this.diagram.Y_OFFSET
 												+ (this.height) + 5
 												- scrollPos.top

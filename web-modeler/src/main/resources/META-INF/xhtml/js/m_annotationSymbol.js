@@ -278,7 +278,7 @@ define(
 							name).moveDiv(
 							{
 								"x" : this.x + this.diagram.X_OFFSET
-										+ this.width / 5 - scrollPos.left,
+										+ this.width / 5 - scrollPos.left - 10,
 								"y" : this.y + this.diagram.Y_OFFSET
 										+ this.height / 8 - scrollPos.top
 							}).show().trigger("dblclick");
