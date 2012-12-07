@@ -1936,7 +1936,7 @@ define(
 								.hide().trigger("blur");
 						this.currentTextPrimitive.attr("text", content);
 						m_utils.debug("textarea set");
-						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges();
+						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
 
 						m_commandsController
 								.submitCommand(m_command

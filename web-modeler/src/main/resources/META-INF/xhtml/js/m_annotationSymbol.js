@@ -308,9 +308,7 @@ define(
 
 				AnnotationSymbol.prototype.getEditedChanges = function(text) {
 					return {
-						modelElement : {
-							content : text
-						}
+						content : text
 					};
 				};
 

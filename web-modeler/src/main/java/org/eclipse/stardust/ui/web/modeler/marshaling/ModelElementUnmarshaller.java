@@ -263,6 +263,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateData((DataType) element, json);
       }
+      else if (element instanceof DataSymbolType)
+      {
+         updateDataSymbol((DataSymbolType) element, json);
+      }
       else if (element instanceof RoleType)
       {
          updateRole((RoleType) element, json);
@@ -1044,6 +1048,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
+    * @param dataSymbol
+    * @param dataSymbolJson
+    */
+   private void updateDataSymbol(DataSymbolType dataSymbol, JsonObject dataSymbolJson)
+   {
+      updateNodeSymbol(dataSymbol, dataSymbolJson);
+
+      mapDeclaredProperties(dataSymbol, dataSymbolJson,
+            propertiesMap.get(DataSymbolType.class));
+
+      DataType data = dataSymbol.getData();
+      JsonObject activityJson = dataSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      updateData(data, activityJson);
+   }
+
+   /**
     *
     * @param activitySymbol
     * @param activitySymbolJson
@@ -1389,14 +1410,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeDescription(trigger, triggerJson);
 
       // A few BPMN properties
-      
+
       if (triggerJson.has(ModelerConstants.EVENT_CLASS_PROPERTY))
       {
          getModelBuilderFacade().setAttribute(trigger,
                "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
       }
-      
+
       if (triggerJson.has(ModelerConstants.THROWING_PROPERTY))
       {
          getModelBuilderFacade().setBooleanAttribute(trigger,
