@@ -248,10 +248,6 @@ public class ModelCache implements Resetable, Serializable
             unusedModels=null;
 
          }
-         catch (Exception e)
-         {
-            ExceptionHandler.handleException(e);
-         }
          finally
          {
             //6)release write lock

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.ExtensionProviderUtils;
+import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -384,54 +385,59 @@ public final class SessionContext implements Serializable
          // Service factory needs to be set already
          throw new PortalException(PortalErrorClass.UNABLE_TO_INITIALIZE_SESSION);
       }
-      
-      /* Reset model cache to ensure that the latest models are fetched */ 
-      ModelCache modelCache = ModelCache.findModelCache();
-      modelCache.reset();
-      
-      if (isModelRequired())
-      {
-         Collection models = modelCache.getAllModels();
-         if (models.isEmpty())
-         {
-            logout();
-            throw new PortalException(PortalErrorClass.NO_DEPLOYED_MODEL);
-         }
-      }
-      
-      ApplicationContext.registerUser((HttpSession)FacesContext.getCurrentInstance().
-            getExternalContext().getSession(false), loggedInUser);
-      
-      this.propertyMap = getPropertyMap(false);
-      synchronized (propertyMap)
-      {
-         if(!propertyMap.isEmpty())
-         {
-            Iterator mapIter = propertyMap.entrySet().iterator();
-            Map sessionListenerMap = CollectionUtils.newMap();
-            while (mapIter.hasNext())
-            {
-               Map.Entry mapEntry = (Map.Entry) mapIter.next();
-               Object value = mapEntry.getValue(); 
-               if(value instanceof ISessionListener)
-               {
-                  sessionListenerMap.put(mapEntry.getKey(), value);
-               }
-            }
-            propertyMap.clear();
-            propertyMap.putAll(sessionListenerMap);
-            resetPropertyMap(propertyMap);
-         }
-      }
-      
       try
       {
+         /* Reset model cache to ensure that the latest models are fetched */
+         ModelCache modelCache = ModelCache.findModelCache();
+         modelCache.reset();
+
+         if (isModelRequired())
+         {
+            Collection models = modelCache.getAllModels();
+            if (models.isEmpty())
+            {
+               logout();
+               throw new PortalException(PortalErrorClass.NO_DEPLOYED_MODEL);
+            }
+         }
+
+         ApplicationContext.registerUser((HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+               .getSession(false), loggedInUser);
+
+         this.propertyMap = getPropertyMap(false);
+         synchronized (propertyMap)
+         {
+            if (!propertyMap.isEmpty())
+            {
+               Iterator mapIter = propertyMap.entrySet().iterator();
+               Map sessionListenerMap = CollectionUtils.newMap();
+               while (mapIter.hasNext())
+               {
+                  Map.Entry mapEntry = (Map.Entry) mapIter.next();
+                  Object value = mapEntry.getValue();
+                  if (value instanceof ISessionListener)
+                  {
+                     sessionListenerMap.put(mapEntry.getKey(), value);
+                  }
+               }
+               propertyMap.clear();
+               propertyMap.putAll(sessionListenerMap);
+               resetPropertyMap(propertyMap);
+            }
+         }
+
          propagateNewSession();
       }
-      catch(LoginFailedException e)
+      catch (LoginFailedException e)
       {
          logout();
          throw e;
+      }
+      catch (AccessForbiddenException ex)
+      {
+         // ModelCache throws AFE when user with no-role tries login
+         logout();
+         throw ex;
       }
    }
    
