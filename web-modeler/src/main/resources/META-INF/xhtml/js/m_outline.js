@@ -2031,15 +2031,13 @@ define(
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newRole.namePrefix");
 					var name = getUniqueNameForElement(model.id, titledata);
-					var id = m_utils.generateIDFromName(name);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateRoleCommand(model.id, targetOid, {
-								"name" : name,
-								"id" : id
+								"name" : name
 							}));
 					isElementCreatedViaOutline = true;
 				}
