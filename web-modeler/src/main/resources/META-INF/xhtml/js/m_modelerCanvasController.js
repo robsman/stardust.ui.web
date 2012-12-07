@@ -158,13 +158,21 @@ define(
 
 								data.submitCreation();
 
-								var dataSymbol = m_dataSymbol
-										.createDataSymbolFromData(diagram, data);
+								// TODO: this needs to be changed.
+								// we need some mechanism to associate newly create
+								// data with the data symbol to be created as now
+								// we don't generate ID on client side.
+								data = data.model.findModelElementByName(data.name);
 
-								dataSymbol.initialize(clickCoordinates.x
-										- diagram.X_OFFSET, clickCoordinates.y
-										- diagram.Y_OFFSET);
-								dataSymbol.refreshFromModelElement();
+								if (data) {
+									var dataSymbol = m_dataSymbol
+									.createDataSymbolFromData(diagram, data);
+
+									dataSymbol.initialize(clickCoordinates.x
+											- diagram.X_OFFSET, clickCoordinates.y
+											- diagram.Y_OFFSET);
+									dataSymbol.refreshFromModelElement();
+								}
 							} else if ('process' == parent.iDnD
 									.getTransferObject().elementType) {
 								var process = m_model.findProcess(parent.iDnD
