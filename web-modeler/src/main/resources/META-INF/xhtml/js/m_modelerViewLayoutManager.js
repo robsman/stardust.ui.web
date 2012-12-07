@@ -152,7 +152,7 @@ define(
 				jQuery("#participantdata")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.processs.processDefinition.participant"));
+										.getProperty("modeler.swimlane.properties.participant"));
 				jQuery("#datadesc")
 						.text(
 								m_i18nUtils
