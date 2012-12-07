@@ -38,6 +38,8 @@ define(
 				createActivitySymbolFromProcess : function(diagram, process) {
 					var activitySymbol = new ActivitySymbol();
 
+					activitySymbol.activateEditOnCreation = false;
+
 					activitySymbol.bind(diagram);
 
 					activitySymbol.modelElement = m_activity
@@ -49,6 +51,8 @@ define(
 				createActivitySymbolFromApplication : function(diagram,
 						application) {
 					var activitySymbol = new ActivitySymbol();
+
+					activitySymbol.activateEditOnCreation = false;
 
 					activitySymbol.bind(diagram);
 

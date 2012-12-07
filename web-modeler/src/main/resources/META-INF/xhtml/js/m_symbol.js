@@ -53,6 +53,7 @@ define(
 				this.dragStartY = 0;
 				this.visible = true;
 				this.serverSideCoordinates = null;
+				this.activateEditOnCreation = true;
 
 				// Method initialization
 
@@ -278,7 +279,9 @@ define(
 							}
 						}
 						this.createAndSubmitCreateCommand(sync);
-						this.postComplete();
+						if(this.activateEditOnCreation){
+							this.postComplete();
+						}
 					}
 
 

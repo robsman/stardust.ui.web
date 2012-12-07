@@ -47,6 +47,8 @@ define(
 				createDataSymbolFromData : function(diagram, data) {
 					var dataSymbol = new DataSymbol();
 
+					dataSymbol.activateEditOnCreation = false;
+
 					dataSymbol.bind(diagram);
 
 					dataSymbol.modelElement = data;
