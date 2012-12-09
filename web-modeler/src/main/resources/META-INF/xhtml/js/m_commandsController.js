@@ -198,8 +198,7 @@ define(
 						url += "/" + command.operation;
 					}
 
-					m_utils.debug("URL: " + url);
-					m_utils.debug("Command:");
+					m_utils.debug("\n===> Post Command:\n");
 					m_utils.debug(command);
 
 					if (command.type == m_constants.DELETE_COMMAND) {
@@ -213,7 +212,7 @@ define(
 											return {
 												"success" : function(command) {
 													m_utils
-															.debug("===> Receive Command Confirmation");
+															.debug("\n===> Receive Command Confirmation:\n");
 													m_utils.debug(command);
 
 													getInstance()
@@ -251,7 +250,7 @@ define(
 											return {
 												"success" : function(command) {
 													m_utils
-															.debug("===> Receive Command Confirmation");
+															.debug("\n===> Receive Command Confirmation\n");
 													m_utils.debug(command);
 
 													getInstance()
