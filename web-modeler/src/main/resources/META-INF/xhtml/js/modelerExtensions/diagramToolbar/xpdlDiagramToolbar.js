@@ -116,7 +116,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "startEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createStartEvent.title"),
-			iconUrl : "../../images/icons/start_event_with_border.png",
+			iconUrl : "../../images/icons/start-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createStartEvent",
 			visibility : "always"
@@ -124,7 +124,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "intermediateEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createIntermediateEvent.title"),
-			iconUrl : "../../images/icons/end_event_with_border.png",
+			iconUrl : "../../images/icons/intermediate-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createIntermediateEvent",
 			visibility : "preview"
@@ -132,7 +132,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "endEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createEndEvent.title"),
-			iconUrl : "../../images/icons/end_event_with_border.png",
+			iconUrl : "../../images/icons/end-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createEndEvent",
 			visibility : "always"
