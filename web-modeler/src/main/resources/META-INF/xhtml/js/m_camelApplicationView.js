@@ -9,15 +9,19 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_session",
-				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model","bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session,
-				m_commandsController, m_dialog, m_modelElementView, m_model, m_i18nUtils) {
+				m_commandsController, m_dialog, m_modelElementView, m_model,
+				m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new CamelApplicationView();
-				i18camelrouteproperties();
+					i18camelrouteproperties();
 					// TODO Unregister!
 					// In Initializer?
 					m_commandsController.registerCommandHandler(view);
@@ -26,18 +30,17 @@ define(
 				}
 			};
 
-
 			function i18camelrouteproperties() {
 
 				$("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
+
 				$("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 
 				jQuery("#applicationName")
 						.text(
@@ -59,7 +62,7 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.camelContext"));
-								 
+
 				jQuery("#addBeanSpec")
 						.text(
 								m_i18nUtils
@@ -87,7 +90,6 @@ define(
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.endPoint.generic");
 				selectendpoint.append("<option value=\"genericEndpoint\">"
 						+ selectdata + "</option>");
-
 			}
 			/**
 			 * 
@@ -114,6 +116,7 @@ define(
 					this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
 					this.requestDataInput = jQuery("#requestDataInput");
 					this.responseDataInput = jQuery("#responseDataInput");
+					this.directionInput = jQuery("#directionInput");
 
 					this.overlays = {};
 					this.overlayControllers = {};
@@ -181,11 +184,6 @@ define(
 												view.overlayControllers[jQuery(
 														this).attr("id")] = extension.provider
 														.create(view);
-												m_utils
-														.debug("Overlay loaded: "
-																+ jQuery(this)
-																		.attr(
-																				"id"));
 											}
 										});
 					}
@@ -199,6 +197,32 @@ define(
 								.val()].activate();
 						view.setOverlay(view.endpointTypeSelectInput.val());
 					});
+
+					this.directionInput
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (view.directionInput.val() == "requestResponse") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
+														}
+													});
+										} else {
+											// TODO What do we have to set here?
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:camel::producerMethodName" : ""
+														}
+													});
+										}
+									});
 
 					this.initializeModelElementView(application);
 				};
@@ -221,17 +245,26 @@ define(
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.activate = function() {
+					this
+							.submitChanges({
+								attributes : {
+									"carnot:engine:camel::camelContextId" : "Default",
+									"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
+								}
+							});
 				};
 
 				/**
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.update = function() {
+
 					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
 						this
 								.submitChanges({
 									attributes : {
-										"carnot:engine:camel::camelContextId" : "Default"
+										"carnot:engine:camel::camelContextId" : "Default",
+										"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
 									}
 								});
 					} else {
