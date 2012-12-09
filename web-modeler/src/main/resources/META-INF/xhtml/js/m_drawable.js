@@ -530,6 +530,7 @@ define(
 				 */
 				Drawable.prototype.doubleClickEditableTextPrimitive = function(
 						element) {
+					this.hideFlyOutMenu();
 					this.diagram.showEditable(element);
 				};
 

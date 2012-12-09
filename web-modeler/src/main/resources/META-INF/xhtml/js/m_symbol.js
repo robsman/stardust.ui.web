@@ -1421,7 +1421,10 @@ define(
 										.hideFlyOutMenu();
 							}
 						}
-						if (!this.selected) {
+						
+						// TODO Experimental
+						
+						if (true/*!this.selected*/) {
 							this.showFlyOutMenu();
 						}
 					} else {
