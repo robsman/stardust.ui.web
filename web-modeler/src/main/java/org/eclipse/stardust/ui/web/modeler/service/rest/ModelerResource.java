@@ -13,6 +13,10 @@ package org.eclipse.stardust.ui.web.modeler.service.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -513,7 +517,8 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().getConfigurationVariables(modelId).toString(),
+         return Response.ok(
+               getModelService().getConfigurationVariables(modelId).toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -528,12 +533,15 @@ public class ModelerResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/configurationVariables/{variableName}")
-   public Response updateConfigurationVariable(@PathParam("modelId") String modelId, String postedData)
+   public Response updateConfigurationVariable(@PathParam("modelId") String modelId,
+         String postedData)
    {
       try
       {
-         return Response.ok(getModelService().updateConfigurationVariable(modelId, jsonIo.readJsonObject(postedData)).toString(),
-               APPLICATION_JSON_TYPE).build();
+         return Response.ok(
+               getModelService().updateConfigurationVariable(modelId,
+                     jsonIo.readJsonObject(postedData)).toString(), APPLICATION_JSON_TYPE)
+               .build();
       }
       catch (Exception e)
       {
@@ -827,6 +835,133 @@ public class ModelerResource
          e.printStackTrace();
 
          throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("upload")
+   /**
+    * Temporary - used as an upload bridge for Rules Manager
+    */
+   public Response uploadFile(String postedData)
+   {
+      System.out.println("Posted Data:");
+      System.out.println(postedData);
+
+      BufferedReader reader = new BufferedReader(new StringReader(postedData));
+
+      try
+      {
+         // Read header
+
+         reader.readLine(); // ------WebKitFormBoundary ...
+         reader.readLine(); // Content-Disposition: ...
+         reader.readLine(); // Content-Type: ...
+
+         String factsLine = reader.readLine();
+
+         while ((factsLine = reader.readLine()) != null)
+         {
+            if (factsLine.trim().length() != 0)
+            {
+               break;
+            }
+         }
+
+         String propertiesLine = reader.readLine();
+
+         System.out.println("Facts Line" + factsLine);
+         System.out.println("Properties Line" + propertiesLine);
+
+         String[] facts = factsLine.split(";");
+         String[] properties = propertiesLine.split(";");
+         List<String> factNames = new ArrayList<String>();
+         List<String> propertyNames = new ArrayList<String>();
+         String currentFactName = null;
+
+         for (int n = 0; n < properties.length; ++n)
+         {
+            System.out.println("Property: " + properties[n]);
+
+            if (n < facts.length && facts[n] != null && !facts[n].isEmpty())
+            {
+               currentFactName = facts[n];
+            }
+
+            factNames.add(currentFactName);
+            propertyNames.add(properties[n]);
+         }
+
+         JsonArray rulesJson = new JsonArray();
+         String ruleLine = null;
+
+         while ((ruleLine = reader.readLine()) != null)
+         {
+            if (ruleLine.startsWith("------") ||
+                  ruleLine.isEmpty())
+            {
+               break;
+            }
+
+            System.out.println("Processing Line: " + ruleLine);
+            
+            JsonObject ruleJson = new JsonObject();
+
+            rulesJson.add(ruleJson);
+
+            JsonArray factConditionsJson = new JsonArray();
+
+            ruleJson.add("conditions", factConditionsJson);
+
+            JsonArray factActionsJson = new JsonArray();
+
+            ruleJson.add("actions", factActionsJson);
+
+            String[] values = ruleLine.split(";");
+            String factName = null;
+            JsonObject factConditionJson = null;
+            JsonArray propertyConditionsJson = null;
+
+            for (int m = 0; m < values.length; ++m)
+            {
+               if (!factNames.get(m).equals(factName))
+               {
+                  factName = factNames.get(m);
+
+                  System.out.println("New fact condition: " + factName);
+                  
+                  factConditionJson = new JsonObject();
+
+                  factConditionsJson.add(factConditionJson);
+                  factConditionJson.addProperty("name", factName);
+                  
+                  propertyConditionsJson = new JsonArray();
+
+                  factConditionJson.add("propertyConditions", propertyConditionsJson);
+               }
+               
+               JsonObject propertyConditionJson = new JsonObject();
+
+               System.out.println("New property condition: " + propertyNames.get(m));
+
+               propertyConditionsJson.add(propertyConditionJson);
+               propertyConditionJson.addProperty("name", propertyNames.get(m));
+               propertyConditionJson.addProperty("value", values[m]);
+            }
+         }
+
+         System.out.println("Return Value: " + rulesJson.toString());
+         
+         return Response.ok(rulesJson.toString(), APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         
+         return Response.serverError().build();
       }
    }
 
