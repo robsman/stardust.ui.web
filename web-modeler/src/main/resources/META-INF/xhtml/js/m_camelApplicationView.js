@@ -326,17 +326,20 @@ define(
 					this.initializeModelElement(application);
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
-						m_utils.debug("===> Initializing");
-
 						// Do some initialization against the server
 						this.activate();
 						this.setOverlay("genericEndpoint");
 					} else {
-						m_utils
-								.debug("===> Has endpoint "
-										+ this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
 						this
 								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
+					}
+
+					if (this.application.attributes["carnot:engine:camel::producerMethodName"]
+							&& this.application.attributes["carnot:engine:camel::producerMethodName"]
+									.indexOf("sendBodyInOut") == 0) {
+						this.directionInput.val("requestResponse");
+					} else {
+						this.directionInput.val("requestOnly");
 					}
 				};
 
