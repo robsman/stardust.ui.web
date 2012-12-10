@@ -860,41 +860,82 @@ public class ModelerResource
          reader.readLine(); // Content-Disposition: ...
          reader.readLine(); // Content-Type: ...
 
-         String factsLine = reader.readLine();
+         String sectionsLine = reader.readLine();
 
-         while ((factsLine = reader.readLine()) != null)
+         while ((sectionsLine = reader.readLine()) != null)
          {
-            if (factsLine.trim().length() != 0)
+            if (sectionsLine.trim().length() != 0)
             {
                break;
             }
          }
 
+         String factsLine = reader.readLine();
          String propertiesLine = reader.readLine();
 
+         System.out.println("Sections Line" + sectionsLine);
          System.out.println("Facts Line" + factsLine);
          System.out.println("Properties Line" + propertiesLine);
 
+         String[] sections = sectionsLine.split(";");
          String[] facts = factsLine.split(";");
          String[] properties = propertiesLine.split(";");
+         List<String> sectionNames = new ArrayList<String>();
          List<String> factNames = new ArrayList<String>();
          List<String> propertyNames = new ArrayList<String>();
+         String currentSectionName = null;
          String currentFactName = null;
+         JsonObject returnJson = new JsonObject();
+         JsonArray masterFactConditions = new JsonArray();
+         
+         returnJson.add("masterFactConditions", masterFactConditions);
+         
+         JsonArray masterFactActions = new JsonArray();
+
+         returnJson.add("masterFactActions", masterFactActions);
+         
+         JsonObject masterFactCondition = null;
+         JsonObject masterFactAction = null;         
 
          for (int n = 0; n < properties.length; ++n)
          {
             System.out.println("Property: " + properties[n]);
 
+            if (n < sections.length && sections[n] != null && !sections[n].isEmpty())
+            {
+               currentSectionName = sections[n];
+            }
+
+            sectionNames.add(currentSectionName);
+
             if (n < facts.length && facts[n] != null && !facts[n].isEmpty())
             {
                currentFactName = facts[n];
+               
+               if (currentSectionName.toLowerCase().startsWith("condition"))
+               {
+                  masterFactCondition = new JsonObject();
+                  
+                  masterFactConditions.add(masterFactCondition);
+                  masterFactCondition.addProperty("name", currentFactName);
+               }
+               else
+               {
+                  masterFactAction = new JsonObject();
+                  
+                  masterFactActions.add(masterFactAction);
+                  masterFactAction.addProperty("name", currentFactName);                  
+               }
             }
 
             factNames.add(currentFactName);
             propertyNames.add(properties[n]);
          }
-
+         
          JsonArray rulesJson = new JsonArray();
+         
+         returnJson.add("rules", rulesJson);
+
          String ruleLine = null;
 
          while ((ruleLine = reader.readLine()) != null)
@@ -952,9 +993,9 @@ public class ModelerResource
             }
          }
 
-         System.out.println("Return Value: " + rulesJson.toString());
+         System.out.println("Return Value: " + returnJson.toString());
          
-         return Response.ok(rulesJson.toString(), APPLICATION_JSON_TYPE)
+         return Response.ok(returnJson.toString(), APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
