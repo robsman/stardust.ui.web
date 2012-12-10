@@ -68,13 +68,17 @@ define(
 							.append("<optgroup label=\""+modelname+"\">");
 
 					for ( var i in this.getModel().participants) {
-						this.participantList
-								.append("<option value='"
-										+ this.getModel().participants[i]
-												.getFullId()
-										+ "'>"
-										+ this.getModel().participants[i].name
-										+ "</option>");
+						// Show only participants from this model and not
+						// external references.
+						if (!this.getModel().participants[i].externalReference) {
+							this.participantList
+							.append("<option value='"
+									+ this.getModel().participants[i]
+											.getFullId()
+									+ "'>"
+									+ this.getModel().participants[i].name
+									+ "</option>");
+						}
 					}
 					var othermodel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.participantList
