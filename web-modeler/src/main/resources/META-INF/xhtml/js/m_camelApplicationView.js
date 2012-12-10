@@ -211,14 +211,43 @@ define(
 													.submitChanges({
 														attributes : {
 															"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
+														},
+														contexts : {
+															application : {
+																accessPoints : [
+																		{
+																			id : "oParam1",
+																			name : "Input",
+																			direction : "IN",
+																			dataType : "primitive",
+																			primitiveDataType : "string"
+																		},
+																		{
+																			id : "returnValue",
+																			name : "Output",
+																			direction : "OUT",
+																			dataType : "primitive",
+																			primitiveDataType : "string"
+																		} ]
+															}
 														}
 													});
 										} else {
-											// TODO What do we have to set here?
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:camel::producerMethodName" : ""
+														},
+														contexts : {
+															application : {
+																accessPoints : [ {
+																	id : "oParam1",
+																	name : "Input",
+																	direction : "IN",
+																	dataType : "primitive",
+																	primitiveDataType : "string"
+																} ]
+															}
 														}
 													});
 										}
@@ -248,8 +277,26 @@ define(
 					this
 							.submitChanges({
 								attributes : {
-									"carnot:engine:camel::camelContextId" : "Default",
+									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpoint",
+									"carnot:engine:camel::camelContextId" : "camelContext",
 									"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
+								},
+								contexts : {
+									application : {
+										accessPoints : [ {
+											id : "oParam1",
+											name : "Input",
+											direction : "IN",
+											dataType : "primitive",
+											primitiveDataType : "string"
+										}, {
+											id : "returnValue",
+											name : "Output",
+											direction : "OUT",
+											dataType : "primitive",
+											primitiveDataType : "string"
+										} ]
+									}
 								}
 							});
 				};
@@ -258,24 +305,12 @@ define(
 				 * Overlay protocol
 				 */
 				CamelApplicationView.prototype.update = function() {
-
-					if (this.application.attributes["carnot:engine:camel::camelContextId"] == null) {
-						this
-								.submitChanges({
-									attributes : {
-										"carnot:engine:camel::camelContextId" : "Default",
-										"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-									}
-								});
-					} else {
-						this.camelContextInput
-								.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
-
-						this.routeTextarea
-								.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
-						this.additionalBeanSpecificationTextarea
-								.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
-					}
+					this.camelContextInput
+							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
+					this.routeTextarea
+							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
+					this.additionalBeanSpecificationTextarea
+							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
 				};
 
 				/**
@@ -291,8 +326,15 @@ define(
 					this.initializeModelElement(application);
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
+						m_utils.debug("===> Initializing");
+
+						// Do some initialization against the server
+						this.activate();
 						this.setOverlay("genericEndpoint");
 					} else {
+						m_utils
+								.debug("===> Has endpoint "
+										+ this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
 						this
 								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
 					}
