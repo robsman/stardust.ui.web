@@ -59,6 +59,7 @@ import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
@@ -314,6 +315,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      .getLiteral());
                formalParameterJson.addProperty(
                      ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+            }
+            FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
+            if (mappingsType != null)
+            {
+               DataType data = mappingsType.getMappedData(formalParameter);
+               String fullID = getModelBuilderFacade().createFullId(model, data);
+               formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                     fullID);
             }
          }
       }

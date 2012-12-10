@@ -34,6 +34,25 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.xsd.XSDComplexTypeContent;
+import org.eclipse.xsd.XSDComplexTypeDefinition;
+import org.eclipse.xsd.XSDCompositor;
+import org.eclipse.xsd.XSDConstrainingFacet;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDFactory;
+import org.eclipse.xsd.XSDImport;
+import org.eclipse.xsd.XSDModelGroup;
+import org.eclipse.xsd.XSDParticle;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDSimpleTypeDefinition;
+import org.eclipse.xsd.XSDTerm;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.xsd.impl.XSDSchemaImpl;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -104,24 +123,6 @@ import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.xsd.XSDComplexTypeContent;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDCompositor;
-import org.eclipse.xsd.XSDConstrainingFacet;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDFactory;
-import org.eclipse.xsd.XSDImport;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDParticle;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-import org.eclipse.xsd.XSDTerm;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.eclipse.xsd.impl.XSDSchemaImpl;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -776,7 +777,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else
                {
-                  newId = NameIdUtils.createIdFromName(newName);                  
+                  newId = NameIdUtils.createIdFromName(newName);
                }
             }
          }
@@ -838,14 +839,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             DataType data = null;
+            String dataFullID = null;
 
             if (formalParameterJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
                   && !formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
                         .isJsonNull())
             {
-               data = getModelBuilderFacade().findData(
-                     formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                           .getAsString());
+               dataFullID = formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+               .getAsString();
+               ModelType model = ModelUtils.findContainingModel(processDefinition);
+               data = getModelBuilderFacade().importData(model, dataFullID);
             }
 
             if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
