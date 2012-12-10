@@ -76,7 +76,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -91,7 +91,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -377,9 +377,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -404,7 +404,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -422,12 +422,37 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.SWIMLANE_SYMBOL);
-      laneSymbolJson.addProperty(
-            ModelerConstants.PARTICIPANT_FULL_ID,
-            getModelBuilderFacade().createFullId(
-                  ModelUtils.findContainingModel(LaneParticipantUtil.getParticipant(laneSymbol)),
-                  LaneParticipantUtil.getParticipant(laneSymbol)));
-      loadAttributes(laneSymbol, laneSymbolJson);
+
+      if (null != LaneParticipantUtil.getParticipant(laneSymbol))
+      {
+         String roleUri = AttributeUtil.getAttributeValue(
+               (IExtensibleElement) LaneParticipantUtil.getParticipant(laneSymbol),
+               IConnectionManager.URI_ATTRIBUTE_NAME);
+
+         if ( !StringUtils.isEmpty(roleUri))
+         {
+            ModelType model = ModelUtils.findContainingModel(laneSymbol);
+            URI createURI = URI.createURI(roleUri);
+            String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+                  + createURI.authority() + "/"; //$NON-NLS-1$
+            ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            if (referencedModel != null)
+            {
+               String roleId = getModelBuilderFacade().createFullId(referencedModel,
+                     LaneParticipantUtil.getParticipant(laneSymbol));
+               laneSymbolJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
+            }
+         }
+         else
+         {
+            laneSymbolJson.addProperty(
+                  ModelerConstants.PARTICIPANT_FULL_ID,
+                  getModelBuilderFacade().createFullId(
+                        ModelUtils.findContainingModel(LaneParticipantUtil.getParticipant(laneSymbol)),
+                        LaneParticipantUtil.getParticipant(laneSymbol)));
+            loadAttributes(laneSymbol, laneSymbolJson);
+         }
+      }
 
       return laneSymbolJson;
    }
@@ -503,32 +528,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          for (LaneSymbol laneSymbol : poolSymbol.getChildLanes())
          {
-            JsonObject laneSymbolJson = new JsonObject();
+            JsonObject laneSymbolJson = toLaneTypeJson(laneSymbol);
             laneSymbols.add(laneSymbolJson);
-
-            laneSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
-                  laneSymbol.getElementOid());
-            laneSymbolJson.addProperty(ModelerConstants.ID_PROPERTY, laneSymbol.getId());
-            laneSymbolJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                  laneSymbol.getName());
-            laneSymbolJson.addProperty(ModelerConstants.X_PROPERTY, laneSymbol.getXPos());
-            laneSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, laneSymbol.getYPos());
-            laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-                  laneSymbol.getWidth());
-            laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-                  laneSymbol.getHeight());
-            loadAttributes(laneSymbol, laneSymbolJson);
-
-            if (LaneParticipantUtil.getParticipant(laneSymbol) != null)
-            {
-               // TODO Scope handling
-
-               laneSymbolJson.addProperty(
-                     ModelerConstants.PARTICIPANT_FULL_ID,
-                     getModelBuilderFacade().createFullId(
-                           ModelUtils.findContainingModel(processDefinition),
-                           LaneParticipantUtil.getParticipant(laneSymbol)));
-            }
 
             JsonObject activitySymbolsJson = new JsonObject();
             JsonObject gatewaySymbolsJson = new JsonObject();
@@ -643,7 +644,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -822,7 +823,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -910,7 +911,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -969,7 +970,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1020,7 +1021,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -1046,12 +1047,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadAttributes(event, eventJson);
 
       // Load BPMN attributes
-      
+
       Object attribute = getModelBuilderFacade().getAttribute(event,
             "eventClass");
 
       // TODO We need a better convenience function to access attributes
-      
+
       if (attribute != null)
       {
          eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY, getModelBuilderFacade().getAttributeValue(attribute));
@@ -1119,7 +1120,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1129,14 +1130,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (null != data)
       {
-         dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());         
+         dataJson.addProperty(ModelerConstants.ID_PROPERTY, data.getId());
          dataJson.addProperty(ModelerConstants.TYPE_PROPERTY, "data");
          dataJson.addProperty(ModelerConstants.NAME_PROPERTY, data.getName());
          dataJson.addProperty(ModelerConstants.UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(data));
          dataJson.addProperty(ModelerConstants.OID_PROPERTY, data.getElementOid());
          ModelType model = ModelUtils.findContainingModel(data);
-         
+
          dataJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
                eObjectUUIDMapper().getUUID(model));
          setContainingModelIdProperty(dataJson, data);
@@ -1146,25 +1147,25 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
                this.getModelBuilderFacade().isExternalReference(data));
-         
+
          String dataUri = AttributeUtil.getAttributeValue(
                (IExtensibleElement) data,
                IConnectionManager.URI_ATTRIBUTE_NAME);
-         
+
          if (!StringUtils.isEmpty(dataUri))
          {
             URI createURI = URI.createURI(dataUri);
             String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-               + createURI.authority() + "/"; //$NON-NLS-1$         
+               + createURI.authority() + "/"; //$NON-NLS-1$
             ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
-            
+
             if(referencedModel != null)
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
-               dataJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);         
-            }         
+               dataJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);
+            }
          }
-         
+
          if (null != data.getType()
                && data.getType()
                      .getId()
@@ -1176,7 +1177,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   IConnectionManager.URI_ATTRIBUTE_NAME);
             if (null != model)
             {
-               IConnectionManager manager = model.getConnectionManager();                           
+               IConnectionManager manager = model.getConnectionManager();
                if (manager != null & uri != null)
                {
                   EObject eObject = manager.find(uri);
@@ -1274,7 +1275,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1329,7 +1330,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toRoleJson(RoleType role)
    {
       JsonObject roleJson = new JsonObject();
-      roleJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());      
+      roleJson.addProperty(ModelerConstants.ID_PROPERTY, role.getId());
       roleJson.addProperty(ModelerConstants.NAME_PROPERTY, role.getName());
       roleJson.addProperty(ModelerConstants.OID_PROPERTY, role.getElementOid());
       roleJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -1381,21 +1382,21 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       String roleUri = AttributeUtil.getAttributeValue(
             (IExtensibleElement) role,
             IConnectionManager.URI_ATTRIBUTE_NAME);
-      
+
       if (!StringUtils.isEmpty(roleUri))
       {
          URI createURI = URI.createURI(roleUri);
          String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-            + createURI.authority() + "/"; //$NON-NLS-1$         
+            + createURI.authority() + "/"; //$NON-NLS-1$
          ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
          if(referencedModel != null)
          {
             String roleId = getModelBuilderFacade().createFullId(referencedModel, role);
             roleJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
-         }         
+         }
       }
-      
-      
+
+
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
 
@@ -1650,7 +1651,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1701,7 +1702,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1818,7 +1819,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -1960,7 +1961,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2176,10 +2177,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    * 
+    *
     * Returns the organisation for which the role is a team leader, null otherwise returns
     * null if role is not a team leader in the first place
-    * 
+    *
     * @param participant
     * @return
     */
@@ -2355,7 +2356,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2386,7 +2387,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2406,7 +2407,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2495,9 +2496,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
