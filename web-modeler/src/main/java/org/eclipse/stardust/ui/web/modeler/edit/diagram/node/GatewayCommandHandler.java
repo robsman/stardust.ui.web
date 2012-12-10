@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -58,10 +59,16 @@ public class GatewayCommandHandler
 
          // encode Gateway as Route Activity (default configuration)
          String name = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
+         if(StringUtils.isEmpty(name))
+         {
+            name = "gateway"; //$NON-NLS-1$
+         }
+         
          ActivityType gateway = newRouteActivity(processDefinition) //
                .withIdAndName(null, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
          gateway.setElementOid(++maxOid);
+         gateway.setName(""); //$NON-NLS-1$
          
          // add gateway to model
          processDefinition.getActivity().add(gateway);
