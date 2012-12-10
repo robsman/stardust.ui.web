@@ -1972,7 +1972,17 @@ define(
 							m_messageDisplay
 									.showErrorMessage("Data symbols can connect to activity only.");
 							return false;
-						} else if (!fromAnchorPoint.symbol
+						} else if (null != toAnchorPoint
+								&& (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL)) {
+							if (!toAnchorPoint.symbol
+									.validateCreateConnection(this)) {
+								m_messageDisplay
+										.showErrorMessage("Data element is already associated with this Activity");
+								return false;
+							}
+						}
+
+						if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
 							m_messageDisplay
 									.showErrorMessage("No further IN Connection allowed with this activity.");
@@ -1990,6 +2000,14 @@ define(
 										.showErrorMessage("No further outgoing connection allowed from this activity.");
 								return false;
 							}
+
+							if (!fromAnchorPoint.symbol
+									.validateCreateConnection(this)) {
+								m_messageDisplay
+										.showErrorMessage("Data element is already associated with this Activity");
+								return false;
+							}
+
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {
 							m_messageDisplay

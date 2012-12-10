@@ -630,13 +630,21 @@ define(
 						conn) {
 					var outMappingActivity = new Array();
 					var inMappingActivity = new Array();
+					var dataMapping = {};
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
 						if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL
 								&& connection.fromAnchorPoint.symbol.oid == this.oid) {
 							if ((null != connection.toAnchorPoint && null != connection.toAnchorPoint.symbol)
 									&& connection.toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								// do nothing
+								// verify duplicate Data mapping
+								if (connection.toAnchorPoint.symbol.dataId in dataMapping) {
+									if (dataMapping[conn.toAnchorPoint.symbol.dataId] != connection.toAnchorPoint.symbol.oid) {
+										return false;
+									}
+								} else {
+									dataMapping[connection.toAnchorPoint.symbol.dataId] = connection.toAnchorPoint.symbol.oid;
+								}
 							} else {
 								if (-1 != jQuery.inArray(
 										connection.fromAnchorPoint.symbol.oid,
@@ -651,7 +659,14 @@ define(
 							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 								// do nothing
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
-								// do nothing
+								// verify duplicate Data mapping
+								if (connection.fromAnchorPoint.symbol.dataId in dataMapping) {
+									if (dataMapping[connection.fromAnchorPoint.symbol.dataId] != connection.fromAnchorPoint.symbol.oid) {
+										return false;
+									}
+								} else {
+									dataMapping[connection.fromAnchorPoint.symbol.dataId] = connection.fromAnchorPoint.symbol.oid;
+								}
 							} else if (connection.toAnchorPoint.symbol.oid == this.oid) {
 								if (-1 != jQuery.inArray(
 										connection.toAnchorPoint.symbol.oid,
