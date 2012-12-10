@@ -56,12 +56,6 @@ define(
 					return getLastIndexOf(str, searchStr);
 				},
 
-				// Deprecated: All ID generation is now
-				// handled on server side.
-				generateIDFromName : function(name) {
-					return name.replace(/ /g, '_');
-				},
-
 				prettyDateTime : prettyDateTime,
 
 				formatDate : formatDate,
