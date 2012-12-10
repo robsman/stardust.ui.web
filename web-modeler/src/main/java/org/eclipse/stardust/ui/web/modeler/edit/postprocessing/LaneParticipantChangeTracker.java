@@ -39,8 +39,9 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
       modification = change;
       for (EObject candidate : change.getModifiedElements())
       {
-         if ((candidate instanceof LaneSymbol)
-               && change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_Participant()))
+         if (candidate instanceof LaneSymbol               
+               && (change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_Participant())
+               || change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_ParticipantReference())))
          {
             LaneSymbol lane = (LaneSymbol) candidate;
             IModelParticipant participant = LaneParticipantUtil.getParticipant(lane);
