@@ -1582,6 +1582,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   }
                }
 
+               storeAttributes(accessPoint, accessPointJson);
                storeDescription(accessPoint, accessPointJson);
             }
          }

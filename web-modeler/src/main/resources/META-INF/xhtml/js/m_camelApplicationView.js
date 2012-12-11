@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -92,7 +92,7 @@ define(
 						+ selectdata + "</option>");
 			}
 			/**
-			 * 
+			 *
 			 */
 			function CamelApplicationView() {
 				var modelElementView = m_modelElementView.create();
@@ -102,7 +102,7 @@ define(
 						modelElementView);
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
@@ -227,7 +227,10 @@ define(
 																			name : "Output",
 																			direction : "OUT",
 																			dataType : "primitive",
-																			primitiveDataType : "string"
+																			primitiveDataType : "string",
+																			attributes: {
+																				"carnot:engine:flavor": "RETURN_VALUE"
+																			}
 																		} ]
 															}
 														}
@@ -257,7 +260,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.setOverlay = function(overlay) {
 					this.endpointTypeSelectInput.val(overlay);
@@ -294,7 +297,10 @@ define(
 											name : "Output",
 											direction : "OUT",
 											dataType : "primitive",
-											primitiveDataType : "string"
+											primitiveDataType : "string",
+											attributes: {
+												"carnot:engine:flavor": "RETURN_VALUE"
+											}
 										} ]
 									}
 								}
@@ -314,7 +320,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.setModelElement = function(
 						application) {
@@ -344,14 +350,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.toString = function() {
 					return "Lightdust.CamelApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
