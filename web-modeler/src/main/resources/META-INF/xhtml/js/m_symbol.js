@@ -1247,6 +1247,8 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStart = function() {
+
+					this.diagram.resetEditableText();
 					// TODO hide for all selected
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
 						this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
@@ -1421,9 +1423,9 @@ define(
 										.hideFlyOutMenu();
 							}
 						}
-						
+
 						// TODO Experimental
-						
+
 						if (true/*!this.selected*/) {
 							this.showFlyOutMenu();
 						}
@@ -1644,9 +1646,7 @@ define(
 				Symbol.prototype.click = function(x, y) {
 					// When symbol is Draged, the edit symbol operation should
 					// reset
-					if (this.diagram.symbolEditMode) {
-						this.diagram.editableText.resetForm();
-					}
+					this.diagram.resetEditableText();
 					if (!this.isCompleted()) {
 						// returns 'true' if symbol was placed at new loc. else
 						// false

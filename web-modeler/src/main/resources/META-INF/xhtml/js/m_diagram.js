@@ -1971,6 +1971,14 @@ define(
 					m_utils.debug("text primitive hidden");
 				};
 
+				Diagram.prototype.resetEditableText = function() {
+					m_utils.debug("resetting editable text");
+					if (this.symbolEditMode) {
+						this.editableText.resetForm();
+						this.editableTextArea.resetForm();
+					}
+				};
+
 				/**
 				 *
 				 */
