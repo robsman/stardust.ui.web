@@ -140,6 +140,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
   
    private boolean preSearch;
    private String columnPrefKey = UserPreferencesEntries.V_PROCESS_SEARCH;
+   private ProcessDefinition caseProcessDefinition;
 
    static
    {
@@ -440,6 +441,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       }
       // Will reset the hierarchy filter on change from Activity to Process
       setHierarchyValue(HIERARCHY_PROCESS);
+      filterProcessDefinitionList();
       // This is just to remove/add case related descriptors
       // TODO: Review following code - separate filter can be used show/hide case
       // descriptors
@@ -644,9 +646,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    private void evaluateProcesses()
    {
-      processes = new ArrayList<SelectItem>();
       List<ProcessDefinition> processDefinitionsList;
-      processDefinitions = new HashMap<String, ProcessDefinition>();
 
       if (isAuxiliaryProcessesSwitchOn())
       {
@@ -656,7 +656,23 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       {
          processDefinitionsList = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
       }
+      if (selectedHierarchy.equals(HIERARCHY_PROCESS)
+            || selectedHierarchy.equals(HIERARCHY_ROOT_PROCESS))
+      {
+         processDefinitionsList.remove(caseProcessDefinition);
+      }
+      populateProcesses(processDefinitionsList);
+   }
 
+   /**
+    * Populates the PD's List and creates processes Select List
+    * 
+    * @param processDefinitionsList
+    */
+   private void populateProcesses(List<ProcessDefinition> processDefinitionsList)
+   {
+      processes = new ArrayList<SelectItem>();
+      processDefinitions = new HashMap<String, ProcessDefinition>();
       for (ProcessDefinition pd : processDefinitionsList)
       {
          processDefinitions.put(pd.getQualifiedId(), pd);
@@ -664,20 +680,52 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       }
       // sort process in ascending order
       Collections.sort(processes, IceComponentUtil.SELECT_ITEM_ORDER);
-      processes.add(0, new SelectItem("ALL", Localizer.getString(BusinessControlCenterLocalizerKey.ALL_PROCESSES)));
+      processes.add(
+            0,
+            new SelectItem("ALL",
+                  Localizer.getString(BusinessControlCenterLocalizerKey.ALL_PROCESSES)));
 
       // set to 'All Processes'
       selectedProcesses = new String[1];
       selectedProcesses[0] = "ALL";
    }
-
+   
+   /**
+    * 
+    */
+   private void filterProcessDefinitionList()
+   {
+      if (selectedHierarchy.equals(HIERARCHY_PROCESS)
+            || selectedHierarchy.equals(HIERARCHY_ROOT_PROCESS))
+      {
+         // If ProcessDefinition list contains Case PD, remove the case PD and filter
+         // Processes select box.
+         if (processDefinitions.containsKey(caseProcessDefinition.getQualifiedId()))
+         {
+            processDefinitions.remove(caseProcessDefinition.getQualifiedId());
+            populateProcesses(CollectionUtils.newListFromElements(processDefinitions.values()));
+         }
+      }
+      else if (selectedHierarchy.equals(HIERARCHY_CASE)
+            || selectedHierarchy.equals(HIERARCHY_PROCESS_AND_CASE))
+      {
+         // If ProcessDefinition list does not contain Case PD, add the case PD and
+         // filter Processes select box.
+         if ( !processDefinitions.containsKey(caseProcessDefinition.getQualifiedId()))
+         {
+            processDefinitions.put(caseProcessDefinition.getQualifiedId(),
+                  caseProcessDefinition);
+            populateProcesses(CollectionUtils.newListFromElements(processDefinitions.values()));
+         }
+      }
+   }
+   
    /**
     * @return selected process definitions
     */
    private List<ProcessDefinition> getSelectedProcessDefs()
    {
       List<ProcessDefinition> selectedProcessDefs = new ArrayList<ProcessDefinition>();
-
       for (int i = 0; i < selectedProcesses.length; i++)
       {
          if (selectedProcesses[i].equals("ALL")) // all processes selected
@@ -789,9 +837,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private void refreshDescriptorTable(List<ProcessDefinition> selectedProcessDefs)
    {
       descriptorItems.clear();
+      boolean removedCaseProcess = false;
       if (CollectionUtils.isNotEmpty(selectedProcessDefs))
       {
-         commonDescriptors = CommonDescriptorUtils.getCommonDescriptors(selectedProcessDefs, true);
+         List<ProcessDefinition> selProcessDefs = new ArrayList<ProcessDefinition>();
+         selProcessDefs.addAll(selectedProcessDefs);
+         removedCaseProcess = selProcessDefs.remove(caseProcessDefinition);
+         commonDescriptors = CommonDescriptorUtils.getCommonDescriptors(selProcessDefs, true);
+            
          GenericDataMapping mapping;
          DataMappingWrapper dmWrapper;
          boolean includeCaseDescriptor = false;
@@ -808,10 +861,10 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             dmWrapper.setDefaultValue(null);
          }
 
-         // If selected Process doesn't contain Case Process, and Hierarchy is Case
-         // RootPI add Case descriptors to filter criteria
-         if (!includeCaseDescriptor
-               & (SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()))
+         // Add case descriptor to filter criteria if 'ALL Processes' search is set or
+         // Hierarchy is Case RootPI add Case descriptors
+         if ( !includeCaseDescriptor
+               & ((SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()) || removedCaseProcess))
          {
             descriptorItems.addAll(caseDescriptorItems);
          }
@@ -889,6 +942,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       {
          String selectedOption = event.getNewValue().toString();
          setHierarchyValue(selectedOption);
+         filterProcessDefinitionList();
          // TODO: Review following code - separate filter can be used show/hide case
          // descriptors
          refreshDescriptorTable(getSelectedProcessDefs());
@@ -967,7 +1021,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       ownerSelector = new UserAutocompleteMultiSelector(false, true);
       ownerSelector.setShowOnlineIndicator(false);
       ownerSelector.setDisabled(true);
-      
+
       // Case
       hierarchyTypes = new ArrayList<SelectItem>();
       hierarchyTypes.add(new SelectItem(HIERARCHY_PROCESS, this.getMessages().getString(
@@ -981,6 +1035,9 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
 
       selectedHierarchy = HIERARCHY_PROCESS;
       setHierarchyValue(selectedHierarchy);
+      
+      // Stored the Case PD to filter the ProcessDefinitions on Hierarchy change
+      caseProcessDefinition = ProcessDefinitionUtils.getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
       
       // Priority
       priorityList = new ArrayList<SelectItem>();

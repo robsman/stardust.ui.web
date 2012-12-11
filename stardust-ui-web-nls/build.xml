@@ -49,6 +49,9 @@
       <ant target="copy-nls-resources" dir="${project.dir}/../views-common" inheritall="false">
          <property name="build.nls.dir" value="${build.nls.dir}" />
       </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../web-modeler" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
    </target>
 
 </project>

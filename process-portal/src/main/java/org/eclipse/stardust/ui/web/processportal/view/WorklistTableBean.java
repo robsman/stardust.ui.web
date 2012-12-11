@@ -372,10 +372,13 @@ public class WorklistTableBean extends UIComponentBean
          
          if (!filtersAddedToQuery)
          {
-            ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
             if (SpecialWorklistCacheManager.isSpecialWorklist(worklistId))
             {
                SpecialWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+            }
+            else
+            {
+               ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
             }
          }
       }
