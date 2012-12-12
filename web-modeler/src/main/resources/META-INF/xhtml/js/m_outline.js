@@ -2405,8 +2405,6 @@ define(
 							if (m_constants.MODEL == obj.changes.modified[i].type) {
 								var modelElement = m_model
 										.findModelByUuid(obj.changes.modified[i].uuid);
-								modelElement.fileName = obj.changes.modified[i].fileName;
-								modelElement.filePath = obj.changes.modified[i].filePath;
 							} else {
 								var modelElement = m_model
 										.findElementInModelByUuid(
@@ -2595,7 +2593,7 @@ define(
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
-
+					m_utils.inheritFields(model, data);
 					jQuery("#outline").jstree("create", "#outline", "last", {
 						"attr" : {
 							"elementId" : data.id,

@@ -110,6 +110,7 @@ public class ModelChangeCommandHandler
       modelService().getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
+      modelService().getModelManagementStrategy().saveModel(model);
 
       JsonArray added = new JsonArray();
       JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(model);
