@@ -92,6 +92,7 @@ define(
 				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
 				this.importButton = jQuery("#importButton");
 				this.cancelButton = jQuery("#cancelButton");
+				this.closeButton = jQuery("#dialogCloseIcon");
 
 				var view = this;
 				this.loadFromUrlButton.click(function(event) {
@@ -104,6 +105,10 @@ define(
 				});
 
 				this.cancelButton.click(function(event) {
+					closePopup();
+				});
+
+				this.closeButton.click(function(event) {
 					closePopup();
 				});
 
