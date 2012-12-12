@@ -465,9 +465,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
 
+         String expressionValue = controlFlowJson.get(ModelerConstants.CONDITION_EXPRESSION_PROPERTY).getAsString();
+         if(StringUtils.isEmpty(expressionValue))
+         {
+            expressionValue = "true";
+         }
+         
          ModelUtils.setCDataString(expression.getMixed(),
-               controlFlowJson.get(ModelerConstants.CONDITION_EXPRESSION_PROPERTY)
-                     .getAsString(), true);
+               expressionValue, true);
          transition.setExpression(expression);
       }
 
