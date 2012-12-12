@@ -52,6 +52,8 @@ public class ProcessChangeCommandHandler
    public void createProcess(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String defaultLaneName = extractString(request, "defaultLaneName");
+      String defaultPoolName = extractString(request, "defaultPoolName");
       ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(null, name).build();
       //Added process definition to UUID map.
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -76,7 +78,7 @@ public class ProcessChangeCommandHandler
       poolSymbol.setYPos(0);
       poolSymbol.setWidth(500);
       poolSymbol.setHeight(600);
-      poolSymbol.setName(DefaultNames.getString("views.diagram.defaultPool"));
+      poolSymbol.setName(defaultPoolName);
       poolSymbol.setId("_default_pool__1");
       poolSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 
@@ -87,7 +89,7 @@ public class ProcessChangeCommandHandler
 
       laneSymbol.setElementOid(++maxOid);
       laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
-      laneSymbol.setName(DefaultNames.getString("views.diagram.defaultLane"));
+      laneSymbol.setName(defaultLaneName);
 
       // Setting the x,y for default swimlane
       //TODO - Move this code to javascript
