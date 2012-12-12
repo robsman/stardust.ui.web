@@ -264,6 +264,12 @@ define(
 				this.canvas = jQuery('#' + this.divId);
 				this.scrollPane = jQuery("#scrollpane");
 
+				this.scrollPane.scroll({
+					"diagram" : this
+				}, function(event) {
+					event.data.diagram.resetEditableText();
+				});
+
 				// Define event handling for DOM elements
 
 				this.canvas.mousedown({
@@ -1826,7 +1832,9 @@ define(
 				 *
 				 */
 				Diagram.prototype.addToCurrentSelection = function(drawable) {
-					this.currentSelection.push(drawable);
+					if(-1 == this.currentSelection.indexOf(drawable)){
+						this.currentSelection.push(drawable);
+					}
 				};
 
 				/**
@@ -1972,8 +1980,8 @@ define(
 				};
 
 				Diagram.prototype.resetEditableText = function() {
-					m_utils.debug("resetting editable text");
 					if (this.symbolEditMode) {
+						m_utils.debug("resetting editable text");
 						this.editableText.resetForm();
 						this.editableTextArea.resetForm();
 					}
