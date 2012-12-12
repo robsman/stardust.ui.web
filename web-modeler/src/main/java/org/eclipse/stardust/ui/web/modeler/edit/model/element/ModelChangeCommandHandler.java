@@ -31,7 +31,6 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
@@ -156,9 +155,7 @@ public class ModelChangeCommandHandler
          modelMgtStrategy.deleteModel(model);
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
-
-         String generatedID = NameIdUtils.createIdFromName(model.getName());
-         model.setId(generatedID);
+                  
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
