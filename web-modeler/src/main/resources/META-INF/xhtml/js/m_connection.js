@@ -1985,7 +1985,7 @@ define(
 						if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
 							m_messageDisplay
-									.showErrorMessage("No further IN Connection allowed with this activity.");
+									.showErrorMessage("No further connection allowed for this Data symbols.");
 							return false;
 						}
 					} else if (fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {

@@ -638,12 +638,13 @@ define(
 							if ((null != connection.toAnchorPoint && null != connection.toAnchorPoint.symbol)
 									&& connection.toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
-								if (connection.toAnchorPoint.symbol.dataId in dataMapping) {
-									if (dataMapping[conn.toAnchorPoint.symbol.dataId] != connection.toAnchorPoint.symbol.oid) {
+								if (connection.toAnchorPoint.symbol.modelElement
+										&& connection.toAnchorPoint.symbol.modelElement.id in dataMapping) {
+									if (dataMapping[conn.toAnchorPoint.symbol.modelElement.id] != connection.toAnchorPoint.symbol.oid) {
 										return false;
 									}
 								} else {
-									dataMapping[connection.toAnchorPoint.symbol.dataId] = connection.toAnchorPoint.symbol.oid;
+									dataMapping[connection.toAnchorPoint.symbol.modelElement.id] = connection.toAnchorPoint.symbol.oid;
 								}
 							} else {
 								if (-1 != jQuery.inArray(
@@ -660,12 +661,13 @@ define(
 								// do nothing
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
-								if (connection.fromAnchorPoint.symbol.dataId in dataMapping) {
-									if (dataMapping[connection.fromAnchorPoint.symbol.dataId] != connection.fromAnchorPoint.symbol.oid) {
+								if (connection.toAnchorPoint.symbol.modelElement
+										&& connection.fromAnchorPoint.symbol.modelElement.id in dataMapping) {
+									if (dataMapping[connection.fromAnchorPoint.symbol.modelElement.id] != connection.fromAnchorPoint.symbol.oid) {
 										return false;
 									}
 								} else {
-									dataMapping[connection.fromAnchorPoint.symbol.dataId] = connection.fromAnchorPoint.symbol.oid;
+									dataMapping[connection.fromAnchorPoint.symbol.modelElement.id] = connection.fromAnchorPoint.symbol.oid;
 								}
 							} else if (connection.toAnchorPoint.symbol.oid == this.oid) {
 								if (-1 != jQuery.inArray(
