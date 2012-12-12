@@ -336,15 +336,17 @@ public class MyPicturePreferenceBean
     */
    private boolean hasValidFileExtension(final String filePath, final ActionEvent event)
    {
-      String extn = filePath.substring(filePath.lastIndexOf("."));
-      for (String ex : VALID_IMAGE_FILE_EXTENSIONS)
+      if (null != filePath)
       {
-         if (ex.equalsIgnoreCase(extn))
+         String extn = filePath.substring(filePath.lastIndexOf("."));
+         for (String ex : VALID_IMAGE_FILE_EXTENSIONS)
          {
-            return true;
+            if (ex.equalsIgnoreCase(extn))
+            {
+               return true;
+            }
          }
       }
-
       /* If not a valid extension display an error message. */
       FacesMessage message = new FacesMessage();
       message.setSeverity(FacesMessage.SEVERITY_ERROR);
