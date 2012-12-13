@@ -333,11 +333,7 @@ define(
 						this.organization.attributes = {};
 					}
 
-					if (this.organization.teamLeadFullId != null) {
-						this.leaderSelect.val(this.organization.teamLeadFullId);
-					} else {
-						this.leaderSelect.val(m_constants.TO_BE_DEFINED);
-					}
+					this.setTeamLeader();
 
 					// Set default
 
@@ -465,6 +461,17 @@ define(
 				/**
 				 *
 				 */
+				OrganizationView.prototype.setTeamLeader = function() {
+					if (this.organization.teamLeadFullId != null) {
+						this.leaderSelect.val(this.organization.teamLeadFullId);
+					} else {
+						this.leaderSelect.val(m_constants.TO_BE_DEFINED);
+					}
+				}
+
+				/**
+				 *
+				 */
 				OrganizationView.prototype.toString = function() {
 					return "Lightdust.OrganizationView";
 				};
@@ -491,6 +498,15 @@ define(
 					}
 
 					return true;
+				};
+
+				/**
+				 * Overrides the postProcessCommand to update the role list,
+				 * in case it's changed.
+				 */
+				OrganizationView.prototype.postProcessCommand = function(command) {
+					this.populateLeaderSelectInput();
+					this.setTeamLeader();
 				};
 			}
 		});

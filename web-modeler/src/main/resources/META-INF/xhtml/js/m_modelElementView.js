@@ -108,7 +108,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ModelElementView() {
 				// Inheritance
@@ -119,7 +119,7 @@ define(
 				m_utils.inheritMethods(ModelElementView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.initializeModelElementView = function(
 						modelElement) {
@@ -165,7 +165,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.loadPropertiesPage = function(
 						modelElement, extensions, propertiesPagesExtensions, n) {
@@ -252,7 +252,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.initializeModelElement = function(
 						modelElement) {
@@ -283,14 +283,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.getModelElement = function() {
 					return this.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.getModel = function() {
 					return this.getModelElement().model;
@@ -305,7 +305,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -317,7 +317,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -331,7 +331,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.renameModelElement = function(name) {
 					this.submitChanges({
@@ -340,7 +340,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.submitChanges = function(changes) {
 					// Generic attributes
@@ -357,7 +357,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -382,7 +382,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -414,7 +414,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -446,7 +446,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.processCommand = function(command) {
 					m_utils.debug("===> Process Command for " + this.id);
@@ -473,6 +473,15 @@ define(
 							}
 						}
 					}
+
+					this.postProcessCommand();
+				};
+
+				/**
+				 * In case individual views want to do additional stuff
+				 * they can over ride this function.
+				 */
+				ModelElementView.prototype.postProcessCommand = function(command) {
 				};
 			}
 		});
