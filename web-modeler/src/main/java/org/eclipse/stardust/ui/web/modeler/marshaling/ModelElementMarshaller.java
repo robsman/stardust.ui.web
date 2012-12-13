@@ -441,10 +441,17 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          if ( !StringUtils.isEmpty(roleUri))
          {
             ModelType model = ModelUtils.findContainingModel(laneSymbol);
-            URI createURI = URI.createURI(roleUri);
-            String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-                  + createURI.authority() + "/"; //$NON-NLS-1$
-            ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            
+            ModelType referencedModel = null;
+            
+            if(model != null)
+            {
+               URI createURI = URI.createURI(roleUri);
+               String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+                     + createURI.authority() + "/"; //$NON-NLS-1$
+               referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            }
+            
             if (referencedModel != null)
             {
                String roleId = getModelBuilderFacade().createFullId(referencedModel,
@@ -1163,11 +1170,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (!StringUtils.isEmpty(dataUri))
          {
-            URI createURI = URI.createURI(dataUri);
-            String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-               + createURI.authority() + "/"; //$NON-NLS-1$
-            ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
-
+            ModelType referencedModel = null;
+            
+            if(model != null)
+            {
+               URI createURI = URI.createURI(dataUri);
+               String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+                  + createURI.authority() + "/"; //$NON-NLS-1$
+               referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            }
+            
             if(referencedModel != null)
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
@@ -1394,17 +1406,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (!StringUtils.isEmpty(roleUri))
       {
-         URI createURI = URI.createURI(roleUri);
-         String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-            + createURI.authority() + "/"; //$NON-NLS-1$
-         ModelType referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+         ModelType referencedModel = null;
+         
+         if(model != null)
+         {
+            URI createURI = URI.createURI(roleUri);
+            String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+               + createURI.authority() + "/"; //$NON-NLS-1$
+            referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+         }
+         
          if(referencedModel != null)
          {
             String roleId = getModelBuilderFacade().createFullId(referencedModel, role);
             roleJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
          }
       }
-
 
       loadDescription(roleJson, role);
       loadAttributes(role, roleJson);
