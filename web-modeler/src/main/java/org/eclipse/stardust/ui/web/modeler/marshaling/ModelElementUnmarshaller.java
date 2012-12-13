@@ -80,6 +80,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
@@ -113,6 +114,7 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
@@ -1397,6 +1399,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             getModelBuilderFacade().setAttribute(trigger,
                   PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, performer.getId());
+            AttributeType attribute = AttributeUtil.getAttribute(trigger, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT);
+            ModelUtils.setReference(attribute, ModelUtils.findContainingModel(trigger), "role+organization");
          }
 
       }

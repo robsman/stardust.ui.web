@@ -11,6 +11,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -18,6 +19,7 @@ import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
 @Component
@@ -39,7 +41,7 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
       modification = change;
       for (EObject candidate : change.getModifiedElements())
       {
-         if (candidate instanceof LaneSymbol               
+         if (candidate instanceof LaneSymbol
                && (change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_Participant())
                || change.wasModified(candidate, PKG_XPDL.getISwimlaneSymbol_ParticipantReference())))
          {
@@ -96,8 +98,10 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
       String newPerformerId = (null != newPerformer) ? newPerformer.getId() : null;
       if ( !CompareHelper.areEqual(newPerformerId, originalPerformerId))
       {
-         AttributeUtil.setAttribute(manualTrigger,
+         AttributeType attribute = AttributeUtil.setAttribute(manualTrigger,
                PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, newPerformerId);
+         ModelUtils.setReference(attribute,
+               ModelUtils.findContainingModel(manualTrigger), "role+organization");
          modification.markAlsoModified(manualTrigger);
       }
    }
