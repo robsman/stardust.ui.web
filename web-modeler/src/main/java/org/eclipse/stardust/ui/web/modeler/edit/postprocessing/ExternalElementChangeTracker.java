@@ -52,7 +52,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    {
       return 10;
    }
-   
+
    @Override
    public void inspectChange(Modification change)
    {
@@ -68,22 +68,22 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
 
    private void trackModification(EObject candidate, boolean removed, Modification change)
    {
-      ModelType model = ModelUtils.findContainingModel(candidate);      
+      ModelType model = ModelUtils.findContainingModel(candidate);
       if(removed)
       {
          if (candidate.eContainer() instanceof ChangeDescriptionImpl)
          {
             ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate.eContainer();
             EObject container = changeDescription.getOldContainer(candidate);
-            model = ModelUtils.findContainingModel(container);            
-         }         
+            model = ModelUtils.findContainingModel(container);
+         }
       }
-      
+
       if(model != null)
       {
          if(candidate instanceof DataType && !removed)
          {
-            String id = checkIsExternalReference(candidate);         
+            String id = checkIsExternalReference(candidate);
             if(!StringUtils.isEmpty(id))
             {
                UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
@@ -94,64 +94,65 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                   EList<INodeSymbol> symbols = ((DataType) candidate).getSymbols();
                   if(symbols.size() == 0)
                   {
-                     model.getData().remove(candidate);          
-                     change.markAlsoModified(candidate);                                       
-                  }                              
+                     model.getData().remove(candidate);
+                     change.markAlsoModified(candidate);
+                  }
                }
-            }         
+            }
          }
-         
-         UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();         
+
+         UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
          Map matchedElements = searcher.search(model);
          List<EObject> children = (List) matchedElements.get(model);
          if(children != null)
          {
             boolean modified = false;
-            
+
             for(EObject element : children)
             {
-               String id = checkIsExternalReference(element);         
+               String id = checkIsExternalReference(element);
                if(!StringUtils.isEmpty(id))
-               {      
+               {
                   if(element instanceof IIdentifiableModelElement)
                   {
                      if(((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
                         if(element instanceof RoleType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
-                           model.getRole().remove(element);                                  
+                           model.getRole().remove(element);
                            modified = true;
                         }
                         else if(element instanceof ConditionalPerformerType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
-                           model.getConditionalPerformer().remove(element);                                  
-                           modified = true;                           
+                           model.getConditionalPerformer().remove(element);
+                           modified = true;
                         }
                         else if(element instanceof OrganizationType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
-                           model.getOrganization().remove(element);                                  
-                           modified = true;                           
-                        } 
+                           model.getOrganization().remove(element);
+                           modified = true;
+                        }
                         else if(element instanceof DataType)
                         {
-                           model.getData().remove(element);                                  
-                           modified = true;                           
-                        } 
+                           //TODO:Investigate - related to delete problem for external Data
+                           //model.getData().remove(element);
+                           //modified = true;
+                        }
                         if(modified)
                         {
-                           change.markAlsoModified(element);                     
+                           change.markAlsoModified(element);
                         }
                      }
                   }
-               }            
+               }
             }
          }
-      }      
+      }
    }
-   
+
    public String checkIsExternalReference(EObject modelElement)
    {
-      String uri = null;      
+      String uri = null;
       if (modelElement instanceof Extensible)
       {
          uri = ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement, IConnectionManager.URI_ATTRIBUTE_NAME);
@@ -165,10 +166,10 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
          URI createURI = URI.createURI(uri);
          if (IConnectionManager.SCHEME.equals(createURI.scheme()))
          {
-            return createURI.authority();            
+            return createURI.authority();
          }
       }
 
-      return null;      
-   }   
+      return null;
+   }
 }
