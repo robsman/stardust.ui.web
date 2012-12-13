@@ -1192,7 +1192,7 @@ public class WorklistTableBean extends UIComponentBean
                      ? WorklistQuery.ACTIVITY_INSTANCE_OID
                      : ActivityInstanceQuery.OID, sortCriterion.isAscending());
             }
-            else if (Constants.COL_CRITICALITY.equals(sortCriterion.getProperty()))
+            else if ("criticality".equals(sortCriterion.getProperty()))
             {
                query.orderBy(worklistQuery
                      ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
