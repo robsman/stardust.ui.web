@@ -15,8 +15,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils" ],
-		function(m_utils) {
+		[ "jquery", "bpm-modeler/js/m_utils" ],
+		function(jQuery, m_utils) {
 			var cumulatedExtensions = {};
 
 			return {
@@ -142,7 +142,7 @@ define(
 
 					var extensionsForExtensionPoint = extensions[m];
 
-					if (!m_utils.isArray(extensionsForExtensionPoint)) {
+					if (!jQuery.isArray(extensionsForExtensionPoint)) {
 						extensionsForExtensionPoint = [ extensionsForExtensionPoint ];
 					}
 

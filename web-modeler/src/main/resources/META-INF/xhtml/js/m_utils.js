@@ -64,9 +64,7 @@ define(
 
 				xmlToString : xmlToString,
 
-				contentWrap : contentWrap,
-
-				isArray : isArray
+				contentWrap : contentWrap
 			};
 
 			function getLastIndexOf(str, searchStr) {
