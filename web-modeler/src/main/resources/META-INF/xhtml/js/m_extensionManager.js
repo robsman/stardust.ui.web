@@ -11,7 +11,7 @@
 
 /**
  * Extension Management
- * 
+ *
  * @author Marc.Gille
  */
 define(
@@ -78,7 +78,7 @@ define(
 				},
 
 				/**
-				 * 
+				 *
 				 * @param extensionPoint
 				 * @param property
 				 * @param value
@@ -103,7 +103,7 @@ define(
 				},
 
 				/**
-				 * 
+				 *
 				 * @param extensionPoint
 				 * @returns
 				 */
@@ -111,7 +111,7 @@ define(
 					m_utils.debug(extensionPoint);
 					m_utils.debug(getCumulatedExtensions());
 					m_utils.debug(getCumulatedExtensions()[extensionPoint]);
-					
+
 					if (getCumulatedExtensions()[extensionPoint].length >= 1) {
 						var extension = getCumulatedExtensions()[extensionPoint][0];
 						return new Extension(extension);
@@ -123,26 +123,26 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function getCumulatedExtensions() {
 				return cumulatedExtensions;
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function loadExtensions(extensions) {
 				for ( var m in extensions) {
 					if (!extensions[m]) {
 						continue;
 					}
-					
+
 					console.log("Adding Extensions of Extension Point: " + m);
 
 					var extensionsForExtensionPoint = extensions[m];
 
-					if (!jQuery.isArray(extensionsForExtensionPoint)) {
+					if (!m_utils.isArray(extensionsForExtensionPoint)) {
 						extensionsForExtensionPoint = [ extensionsForExtensionPoint ];
 					}
 
@@ -158,20 +158,20 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Extension(data) {
 				m_utils.inheritFields(this, data);
 
 				/**
-				 * 
+				 *
 				 */
 				Extension.prototype.toString = function() {
 					return "Lightdust.Extension";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Extension.prototype.supportedInProfile = function(profile) {
 					m_utils.debug("===> Checking profile " + profile);
