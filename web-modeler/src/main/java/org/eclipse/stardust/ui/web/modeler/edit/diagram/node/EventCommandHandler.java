@@ -24,6 +24,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.common.util.EList;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -127,6 +128,15 @@ public class EventCommandHandler
          {
             StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
                   parentLaneSymbol, eventOId);
+
+            // Delete the associated trigger too, if it exists
+            // TODO - should be moved to ModelBuilderFacade?
+            TriggerType trigger = startEventSymbol.getTrigger();
+            if (null != trigger)
+            {
+               processDefinition.getTrigger().remove(trigger);
+            }
+
             ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, startEventSymbol);
             processDefinition.getDiagram()
                   .get(0)
