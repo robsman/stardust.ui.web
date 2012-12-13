@@ -38,9 +38,15 @@ define(
 			 * @returns {string} the cardinality's label (either from a resource bundle, otherwise simple the cardinality)
 			 */
 			function getCardinalityLabel(cardinality) {
-				var label = m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option." + cardinality);
+				if (cardinality) {
+					var label = m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.cardinality.option." + cardinality);
 
-				return label || cardinality;
+					return label || cardinality;
+				}
+
+				// In case of enum, there won't be an associated cardinality
+				// so return empty string
+				return "";
 			}
 
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {
