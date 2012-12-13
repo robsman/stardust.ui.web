@@ -1247,8 +1247,6 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStart = function() {
-
-					this.diagram.resetEditableText();
 					// TODO hide for all selected
 					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
 						this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
@@ -1277,6 +1275,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.drag = function(dX, dY, x, y) {
+					this.diagram.resetEditableText();
 					var moveX = x * this.diagram.zoomFactor
 							- this.diagram.X_OFFSET
 							+ this.diagram.scrollPane.scrollLeft()
@@ -1646,7 +1645,7 @@ define(
 				Symbol.prototype.click = function(x, y) {
 					// When symbol is Draged, the edit symbol operation should
 					// reset
-					this.diagram.resetEditableText();
+					//this.diagram.resetEditableText();
 					if (!this.isCompleted()) {
 						// returns 'true' if symbol was placed at new loc. else
 						// false
