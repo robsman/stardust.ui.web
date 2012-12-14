@@ -356,7 +356,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       {
          idParams = viewKey; // Keep the backward compatibility
       }
-      
+      idParams = (idParams == null) ? "" : idParams;
       return idParams;
    }
 
@@ -472,6 +472,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    public String getViewId()
    {
       String viewId = (definition == null) ? getId() : definition.getName();
+      viewId = (definition == null) ? "" : viewId;
       return viewId;
    }
 
