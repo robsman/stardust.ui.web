@@ -10,10 +10,16 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.theme.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -21,10 +27,12 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.core.repository.IRepositoryManager;
 import org.eclipse.stardust.engine.core.repository.RepositorySpaceKey;
+import org.eclipse.stardust.ui.client.util.PluginResourceUtils;
 import org.eclipse.stardust.ui.web.common.spi.theme.Theme;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 
@@ -44,7 +52,9 @@ public class IppThemeProvider implements ThemeProvider
    private static List<Theme> availableThemes;
    
    private String themeId;
+   private String loginStyleSheet;
    private List<String> themeStyleSheets;
+   private Map<String, List<String>> pluginAvailableSkins;
 
    /**
     * 
@@ -53,50 +63,82 @@ public class IppThemeProvider implements ThemeProvider
    {
    }
 
-   /* (non-Javadoc)
-    * @see org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider#loadTheme(java.lang.String)
+   /*
+    * (non-Javadoc)
+    * 
+    * @see
+    * org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider#loadTheme(java.lang.String
+    * )
     */
    public void loadTheme(String themeId)
    {
       this.themeId = themeId;
+      availableThemes = new ArrayList<Theme>();
+      themeStyleSheets = new ArrayList<String>();
+      availableThemes.add(new IppTheme("", MessagePropertiesBean.getInstance().getString(
+            "views.configurationPanel.skins.defaultSkin")));
+
+      Set<Theme> availableThemesSet = CollectionUtils.newHashSet();
       
-      bootstrapThemes();
+      availableThemesSet.addAll(bootstrapThemes());
+      availableThemesSet.addAll(bootstrapPluginThemes());
+
+      availableThemes.addAll(availableThemesSet);
+      
+      loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
+            LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
+      
       loadThemeStyleSheets();
+      loadPluginThemeStyleSheets();
    }
 
    /**
     * 
     */
-   private void bootstrapThemes()
+   private Set<Theme> bootstrapThemes()
    {
-      availableThemes = new ArrayList<Theme>();
-      availableThemes.add(new IppTheme("", MessagePropertiesBean.getInstance().getString(
-            "views.configurationPanel.skins.defaultSkin")));
+      Set<Theme> availableJCRThemes = new HashSet<Theme>();
       
       List<Folder> skins = getSkinsFolders();
 
       for (Folder skinFolder : skins)
       {
-         availableThemes.add(new IppTheme(skinFolder.getId(), skinFolder.getName()));
+         availableJCRThemes.add(new IppTheme(skinFolder.getId(), skinFolder.getName()));
       }
+      return availableJCRThemes;
+   }
+   
+   /**
+    * Load the plugin themes from /public/skins folder
+    */
+   private Set<Theme> bootstrapPluginThemes()
+   {
+      Set<Theme> availablePluginThemes = new HashSet<Theme>();
+
+      pluginAvailableSkins = PluginResourceUtils.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
+
+      for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+      {
+         String key = entry.getKey();
+            availablePluginThemes.add(new IppTheme(key, key.substring(key.lastIndexOf("/")+1)));
+      }
+     return availablePluginThemes;
    }
 
    /**
+    * @throws IOException 
     * 
     */
-   private void loadThemeStyleSheets()
+   private void loadThemeStyleSheets() 
    {
       String skinFolderId = themeId;
-      themeStyleSheets = new ArrayList<String>();
+      List<String> jcrStyleSheets = new ArrayList<String>();
 
       if (StringUtils.isNotEmpty(skinFolderId))
       {
          Folder skinRoot = getSkinsRootFolder();
          if (null != skinRoot)
          {
-            String loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
-                  LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
-
             List<Folder> allSkinFolders = getSkinsFolders();
             for (Folder skinFolder : allSkinFolders)
             {
@@ -113,14 +155,47 @@ public class IppThemeProvider implements ThemeProvider
                      {
                         String path = skinFile.getPath();
                         path = path.replace(skinRoot.getPath() + "/", "");
-                        themeStyleSheets.add(THEME_SERVLET_PATH + path);
+                        jcrStyleSheets.add(THEME_SERVLET_PATH + path);
                      }
                   }
 
                   break;
                }
             }
+            themeStyleSheets.addAll(jcrStyleSheets);
          }
+      }
+   }
+   
+   /**
+    * 
+    */
+   private void loadPluginThemeStyleSheets()
+   {
+      String skinFolderId = themeId;
+      List<String> pluginStyleSheets = new ArrayList<String>();
+
+      if (StringUtils.isNotEmpty(skinFolderId))
+      {
+         Set<String> allSkinFolders = pluginAvailableSkins.keySet();
+         for (String skinFolder : allSkinFolders)
+         {
+            if (skinFolder.equals(skinFolderId))
+            {
+               List<String> documents = pluginAvailableSkins.get(skinFolder);
+               for (String skinFile : documents)
+               {
+                  if (skinFile.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
+                  {
+                     String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolderId + "/"
+                           + skinFile.substring(skinFile.lastIndexOf("\\") + 1);
+                     pluginStyleSheets.add(path);
+                  }
+               }
+               break;
+            }
+         }
+         themeStyleSheets.addAll(pluginStyleSheets);
       }
    }
 
@@ -164,7 +239,7 @@ public class IppThemeProvider implements ThemeProvider
       }
       return null;
    }
-
+   
     /**
      * @param folder
      */

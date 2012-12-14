@@ -66,6 +66,9 @@ public class Constants
    
    public static final String ROOT_GRID = "rootGrid";
    
+   public static final String PLUGIN_FOLDER_PATH = "/public/skins";
+   public static final String PLUGIN_ROOT_FOLDER_PATH = "/plugins/";
+   
    public ActivityInstanceStates getActivityInstanceState()
    {
       return activityInstanceStates;
