@@ -91,7 +91,7 @@
 				title="#{(row.totalPriority eq 0) ? null: row.title}">
 				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-Total"
 					standAlone="false" />
-				<f:param name="selectedPriorityForDetails" value="" />
+				<f:param name="selectedPriorityForDetails" value="#{null}" />
 				<f:param name="selectedCriticalForDetails" value="#{false}" />
 			</ice:commandLink>
 		</ice:panelGroup>
@@ -102,7 +102,7 @@
 				title="#{(row.criticalTotalPriority eq 0) ? null: row.title}">
 				<pc:automationTag value="auto-BCC-ProcMgr-PrioDataTable-CritTotal"
 					standAlone="false" />
-				<f:param name="selectedPriorityForDetails" value="" />
+				<f:param name="selectedPriorityForDetails" value="#{null}" />
 				<f:param name="selectedCriticalForDetails" value="#{true}" />
 			</ice:commandLink>
 		</ice:panelGroup>
