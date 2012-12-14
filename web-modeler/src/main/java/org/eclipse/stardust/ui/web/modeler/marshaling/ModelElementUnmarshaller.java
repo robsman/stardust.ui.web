@@ -121,6 +121,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
@@ -814,10 +815,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
+      // Make sure that formal parameters are never empty
+      // TODO Code should be at a central place for Process Definitions
+      if (processDefinition.getFormalParameters() == null)
+      {
+         processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+      }
+
       if (processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
       {
-         if (processDefinition.getFormalParameters() != null
-               && processDefinition.getFormalParameters().getFormalParameter() != null)
+         if (processDefinition.getFormalParameters().getFormalParameter() != null)
          {
             processDefinition.getFormalParameters().getFormalParameter().clear();
          }
