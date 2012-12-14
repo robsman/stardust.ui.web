@@ -79,10 +79,10 @@ public class IppThemeProvider implements ThemeProvider
             "views.configurationPanel.skins.defaultSkin")));
 
       Set<Theme> availableThemesSet = CollectionUtils.newHashSet();
-      
+      // Themes name should be unique on UI, so maintaining a set
       availableThemesSet.addAll(bootstrapThemes());
       availableThemesSet.addAll(bootstrapPluginThemes());
-
+      
       availableThemes.addAll(availableThemesSet);
       
       loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
@@ -146,19 +146,21 @@ public class IppThemeProvider implements ThemeProvider
                {
                   skinFolder = wrapForFetchingChildren(skinFolder);
 
-                  @SuppressWarnings("unchecked")
-                  List<Document> documents = skinFolder.getDocuments();
-                  for (Document skinFile : documents)
+                  if(null !=skinFolder)
                   {
-                     if (skinFile.getName().toLowerCase().endsWith(".css")
-                           && !loginStyleSheet.equals(skinFile.getName()))
+                     @SuppressWarnings("unchecked")
+                     List<Document> documents = skinFolder.getDocuments();
+                     for (Document skinFile : documents)
                      {
-                        String path = skinFile.getPath();
-                        path = path.replace(skinRoot.getPath() + "/", "");
-                        jcrStyleSheets.add(THEME_SERVLET_PATH + path);
-                     }
+                        if (skinFile.getName().toLowerCase().endsWith(".css")
+                              && !loginStyleSheet.equals(skinFile.getName()))
+                        {
+                           String path = skinFile.getPath();
+                           path = path.replace(skinRoot.getPath() + "/", "");
+                           jcrStyleSheets.add(THEME_SERVLET_PATH + path);
+                        }
+                     }                     
                   }
-
                   break;
                }
             }
@@ -168,7 +170,8 @@ public class IppThemeProvider implements ThemeProvider
    }
    
    /**
-    * 
+    * When folderId is in pattern <plugin-id>/public/skins/<skinId>, Plugin skins are
+    * loader ex. <views-common/public/skins/red>
     */
    private void loadPluginThemeStyleSheets()
    {
@@ -187,6 +190,9 @@ public class IppThemeProvider implements ThemeProvider
                {
                   if (skinFile.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
                   {
+                     // path : a string concat of plugin-root (/plugin) + folderId +
+                     // skinFile(say camino.css) ex:
+                     // "/plugin/views-common/public/skins/red/camino.css"
                      String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolderId + "/"
                            + skinFile.substring(skinFile.lastIndexOf("\\") + 1);
                      pluginStyleSheets.add(path);
