@@ -887,15 +887,16 @@ public class ModelerResource
          String currentFactName = null;
          JsonObject returnJson = new JsonObject();
          JsonArray masterFactConditions = new JsonArray();
-         
+
          returnJson.add("masterFactConditions", masterFactConditions);
-         
+
          JsonArray masterFactActions = new JsonArray();
 
          returnJson.add("masterFactActions", masterFactActions);
-         
+
          JsonObject masterFactCondition = null;
-         JsonObject masterFactAction = null;         
+         JsonObject masterFactAction = null;
+         JsonArray container = null;
 
          for (int n = 0; n < properties.length; ++n)
          {
@@ -911,43 +912,57 @@ public class ModelerResource
             if (n < facts.length && facts[n] != null && !facts[n].isEmpty())
             {
                currentFactName = facts[n];
-               
+
                if (currentSectionName.toLowerCase().startsWith("condition"))
                {
                   masterFactCondition = new JsonObject();
-                  
+
                   masterFactConditions.add(masterFactCondition);
-                  masterFactCondition.addProperty("name", currentFactName);
+                  masterFactCondition.addProperty("fact", currentFactName);
+                  masterFactCondition.add("propertyConditions",
+                        container = new JsonArray());
                }
                else
                {
                   masterFactAction = new JsonObject();
-                  
+
                   masterFactActions.add(masterFactAction);
-                  masterFactAction.addProperty("name", currentFactName);                  
+                  masterFactAction.addProperty("fact", currentFactName);
+                  masterFactAction.add("propertyActions", container = new JsonArray());
                }
+            }
+
+            if (container != null)
+            {
+               JsonObject masterProperty = new JsonObject();
+
+               container.add(masterProperty);
+               masterProperty.addProperty("property", properties[n]);
+            }
+            else
+            {
+               System.err.println("No container set. Wrong CSV structure.");
             }
 
             factNames.add(currentFactName);
             propertyNames.add(properties[n]);
          }
-         
+
          JsonArray rulesJson = new JsonArray();
-         
+
          returnJson.add("rules", rulesJson);
 
          String ruleLine = null;
 
          while ((ruleLine = reader.readLine()) != null)
          {
-            if (ruleLine.startsWith("------") ||
-                  ruleLine.isEmpty())
+            if (ruleLine.startsWith("------") || ruleLine.isEmpty())
             {
                break;
             }
 
             System.out.println("Processing Line: " + ruleLine);
-            
+
             JsonObject ruleJson = new JsonObject();
 
             rulesJson.add(ruleJson);
@@ -967,41 +982,40 @@ public class ModelerResource
 
             for (int m = 0; m < values.length; ++m)
             {
-               if (!factNames.get(m).equals(factName))
+               if ( !factNames.get(m).equals(factName))
                {
                   factName = factNames.get(m);
 
                   System.out.println("New fact condition: " + factName);
-                  
+
                   factConditionJson = new JsonObject();
 
                   factConditionsJson.add(factConditionJson);
-                  factConditionJson.addProperty("name", factName);
-                  
+                  factConditionJson.addProperty("fact", factName);
+
                   propertyConditionsJson = new JsonArray();
 
                   factConditionJson.add("propertyConditions", propertyConditionsJson);
                }
-               
+
                JsonObject propertyConditionJson = new JsonObject();
 
                System.out.println("New property condition: " + propertyNames.get(m));
 
                propertyConditionsJson.add(propertyConditionJson);
-               propertyConditionJson.addProperty("name", propertyNames.get(m));
+               propertyConditionJson.addProperty("property", propertyNames.get(m));
                propertyConditionJson.addProperty("value", values[m]);
             }
          }
 
          System.out.println("Return Value: " + returnJson.toString());
-         
-         return Response.ok(returnJson.toString(), APPLICATION_JSON_TYPE)
-               .build();
+
+         return Response.ok(returnJson.toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
          e.printStackTrace();
-         
+
          return Response.serverError().build();
       }
    }
