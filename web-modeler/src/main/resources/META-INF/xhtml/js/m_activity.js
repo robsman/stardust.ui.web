@@ -125,7 +125,8 @@ define(
 				 */
 				Activity.prototype.getContexts = function() {
 					// TODO Should/might be evaluated on the server
-					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
+					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE
+							&& this.applicationFullId) {
 						var application = m_model
 								.findApplication(this.applicationFullId);
 
