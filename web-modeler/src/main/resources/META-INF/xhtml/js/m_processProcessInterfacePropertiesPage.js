@@ -13,12 +13,13 @@
  */
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
 				"bpm-modeler/js/m_dataTypeSelector",
-				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
-				m_dataTypeSelector,
-				m_parameterDefinitionsPanel,m_i18nUtils) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ProcessProcessInterfacePropertiesPage(
@@ -31,14 +32,15 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function ProcessProcessInterfacePropertiesPage(newPropertiesPanel,
 					newId, newTitle) {
-				var processInterfacetext = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.processInterface");
+				var processInterfacetext = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.processInterface");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
-					newPropertiesPanel, "processInterfacePropertiesPage",
-					processInterfacetext);
+						newPropertiesPanel, "processInterfacePropertiesPage",
+						processInterfacetext);
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -46,7 +48,7 @@ define(
 						propertiesPage);
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.initialize = function() {
 					this.processInterfaceTypeSelectInput = this
@@ -71,13 +73,14 @@ define(
 							.create({
 								scope : "processInterfacePropertiesPage",
 								submitHandler : this,
-								//listType : "object",
+								// listType : "object",
 								supportsOrdering : false,
 								supportsDataMappings : true,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true
 							});
 
+					this.internationalizeLabels();
 					this.processInterfaceTypeSelectInput
 							.change(
 									{
@@ -200,7 +203,28 @@ define(
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				ProcessProcessInterfacePropertiesPage.prototype.internationalizeLabels = function() {
+					this.processInterfaceTypeSelectInput.append("<option value='" + m_constants.NO_PROCESS_INTERFACE_KEY + "'>" + m_i18nUtils.getProperty("modeler.processdefinition.propertyPages.processInterface.type.noProcessInterface") + "</option>" );
+					this.processInterfaceTypeSelectInput.append("<option value='" + m_constants.PROVIDES_PROCESS_INTERFACE_KEY + "'>"
+									+ m_i18nUtils
+									.getProperty("modeler.processdefinition.propertyPages.processInterface.type.providesProcessInterface") + "</option>");
+					this.processInterfaceTypeSelectInput
+							.append("<option value='" + m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY + "'>"
+									+ m_i18nUtils
+									.getProperty("modeler.processdefinition.propertyPages.processInterface.type.implementsProcessInterface") + "</option>");
+
+					// TODO Ugly
+					
+					jQuery("#processdefinitionselect").find("label[for='processInterfaceTypeSelectInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.type"));
+				};
+				
+				/**
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateProcessDataTable = function() {
 					this.processDataTableBody.empty();
@@ -234,10 +258,10 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
-					this.processInterfaceTypeSelectInput.val("noInterface");
+					this.processInterfaceTypeSelectInput.val(m_constants.NO_PROCESS_INTERFACE_KEY);
 					m_dialog.makeVisible(this.noInterfacePanel);
 					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
 					m_dialog
@@ -245,11 +269,11 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setProvidesProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
-							.val("providesProcessInterface");
+							.val(m_constants.PROVIDES_PROCESS_INTERFACE_KEY);
 					m_dialog.makeInvisible(this.noInterfacePanel);
 					m_dialog.makeVisible(this.providesProcessInterfacePanel);
 					m_dialog
@@ -258,9 +282,6 @@ define(
 					if (this.getModelElement().formalParameters == null) {
 						this.getModelElement().formalParameters = [];
 					}
-								m_utils.debug("Set Parameters:");
-					m_utils.debug(this
-							.getModelElement().formalParameters);
 
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getModelElement().model);
@@ -269,18 +290,18 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setImplementsProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
-							.val("implementsProcessInterface");
+							.val(m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
 					m_dialog.makeInvisible(this.noInterfacePanel);
 					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
 					m_dialog.makeVisible(this.implementsProcessInterfacePanel);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function() {
 					this.parameterDefinitionNameInput
@@ -296,14 +317,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -313,19 +334,39 @@ define(
 						this.setNoInterface();
 					} else if (this.getModelElement().processInterfaceType == m_constants.PROVIDES_PROCESS_INTERFACE_KEY) {
 						this.setProvidesProcessInterface();
+						
+						// Set protocol
+
+						if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "SOAP") {
+							this.restInterfaceCheckboxInput.prop("checked", false);
+							this.webServiceInterfaceCheckboxInput.prop("checked",
+									true);
+						} else if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "REST") {
+							this.restInterfaceCheckboxInput.prop("checked", true);
+							this.webServiceInterfaceCheckboxInput.prop("checked",
+									false);
+						} else if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "both") {
+							this.restInterfaceCheckboxInput.prop("checked", true);
+							this.webServiceInterfaceCheckboxInput.prop("checked",
+									true);
+						} else {
+							this.restInterfaceCheckboxInput.prop("checked", false);
+							this.webServiceInterfaceCheckboxInput.prop("checked",
+									false);
+						}
 					} else if (this.getModelElement().processInterfaceType == m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY) {
 						this.setImplementsProcessInterface();
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.validate = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.submitProtocol = function() {
 					var attributes = {};
