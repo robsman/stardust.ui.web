@@ -323,34 +323,6 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
 				gatewayTypeInputselect.append("<option value=\"xor\">"+selectdata+"</option>" );
 
-				var processdefinationselect = $("#processdefinationselect")
-						.find("#processInterfaceTypeSelectInput");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.processdefination.propertyPages.processInterface.type.noProcessInterface");
-				processdefinationselect
-						.append("<option value=\"noProcessInterface\">"
-								+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.processdefination.propertyPages.processInterface.type.providesProcessInterface");
-				processdefinationselect
-						.append("<option value=\"providesProcessInterface\">"
-								+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.processdefination.propertyPages.processInterface.type.implementsProcessInterface");
-				processdefinationselect
-						.append("<option value=\"implementsProcessInterface\">"
-								+ selectdata + "</option>");
-
-				$("#processdefinationselect")
-						.find("label[for='processInterfaceTypeSelectInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.type"));
-
-
 				var directionSelect = $("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
@@ -373,10 +345,6 @@ define(
 
 				jQuery("#dataid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.data"));
-
-
-
-
 			}
 
 			function hidePropertiesPane() {
