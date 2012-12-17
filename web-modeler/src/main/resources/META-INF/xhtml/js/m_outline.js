@@ -1746,13 +1746,12 @@ define(
 												}
 											}
 										}
+									},
+									"themes" : {
+										"theme" : "classic",
+										"url" : "../css/thirdparty/jstree/classic/style.css"
 									}
-								}).jstree("set_theme", "classic",
-								"../css/thirdparty/jstree/classic/style.css");
-				// "themes" : {
-				// "theme" : "default",
-				// "url" : "/xhtml/css/jstree"}}).jstree("set_theme",
-				// "default");
+								});
 
 				var handleToolbarEvents = function(event, data) {
 					if ("createModel" == data.id) {
