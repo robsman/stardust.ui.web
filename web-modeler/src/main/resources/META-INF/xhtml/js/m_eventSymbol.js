@@ -494,11 +494,9 @@ define(
 							.moveDiv(
 									{
 										"x" : this.x + this.diagram.X_OFFSET
-												+ this.width / 5
 												- scrollPos.left - 10,
 										"y" : this.y + this.diagram.Y_OFFSET
-												+ (this.height) + 5
-												- scrollPos.top
+												+ (2 * m_constants.EVENT_DEFAULT_RADIUS + 5) - scrollPos.top
 									}).show().trigger("dblclick");
 
 					return this.text;

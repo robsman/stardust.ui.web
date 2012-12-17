@@ -298,6 +298,13 @@ define(
 				 *
 				 */
 				GatewaySymbol.prototype.adjustPrimitives = function(dX, dY) {
+					//This code is required in case the imported model is eclipse born.
+					//Force setting of these attributes cannot be done in Refresh method as
+					//m_propertiesPanel.processCommand again overwrites these attributes and then symbol.refresh does not get invoked.
+					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
+					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
+
+
 					this.text.animate({
 						x : this.x + 0.5 * this.width,
 						y : this.y + this.height + 1.2
@@ -320,11 +327,6 @@ define(
 								* m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT
 					});
 
-					//This code is required in case the imported model is eclipse born.
-					//Force setting of these attributes cannot be done in Refresh method as
-					//m_propertiesPanel.processCommand again overwrites these attributes and then symbol.refresh does not get invoked.
-					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
-					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 				};
 
 				/**
@@ -622,11 +624,11 @@ define(
 							.moveDiv(
 									{
 										"x" : this.x + this.diagram.X_OFFSET
-												+ this.width / 5
 												- scrollPos.left - 10,
-										"y" : this.y + this.diagram.Y_OFFSET
-												+ (this.height) + 5
-												- scrollPos.top
+										"y" : this.y
+												+ this.diagram.Y_OFFSET
+												+ m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT
+												+ 5 - scrollPos.top
 									}).show().trigger("dblclick");
 
 					return this.text;
