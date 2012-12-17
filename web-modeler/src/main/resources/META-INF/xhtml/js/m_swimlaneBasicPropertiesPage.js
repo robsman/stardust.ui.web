@@ -90,15 +90,18 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].participants) {
-							this.participantList
-									.append("<option value='"
-											+ m_model.getModels()[n].participants[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].participants[m].name
-											+ "</option>");
+							if (!m_model.getModels()[n].participants[m].attributes["carnot:engine:visibility"]
+								|| m_model.getModels()[n].participants[m].attributes["carnot:engine:visibility"] == "Public") {
+								this.participantList
+								.append("<option value='"
+										+ m_model.getModels()[n].participants[m]
+												.getFullId()
+										+ "'>"
+										+ m_model.getModels()[n].name
+										+ "/"
+										+ m_model.getModels()[n].participants[m].name
+										+ "</option>");
+							}
 						}
 					}
 
