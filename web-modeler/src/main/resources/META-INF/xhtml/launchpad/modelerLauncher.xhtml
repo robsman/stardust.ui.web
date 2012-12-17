@@ -113,6 +113,14 @@
 		window.parent.EventHub.events
 				.publish("CHANGE_PROFILE", selectedProfile);
 	}
+
+	// Set the user profile dropdown to selected profile
+	// This is needed as the selected option gets reset to default, if a user has changed
+	// it and then switched perspective and come back to modeler perspective.
+	if (window.top.currentRole) {
+		var userProfileSelect = findUserProfileSelect();
+		userProfileSelect.value = window.top.currentRole;
+	}
 </script>
 </head>
 <pc:wizard bean="#{modelDeploymentDialogBean}" modal="true" popupX="325"
