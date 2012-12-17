@@ -69,6 +69,8 @@ define(
 					this.xorPath = null;
 					this.orCircle = null;
 					this.text = null;
+					this.sourceAnchorPtO = m_constants.UNDEFINED_ORIENTATION;
+					this.engagedAnchorPts = new Array();
 				};
 
 				/**
@@ -318,6 +320,11 @@ define(
 								* m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT
 					});
 
+					//This code is required in case the imported model is eclipse born.
+					//Force setting of these attributes cannot be done in Refresh method as
+					//m_propertiesPanel.processCommand again overwrites these attributes and then symbol.refresh does not get invoked.
+					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
+					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 				};
 
 				/**
