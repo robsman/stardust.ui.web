@@ -12,46 +12,17 @@
    <parent>
       <groupId>com.infinity.bpm.pepper</groupId>
       <artifactId>pepper-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1-SNAPSHOT</version>
       <relativePath>../pepper-common/pom.xml</relativePath>
-	</parent>
+   </parent>
 -->
 
    <properties>
       <ipp.version>7.1.0-NIGHTLY-SNAPSHOT</ipp.version>
-		<atmosphere.version>1.0.4</atmosphere.version>
    </properties>
 
    <dependencyManagement>
       <dependencies>
-         <!-- <dependency>
-            <groupId>com.infinity.bpm</groupId>
-            <artifactId>carnot-common</artifactId> 
-				<version>${ipp.version}</version>
-            <type>pom</type> <scope>import</scope> 
-         </dependency>
-         <dependency>
-            <groupId>com.infinity.bpm.rtenv</groupId>
-            <artifactId>rtenv-common</artifactId>
-				<version>${ipp.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-				<version>1.10</version>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.jersey</groupId> 
-            <artifactId>jersey-server</artifactId>
-            <version>1.10</version>
-         </dependency> 
-         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
-            <version>1.10</version>
-         </dependency> -->
       </dependencies>
    </dependencyManagement>
 
@@ -66,7 +37,7 @@
       <dependency>
          <groupId>wsdl4j</groupId>
          <artifactId>wsdl4j</artifactId>
-         <version>1.6.2</version>
+         <version>${wsdl4j.version}</version>
       </dependency>
 
       <dependency>
@@ -99,36 +70,36 @@
       <dependency>
          <groupId>org.apache.myfaces.core</groupId>
          <artifactId>myfaces-api</artifactId>
-         <version>1.2.9</version>
+         <version>${myfaces-api.version}</version>
       </dependency>
       <dependency>
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
-         <version>2.4</version>
+         <version>${servlet-api.version}</version>
       </dependency>
 
       <dependency>
          <groupId>com.google.code.gson</groupId>
          <artifactId>gson</artifactId>
-         <version>1.6</version>
+         <version>${gson.version}</version>
       </dependency>
 
-		<!-->dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
-		</dependency-->
+      <!-->dependency>
+         <groupId>org.apache.httpcomponents</groupId>
+         <artifactId>httpclient</artifactId>
+         <version>${commons-httpclient.version}</version>
+      </dependency-->
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.common</artifactId>
-         <version>2.6.0.v20100914-1218</version>
+         <version>${org.eclipse.emf.common.version}</version>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore</artifactId>
-         <version>2.6.1.v20100914-1218</version>
+         <version>${org.eclipse.emf.ecore.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -139,7 +110,7 @@
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-         <version>2.5.0.v20100521-1846</version>
+         <version>${org.eclipse.emf.ecore.xmi.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -150,7 +121,7 @@
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.change</artifactId>
-         <version>2.5.1.v20100907-1643</version>
+         <version>${org.eclipse.emf.ecore.change.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -161,33 +132,33 @@
       <dependency>
          <groupId>org.eclipse.xsd</groupId>
          <artifactId>org.eclipse.xsd</artifactId>
-         <version>2.6.0.v20100914-1218</version>
+         <version>${org.eclipse.xsd.version}</version>
       </dependency>
 
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>4.10</version>
+         <version>${junit.version}</version>
          <scope>test</scope>
       </dependency>
 
       <dependency>
          <groupId>org.atmosphere</groupId>
          <artifactId>atmosphere-runtime</artifactId>
-         <version>${atmosphere.version}</version>
+         <version>${atmosphere-runtime.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.slf4j</groupId>
                <artifactId>slf4j-api</artifactId>
             </exclusion>
-				<!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
-					</exclusion> -->
+            <!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
+               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
+               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
+               </exclusion> -->
          </exclusions>
       </dependency>
-		<!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
-			<version>1.7.4</version> </dependency> -->
+      <!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
+         <version>1.7.4</version> </dependency> -->
 
    </dependencies>
 
