@@ -219,17 +219,4 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       return false;
    }
 
-   /*
-    * public String checkIsExternalReference(EObject modelElement) { String uri = null; if
-    * (modelElement instanceof Extensible) { uri =
-    * ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement,
-    * IConnectionManager.URI_ATTRIBUTE_NAME); } else if (modelElement instanceof
-    * IExtensibleElement) { uri = AttributeUtil.getAttributeValue((IExtensibleElement)
-    * modelElement, IConnectionManager.URI_ATTRIBUTE_NAME); } if(uri != null) { URI
-    * createURI = URI.createURI(uri); if
-    * (IConnectionManager.SCHEME.equals(createURI.scheme())) { return
-    * createURI.authority(); } }
-    *
-    * return null; }
-    */
 }
