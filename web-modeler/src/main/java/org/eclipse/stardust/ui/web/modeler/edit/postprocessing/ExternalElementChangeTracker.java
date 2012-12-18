@@ -32,12 +32,14 @@ import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.impl.DataSymbolTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.UnusedModelElementsSearcher;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
+import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 
 /**
@@ -58,7 +60,19 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    {
       for (EObject candidate : change.getRemovedElements())
       {
-         trackModification(candidate, true, change);
+         if (candidate instanceof DataSymbolTypeImpl)
+         {
+            for (EObject dataCandidate : change.getModifiedElements())
+            {
+               if (dataCandidate instanceof DataType) {
+                  trackDataModification((DataType) dataCandidate, change);
+               }
+            }
+         }
+         else
+         {
+            trackModification(candidate, true, change);
+         }
       }
       for (EObject candidate : change.getModifiedElements())
       {
@@ -66,10 +80,30 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       }
    }
 
+   private void trackDataModification(DataType dataType, Modification change)
+   {
+      ModelType model = ModelUtils.findContainingModel(dataType);
+      if (isExternalReference(dataType))
+      {
+         UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
+         Map matchedElements = searcher.search(model);
+         List children = (List) matchedElements.get(model);
+         if (children != null && children.contains(dataType))
+         {
+            EList<INodeSymbol> symbols = ((DataType) dataType).getSymbols();
+            if (symbols.size() == 0)
+            {
+               model.getData().remove(dataType);
+               change.markAlsoModified(dataType);
+            }
+         }
+      }
+   }
+
    private void trackModification(EObject candidate, boolean removed, Modification change)
    {
       ModelType model = ModelUtils.findContainingModel(candidate);
-      if(removed)
+      if (removed)
       {
          if (candidate.eContainer() instanceof ChangeDescriptionImpl)
          {
@@ -79,66 +113,42 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
          }
       }
 
-      if(model != null)
+      if (model != null)
       {
-         if(candidate instanceof DataType && !removed)
-         {
-            String id = checkIsExternalReference(candidate);
-            if(!StringUtils.isEmpty(id))
-            {
-               UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
-               Map matchedElements = searcher.search(model);
-               List children = (List) matchedElements.get(model);
-               if(children != null && children.contains(candidate))
-               {
-                  EList<INodeSymbol> symbols = ((DataType) candidate).getSymbols();
-                  if(symbols.size() == 0)
-                  {
-                     model.getData().remove(candidate);
-                     change.markAlsoModified(candidate);
-                  }
-               }
-            }
-         }
-
          UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
          Map matchedElements = searcher.search(model);
          List<EObject> children = (List) matchedElements.get(model);
-         if(children != null)
+         if (children != null)
          {
             boolean modified = false;
 
-            for(EObject element : children)
+            for (EObject element : children)
             {
-               String id = checkIsExternalReference(element);
-               if(!StringUtils.isEmpty(id))
+               if (isExternalReference(element))
                {
-                  if(element instanceof IIdentifiableModelElement)
+                  if (element instanceof IIdentifiableModelElement)
                   {
-                     if(((IIdentifiableModelElement) element).getSymbols().isEmpty())
+                     if (((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
-                        if(element instanceof RoleType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
+                        if (element instanceof RoleType
+                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getRole().remove(element);
                            modified = true;
                         }
-                        else if(element instanceof ConditionalPerformerType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
+                        else if (element instanceof ConditionalPerformerType
+                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getConditionalPerformer().remove(element);
                            modified = true;
                         }
-                        else if(element instanceof OrganizationType && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
+                        else if (element instanceof OrganizationType
+                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getOrganization().remove(element);
                            modified = true;
                         }
-                        else if(element instanceof DataType)
-                        {
-                           //TODO:Investigate - related to delete problem for external Data
-                           //model.getData().remove(element);
-                           //modified = true;
-                        }
-                        if(modified)
+                        if (modified)
                         {
                            change.markAlsoModified(element);
                         }
@@ -150,26 +160,76 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       }
    }
 
-   public String checkIsExternalReference(EObject modelElement)
+   public boolean isExternalReference(EObject modelElement)
    {
-      String uri = null;
-      if (modelElement instanceof Extensible)
+      if (modelElement != null)
       {
-         uri = ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement, IConnectionManager.URI_ATTRIBUTE_NAME);
-      }
-      else if (modelElement instanceof IExtensibleElement)
-      {
-         uri = AttributeUtil.getAttributeValue((IExtensibleElement) modelElement, IConnectionManager.URI_ATTRIBUTE_NAME);
-      }
-      if(uri != null)
-      {
-         URI createURI = URI.createURI(uri);
-         if (IConnectionManager.SCHEME.equals(createURI.scheme()))
+         if (modelElement instanceof IExtensibleElement)
          {
-            return createURI.authority();
+            if (AttributeUtil.getAttributeValue((IExtensibleElement) modelElement,
+                  IConnectionManager.URI_ATTRIBUTE_NAME) != null)
+            {
+               String uri = AttributeUtil.getAttributeValue(
+                     (IExtensibleElement) modelElement,
+                     IConnectionManager.URI_ATTRIBUTE_NAME);
+               ModelType model = ModelUtils.findContainingModel(modelElement);
+               if (model == null)
+               {
+                  return false;
+               }
+               Connection connection = (Connection) model.getConnectionManager()
+                     .findConnection(uri);
+               if (connection != null)
+               {
+                  String importString = connection.getAttribute("importByReference"); //$NON-NLS-1$
+                  if (importString != null && importString.equalsIgnoreCase("false")) //$NON-NLS-1$
+                  {
+                     return false;
+                  }
+               }
+               return true;
+            }
+         }
+         if (modelElement instanceof Extensible)
+         {
+            if (ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement,
+                  IConnectionManager.URI_ATTRIBUTE_NAME) != null)
+            {
+               String uri = ExtendedAttributeUtil.getAttributeValue(
+                     (Extensible) modelElement, IConnectionManager.URI_ATTRIBUTE_NAME);
+               ModelType model = ModelUtils.findContainingModel(modelElement);
+               if (model == null)
+               {
+                  return false;
+               }
+               Connection connection = (Connection) model.getConnectionManager()
+                     .findConnection(uri);
+               if (connection != null)
+               {
+                  String importString = connection.getAttribute("importByReference"); //$NON-NLS-1$
+                  if (importString != null && importString.equalsIgnoreCase("false")) //$NON-NLS-1$
+                  {
+                     return false;
+                  }
+               }
+               return true;
+            }
          }
       }
-
-      return null;
+      return false;
    }
+
+   /*
+    * public String checkIsExternalReference(EObject modelElement) { String uri = null; if
+    * (modelElement instanceof Extensible) { uri =
+    * ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement,
+    * IConnectionManager.URI_ATTRIBUTE_NAME); } else if (modelElement instanceof
+    * IExtensibleElement) { uri = AttributeUtil.getAttributeValue((IExtensibleElement)
+    * modelElement, IConnectionManager.URI_ATTRIBUTE_NAME); } if(uri != null) { URI
+    * createURI = URI.createURI(uri); if
+    * (IConnectionManager.SCHEME.equals(createURI.scheme())) { return
+    * createURI.authority(); } }
+    *
+    * return null; }
+    */
 }
