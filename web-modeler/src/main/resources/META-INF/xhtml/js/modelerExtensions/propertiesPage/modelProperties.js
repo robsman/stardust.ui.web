@@ -25,7 +25,7 @@ define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',"bpm-modeler/js/m
 			pageId: "configurationVariablesPropertiesPage",
 			pageHtmlUrl: "modelConfigurationVariablesPropertiesPage.html",
 			provider: m_modelConfigurationVariablesPropertiesPage,
-			visibility: "preview",
+			visibility: "always",
 			pageName: "Configuration Variables", // TODO I18N
 			pageIconUrl: "../../images/icons/basic-properties-page.png"
 		}]
