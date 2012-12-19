@@ -37,39 +37,47 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
    {
 
       Collection<EObject> removedList = change.getRemovedElements();
+      Collection<EObject> modifiedList = change.getModifiedElements();
 
-      ModelType model = null;
-
-      if (!removedList.isEmpty())
+      if ( !removedList.isEmpty())
       {
          EObject removedElement = (EObject) removedList.toArray()[0];
          if (removedElement.eContainer() instanceof ChangeDescriptionImpl)
          {
-            ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) removedElement
-                  .eContainer();
+            ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) removedElement.eContainer();
             EObject container = changeDescription.getOldContainer(removedElement);
-            model = ModelUtils.findContainingModel(container);
-            List<String> uris = ModelUtils.getURIsForExternalPackages(model);
-            for (Iterator<String> i = uris.iterator(); i.hasNext();)
-            {
-               String uri = i.next();
-               WebModelerConnectionManager cm = (WebModelerConnectionManager) model
-                     .getConnectionManager();
-               Connection connection = (Connection) cm.findConnection(uri);
-               List<EObject> references = this.getExternalReferences(model,
-                     (Connection) connection);
-               if (references.size() == 1)
-               {
-                  ExternalPackage externalReference = (ExternalPackage) references.get(0);
-                  removeConnection(externalReference);
-                  model.getExternalPackages().getExternalPackage()
-                        .remove(externalReference);
-                  change.markAlsoRemoved(externalReference);
-                  change.markAlsoModified(model);
-               }
-            }
+            trackExternalReferences(change, container);
          }
+      }
 
+      if ( !modifiedList.isEmpty())
+      {
+         EObject modifiedElement = (EObject) modifiedList.toArray()[0];
+         trackExternalReferences(change, modifiedElement);
+      }
+
+   }
+
+   private void trackExternalReferences(Modification change, EObject container)
+   {
+      ModelType model;
+      model = ModelUtils.findContainingModel(container);
+      List<String> uris = ModelUtils.getURIsForExternalPackages(model);
+      for (Iterator<String> i = uris.iterator(); i.hasNext();)
+      {
+         String uri = i.next();
+         WebModelerConnectionManager cm = (WebModelerConnectionManager) model.getConnectionManager();
+         Connection connection = (Connection) cm.findConnection(uri);
+         List<EObject> references = this.getExternalReferences(model,
+               (Connection) connection);
+         if (references.size() == 1)
+         {
+            ExternalPackage externalReference = (ExternalPackage) references.get(0);
+            removeConnection(externalReference);
+            model.getExternalPackages().getExternalPackage().remove(externalReference);
+            change.markAlsoRemoved(externalReference);
+            change.markAlsoModified(model);
+         }
       }
    }
 
@@ -80,8 +88,7 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
             IConnectionManager.URI_ATTRIBUTE_NAME);
       ConnectionImpl connection = (ConnectionImpl) model.getConnectionManager()
             .findConnection(uri);
-      WebModelerConnectionManager man = (WebModelerConnectionManager) model
-            .getConnectionManager();
+      WebModelerConnectionManager man = (WebModelerConnectionManager) model.getConnectionManager();
       man.getRepository().getConnection().remove(connection);
    }
 

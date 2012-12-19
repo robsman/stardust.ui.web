@@ -31,6 +31,7 @@ import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.DataSymbolTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
@@ -38,6 +39,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.UnusedModelElementsSearcher;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
@@ -64,7 +66,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
          {
             for (EObject dataCandidate : change.getModifiedElements())
             {
-               if (dataCandidate instanceof DataType) {
+               if (dataCandidate instanceof DataType)
+               {
                   trackDataModification((DataType) dataCandidate, change);
                }
             }
@@ -78,6 +81,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       {
          trackModification(candidate, false, change);
       }
+
    }
 
    private void trackDataModification(DataType dataType, Modification change)
@@ -146,6 +150,12 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                               && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
                         {
                            model.getOrganization().remove(element);
+                           modified = true;
+                        }
+                        else if (candidate instanceof ProcessDefinitionType
+                              && element instanceof DataType)
+                        {
+                           model.getData().remove(element);
                            modified = true;
                         }
                         if (modified)
