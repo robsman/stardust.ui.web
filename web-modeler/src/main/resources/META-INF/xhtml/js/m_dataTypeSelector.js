@@ -231,15 +231,18 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							this.structuredDataTypeSelect
-									.append("<option value='"
-											+ m_model.getModels()[n].typeDeclarations[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].typeDeclarations[m].name
-											+ "</option>");
+							if (!m_model.getModels()[n].typeDeclarations[m].attributes['carnot:engine:visibility']
+									|| m_model.getModels()[n].typeDeclarations[m].attributes['carnot:engine:visibility'] === "Public") {
+								this.structuredDataTypeSelect
+										.append("<option value='"
+												+ m_model.getModels()[n].typeDeclarations[m]
+														.getFullId()
+												+ "'>"
+												+ m_model.getModels()[n].name
+												+ "/"
+												+ m_model.getModels()[n].typeDeclarations[m].name
+												+ "</option>");
+							}
 						}
 					}
 
