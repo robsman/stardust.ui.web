@@ -183,18 +183,15 @@ define(
 											return;
 										}
 
-										if (view.publicVisibilityCheckbox
-												.is(":checked")
-												&& view.data.attributes["carnot:engine:visibility"] != "Public") {
+										if (view.modelElement.attributes["carnot:engine:visibility"]
+												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:visibility" : "Public"
 														}
 													});
-										} else if (!view.publicVisibilityCheckbox
-												.is(":checked")
-												&& view.data.attributes["carnot:engine:visibility"] == "Public") {
+										} else {
 											view
 													.submitChanges({
 														attributes : {
@@ -251,7 +248,8 @@ define(
 					this.initializeDataType(this.data,
 							this.data.attributes["carnot:engine:defaultValue"]);
 
-					if ("Public" == this.data.attributes["carnot:engine:visibility"]) {
+					if (!this.data.attributes["carnot:engine:visibility"] ||
+							"Public" == this.data.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);

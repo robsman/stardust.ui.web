@@ -176,7 +176,8 @@ define(
 					jQuery(this.typeDeclaration.isSequence() ? ".show-when-struct" : ".show-when-enum").show();
 					jQuery(this.typeDeclaration.isSequence() ? ".show-when-enum" : ".show-when-struct").hide();
 
-					this.visibilitySelect.prop("checked", "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]);
+					this.visibilitySelect.prop("checked", (!this.typeDeclaration.attributes["carnot:engine:visibility"]
+																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 
 					this.minimumLengthEdit.val(this.typeDeclaration.getTypeDeclaration().minLength);

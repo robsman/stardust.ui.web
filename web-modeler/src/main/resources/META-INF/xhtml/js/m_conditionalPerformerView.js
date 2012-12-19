@@ -26,7 +26,7 @@ define(
 					view.initialize(conditionalPerformer);
 				}
 			};
-			
+
 
 			function i18nconditionalScreen() {
 
@@ -34,7 +34,7 @@ define(
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
@@ -68,10 +68,10 @@ define(
 
 				jQuery("#propertiesTabs span.tabLabel")
 						.text(
-								m_i18nUtils	
+								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
 
-				this.performerTypeSelect1 = jQuery("#performerTypeSelect");
+				var performerTypeSelect1 = jQuery("#performerTypeSelect");
 
 				var dropDownData = m_i18nUtils
 						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.user");
@@ -94,8 +94,8 @@ define(
 				performerTypeSelect1
 						.append("<option value=\"modelParticipantOrUserGroup\">"
 								+ dropDownData + "</option>");
-				
-				
+
+
 			}
 
 			/**
@@ -131,11 +131,19 @@ define(
 											return;
 										}
 
-										if (view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+										if (view.modelElement.attributes["carnot:engine:visibility"]
+												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
 														}
 													});
 										}
@@ -165,14 +173,20 @@ define(
 
 					this.populateBindingDataSelect();
 
-					if ("Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
+					if (!this.conditionalPerformer.attributes["carnot:engine:visibility"]
+							|| "Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					this.performerTypeSelect
-							.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]);
+					if (this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]) {
+						this.performerTypeSelect
+								.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:kind"]);
+					} else {
+						this.performerTypeSelect.val("modelParticipant");
+					}
+
 					this.bindingDataSelect
 							.val(this.conditionalPerformer.dataFullId);
 					this.bindingDataPathInput

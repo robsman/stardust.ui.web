@@ -300,18 +300,15 @@ define(
 											return;
 										}
 
-										if (view.publicVisibilityCheckbox
-												.is(":checked")
-												&& view.application.attributes["carnot:engine:visibility"] != "Public") {
+										if (view.modelElement.attributes["carnot:engine:visibility"]
+												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
 											view
 													.submitChanges({
 														attributes : {
 															"carnot:engine:visibility" : "Public"
 														}
 													});
-										} else if (!view.publicVisibilityCheckbox
-												.is(":checked")
-												&& view.application.attributes["carnot:engine:visibility"] == "Public") {
+										} else {
 											view
 													.submitChanges({
 														attributes : {
@@ -345,7 +342,8 @@ define(
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
 
-					if ("Public" == this.application.attributes["carnot:engine:visibility"]) {
+					if (!this.application.attributes["carnot:engine:visibility"]
+							|| "Public" == this.application.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
