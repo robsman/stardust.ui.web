@@ -46,9 +46,9 @@ public class PluginResourceUtils
     * @param fileName
     * @return
     */
-   public static Map<String, List<String>> findPluginSkins(String pluginFolder, String fileName)
+   public static Map<String, List<Resource>> findPluginSkins(String pluginFolder, String fileName)
    {
-      Map<String, List<String>> allExtensions = new TreeMap<String, List<String>>(new Comparator<String>()
+      Map<String, List<Resource>> allExtensions = new TreeMap<String, List<Resource>>(new Comparator<String>()
       {
          public int compare(String a, String b)
          {
@@ -97,18 +97,16 @@ public class PluginResourceUtils
                   // Split the above path to create 2 paths ex: a) <views-common> b)
                   // skin1/images
                   String[] splitArr = extensionWebUri.split(pluginFolder + "/");
-
                   String extensionWebUriKey = webUriPrefix.substring(0, webUriPrefix.lastIndexOf("/")) + pluginFolder
                         + "/" + splitArr[1].substring(0, splitArr[1].indexOf("/"));
 
-                  File extResourceFile = extensionResource.getFile();
-                  List<String> resourceFile = allExtensions.get(extensionWebUri);
+                  List<Resource> resourceFile = allExtensions.get(extensionWebUri);
                   if (null == resourceFile)
                   {
                      resourceFile = CollectionUtils.newArrayList();
                      allExtensions.put(extensionWebUriKey, resourceFile);
                   }
-                  resourceFile.add(extResourceFile.getPath());
+                  resourceFile.add(extensionResource);
                   trace.info("Discovered '" + pluginFolder + "' modeler extensions descriptor at " + extensionWebUri);
                }
             }
@@ -140,9 +138,9 @@ public class PluginResourceUtils
       List<Resource> extensions = CollectionUtils.newArrayList();
       Resource[] jsModules = null;
       if (null == fileName)
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category + "/*/*.*");
+         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/")+1) + "/*/*.*");
       else
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category + "/**/" + fileName);
+         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/")+1) + "/**/" + fileName);
       for (Resource jsModule : jsModules)
       {
          extensions.add(jsModule);

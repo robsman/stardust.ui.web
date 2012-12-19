@@ -22,6 +22,8 @@ import java.util.Set;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
@@ -35,6 +37,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.springframework.core.io.Resource;
 
 
 
@@ -46,6 +49,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 public class IppThemeProvider implements ThemeProvider
 {
    private static final long serialVersionUID = 1L;
+   public static final Logger trace = LogManager.getLogger(IppThemeProvider.class);
 
    public static final String THEME_SERVLET_PATH = "/skins/";
    
@@ -54,7 +58,7 @@ public class IppThemeProvider implements ThemeProvider
    private String themeId;
    private String loginStyleSheet;
    private List<String> themeStyleSheets;
-   private Map<String, List<String>> pluginAvailableSkins;
+   private Map<String, List<Resource>> pluginAvailableSkins;
 
    /**
     * 
@@ -117,7 +121,7 @@ public class IppThemeProvider implements ThemeProvider
 
       pluginAvailableSkins = PluginResourceUtils.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
 
-      for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+      for (Map.Entry<String, List<Resource>> entry : pluginAvailableSkins.entrySet())
       {
          String key = entry.getKey();
             availablePluginThemes.add(new IppTheme(key, key.substring(key.lastIndexOf("/")+1)));
@@ -172,36 +176,46 @@ public class IppThemeProvider implements ThemeProvider
    /**
     * When folderId is in pattern <plugin-id>/public/skins/<skinId>, Plugin skins are
     * loader ex. <views-common/public/skins/red>
+    * 
     */
    private void loadPluginThemeStyleSheets()
    {
-      String skinFolderId = themeId;
-      List<String> pluginStyleSheets = new ArrayList<String>();
-
-      if (StringUtils.isNotEmpty(skinFolderId))
+      try
       {
-         Set<String> allSkinFolders = pluginAvailableSkins.keySet();
-         for (String skinFolder : allSkinFolders)
+         String skinFolderId = themeId;
+         List<String> pluginStyleSheets = new ArrayList<String>();
+
+         if (StringUtils.isNotEmpty(skinFolderId))
          {
-            if (skinFolder.equals(skinFolderId))
+            Set<String> allSkinFolders = pluginAvailableSkins.keySet();
+            for (String skinFolder : allSkinFolders)
             {
-               List<String> documents = pluginAvailableSkins.get(skinFolder);
-               for (String skinFile : documents)
+               if (skinFolder.equals(skinFolderId))
                {
-                  if (skinFile.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
+                  List<Resource> documents = pluginAvailableSkins.get(skinFolder);
+                  for (Resource skinFile : documents)
                   {
-                     // path : a string concat of plugin-root (/plugin) + folderId +
-                     // skinFile(say camino.css) ex:
-                     // "/plugin/views-common/public/skins/red/camino.css"
-                     String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolderId + "/"
-                           + skinFile.substring(skinFile.lastIndexOf("\\") + 1);
-                     pluginStyleSheets.add(path);
+                     String filePath = skinFile.getURI().toString();
+                     System.out.println("File Path is @@@@@@@@@" + filePath);
+                     if (filePath.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
+                     {
+                        // path : a string concat of plugin-root (/plugin) + folderId +
+                        // skinFile(say camino.css) ex:
+                        // "/plugin/views-common/public/skins/red/camino.css"
+                        String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolderId + "/"
+                              + filePath.substring(filePath.lastIndexOf("/") + 1);
+                        pluginStyleSheets.add(path);
+                     }
                   }
+                  break;
                }
-               break;
             }
+            themeStyleSheets.addAll(pluginStyleSheets);
          }
-         themeStyleSheets.addAll(pluginStyleSheets);
+      }
+      catch (Exception e)
+      {
+         trace.error("Error occured in reading plugin theme files" + e.getLocalizedMessage());
       }
    }
 

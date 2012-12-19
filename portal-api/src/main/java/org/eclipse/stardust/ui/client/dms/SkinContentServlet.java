@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.client.dms;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -58,6 +55,7 @@ import org.eclipse.stardust.vfs.impl.jcr.JcrDocumentRepositoryService;
 import org.eclipse.stardust.vfs.impl.jcr.web.AbstractVfsContentServlet;
 import org.eclipse.stardust.vfs.jcr.ISessionFactory;
 import org.eclipse.stardust.vfs.jcr.spring.JcrSpringSessionFactory;
+import org.springframework.core.io.Resource;
 
 
 /**
@@ -268,35 +266,31 @@ public class SkinContentServlet extends AbstractVfsContentServlet
     */
    private int loadPluginSkin(String skinFolder, String fileName, ContentDownloadController downloadManager) throws IOException
    {
-      Map<String, List<String>> pluginAvailableSkins = PluginResourceUtils
+      Map<String, List<Resource>> pluginAvailableSkins = PluginResourceUtils
             .findPluginSkins(PLUGIN_FOLDER_PATH, fileName);
 
       if (!CollectionUtils.isEmpty(pluginAvailableSkins))
       {
-         for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+         for (Map.Entry<String, List<Resource>> entry : pluginAvailableSkins.entrySet())
          {
             if (entry.getKey().equals(skinFolder))
             {
-               for (String filePath : entry.getValue())
+               for (Resource resource : entry.getValue())
                {
-                  File file = new File(filePath);
-                  {
-                     downloadManager.setContentLength((int) file.length());
-                     downloadManager.setFilename(file.getName());
+                  InputStream is = resource.getInputStream();
+                     
                      byte[] bbuf = new byte[4096];
-                     DataInputStream in = new DataInputStream(new FileInputStream(file));
                      int length = 0;
                      OutputStream op = downloadManager.getContentOutputStream();
-                     while ((in != null) && ((length = in.read(bbuf)) != -1))
+                     while ((is != null) && ((length = is.read(bbuf)) != -1))
                      {
                         op.write(bbuf, 0, length);
                      }
 
-                     in.close();
+                     is.close();
                      op.flush();
                      op.close();
                   }
-               }
             }
             else
             {
