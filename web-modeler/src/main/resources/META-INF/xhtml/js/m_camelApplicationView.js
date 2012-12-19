@@ -108,6 +108,7 @@ define(
 						application) {
 					this.id = "camelApplicationView";
 
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.overlayTableCell = jQuery("#overlayTableCell");
 					this.genericEndpointOverlay = jQuery("#overlayTableCell #genericEndpoint");
 					this.camelContextInput = jQuery("#camelContextInput");
@@ -197,7 +198,38 @@ define(
 								.val()].activate();
 						view.setOverlay(view.endpointTypeSelectInput.val());
 					});
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
 
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else if (!view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] == "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
+														}
+													});
+										}
+									});
 					this.directionInput
 							.change(
 									{
@@ -330,6 +362,12 @@ define(
 					m_utils.debug(application);
 
 					this.initializeModelElement(application);
+
+					if ("Public" == this.application.attributes["carnot:engine:visibility"]) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
 						// Do some initialization against the server

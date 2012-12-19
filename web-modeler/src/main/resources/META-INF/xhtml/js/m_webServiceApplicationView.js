@@ -11,7 +11,7 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils" , "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model" ,"bpm-modeler/js/m_i18nUtils"],	
+				"bpm-modeler/js/m_model" ,"bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_urlUtils, m_constants, m_communicationController,
 				m_command, m_commandsController, m_dialog, m_modelElementView,
 				m_model, m_i18nUtils) {
@@ -35,12 +35,12 @@ define(
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
-				
+
 				jQuery("#application")
 						.text(
 								m_i18nUtils
@@ -158,6 +158,7 @@ define(
 						application) {
 					this.id = "webServiceApplicationView";
 					this.webServiceStructure = {};
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
 					this.serviceSelect = jQuery("#serviceSelect");
@@ -195,7 +196,7 @@ define(
 					this.mechanismselect
 							.append("<option value=\"ws-security\">"
 									+ selectdata + "</option>");
-									
+
 					this.browseButton.click({
 						view : this
 					}, function(event) {
@@ -261,11 +262,11 @@ define(
 
 										if (event.data.view.mechanismSelect
 												.val() == "basic") {
-											
+
 											selectdata = m_i18nUtils.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
 											event.data.view.variantSelect
 											.append("<option value=\"passwordText\">"+selectdata+"</option>");
-													
+
 										} else {
 											selectdata = m_i18nUtils
 													.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
@@ -285,6 +286,38 @@ define(
 													.append("<option value=\"xwssConfiguration\">"
 															+ selectdata
 															+ "</option>");
+										}
+									});
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else if (!view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] == "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
+														}
+													});
 										}
 									});
 					this.variantSelect
@@ -311,6 +344,12 @@ define(
 
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
+
+					if ("Public" == this.application.attributes["carnot:engine:visibility"]) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
 
 					// Build dummy Web Service structure - allows too initialize
 					// selects even without full WSDL information
@@ -466,7 +505,7 @@ define(
 				 */
 				WebServiceApplicationView.prototype.setWebServiceStructure = function(
 						webServiceStructure) {
-					
+
 					m_utils.debug("===> Web Service Structure");
 					m_utils.debug(webServiceStructure);
 
@@ -475,8 +514,8 @@ define(
 					this.serviceSelect.empty();
 
 					var start = true;
-					
-					
+
+
 					for ( var m in webServiceStructure.services) {
 						var service = webServiceStructure.services[m];
 

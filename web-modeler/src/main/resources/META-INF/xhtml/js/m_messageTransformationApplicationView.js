@@ -27,15 +27,15 @@ define(
 					view.initialize(m_model.findApplication(fullId));
 				   }
 				};
-							
+
 
 			function i18nmessageTransformationproperties() {
-                
+
 				$("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
-								
+
 				$("label[for='idOutput']")
 				.text(
 						m_i18nUtils
@@ -152,7 +152,7 @@ define(
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.resetButton"));
 
 			}
-	
+
 
 			/**
 			 *
@@ -173,6 +173,7 @@ define(
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.inputTable = jQuery("#sourceTable");
 					this.inputTableBody = jQuery("table#sourceTable tbody");
 					this.sourceFilterInput = jQuery("#sourceFilterInput");
@@ -253,6 +254,39 @@ define(
 						event.data.view.filterFieldsWithMapping();
 					});
 
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else if (!view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] == "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
+														}
+													});
+										}
+									});
+
 					jQuery(this.expressionEditor.getWrapper())
 							.droppable({
 								accept : ".data-element",
@@ -331,14 +365,14 @@ define(
 									"value",
 									m_i18nUtils
 											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.close"))
-					  
-					  
+
+
 				      /*Comment*/
 					jQuery("#inputDataDialog #closeButton").click(function() {
 						jQuery("#inputDataDialog").dialog("close");
 					});
 
-					
+
 					jQuery("#inputDataDialog #applyButton")
 							.click(
 									{
@@ -564,6 +598,12 @@ define(
 					this.initializeModelElement(application);
 
 					this.application = application;
+
+					if ("Public" == this.application.attributes["carnot:engine:visibility"]) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
 
 					m_utils.debug("===> Application");
 					m_utils.debug(application);

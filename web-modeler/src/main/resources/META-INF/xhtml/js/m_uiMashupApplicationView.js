@@ -169,6 +169,7 @@ define(
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 					this.urlInput = jQuery("#urlInput");
+					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "uiMashupApplicationView",
@@ -182,7 +183,38 @@ define(
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.urlInput,
 							"carnot:engine:ui:externalWebApp:uri");
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
 
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else if (!view.publicVisibilityCheckbox
+												.is(":checked")
+												&& view.application.attributes["carnot:engine:visibility"] == "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
+														}
+													});
+										}
+									});
 					this.initializeModelElementView(application);
 				};
 
@@ -195,6 +227,12 @@ define(
 
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
+
+					if ("Public" == this.application.attributes["carnot:engine:visibility"]) {
+						this.publicVisibilityCheckbox.attr("checked", true);
+					} else {
+						this.publicVisibilityCheckbox.attr("checked", false);
+					}
 
 					// TODO Guard needed?
 
