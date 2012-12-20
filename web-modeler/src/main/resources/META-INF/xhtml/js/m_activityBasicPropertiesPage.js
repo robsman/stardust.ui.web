@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -16,10 +16,11 @@ define(
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_modelElementUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_user, m_session, m_model, m_dialog,
-				m_basicPropertiesPage, m_activity, m_i18nUtils) {
+				m_basicPropertiesPage, m_activity, m_i18nUtils, m_modelElementUtils) {
 			return {
 				create : function(propertiesPanel) {
 					i18nProcessActivityScreen();
@@ -93,7 +94,7 @@ define(
 						basicPropertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -231,7 +232,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateUserApplicationSelect = function() {
 					this.userApplicationList.empty();
@@ -271,7 +272,10 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].applications) {
-							if (!m_model.getModels()[n].applications[m].interactive) {
+							if (!m_model.getModels()[n].applications[m].interactive
+									|| !m_modelElementUtils
+											.hasPublicVisibility(m_model
+													.getModels()[n].applications[m])) {
 								continue;
 							}
 
@@ -291,7 +295,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateApplicationSelect = function() {
 					this.applicationList.empty();
@@ -323,7 +327,10 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].applications) {
-							if (m_model.getModels()[n].applications[m].interactive) {
+							if (m_model.getModels()[n].applications[m].interactive
+									|| !m_modelElementUtils
+											.hasPublicVisibility(m_model
+													.getModels()[n].applications[m])) {
 								continue;
 							}
 
@@ -343,7 +350,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateSubprocessSelect = function() {
 					this.subprocessList.empty();
@@ -372,12 +379,17 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].processes) {
-							this.subprocessList.append("<option value='"
-									+ m_model.getModels()[n].processes[m]
-											.getFullId() + "'>"
-									+ m_model.getModels()[n].name + "/"
-									+ m_model.getModels()[n].processes[m].name
-									+ "</option>");
+							if (!(m_model.getModels()[n].processes[m].processInterfaceType === m_constants.NO_PROCESS_INTERFACE_KEY)) {
+								this.subprocessList
+										.append("<option value='"
+												+ m_model.getModels()[n].processes[m]
+														.getFullId()
+												+ "'>"
+												+ m_model.getModels()[n].name
+												+ "/"
+												+ m_model.getModels()[n].processes[m].name
+												+ "</option>");
+							}
 						}
 					}
 
@@ -385,7 +397,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setUserTaskType = function(
 						applicationFullId) {
@@ -426,7 +438,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
 						applicationFullId) {
@@ -456,7 +468,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
 						subprocessFullId, executionType, copyData) {
@@ -484,7 +496,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setRulesType = function(
 						ruleSetUuid) {
@@ -510,7 +522,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitUserTaskChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.userApplicationList
@@ -532,7 +544,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitApplicationChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
@@ -550,7 +562,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
@@ -567,7 +579,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
@@ -591,7 +603,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -675,7 +687,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()) {
