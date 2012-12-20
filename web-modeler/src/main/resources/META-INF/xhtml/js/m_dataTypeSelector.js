@@ -16,9 +16,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				m_i18nUtils) {
+				m_i18nUtils, m_modelElementUtils) {
 			return {
 				create : function(options) {
 					var panel = new DataTypeSelector();
@@ -231,8 +231,7 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							if (!m_model.getModels()[n].typeDeclarations[m].attributes['carnot:engine:visibility']
-									|| m_model.getModels()[n].typeDeclarations[m].attributes['carnot:engine:visibility'] === "Public") {
+							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].typeDeclarations[m])) {
 								this.structuredDataTypeSelect
 										.append("<option value='"
 												+ m_model.getModels()[n].typeDeclarations[m]
@@ -289,10 +288,11 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							// Only composite structured types and not
+							// Only composite structured types (with public visibility) and not
 							// enumerations are listed here
 							if (m_model.getModels()[n].typeDeclarations[m]
-									.isSequence()) {
+									.isSequence()
+									&& m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].typeDeclarations[m])) {
 								this.documentTypeSelect
 										.append("<option value='"
 												+ m_model.getModels()[n].typeDeclarations[m]
