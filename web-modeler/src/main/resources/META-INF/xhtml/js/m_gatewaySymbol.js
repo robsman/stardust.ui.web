@@ -69,8 +69,6 @@ define(
 					this.xorPath = null;
 					this.orCircle = null;
 					this.text = null;
-					this.sourceAnchorPtO = m_constants.UNDEFINED_ORIENTATION;
-					this.engagedAnchorPts = new Array();
 				};
 
 				/**

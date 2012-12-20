@@ -242,15 +242,56 @@ define(
 					var toAnchorPOFixed = this.toAnchorPointOrientation;
 					var orientation = {};
 
+
+					// for Vertical orientation
 					// If the connection is from Activity to Gateway, - use
 					// single target anchor point of Gateway
 					// it will keep other Anchor points of Gateway free for
 					// out-flowing controls
 					if (frmSmbl.type == m_constants.ACTIVITY_SYMBOL
 							&& toSmbl.type == m_constants.GATEWAY_SYMBOL) {
-						if (toSmbl.sourceAnchorPtO != m_constants.UNDEFINED_ORIENTATION
-								&& toAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
-							toAnchorPOFixed = toSmbl.sourceAnchorPtO;
+						if (fromAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
+							if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								fromAnchorPOFixed = 2;
+							} else {
+								fromAnchorPOFixed = 1;
+							}
+						}
+						if (toAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
+							if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								toAnchorPOFixed = 0;
+							} else {
+								toAnchorPOFixed = 3;
+							}
+						}
+					}
+
+					if (frmSmbl.type == m_constants.GATEWAY_SYMBOL
+							&& toSmbl.type == m_constants.ACTIVITY_SYMBOL) {
+						if (toAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
+							if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								toAnchorPOFixed = 0;
+							}
+							else{
+								toAnchorPOFixed = 3;
+							}
+						}
+						if (fromAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
+							if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+								fromAnchorPOFixed = 2;
+								if (toSmbl.anchorPoints[0].x < frmSmbl.anchorPoints[3].x) {
+									fromAnchorPOFixed = 3;
+								} else if (toSmbl.anchorPoints[0].x > frmSmbl.anchorPoints[1].x) {
+									fromAnchorPOFixed = 1;
+								}
+							} else {
+								fromAnchorPOFixed = frmSmbl.anchorPoints[1];
+								if (toSmbl.anchorPoints[3].y < frmSmbl.anchorPoints[0].y) {
+									fromAnchorPOFixed = 0;
+								} else if (toSmbl.anchorPoints[3].y > frmSmbl.anchorPoints[2].y) {
+									fromAnchorPOFixed = 2;
+								}
+							}
 						}
 					}
 
@@ -267,26 +308,21 @@ define(
 						orientation["from"] = fromAnchorPOFixed;
 						orientation["to"] = this.getClosestAnchorPointFor(
 								frmSmbl.anchorPoints[fromAnchorPOFixed],
-								toSmbl.anchorPoints, null)["orient"];
+								toSmbl.anchorPoints)["orient"];
 					} else if (fromAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION
 							&& toAnchorPOFixed != m_constants.UNDEFINED_ORIENTATION) {
 						orientation["to"] = toAnchorPOFixed;
 						orientation["from"] = this.getClosestAnchorPointFor(
 								toSmbl.anchorPoints[toAnchorPOFixed],
-								frmSmbl.anchorPoints, frmSmbl)["orient"];
+								frmSmbl.anchorPoints)["orient"];
 					} else if (fromAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION
 							&& toAnchorPOFixed == m_constants.UNDEFINED_ORIENTATION) {
 						var distance;
 						var orientationDist;
 						for ( var i = 0; i < 4; i++) {
-							if (this.fromModelElementType == m_constants.GATEWAY) {
-								if (frmSmbl.engagedAnchorPts.indexOf(i) != -1) {
-									continue;
-								}
-							}
 							orientationDist = this.getClosestAnchorPointFor(
 									frmSmbl.anchorPoints[i],
-									toSmbl.anchorPoints, null);
+									toSmbl.anchorPoints);
 
 							if (!distance
 									|| (orientationDist["dist"] < distance)) {
@@ -295,34 +331,20 @@ define(
 								orientation["to"] = orientationDist["orient"];
 							}
 						}
-						if (this.fromModelElementType == m_constants.GATEWAY) {
-							frmSmbl.engagedAnchorPts.push(orientation["from"]);
-						}
 					}
 
-					// if activity to Gateway, adjust activity's anchor point
-					if (frmSmbl.type == m_constants.ACTIVITY_SYMBOL
-							&& toSmbl.type == m_constants.GATEWAY_SYMBOL) {
-						toSmbl.sourceAnchorPtO = orientation["to"];
-						toSmbl.engagedAnchorPts.push(orientation["to"]);
-					}
 					return orientation;
 				};
 
 				/**
 				 * finds the closest anchor points of four anchor points
-				 * Skip anchor points of gateways which are already Engaged
+				 *
 				 */
 				Connection.prototype.getClosestAnchorPointFor = function(
-						fromAnchorPoint, toAnchorPoints, gatewaySmbl) {
+						fromAnchorPoint, toAnchorPoints) {
 					var orientationDist = {};
 					var distance;
 					for ( var i = 0; i < 4; i++) {
-						if (gatewaySmbl) {
-							if (gatewaySmbl.engagedAnchorPts.indexOf(i) != -1) {
-								continue;
-							}
-						}
 						var dX = fromAnchorPoint.x - toAnchorPoints[i].x;
 						var dY = fromAnchorPoint.y - toAnchorPoints[i].y;
 						var dX2 = dX * dX;
@@ -338,10 +360,6 @@ define(
 							orientationDist["orient"] = i;
 							orientationDist["dist"] = distance1;
 						}
-					}
-					if (gatewaySmbl) {
-						gatewaySmbl.engagedAnchorPts
-								.push(orientationDist["orient"]);
 					}
 					return orientationDist;
 				};
