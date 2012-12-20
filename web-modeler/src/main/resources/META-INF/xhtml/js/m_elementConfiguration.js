@@ -63,7 +63,11 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"roleParticipant" : "/plugins/bpm-modeler/images/icons/role.png",
 			"teamLeader" : "/plugins/bpm-modeler/images/icons/manager.png",
 			"organizationParticipant" : "/plugins/bpm-modeler/images/icons/organization.png",
-			"conditionalPerformerParticipant" : "/plugins/bpm-modeler/images/icons/conditional.png"
+			"conditionalPerformerParticipant" : "/plugins/bpm-modeler/images/icons/conditional.png",
+			"structuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type.png",
+			"compositeStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-comp.png",
+			"enumStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-enum.png",
+			"importedStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-import.png"
 	};
 
 	return {

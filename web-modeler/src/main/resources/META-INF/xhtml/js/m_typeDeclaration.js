@@ -98,6 +98,14 @@ define(
                             		: this.id);
 				};
 
+				TypeDeclaration.prototype.getType = function() {
+					if (this.isSequence()) {
+						return "compositeStructuredDataType";
+					} else {
+						return "enumStructuredDataType";
+					}
+				};
+
 				/**
 				 *
 				 */

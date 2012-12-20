@@ -301,7 +301,7 @@ define(
 																				"fullId" : typeDeclaration
 																						.getFullId(),
 																				"elementId" : typeDeclaration.id,
-																				"rel" : "structuredDataType",
+																				"rel" : (typeDeclaration.isSequence() ? "compositeStructuredDataType" : "enumStructuredDataType"),
 																				"modelId" : model.id,
 																				"modelUUID" : model.uuid,
 																				"draggable" : true
@@ -495,7 +495,10 @@ define(
 				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
 					renameView("genericApplicationView", uuid,
 							"applicationName", name)
-				} else if (type == "structuredDataType") {
+				} else if (type == "structuredDataType"
+							|| type == "compositeStructuredDataType"
+							|| type == "enumStructuredDataType"
+							|| type == "importedStructuredDataType") {
 					renameView("xsdStructuredDataTypeView", uuid,
 							"structuredDataTypeName", name)
 				} else if (type == "conditionalPerformerParticipant") {
@@ -932,7 +935,10 @@ define(
 														+ "&modelUUID="
 														+ model.uuid,
 												application.uuid);
-									} else if (data.rslt.obj.attr('rel') == "structuredDataType") {
+									} else if (data.rslt.obj.attr('rel') == "structuredDataType"
+												|| data.rslt.obj.attr('rel') == "compositeStructuredDataType"
+												|| data.rslt.obj.attr('rel') == "enumStructuredDataType"
+												|| data.rslt.obj.attr('rel') == "importedStructuredDataType") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -1613,6 +1619,21 @@ define(
 											"structuredDataType" : {
 												"icon" : {
 													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type.png"
+												}
+											},
+											"compositeStructuredDataType" : {
+												"icon" : {
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-comp.png"
+												}
+											},
+											"enumStructuredDataType" : {
+												"icon" : {
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-enum.png"
+												}
+											},
+											"importedStructuredDataType" : {
+												"icon" : {
+													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-import.png"
 												}
 											},
 											"applications" : {
@@ -2441,6 +2462,12 @@ define(
 											obj.changes.modified[i].dataType);
 								}
 
+								// Change struct type icon in case the type
+								// changes
+								if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
+									node.attr("rel", modelElement.getType());
+								}
+
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
 								m_utils.inheritFields(modelElement,
@@ -2819,7 +2846,7 @@ define(
 					jQuery("#outline").jstree("create", parentSelector, "last",
 							{
 								"attr" : {
-									"rel" : "structuredDataType",
+									"rel" : "compositeStructuredDataType",
 									"modelId" : model.id,
 									"modelUUID" : model.uuid,
 									"id" : dataStructure.uuid,

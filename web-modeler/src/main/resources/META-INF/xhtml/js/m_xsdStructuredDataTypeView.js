@@ -14,10 +14,11 @@
 define(
 		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser",
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils) {
+				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -36,6 +37,7 @@ define(
 			 */
 			function XsdStructuredDataTypeView() {
 				var view = m_modelElementView.create();
+				var viewManager = m_jsfViewManager.create();
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(XsdStructuredDataTypeView.prototype,
@@ -155,6 +157,8 @@ define(
 					this.initializeModelElement(typeDeclaration);
 
 					this.typeDeclaration = typeDeclaration;
+
+					this.updateViewIcon();
 
 					m_utils.debug("===> Type Declaration");
 					m_utils.debug(this.typeDeclaration);
@@ -563,6 +567,19 @@ define(
 					}
 
 					return true;
+				};
+
+				/**
+				 *
+				 */
+				XsdStructuredDataTypeView.prototype.updateViewIcon = function() {
+					var dataTypeViewIcon = m_elementConfiguration
+							.getIconForElementType(this.typeDeclaration.getType());
+					if (dataTypeViewIcon) {
+						viewManager.updateView("xsdStructuredDataTypeView",
+								m_constants.VIEW_ICON_PARAM_KEY + "="
+										+ dataTypeViewIcon, this.typeDeclaration.uuid);
+					}
 				};
 			}
 		});
