@@ -42,6 +42,7 @@
    <dependencies>
       <!-- ipp-portal-api-compile -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile->engine-module-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile->spring-module-compile" />
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-compile-optional->jcr-vfs-module-runtime" />
       <!-- ipp-portal-api-runtime -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-runtime->engine-module-runtime" />
