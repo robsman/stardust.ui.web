@@ -789,6 +789,8 @@ define(
 									m_constants.DEFAULT_FLY_OUT_MENU_WIDTH,
 									m_constants.DEFAULT_FLY_OUT_MENU_HEIGHT,
 									{
+										"stroke" : m_constants.FLY_OUT_MENU_STROKE,
+										"stroke-width" : m_constants.FLY_OUT_MENU_STROKE_WIDTH,
 										'fill' : m_constants.FLY_OUT_MENU_FILL,
 										'fill-opacity' : m_constants.FLY_OUT_MENU_START_OPACITY,
 										'r' : m_constants.FLY_OUT_MENU_R
