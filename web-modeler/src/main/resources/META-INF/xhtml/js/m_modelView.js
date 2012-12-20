@@ -249,10 +249,11 @@ define(
 												}
 
 												content += "</td>";
-												content += "<td><a id=\"issue"
+												content += "<td class=\"modelProblemElement\">";
+												content += "<a id=\"issue"
 														+ n + "\">";
 												content += "</a></td>";
-												content += "<td>";
+												content += "<td class=\"modelProblemDescription\">";
 												content += json[n].message;
 												content += "</td>";
 												content += "</tr>";
