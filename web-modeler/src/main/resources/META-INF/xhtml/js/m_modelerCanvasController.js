@@ -147,8 +147,10 @@ define(
 												.getTransferObject().attr.fullId);
 								diagram.poolSymbol
 										.createSwimlaneSymbolFromParticipant(participant);
-							} else if ('structuredDataType' == parent.iDnD
-									.getTransferObject().elementType) {
+							} else if ('structuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'compositeStructuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'enumStructuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'importedStructuredDataType' == parent.iDnD.getTransferObject().elementType) {
 								var dataStructure = m_model.findTypeDeclaration(parent.iDnD
 												.getTransferObject().attr.fullId);
 								var data = m_data.createDataFromDataStructure(
