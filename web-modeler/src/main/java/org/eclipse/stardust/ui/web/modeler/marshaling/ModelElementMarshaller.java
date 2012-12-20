@@ -269,60 +269,62 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             DataTypeType dataType = formalParameter.getDataType();
             ModelType model = ModelUtils.findContainingModel(formalParameter);
+            if (model != null) {
+               if (dataType.getCarnotType()
+                     .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+               {
+                  formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
 
-            if (dataType.getCarnotType()
-                  .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
-            {
-               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                     ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+                  String typeDeclarationId = dataType.getDeclaredType().getId();
 
-               String typeDeclarationId = dataType.getDeclaredType().getId();
+                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                        .getTypeDeclaration(typeDeclarationId);
 
-               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
-                     .getTypeDeclaration(typeDeclarationId);
+                  String fullId = getModelBuilderFacade().createFullId(model,
+                        typeDeclaration);
 
-               String fullId = getModelBuilderFacade().createFullId(model,
-                     typeDeclaration);
+                  formalParameterJson.addProperty(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+               }
+               else if (dataType.getCarnotType().equals(
+                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+               {
+                  formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
 
-               formalParameterJson.addProperty(
-                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-            }
-            else if (dataType.getCarnotType().equals(
-                  ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-            {
-               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
+                  String typeDeclarationId = dataType.getDeclaredType().getId();
 
-               String typeDeclarationId = dataType.getDeclaredType().getId();
+                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                        .getTypeDeclaration(typeDeclarationId);
 
-               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
-                     .getTypeDeclaration(typeDeclarationId);
+                  String fullId = getModelBuilderFacade().createFullId(model,
+                        typeDeclaration);
 
-               String fullId = getModelBuilderFacade().createFullId(model,
-                     typeDeclaration);
+                  formalParameterJson.addProperty(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+               }
+               else if (dataType.getCarnotType().equals(
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+               {
+                  formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+                  String type = mapPrimitiveTypes(formalParameter.getDataType()
+                        .getBasicType()
+                        .getType()
+                        .getLiteral());
+                  formalParameterJson.addProperty(
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+               }
+               FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
+               if (mappingsType != null)
+               {
+                  DataType data = mappingsType.getMappedData(formalParameter);
+                  String fullID = getModelBuilderFacade().createFullId(model, data);
+                  formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                        fullID);
+               }
 
-               formalParameterJson.addProperty(
-                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-            }
-            else if (dataType.getCarnotType().equals(
-                  ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-            {
-               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                     ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-               String type = mapPrimitiveTypes(formalParameter.getDataType()
-                     .getBasicType()
-                     .getType()
-                     .getLiteral());
-               formalParameterJson.addProperty(
-                     ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
-            }
-            FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
-            if (mappingsType != null)
-            {
-               DataType data = mappingsType.getMappedData(formalParameter);
-               String fullID = getModelBuilderFacade().createFullId(model, data);
-               formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-                     fullID);
             }
          }
       }
@@ -441,9 +443,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          if ( !StringUtils.isEmpty(roleUri))
          {
             ModelType model = ModelUtils.findContainingModel(laneSymbol);
-            
+
             ModelType referencedModel = null;
-            
+
             if(model != null)
             {
                URI createURI = URI.createURI(roleUri);
@@ -451,7 +453,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      + createURI.authority() + "/"; //$NON-NLS-1$
                referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
             }
-            
+
             if (referencedModel != null)
             {
                String roleId = getModelBuilderFacade().createFullId(referencedModel,
@@ -1171,7 +1173,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          if (!StringUtils.isEmpty(dataUri))
          {
             ModelType referencedModel = null;
-            
+
             if(model != null)
             {
                URI createURI = URI.createURI(dataUri);
@@ -1179,7 +1181,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   + createURI.authority() + "/"; //$NON-NLS-1$
                referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
             }
-            
+
             if(referencedModel != null)
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
@@ -1407,7 +1409,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       if (!StringUtils.isEmpty(roleUri))
       {
          ModelType referencedModel = null;
-         
+
          if(model != null)
          {
             URI createURI = URI.createURI(roleUri);
@@ -1415,7 +1417,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                + createURI.authority() + "/"; //$NON-NLS-1$
             referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
          }
-         
+
          if(referencedModel != null)
          {
             String roleId = getModelBuilderFacade().createFullId(referencedModel, role);
