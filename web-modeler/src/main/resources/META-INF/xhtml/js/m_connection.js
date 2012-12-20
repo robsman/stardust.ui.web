@@ -371,6 +371,10 @@ define(
 				Connection.prototype.updateAnchorPointForSymbol = function() {
 					var sourceOrientation = null;
 					var targetOrientation = 0;
+					if (this.diagram.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL) {
+						targetOrientation = 3;
+					}
+
 					if (this.fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL
 							|| this.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 						var startSymbol = this.fromAnchorPoint.symbol;
