@@ -308,24 +308,12 @@ define(
 				}
 				/**
 				 * generate command type based on i/p . i.e create,remove
+				 * Here we are relying on the symbol's "type" to generate command.
+				 * Override the function if you need a different command ID.
 				 */
 				Symbol.prototype.getCommandIdForNode = function(str) {
-					var commandType = null;
-					if (this.type == m_constants.ACTIVITY_SYMBOL) {
-						commandType = "activitySymbol." + str;
-					} else if (this.type == m_constants.GATEWAY_SYMBOL) {
-						commandType = "gateSymbol." + str;
-					} else if (this.type == m_constants.EVENT_SYMBOL) {
-						commandType = "eventSymbol." + str;
-					} else if (this.type == m_constants.DATA_SYMBOL) {
-						commandType = "dataSymbol." + str;
-					} else if (m_constants.SWIMLANE_SYMBOL.match(this.type)) {
-						commandType = "swimlaneSymbol." + str;
-					} else if (m_constants.ANNOTATION_SYMBOL.match(this.type)) {
-						commandType = "annotationSymbol." + str;
-					}
 
-					return commandType;
+					return this.type + "." + str;
 				}
 				/**
 				 *
