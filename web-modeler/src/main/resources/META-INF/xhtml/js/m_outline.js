@@ -1391,8 +1391,10 @@ define(
 														}
 													}
 												};
-											} else if ('structuredDataType' == node
-													.attr('rel')) {
+											} else if ("structuredDataType" == node.attr('rel')
+														|| "compositeStructuredDataType" == node.attr('rel')
+														|| "enumStructuredDataType" == node.attr('rel')
+														|| "importedStructuredDataType" == node.attr('rel')) {
 												return {
 													"ccp" : false,
 													"create" : false,
