@@ -100,7 +100,7 @@ public class PluginResourceUtils
                   String extensionWebUriKey = webUriPrefix.substring(0, webUriPrefix.lastIndexOf("/")) + pluginFolder
                         + "/" + splitArr[1].substring(0, splitArr[1].indexOf("/"));
 
-                  List<Resource> resourceFile = allExtensions.get(extensionWebUri);
+                  List<Resource> resourceFile = allExtensions.get(extensionWebUriKey);
                   if (null == resourceFile)
                   {
                      resourceFile = CollectionUtils.newArrayList();
