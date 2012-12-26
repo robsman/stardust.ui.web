@@ -953,7 +953,7 @@ define(
 			}
 
 			function PoolSymbol_hoverInFlyOutMenuClosure() {
-				this.auxiliaryProperties.callbackScope.showFlyOutMenu();
+				//this.auxiliaryProperties.callbackScope.showFlyOutMenu();
 			}
 
 			function PoolSymbol_hoverOutFlyOutMenuClosure() {
