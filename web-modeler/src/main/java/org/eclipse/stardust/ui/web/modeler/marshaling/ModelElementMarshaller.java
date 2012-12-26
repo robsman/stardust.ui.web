@@ -235,7 +235,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       // TODO Better way to determine whether a process provides an interface?
 
-      if (processDefinition.getFormalParameters() != null)
+      if (null != processDefinition.getFormalParameters()
+            && null != processDefinition.getFormalParameters().getFormalParameter()
+            && processDefinition.getFormalParameters().getFormalParameter().size() > 0)
       {
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);
@@ -320,9 +322,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                if (mappingsType != null)
                {
                   DataType data = mappingsType.getMappedData(formalParameter);
-                  String fullID = getModelBuilderFacade().createFullId(model, data);
-                  formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
-                        fullID);
+                  setDataFullID(formalParameterJson, model, data);
                }
 
             }
@@ -2592,5 +2592,43 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return new ModelBuilderFacade(modelManagementStrategy());
+   }
+
+   /**
+    * @param data
+    * @param model
+    * @param jsonObj
+    */
+   private void setDataFullID(JsonObject jsonObj, ModelType model, DataType data)
+   {
+      if (null != data)
+      {
+         String dataUri = AttributeUtil.getAttributeValue((IExtensibleElement) data,
+               IConnectionManager.URI_ATTRIBUTE_NAME);
+
+         if ( !StringUtils.isEmpty(dataUri))
+         {
+            ModelType referencedModel = null;
+
+            if (model != null)
+            {
+               URI createURI = URI.createURI(dataUri);
+               String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
+                     + createURI.authority() + "/"; //$NON-NLS-1$
+               referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
+            }
+
+            if (referencedModel != null)
+            {
+               String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
+               jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);
+            }
+         }
+         else
+         {
+            String fullID = getModelBuilderFacade().createFullId(model, data);
+            jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
+         }
+      }
    }
 }
