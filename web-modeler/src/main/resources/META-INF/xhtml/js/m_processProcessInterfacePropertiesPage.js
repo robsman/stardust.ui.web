@@ -32,7 +32,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ProcessProcessInterfacePropertiesPage(newPropertiesPanel,
 					newId, newTitle) {
@@ -48,7 +48,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.initialize = function() {
 					this.processInterfaceTypeSelectInput = this
@@ -100,6 +100,8 @@ define(
 											event.data.callbackScope
 													.setImplementsProcessInterface();
 										}
+
+										event.data.callbackScope.submitProcessInterfaceType();
 									});
 					this.processInterfaceFromDataCreationWizardLink.click({
 						"callbackScope" : this
@@ -203,7 +205,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.internationalizeLabels = function() {
 					this.processInterfaceTypeSelectInput.append("<option value='" + m_constants.NO_PROCESS_INTERFACE_KEY + "'>" + m_i18nUtils.getProperty("modeler.processdefinition.propertyPages.processInterface.type.noProcessInterface") + "</option>" );
@@ -216,15 +218,15 @@ define(
 									.getProperty("modeler.processdefinition.propertyPages.processInterface.type.implementsProcessInterface") + "</option>");
 
 					// TODO Ugly
-					
+
 					jQuery("#processdefinitionselect").find("label[for='processInterfaceTypeSelectInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.type"));
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateProcessDataTable = function() {
 					this.processDataTableBody.empty();
@@ -258,7 +260,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
 					this.processInterfaceTypeSelectInput.val(m_constants.NO_PROCESS_INTERFACE_KEY);
@@ -269,7 +271,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setProvidesProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -290,7 +292,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setImplementsProcessInterface = function() {
 					this.processInterfaceTypeSelectInput
@@ -301,7 +303,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.populateParameterDefinitionFields = function() {
 					this.parameterDefinitionNameInput
@@ -317,14 +319,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -334,7 +336,7 @@ define(
 						this.setNoInterface();
 					} else if (this.getModelElement().processInterfaceType == m_constants.PROVIDES_PROCESS_INTERFACE_KEY) {
 						this.setProvidesProcessInterface();
-						
+
 						// Set protocol
 
 						if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "SOAP") {
@@ -360,13 +362,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.validate = function() {
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.submitProtocol = function() {
 					var attributes = {};
@@ -397,6 +399,16 @@ define(
 						formalParameters) {
 					this.propertiesPanel.submitChanges({
 						"formalParameters" : formalParameters
+					});
+				};
+
+				/**
+				 *
+				 */
+				ProcessProcessInterfacePropertiesPage.prototype.submitProcessInterfaceType = function(
+						formalParameters) {
+					this.propertiesPanel.submitChanges({
+						"processInterfaceType" : this.processInterfaceTypeSelectInput.val()
 					});
 				};
 			}
