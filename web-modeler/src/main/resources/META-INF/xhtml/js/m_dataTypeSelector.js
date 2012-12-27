@@ -478,20 +478,24 @@ define(
 					if (this.submitHandler) {
 
 						var structTypeFullId;
-						if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect
+						var primitiveDataType;
+						if (m_constants.PRIMITIVE_DATA_TYPE == this.dataTypeSelect
+								.val()) {
+							primitiveDataType = this.primitiveDataTypeSelect
+									.val();
+						} else if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect
 								.val()) {
 							structTypeFullId = this.structuredDataTypeSelect
-									.val()
+									.val();
 						} else if (m_constants.DOCUMENT_DATA_TYPE == this.dataTypeSelect
 								.val()) {
-							structTypeFullId = this.documentTypeSelect.val()
+							structTypeFullId = this.documentTypeSelect.val();
 						}
 
 						// TODO Check for changes?
 						this.submitHandler.submitDataChanges({
 							dataType : this.dataTypeSelect.val(),
-							primitiveDataType : this.primitiveDataTypeSelect
-									.val(),
+							primitiveDataType : primitiveDataType,
 							structuredDataTypeFullId : structTypeFullId
 						});
 					}

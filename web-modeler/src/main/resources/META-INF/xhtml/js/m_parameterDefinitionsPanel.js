@@ -343,10 +343,6 @@ define(
 					if (this.options.supportsDataTypeSelection) {
 						this.dataTypeSelector.setScopeModel(scopeModel);
 					}
-
-					if (this.options.supportsDataMappings) {
-						this.populateDataItemsList();
-					}
 				};
 
 				/**
@@ -395,7 +391,8 @@ define(
 							var dataItem = this.scopeModel.dataItems[i];
 							// Show only data items from this model and not
 							// external references.
-							if (!dataItem.externalReference) {
+							if (!dataItem.externalReference
+									&& this.isDataOfSelectedType(dataItem)) {
 								this.parameterDefinitionDataSelect
 										.append("<option value='"
 												+ dataItem.getFullId() + "'>"
@@ -419,16 +416,49 @@ define(
 						for ( var m in m_model.getModels()[n].dataItems) {
 							var dataItem = m_model.getModels()[n].dataItems[m];
 
-							this.parameterDefinitionDataSelect
-									.append("<option value='"
-											+ dataItem.getFullId() + "'>"
-											+ m_model.getModels()[n].name + "/"
-											+ dataItem.name + "</option>");
+							if (this.isDataOfSelectedType(dataItem)) {
+								this.parameterDefinitionDataSelect
+										.append("<option value='"
+												+ dataItem.getFullId() + "'>"
+												+ m_model.getModels()[n].name
+												+ "/" + dataItem.name
+												+ "</option>");
+							}
 						}
 					}
 
 					this.parameterDefinitionDataSelect.append("</optgroup>");
+
+					if (!this.currentParameterDefinition ||
+							!this.currentParameterDefinition.dataFullId) {
+						this.parameterDefinitionDataSelect
+								.val(m_constants.TO_BE_DEFINED);
+					} else {
+						this.parameterDefinitionDataSelect
+								.val(this.currentParameterDefinition.dataFullId);
+					}
 				};
+
+				/**
+				 *
+				 */
+				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(data) {
+					if (this.dataTypeSelector
+							&& data.dataType === this.dataTypeSelector.dataTypeSelect.val()) {
+						if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
+								&& data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
+							return true
+						} else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect.val()) {
+							return true
+						} else if (data.dataType === m_constants.DOCUMENT_DATA_TYPE
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.documentTypeSelect.val()) {
+							return true
+						}
+					}
+
+					return false;
+				}
 
 				/**
 				 *
@@ -649,13 +679,7 @@ define(
 							this.parameterDefinitionDataSelect
 									.removeAttr("disabled");
 
-							if (this.currentParameterDefinition.dataFullId == null) {
-								this.parameterDefinitionDataSelect
-										.val(m_constants.TO_BE_DEFINED);
-							} else {
-								this.parameterDefinitionDataSelect
-										.val(this.currentParameterDefinition.dataFullId);
-							}
+							this.populateDataItemsList();
 
 							if (this.options.supportsDataPathes) {
 								this.parameterDefinitionPathInput

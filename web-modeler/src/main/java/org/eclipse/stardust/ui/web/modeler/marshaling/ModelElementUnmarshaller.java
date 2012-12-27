@@ -473,7 +473,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             expressionValue = "true";
          }
-         
+
          ModelUtils.setCDataString(expression.getMixed(),
                expressionValue, true);
          transition.setExpression(expression);
@@ -895,6 +895,26 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
 
                getModelBuilderFacade().createStructuredParameter(
+                     processDefinition,
+                     data, NameIdUtils.createIdFromName(formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
+                           .getAsString()),
+                     formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
+                           .getAsString(), structuredDataTypeFullId, mode);
+            }
+            else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+            {
+               String structuredDataTypeFullId = null;
+
+               if (formalParameterJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+               {
+                  structuredDataTypeFullId = formalParameterJson.get(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                        .getAsString();
+               }
+
+               getModelBuilderFacade().createDocumentParameter(
                      processDefinition,
                      data, NameIdUtils.createIdFromName(formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                            .getAsString()),
