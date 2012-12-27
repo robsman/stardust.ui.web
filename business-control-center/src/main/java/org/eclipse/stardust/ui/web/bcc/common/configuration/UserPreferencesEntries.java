@@ -13,7 +13,8 @@ package org.eclipse.stardust.ui.web.bcc.common.configuration;
 public interface UserPreferencesEntries
 {
    public static final String M_BCC = "ipp-business-control-center";
-   
+   // Admin Module is used for fetching User Preference 
+   public static final String M_ADMIN_PORTAL = "ipp-admin-portal";
   
    public static final String V_PRIORITY_VIEW = "priorityView";
    public static final String V_COMPLETED_ACTIVITY = "CompletedActivity";

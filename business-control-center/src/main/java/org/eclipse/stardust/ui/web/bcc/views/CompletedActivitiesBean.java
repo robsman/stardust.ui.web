@@ -245,7 +245,10 @@ public class CompletedActivitiesBean extends UIComponentBean implements Resource
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+
       userStatistics = (UserPerformanceStatistics) facade.getAllUsers(UserPerformanceStatisticsQuery.forAllUsers());
 
       if (queryExtender != null)

@@ -288,7 +288,10 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
             Constants.getCriticalDurationThreshold(ProcessInstancePriority.HIGH, 1.0f)));
       pStat = (PostponedActivitiesStatistics) facade.getAllUsers(query);
       UserQuery uQuery = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-      uQuery.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      uQuery.setPolicy(userPolicy);
+
       if (queryExtender != null)
       {
          queryExtender.extendQuery(uQuery);

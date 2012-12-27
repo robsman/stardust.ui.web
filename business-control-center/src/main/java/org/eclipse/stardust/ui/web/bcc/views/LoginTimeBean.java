@@ -271,7 +271,10 @@ public class LoginTimeBean extends UIComponentBean
          statistics = (UserLoginStatistics) facade.getAllUsers(UserLoginStatisticsQuery
                .forAllUsers());
          UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         query.setPolicy(userPolicy);
+
          if (queryExtender != null)
          {
             queryExtender.extendQuery(query);

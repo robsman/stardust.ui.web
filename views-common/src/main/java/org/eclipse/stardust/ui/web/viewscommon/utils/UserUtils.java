@@ -101,8 +101,12 @@ public class UserUtils
    public static List<User> searchUsers(String searchValue, boolean onlyActive, int maxMatches)
    {
       UserQuery userQuery = onlyActive ? UserQuery.findActive() : UserQuery.findAll();
+      
+      String[] prefModules = {UserPreferencesEntries.M_ADMIN_PORTAL,UserPreferencesEntries.M_VIEWS_COMMON};
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(prefModules);
+      userQuery.setPolicy(userPolicy);
 
-      userQuery.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
       userQuery.setPolicy(new SubsetPolicy(maxMatches, false));
 
       FilterOrTerm filter = userQuery.getFilter().addOrTerm();

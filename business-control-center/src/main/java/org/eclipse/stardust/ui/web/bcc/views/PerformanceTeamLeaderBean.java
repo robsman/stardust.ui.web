@@ -455,7 +455,9 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
       UserQuery query = UserQuery.findAll();
       query.getFilter().add(
             ParticipantAssociationFilter.forTeamLeader(tl.getTeamleaderRole()));
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       return facade.getAllUsers(query);
    }

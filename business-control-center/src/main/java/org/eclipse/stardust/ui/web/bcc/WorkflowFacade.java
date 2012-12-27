@@ -69,6 +69,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatistics.
 import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatistics.UserStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.WorklistStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterLocalizerKey;
 import org.eclipse.stardust.ui.web.bcc.jsf.InvalidServiceException;
 import org.eclipse.stardust.ui.web.bcc.jsf.PageMessage;
@@ -215,7 +216,9 @@ public class WorkflowFacade implements Resetable
       }
       
       UserQuery query = UserQuery.findActive();
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
       List<User> users = getQueryService().getAllUsers(query);
       
       Pair/* <Map<String, RoleItem>, Map<Long, UserItem>> */pair = getWorklistStatistics(roles, users);

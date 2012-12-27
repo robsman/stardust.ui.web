@@ -342,7 +342,9 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
    public Query createQuery()
    {
       UserQuery query = UserQuery.findActive();
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
 
       if (queryExtender != null)
       {
