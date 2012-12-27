@@ -993,6 +993,10 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
       {
          permissionObject.setContainsDefaultParticipants(true);
       }
+      else
+      {
+         permissionObject.setContainsDefaultParticipants(false);
+      }
 
       // check permission node is selected
       if (selectedPermissions.contains(permissionId))
