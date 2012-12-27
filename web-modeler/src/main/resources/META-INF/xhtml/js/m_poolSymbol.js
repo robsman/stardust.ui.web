@@ -89,10 +89,11 @@ define(
 						hasLanes = true;
 					}
 
-					// TODO Verify
-
 					if (!hasLanes) {
-						this.createDefaultLane();
+						m_messageDisplay
+								.showErrorMessage(m_i18nUtils
+										.getProperty("modeler.diagram.messages.processNotUsingBPMNMode"));
+						return;
 					}
 
 					this.prepareNoPosition();
