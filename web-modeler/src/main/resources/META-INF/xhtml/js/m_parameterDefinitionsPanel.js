@@ -443,6 +443,10 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(data) {
+					if (this.options.supportsDataTypeSelection == false) {
+						return true;
+					}
+
 					if (this.dataTypeSelector
 							&& data.dataType === this.dataTypeSelector.dataTypeSelect.val()) {
 						if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
