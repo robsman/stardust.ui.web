@@ -25,11 +25,13 @@ import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
 import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.IllegalOperationException;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserProfileBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantItem;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -190,38 +192,50 @@ public class ParticipantUserObject extends IceUserObject
             User newUser = userProfileBean.getUser();
             if (null != newUser)
             {
-               switch (nodeType)
+               try
                {
-               case ORGANIZATION_UNSCOPED:
-               case ORGANIZATON_SCOPED_IMPLICIT:
-               case DEPARTMENT_DEFAULT:
-               case ROLE_UNSCOPED:
-               case ROLE_SCOPED:
-               {
-                  newUser.addGrant(getQualifiedModelParticipantInfo());
-                  break;
-               }
-               case USERGROUP:
-               {
-                  newUser.joinGroup(getDynamicParticipantInfo().getId());
-                  break;
-               }
-               case DEPARTMENT:
-               {
-                  Department department = getDepartment();
-                  QualifiedModelParticipantInfo qualifiedParticipantInfo = department.getScopedParticipant(department
-                        .getOrganization());
-                  newUser.addGrant(qualifiedParticipantInfo);
-                  break;
-               }
-               }
-               ServiceFactoryUtils.getUserService().modifyUser(newUser);
+                  switch (nodeType)
+                  {
+                  case ORGANIZATION_UNSCOPED:
+                  case ORGANIZATON_SCOPED_IMPLICIT:
+                  case DEPARTMENT_DEFAULT:
+                  case ROLE_UNSCOPED:
+                  case ROLE_SCOPED:
+                  {
+                     newUser.addGrant(getQualifiedModelParticipantInfo());
+                     break;
+                  }
+                  case USERGROUP:
+                  {
+                     newUser.joinGroup(getDynamicParticipantInfo().getId());
+                     break;
 
-               if (null != refreshUserTableCallback)
-               {
-                  refreshUserTableCallback.handleEvent(ICallbackHandler.EventType.APPLY);
+                  }
+                  case DEPARTMENT:
+                  {
+                     Department department = getDepartment();
+                     QualifiedModelParticipantInfo qualifiedParticipantInfo = department
+                           .getScopedParticipant(department.getOrganization());
+                     newUser.addGrant(qualifiedParticipantInfo);
+                     break;
+                  }
+                  }
+                  ServiceFactoryUtils.getUserService().modifyUser(newUser);
+
+                  if (null != refreshUserTableCallback)
+                  {
+                     refreshUserTableCallback.handleEvent(ICallbackHandler.EventType.APPLY);
+                  }
+                  refreshParticipantTree();
                }
-               refreshParticipantTree();
+               catch (IllegalOperationException e)
+               {
+                  ExceptionHandler.handleException(e);
+               }
+               catch (Exception e)
+               {
+                  ExceptionHandler.handleException(e);
+               }
             }
          }
       });
