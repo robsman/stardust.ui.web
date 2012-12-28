@@ -1994,13 +1994,10 @@ define(
 					this.zoomFactor = Math.max(this.zoomFactor
 							- m_constants.ZOOM_INCREMENT, 1);
 
-					m_canvasManager.setViewBox(this.scrollPane.scrollLeft(),
-							this.scrollPane.scrollTop(), this.zoomFactor);
-
-					// Only zoom viewbox
-
 					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
+
+					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
@@ -2010,13 +2007,10 @@ define(
 					this.zoomFactor = this.zoomFactor
 							+ m_constants.ZOOM_INCREMENT;
 
-					m_canvasManager.setViewBox(this.scrollPane.scrollLeft(),
-							this.scrollPane.scrollTop(), this.zoomFactor);
-
-					// Only zoom viewbox
-
 					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
+
+					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
