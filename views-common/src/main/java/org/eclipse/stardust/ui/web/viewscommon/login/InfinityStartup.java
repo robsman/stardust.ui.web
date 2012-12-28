@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
@@ -31,7 +32,6 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FacesUtils;
 
 
-
 public class InfinityStartup
 {
    private static final Logger trace = LogManager.getLogger(InfinityStartup.class);
@@ -40,6 +40,8 @@ public class InfinityStartup
    
    public final static String RETURN_URL_PARAM = "returnUrl";
    
+   private final static String TIMEOUT_COUNTER = "Carnot.Portal.SessionInvalidate.Timeout.counter";
+   
    private final ServletContext servletContext;
    
    private final HttpServletRequest request;
@@ -47,6 +49,8 @@ public class InfinityStartup
    private final HttpServletResponse response;
 
    private final String params;
+   
+   private final int timeoutCounter;
 
    public InfinityStartup(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)
    {
@@ -64,6 +68,9 @@ public class InfinityStartup
       {
          trace.debug("#InfinityStartup created....");
       }
+      
+      //read parameter
+      this.timeoutCounter = Parameters.instance().getInteger(TIMEOUT_COUNTER, 10);
    }
    
    private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
@@ -155,7 +162,26 @@ public class InfinityStartup
             trace.debug("#Invalidating Session....");
          }
          
-         httpSession.invalidate();
+         if (request.isRequestedSessionIdValid())
+         {
+            try
+            {
+               httpSession.invalidate();
+
+               int counter = timeoutCounter;
+               while (counter > 0 && request.isRequestedSessionIdValid())
+               {
+                  trace.debug("####################Waiting for 100ms...");
+                  Thread.sleep(100);
+                  counter-- ;
+               }
+            }
+            catch (Exception e)
+            {
+               trace.warn("#Exception occurred while invalidating session");
+            }
+         }
+         
 		 if (trace.isDebugEnabled())
          {
             trace.debug("#creating new session");

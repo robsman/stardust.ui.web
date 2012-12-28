@@ -932,7 +932,7 @@ public class PortalApplication
       {
          // don't directly logout, but redirect main page towards logout
          String logoutScript = "InfinityBpm.Core.closeSession();";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), logoutScript);
+         //JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), logoutScript);
          addEventScript(logoutScript); // This is required since addJavascriptCall does not work if JSF Page refresh is involved 
          if (trace.isDebugEnabled())
          {
