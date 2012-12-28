@@ -132,6 +132,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private List<DataMappingWrapper> descriptorItems = new ArrayList<DataMappingWrapper>();
    private List<DataMappingWrapper> caseDescriptorItems = new ArrayList<DataMappingWrapper>();
    private DataPath[] commonDescriptors;
+   private List<DataPath> caseDataPath;
 
    // Case
    private UserAutocompleteMultiSelector ownerSelector;
@@ -867,10 +868,34 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                & ((SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()) || removedCaseProcess))
          {
             descriptorItems.addAll(caseDescriptorItems);
+            commonDescriptors = updateCommonDescriptorsForCase();
          }
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   private DataPath[] updateCommonDescriptorsForCase()
+   {
+      int i = 0;
+      DataPath[] caseDataPathArr = caseDataPath.toArray(new DataPath[0]);
+      // Common Descriptors will contains non-case and case descriptors
+      DataPath[] commonDescriptorsWithCase = new DataPath[commonDescriptors.length + caseDataPathArr.length];
+      // Add selected PD excluding case PD descriptors to commonDescriptors array
+      for (i = 0; i < commonDescriptors.length; i++)
+      {
+         commonDescriptorsWithCase[i] = commonDescriptors[i];
+      }
+      // Add Case descriptors to commonDescriptors array
+      for (int j = 0; j < caseDataPathArr.length; j++, i++)
+      {
+         commonDescriptorsWithCase[i] = caseDataPathArr[j];
+      }
+      return commonDescriptorsWithCase;
+   }
+   
    /**
     * If selected Process is Case Process, return true
     * 
@@ -1054,7 +1079,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
 
       ProcessDefinition caseProcessDefinition = ProcessDefinitionUtils
             .getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
-      List<DataPath> caseDataPath = caseProcessDefinition.getAllDataPaths();
+      caseDataPath = caseProcessDefinition.getAllDataPaths();
       caseDescriptorItems.clear();
       GenericDataMapping mapping;
       DataMappingWrapper dmWrapper;
