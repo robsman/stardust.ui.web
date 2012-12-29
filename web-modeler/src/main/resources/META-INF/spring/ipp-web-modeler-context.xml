@@ -54,7 +54,7 @@
 		<property name="modelService" ref="modelService" />
 	</bean>
 
-	<bean id="uriModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.orion.UriModelManagementStrategy"
+	<bean id="clientModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy"
 		scope="session">
 		<qualifier value="test" />
 	</bean>

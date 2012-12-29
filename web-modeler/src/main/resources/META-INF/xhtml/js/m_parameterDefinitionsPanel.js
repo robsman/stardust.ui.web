@@ -14,12 +14,12 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_model,
+		function(m_utils, m_urlUtils, m_constants, m_extensionManager, m_model,
 				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
 			return {
 				create : function(options) {
@@ -92,6 +92,9 @@ define(
 							+ " #addParameterDefinitionButton");
 					this.deleteParameterDefinitionButton = jQuery(this.options.scope
 							+ " #deleteParameterDefinitionButton");
+
+					this.addParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/add.png");
+					this.deleteParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/delete.png");
 
 					this.currentFocusInput = this.parameterDefinitionNameInput;
 

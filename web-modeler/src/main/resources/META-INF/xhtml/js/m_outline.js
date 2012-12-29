@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -23,8 +23,8 @@ define(
 				"bpm-modeler/js/m_data",
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
-				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_messageDisplay",
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
@@ -33,9 +33,10 @@ define(
 				m_messageDisplay, m_i18nUtils, m_modelerUtils) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
+			var displayScope = "";
+
 			function getURL() {
-				return m_urlUtils
-						.getContextName()
+				return m_urlUtils.getContextName()
 						+ "/services/rest/bpm-modeler/modeler/"
 						+ new Date().getTime();
 			}
@@ -50,11 +51,12 @@ define(
 
 				jQuery
 						.each(
-								m_utils.convertToSortedArray(m_model.getModels(), "name", true),
+								m_utils.convertToSortedArray(m_model
+										.getModels(), "name", true),
 								function(index, model) {
 
-									jQuery("#outline").jstree("create",
-											"#outline", "first", {
+									jQuery(displayScope + "#outline").jstree(
+											"create", displayScope + "#outline", "first", {
 												"attr" : {
 													"id" : model.uuid,
 													"rel" : "model",
@@ -63,14 +65,17 @@ define(
 												"data" : model.name
 											}, null, true);
 
-									jQuery("#outline").jstree("set_type",
-											"model", "#" + model.uuid);
+									jQuery(displayScope + "#outline").jstree(
+											"set_type", "model",
+											"#" + model.uuid);
 
 									jQuery
 											.each(
 													model.processes,
 													function(index, process) {
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"create",
 																		"#"
@@ -92,14 +97,16 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"close_node",
 																		"#"
 																				+ process.id);
 													});
 
-									jQuery("#outline").jstree(
+									jQuery(displayScope + "#outline").jstree(
 											"create",
 											"#" + model.uuid,
 											"first",
@@ -119,7 +126,9 @@ define(
 													function(index, participant) {
 														if (!participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 															if (!participant.parentUUID) {
-																jQuery("#outline")
+																jQuery(
+																		displayScope
+																				+ "#outline")
 																		.jstree(
 																				"create",
 																				"#participants_"
@@ -146,7 +155,9 @@ define(
 																		model,
 																		participant);
 
-																jQuery("#outline")
+																jQuery(
+																		displayScope
+																				+ "#outline")
 																		.jstree(
 																				"close_node",
 																				"#"
@@ -154,12 +165,13 @@ define(
 															}
 														}
 													});
-									jQuery("#outline").jstree("close_node",
+									jQuery(displayScope + "#outline").jstree(
+											"close_node",
 											"#participants_" + model.uuid);
 
 									// Applications
 
-									jQuery("#outline").jstree(
+									jQuery(displayScope + "#outline").jstree(
 											"create",
 											"#" + model.uuid,
 											"first",
@@ -180,7 +192,9 @@ define(
 											.each(
 													model.applications,
 													function(index, application) {
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"create",
 																		"#applications_"
@@ -206,7 +220,9 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"close_node",
 																		"#applications_"
@@ -216,7 +232,7 @@ define(
 									// TODO - remove hard-coding for primitive
 									// data and add nodes of specific data types
 
-									jQuery("#outline")
+									jQuery(displayScope + "#outline")
 											.jstree(
 													"create",
 													"#" + model.uuid,
@@ -237,7 +253,9 @@ define(
 													model.dataItems,
 													function(index, data) {
 														if (!data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"create",
 																			"#data_"
@@ -257,7 +275,9 @@ define(
 																			},
 																			null,
 																			true);
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"close_node",
 																			"#data_"
@@ -267,7 +287,7 @@ define(
 
 									// Structured Data Types
 
-									jQuery("#outline").jstree(
+									jQuery(displayScope + "#outline").jstree(
 											"create",
 											"#" + model.uuid,
 											"first",
@@ -289,7 +309,9 @@ define(
 													model.typeDeclarations,
 													function(index,
 															typeDeclaration) {
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"create",
 																		"#structuredTypes_"
@@ -310,15 +332,17 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery("#outline")
+														jQuery(
+																displayScope
+																		+ "#outline")
 																.jstree(
 																		"close_node",
 																		"#structuredTypes_"
 																				+ model.uuid);
 													});
 
-									jQuery("#outline").jstree("close_node",
-											"#" + model.uuid);
+									jQuery(displayScope + "#outline").jstree(
+											"close_node", "#" + model.uuid);
 								});
 				hasUnsavedModifications = false;
 				jQuery("#undoChange").addClass("toolDisabled");
@@ -329,7 +353,7 @@ define(
 				if (parentParticipant.childParticipants) {
 					jQuery.each(parentParticipant.childParticipants, function(
 							index, participant) {
-						jQuery("#outline").jstree("create",
+						jQuery(displayScope + "#outline").jstree("create",
 								"#" + parentParticipant.uuid, "last", {
 									"attr" : {
 										"id" : participant.uuid,
@@ -344,7 +368,7 @@ define(
 									"data" : participant.name
 								}, null, true);
 						loadChildParticipants(model, participant);
-						jQuery("#outline").jstree("close_node",
+						jQuery(displayScope + "#outline").jstree("close_node",
 								"#" + participant.uuid);
 					});
 				}
@@ -388,8 +412,8 @@ define(
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
 					var parentSelector = '#' + parent;
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
 									"rel" : "manual_activity",
@@ -399,8 +423,8 @@ define(
 							}, null, true);
 				} else if (type == "subProcessActivity") {
 					var parentSelector = '#' + parent;
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
 									"rel" : "sub_process_activity"
@@ -409,8 +433,8 @@ define(
 							}, null, true);
 				} else if (type == 'primitiveDataType') {
 					var parentSelector = '#' + parent;
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
 									"rel" : "Primitive_Data",
@@ -420,8 +444,8 @@ define(
 							}, null, true);
 				} else if (type == 'role') {
 					var parentSelector = '#' + parent;
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
 									rel : "participant_role",
@@ -520,7 +544,8 @@ define(
 								attributes : {
 									width : "400px",
 									height : "200px",
-									src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
+									src : m_urlUtils.getPlugsInRoot()
+											+ "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
 								},
 								payload : {
 									title : "Confirm",
@@ -543,7 +568,7 @@ define(
 				// state.
 				m_modelerUtils.closeAllModelerViews();
 
-				jQuery("#outline").empty();
+				jQuery(displayScope + "#outline").empty();
 				readAllModels(true);
 			};
 
@@ -555,7 +580,8 @@ define(
 									attributes : {
 										width : "400px",
 										height : "200px",
-										src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/confirmationPopupDialogContent.html"
+										src : m_urlUtils.getPlugsInRoot()
+												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
 										title : "Warning",
@@ -708,7 +734,7 @@ define(
 
 				// Tree Node Selection
 
-				jQuery("#outline")
+				jQuery(displayScope + "#outline")
 						.bind(
 								"select_node.jstree",
 								function(event, data) {
@@ -1092,7 +1118,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1154,7 +1182,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1259,7 +1289,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1324,7 +1356,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1402,7 +1436,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1437,7 +1473,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1486,7 +1524,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1519,7 +1559,9 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery("#outline")
+															jQuery(
+																	displayScope
+																			+ "#outline")
 																	.jstree(
 																			"rename",
 																			"#"
@@ -1574,7 +1616,9 @@ define(
 										"types" : {
 											"model" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/model.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/model.png"
 												},
 												"valid_children" : [
 														"participants",
@@ -1585,42 +1629,58 @@ define(
 											},
 											"participants" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/participants.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/participants.png"
 												}
 											},
 											"roleParticipant" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/role.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/role.png"
 												}
 											},
 											"teamLeader" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/manager.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/manager.png"
 												}
 											},
 											"organizationParticipant" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/organization.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/organization.png"
 												}
 											},
 											"conditionalPerformerParticipant" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/conditional.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/conditional.png"
 												}
 											},
 											"process" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/process.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/process.png"
 												}
 											},
 											"structuredTypes" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-types.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/structured-types.png"
 												}
 											},
 											"structuredDataType" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/structured-type.png"
 												}
 											},
 											"compositeStructuredDataType" : {
@@ -1640,132 +1700,184 @@ define(
 											},
 											"applications" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/applications.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/applications.png"
 												}
 											},
 											"interactive" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-c-ext-web.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-c-ext-web.png"
 												}
 											},
 											"plainJava" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-plain-java.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-plain-java.png"
 												}
 											},
 											"jms" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-jms.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-jms.png"
 												}
 											},
 											"webservice" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-web-service.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-web-service.png"
 												}
 											},
 											"dmsOperation" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-dms.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-dms.png"
 												}
 											},
 											"mailBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-mail.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-mail.png"
 												}
 											},
 											"messageParsingBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-p.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-message-p.png"
 												}
 											},
 											"messageSerializationBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-s.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-message-s.png"
 												}
 											},
 											"messageTransformationBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-trans.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-message-trans.png"
 												}
 											},
 											"camelSpringProducerApplication" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-camel.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-camel.png"
 												}
 											},
 											"rulesEngineBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-drools.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-drools.png"
 												}
 											},
 											"sessionBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-session.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-session.png"
 												}
 											},
 											"springBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-plain-java.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-plain-java.png"
 												}
 											},
 											"xslMessageTransformationBean" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/application-message-trans.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-message-trans.png"
 												}
 											},
 											"data" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data.png"
 												}
 											},
 											"primitive" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-primitive.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-primitive.png"
 												}
 											},
 											"hibernate" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-hibernate.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-hibernate.png"
 												}
 											},
 											"struct" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-structured.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-structured.png"
 												}
 											},
 											"serializable" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-serializable.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-serializable.png"
 												}
 											},
 											"entity" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-entity.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-entity.png"
 												}
 											},
 											"dmsDocument" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-document.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-document.png"
 												}
 											},
 											"dmsDocumentList" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-document-list.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-document-list.png"
 												}
 											},
 											"dmsFolder" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-folder.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-folder.png"
 												}
 											},
 											"dmsFolderList" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-folder-list.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-folder-list.png"
 												}
 											},
 											"plainXML" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/data-xml.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/data-xml.png"
 												}
 											}
 										}
@@ -1793,14 +1905,15 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/notificationDialog.html"
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/popups/notificationDialog.html"
 						},
 						payload : {
 							title : "Info",
@@ -1811,14 +1924,15 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/popups/errorDialog.html"
 						},
 						payload : {
 							title : "Error",
@@ -1829,7 +1943,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createModel() {
 					var modelName = m_i18nUtils
@@ -1860,7 +1974,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1869,7 +1983,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -1885,26 +1999,34 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createProcess(modelId) {
-					var procNamePrefix = m_i18nUtils.getProperty("modeler.outline.newProcess.namePrefix");
+					var procNamePrefix = m_i18nUtils
+							.getProperty("modeler.outline.newProcess.namePrefix");
 					var name = getUniqueNameForElement(modelId, procNamePrefix);
 
 					// TODO
-					// Temporarily added I18n FOR default pool and lane names on client side,
+					// Temporarily added I18n FOR default pool and lane names on
+					// client side,
 					// till this is handled on server side.
-					m_commandsController.submitCommand(m_command
-							.createCreateProcessCommand(modelId, modelId, {
-								"name" : name,
-								"defaultPoolName" : m_i18nUtils.getProperty("modeler.diagram.defaultPoolName"),
-								"defaultLaneName" : m_i18nUtils.getProperty("modeler.diagram.defaultLaneName")
-							}));
+					m_commandsController
+							.submitCommand(m_command
+									.createCreateProcessCommand(
+											modelId,
+											modelId,
+											{
+												"name" : name,
+												"defaultPoolName" : m_i18nUtils
+														.getProperty("modeler.diagram.defaultPoolName"),
+												"defaultLaneName" : m_i18nUtils
+														.getProperty("modeler.diagram.defaultLaneName")
+											}));
 					isElementCreatedViaOutline = true;
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1926,7 +2048,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1938,7 +2060,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1950,7 +2072,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -1965,7 +2087,8 @@ define(
 						attributes : {
 							width : "400px",
 							height : "200px",
-							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/confirmationPopupDialogContent.html"
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
 							title : "Confirm",
@@ -1991,7 +2114,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2012,7 +2135,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2029,7 +2152,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2046,7 +2169,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2065,7 +2188,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2085,7 +2208,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2101,7 +2224,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2121,7 +2244,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2138,7 +2261,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2155,7 +2278,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2171,7 +2294,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2188,7 +2311,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @returns
 				 */
@@ -2207,7 +2330,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2217,7 +2340,8 @@ define(
 						attributes : {
 							width : "700px",
 							height : "500px",
-							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/views/modeler/serviceWrapperWizard.html"
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/views/modeler/serviceWrapperWizard.html"
 						},
 						payload : {
 							application : application,
@@ -2237,7 +2361,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2247,7 +2371,8 @@ define(
 						attributes : {
 							width : "750px",
 							height : "600px",
-							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
 						},
 						payload : {
 							model : model
@@ -2310,7 +2435,11 @@ define(
 			var outline;
 
 			return {
-				init : function(newViewManager) {
+				init : function(newViewManager, newDisplayScope) {
+
+					if (newDisplayScope) {
+						displayScope = "#" + newDisplayScope + " ";
+					}
 
 					if (newViewManager != null) {
 						viewManager = newViewManager;
@@ -2325,6 +2454,8 @@ define(
 					outline.initialize();
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
+					
+					return outline;
 				},
 				refresh : function() {
 					refresh();
@@ -2332,18 +2463,18 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Outline() {
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -2352,21 +2483,22 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
-						jQuery("#outline").jstree("select_node",
+						jQuery(displayScope + "#outline").jstree("select_node",
 								"#" + element.uuid);
-						jQuery("#outline").jstree("deselect_all");
+						jQuery(displayScope + "#outline")
+								.jstree("deselect_all");
 						// Delay of 1000ms is added to avoid issues of node
 						// getting out or rename mode if the view takes
 						// a little longer to open - observed specifically on
 						// first node creation after login,
 						if (!openView) {
 							window.setTimeout(function() {
-								jQuery("#outline").jstree("rename",
-										"#" + element.uuid)
+								jQuery(displayScope + "#outline").jstree(
+										"rename", "#" + element.uuid)
 							}, 1000);
 						}
 					}
@@ -2374,14 +2506,14 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.fireCloseViewCommand = function(uuid) {
 					viewManager.closeViewsForElement(uuid);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2615,27 +2747,28 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
 					m_utils.inheritFields(model, data);
-					jQuery("#outline").jstree("create", "#outline", "last", {
-						"attr" : {
-							"elementId" : data.id,
-							"id" : data.uuid,
-							"fullId" : model.getFullId(),
-							"rel" : "model"
-						},
-						"data" : data.name
-					}, null, true);
-					jQuery("#outline").jstree("set_type", "model",
-							"#" + data.uuid);
+					jQuery(displayScope + "#outline").jstree("create",
+							"#outline", "last", {
+								"attr" : {
+									"elementId" : data.id,
+									"id" : data.uuid,
+									"fullId" : model.getFullId(),
+									"rel" : "model"
+								},
+								"data" : data.name
+							}, null, true);
+					jQuery(displayScope + "#outline").jstree("set_type",
+							"model", "#" + data.uuid);
 
-					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"last", {
+					jQuery(displayScope + "#outline").jstree("create",
+							"#" + data.uuid, "last", {
 								"attr" : {
 									"id" : "structuredTypes_" + data.uuid,
 									"rel" : "structuredTypes",
@@ -2644,8 +2777,8 @@ define(
 								},
 								"data" : "Structured Types"
 							}, null, true);
-					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"last", {
+					jQuery(displayScope + "#outline").jstree("create",
+							"#" + data.uuid, "last", {
 								"attr" : {
 									"id" : "data_" + data.uuid,
 									"rel" : "data",
@@ -2656,10 +2789,10 @@ define(
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
 					});
-					jQuery("#outline").jstree("close_node",
+					jQuery(displayScope + "#outline").jstree("close_node",
 							"#" + "data_" + data.uuid);
-					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"last", {
+					jQuery(displayScope + "#outline").jstree("create",
+							"#" + data.uuid, "last", {
 								"attr" : {
 									"modelId" : data.id,
 									"id" : "applications_" + data.uuid,
@@ -2668,8 +2801,8 @@ define(
 								},
 								"data" : "Applications"
 							}, null, true);
-					jQuery("#outline").jstree("create", "#" + data.uuid,
-							"last", {
+					jQuery(displayScope + "#outline").jstree("create",
+							"#" + data.uuid, "last", {
 								"attr" : {
 									"id" : "participants_" + data.uuid,
 									"rel" : "participants",
@@ -2680,26 +2813,26 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
-					jQuery("#outline").jstree("close_node",
+					jQuery(displayScope + "#outline").jstree("close_node",
 							"#" + "participants_" + data.uuid);
 
 					return model;
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -2707,10 +2840,10 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -2718,10 +2851,10 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -2730,11 +2863,11 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -2744,10 +2877,10 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
-					jQuery("#outline").jstree("remove",
+					jQuery(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -2755,7 +2888,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2763,8 +2896,8 @@ define(
 							transferObject);
 					var parentSelector = '#' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"id" : process.uuid,
 									"oid" : process.oid,
@@ -2782,7 +2915,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2790,8 +2923,8 @@ define(
 							transferObject);
 					var parentSelector = '#applications_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"rel" : application.applicationType,
 									"id" : application.uuid,
@@ -2808,7 +2941,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2817,8 +2950,8 @@ define(
 
 					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 						var parentSelector = '#data_' + model.uuid;
-						jQuery("#outline").jstree("create", parentSelector, "last",
-								{
+						jQuery(displayScope + "#outline").jstree("create",
+								parentSelector, "last", {
 									"attr" : {
 										"rel" : data.dataType,
 										"modelId" : model.id,
@@ -2836,7 +2969,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2845,8 +2978,8 @@ define(
 							model, transferObject);
 					var parentSelector = '#structuredTypes_' + model.uuid;
 
-					jQuery("#outline").jstree("create", parentSelector, "last",
-							{
+					jQuery(displayScope + "#outline").jstree("create",
+							parentSelector, "last", {
 								"attr" : {
 									"rel" : "compositeStructuredDataType",
 									"modelId" : model.id,
@@ -2863,7 +2996,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model
@@ -2874,20 +3007,25 @@ define(
 					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 						var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
 								: ("#participants_" + model.uuid));
-						jQuery("#outline").jstree("create", parentSelector, "last",
-								{
-									"attr" : {
-										"id" : participant.uuid,
-										"fullId" : participant.getFullId(),
-										"rel" : participant.type,
-										"modelId" : model.id,
-										"modelUUID" : model.uuid,
-										"parentUUID" : transferObject.parentUUID,
-										"draggable" : true,
-										"elementId" : participant.id
-									},
-									"data" : participant.name
-								}, null, true);
+						jQuery(displayScope + "#outline")
+								.jstree(
+										"create",
+										parentSelector,
+										"last",
+										{
+											"attr" : {
+												"id" : participant.uuid,
+												"fullId" : participant
+														.getFullId(),
+												"rel" : participant.type,
+												"modelId" : model.id,
+												"modelUUID" : model.uuid,
+												"parentUUID" : transferObject.parentUUID,
+												"draggable" : true,
+												"elementId" : participant.id
+											},
+											"data" : participant.name
+										}, null, true);
 					}
 
 					return participant;

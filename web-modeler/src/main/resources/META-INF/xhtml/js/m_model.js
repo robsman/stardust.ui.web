@@ -12,8 +12,11 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_communicationController",
-				"bpm-modeler/js/m_application", "bpm-modeler/js/m_data", "bpm-modeler/js/m_process", "bpm-modeler/js/m_participant",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_application", "bpm-modeler/js/m_data",
+				"bpm-modeler/js/m_process", "bpm-modeler/js/m_participant",
 				"bpm-modeler/js/m_typeDeclaration" ],
 		function(m_utils, m_constants, m_urlUtils, m_communicationController,
 				m_application, m_data, m_process, m_participant,
@@ -79,7 +82,7 @@ define(
 				},
 				/**
 				 * TODO May not be safe as element OIDs are not unique.
-				 *
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -111,7 +114,7 @@ define(
 
 				/**
 				 * Fetches the model for given element UUID.
-				 *
+				 * 
 				 * @param elementUUID
 				 * @returns model
 				 */
@@ -130,7 +133,7 @@ define(
 
 				/**
 				 * Fetches the element with given OID within the given modelId.
-				 *
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -151,7 +154,7 @@ define(
 
 				/**
 				 * Fetches the element with given UUID within the given modelId.
-				 *
+				 * 
 				 * @param guid
 				 * @returns
 				 */
@@ -172,7 +175,7 @@ define(
 				},
 
 				/**
-				 *
+				 * 
 				 */
 				getFullId : function(model, symbolId) {
 					return model.id + ":" + symbolId;
@@ -180,7 +183,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function stripModelId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -191,7 +194,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function stripElementId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -202,7 +205,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function Model() {
 				this.type = m_constants.MODEL;
@@ -215,21 +218,21 @@ define(
 				this.participants = {};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.toString = function() {
 					return "Lightdust.Model";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getFullId = function() {
 					return this.id;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.rename = function(id, name) {
 					delete getModels()[this.id];
@@ -240,7 +243,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getNewDataIndex = function() {
 					var index = 0;
@@ -255,14 +258,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
@@ -313,7 +316,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.findModelElementById = function(id) {
 					var n;
@@ -352,8 +355,8 @@ define(
 				};
 
 				/**
-				 * Used to identify if an element with same name exists,
-				 * used while determining name for newly created element.
+				 * Used to identify if an element with same name exists, used
+				 * while determining name for newly created element.
 				 */
 				Model.prototype.findModelElementByName = function(name) {
 					var n;
@@ -392,7 +395,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Model.prototype.findTypeDeclarationBySchemaName = function(
 						schemaName) {
@@ -406,6 +409,41 @@ define(
 
 					return null;
 				};
+			}
+
+			/**
+			 * 
+			 */
+			function DefaultModelManager() {
+				/**
+				 * 
+				 */
+				DefaultModelManager.prototype.refreshModels = function() {
+					m_communicationController.syncGetData({
+						url : m_communicationController.getEndpointUrl()
+								+ "/models"
+					}, {
+						"success" : function(json) {
+							window.top.models = json;
+
+							bindModels();
+						},
+						"error" : function() {
+							alert('Error occured while fetching models');
+						}
+					});
+				};
+			}
+
+			/**
+			 * Singleton on DOM level.
+			 */
+			function getModelManager() {
+				if (!window.top.modelManager) {
+					window.top.modelManager = new DefaultModelManager();
+				}
+
+				return window.top.modelManager;
 			}
 
 			/**
@@ -425,37 +463,37 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function loadModels(force) {
 				if (!force && getModels() != null) {
 					return;
 				}
 
-				refreshModels();
+				getModelManager().refreshModels();
 			}
 
 			/**
-			 *
+			 * 
 			 */
-			function refreshModels() {
-				m_communicationController.syncGetData({
-					url : m_communicationController.getEndpointUrl()
-							+ "/models"
-				}, {
-					"success" : function(json) {
-						window.top.models = json;
-
-						bindModels();
-					},
-					"error" : function() {
-						alert('Error occured while fetching models');
-					}
-				});
-			}
+//			function refreshModels() {
+//				m_communicationController.syncGetData({
+//					url : m_communicationController.getEndpointUrl()
+//							+ "/models"
+//				}, {
+//					"success" : function(json) {
+//						window.top.models = json;
+//
+//						bindModels();
+//					},
+//					"error" : function() {
+//						alert('Error occured while fetching models');
+//					}
+//				});
+//			}
 
 			/**
-			 *
+			 * 
 			 */
 			function bindModels() {
 				for ( var model in getModels()) {
@@ -464,7 +502,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function bindModel(model) {
 				// TODO Ugly, user prototype

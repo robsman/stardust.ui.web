@@ -14,7 +14,10 @@ package org.eclipse.stardust.ui.web.modeler.service.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
@@ -50,6 +54,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.core.compatibility.el.SyntaxError;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
@@ -58,12 +65,15 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
+import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.service.orion.UriModelManagementStrategy;
+import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
 
 @Path("/modeler/{randomPostFix}")
 public class ModelerResource
 {
+   private static final Logger trace = LogManager.getLogger(ModelerResource.class);
+
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    private ModelService modelService;
@@ -128,35 +138,6 @@ public class ModelerResource
       return Response.ok(postedData, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
-   /**
-    * @deprecated
-    * @param modelId
-    * @param processId
-    * @param servletContext
-    * @param req
-    * @param resp
-    * @return
-    */
-   @POST
-   @Path("models/{modelId}/processes/{processId}/openview")
-   public Response openProcessView(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @Context ServletContext servletContext, @Context HttpServletRequest req,
-         @Context HttpServletResponse resp)
-   {
-      try
-      {
-         ViewUtils.openView(modelId, processId, servletContext, req, resp);
-         return Response.ok().build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("preferences")
@@ -209,6 +190,89 @@ public class ModelerResource
                   "attachment; filename = \""
                         + getModelService().getModelFileName(modelId) + "\"")
             .build();
+   }
+
+   /**
+    * Used to push models loaded on the client (e.g. from Orion) into a server-side cache.
+    * Switches the model management strategy to <code>clientModelManagementStrategy</code>
+    * .
+    * 
+    * @param modelId
+    * @param postedData
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.TEXT_PLAIN)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/upload/{fileName}")
+   public Response uploadModel(@PathParam("fileName") String fileName, String postedData)
+   {
+      try
+      {
+         // Ensures that the Model Management Strategy is clientModelManagementStrategy
+
+         ClientModelManagementStrategy modelManagementStrategy = getClientModelManagementStrategy();
+
+         JsonObject modelDescriptorJson = modelManagementStrategy.addModelFile(fileName, postedData);
+
+         getModelService().setModelManagementStrategy(modelManagementStrategy);
+
+         return Response.ok(modelDescriptorJson.toString(), APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   /**
+    * Temporary, auxiliary service to load a text file. Used to provide access to Orion
+    * files from this URL domain.
+    * 
+    * @param path
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("file")
+   public Response loadFile(String postedData)
+   {
+      try
+      {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(readFile(json.get("path").getAsString()),
+               MediaType.TEXT_PLAIN).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   /**
+    * Used by the auxiliary method above only.
+    * 
+    * @param path
+    * @return
+    */
+   private static String readFile(String path)
+   {
+      try
+      {
+         String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+
+         return content;
+      }
+      catch (FileNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    @GET
@@ -561,7 +625,7 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Retrieve decoration " + decorationId);
+         trace.debug("Retrieve decoration " + decorationId);
 
          JsonObject decorations = new JsonObject();
 
@@ -814,31 +878,6 @@ public class ModelerResource
    }
 
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("model/management/strategy")
-   public Response setModelManagementStrategy(String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-         UriModelManagementStrategy modelManagementStrategy = getUriModelManagementStrategy();
-
-         modelManagementStrategy.setFileUri(json.get("fileUri").getAsString());
-
-         getModelService().setModelManagementStrategy(modelManagementStrategy);
-
-         return Response.ok(json.toString(), APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("upload")
@@ -847,8 +886,8 @@ public class ModelerResource
     */
    public Response uploadFile(String postedData)
    {
-      System.out.println("Posted Data:");
-      System.out.println(postedData);
+      trace.debug("Posted Data:");
+      trace.debug(postedData);
 
       BufferedReader reader = new BufferedReader(new StringReader(postedData));
 
@@ -873,9 +912,9 @@ public class ModelerResource
          String factsLine = reader.readLine();
          String propertiesLine = reader.readLine();
 
-         System.out.println("Sections Line" + sectionsLine);
-         System.out.println("Facts Line" + factsLine);
-         System.out.println("Properties Line" + propertiesLine);
+         trace.debug("Sections Line" + sectionsLine);
+         trace.debug("Facts Line" + factsLine);
+         trace.debug("Properties Line" + propertiesLine);
 
          String[] sections = sectionsLine.split(";");
          String[] facts = factsLine.split(";");
@@ -900,7 +939,7 @@ public class ModelerResource
 
          for (int n = 0; n < properties.length; ++n)
          {
-            System.out.println("Property: " + properties[n]);
+            trace.debug("Property: " + properties[n]);
 
             if (n < sections.length && sections[n] != null && !sections[n].isEmpty())
             {
@@ -953,6 +992,7 @@ public class ModelerResource
          returnJson.add("rules", rulesJson);
 
          String ruleLine = null;
+         int ruleIndex = 0;
 
          while ((ruleLine = reader.readLine()) != null)
          {
@@ -961,11 +1001,14 @@ public class ModelerResource
                break;
             }
 
-            System.out.println("Processing Line: " + ruleLine);
+            ++ruleIndex;
+
+            trace.debug("Processing Line: " + ruleLine);
 
             JsonObject ruleJson = new JsonObject();
 
             rulesJson.add(ruleJson);
+            ruleJson.addProperty("name", "Rule " + ruleIndex);
 
             JsonArray factConditionsJson = new JsonArray();
 
@@ -979,38 +1022,87 @@ public class ModelerResource
             String factName = null;
             JsonObject factConditionJson = null;
             JsonArray propertyConditionsJson = null;
+            JsonObject factActionJson = null;
+            JsonArray propertyActionsJson = null;
 
             for (int m = 0; m < values.length; ++m)
             {
-               if ( !factNames.get(m).equals(factName))
+               if (sectionNames.get(m).toLowerCase().startsWith("condition"))
                {
-                  factName = factNames.get(m);
+                  if ( !factNames.get(m).equals(factName))
+                  {
+                     factName = factNames.get(m);
+                     factConditionJson = new JsonObject();
 
-                  System.out.println("New fact condition: " + factName);
+                     factConditionsJson.add(factConditionJson);
+                     factConditionJson.addProperty("fact", factName);
 
-                  factConditionJson = new JsonObject();
+                     propertyConditionsJson = new JsonArray();
 
-                  factConditionsJson.add(factConditionJson);
-                  factConditionJson.addProperty("fact", factName);
+                     factConditionJson.add("propertyConditions", propertyConditionsJson);
+                  }
 
-                  propertyConditionsJson = new JsonArray();
+                  JsonObject propertyConditionJson = new JsonObject();
 
-                  factConditionJson.add("propertyConditions", propertyConditionsJson);
+                  propertyConditionsJson.add(propertyConditionJson);
+                  propertyConditionJson.addProperty("property", propertyNames.get(m));
+                  propertyConditionJson.addProperty("operator", "=");
+                  propertyConditionJson.addProperty("value", values[m]);
                }
+               else
+               {
+                  if ( !factNames.get(m).equals(factName))
+                  {
+                     factName = factNames.get(m);
+                     factActionJson = new JsonObject();
 
-               JsonObject propertyConditionJson = new JsonObject();
+                     factActionsJson.add(factActionJson);
+                     factActionJson.addProperty("fact", factName);
 
-               System.out.println("New property condition: " + propertyNames.get(m));
+                     propertyActionsJson = new JsonArray();
 
-               propertyConditionsJson.add(propertyConditionJson);
-               propertyConditionJson.addProperty("property", propertyNames.get(m));
-               propertyConditionJson.addProperty("value", values[m]);
+                     factActionJson.add("propertyActions", propertyActionsJson);
+                  }
+
+                  JsonObject propertyActionJson = new JsonObject();
+
+                  propertyActionsJson.add(propertyActionJson);
+                  propertyActionJson.addProperty("property", propertyNames.get(m));
+                  propertyActionJson.addProperty("operator", "=");
+                  propertyActionJson.addProperty("value", values[m]);
+               }
             }
          }
 
-         System.out.println("Return Value: " + returnJson.toString());
-
          return Response.ok(returnJson.toString(), APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.TEXT_PLAIN)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/parseDrl")
+   /**
+    * 
+    */
+   public Response parseDrlFile(String fileContent)
+   {
+      try
+      {
+         trace.debug("Posted Data:");
+         trace.debug(fileContent);
+
+         DrlParser parser = new DrlParser();
+         
+         JsonObject ruleSetJson = parser.parseDrl(fileContent);
+
+         return Response.ok(ruleSetJson.toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -1023,10 +1115,10 @@ public class ModelerResource
    /**
     * @return
     */
-   private UriModelManagementStrategy getUriModelManagementStrategy()
+   private ClientModelManagementStrategy getClientModelManagementStrategy()
    {
       ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 
-      return (UriModelManagementStrategy) context.getBean("uriModelManagementStrategy");
+      return (ClientModelManagementStrategy) context.getBean("clientModelManagementStrategy");
    }
 }
