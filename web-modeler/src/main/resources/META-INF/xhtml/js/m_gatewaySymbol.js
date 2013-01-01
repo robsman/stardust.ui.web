@@ -48,9 +48,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(GatewaySymbol.prototype, symbol);
 
-				this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
-				this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
-
 				/**
 				 * Binds all client-side aspects to the object (graphics
 				 * objects, diagram, base classes).
@@ -69,6 +66,7 @@ define(
 					this.xorPath = null;
 					this.orCircle = null;
 					this.text = null;
+					this.performClientSideAdj();
 				};
 
 				/**
@@ -94,14 +92,29 @@ define(
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
 
-					// Patch width and height
+					this.performClientSideAdj();
 
-					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
-					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 					this.parentSymbol.containedSymbols.push(this);
 					this.prepareNoPosition();
 					this.completeNoTransfer();
 					this.register();
+				};
+
+				/**
+				 * Client side adjustment This code is required in case the
+				 * imported model is eclipse born. Force setting of these
+				 * attributes cannot be done in Refresh method as
+				 * m_propertiesPanel.processCommand again overwrites these
+				 * attributes and then symbol.refresh does not get invoked.
+				 */
+				GatewaySymbol.prototype.performClientSideAdj = function() {
+					if (this.width &&  this.width != m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH) {
+						this.clientSideAdjX = (this.width / 2)
+								- (m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH / 2);
+						this.x = this.x + this.clientSideAdjX;
+					}
+					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
+					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 				};
 
 				/**
@@ -296,12 +309,8 @@ define(
 				 *
 				 */
 				GatewaySymbol.prototype.adjustPrimitives = function(dX, dY) {
-					//This code is required in case the imported model is eclipse born.
-					//Force setting of these attributes cannot be done in Refresh method as
-					//m_propertiesPanel.processCommand again overwrites these attributes and then symbol.refresh does not get invoked.
-					this.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
-					this.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
 
+					this.performClientSideAdj();
 
 					this.text.animate({
 						x : this.x + 0.5 * this.width,

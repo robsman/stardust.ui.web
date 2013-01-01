@@ -62,6 +62,8 @@ define(
 				this.serverSideCoordinates = null;
 				this.activateEditOnCreation = true;
 
+				this.clientSideAdjX = 0; // adjustment for Y is not required at the moment.
+
 				// Method initialization
 
 				/**
@@ -1331,9 +1333,11 @@ define(
 									this.onParentSymbolChange();
 								}
 
-								newGeometry['x'] = this.x
-										+ this.parentSymbol.symbolXOffset;
-								newGeometry['y'] = this.y;
+								var adjustedX = this.x - this.clientSideAdjX + this.parentSymbol.symbolXOffset;
+								var adjustedY = this.y + this.parentSymbol.symbolYOffset;
+
+								newGeometry['x'] = adjustedX;
+								newGeometry['y'] = adjustedY;
 								newGeometry['parentSymbolId'] = this.parentSymbol.id;
 								newGeometry['type'] = this.type;
 

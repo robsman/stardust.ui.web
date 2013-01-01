@@ -70,9 +70,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				m_utils.inheritMethods(EventSymbol.prototype, symbol);
 
-				this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
-				this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
-
 				/**
 				 * Binds all client-side aspects to the object (graphics
 				 * objects, diagram, base classes).
@@ -96,10 +93,7 @@ define(
 					this.errorCatchingUrl = "../../images/icons/event-error-catching.png";
 					this.errorThrowingUrl = "../../images/icons/event-error-throwing.png";
 
-					// Size is not transfered from the server
-
-					this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
-					this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
+					this.performClientSideAdj();
 				};
 
 				/**
@@ -115,10 +109,7 @@ define(
 				EventSymbol.prototype.initializeFromJson = function(lane) {
 					m_event.typeObject(this.modelElement);
 
-					// Overwrite width and height
-
-					this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
-					this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
+					this.performClientSideAdj();
 
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
@@ -126,6 +117,23 @@ define(
 					this.prepareNoPosition();
 					this.completeNoTransfer();
 					this.register();
+				};
+
+				/**
+				 * Client side adjustment This code is required in case the
+				 * imported model is eclipse born. Force setting of these
+				 * attributes cannot be done in Refresh method as
+				 * m_propertiesPanel.processCommand again overwrites these
+				 * attributes and then symbol.refresh does not get invoked.
+				 */
+				EventSymbol.prototype.performClientSideAdj = function() {
+					if (this.width && this.width != (2 * m_constants.EVENT_DEFAULT_RADIUS)) {
+						this.clientSideAdjX = (this.width / 2)
+								- m_constants.EVENT_DEFAULT_RADIUS;
+						this.x = this.x + this.clientSideAdjX;
+					}
+					this.width = 2 * m_constants.EVENT_DEFAULT_RADIUS;
+					this.height = 2 * m_constants.EVENT_DEFAULT_RADIUS;
 				};
 
 				/**
@@ -371,6 +379,9 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.adjustPrimitives = function(dX, dY) {
+
+					this.performClientSideAdj();
+
 					this.circle.animate({
 						cx : this.x + m_constants.EVENT_DEFAULT_RADIUS,
 						cy : this.y + m_constants.EVENT_DEFAULT_RADIUS

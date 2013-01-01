@@ -963,6 +963,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
             + laneOffsetY);
 
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            startEventSymbol.getWidth());
+
       JsonObject eventJson = null;
       TriggerType trigger = (TriggerType) startEventSymbol.getModelElement();
 
@@ -1018,6 +1021,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             + laneOffsetX);
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, endEventSymbol.getYPos()
             + laneOffsetY);
+
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            endEventSymbol.getWidth());
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
