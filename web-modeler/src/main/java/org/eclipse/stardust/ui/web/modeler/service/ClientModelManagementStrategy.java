@@ -23,37 +23,15 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementS
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-import org.apache.http.Consts;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.cookie.Cookie;
 
 import com.google.gson.JsonObject;
 
 /**
  * Support insertion of model files received from the client and allows to download
  * changed model files. Used e.g. for integration with Orion.
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public class ClientModelManagementStrategy extends AbstractModelManagementStrategy
 {
@@ -78,7 +56,7 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
    public JsonObject addModelFile(String filePath, String content)
    {
       trace.info("Caching model file " + filePath + " with content of length " + content.length());
-      
+
       byte[] modelContent = content.getBytes();
 
       trace.info("Load Model " + filePath);
@@ -124,7 +102,7 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
          }
       }
       else
-      {            
+      {
          throw new RuntimeException("Model cannot be obtained.");
       }
 
@@ -137,20 +115,20 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
 
          trace.info("Adding model " + xpdlModel.getId() + " " + filePath);
 
-         ModelDescriptor modelDescriptor = new ModelDescriptor(xpdlModel.getId(), filePath, model, xpdlModel); 
-         
+         ModelDescriptor modelDescriptor = new ModelDescriptor(xpdlModel.getId(), filePath, model, xpdlModel);
+
          loadedModels.add(modelDescriptor);
 
          JsonObject modelDescriptorJson = new JsonObject();
-         
+
          modelDescriptorJson.addProperty("id", xpdlModel.getId());
          modelDescriptorJson.addProperty("uuid", uuidMapper().getUUID(xpdlModel));
          modelDescriptorJson.addProperty("name", xpdlModel.getName());
-         
+
          return modelDescriptorJson;
       }
       else
-      {            
+      {
          throw new RuntimeException("Model cannot be obtained.");
       }
    }
@@ -190,7 +168,7 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public void deleteModel(ModelType model)
@@ -219,7 +197,7 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public String getModelFileName(ModelType model)
@@ -229,7 +207,7 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
    }
 
    /**
-    * 
+    *
     * @param model
     */
    public String getModelFilePath(ModelType model)
