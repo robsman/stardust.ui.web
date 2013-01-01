@@ -2018,8 +2018,8 @@ define(
 				 */
 				Diagram.prototype.loadProcess = function() {
 					m_communicationController.syncGetData({
-						url : this.getEndpointUrl() + "/models/" + this.modelId
-								+ "/process/" + this.processId + "/loadModel",
+						url : this.getEndpointUrl() + "/models/" + encodeURIComponent(this.modelId)
+								+ "/process/" + encodeURIComponent(this.processId) + "/loadModel",
 						callbackScope : this
 					}, new function() {
 						return {

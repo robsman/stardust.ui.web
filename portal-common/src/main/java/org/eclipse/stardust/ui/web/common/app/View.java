@@ -12,6 +12,9 @@ package org.eclipse.stardust.ui.web.common.app;
 
 import static org.eclipse.stardust.ui.web.common.util.StringUtils.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,9 +37,9 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 public class View extends AbstractUiElement implements TabScopeManager
 {
    public static final String PRE_DESCRIPTION = "description";
-   
+
    private ViewState viewState;
-   
+
    private View openerView;
 
    private final ViewDefinition definition;
@@ -44,15 +47,15 @@ public class View extends AbstractUiElement implements TabScopeManager
    private final String url;
 
    private String viewKey;
-   
+
    private final String id;
 
    private String icon = "/plugins/common/images/icons/tabIcon-generic.png" ;
-   
+
    private String label;
-   
+
    private String fullLabel;
-   
+
    private String tooltip;
 
    private String description;
@@ -66,7 +69,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    protected final AbstractMessageBean msgBean;
 
    private Map<String, Object> viewParams = CollectionUtils.newTreeMap();
-   
+
    private String identityUrl;
 
    /**
@@ -80,7 +83,7 @@ public class View extends AbstractUiElement implements TabScopeManager
 
    /**
     * Package Scope Constrcutor
-    * 
+    *
     * @param definition
     * @param url
     * @param msgBean
@@ -88,7 +91,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    public View(ViewDefinition definition, String url, AbstractMessageBean msgBean)
    {
       super("");
-      
+
       this.url = url;
       this.msgBean = msgBean;
 
@@ -151,7 +154,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    {
       return new UiElementMessage(definition);
    }
-   
+
    @Override
    public String toString()
    {
@@ -172,7 +175,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       viewStateDestructionCallbacks.clear();
       viewStateMap.clear();
    }
-   
+
    public ViewState getViewState()
    {
       return viewState;
@@ -232,18 +235,26 @@ public class View extends AbstractUiElement implements TabScopeManager
    private String contertToParamString(Map<String, Object> viewParams2)
    {
       String ret = "?";
-   
+
       if (viewParams2 != null)
       {
-	     for (Entry<String, Object> element : viewParams2.entrySet())
-	     {
-	        if (element.getValue() instanceof String)
-	        {
-	           ret += element.getKey() + "=" + element.getValue() + "&";
-	        }
-	     }
+        for (Entry<String, Object> element : viewParams2.entrySet())
+         {
+            if (element.getValue() instanceof String)
+            {
+               try
+               {
+                  ret += element.getKey() + "="
+                        + URLEncoder.encode((String) element.getValue(), "UTF-8") + "&";
+               }
+               catch (UnsupportedEncodingException e)
+               {
+                  ret += element.getKey() + "=" + element.getValue() + "&";
+               }
+            }
+         }
       }
-      
+
       if (ret.length() < 2)
          ret = "";
       else if (ret.length() >= 2)
@@ -281,10 +292,17 @@ public class View extends AbstractUiElement implements TabScopeManager
             Iterator<String> parsedParam = split(i.next(), "=");
             String name = parsedParam.next();
             String value = parsedParam.hasNext() ? parsedParam.next() : null;
-   
+
             if ( !isEmpty(name))
             {
-               viewParams.put(name, value);
+                try
+                {
+                   viewParams.put(name, URLDecoder.decode(value, "UTF-8"));
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                   viewParams.put(name, value);
+                }
             }
          }
       }
@@ -315,7 +333,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       String key2 = "description";
       this.description = getMessage(key2);
    }
-   
+
    /**
     * @param viewDefinition
     * @param params
@@ -326,7 +344,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       if(null != viewDefinition && !CollectionUtils.isEmpty(params))
       {
          StringBuffer sb = new StringBuffer();
-   
+
          for (String key : params.keySet())
          {
             if (viewDefinition.getIdentityParamsSet().contains(key))
@@ -336,16 +354,16 @@ public class View extends AbstractUiElement implements TabScopeManager
                   sb.append("&");
                }
 
-               sb.append(key).append("=").append(params.get(key));               
+               sb.append(key).append("=").append(params.get(key));
             }
          }
-   
+
          return sb.toString();
       }
 
       return null;
    }
-   
+
    /**
     * @return
     */
@@ -356,7 +374,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       {
          idParams = viewKey; // Keep the backward compatibility
       }
-      
+
       return idParams;
    }
 
@@ -392,7 +410,7 @@ public class View extends AbstractUiElement implements TabScopeManager
                truncatedValue = paramValue.substring(0, paramTruncNum);
                truncatedValue += "...";
             }
-            
+
             label = replace(label, strParamConstruct + paramTrunc + "]", truncatedValue);
             fullLabel = replace(fullLabel, strParamConstruct + paramTrunc + "]", paramValue);
             tooltip = replace(tooltip, strParamConstruct + paramTrunc + "]", paramValue);
@@ -597,7 +615,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    {
       this.viewParams = viewParams;
    }
-   
+
    public enum ViewState
    {
       CREATED,

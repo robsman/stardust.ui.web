@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -744,9 +744,9 @@ define(
 														.attr("id"));
 
 										viewManager.openView("modelView",
-												"modelId=" + model.id
+												"modelId=" + encodeURIComponent(model.id)
 														+ "&modelName="
-														+ model.name + "&uuid="
+														+ encodeURIComponent(model.name) + "&uuid="
 														+ model.uuid,
 												model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
@@ -760,13 +760,13 @@ define(
 
 										viewManager
 												.openView("roleView", "roleId="
-														+ role.id + "&modelId="
-														+ model.id
+														+ encodeURIComponent(role.id) + "&modelId="
+														+ encodeURIComponent(model.id)
 														+ "&roleName="
-														+ role.name
+														+ encodeURIComponent(role.name)
 														+ "&fullId="
-														+ role.getFullId()
-														+ "&uuid=" + role.uuid
+														+ encodeURIComponent(role.getFullId())
+														+ "&uuid=" + encodeURIComponent(role.uuid)
 														+ "&modelUUID="
 														+ model.uuid, role.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
@@ -780,14 +780,14 @@ define(
 										viewManager.openView(
 												"organizationView",
 												"organizationId="
-														+ organization.id
+														+ encodeURIComponent(organization.id)
 														+ "&modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&organizationName="
-														+ organization.name
+														+ encodeURIComponent(organization.name)
 														+ "&fullId="
-														+ organization
-																.getFullId()
+														+ encodeURIComponent(organization
+																.getFullId())
 														+ "&uuid="
 														+ organization.uuid
 														+ "&modelUUID="
@@ -807,12 +807,12 @@ define(
 
 										viewManager
 												.openView("dataView", "dataId="
-														+ data.id + "&modelId="
-														+ model.id
+														+ encodeURIComponent(data.id) + "&modelId="
+														+ encodeURIComponent(model.id)
 														+ "&dataName="
-														+ data.name
+														+ encodeURIComponent(data.name)
 														+ "&fullId="
-														+ data.getFullId()
+														+ encodeURIComponent(data.getFullId())
 														+ "&uuid=" + data.uuid
 														+ "&modelUUID="
 														+ model.uuid, data.uuid);
@@ -826,13 +826,13 @@ define(
 
 										viewManager.openView(
 												"processDefinitionView",
-												"processId=" + process.id
+												"processId=" + encodeURIComponent(process.id)
 														+ "&modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&processName="
-														+ process.name
+														+ encodeURIComponent(process.name)
 														+ "&fullId="
-														+ process.getFullId()
+														+ encodeURIComponent(process.getFullId())
 														+ "&uuid="
 														+ process.uuid
 														+ "&modelUUID="
@@ -1905,7 +1905,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1924,7 +1924,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1943,7 +1943,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createModel() {
 					var modelName = m_i18nUtils
@@ -1974,7 +1974,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1983,7 +1983,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -1999,7 +1999,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createProcess(modelId) {
 					var procNamePrefix = m_i18nUtils
@@ -2026,7 +2026,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2048,7 +2048,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2060,7 +2060,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2072,7 +2072,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2114,7 +2114,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2135,7 +2135,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2152,7 +2152,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2169,7 +2169,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2188,7 +2188,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2208,7 +2208,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2224,7 +2224,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2244,7 +2244,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2261,7 +2261,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2278,7 +2278,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2294,7 +2294,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2311,7 +2311,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 * @param modelId
 				 * @returns
 				 */
@@ -2330,7 +2330,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2361,7 +2361,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2454,7 +2454,7 @@ define(
 					outline.initialize();
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
-					
+
 					return outline;
 				},
 				refresh : function() {
@@ -2463,18 +2463,18 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Outline() {
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.initialize = function() {
 					// Register with Event Bus
@@ -2483,7 +2483,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
@@ -2506,14 +2506,14 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.fireCloseViewCommand = function(uuid) {
 					viewManager.closeViewsForElement(uuid);
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2747,7 +2747,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
@@ -2820,7 +2820,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
@@ -2829,7 +2829,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
 					jQuery(displayScope + "#outline").jstree("remove",
@@ -2840,7 +2840,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
 					jQuery(displayScope + "#outline").jstree("remove",
@@ -2851,7 +2851,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
 					jQuery(displayScope + "#outline").jstree("remove",
@@ -2863,7 +2863,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
@@ -2877,7 +2877,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
 					jQuery(displayScope + "#outline").jstree("remove",
@@ -2888,7 +2888,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2915,7 +2915,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2941,7 +2941,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2969,7 +2969,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2996,7 +2996,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model
