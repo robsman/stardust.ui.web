@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.engine.api.dto.DeploymentInfoDetails;
 import org.eclipse.stardust.engine.api.model.Inconsistency;
@@ -153,12 +154,23 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
          {
             deploymentInfoList = deployModels();
             processConfigurationVariables(deployList);
-            initialize();
-          
          }
          catch (Exception e)
-         {       
+         { 
+            deploymentException = true;
             
+            DeploymentInfoDetails infoDetail = new DeploymentInfoDetails(null, null,
+                  ExceptionHandler.getExceptionMessage(e));
+            Inconsistency inconsistency = new Inconsistency(e.getLocalizedMessage(),
+                  null, Inconsistency.ERROR);
+            infoDetail.addInconsistency(inconsistency);
+            if (CollectionUtils.isEmpty(deploymentInfoList))
+            {
+               deploymentInfoList = new ArrayList<DeploymentInfo>(1);
+            }
+       
+            deploymentInfoList.add(infoDetail);
+                        
             DeploymentStatusTableEntry entry = new DeploymentStatusTableEntry();
             entry.setErrors(1);
             entry.setCause(e);
@@ -169,9 +181,9 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
             
             deploymentStatus.setList(list);
             deploymentStatus.initialize();
-            
-            ExceptionHandler.handleException(e);
          }
+
+         initialize();
       }
    }
 
@@ -555,10 +567,6 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
                   list = new ArrayList<DeploymentInfo>(1);
                   list.add(info);
                   deploymentException = true;
-               }
-               catch (ConcurrencyException ce)
-               {
-                  ExceptionHandler.handleException(ce);
                }
             }
          }
