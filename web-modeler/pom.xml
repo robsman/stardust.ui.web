@@ -2,6 +2,13 @@
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
+   </parent>
+   
    <groupId>org.eclipse.stardust.ui.web</groupId>
    <artifactId>stardust-web-modeler</artifactId>
    <version>0.0.1-SNAPSHOT</version>
@@ -12,14 +19,13 @@
    <parent>
       <groupId>com.infinity.bpm.pepper</groupId>
       <artifactId>pepper-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1-SNAPSHOT</version>
       <relativePath>../pepper-common/pom.xml</relativePath>
-	</parent>
+   </parent>
 -->
 
    <properties>
 		<ipp.version>7.1.1-NIGHTLY-SNAPSHOT</ipp.version>
-		<atmosphere.version>1.0.4</atmosphere.version>
    </properties>
 
    <dependencyManagement>
@@ -66,7 +72,7 @@
       <dependency>
          <groupId>wsdl4j</groupId>
          <artifactId>wsdl4j</artifactId>
-         <version>1.6.2</version>
+         <version>${wsdl4j.version}</version>
       </dependency>
 
       <dependency>
@@ -99,36 +105,36 @@
       <dependency>
          <groupId>org.apache.myfaces.core</groupId>
          <artifactId>myfaces-api</artifactId>
-         <version>1.2.9</version>
+         <version>${myfaces-api.version}</version>
       </dependency>
       <dependency>
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
-         <version>2.4</version>
+         <version>${servlet-api.version}</version>
       </dependency>
 
       <dependency>
          <groupId>com.google.code.gson</groupId>
          <artifactId>gson</artifactId>
-         <version>1.6</version>
+         <version>${gson.version}</version>
       </dependency>
 
 		<!-->dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
+         <version>${commons-httpclient.version}</version>
 		</dependency-->
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.common</artifactId>
-         <version>2.6.0.v20100914-1218</version>
+         <version>${org.eclipse.emf.common.version}</version>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore</artifactId>
-         <version>2.6.1.v20100914-1218</version>
+         <version>${org.eclipse.emf.ecore.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -139,7 +145,7 @@
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-         <version>2.5.0.v20100521-1846</version>
+         <version>${org.eclipse.emf.ecore.xmi.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -150,7 +156,7 @@
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.change</artifactId>
-         <version>2.5.1.v20100907-1643</version>
+         <version>${org.eclipse.emf.ecore.change.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.eclipse.emf</groupId>
@@ -161,20 +167,20 @@
       <dependency>
          <groupId>org.eclipse.xsd</groupId>
          <artifactId>org.eclipse.xsd</artifactId>
-         <version>2.6.0.v20100914-1218</version>
+         <version>${org.eclipse.xsd.version}</version>
       </dependency>
 
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>4.10</version>
+         <version>${junit.version}</version>
          <scope>test</scope>
       </dependency>
 
       <dependency>
          <groupId>org.atmosphere</groupId>
          <artifactId>atmosphere-runtime</artifactId>
-         <version>${atmosphere.version}</version>
+         <version>${atmosphere-runtime.version}</version>
          <exclusions>
             <exclusion>
                <groupId>org.slf4j</groupId>
@@ -259,12 +265,12 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-compiler-plugin</artifactId>
                   <configuration>
-                  <excludes>
-                     <exclude>**/web/modeler/edit/twophase/**</exclude>
-                  </excludes>
-                  <testExcludes>
-                     <testExclude>**/web/modeler/edit/twophase/**</testExclude>
-                  </testExcludes>
+                     <excludes>
+                        <exclude>**/web/modeler/edit/twophase/**</exclude>
+                     </excludes>
+                     <testExcludes>
+                        <testExclude>**/web/modeler/edit/twophase/**</testExclude>
+                     </testExcludes>
                   </configuration>
                </plugin>
             </plugins>

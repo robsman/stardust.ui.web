@@ -50,12 +50,12 @@
       <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-compile" />
       <dependency org="org.eclipse.stardust.ui.common" name="stardust-ui-form-jsf" rev="${ipp.version.full}" conf="ipp-views-common-compile->stardust-ui-form-jsf-compile" />
 
-      <dependency org="javax.mail" name="mail" rev="1.4" conf="ipp-views-common-compile->default" />
-      <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="ipp-views-common-compile->default" />
-      <dependency org="org.icepdf" name="icepdf-core" rev="4.3.2" transitive="false" conf="ipp-views-common-compile->default" />
-      <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="2.1" conf="ipp-views-common-compile->default" />
-      <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" conf="ipp-views-common-compile->default" />
-      <dependency org="javax.media" name="jai_imageio-infinity01" rev="1.1" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.mail" name="mail" rev="${mail.version}" conf="ipp-views-common-compile->default" />
+      <dependency org="commons-lang" name="commons-lang" rev="${commons-lang.version}" conf="ipp-views-common-compile->default" />
+      <dependency org="org.icepdf" name="icepdf-core" rev="${icepdf-core.version}" transitive="false" conf="ipp-views-common-compile->default" />
+      <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="${htmlcleaner.version}" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" conf="ipp-views-common-compile->default" />
+      <dependency org="javax.media" name="jai_imageio-infinity01" rev="${jai_imageio.version}" conf="ipp-views-common-compile->default" />
 
       <!-- ipp-views-common-runtime -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->engine-module-runtime" />
@@ -63,35 +63,35 @@
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="ipp-views-common-runtime->ipp-portal-api-runtime" />
       <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->spring-module-runtime" />
       
-      <dependency org="org.apache.cxf" name="cxf-api" rev="2.6.1-stardust01" conf="ipp-views-common-runtime->default" >
-	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
-	       <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
-	  </dependency>
-	  <dependency org="org.apache.cxf" name="cxf-rt-core" rev="2.6.1" conf="ipp-views-common-runtime->default" >
-	       <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
-	  </dependency>
-      <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="2.6.1" conf="ipp-views-common-runtime->default" />
+      <dependency org="org.apache.cxf" name="cxf-api" rev="${cxf-api.version}" conf="ipp-views-common-runtime->default" >
+         <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
+         <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
+      </dependency>
+      <dependency org="org.apache.cxf" name="cxf-rt-core" rev="${cxf-rt-core.version}" conf="ipp-views-common-runtime->default" >
+         <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
+      </dependency>
+      <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-views-common-runtime->default" />
  
       <!-- ipp-views-common-provided -->
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-views-common-provided->jsf-api-module-compile" />
-      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-views-common-provided->default" />
-      <dependency org="javax.el" name="el-api" rev="1.0" conf="ipp-views-common-provided->default" />
-      <dependency org="javax.servlet" name="jsp-api" rev="2.0" conf="ipp-views-common-provided->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-views-common-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-views-common-provided->default" />
+      <dependency org="javax.servlet" name="jsp-api" rev="${jsp-api.version}" conf="ipp-views-common-provided->default" />
       
       <!-- compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="1.1_02" conf="compile->default" />
-      <dependency org="org.eclipse.xsd" name="xsd-runtime" rev="2.6.1" transitive="false" conf="compile->default">
+      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
+      <dependency org="org.eclipse.xsd" name="xsd-runtime" rev="${xsd-runtime.version}" transitive="false" conf="compile->default">
          <artifact name="org.eclipse.xsd" type="jar"/>
       </dependency>
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="4.10" conf="test->default" />     
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
       
-      <override org="commons-beanutils" module="commons-beanutils" rev="1.8.0" />
-      <override org="commons-digester" module="commons-digester" rev="1.8" />
-      <override org="commons-logging" module="commons-logging" rev="1.1.1" />
-      <override org="javax.ws.rs" module="jsr311-api" rev="1.1.1" />
-      <override org="com.sun.xml.bind" module="jaxb-impl" rev="2.1.12" />
-      <override org="org.apache.cxf" module="cxf-api" rev="2.6.1-stardust01" />
+      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
+      <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
+      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
+      <override org="javax.ws.rs" module="jsr311-api" rev="${jsr311-api.version}" />
+      <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
+      <override org="org.apache.cxf" module="cxf-api" rev="${cxf-api.version}" />
    </dependencies>
 </ivy-module>
