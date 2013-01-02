@@ -26,7 +26,7 @@ define(
 				
 				var globalVariables = null;
 				var hlLine = null;
-				var jsValidationPrefix = "";
+				var jsValidationPrefix = "", jsValidationCallback = null;
 				var errorLineNumbers = [];
 				var disabled = false;
 				
@@ -37,6 +37,7 @@ define(
 				
 				var EDITOR_READONLY = "readOnly";
 				var EDITOR_NOCURSOR = "nocursor";
+				var EDITOR_LINE_NUMBERS = "lineNumbers";
 				
 				// Set up code editor for JS code expression
 				CodeMirror.commands.autocomplete = function(cm) {
@@ -51,7 +52,11 @@ define(
 					lineWrapping: true,
 					indentUnit: 4,
 					matchBrackets: true,
-					extraKeys: {"Ctrl-Space": "autocomplete"},
+					extraKeys: {"Ctrl-Space": "autocomplete" /*,
+								"Up": "goCharRight",
+								"Down": "goCharLeft",
+								"Enter": "goCharRight"*/
+						},
 					onCursorActivity: function() {
 						// Highlight selected text
 						editor.matchHighlight(EDITOR_STYLECLASS_MATCH_HIGHLIGHT);
@@ -75,14 +80,15 @@ define(
 				hlLine = editor.setLineClass(0, EDITOR_STYLECLASS_ACTIVELINE);
 				setTimeout(showErrors, 100);
 				
-		
-				function getErrors(source) {
+				function getErrors(source, globalVars) {
 					var errors = {};
 					var err, lineNumber;
 					
+					if (disabled) return;
+					
 					var options = {undef: true, smarttabs: false};
 					var globals = {};
-					for (var variable in globalVariables) {
+					for (var variable in globalVars) {
 						globals[variable] = true;
 					}
 					JSHINT(source, options, globals);
@@ -104,7 +110,8 @@ define(
 						errorLineNumbers.length = 0;
 					
 						var html;
-						var errors = getErrors(jsValidationPrefix + editor.getValue());
+						var errors = getErrors(jsValidationPrefix + " = " + editor.getValue(), globalVariables);
+						if (jsValidationCallback != null) jsValidationCallback(jsValidationPrefix, errors);
 						for (var lineNumber in errors) {
 							html = '<div class="gutter-warning"><div class="tooltip"><ul>';
 							for (var i = 0; i < errors[lineNumber].length; i++)
@@ -172,8 +179,9 @@ define(
 					}
 				};
 		
-				CodeEditor.prototype.setJSValidationPrefix = function(prefix) {
+				CodeEditor.prototype.setJavaScriptValidationOptions = function(callback, prefix) {
 					jsValidationPrefix = prefix;
+					jsValidationCallback = callback;
 				};
 
 				CodeEditor.prototype.save = function() {
@@ -182,6 +190,18 @@ define(
 				
 				CodeEditor.prototype.refresh = function() {
 					editor.refresh();
+				};
+
+				CodeEditor.prototype.getErrors = function(source) {
+					getErrors(source, globalVariables);
+				};
+				
+				CodeEditor.prototype.setSize = function(width, height) {
+					editor.setSize(width, height);
+				};
+
+				CodeEditor.prototype.hideLineNumbers = function() {
+					editor.setOption(EDITOR_LINE_NUMBERS, false);
 				};
 			}
 		}

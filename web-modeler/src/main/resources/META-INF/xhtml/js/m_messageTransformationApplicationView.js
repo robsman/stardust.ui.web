@@ -341,7 +341,7 @@ define(
 						autoOpen : false,
 						draggable : true,
 										title : m_i18nUtils
-												.getProperty("modeler.propertyView.messageTransformation.configurationProperties.addInput.popUp")
+												.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
 									});
 					jQuery("#inputDataDialog #name")
 							.text(
@@ -356,12 +356,12 @@ define(
 							.attr(
 									"value",
 									m_i18nUtils
-											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.apply"));
+											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
 					jQuery("#inputDataDialog #closeButton")
 							.attr(
 									"value",
 									m_i18nUtils
-											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.close"))
+											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"))
 
 
 				      /*Comment*/
@@ -423,7 +423,7 @@ define(
 						autoOpen : false,
 						draggable : true,
 										title : m_i18nUtils
-												.getProperty("modeler.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
+												.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
 									});
 					jQuery("#outputDataDialog #name")
 							.text(
@@ -438,12 +438,12 @@ define(
 							.attr(
 									"value",
 									m_i18nUtils
-											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.apply"));
+											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
 					jQuery("#outputDataDialog #closeButton")
 							.attr(
 									"value",
 									m_i18nUtils
-											.getProperty("modeler.propertyView.messageTransformation.configurationProperties.close"));
+											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
 
 					jQuery("#outputDataDialog #closeButton").click(function() {
 						jQuery("#outputDataDialog").dialog("close");
@@ -640,7 +640,7 @@ define(
 
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
-					var typeDeclaration;
+					/*var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
@@ -649,7 +649,7 @@ define(
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
-					}
+					}*/
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
 				};
@@ -698,6 +698,22 @@ define(
 
 				/**
 				 *
+				 */
+				MessageTransformationApplicationView.prototype.showOutputMappingError = function(
+						path, errors) {
+					var rowId = path.replace(/\./g, "-");
+					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
+					
+					if (!jQuery.isEmptyObject(errors)) {
+						problemCell.addClass("mappingError");
+					}
+					else {
+						problemCell.removeClass("mappingError");
+					}
+				}
+				
+				/**
+				 * 
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
@@ -749,7 +765,9 @@ define(
 										view.expressionEditor
 												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
-										view.expressionEditor.setJSValidationPrefix(view.selectedOutputTableRow.path + " = ");
+										
+										// Register showOutputMappingError as a callback function after JS validation occurs 
+										view.expressionEditor.setJavaScriptValidationOptions(view.showOutputMappingError, view.selectedOutputTableRow.path);
 									});
 
 					jQuery("table#targetTable tbody tr span").mousedown(
@@ -1009,9 +1027,7 @@ define(
 						} else {
 							content += "<td class=\"mapping\">";
 							content += tableRows[tableRow].mappingExpression;
-							content += "<td/>";
-							content += "<td>";
-							content += "</td>";
+							content += "<td class=\"problem\" />";
 							content += "</tr>";
 
 							tableBody.append(content);
