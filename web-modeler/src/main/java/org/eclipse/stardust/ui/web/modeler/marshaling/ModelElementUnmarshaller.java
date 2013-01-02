@@ -2317,7 +2317,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          for (String property : elementProperties)
          {
-            mapProperty(element, elementJson, property);
+            if(elementJson.has(property))
+            {
+               mapProperty(element, elementJson, property);
+            }
          }
       }
    }

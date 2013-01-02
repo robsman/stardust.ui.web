@@ -162,8 +162,8 @@ define(
 								.getInstance();
 
 						if (this.modelElement.attributes != null) {
-							this.conditionExpressionTextXOffset = this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"];
-							this.conditionExpressionTextYOffset = this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"];
+							this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
+							this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
 
 							if (this.conditionExpressionTextXOffset == null) {
 								this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
@@ -783,6 +783,7 @@ define(
 					});
 
 					this.addToPrimitives(this.path);
+					this.addToEditableTextPrimitives(this.path);
 
 					this.path.auxiliaryProperties = {
 						callbackScope : this
@@ -881,6 +882,14 @@ define(
 											.trim() != "true") {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.conditionExpression);
+								this.conditionExpressionText
+										.attr({
+											x : this.fromAnchorPoint.x
+													+ this.conditionExpressionTextXOffset,
+											y : this.fromAnchorPoint.y
+													+ this.conditionExpressionTextYOffset
+										});
+
 								this.conditionExpressionText.show();
 							} else if (this.modelElement.name) {
 								this.conditionExpressionText.attr("text",
@@ -1715,6 +1724,17 @@ define(
 				 */
 				Connection.prototype.dragStopConditionExpressionText = function(
 						x, y, event) {
+
+					var changes = {
+						modelElement : {
+							attributes : {
+							"carnot:engine:conditionExpressionTextXOffset" : this.conditionExpressionTextXOffset,
+							"carnot:engine:conditionExpressionTextYOffset" : this.conditionExpressionTextYOffset
+							}
+						}
+					};
+
+					this.createUpdateCommand(changes);
 				};
 
 				/**
