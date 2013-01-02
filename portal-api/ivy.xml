@@ -48,9 +48,9 @@
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-api-runtime->engine-module-runtime" />
  
       <!-- ipp-portal-api-provided -->
-      <dependency org="javax.servlet" name="servlet-api" rev="2.4" conf="ipp-portal-api-provided, compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-api-provided, compile->default" />
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="4.10" conf="test->default" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
    </dependencies>
 </ivy-module>

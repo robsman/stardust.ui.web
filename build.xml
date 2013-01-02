@@ -23,12 +23,12 @@
    <property file="${project.etc}/private.properties"/>
    <property name="views-common-menu-context.xmlfile" value="${project.dir}/views-common/src/main/resources/META-INF/spring/views-common-menu-context.xml" />
    
-   <import file="${project.dir}/../build.tools/commons-build.xml" />
+   <import file="${project.dir}/../../buildtools/ipp-build.xml" />
    
    <property name="stardust.home" location="../"/>
    <property name="ui.common.home" location="${stardust.home}/ui.common"/>
 
-	<target name="init" depends="initBuildDirectories"/>
+   <target name="init" depends="initBuildDirectories"/>
 
    <target name="initBuild">
       <property name="nirvana.build.dir" location="${project.dir}/build"/>
