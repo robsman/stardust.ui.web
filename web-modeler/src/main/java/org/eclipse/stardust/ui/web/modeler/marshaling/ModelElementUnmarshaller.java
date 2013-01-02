@@ -930,6 +930,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.NO_PROCESS_INTERFACE_KEY))
          {
+            processDefinition.setFormalParameters(null);
+            processDefinition.setFormalParameterMappings(null);
+            processDefinition.setExternalRef(null);
          }
          else if (processDefinitionJson.get(
                ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
