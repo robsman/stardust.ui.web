@@ -1901,12 +1901,15 @@ define(
 				Diagram.prototype.showEditable = function(textPrimitive) {
 					// Use the Symbol's x co-ordinate to decide the width of
 					// textbox
-					m_utils.debug("text primitive set");
+					if (!this.symbolEditMode) {
+						m_utils.debug("text primitive set");
 
-					this.currentTextPrimitive = textPrimitive.auxiliaryProperties.callbackScope.showEditable();
+						this.currentTextPrimitive = textPrimitive.auxiliaryProperties.callbackScope
+								.showEditable();
 
-					this.symbolEditMode = true;
-					m_utils.debug("editable activated");
+						this.symbolEditMode = true;
+						m_utils.debug("editable activated");
+					}
 				};
 
 				/**

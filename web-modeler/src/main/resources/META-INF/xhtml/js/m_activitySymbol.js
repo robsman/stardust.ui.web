@@ -768,18 +768,31 @@ define(
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 
 					var name = this.modelElement.name;
-					var textboxWidth = this.text.getBBox().width + 20;
+					var textboxWidth, textboxHeight, textBoxX, textBoxY;
+					if (this.text.getBBox() != null) {
+						textboxWidth = this.text.getBBox().width + 20;
+						textboxHeight = this.text.getBBox().height;
+						textBoxX = this.text.getBBox().x;
+						textBoxY = this.text.getBBox().y;
+					} else {
+						textboxWidth = m_constants.DEFAULT_TEXT_WIDTH;
+						textboxHeight = m_constants.DEFAULT_TEXT_HEIGHT;
+						textBoxX = this.x + this.width / 3;
+						textBoxY = this.y + this.height / 3;
+					}
+
+					textBoxX = textBoxX + this.diagram.X_OFFSET - scrollPos.left;
+					textBoxY = textBoxY + this.diagram.Y_OFFSET - scrollPos.top;
 
 					editableText.css("width", parseInt(textboxWidth.valueOf()));
+					editableText.css("height", parseInt(textboxHeight.valueOf()));
 					editableText
 					.css("visibility", "visible")
 					.html(name)
 					.moveDiv(
 							{
-								"x" : this.x + this.diagram.X_OFFSET + this.width
-										/ 3 - scrollPos.left,
-								"y" : this.y + this.diagram.Y_OFFSET + this.height
-										/ 3 - scrollPos.top
+								"x" : textBoxX,
+								"y" : textBoxY
 							}).show().trigger("dblclick");
 					return this.text;
 				};
