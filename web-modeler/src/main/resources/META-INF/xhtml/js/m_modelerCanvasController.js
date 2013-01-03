@@ -1656,7 +1656,7 @@ define(
 					imageUrl = "../../images/icons/start_event_with_border.png";
 					eventType = "startEvent";
 				} else {
-					imageUrl = "../../images/icons/end_event_with_border.png";
+					imageUrl = "../../images/icons/end-event-toolbar.png";
 					eventType = "stopEvent";
 				}
 

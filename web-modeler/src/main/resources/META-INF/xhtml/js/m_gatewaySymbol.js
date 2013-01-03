@@ -517,7 +517,7 @@ define(
 												clickHandler : GatewaySymbol_connectToGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/end_event_with_border.png",
+												imageUrl : "../../images/icons/end-event-toolbar.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToEndEventClosure
