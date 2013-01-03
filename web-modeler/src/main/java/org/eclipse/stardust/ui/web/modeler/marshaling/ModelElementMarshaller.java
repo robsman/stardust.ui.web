@@ -77,7 +77,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -92,7 +92,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -236,8 +236,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       // TODO Better way to determine whether a process provides an interface?
 
       if (null != processDefinition.getFormalParameters()
-            && null != processDefinition.getFormalParameters().getFormalParameter()
-            && processDefinition.getFormalParameters().getFormalParameter().size() > 0)
+            && null != processDefinition.getFormalParameters().getFormalParameter())
       {
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);
@@ -389,9 +388,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -416,7 +415,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -663,7 +662,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -854,7 +853,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param activityJson
     */
@@ -864,7 +863,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             getModelBuilderFacade().getAttribute(activity, ModelerConstants.TASK_TYPE));
 
       System.out.println("Task Type stored with Activity: " + taskType);
-      
+
       if (taskType != null)
       {
          activityJson.addProperty(ModelerConstants.TASK_TYPE, taskType);
@@ -933,7 +932,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -1021,7 +1020,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1083,7 +1082,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1137,7 +1136,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -1234,7 +1233,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1393,7 +1392,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1773,7 +1772,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -1824,7 +1823,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -1941,7 +1940,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2083,7 +2082,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2299,10 +2298,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    * 
+    *
     * Returns the organisation for which the role is a team leader, null otherwise returns
     * null if role is not a team leader in the first place
-    * 
+    *
     * @param participant
     * @return
     */
@@ -2478,7 +2477,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2509,7 +2508,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2529,7 +2528,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2618,9 +2617,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
