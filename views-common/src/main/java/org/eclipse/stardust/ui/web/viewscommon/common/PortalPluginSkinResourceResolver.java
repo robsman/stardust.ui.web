@@ -8,12 +8,11 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.client.util;
+package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import static java.util.Collections.emptyList;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,9 +34,9 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @author Sidharth.Singh
  * @version $Revision: $
  */
-public class PluginResourceUtils
+public class PortalPluginSkinResourceResolver
 {
-   public static final Logger trace = LogManager.getLogger(PluginResourceUtils.class);
+   public static final Logger trace = LogManager.getLogger(PortalPluginSkinResourceResolver.class);
    private static ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
    /**
@@ -46,9 +45,9 @@ public class PluginResourceUtils
     * @param fileName
     * @return
     */
-   public static Map<String, List<Resource>> findPluginSkins(String pluginFolder, String fileName)
+   public static Map<String, List<String>> findPluginSkins(String pluginFolder, String fileName)
    {
-      Map<String, List<Resource>> allExtensions = new TreeMap<String, List<Resource>>(new Comparator<String>()
+      Map<String, List<String>> allExtensions = new TreeMap<String, List<String>>(new Comparator<String>()
       {
          public int compare(String a, String b)
          {
@@ -100,13 +99,13 @@ public class PluginResourceUtils
                   String extensionWebUriKey = webUriPrefix.substring(0, webUriPrefix.lastIndexOf("/")) + pluginFolder
                         + "/" + splitArr[1].substring(0, splitArr[1].indexOf("/"));
 
-                  List<Resource> resourceFile = allExtensions.get(extensionWebUriKey);
+                  List<String> resourceFile = allExtensions.get(extensionWebUriKey);
                   if (null == resourceFile)
                   {
                      resourceFile = CollectionUtils.newArrayList();
                      allExtensions.put(extensionWebUriKey, resourceFile);
                   }
-                  resourceFile.add(extensionResource);
+                  resourceFile.add(extensionResUri);
                   trace.info("Discovered '" + pluginFolder + "' modeler extensions descriptor at " + extensionWebUri);
                }
             }
@@ -138,9 +137,11 @@ public class PluginResourceUtils
       List<Resource> extensions = CollectionUtils.newArrayList();
       Resource[] jsModules = null;
       if (null == fileName)
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/")+1) + "/*/*.*");
+         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+               + "/*/*.*");
       else
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/")+1) + "/**/" + fileName);
+         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+               + "/**/" + fileName);
       for (Resource jsModule : jsModules)
       {
          extensions.add(jsModule);

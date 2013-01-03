@@ -29,12 +29,12 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.core.repository.IRepositoryManager;
 import org.eclipse.stardust.engine.core.repository.RepositorySpaceKey;
-import org.eclipse.stardust.ui.client.util.PluginResourceUtils;
 import org.eclipse.stardust.ui.web.common.spi.theme.Theme;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.core.io.Resource;
@@ -58,7 +58,7 @@ public class IppThemeProvider implements ThemeProvider
    private String themeId;
    private String loginStyleSheet;
    private List<String> themeStyleSheets;
-   private Map<String, List<Resource>> pluginAvailableSkins;
+   private Map<String, List<String>> pluginAvailableSkins;
 
    /**
     * 
@@ -107,6 +107,10 @@ public class IppThemeProvider implements ThemeProvider
 
       for (Folder skinFolder : skins)
       {
+         if (StringUtils.isNotEmpty(themeId) && skinFolder.getName().equals(themeId))
+         {
+            this.themeId = skinFolder.getId();
+         }
          availableJCRThemes.add(new IppTheme(skinFolder.getId(), skinFolder.getName()));
       }
       return availableJCRThemes;
@@ -119,12 +123,17 @@ public class IppThemeProvider implements ThemeProvider
    {
       Set<Theme> availablePluginThemes = new HashSet<Theme>();
 
-      pluginAvailableSkins = PluginResourceUtils.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
+      pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
 
-      for (Map.Entry<String, List<Resource>> entry : pluginAvailableSkins.entrySet())
+      for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
       {
          String key = entry.getKey();
-            availablePluginThemes.add(new IppTheme(key, key.substring(key.lastIndexOf("/")+1)));
+         String fileName = key.substring(key.lastIndexOf("/") + 1);
+         availablePluginThemes.add(new IppTheme(key, fileName));
+         if (StringUtils.isNotEmpty(themeId) && fileName.equals(themeId))
+         {
+            this.themeId = key;
+         }
       }
      return availablePluginThemes;
    }
@@ -192,18 +201,16 @@ public class IppThemeProvider implements ThemeProvider
             {
                if (skinFolder.equals(skinFolderId))
                {
-                  List<Resource> documents = pluginAvailableSkins.get(skinFolder);
-                  for (Resource skinFile : documents)
+                  List<String> documentsName = pluginAvailableSkins.get(skinFolder);
+                  for (String skinFile : documentsName)
                   {
-                     String filePath = skinFile.getURI().toString();
-                     System.out.println("File Path is @@@@@@@@@" + filePath);
-                     if (filePath.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
+                     String fileName = skinFile.substring(skinFile.lastIndexOf("/") + 1);
+                     if (fileName.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
                      {
                         // path : a string concat of plugin-root (/plugin) + folderId +
                         // skinFile(say camino.css) ex:
                         // "/plugin/views-common/public/skins/red/camino.css"
-                        String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolderId + "/"
-                              + filePath.substring(filePath.lastIndexOf("/") + 1);
+                        String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolder + "/" + fileName;
                         pluginStyleSheets.add(path);
                      }
                   }

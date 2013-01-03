@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.ExternalContext;
@@ -21,8 +22,11 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -30,14 +34,16 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
+import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.springframework.beans.factory.InitializingBean;
 
 
-
-public class LoginDialogBean implements Serializable
+public class LoginDialogBean implements Serializable, InitializingBean
 {
    private static final long serialVersionUID = -2703702864230398366L;
 
@@ -74,6 +80,8 @@ public class LoginDialogBean implements Serializable
    private boolean principalLogin;
    
    private String loginStyleSheetName;
+   
+   private String pluginLoginStyleSheetPath;
    
    public LoginDialogBean()
    {
@@ -113,6 +121,55 @@ public class LoginDialogBean implements Serializable
             LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
    }
 
+   /**
+    * The partition skin preference is read and update the PluginLoginStyleSheet
+    */
+   public void afterPropertiesSet()
+   {
+      try
+      {
+         SessionContext sessionCtx = TechnicalUserUtils.login(getLoginProperties());
+         UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_PORTAL,
+               PreferenceScope.PARTITION);
+         String skinPreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_PORTAL_CONFIG,
+               UserPreferencesEntries.F_SKIN);
+         TechnicalUserUtils.logout(sessionCtx);
+         Map<String, List<String>> pluginAvailableSkins = null;
+         if (skinPreference.contains(Constants.PLUGIN_FOLDER_PATH))
+         {
+            // if skinPreference =<plugin-id>/public/skins/camino, directly retrieve the
+            // skin
+            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH,
+                  loginStyleSheetName);
+         }
+         else
+         {
+            // If skinPreference ="camino" (i.e loaded from
+            // SungardSkinStaticConfigurationProvider), search skin folder
+            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
+         }
+
+         for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+         {
+            if (entry.getKey().endsWith(skinPreference))
+            {
+               for (String filePath : entry.getValue())
+               {
+                  String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+                  if (fileName.equals(loginStyleSheetName))
+                  {
+                     pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
+                  }
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Technical User login failed for reading skin preference" + e);
+      }
+   }
+   
    /**
     * @return
     */
@@ -350,4 +407,16 @@ public class LoginDialogBean implements Serializable
    {
       return loginStyleSheetName;
    }
+
+   public String getPluginLoginStyleSheetPath()
+   {
+      return pluginLoginStyleSheetPath;
+   }
+
+   public void setPluginLoginStyleSheetPath(String pluginLoginStyleSheetPath)
+   {
+      this.pluginLoginStyleSheetPath = pluginLoginStyleSheetPath;
+   }
+   
+   
 }

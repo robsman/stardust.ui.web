@@ -437,3 +437,76 @@ div.columnsListBox {
 	overflow: auto;
 }
 /* *********** Column Selector - END ************* */
+
+/* Common Menu Start */
+.commonMenuLnk {
+	font: 16px bold Arial; 
+	position: absolute; 
+	top:25px; 
+	left: 10px; 
+	color: transparent !important;
+}
+.commonMenuLnk:hover {
+	color: transparent !important;
+	text-decoration:none;
+}
+
+.commonMenuItem {
+	line-height: 30px;
+	white-space: nowrap;
+	border: none;
+	border-bottom: 1px solid #303030;
+	background: black;
+}
+
+.commonMenuItem:hover 	{
+	background: #518a94; /* Old browsers */
+	background: -moz-linear-gradient(top, #518a94 0%, #23626c 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #518a94), color-stop(100%, #23626c)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #518a94 0%, #23626c 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #518a94 0%, #23626c 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #518a94 0%, #23626c 100%); /* IE10+ */
+	background: linear-gradient(top, #518a94 0%, #23626c 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#518a94', endColorstr='#23626c', GradientType=0); /* IE6-9 */
+	text-decoration: none;
+}
+
+.commonMenuItem a:hover {
+	text-decoration: none;
+}
+
+.commonMenuItem .iceOutTxt{
+	font-size: 12px;
+	color: #75C0CD;
+}
+
+.commonMenuItem .iceGphImg {
+	margin-left: 15px;
+	margin-right: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	vertical-align: middle;
+}
+
+.commonMenuHeadingItem {
+	background: #3c3c3c; /* Old browsers */
+	background: -moz-linear-gradient(top, #3c3c3c 0%, #101010 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3c3c3c), color-stop(100%, #101010)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #3c3c3c 0%, #101010 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #3c3c3c 0%, #101010 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #3c3c3c 0%, #101010 100%); /* IE10+ */
+	background: linear-gradient(top, #3c3c3c 0%, #101010 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3c3c3c', endColorstr='#101010', GradientType=0); /* IE6-9 */
+	
+	white-space: nowrap;
+	border: none;
+	border-bottom: 1px solid #303030;
+}
+
+.commonMenuHeadingItem .iceOutTxt {
+	line-height: 30px;
+	font-size: 12px;
+	color: #B9B5AE;
+	padding-left: 10px;
+}
+/* Common Menu End */

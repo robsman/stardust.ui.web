@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.viewscommon.login.dialogs;
 import java.util.Collections;
 import java.util.Map;
 
-import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -22,28 +21,22 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-
-
 
 /**
  * @author Subodh.Godbole
- *
+ * 
  */
 public class ResetPasswordDialog extends PopupDialog
 {
    private static final long serialVersionUID = 1L;
-   
+
    protected static final Logger trace = LogManager.getLogger(ResetPasswordDialog.class);
-   
+
    private static final String FORM_ID = "resetPwdForm";
    private static final String COMMON_MESSAGE_ID = "resetPwdCommonMsg";
 
-   public static final String TECH_USER_PARAM_ACCOUNT = "Security.ResetPassword.TechnicalUser.Account";
-   public static final String TECH_USER_PARAM_PASSWORD = "Security.ResetPassword.TechnicalUser.Password";
-   public static final String TECH_USER_PARAM_REALM = "Security.ResetPassword.TechnicalUser.Realm";
-   
-   
    private String account;
    private String realm;
    private String domain;
@@ -78,49 +71,9 @@ public class ResetPasswordDialog extends PopupDialog
       // Login With Technical User
       try
       {
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Technical User about to log in...");
-         }
-
-         Parameters parameters = Parameters.instance();
-
-         String user = parameters.getString(TECH_USER_PARAM_ACCOUNT);
-         String pwd = parameters.getString(TECH_USER_PARAM_PASSWORD);
-         String realm = parameters.getString(TECH_USER_PARAM_REALM);
-         
-         Map<String, String> properties = CollectionUtils.newHashMap();
-         properties.put(SecurityProperties.REALM, realm);
-         
-         if(StringUtils.isEmpty(user) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(realm))
-         {
-            user = "motu";
-            pwd = "motu";
-            realm = "carnot";
-            
-            trace.info("The default user credentials were used to initiate the 'Reset Password' request. Please configure a new technical user.");
-         }
-         else
-         {
-            trace.debug("Technical User is found to be configured. Using the same to Reset Password");
-         }
-
-         // Set the partition of Tech User same as the current user
-         if(loginProperties.containsKey(SecurityProperties.PARTITION))
-         {
-            properties.put(SecurityProperties.PARTITION, loginProperties
-                  .get(SecurityProperties.PARTITION));
-         }
-
-         sessionCtx = SessionContext.findSessionContext();
-         sessionCtx.initInternalSession(user, pwd, properties);
-         
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Technical User Logged in...");
-         }
+         sessionCtx = TechnicalUserUtils.login(loginProperties);
       }
-      catch(Exception e)
+      catch (Exception e)
       {
          ExceptionHandler.handleException(FORM_ID + ":" + COMMON_MESSAGE_ID, e);
          return;
@@ -142,10 +95,10 @@ public class ResetPasswordDialog extends PopupDialog
             trace.debug("Reset Pwd Success for - " + account);
          }
 
-         sessionCtx.logout();
+         TechnicalUserUtils.logout(sessionCtx);
          success = true;
       }
-      catch(Exception e)
+      catch (Exception e)
       {
          ExceptionHandler.handleException(FORM_ID + ":" + COMMON_MESSAGE_ID, e);
       }
@@ -166,7 +119,7 @@ public class ResetPasswordDialog extends PopupDialog
       reset();
       super.closePopup();
    }
-   
+
    private Map<String, String> getLoginProperties()
    {
       LoginDialogBean loginDlg = LoginDialogBean.getInstance();
@@ -186,7 +139,7 @@ public class ResetPasswordDialog extends PopupDialog
       }
       return Collections.unmodifiableMap(properties);
    }
-   
+
    public String getAccount()
    {
       return account;

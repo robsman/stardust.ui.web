@@ -170,7 +170,14 @@ public class PortalConfigurationPanel extends UIComponentBean
 
       if (userProvider.getUser().isAdministrator())
       {
-         userPrefsHelper.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
+         if (!StringUtils.isEmpty(selectedSkin))
+         {
+            userPrefsHelper.setString(V_PORTAL_CONFIG, F_SKIN, selectedSkin);
+         }
+         else
+         {
+            userPrefsHelper.resetValue(V_PORTAL_CONFIG, F_SKIN);
+         }
       }
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE, selectedPerspective);
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, String.valueOf(maxTabsDisplay));
