@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -23,7 +23,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function initialize() {
 				if (window.top.modelingSession == null) {
@@ -37,7 +37,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function renew() {
 				window.top.modelingSession = new Session(m_user
@@ -49,7 +49,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Session(sessionOwner) {
 				this.prospects = new Array();
@@ -57,7 +57,7 @@ define(
 				this.owner = sessionOwner;
 				this.loggedInUser = sessionOwner;
 				this.joined = false;
-				this.technologyPreview = true;
+				this.technologyPreview = false; // be careful when committing anything but false
 				var sessionCallbackObj = this;
 				var startTime = new Date();
 				this.ownerJson = "";
@@ -67,7 +67,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Session.prototype.processCommand = function(command) {
 					if (command.type == m_constants.ACCEPT_INVITE_COMMAND) {
@@ -134,7 +134,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				function refreshPreferences() {
 					m_communicationController
@@ -174,7 +174,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Session.prototype.getUserByAccount = function(account) {
 					if (this.owner.account == account) {
@@ -193,15 +193,15 @@ define(
 						}
 					}
 				};
-				
-				
+
+
 				Session.prototype.isOwner = function(username){
 					if(this.owner.account == username){
 						return true;
 					}
 					return false;
 				}
-				
+
 				function submitCommand(command) {
 					var url = m_communicationController.getEndpointUrl()
 							+ command.path;
