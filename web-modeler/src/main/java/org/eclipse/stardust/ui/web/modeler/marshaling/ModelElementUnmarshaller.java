@@ -350,8 +350,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (activityJson.has(ModelerConstants.TASK_TYPE))
          {
-            System.out.println("Task Type in JSON: " + activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
-            
             getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
                   activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
 

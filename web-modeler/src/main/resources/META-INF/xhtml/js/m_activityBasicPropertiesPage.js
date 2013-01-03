@@ -68,10 +68,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.relocationTarget"));
-				$("label[for='subprocessInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.general.subProcessInput"));
 			}
 
 			function ActivityBasicPropertiesPage(propertiesPanel) {
@@ -107,6 +103,63 @@ define(
 							.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
+
+					// I18N
+
+					jQuery("label[for='taskInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.task"));
+					this.taskTypeList
+							.append("<option value='none'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.noneTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='manual'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.manualTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='user'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.userTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='service'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.serviceTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='script'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.scriptTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='send'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.sendTask")
+									+ "</option>");
+					this.taskTypeList
+							.append("<option value='receive'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.receiveTask")
+									+ "</option>");
+
+					if (m_session.getInstance().technologyPreview) {
+						this.taskTypeList
+								.append("<option value='rule'>"
+										+ m_i18nUtils
+												.getProperty("modeler.activity.propertyPages.general.ruleTask")
+										+ "</option>");
+					}
+
+					jQuery("label[for='subprocessInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.subProcessInput"));
+
+					// Events
 
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.allowAbortByParticipantInput,
@@ -186,10 +239,15 @@ define(
 					this.subprocessList.empty();
 					this.subprocessList.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
+							+ "'>"
+							+ m_i18nUtils
+									.getProperty("modeler.general.toBeDefined")
+							+ "</option>");
 
-					this.subprocessList
-							.append("<optgroup label=\"This Model\"></optgroup>");
+					this.subprocessList.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.thisModel")
+							+ "'>");
 
 					for ( var i in this.getModel().processes) {
 						this.subprocessList.append("<option value='"
@@ -200,8 +258,10 @@ define(
 
 					this.subprocessList.append("</optgroup>");
 
-					this.subprocessList
-							.append("<optgroup label=\"Others Model\">");
+					this.subprocessList.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.otherModels")
+							+ "'>");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModel()) {
@@ -243,16 +303,19 @@ define(
 
 					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
 							|| this.getModelElement().taskType == m_constants.MANUAL_TASK_TYPE) {
-
 						if (this.getModelElement().participantFullId) {
 							var participant = m_model.findParticipant(this
 									.getModelElement().participantFullId);
 
-							this.participantOutput.append("performed by "
-									+ participant.name + ".");
+							this.participantOutput
+									.append(m_i18nUtils
+											.getProperty(
+													"modeler.activity.propertyPages.general.performedBy")
+											.replace("{0}", participant.name));
 						} else {
 							this.participantOutput
-									.append("Performer to be set.");
+									.append(m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.performerToBeSet"));
 						}
 					}
 				};
