@@ -1573,8 +1573,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             String contextId = entry.getKey();
 
-            System.out.println("Context: " + contextId);
-
             IAccessPointOwner context = application;
 
             if ( !ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY.equals(contextId))
@@ -1598,8 +1596,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      .getAsString();
 
                AccessPointType accessPoint = null;
-
-               System.out.println("Access Point JSON: " + accessPointJson);
 
                if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
                {
@@ -1626,8 +1622,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                      accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
                            context, id, name, structuredDataFullId, direction);
-
-                     System.out.println("Created Access Point: " + accessPoint);
                   }
                   else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                   {
@@ -2229,8 +2223,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateData(DataType data, JsonObject dataJson)
    {
-      System.out.println("Data Json " + dataJson);
-
       updateIdentifiableElement(data, dataJson);
 
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
@@ -2239,24 +2231,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (dataJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
       {
-         System.out.println("Has property "
-               + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
-
          if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()
                .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
          {
-            System.out.println("Creating Primitive Type: "
-                  + dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
-
             getModelBuilderFacade().convertDataType(data,
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
             getModelBuilderFacade().updatePrimitiveData(
                   data,
                   dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                         .getAsString());
-
-            System.out.println("Primitive Type: " + data.getType());
          }
          else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()
@@ -2268,8 +2252,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   data,
                   dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
                         .getAsString());
-
-            System.out.println("Structured Type: " + data.getType());
          }
          else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()
@@ -2281,8 +2263,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   data,
                   dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
                         .getAsString());
-
-            System.out.println("Document Type: " + data.getType());
          }
          else
          {

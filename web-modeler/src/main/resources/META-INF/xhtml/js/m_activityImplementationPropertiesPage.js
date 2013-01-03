@@ -58,12 +58,13 @@ define(
 					this.ruleSetList = this.mapInputId("ruleSetList");
 
 					this.heading.empty();
-					this.heading.append(m_i18nUtils
-							.getProperty("modeler.propertiesPage.activity.implementation.heading"));					
+					this.heading
+							.append(m_i18nUtils
+									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
 					jQuery("label[for='applicationList']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.propertiesPage.activity.implementation.application"));
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertiesPage.activity.implementation.application"));
 
 					this.applicationList.change({
 						"page" : this
@@ -90,18 +91,14 @@ define(
 									.getProperty("modeler.general.toBeDefined")
 							+ "</option>");
 
-					this.applicationList
-							.append("<optgroup label='" + m_i18nUtils
-									.getProperty("modeler.general.thisModel") + "'>");
+					this.applicationList.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.thisModel")
+							+ "'>");
 
 					for ( var i in this.getModel().applications) {
-						if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
-								&& !this.getModel().applications[i].interactive) {
-							continue;
-						}
-
-						if (this.getModelElement().taskType != m_constants.USER_TASK_TYPE
-								&& this.getModel().applications[i].interactive) {
+						if (!this
+								.checkCompatibility(this.getModel().applications[i])) {
 							continue;
 						}
 
@@ -112,9 +109,10 @@ define(
 					}
 
 					this.applicationList.append("</optgroup>");
-					this.applicationList
-					.append("<optgroup label='" + m_i18nUtils
-							.getProperty("modeler.general.otherModels") + "'>");
+					this.applicationList.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.otherModels")
+							+ "'>");
 
 					for ( var n in m_model.getModels()) {
 						if (m_model.getModels()[n] == this.getModel()) {
@@ -127,13 +125,8 @@ define(
 								continue;
 							}
 
-							if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
-									&& !m_model.getModels()[n].applications[m].interactive) {
-								continue;
-							}
-
-							if (this.getModelElement().taskType != m_constants.USER_TASK_TYPE
-									&& m_model.getModels()[n].applications[m].interactive) {
+							if (!this
+									.checkCompatibility(m_model.getModels()[n].applications[m])) {
 								continue;
 							}
 
@@ -151,6 +144,39 @@ define(
 
 					this.applicationList.append("</optgroup>");
 				};
+
+				/**
+				 * 
+				 */
+				ActivityImplementationPropertiesPage.prototype.checkCompatibility = function(
+						application) {
+					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
+							&& !application.interactive) {
+						return false;
+					}
+
+					if (this.getModelElement().taskType != m_constants.USER_TASK_TYPE
+							&& application.interactive) {
+						return false;
+					}
+
+					if (this.getModelElement().taskType == m_constants.SCRIPT_TASK_TYPE
+							&& application.applicationType != "messageTransformationBean") {
+						return false;
+					}
+
+					if (this.getModelElement().taskType == m_constants.SEND_TASK_TYPE
+							&& !(application.applicationType == "jms" || application.applicationType == "mailBean")) {
+						return false;
+					}
+
+					if (this.getModelElement().taskType == m_constants.RECEIVE_TASK_TYPE
+							&& application.applicationType != "jms") {
+						return false;
+					}
+
+					return true;
+				}
 
 				/**
 				 * 

@@ -860,8 +860,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       String taskType = getModelBuilderFacade().getAttributeValue(
             getModelBuilderFacade().getAttribute(activity, ModelerConstants.TASK_TYPE));
 
-      System.out.println("Task Type stored with Activity: " + taskType);
-
       if (taskType != null)
       {
          activityJson.addProperty(ModelerConstants.TASK_TYPE, taskType);
