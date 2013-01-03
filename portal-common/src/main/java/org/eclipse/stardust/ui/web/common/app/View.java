@@ -303,7 +303,7 @@ public class View extends AbstractUiElement implements TabScopeManager
                   }
                   else
                   {
-                     viewParams.put(name, null);
+                     viewParams.put(name, value);
                   }
                }
                catch (Exception e)
