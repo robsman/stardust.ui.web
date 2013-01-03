@@ -297,7 +297,14 @@ public class View extends AbstractUiElement implements TabScopeManager
             {
                try
                {
-                  viewParams.put(name, URLDecoder.decode(value, "UTF-8"));
+                  if (StringUtils.isNotEmpty(value))
+                  {
+                     viewParams.put(name, URLDecoder.decode(value, "UTF-8"));
+                  }
+                  else
+                  {
+                     viewParams.put(name, null);
+                  }
                }
                catch (Exception e)
                {
