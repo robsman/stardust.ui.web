@@ -236,16 +236,22 @@ define(
 											// submit
 											: false
 										},
+										// TODO Needs to be reviewed: it is a guard but any unwanted reference should have been removed before as we 
+										// intend to control what is passed to the server
 										// Added to remove any cyclic reference
-										JSON.stringify(command, function(key,
-												val) {
-											if (typeof val == "object") {
-												if (obj.indexOf(val) >= 0)
-													return undefined;
-												obj.push(val);
-											}
-											return val;
-										}),
+										JSON
+												.stringify(
+														command,
+														function(key, val) {
+															if (typeof val == "object") {
+																if (obj
+																		.indexOf(val) >= 0) {
+																	return undefined;
+																}
+																obj.push(val);
+															}
+															return val;
+														}),
 										new function() {
 											return {
 												"success" : function(command) {

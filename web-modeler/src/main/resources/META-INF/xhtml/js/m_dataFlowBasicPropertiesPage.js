@@ -317,7 +317,7 @@ define(
 
 					// TODO Use method of m_activity; proper type binding
 					// required
-					if (dataFlow.activity.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
+					if (dataFlow.activity.taskType != m_constants.TASK_ACTIVITY_TYPE) {
 						this.inputAccessPointSelectInput
 								.append("<option value='DEFAULT'>Default</option>"); // I18N
 					} else {
@@ -394,7 +394,7 @@ define(
 
 					// TODO Use method of m_activity; proper type binding
 					// required
-					if (dataFlow.activity.activityType != m_constants.APPLICATION_ACTIVITY_TYPE) {
+					if (dataFlow.activity.taskType != m_constants.TASK_ACTIVITY_TYPE) {
 						this.outputAccessPointSelectInput
 								.append("<option value='DEFAULT'>Default</option>");
 					} else {

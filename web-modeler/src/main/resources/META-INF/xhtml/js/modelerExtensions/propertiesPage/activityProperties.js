@@ -9,12 +9,14 @@
  ******************************************************************************/
 
 define([ 'bpm-modeler/js/m_activityBasicPropertiesPage',
+         'bpm-modeler/js/m_activityImplementationPropertiesPage',
          'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
          'bpm-modeler/js/m_activityProcessingPropertiesPage',
          'bpm-modeler/js/m_activityControllingPropertiesPage',
          'bpm-modeler/js/m_activityQualityControlPropertiesPage',
          'bpm-modeler/js/m_activityDisplayPropertiesPage'], function(
         		 m_activityBasicPropertiesPage,
+        		 m_activityImplementationPropertiesPage,
         		 m_modelElementCommentsPropertiesPage,
         		 m_activityProcessingPropertiesPage,
         		 m_activityControllingPropertiesPage,
@@ -25,6 +27,11 @@ define([ 'bpm-modeler/js/m_activityBasicPropertiesPage',
 			panelId: "activityPropertiesPanel",
 			pageId: "basicPropertiesPage",
 			provider: m_activityBasicPropertiesPage,
+			visibility: "always"
+		}, {
+			panelId: "activityPropertiesPanel",
+			pageId: "implementationPropertiesPage",
+			provider: m_activityImplementationPropertiesPage,
 			visibility: "always"
 		}, {
 			panelId: "activityPropertiesPanel",

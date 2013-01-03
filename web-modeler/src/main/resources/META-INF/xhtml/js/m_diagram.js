@@ -1087,7 +1087,7 @@ define(
 				 */
 				Diagram.prototype.addActivitySymbol = function() {
 					this.newSymbol = m_activitySymbol.createActivitySymbol(
-							this, m_constants.MANUAL_ACTIVITY_TYPE);
+							this, m_constants.TASK_ACTIVITY_TYPE);
 				};
 
 				/**
@@ -1701,7 +1701,7 @@ define(
 				Diagram.prototype.connectToActivity = function(symbol) {
 					this.addAndConnectSymbol(symbol, m_activitySymbol
 							.createActivitySymbol(this,
-									m_constants.MANUAL_ACTIVITY_TYPE));
+									m_constants.TASK_ACTIVITY_TYPE));
 				};
 
 				/**

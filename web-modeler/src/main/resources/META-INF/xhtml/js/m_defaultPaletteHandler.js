@@ -45,7 +45,7 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 			diagram.clearCurrentToolSelection();
 			selectTool("activityButton");
 			diagram.newSymbol = m_activitySymbol.createActivitySymbol(diagram,
-					m_constants.MANUAL_ACTIVITY_TYPE);
+					m_constants.TASK_ACTIVITY_TYPE);
 		},
 		createSwimlane : function(diagram) {
 			diagram.clearCurrentToolSelection();

@@ -77,7 +77,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -92,7 +92,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -271,9 +271,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             DataTypeType dataType = formalParameter.getDataType();
             ModelType model = ModelUtils.findContainingModel(formalParameter);
-            if (model != null) {
-               if (dataType.getCarnotType()
-                     .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+            if (model != null)
+            {
+               if (dataType.getCarnotType().equals(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                {
                   formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                         ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
@@ -388,9 +389,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    *
+    * 
     * TODO Review and move to Facade
-    *
+    * 
     * @param type
     * @return
     */
@@ -415,7 +416,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -446,7 +447,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             ModelType referencedModel = null;
 
-            if(model != null)
+            if (model != null)
             {
                URI createURI = URI.createURI(roleUri);
                String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
@@ -662,7 +663,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -711,8 +712,20 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ACTIVITY_KEY);
-            activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
-                  activity.getImplementation().getLiteral());
+
+            if ( !activity.getImplementation().equals(
+                  ActivityImplementationType.SUBPROCESS_LITERAL))
+            {
+               activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+                     ModelerConstants.TASK_ACTIVITY);
+               mapTaskType(activity, activityJson);
+            }
+            else
+            {
+               activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
+                     activity.getImplementation().getLiteral());
+            }
+
             activityJson.addProperty(ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER,
                   activity.isAllowsAbortByPerformer());
             activityJson.addProperty(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION,
@@ -841,7 +854,86 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
+    * @param activity
+    * @param activityJson
+    */
+   public void mapTaskType(ActivityType activity, JsonObject activityJson)
+   {
+      String taskType = getModelBuilderFacade().getAttributeValue(
+            getModelBuilderFacade().getAttribute(activity, ModelerConstants.TASK_TYPE));
+
+      System.out.println("Task Type stored with Activity: " + taskType);
+      
+      if (taskType != null)
+      {
+         activityJson.addProperty(ModelerConstants.TASK_TYPE, taskType);
+      }
+      else
+      {
+         if (activity.getImplementation()
+               .equals(ActivityImplementationType.ROUTE_LITERAL))
+         {
+            activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                  ModelerConstants.NONE_TASK_KEY);
+         }
+         else if (activity.getImplementation().equals(
+               ActivityImplementationType.MANUAL_LITERAL))
+         {
+            activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                  ModelerConstants.MANUAL_TASK_KEY);
+         }
+         else if (activity.getImplementation().equals(
+               ActivityImplementationType.APPLICATION_LITERAL))
+         {
+            if (activity.getApplication().isInteractive())
+            {
+               activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                     ModelerConstants.USER_TASK_KEY);
+            }
+            else
+            {
+               if (activity.getApplication()
+                     .getType()
+                     .getId()
+                     .equals("messageTransformationBean"))
+               {
+                  activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                        ModelerConstants.SCRIPT_TASK_KEY);
+               }
+               else if (activity.getApplication()
+                     .getType()
+                     .getId()
+                     .equals("rulesEngineBean"))
+               {
+                  activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                        ModelerConstants.RULE_TASK_KEY);
+               }
+               else if (activity.getApplication().getType().getId().equals("jms")
+                     && !activity.getApplication().getType().isSynchronous())
+               {
+                  activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                        ModelerConstants.RECEIVE_TASK_KEY);
+               }
+               else
+               {
+                  activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                        ModelerConstants.SERVICE_TASK_KEY);
+               }
+            }
+
+         }
+         else if (activity.getImplementation().equals(
+               ActivityImplementationType.SUBPROCESS_LITERAL))
+         {
+            activityJson.addProperty(ModelerConstants.TASK_TYPE,
+                  ModelerConstants.SUBPROCESS_TASK_KEY);
+         }
+      }
+   }
+
+   /**
+    * 
     * @param activitySymbol
     * @return
     */
@@ -929,7 +1021,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -991,7 +1083,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1045,7 +1137,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param event
     * @return
     */
@@ -1072,14 +1164,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       // Load BPMN attributes
 
-      Object attribute = getModelBuilderFacade().getAttribute(event,
-            "eventClass");
+      Object attribute = getModelBuilderFacade().getAttribute(event, "eventClass");
 
       // TODO We need a better convenience function to access attributes
 
       if (attribute != null)
       {
-         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY, getModelBuilderFacade().getAttributeValue(attribute));
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+               getModelBuilderFacade().getAttributeValue(attribute));
       }
       else
       {
@@ -1090,10 +1182,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       // TODO Validate defaults (e.g. Start Events cannot be throwing
       eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
             getModelBuilderFacade().getBooleanAttribute(event, "throwing"));
-      eventJson.addProperty(
-            ModelerConstants.INTERRUPTING_PROPERTY,
-            getModelBuilderFacade().getBooleanAttribute(event,
-                  "interrupting"));
+      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
+            getModelBuilderFacade().getBooleanAttribute(event, "interrupting"));
 
       JsonArray parameterMappingsJson = new JsonArray();
 
@@ -1144,7 +1234,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -1172,23 +1262,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          dataJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
                this.getModelBuilderFacade().isExternalReference(data));
 
-         String dataUri = AttributeUtil.getAttributeValue(
-               (IExtensibleElement) data,
+         String dataUri = AttributeUtil.getAttributeValue((IExtensibleElement) data,
                IConnectionManager.URI_ATTRIBUTE_NAME);
 
-         if (!StringUtils.isEmpty(dataUri))
+         if ( !StringUtils.isEmpty(dataUri))
          {
             ModelType referencedModel = null;
 
-            if(model != null)
+            if (model != null)
             {
                URI createURI = URI.createURI(dataUri);
                String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-                  + createURI.authority() + "/"; //$NON-NLS-1$
+                     + createURI.authority() + "/"; //$NON-NLS-1$
                referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
             }
 
-            if(referencedModel != null)
+            if (referencedModel != null)
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
                dataJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);
@@ -1304,7 +1393,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1377,7 +1466,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          roleJson.addProperty(ModelerConstants.CARDINALITY, "");
       }
 
-      if(model != null)
+      if (model != null)
       {
          List<OrganizationType> parentOrgs = getModelBuilderFacade().getParentOrganizations(
                model, role);
@@ -1408,23 +1497,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       roleJson.addProperty(ModelerConstants.EXTERNAL_REFERENCE_PROPERTY,
             this.getModelBuilderFacade().isExternalReference(role));
 
-      String roleUri = AttributeUtil.getAttributeValue(
-            (IExtensibleElement) role,
+      String roleUri = AttributeUtil.getAttributeValue((IExtensibleElement) role,
             IConnectionManager.URI_ATTRIBUTE_NAME);
 
-      if (!StringUtils.isEmpty(roleUri))
+      if ( !StringUtils.isEmpty(roleUri))
       {
          ModelType referencedModel = null;
 
-         if(model != null)
+         if (model != null)
          {
             URI createURI = URI.createURI(roleUri);
             String uri = createURI.scheme().toString() + "://" //$NON-NLS-1$
-               + createURI.authority() + "/"; //$NON-NLS-1$
+                  + createURI.authority() + "/"; //$NON-NLS-1$
             referencedModel = ModelUtils.getReferencedModelByURI(model, uri);
          }
 
-         if(referencedModel != null)
+         if (referencedModel != null)
          {
             String roleId = getModelBuilderFacade().createFullId(referencedModel, role);
             roleJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
@@ -1685,7 +1773,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -1736,7 +1824,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -1853,7 +1941,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -1995,7 +2083,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -2211,10 +2299,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    *
+    * 
     * Returns the organisation for which the role is a team leader, null otherwise returns
     * null if role is not a team leader in the first place
-    *
+    * 
     * @param participant
     * @return
     */
@@ -2390,7 +2478,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2421,7 +2509,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2441,7 +2529,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2530,9 +2618,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */

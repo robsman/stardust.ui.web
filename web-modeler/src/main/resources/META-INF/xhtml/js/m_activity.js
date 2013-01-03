@@ -24,7 +24,7 @@ define(
 					var actNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newActivity.namePrefix");
 					activity.initialize(actNamePrefix + " " + index, type);
 
-					activity.activityType == m_constants.MANUAL_ACTIVITY_TYPE
+					activity.taskType = m_constants.MANUAL_TASK_TYPE;
 
 					return activity;
 				},
@@ -46,7 +46,11 @@ define(
 					var activity = new Activity();
 
 					activity.initialize(application.name + index,
-							m_constants.APPLICATION_ACTIVITY_TYPE);
+							m_constants.TASK_ACTIVITY_TYPE);
+
+					// TODO Resolve task type
+					
+					activity.taskType = m_constants.SERVICE_TASK_TYPE;
 
 					activity.applicationFullId = application.getFullId();
 
@@ -61,6 +65,7 @@ define(
 							m_constants.GATEWAY_ACTIVITY_TYPE);
 
 					activity.type = m_constants.GATEWAY;
+					activity.taskType = m_constants.NONE_TASK_TYPE;
 					activity.gatewayType = m_constants.XOR_GATEWAY_TYPE;
 
 					return activity;
@@ -117,7 +122,7 @@ define(
 				 * TODO Needed?
 				 */
 				Activity.prototype.hasDefaultContext = function() {
-					return this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE;
+					return this.activityType == m_constants.TASK_ACTIVITY_TYPE;
 				};
 
 				/**
@@ -125,7 +130,7 @@ define(
 				 */
 				Activity.prototype.getContexts = function() {
 					// TODO Should/might be evaluated on the server
-					if (this.activityType == m_constants.APPLICATION_ACTIVITY_TYPE
+					if (this.activityType == m_constants.TASK_ACTIVITY_TYPE
 							&& this.applicationFullId) {
 						var application = m_model
 								.findApplication(this.applicationFullId);

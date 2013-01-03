@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -60,6 +61,8 @@ public class ActivityCommandHandler
 
       String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ACTIVITY_TYPE);
+      String taskType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+            ModelerConstants.TASK_TYPE);
       String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.NAME_PROPERTY);
       String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
@@ -78,6 +81,20 @@ public class ActivityCommandHandler
          ActivityType activity = getModelBuilderFacade().createActivity(model, processDefinition,
                activityType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
+
+         // TODO Add to Facade
+         
+         getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
+               taskType);
+
+         if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
+         {
+            activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+         }
+         else
+         {
+            activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+         }
 
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));

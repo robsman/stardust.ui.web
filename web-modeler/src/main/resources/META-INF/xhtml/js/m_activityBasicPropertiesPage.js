@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -20,7 +20,8 @@ define(
 				"bpm-modeler/js/m_modelElementUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_user, m_session, m_model, m_dialog,
-				m_basicPropertiesPage, m_activity, m_i18nUtils, m_modelElementUtils) {
+				m_basicPropertiesPage, m_activity, m_i18nUtils,
+				m_modelElementUtils) {
 			return {
 				create : function(propertiesPanel) {
 					i18nProcessActivityScreen();
@@ -67,18 +68,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.relocationTarget"));
-				jQuery("#userTask")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.general.userTask"));
-				jQuery("#userTask")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.general.userTask"));
-				$("label[for='applicationInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.general.applicationInput"));
 				$("label[for='subprocessInput']")
 						.text(
 								m_i18nUtils
@@ -94,16 +83,13 @@ define(
 						basicPropertiesPage);
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 
-					this.userTaskInput = this.mapInputId("userTaskInput");
-					this.userApplicationList = this
-							.mapInputId("userApplicationList");
-					this.applicationInput = this.mapInputId("applicationInput");
-					this.applicationList = this.mapInputId("applicationList");
+					this.taskInput = this.mapInputId("taskInput");
+					this.taskTypeList = this.mapInputId("taskTypeList");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
 					this.subprocessExecutionRow = this
@@ -121,17 +107,6 @@ define(
 							.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
-					this.rulesActivityRow = this.mapInputId("rulesActivityRow");
-					this.rulesActivityInput = this
-							.mapInputId("rulesActivityInput");
-					this.rulesActivityPackageList = this
-							.mapInputId("rulesActivityPackageList");
-
-					if (!m_session.getInstance().technologyPreview) {
-						m_dialog.makeInvisible(this.rulesActivityRow);
-					} else {
-						m_dialog.makeVisible(this.rulesActivityRow);
-					}
 
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.allowAbortByParticipantInput,
@@ -152,18 +127,15 @@ define(
 									this.copyDataInput,
 									"carnot:engine:subprocess:copyAllData");
 
-					this.userApplicationList.change({
+					this.taskInput.click({
 						"page" : this
 					}, function(event) {
-						var page = event.data.page;
-
-						if (!page.validate()) {
-							return;
+						if (event.data.page.taskInput.is(":checked")) {
+							event.data.page.setTaskType();
+							event.data.page.submitTaskTypeChanges();
 						}
-
-						page.submitUserTaskChanges();
 					});
-					this.applicationList.change({
+					this.taskTypeList.change({
 						"page" : this
 					}, function(event) {
 						var page = event.data.page;
@@ -172,7 +144,7 @@ define(
 							return;
 						}
 
-						page.submitApplicationChanges();
+						page.submitTaskTypeChanges();
 					});
 					this.subprocessList.change({
 						"page" : this
@@ -185,36 +157,12 @@ define(
 
 						page.submitSubprocessChanges();
 					});
-					this.userTaskInput.click({
-						"page" : this
-					}, function(event) {
-						if (event.data.page.userTaskInput.is(":checked")) {
-							event.data.page.setUserTaskType();
-							event.data.page.submitUserTaskChanges();
-						}
-					});
-					this.applicationInput.click({
-						"page" : this
-					}, function(event) {
-						if (event.data.page.applicationInput.is(":checked")) {
-							event.data.page.setApplicationType();
-							event.data.page.submitApplicationChanges();
-						}
-					});
 					this.subprocessInput.click({
 						"page" : this
 					}, function(event) {
 						if (event.data.page.subprocessInput.is(":checked")) {
 							event.data.page.setSubprocessType();
 							event.data.page.submitSubprocessChanges();
-						}
-					});
-					this.rulesActivityInput.click({
-						"page" : this
-					}, function(event) {
-						if (event.data.page.rulesActivityInput.is(":checked")) {
-							event.data.page.setRulesType();
-							//event.data.page.submitSubprocessChanges();
 						}
 					});
 					this.subprocessModeSelect
@@ -232,125 +180,7 @@ define(
 				};
 
 				/**
-				 *
-				 */
-				ActivityBasicPropertiesPage.prototype.populateUserApplicationSelect = function() {
-					this.userApplicationList.empty();
-					this.userApplicationList.append("<option value='"
-							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
-					this.userApplicationList.append("<option value='"
-							+ m_constants.AUTO_GENERATED_UI
-							+ "'>(Auto-generated Screen)</option>");
-
-					var modellabel = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.thisModel");
-					this.userApplicationList.append("<optgroup label=\""
-							+ modellabel + "\">");
-
-					for ( var i in this.getModel().applications) {
-						if (!this.getModel().applications[i].interactive) {
-							continue;
-						}
-
-						this.userApplicationList.append("<option value='"
-								+ this.getModel().applications[i].getFullId()
-								+ "'>" + this.getModel().applications[i].name
-								+ "</option>");
-					}
-
-					this.userApplicationList.append("</optgroup>");
-					modellabel = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.otherModel");
-					this.userApplicationList
-							.append("</optgroup><optgroup label=\""
-									+ modellabel + "\">");
-
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModel()) {
-							continue;
-						}
-
-						for ( var m in m_model.getModels()[n].applications) {
-							if (!m_model.getModels()[n].applications[m].interactive
-									|| !m_modelElementUtils
-											.hasPublicVisibility(m_model
-													.getModels()[n].applications[m])) {
-								continue;
-							}
-
-							this.userApplicationList
-									.append("<option value='"
-											+ m_model.getModels()[n].applications[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].applications[m].name
-											+ "</option>");
-						}
-					}
-
-					this.userApplicationList.append("</optgroup>");
-				};
-
-				/**
-				 *
-				 */
-				ActivityBasicPropertiesPage.prototype.populateApplicationSelect = function() {
-					this.applicationList.empty();
-					this.applicationList.append("<option value='"
-							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
-
-					this.applicationList
-							.append("<optgroup label=\"This Model\">");
-
-					for ( var i in this.getModel().applications) {
-						if (this.getModel().applications[i].interactive) {
-							continue;
-						}
-
-						this.applicationList.append("<option value='"
-								+ this.getModel().applications[i].getFullId()
-								+ "'>" + this.getModel().applications[i].name
-								+ "</option>");
-					}
-
-					this.applicationList.append("</optgroup>");
-					this.applicationList
-							.append("</optgroup><optgroup label=\"Others Model\">");
-
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModel()) {
-							continue;
-						}
-
-						for ( var m in m_model.getModels()[n].applications) {
-							if (m_model.getModels()[n].applications[m].interactive
-									|| !m_modelElementUtils
-											.hasPublicVisibility(m_model
-													.getModels()[n].applications[m])) {
-								continue;
-							}
-
-							this.applicationList
-									.append("<option value='"
-											+ m_model.getModels()[n].applications[m]
-													.getFullId()
-											+ "'>"
-											+ m_model.getModels()[n].name
-											+ "/"
-											+ m_model.getModels()[n].applications[m].name
-											+ "</option>");
-						}
-					}
-
-					this.applicationList.append("</optgroup>");
-				};
-
-				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.populateSubprocessSelect = function() {
 					this.subprocessList.empty();
@@ -397,81 +227,43 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.setUserTaskType = function(
-						applicationFullId) {
-					this.userTaskInput.attr("checked", true);
-					this.userApplicationList.removeAttr("disabled");
-					m_dialog.makeVisible(this.participantOutput);
-
-					if (applicationFullId != null) {
-						this.userApplicationList.val(applicationFullId);
-					} else {
-						this.userApplicationList
-								.val(m_constants.AUTO_GENERATED_UI);
-					}
+				ActivityBasicPropertiesPage.prototype.setTaskType = function() {
+					this.taskInput.attr("checked", true);
+					this.taskTypeList.removeAttr("disabled");
+					this.taskTypeList.val(this.getModelElement().taskType);
+					this.subprocessInput.attr("checked", false);
+					this.subprocessList.attr("disabled", true);
+					this.subprocessModeSelect.attr("disabled", true);
+					this.copyDataInput.attr("disabled", true);
+					this.subprocessList.val(m_constants.TO_BE_DEFINED);
 
 					this.participantOutput.empty();
 
-					if (this.propertiesPanel.participant != null) {
-						this.participantOutput.append("executed by <b>"
-								+ this.propertiesPanel.participant.name
-								+ ".</b>");
-					} else {
-						this.participantOutput
-								.append("executed by a participant to be defined.</b>");
-					}
+					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
+							|| this.getModelElement().taskType == m_constants.MANUAL_TASK_TYPE) {
 
-					this.applicationInput.attr("checked", false);
-					this.applicationList.attr("disabled", true);
-					this.subprocessInput.attr("checked", false);
-					this.subprocessList.attr("disabled", true);
-					this.subprocessModeSelect.attr("disabled", true);
-					this.copyDataInput.attr("disabled", true);
-					this.subprocessList.val(m_constants.TO_BE_DEFINED);
+						if (this.getModelElement().participantFullId) {
+							var participant = m_model.findParticipant(this
+									.getModelElement().participantFullId);
 
-					if (m_session.getInstance().technologyPreview) {
-						this.rulesActivityInput.attr("checked", false);
-						this.rulesActivityPackageList.attr("disabled", true);
+							this.participantOutput.append("performed by "
+									+ participant.name + ".");
+						} else {
+							this.participantOutput
+									.append("Performer to be set.");
+						}
 					}
 				};
 
 				/**
-				 *
-				 */
-				ActivityBasicPropertiesPage.prototype.setApplicationType = function(
-						applicationFullId) {
-					this.applicationInput.attr("checked", true);
-					this.applicationList.removeAttr("disabled");
-
-					if (applicationFullId != null) {
-						this.applicationList.val(applicationFullId);
-					} else {
-						this.applicationList.val(m_constants.TO_BE_DEFINED);
-					}
-
-					this.userTaskInput.attr("checked", false);
-					this.userApplicationList.attr("disabled", true);
-					this.userApplicationList.val(m_constants.TO_BE_DEFINED);
-					m_dialog.makeInvisible(this.participantOutput);
-					this.subprocessInput.attr("checked", false);
-					this.subprocessList.attr("disabled", true);
-					this.subprocessModeSelect.attr("disabled", true);
-					this.copyDataInput.attr("disabled", true);
-					this.subprocessList.val(m_constants.TO_BE_DEFINED);
-
-					if (m_session.getInstance().technologyPreview) {
-						this.rulesActivityInput.attr("checked", false);
-						this.rulesActivityPackageList.attr("disabled", true);
-					}
-				};
-
-				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
 						subprocessFullId, executionType, copyData) {
+					this.taskInput.attr("checked", false);
+					this.taskTypeList.attr("disabled", true);
 					this.subprocessInput.attr("checked", true);
 					this.subprocessList.removeAttr("disabled");
 					this.subprocessModeSelect.removeAttr("disabled");
@@ -480,89 +272,33 @@ define(
 						this.subprocessList.val(subprocessFullId);
 					}
 
-					this.userTaskInput.attr("checked", false);
-					this.userApplicationList.attr("disabled", true);
-					this.userApplicationList.val(m_constants.TO_BE_DEFINED);
-					m_dialog.makeInvisible(this.participantOutput);
-					this.applicationInput.attr("checked", false);
-					this.applicationList.attr("disabled", true);
-					this.applicationList.val(m_constants.TO_BE_DEFINED);
+					this.taskInput.attr("checked", false);
 					this.setSubprocessMode(executionType, copyData);
 
 					if (m_session.getInstance().technologyPreview) {
 						this.rulesActivityInput.attr("checked", false);
 						this.rulesActivityPackageList.attr("disabled", true);
 					}
+
+					this.participantOutput.empty();
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				ActivityBasicPropertiesPage.prototype.setRulesType = function(
-						ruleSetUuid) {
-					this.rulesActivityInput.attr("checked", true);
-					this.rulesActivityPackageList.removeAttr("disabled");
-
-					if (ruleSetUuid != null) {
-						this.rulesActivityPackageList.val(ruleSetUuid);
-					} else {
-						this.rulesActivityPackageList
-								.val(m_constants.TO_BE_DEFINED);
-					}
-
-					this.userTaskInput.attr("checked", false);
-					this.userApplicationList.attr("disabled", true);
-					this.userApplicationList.val(m_constants.TO_BE_DEFINED);
-					m_dialog.makeInvisible(this.participantOutput);
-					this.subprocessInput.attr("checked", false);
-					this.subprocessList.attr("disabled", true);
-					this.subprocessModeSelect.attr("disabled", true);
-					this.copyDataInput.attr("disabled", true);
-					this.subprocessList.val(m_constants.TO_BE_DEFINED);
-				};
-
-				/**
-				 *
-				 */
-				ActivityBasicPropertiesPage.prototype.submitUserTaskChanges = function() {
-					if (this.propertiesPanel.element.modelElement.applicationFullId != this.userApplicationList
+				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function() {
+					if (this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
 							.val()) {
-						this
-								.submitChanges({
-									modelElement : {
-										activityType : this.userApplicationList
-												.val() == m_constants.AUTO_GENERATED_UI ? m_constants.MANUAL_ACTIVITY_TYPE
-												: m_constants.APPLICATION_ACTIVITY_TYPE,
-										applicationFullId : (this.userApplicationList
-												.val() == m_constants.TO_BE_DEFINED || this.userApplicationList
-												.val() == m_constants.AUTO_GENERATED_UI) ? null
-												: this.userApplicationList
-														.val()
-									}
-								});
+						this.submitChanges({
+							modelElement : {
+								taskType : this.taskTypeList.val()
+							}
+						});
 					}
 				};
 
 				/**
-				 *
-				 */
-				ActivityBasicPropertiesPage.prototype.submitApplicationChanges = function() {
-					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
-							.val()) {
-						this
-								.submitChanges({
-									modelElement : {
-										activityType : m_constants.APPLICATION_ACTIVITY_TYPE,
-										applicationFullId : this.applicationList
-												.val() == m_constants.TO_BE_DEFINED ? null
-												: this.applicationList.val()
-									}
-								});
-					}
-				};
-
-				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
@@ -579,7 +315,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
@@ -603,7 +339,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -611,8 +347,6 @@ define(
 					m_utils.debug("===> Activity");
 					m_utils.debug(this.getModelElement());
 
-					this.populateUserApplicationSelect();
-					this.populateApplicationSelect();
 					this.populateSubprocessSelect();
 
 					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
@@ -637,19 +371,9 @@ define(
 									"checked",
 									this.getModelElement().attributes["carnot:engine:relocate:target"] == true);
 
-					if (this.getModelElement().activityType == m_constants.MANUAL_ACTIVITY_TYPE) {
-						this.setUserTaskType(m_constants.AUTO_GENERATED_UI);
-					} else if (this.getModelElement().activityType == m_constants.APPLICATION_ACTIVITY_TYPE) {
-						if (this.getModelElement().applicationFullId != null
-								&& m_model.findApplication(this
-										.getModelElement().applicationFullId).interactive) {
-							this
-									.setUserTaskType(this.getModelElement().applicationFullId);
-						} else {
-							this
-									.setApplicationType(this.getModelElement().applicationFullId);
-						}
-					} else if (this.getModelElement().activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+					if (this.getModelElement().activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+						this.setTaskType(this.getModelElement().taskType);
+					} else {
 						this
 								.setSubprocessType(
 										this.getModelElement().subprocessFullId,
@@ -663,31 +387,10 @@ define(
 						this.supportsRelocationInput.attr("checked", false);
 						this.supportsRelocationInput.attr("disabled", true);
 					}
-
-					if (m_session.getInstance().technologyPreview) {
-						var ruleSetProviders = m_extensionManager
-								.findExtensions("ruleSetProvider");
-
-						for ( var n = 0; n < ruleSetProviders.length; n++) {
-							var ruleSetProvider = ruleSetProviders[n].provider
-									.create();
-							var ruleSets = ruleSetProvider.getRuleSets();
-
-							this.rulesActivityPackageList.empty();
-
-							for ( var i in ruleSets) {
-								this.rulesActivityPackageList
-										.append("<option value='"
-												+ ruleSets[i].uuid + "'>"
-												+ ruleSets[i].name
-												+ "</option>")
-							}
-						}
-					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()) {
