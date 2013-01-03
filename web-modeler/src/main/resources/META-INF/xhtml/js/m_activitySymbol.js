@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -76,7 +76,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol() {
 				var symbol = m_symbol.createSymbol();
@@ -120,14 +120,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.toString = function() {
 					return "Lightdust.ActivitySymbol";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.initializeFromJson = function(lane) {
 					m_activity.typeObject(this.modelElement);
@@ -141,7 +141,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createTransferObject = function() {
 					var transferObject = {};
@@ -163,12 +163,12 @@ define(
 					transferObject.subprocessMarkerIcon = null;
 					transferObject.boundaryEvents = null;
 					transferObject.viewManager = null;
-					
+
 					return transferObject;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.getPath = function(withId) {
 					var path = "/models/" + this.diagram.model.id
@@ -183,7 +183,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createPrimitives = function() {
 					this.rectangle = m_canvasManager
@@ -283,7 +283,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.initializeEventHandling = function() {
 					this.subprocessMarkerIcon
@@ -302,7 +302,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				// ActivitySymbol.prototype.showPrimitives = function() {
 				// this.rectangle.show();
@@ -310,7 +310,7 @@ define(
 				// this.refreshFromModelElement();
 				// };
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.refreshFromModelElement = function() {
 					this.text.attr("text", this.modelElement.name);
@@ -363,7 +363,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.adjustPrimitives = function() {
 					this.hideGlow();
@@ -492,7 +492,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.createFlyOutMenu = function() {
 					this
@@ -545,7 +545,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.highlight = function() {
 					this.rectangle.attr({
@@ -554,7 +554,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.dehighlight = function() {
 					this.rectangle.attr({
@@ -563,7 +563,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.switchToSubprocessActivity = function() {
 					if (this.modelElement.activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
@@ -572,7 +572,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.switchToManualActivity = function() {
 					if (this.modelElement.taskType != m_constants.MANUAL_TASK_TYPE) {
@@ -581,14 +581,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onComplete = function() {
 					this.onParentSymbolChange();
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onParentSymbolChange = function() {
 					if ((this.modelElement.taskType == m_constants.MANUAL_TASK_TYPE || this.modelElement.taskType == m_constants.USER_TASK_TYPE)
@@ -598,14 +598,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconMouseMove = function() {
 					this.showPointerCursor();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.onSubprocessMarkerIconClick = function() {
 					var model = m_model.findModel(m_model
@@ -633,7 +633,7 @@ define(
 									this.modelElement.oid, changes));
 				};
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.validateCreateConnection = function(
 						conn) {
@@ -715,7 +715,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.postMove = function(x, y, originalX,
 						originalY) {
@@ -727,7 +727,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.addBoundaryEvent = function(
 						eventSymbol) {
@@ -758,7 +758,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivitySymbol.prototype.removeBoundaryEvent = function(
 						eventSymbol) {
@@ -795,16 +795,7 @@ define(
 
 					editableText.css("width", parseInt(textboxWidth.valueOf()));
 					editableText.css("height", parseInt(textboxHeight.valueOf()));
-					editableText.css("visibility", "visible").html(name)
-							.moveDiv(
-									{
-										"x" : this.x + this.diagram.X_OFFSET
-												+ this.width / 3
-												- scrollPos.left,
-										"y" : this.y + this.diagram.Y_OFFSET
-												+ this.height / 3
-												- scrollPos.top
-									}).show().trigger("dblclick");
+
 					editableText
 					.css("visibility", "visible")
 					.html(name)
@@ -823,7 +814,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -831,7 +822,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToActivityClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -839,7 +830,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -847,7 +838,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_connectToEndEventClosure() {
 				this.auxiliaryProperties.callbackScope.diagram
@@ -855,7 +846,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -863,7 +854,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_switchToSubprocessActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -871,7 +862,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_switchToApplicationActivityClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -879,14 +870,14 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_switchToManualActivityClosure() {
 				this.auxiliaryProperties.callbackScope.switchToManualActivity();
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_subprocessMarkerIconMouseMoveClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -894,7 +885,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_subprocessMarkerIconClickClosure() {
 				this.auxiliaryProperties.callbackScope
@@ -902,7 +893,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function ActivitySymbol_updateGlow() {
 				this.auxiliaryProperties.callbackScope.removeGlow();
