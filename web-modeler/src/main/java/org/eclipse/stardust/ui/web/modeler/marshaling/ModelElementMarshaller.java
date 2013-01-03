@@ -233,8 +233,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadDescription(processJson, processDefinition);
       loadAttributes(processDefinition, processJson);
 
-      // TODO Better way to determine whether a process provides an interface?
-
       if (null != processDefinition.getFormalParameters()
             && null != processDefinition.getFormalParameters().getFormalParameter())
       {
