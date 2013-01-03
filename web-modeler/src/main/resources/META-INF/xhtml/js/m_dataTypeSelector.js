@@ -70,34 +70,6 @@ define(
 
 					this.initializeDataTypeOptions();
 
-					var propertiesData = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.primitive");
-
-					this.dataTypeSelect.append("<option value='primitive'>"
-							+ propertiesData + "</option>");
-					propertiesData = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.dataStructure");
-					this.dataTypeSelect.append("<option value='struct'>"
-							+ propertiesData + "</option>");
-
-					if (options.supportDocumentTypes) {
-						propertiesData = m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.document");
-						this.dataTypeSelect
-								.append("<option value='dmsDocument'>"
-										+ propertiesData + "</option>");
-					}
-
-					if (this.supportsOtherData) {
-						propertiesData = m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.other");
-						4
-						this.dataTypeSelect.append("<option value='other'>"
-								+ propertiesData + "</option>");
-						// this.dataTypeSelect.append("<option
-						// value='other'>Other</option>");
-					}
-
 					this.dataTypeSelect.change({
 						panel : this
 					}, function(event) {
