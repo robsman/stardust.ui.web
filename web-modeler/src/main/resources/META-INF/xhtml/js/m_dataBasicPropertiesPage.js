@@ -45,7 +45,8 @@ define(
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataPropertiesPanel",
 						submitHandler : this,
-						supportsOtherData : true
+						supportsOtherData : true,
+						supportsDocumentTypes : true
 					});
 					this.publicVisibilityCheckbox = this
 							.mapInputId("publicVisibilityCheckbox");

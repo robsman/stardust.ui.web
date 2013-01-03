@@ -42,12 +42,7 @@ define(
 					this.scope = options.scope;
 					this.submitHandler = options.submitHandler;
 					this.supportsOtherData = options.supportsOtherData;
-
-					// TODO - not sure what the purpose of this flag is
-					// setting it to true by default to make things work as
-					// before
-					// needs to be set appropriately where required.
-					this.supportDocumentTypes = true;
+					this.supportsDocumentTypes = options.supportsDocumentTypes;
 
 					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
@@ -79,17 +74,6 @@ define(
 
 						event.data.panel.submitChanges();
 					});
-					this.primitiveDataTypeSelect
-							.change(
-									{
-										panel : this
-									},
-									function(event) {
-										event.data.panel
-												.setPrimitiveDataType(event.data.panel.primitiveDataTypeSelect
-														.val());
-										event.data.panel.submitChanges();
-									});
 					this.primitiveDataTypeSelect
 							.change(
 									{
@@ -143,7 +127,7 @@ define(
 					this.dataTypeSelect.append("<option value='struct'>"
 							+ propertiesData + "</option>");
 
-					if (this.supportDocumentTypes) {
+					if (this.supportsDocumentTypes) {
 						propertiesData = m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.document");
 						this.dataTypeSelect
@@ -169,6 +153,51 @@ define(
 					this.populateDocumentTypesSelectInput();
 				};
 
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.populatePrimitivesSelectInput = function() {
+					this.primitiveDataTypeSelect.empty();
+					
+					var dataType = null;
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"String\">" + dataType
+									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"boolean\">" + dataType
+									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"int\">" + dataType
+									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"long\">" + dataType
+									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"double\">" + dataType
+									+ "</option>");
+					// Commented as we don't support Money values yet.
+//					dataType = m_i18nUtils
+//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+//					this.primitiveDataTypeSelect
+//							.append("<option value=\"Decimal\">" + dataType
+//									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"Calendar\">" + dataType
+									+ "</option>");
+				}
+				
 				/**
 				 *
 				 */

@@ -102,7 +102,8 @@ define(
 						this.dataTypeSelector = m_dataTypeSelector.create({
 							scope : "parameterDefinitionTypeSelector",
 							submitHandler : this,
-							supportsOtherData : false
+							supportsOtherData : false,
+							supportsDocumentTypes : true
 						});
 					}
 

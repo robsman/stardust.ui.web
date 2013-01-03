@@ -10,10 +10,10 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditor", "bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_accessPoint, m_dataTraversal, m_dialog,
+				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
 				m_modelElementView, m_codeEditor, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
@@ -196,6 +196,14 @@ define(
 					this.inputTableRows = [];
 					this.outputTableRows = [];
 
+					this.inputDataTypeSelector = m_dataTypeSelector.create({
+						scope : "inputDataDialog"
+					});
+
+					this.outputDataTypeSelector = m_dataTypeSelector.create({
+						scope : "outputDataDialog"
+					});
+
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 					this.expressionEditor.disable();
 
@@ -363,8 +371,6 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"))
 
-
-				      /*Comment*/
 					jQuery("#inputDataDialog #closeButton").click(function() {
 						jQuery("#inputDataDialog").dialog("close");
 					});
@@ -376,15 +382,10 @@ define(
 										"view" : this
 									},
 									function(event) {
-										event.data.view
-												.addInputAccessPoint(
-														jQuery(
-																"#inputDataDialog #nameTextInput")
-																.val(),
-														m_model
-																.findTypeDeclaration(jQuery(
-																		"#inputDataDialog #typeSelectInput")
-																		.val()));
+										var selectedData = {};
+										event.data.view.inputDataTypeSelector.getDataType(selectedData);
+										
+										event.data.view.addInputAccessPoint(jQuery("#inputDataDialog #nameTextInput").val(), selectedData);
 										event.data.view.resume();
 										jQuery("#inputDataDialog").dialog(
 												"close");
@@ -396,25 +397,6 @@ define(
 										"view" : this
 									},
 									function(event) {
-										var inputDataTypeSelectInput = jQuery("#inputDataDialog #typeSelectInput");
-										// var models = m_model.getModels();
-										//
-										// for ( var m in models) {
-										// var model = models[m];
-										var model = event.data.view.application.model;
-										// TODO: Do not show Enumerations
-										for ( var n in model.typeDeclarations) {
-											var typeDeclaration = model.typeDeclarations[n];
-											inputDataTypeSelectInput
-													.append("<option value='"
-															+ typeDeclaration
-																	.getFullId()
-															+ "'>"
-															+ typeDeclaration.name
-															+ "</option>");
-										}
-										// }
-
 										jQuery("#inputDataDialog").dialog(
 												"open");
 									});
@@ -455,15 +437,10 @@ define(
 										"view" : this
 									},
 									function(event) {
-										event.data.view
-												.addOutputAccessPoint(
-														jQuery(
-																"#outputDataDialog #nameTextInput")
-																.val(),
-														m_model
-																.findTypeDeclaration(jQuery(
-																		"#outputDataDialog #typeSelectInput")
-																		.val()));
+										var selectedData = {};
+										event.data.view.outputDataTypeSelector.getDataType(selectedData);
+										
+										event.data.view.addOutputAccessPoint(jQuery("#outputDataDialog #nameTextInput").val(), selectedData);
 										event.data.view.resume();
 										jQuery("#outputDataDialog").dialog(
 												"close");
@@ -475,25 +452,6 @@ define(
 										view : this
 									},
 									function(event) {
-										var outputDataTypeSelectInput = jQuery("#outputDataDialog #typeSelectInput");
-
-										// var models = m_model.getModels();
-										//
-										// for ( var m in models) {
-										// var model = models[m];
-										var model = event.data.view.application.model;
-										for ( var n in model.typeDeclarations) {
-											var typeDeclarations = model.typeDeclarations[n];
-											outputDataTypeSelectInput
-													.append("<option value='"
-															+ typeDeclarations
-																	.getFullId()
-															+ "'>"
-															+ typeDeclarations.name
-															+ "</option>");
-										}
-										// }
-
 										jQuery("#outputDataDialog").dialog(
 												"open");
 									});
@@ -638,6 +596,14 @@ define(
 							this.outputTableRows, false);
 					this.resume();
 
+					this.inputDataTypeSelector.setScopeModel(this.getModel());
+					this.inputDataTypeSelector.populatePrimitivesSelectInput();
+					this.inputDataTypeSelector.setPrimitiveDataType();
+					
+					this.outputDataTypeSelector.setScopeModel(this.getModel());
+					this.outputDataTypeSelector.populatePrimitivesSelectInput();
+					this.outputDataTypeSelector.setPrimitiveDataType();
+					
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
 					/*var typeDeclaration;
@@ -652,6 +618,8 @@ define(
 					}*/
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
+					
+					this.showErrorMessages();
 				};
 
 				/**
@@ -669,7 +637,8 @@ define(
 
 								var fieldPath = jQuery(this).attr("fieldPath")
 
-								fieldPath = fieldPath.replace(/\//g, ".");
+								fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es) 
+								fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
 
 								view.mappingExpressions[fieldPath] = jQuery(
 										this).attr("mappingExpression");
@@ -781,10 +750,20 @@ define(
 				 *
 				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
-						dataName, dataStructure) {
-					this.application.contexts.application.accessPoints.push(m_accessPoint
-							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.IN_ACCESS_POINT));
+						mappingName, data) {
+					var accessPoint = null;
+					if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE) {
+						accessPoint = m_accessPoint.createFromPrimitive(data.primitiveDataType, mappingName, mappingName, m_constants.IN_ACCESS_POINT)
+					}
+					else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
+						accessPoint = m_accessPoint.createFromDataStructure(m_model.findTypeDeclaration(data.structuredDataTypeFullId), mappingName, mappingName, m_constants.IN_ACCESS_POINT)
+					}
+					
+					if (accessPoint == null) {
+						return;
+					}
+					
+					this.application.contexts.application.accessPoints.push(accessPoint);
 
 					this.submitChanges({
 							contexts : {
@@ -800,38 +779,37 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addInputData = function(
 						accessPoint) {
-					m_utils.debug("Access Point:");
-					m_utils.debug(accessPoint);
-
-					// TODO Move to m_accessPoint
-					var typeDeclaration = m_accessPoint
-							.retrieveTypeDeclaration(accessPoint, this
-									.getModel());
-
-					if (typeDeclaration == null) {
-						this.errorMessages
-								.push("Unsupported Type for Source Message Element "
-										+ accessPoint.name + ".");
-						this.showErrorMessages();
-
-						return;
+					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
+						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+						this.inputData[accessPoint.id] = typeDeclaration;
+						this.initializeInputTableRowsRecursively(accessPoint,
+								typeDeclaration.getBody(), null,
+								typeDeclaration.model);
 					}
-
-					this.inputData[accessPoint.id] = typeDeclaration;
-
-					this.initializeInputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null,
-							typeDeclaration.model);
+					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
+						this.inputData[accessPoint.id] = null; // TODO
+						this.initializeInputTableRowsRecursively(accessPoint, null, null, null);
+					}
 				};
 
 				/**
 				 *
 				 */
 				MessageTransformationApplicationView.prototype.addOutputAccessPoint = function(
-						dataName, dataStructure) {
-					this.application.contexts.application.accessPoints.push(m_accessPoint
-							.createFromDataStructure(dataStructure, dataName,
-									dataName, m_constants.OUT_ACCESS_POINT));
+						mappingName, data) {
+					var accessPoint = null;
+					if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE) {
+						accessPoint = m_accessPoint.createFromPrimitive(data.primitiveDataType, mappingName, mappingName, m_constants.OUT_ACCESS_POINT)
+					}
+					else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
+						accessPoint = m_accessPoint.createFromDataStructure(m_model.findTypeDeclaration(data.structuredDataTypeFullId), mappingName, mappingName, m_constants.OUT_ACCESS_POINT)
+					}
+					
+					if (accessPoint == null) {
+						return;
+					}
+					
+					this.application.contexts.application.accessPoints.push(accessPoint);
 
 					this.submitChanges({
 						contexts : {
@@ -847,25 +825,17 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.addOutputData = function(
 						accessPoint) {
-					// TODO Move to m_accessPoint
-					var typeDeclaration = m_accessPoint
-							.retrieveTypeDeclaration(accessPoint, this
-									.getModel());
-
-					if (typeDeclaration == null) {
-						this.errorMessages
-								.push("Unsupported Type for Target Message Element "
-										+ accessPoint.name + ".");
-						this.showErrorMessages();
-
-						return;
+					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
+						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+						this.outputData[accessPoint.id] = typeDeclaration;
+						this.initializeOutputTableRowsRecursively(accessPoint,
+								typeDeclaration.getBody(), null,
+								typeDeclaration.model);
 					}
-
-					this.outputData[accessPoint.id] = typeDeclaration;
-
-					this.initializeOutputTableRowsRecursively(accessPoint,
-							typeDeclaration.getBody(), null,
-							typeDeclaration.model);
+					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
+						this.inputData[accessPoint.id] = null; // TODO
+						this.initializeOutputTableRowsRecursively(accessPoint, null, null, null);
+					}
 				};
 
 				/**
@@ -885,17 +855,19 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
-					tableRow.typeName = parentPath == null ? m_accessPoint
-							.retrieveTypeDeclaration(accessPoint,
-									this.getModel()).getSchemaName()
+					
+					tableRow.typeName = parentPath == null ? 
+							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType) 
 							: element.type;
 
 					// Embedded structure
+					if (element == null) {
+						return;
+					}
 
 					var childElements = element.elements;
 
 					// Recursive resolution
-
 					if (childElements == null && element.type != null) {
 						var typeDeclaration = scopeModel
 								.findTypeDeclarationBySchemaName(element.type);
@@ -933,15 +905,17 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
-					tableRow.typeName = parentPath == null ? m_accessPoint
-							.retrieveTypeDeclaration(accessPoint,
-									this.getModel()).getSchemaName()
+					tableRow.typeName = parentPath == null ? 
+							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType) 
 							: element.type;
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];
 					tableRow.problems = "";
 
 					// Embedded structure
+					if (element == null) {
+						return;
+					}
 
 					var childElements = element.elements;
 
@@ -1287,7 +1261,7 @@ define(
 						transformationProperty += "&quot;/&gt;&#13;&#10;";
 					}
 
-					transformationProperty += ";&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
+					transformationProperty += "&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
 
 					return {
 						attributes : {

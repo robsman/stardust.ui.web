@@ -168,7 +168,8 @@ define(
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
 						submitHandler : this,
-						supportsOtherData : true
+						supportsOtherData : true,
+						supportsDocumentTypes : true
 					});
 
 					this.publicVisibilityCheckbox

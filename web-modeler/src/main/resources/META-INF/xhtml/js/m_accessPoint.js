@@ -29,6 +29,15 @@ define(
 
 					return accessPoint;
 				},
+				createFromPrimitive : function(primitiveType, id, name,
+						direction) {
+					var accessPoint = new AccessPoint();
+
+					accessPoint.initializeFromPrimitive(primitiveType, id,
+							name, direction);
+
+					return accessPoint;
+				},
 				initializeFromJson : function() {
 					// TODO Ugly, use prototype
 					m_utils.typeObject(json, new AccessPoint());
@@ -66,6 +75,7 @@ define(
 					this.name = name;
 					this.accessPointType = m_constants.ANY_ACCESS_POINT;
 					this.structuredDataTypeFullId = null;
+					this.primitiveDataType = null;
 					this.direction = direction;
 					this.attributes = {};
 				};
@@ -81,6 +91,19 @@ define(
 					this.dataType = m_constants.STRUCTURED_DATA_TYPE;
 					this.direction = direction;
 					this.structuredDataTypeFullId = dataStructure.getFullId();
+				};
+
+				/**
+				 * 
+				 */
+				AccessPoint.prototype.initializeFromPrimitive = function(
+						primitiveType, id, name, direction) {
+					this.id = id;
+					this.name = name;
+					this.accessPointType = m_constants.PRIMITIVE_ACCESS_POINT;
+					this.dataType = m_constants.PRIMITIVE_DATA_TYPE;
+					this.direction = direction;
+					this.primitiveDataType = primitiveType;
 				};
 
 				/**
