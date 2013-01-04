@@ -1309,8 +1309,7 @@ define(
 						},
 						payload : {
 							title : "Confirm",
-							message : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.delete")
-									 + cbObj.auxiliaryProperties.callbackScope.text.attr("text")+  m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.info"),
+							message : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.delete").replace("{0}", cbObj.auxiliaryProperties.callbackScope.text.attr("text")),
 							acceptButtonText : "Yes",
 							cancelButtonText : "Cancel",
 
