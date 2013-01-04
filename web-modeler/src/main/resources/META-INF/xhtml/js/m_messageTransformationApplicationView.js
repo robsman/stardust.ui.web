@@ -749,6 +749,34 @@ define(
 				/**
 				 *
 				 */
+				MessageTransformationApplicationView.prototype.deleteAccessPoint = function(tableRow, source) {
+					var accessPoint = null;
+					if (source) {
+						accessPoint = this.inputTableRows[tableRow].accessPoint;
+					}
+					else {
+						accessPoint = this.outputTableRows[tableRow].accessPoint;
+					}
+					
+					for (var i in this.application.contexts.application.accessPoints) {
+						if (this.application.contexts.application.accessPoints[i] === accessPoint) {
+							this.application.contexts.application.accessPoints.splice(i, 1);
+							break;
+						}
+					}
+
+					this.submitChanges({
+							contexts : {
+								application : {
+									accessPoints : this.application.contexts.application.accessPoints
+								}
+							}
+					});
+				};
+
+				/**
+				 *
+				 */
 				MessageTransformationApplicationView.prototype.addInputAccessPoint = function(
 						mappingName, data) {
 					var accessPoint = null;
@@ -968,10 +996,20 @@ define(
 						+"</td>";
 
 						if (source) {
+							content += "<td><div class=\"deleteAction\"></div></td>";
 							content += "</tr>";
 
 							tableBody.append(content);
 
+							// Add click event handler for "delete" action
+							var deleteIcon = jQuery("#sourceTable #" + rowId + " .deleteAction");
+							deleteIcon.click({
+								"view" : this,
+								"tableRow" : tableRow
+							}, function(event) {
+								event.data.view.deleteAccessPoint(event.data.tableRow, true);
+							});
+							
 							var dataElement = jQuery("#sourceTable #" + rowId
 									+ " .data-element");
 
@@ -1002,9 +1040,19 @@ define(
 							content += "<td class=\"mapping\">";
 							content += tableRows[tableRow].mappingExpression;
 							content += "<td class=\"problem\" />";
+							content += "<td><div class=\"deleteAction\"></div></td>";
 							content += "</tr>";
 
 							tableBody.append(content);
+
+							// Add click event handler for "delete" action
+							var deleteIcon = jQuery("#targetTable #" + rowId + " .deleteAction");
+							deleteIcon.click({
+								"view" : this,
+								"tableRow" : tableRow
+							}, function(event) {
+								event.data.view.deleteAccessPoint(event.data.tableRow, false);
+							});
 
 							var row = jQuery("#targetTable #" + rowId);
 							row.data({
