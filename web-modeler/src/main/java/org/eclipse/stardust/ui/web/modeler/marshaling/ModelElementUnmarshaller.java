@@ -353,7 +353,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
                   activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
 
-            if (activityJson.get(ModelerConstants.TASK_TYPE).getAsString().equals(ModelerConstants.MANUAL_TASK_KEY))
+            if (activityJson.get(ModelerConstants.TASK_TYPE)
+                  .getAsString()
+                  .equals(ModelerConstants.NONE_TASK_KEY))
+            {
+               activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+            }
+            else if (activityJson.get(ModelerConstants.TASK_TYPE)
+                  .getAsString()
+                  .equals(ModelerConstants.MANUAL_TASK_KEY))
             {
                activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
             }
@@ -2318,7 +2326,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          for (String property : elementProperties)
          {
-            if(elementJson.has(property))
+            if (elementJson.has(property))
             {
                mapProperty(element, elementJson, property);
             }

@@ -3,15 +3,17 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_model",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint, m_i18nUtils) {
+		function(m_utils, m_constants, m_modelElement, m_model, m_accessPoint,
+				m_i18nUtils) {
 
 			return {
 				create : function() {
@@ -21,7 +23,8 @@ define(
 					var index = process.getNewActivityIndex();
 					var activity = new Activity();
 
-					var actNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newActivity.namePrefix");
+					var actNamePrefix = m_i18nUtils
+							.getProperty("modeler.diagram.newActivity.namePrefix");
 					activity.initialize(actNamePrefix + " " + index, type);
 
 					activity.taskType = m_constants.MANUAL_TASK_TYPE;
@@ -48,9 +51,19 @@ define(
 					activity.initialize(application.name + index,
 							m_constants.TASK_ACTIVITY_TYPE);
 
-					// TODO Resolve task type
-					
-					activity.taskType = m_constants.SERVICE_TASK_TYPE;
+					// TODO Put at a central place
+
+					if (application.applicationType == "jms") {
+						activity.taskType = m_constants.RECEIVE_TASK_TYPE;
+					} else if (application.applicationType == "mailBean") {
+						activity.taskType = m_constants.SEND_TASK_TYPE;
+					} else if (application.applicationType == "messageTransformationBean") {
+						activity.taskType = m_constants.SCRIPT_TASK_TYPE;
+					} else if (application.applicationType == "interactive") {
+						activity.taskType = m_constants.USER_TASK_TYPE;
+					} else {
+						activity.taskType = m_constants.SERVICE_TASK_TYPE;
+					}
 
 					activity.applicationFullId = application.getFullId();
 
@@ -61,8 +74,7 @@ define(
 					var index = process.getNewGatewayIndex();
 					var activity = new Activity("Gateway" + index);
 
-					activity.initialize("",
-							m_constants.GATEWAY_ACTIVITY_TYPE);
+					activity.initialize("", m_constants.GATEWAY_ACTIVITY_TYPE);
 
 					activity.type = m_constants.GATEWAY;
 					activity.taskType = m_constants.NONE_TASK_TYPE;
@@ -79,7 +91,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Activity(id) {
 				var modelElement = m_modelElement.create();
@@ -99,14 +111,14 @@ define(
 				this.processingType = m_constants.SINGLE_PROCESSING_TYPE;
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.toString = function() {
 					return "Lightdust.Activity";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.initialize = function(name, activityType) {
 					this.name = name;
@@ -126,7 +138,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.getContexts = function() {
 					// TODO Should/might be evaluated on the server
@@ -142,7 +154,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.hasInputAccessPoints = function() {
 					var contexts = this.getContexts();
@@ -159,7 +171,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Activity.prototype.hasOutputAccessPoints = function() {
 					var contexts = this.getContexts();

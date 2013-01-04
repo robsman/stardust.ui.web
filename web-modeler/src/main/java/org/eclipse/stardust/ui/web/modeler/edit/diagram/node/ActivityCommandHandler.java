@@ -40,9 +40,9 @@ import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
- *
+ * 
  * @author Sidharth.Singh
- *
+ * 
  */
 @CommandHandler
 public class ActivityCommandHandler
@@ -55,68 +55,80 @@ public class ActivityCommandHandler
     * @param request
     */
    @OnCommand(commandId = "activitySymbol.create")
-   public void createActivity(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
+   public void createActivity(ModelType model, LaneSymbol parentLaneSymbol,
+         JsonObject request)
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
-      String activityType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.ACTIVITY_TYPE);
+      String activityType = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ACTIVITY_TYPE);
       String taskType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.TASK_TYPE);
-      String activityName = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.NAME_PROPERTY);
-      String participantFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.PARTICIPANT_FULL_ID);
-      String applicationFullID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+      String activityName = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
+      String participantFullID = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.PARTICIPANT_FULL_ID);
+      String applicationFullID = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
-      String subProcessID = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.SUBPROCESS_ID);
-      //TODO -Remove the adjustment and pass correct co-ordinates for symbols.
+      String subProcessID = extractString(request,
+            ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.SUBPROCESS_ID);
+      // TODO -Remove the adjustment and pass correct co-ordinates for symbols.
       int xProperty = extractInt(request, X_PROPERTY);
       int yProperty = extractInt(request, Y_PROPERTY);
       int widthProperty = extractInt(request, WIDTH_PROPERTY);
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)
       {
-         ActivityType activity = getModelBuilderFacade().createActivity(model, processDefinition,
-               activityType, null, activityName, participantFullID,
+         ActivityType activity = getModelBuilderFacade().createActivity(model,
+               processDefinition, activityType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
 
          // TODO Add to Facade
-         
-         getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
-               taskType);
 
-         if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
+         if (activityType.equals(ModelerConstants.TASK_ACTIVITY))
          {
-            activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
-         }
-         else
-         {
-            activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+            getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
+                  taskType);
+
+            if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
+            {
+               activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+            }
+            else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
+            {
+               activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+            }
+            else
+            {
+               activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+            }
          }
 
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(model,
-               activity, processDefinition, parentLaneSymbol.getId(), xProperty,
+         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(
+               model, activity, processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
       }
    }
 
    /**
-    *
+    * 
     * @param parentLaneSymbol
     * @param request
     */
    @OnCommand(commandId = "activitySymbol.delete")
-   public void deleteActivity(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
+   public void deleteActivity(ModelType model, LaneSymbol parentLaneSymbol,
+         JsonObject request)
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
-      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition, activityId);
+      String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+            ModelerConstants.ID_PROPERTY);
+      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition,
+            activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
 
       synchronized (model)

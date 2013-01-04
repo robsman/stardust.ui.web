@@ -246,7 +246,6 @@ define(function() {
 		RULE_TASK_TYPE : "rule",
 		SCRIPT_TASK_TYPE : "script",
 		SEND_TASK_TYPE : "send",
-		RECEIVE_TASK_TYPE : "send",
 		SERVICE_TASK_TYPE : "service",
 		USER_TASK_TYPE : "user",
 		SINGLE_PROCESSING_TYPE : "SINGLE_PROCESSING_TYPE",
