@@ -724,7 +724,7 @@ define(
 						originalY) {
 					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
 						this.boundaryEventSymbols[n].moveBy(x - originalX, y
-								- originalY);
+								- originalY, true);
 						this.boundaryEventSymbols[n].toFront();
 					}
 				};

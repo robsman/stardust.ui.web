@@ -9,15 +9,19 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
-				"bpm-modeler/js/m_gatewaySymbol",
-				"bpm-modeler/js/m_eventPropertiesPanel",
-				"bpm-modeler/js/m_event", "bpm-modeler/js/m_modelerUtils"],
-		function(m_utils, m_constants, m_command, m_messageDisplay,
-				m_canvasManager, m_symbol, m_gatewaySymbol,
-				m_eventPropertiesPanel, m_event, m_modelerUtils) {
+		[ "bpm-modeler/js/m_utils",
+		  "bpm-modeler/js/m_constants",
+		  "bpm-modeler/js/m_command",
+		  "bpm-modeler/js/m_commandsController",
+		  "bpm-modeler/js/m_messageDisplay",
+		  "bpm-modeler/js/m_canvasManager",
+		  "bpm-modeler/js/m_symbol",
+		  "bpm-modeler/js/m_gatewaySymbol",
+		  "bpm-modeler/js/m_eventPropertiesPanel",
+		  "bpm-modeler/js/m_event",
+		  "bpm-modeler/js/m_modelerUtils"],
+		function(m_utils, m_constants, m_command, m_commandsController, m_messageDisplay,
+				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventPropertiesPanel, m_event, m_modelerUtils) {
 
 			return {
 				createStartEventSymbol : function(diagram) {
@@ -446,7 +450,8 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.validateCreateConnection = function(conn) {
-					if (this.connections.length > 0
+					if ((("startEvent"== this.eventType) || ("stopEvent" == this.eventType))
+							&& this.connections.length > 0
 							&& this.connections[0].oid > 0
 							&& (this.connections[0].oid != conn.oid)) {
 						m_messageDisplay
@@ -569,7 +574,14 @@ define(
 							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
 						hitSymbol.addBoundaryEvent(this);
 
-						// TODO Submit change
+						// submit change to server
+						var command = m_command.createUpdateModelElementCommand(
+										this.diagram.model.id, this.oid,
+										{ modelElement: {
+											bindingActivityUuid: this.modelElement.bindingActivityUuid }
+										});
+						m_commandsController.submitCommand(command);
+
 					} else if (this.bindingActivitySymbol != null) {
 						this.bindingActivitySymbol.removeBoundaryEvent(this);
 					}

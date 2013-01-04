@@ -16,6 +16,9 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 
@@ -27,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -64,7 +68,9 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
@@ -93,12 +99,15 @@ import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -128,9 +137,9 @@ import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelE
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
@@ -182,7 +191,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -215,6 +224,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       else if (element instanceof StartEventSymbol)
       {
          updateStartEventSymbol((StartEventSymbol) element, json);
+      }
+      else if (element instanceof IntermediateEventSymbol)
+      {
+         updateIntermediateEventSymbol((IntermediateEventSymbol) element, json);
       }
       else if (element instanceof EndEventSymbol)
       {
@@ -279,7 +292,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -432,7 +445,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param controlFlowJson
     */
@@ -507,7 +520,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
@@ -594,7 +607,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param data
     * @param direction
@@ -664,7 +677,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -759,7 +772,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     */
@@ -791,7 +804,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
          String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
-         if ( !element.eGet(eFtrName).equals(newName))
+         if ( !element.eIsSet(eFtrName) || !element.eGet(eFtrName).equals(newName))
          {
             wasModified = true;
             element.eSet(eFtrName, newName);
@@ -821,7 +834,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -1035,7 +1048,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1071,7 +1084,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1210,7 +1223,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * assist retrieving diagram - orientation
-    * 
+    *
     * @param nodeSymbol
     * @return
     */
@@ -1237,7 +1250,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * Update the x,y co-ordinates of symbols contained in the lane
-    * 
+    *
     * @param laneSymbol
     * @param xOffset
     * @param yOffset
@@ -1269,7 +1282,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * remove the association from existing lane and add symbol to new Lane
-    * 
+    *
     * @param nodeSymbol
     * @param newParentSymbol
     * @param symbolType
@@ -1330,7 +1343,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -1349,7 +1362,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -1373,8 +1386,148 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   private void updateIntermediateEventSymbol(IntermediateEventSymbol eventSymbol,
+         JsonObject eventSymbolJson)
+   {
+      JsonObject eventJson = eventSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      updateNodeSymbol(eventSymbol, eventSymbolJson);
+
+      if (null == eventJson)
+      {
+         return;
+      }
+
+      ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
+      JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(hostActivity, eventSymbol, jsonIo);
+      if (null == hostingConfig)
+      {
+         hostingConfig = new JsonObject();
+      }
+
+      EventHandlerType eventHandler = null;
+      if (hostingConfig.has(EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
+      {
+         eventHandler = findIdentifiableElement(hostActivity.getEventHandler(),
+               extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID));
+      }
+
+      if (eventJson.has(ModelerConstants.BINDING_ACTIVITY_UUID))
+      {
+         // potentially detach from old host
+         ProcessDefinitionType containingProcess = ModelUtils.findContainingProcess(eventSymbol);
+         if (null != containingProcess)
+         {
+            ActivityType newHostActivity = ModelUtils.findIdentifiableElement(
+                  containingProcess.getActivity(),
+                  extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
+            if (hostActivity != newHostActivity)
+            {
+               EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, null);
+               if (EventMarshallingUtils.isIntermediateEventHost(hostActivity)
+                     && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
+               {
+                  // TODO reconnect transitions?
+
+                  // collect garbage
+                  containingProcess.getActivity().remove(hostActivity);
+               }
+
+               EventMarshallingUtils.updateEventHostingConfig(newHostActivity, eventSymbol, hostingConfig);
+               hostActivity = newHostActivity;
+            }
+         }
+         // attach to new host activity
+      }
+
+      // store model element state
+      if (null != hostActivity)
+      {
+         if (null != eventHandler)
+         {
+            // verify handler still matches the given event class
+            String currentEventClass = EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType());
+            if ((findContainingActivity(eventHandler) != hostActivity)
+                  || (eventJson.has(ModelerConstants.EVENT_CLASS_PROPERTY) && !extractAsString(
+                        eventJson, ModelerConstants.EVENT_CLASS_PROPERTY).equals(
+                        currentEventClass)))
+            {
+               // dispose current handler if it is out of sync, but carry over crucial attributes
+               mergeUndefinedProperty(eventHandler.getName(), eventJson,
+                     ModelerConstants.NAME_PROPERTY);
+               mergeUndefinedProperty(
+                     ModelUtils.getDescriptionText(eventHandler.getDescription()),
+                     eventJson, ModelerConstants.DESCRIPTION_PROPERTY);
+               // TODO attributes
+
+               hostingConfig.remove(EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
+               findContainingActivity(eventHandler).getEventHandler().remove(eventHandler);
+               eventHandler = null;
+            }
+         }
+
+         if (null == eventHandler)
+         {
+            // if possible, create an event handler defined by the event
+            EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(
+                  extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY),
+                  findContainingModel(hostActivity));
+            if (null != conditionType)
+            {
+               eventHandler = BpmPackageBuilder.F_CWM.createEventHandlerType();
+               eventHandler.setId(UUID.randomUUID().toString());
+               eventHandler.setType(conditionType);
+               EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
+               hostActivity.getEventHandler().add(eventHandler);
+
+               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
+            }
+         }
+
+         if (null != eventHandler)
+         {
+            updateIdentifiableElement(eventHandler, eventJson);
+            storeDescription(eventHandler, eventJson);
+            storeAttributes(eventHandler, eventJson);
+
+            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
+
+            hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
+            hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
+            hostingConfig.remove(ModelerConstants.INTERRUPTING_PROPERTY);
+         }
+         else
+         {
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.NAME_PROPERTY);
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.DESCRIPTION_PROPERTY);
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.EVENT_CLASS_PROPERTY);
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.THROWING_PROPERTY);
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.INTERRUPTING_PROPERTY);
+         }
+
+         EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
+      }
+   }
+
+   private void mergeProperty(JsonObject source, JsonObject target, String propertyName)
+   {
+      if (source.has(propertyName))
+      {
+         target.add(propertyName, source.get(propertyName));
+      }
+   }
+
+   private void mergeUndefinedProperty(String sourceValue, JsonObject target,
+         String propertyName)
+   {
+      if ( !target.has(propertyName))
+      {
+         target.addProperty(propertyName, sourceValue);
+      }
+   }
+
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -1389,22 +1542,21 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             endEventSymbolJson.getAsJsonObject("modelElement"),
             propertiesMap.get(EndEventSymbol.class));
 
-      // TriggerType trigger = endEventSymbol.getTrigger();
-      //
-      // if (trigger == null)
-      // {
-      // TriggerType manualTrigger = newManualTrigger(endEventSymbol.get)
-      // .build();
-      //
-      // manualTrigger.setElementOid(++maxOid);
-      // endEventSymbol.setTrigger(manualTrigger);
-      // }
-      //
-      // updateTrigger(trigger, endEventJson);
+      if (null != endEventJson)
+      {
+         // store model element state
+         ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(endEventSymbol);
+         if (null != hostActivity)
+         {
+            updateIdentifiableElement(hostActivity, endEventJson);
+            storeDescription(hostActivity, endEventJson);
+            storeAttributes(hostActivity, endEventJson);
+         }
+      }
    }
 
    /**
-    * 
+    *
     * @param trigger
     * @param triggerJson
     */
@@ -1531,7 +1683,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -1857,7 +2009,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param simpleTypeJson
     */
@@ -1956,7 +2108,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param json
     */
@@ -2129,7 +2281,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param schema
     * @param json
     */
@@ -2314,7 +2466,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -2335,7 +2487,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -2405,7 +2557,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -2471,7 +2623,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2495,7 +2647,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2519,7 +2671,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2546,7 +2698,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -2555,7 +2707,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param memberName
     * @return
@@ -2634,7 +2786,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param elementType
     * @return
     */
@@ -2661,7 +2813,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -2675,7 +2827,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ServiceFactory getServiceFactory()

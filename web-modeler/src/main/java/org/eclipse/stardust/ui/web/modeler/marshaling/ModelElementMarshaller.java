@@ -1,6 +1,10 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.emf.common.util.ECollections.sort;
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingDiagram;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.ActivityMarshallingUtils.resolveSymbolAssociatedWithActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
@@ -11,6 +15,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.ChangeDescription;
+import org.eclipse.xsd.XSDSchema;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -39,11 +44,14 @@ import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -140,6 +148,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       else if (modelElement instanceof StartEventSymbol)
       {
          jsResult = toStartEventJson((StartEventSymbol) modelElement);
+      }
+      else if (modelElement instanceof IntermediateEventSymbol)
+      {
+         jsResult = toIntermediateEventJson((IntermediateEventSymbol) modelElement);
       }
       else if (modelElement instanceof EndEventSymbol)
       {
@@ -553,6 +565,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             laneSymbolJson.add(ModelerConstants.ACTIVITY_SYMBOLS, activitySymbolsJson);
             laneSymbolJson.add(ModelerConstants.GATEWAY_SYMBOLS, gatewaySymbolsJson);
 
+            List<ActivitySymbolType> boundaryEvents = newArrayList();
             for (ActivitySymbolType activitySymbol : laneSymbol.getActivitySymbol())
             {
                JsonObject activitySymbolJson = toActivitySymbolJson(activitySymbol);
@@ -571,6 +584,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   activitySymbolsJson.add(activitySymbol.getActivity().getId(),
                         activitySymbolJson);
                }
+
+               // generate boundary events, if appropriate
+               if ( !activitySymbol.getActivity().getEventHandler().isEmpty())
+               {
+                  boundaryEvents.add(activitySymbol);
+               }
             }
 
             JsonObject eventSymbols = new JsonObject();
@@ -578,7 +597,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             laneSymbolJson.add(ModelerConstants.EVENT_SYMBOLS, eventSymbols);
 
             // Start Events
-
             for (StartEventSymbol startEventSymbol : laneSymbol.getStartEventSymbols())
             {
                JsonObject startEventJson = toStartEventJson(startEventSymbol);
@@ -586,8 +604,34 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      startEventJson);
             }
 
-            // End Events
+            // Intermediate Events
+            for (IntermediateEventSymbol eventSymbol : laneSymbol.getIntermediateEventSymbols())
+            {
+               JsonObject eventSymbolJson = toIntermediateEventJson(eventSymbol);
+               eventSymbols.add(String.valueOf(eventSymbol.getElementOid()),
+                     eventSymbolJson);
+            }
+            // Boundary Events
+            for (ActivitySymbolType boundaryEventHostSymbol : boundaryEvents)
+            {
+               ActivityType hostActivity = boundaryEventHostSymbol.getActivity();
+               for (EventHandlerType handler : hostActivity.getEventHandler())
+               {
+                  // be sure to avoid marshalling event handlers twice (in case there is
+                  // an explicit intermediate event symbol)
+                  if ((null == EventMarshallingUtils.resolveHostedEvent(handler))
+                        && !isEmpty(EventMarshallingUtils.encodeEventHandlerType(handler.getType())))
+                  {
+                     JsonObject boundaryEventJson = toBoundaryEventJson(handler,
+                           boundaryEventHostSymbol);
+                     eventSymbols.add(
+                           boundaryEventJson.get(ModelerConstants.OID_PROPERTY)
+                                 .getAsString(), boundaryEventJson);
+                  }
+               }
+            }
 
+            // End Events
             for (EndEventSymbol endEventSymbol : laneSymbol.getEndEventSymbols())
             {
                JsonObject eventSymbolJson = toEndEventJson(endEventSymbol);
@@ -1104,10 +1148,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
-      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, endEventSymbol.getXPos()
-            + laneOffsetX);
-      eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, endEventSymbol.getYPos()
-            + laneOffsetY);
+
+      setNodeSymbolCoordinates(eventSymbolJson, endEventSymbol);
 
       eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
             endEventSymbol.getWidth());
@@ -1121,14 +1163,176 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.STOP_EVENT);
-      // eventJson.put(ID_PROPERTY,
-      // String.valueOf(endEventSymbol.getModelElement().getId()));
-      // loadDescription(eventJson,
-      // endEventSymbol.getModelElement());
-      // loadAttributes(endEventSymbol.getModelElement(),
-      // eventJson);
+
+      eventJson.addProperty(ModelerConstants.THROWING_PROPERTY, true);
+      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY, false);
+
+      ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(endEventSymbol);
+      if (null != hostActivity)
+      {
+          eventJson.addProperty(ModelerConstants.ID_PROPERTY, hostActivity.getId());
+          eventJson.addProperty(ModelerConstants.NAME_PROPERTY, hostActivity.getName());
+          loadDescription(eventJson, hostActivity);
+          loadAttributes(hostActivity, eventJson);
+      }
 
       return eventSymbolJson;
+   }
+
+   /**
+    * Generates a transfer object based on an explicit intermediate event symbol. Knows
+    * how to handle both intermediate and boundary events.
+    *
+    * @param eventSymbol
+    *           the defining intermediate event symbol
+    * @return the transfer object
+    */
+   public JsonObject toIntermediateEventJson(IntermediateEventSymbol eventSymbol)
+   {
+      JsonObject eventSymbolJson = new JsonObject();
+
+      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.EVENT_SYMBOL);
+      eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+            eventSymbol.getElementOid());
+
+      setNodeSymbolCoordinates(eventSymbolJson, eventSymbol);
+
+      // TODO more attributes
+      JsonObject eventJson = new JsonObject();
+      ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
+      EventHandlerType eventHandler = null;
+      if (null != hostActivity)
+      {
+         JsonObject config = EventMarshallingUtils.getEventHostingConfig(hostActivity, eventSymbol, jsonIo);
+         if (null != config)
+         {
+            eventJson = config;
+         }
+
+         if (eventJson.has(EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
+         {
+            // marshal properties from defining event handler, if possible
+            eventHandler = ModelUtils.findIdentifiableElement(
+                  hostActivity.getEventHandler(),
+                  extractString(eventJson, EventMarshallingUtils.PRP_EVENT_HANDLER_ID));
+            if (null != eventHandler)
+            {
+               toEventJson(eventHandler, eventJson);
+            }
+
+            eventJson.remove(EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
+         }
+
+         eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
+               ModelerConstants.INTERMEDIATE_EVENT);
+         if ( !EventMarshallingUtils.isIntermediateEventHost(hostActivity))
+         {
+            // actually a boundary event
+            eventJson.addProperty(ModelerConstants.BINDING_ACTIVITY_UUID,
+                  hostActivity.getId());
+         }
+      }
+
+      eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+
+      eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
+
+      return eventSymbolJson;
+   }
+
+   /**
+    * Generates a transfer object for a event handler that has no explicit intermediate
+    * event symbol, guessing a reasonable location of the made up symbol.
+    *
+    * @param eventHandler
+    *           the defining event handler
+    * @param hostActivitySymbol
+    *           the symbol of the hosting activity, giving hint to where to locate the
+    *           made up event symbol
+    * @return the transfer object
+    */
+   public JsonObject toBoundaryEventJson(EventHandlerType eventHandler, ActivitySymbolType hostActivitySymbol)
+   {
+      JsonObject eventSymbolJson = new JsonObject();
+
+      eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.EVENT_SYMBOL);
+      // HACK use event handler element OID for symbol, ensure for the element itself a UUID is being used
+      eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
+            eventHandler.getElementOid());
+
+      // guess coordinates relative to the hosting activity's symbol
+      // TODO handle multiple events per activity, avoid collisions with explicit intermediate event symbols
+      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, hostActivitySymbol.getXPos() + (hostActivitySymbol.getWidth() - 24));
+      eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, hostActivitySymbol.getYPos() + (hostActivitySymbol.getHeight() - 12));
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, 24);
+      eventSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, 24);
+
+      JsonObject eventJson = new JsonObject();
+      toEventJson(eventHandler, eventJson);
+      eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY, ModelerConstants.INTERMEDIATE_EVENT);
+      eventJson.addProperty(ModelerConstants.BINDING_ACTIVITY_UUID, hostActivitySymbol.getActivity().getId());
+
+      eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
+
+      return eventSymbolJson;
+   }
+
+   public void toEventJson(EventHandlerType eventHandler, JsonObject eventJson)
+   {
+      eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+
+      eventJson.addProperty(ModelerConstants.ID_PROPERTY, eventHandler.getId());
+      eventJson.addProperty(ModelerConstants.NAME_PROPERTY, eventHandler.getName());
+      eventJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(eventHandler));
+      eventJson.addProperty(ModelerConstants.OID_PROPERTY, eventHandler.getElementOid());
+      ModelType model = ModelUtils.findContainingModel(eventHandler);
+      eventJson.addProperty(ModelerConstants.MODEL_UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(model));
+      setContainingModelIdProperty(eventJson, eventHandler);
+
+      // TODO This may changes
+
+      loadDescription(eventJson, eventHandler);
+      loadAttributes(eventHandler, eventJson);
+
+      eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+            EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
+      eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
+            EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
+      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
+            EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler.getType()));
+
+      JsonArray parameterMappingsJson = new JsonArray();
+
+      eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
+
+      for (AccessPointType accessPoint : eventHandler.getAccessPoint())
+      {
+         JsonObject parameterMappingJson = new JsonObject();
+
+         parameterMappingsJson.add(parameterMappingJson);
+         parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
+               accessPoint.getId());
+         parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
+               accessPoint.getName());
+
+         if (accessPoint.getType() != null)
+         {
+            parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                  accessPoint.getType().getId());
+         }
+
+         if (accessPoint.getDirection() != null)
+         {
+            parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                  accessPoint.getDirection().getLiteral());
+         }
+
+         loadAttributes(accessPoint, parameterMappingJson);
+      }
    }
 
    /**
@@ -1965,8 +2169,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
-         connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-               transition.getFrom().getActivitySymbols().get(0).getElementOid());
+         connectionJson.addProperty(
+               ModelerConstants.FROM_MODEL_ELEMENT_OID,
+               resolveSymbolAssociatedWithActivity(transition.getFrom(),
+                     findContainingDiagram(transitionConnection)).getElementOid());
 
          // TODO Hack to identify gateways
 
@@ -1975,14 +2181,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
          }
+         else if (EventMarshallingUtils.isIntermediateEventHost(transition.getFrom())
+               || EventMarshallingUtils.isEndEventHost(transition.getFrom()))
+         {
+            connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.EVENT_KEY);
+         }
          else
          {
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.ACTIVITY_KEY);
          }
 
-         connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-               transition.getTo().getActivitySymbols().get(0).getElementOid());
+         connectionJson.addProperty(
+               ModelerConstants.TO_MODEL_ELEMENT_OID,
+               resolveSymbolAssociatedWithActivity(transition.getTo(),
+                     findContainingDiagram(transitionConnection)).getElementOid());
 
          if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
          {
@@ -1995,6 +2209,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
              * ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY,
              * ModelerConstants.NORTH_KEY);
              */
+         }
+         else if (EventMarshallingUtils.isIntermediateEventHost(transition.getTo())
+               || EventMarshallingUtils.isEndEventHost(transition.getTo()))
+         {
+            connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                  ModelerConstants.EVENT_KEY);
          }
          else
          {
@@ -2434,11 +2654,21 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          typeDeclarationJson.add("type", toXpdlTypeJson(type));
       }
 
-      if (null != structType.getSchema())
+      XSDSchema schema = structType.getSchema();
+      if ((null == schema) && (type instanceof ExternalReferenceType))
+      {
+         // TODO try resolving schema against classpath
+      }
+
+      if (null != schema)
       {
          JsonObject schemaJson = new JsonObject();
-         ModelService.loadSchemaInfo(schemaJson, structType.getSchema());
+         ModelService.loadSchemaInfo(schemaJson, schema);
          typeDeclarationJson.add("schema", schemaJson);
+      }
+      else if (type instanceof ExternalReferenceType)
+      {
+         // TODO pass info that schema could not be loaded
       }
 
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -2610,6 +2840,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
+   }
+
+   protected void setNodeSymbolCoordinates(JsonObject nodeSymbolJson, INodeSymbol nodeSymbol)
+   {
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
+
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
+
+      nodeSymbolJson.addProperty(ModelerConstants.X_PROPERTY, nodeSymbol.getXPos()
+            + laneOffsetX);
+      nodeSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, nodeSymbol.getYPos()
+            + laneOffsetY);
    }
 
    /**

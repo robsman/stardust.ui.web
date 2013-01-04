@@ -22,19 +22,23 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import java.util.UUID;
+
 import javax.annotation.Resource;
 
-import org.eclipse.emf.common.util.EList;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -45,6 +49,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 
 /**
  * @author Sidharth.Singh
@@ -93,6 +98,39 @@ public class EventCommandHandler
             manualTrigger.setElementOid(++maxOid);
             startEventSymbol.setTrigger(manualTrigger);
          }
+         else if (ModelerConstants.INTERMEDIATE_EVENT.equals(extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         {
+            IntermediateEventSymbol eventSymbol = AbstractElementBuilder.F_CWM.createIntermediateEventSymbol();
+            eventSymbol.setElementOid(++maxOid);
+            // TODO - Pass correct x,y co-ordinates rather than adjustment at server
+            eventSymbol.setXPos(extractInt(request, X_PROPERTY)
+                  - parentLaneSymbol.getXPos());
+            eventSymbol.setYPos(extractInt(request, Y_PROPERTY)
+                  - parentLaneSymbol.getYPos());
+            eventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+            eventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+
+            processDefinition.getDiagram()
+                  .get(0)
+                  .getIntermediateEventSymbols()
+                  .add(eventSymbol);
+            parentLaneSymbol.getIntermediateEventSymbols().add(eventSymbol);
+
+            // add a host activity
+            ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
+                  .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
+                  .build();
+            hostActivity.setElementOid(++maxOid);
+            EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
+
+            processDefinition.getActivity().add(hostActivity);
+
+            EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
+                  new JsonObject());
+
+            // TODO evaluate other properties
+         }
          else
          {
             EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
@@ -111,6 +149,20 @@ public class EventCommandHandler
                   .add(endEventSymbol);
 
             parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+
+            // add a host activity
+            ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
+                  .withIdAndName("event_" + UUID.randomUUID(), "End Event")
+                  .build();
+            hostActivity.setElementOid(++maxOid);
+            EventMarshallingUtils.tagAsEndEventHost(hostActivity);
+
+            processDefinition.getActivity().add(hostActivity);
+
+            EventMarshallingUtils.updateEventHostingConfig(hostActivity, endEventSymbol,
+                  new JsonObject());
+
+            // TODO evaluate other properties
          }
       }
    }

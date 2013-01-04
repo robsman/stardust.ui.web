@@ -1089,7 +1089,13 @@ define(
 				/**
 				 * Low level graphics operation to move all primitives.
 				 */
-				Symbol.prototype.moveBy = function(dX, dY) {
+				Symbol.prototype.moveBy = function(dX, dY, force) {
+
+					if (this.bindingActivity && !force) {
+						// TODO quick hack for boundary events
+						return;
+					}
+
 					var originalX = this.x;
 					var originalY = this.y;
 					this.x = this.x + dX;

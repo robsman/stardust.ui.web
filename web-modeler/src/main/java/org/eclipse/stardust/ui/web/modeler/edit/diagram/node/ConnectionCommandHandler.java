@@ -11,12 +11,14 @@
 
 package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -31,6 +33,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
@@ -38,8 +41,10 @@ import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -52,6 +57,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 
 /**
  * @author Sidharth.Singh
@@ -59,7 +65,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 @CommandHandler
 public class ConnectionCommandHandler
 {
-   
+
    @Resource
    private ApplicationContext springContext;
 
@@ -72,11 +78,20 @@ public class ConnectionCommandHandler
       synchronized (model)
       {
          long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+         DiagramType diagram = processDefinition.getDiagram().get(0);
+
+         long fromSymbolOid = extractLong(request,
+               ModelerConstants.FROM_MODEL_ELEMENT_OID);
+         long toSymbolOid = extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID);
+
          if (ModelerConstants.ACTIVITY_KEY.equals(extractString(request,
                ModelerConstants.FROM_MODEL_ELEMENT_TYPE))
                || ModelerConstants.GATEWAY.equals(extractString(request,
                      ModelerConstants.FROM_MODEL_ELEMENT_TYPE)))
          {
+            ActivitySymbolType fromActivitySymbol = getModelBuilderFacade().findActivitySymbol(
+                  diagram, fromSymbolOid);
+
             if (ModelerConstants.ACTIVITY_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE))
                   || ModelerConstants.GATEWAY.equals(extractString(request,
@@ -85,52 +100,40 @@ public class ConnectionCommandHandler
                createControlFlowConnection(
                      request,
                      processDefinition,
-                     getModelBuilderFacade().findActivitySymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     getModelBuilderFacade().findActivitySymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
+                     fromActivitySymbol,
+                     getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
                      maxOid);
             }
             else if (ModelerConstants.EVENT_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
                StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
-                     processDefinition.getDiagram().get(0),
-                     extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
-
+                     diagram, toSymbolOid);
                if (null != startEventSymbol)
                {
+                  // start events don't have incoming transitions, simply create an outgoing one
                   createControlFlowConnection(request, processDefinition,
-                        startEventSymbol, getModelBuilderFacade().findActivitySymbol(
-                              processDefinition.getDiagram().get(0),
-                              extractLong(request,
-                                    ModelerConstants.FROM_MODEL_ELEMENT_OID)), maxOid);
+                        startEventSymbol, fromActivitySymbol, maxOid);
                }
                else
                {
-                  EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(
-                        processDefinition.getDiagram().get(0),
-                        extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID));
+                  AbstractEventSymbol toEventSymbol = getModelBuilderFacade().findEndEventSymbol(
+                        diagram, toSymbolOid);
+                  if (null == toEventSymbol)
+                  {
+                     toEventSymbol = getModelBuilderFacade().findIntermediateEventSymbol(
+                           diagram, toSymbolOid);
+                  }
                   createControlFlowConnection(request, processDefinition,
-                        getModelBuilderFacade().findActivitySymbol(
-                              processDefinition.getDiagram().get(0),
-                              extractLong(request,
-                                    ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                        endEventSymbol, maxOid);
+                        fromActivitySymbol, toEventSymbol, maxOid);
 
                }
             }
             else if (ModelerConstants.DATA.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
-               createDataFlowConnection(
-                     request,
-                     processDefinition,
-                     getModelBuilderFacade().findActivitySymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
-                     getModelBuilderFacade().findDataSymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     maxOid);
+               createDataFlowConnection(request, processDefinition, fromActivitySymbol,
+                     getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid), maxOid);
             }
             else
             {
@@ -145,33 +148,33 @@ public class ConnectionCommandHandler
             if (ModelerConstants.ACTIVITY_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
-               try
+               AbstractEventSymbol fromEventSymbol = getModelBuilderFacade().findStartEventSymbol(
+                     diagram, fromSymbolOid);
+               if (null == fromEventSymbol)
                {
-                  StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
-                        processDefinition.getDiagram().get(0),
-                        extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
-
-                  createControlFlowConnection(
-                        request,
-                        processDefinition,
-                        startEventSymbol,
-                        getModelBuilderFacade().findActivitySymbol(
-                              processDefinition.getDiagram().get(0),
-                              extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
+                  fromEventSymbol = getModelBuilderFacade().findIntermediateEventSymbol(
+                        diagram, fromSymbolOid);
+               }
+               if (null != fromEventSymbol)
+               {
+                  createControlFlowConnection(request, processDefinition,
+                        fromEventSymbol,
+                        getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
                         maxOid);
                }
-               catch (ObjectNotFoundException x)
+               else
                {
                   EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(
-                        processDefinition.getDiagram().get(0),
-                        extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID));
-                  createControlFlowConnection(
-                        request,
-                        processDefinition,
-                        getModelBuilderFacade().findActivitySymbol(
-                              processDefinition.getDiagram().get(0),
-                              extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                        endEventSymbol, maxOid);
+                        diagram, fromSymbolOid);
+                  if (null != endEventSymbol)
+                  {
+                     // end events don't have outgoing transitions, simply create an incoming one
+                     createControlFlowConnection(
+                           request,
+                           processDefinition,
+                           getModelBuilderFacade().findActivitySymbol(diagram,
+                                 toSymbolOid), endEventSymbol, maxOid);
+                  }
                }
             }
             else
@@ -187,13 +190,9 @@ public class ConnectionCommandHandler
             if (ModelerConstants.ACTIVITY_KEY.equals(extractString(request,
                   ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
-               createDataFlowConnection(
-                     request,
-                     processDefinition,
-                     getModelBuilderFacade().findActivitySymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID)),
-                     getModelBuilderFacade().findDataSymbol(processDefinition.getDiagram().get(0),
-                           extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID)),
+               createDataFlowConnection(request, processDefinition,
+                     getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
+                     getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
                      maxOid);
             }
             else
@@ -210,16 +209,14 @@ public class ConnectionCommandHandler
          {
             String typeInRequest = extractString(request,
                   ModelerConstants.FROM_MODEL_ELEMENT_TYPE);
-            Long oid = extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID);
+            Long oid = fromSymbolOid;
 
-            INodeSymbol sourceSymbol = getNodeSymbol(request, processDefinition,
-                  typeInRequest, oid);
+            INodeSymbol sourceSymbol = getNodeSymbol(request, diagram, typeInRequest, oid);
 
             typeInRequest = extractString(request, ModelerConstants.TO_MODEL_ELEMENT_TYPE);
-            oid = extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID);
+            oid = toSymbolOid;
 
-            INodeSymbol targetSymbol = getNodeSymbol(request, processDefinition,
-                  typeInRequest, oid);
+            INodeSymbol targetSymbol = getNodeSymbol(request, diagram, typeInRequest, oid);
 
             if (null != sourceSymbol && null != targetSymbol)
             {
@@ -237,50 +234,54 @@ public class ConnectionCommandHandler
          }
       }
    }
-   
-   
+
+
    /**
     * Finds NodeSymbol in Model based on input parameters
-    * 
+    *
     * @param request
     *           : json Object
-    * @param processDefinition
+    * @param diagram
     * @param typeInRequest
     *           (Activity, GateWay etc)
     * @param oidInRequest
     * @return
     */
-   private INodeSymbol getNodeSymbol(JsonObject request,
-         ProcessDefinitionType processDefinition, String typeInRequest, Long oidInRequest)
+   private INodeSymbol getNodeSymbol(JsonObject request, DiagramType diagram,
+         String typeInRequest, long oidInRequest)
    {
-      INodeSymbol nodeSymbal = null;
+      INodeSymbol nodeSymbol = null;
 
       if (ModelerConstants.ACTIVITY_KEY.equals(typeInRequest))
       {
-         nodeSymbal = getModelBuilderFacade().findActivitySymbol(
-               processDefinition.getDiagram().get(0), oidInRequest);
+         nodeSymbol = getModelBuilderFacade().findActivitySymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.GATEWAY.equals(typeInRequest))
       {
-         nodeSymbal = getModelBuilderFacade().findActivitySymbol(
-               processDefinition.getDiagram().get(0), oidInRequest);
+         nodeSymbol = getModelBuilderFacade().findActivitySymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.EVENT_KEY.equals(typeInRequest))
       {
-         nodeSymbal = getModelBuilderFacade().findStartEventSymbol(
-               processDefinition.getDiagram().get(0), oidInRequest);
+         nodeSymbol = getModelBuilderFacade().findStartEventSymbol(diagram, oidInRequest);
+         if (null == nodeSymbol)
+         {
+            nodeSymbol = getModelBuilderFacade().findEndEventSymbol(diagram, oidInRequest);
+         }
+         if (null == nodeSymbol)
+         {
+            nodeSymbol = getModelBuilderFacade().findIntermediateEventSymbol(diagram,
+                  oidInRequest);
+         }
       }
       else if (ModelerConstants.DATA.equals(typeInRequest))
       {
-         nodeSymbal = getModelBuilderFacade().findDataSymbol(
-               processDefinition.getDiagram().get(0), oidInRequest);
+         nodeSymbol = getModelBuilderFacade().findDataSymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.ANNOTATION_SYMBOL.equals(typeInRequest))
       {
-         nodeSymbal = getModelBuilderFacade().findAnnotationSymbol(
-               processDefinition.getDiagram().get(0), oidInRequest);
+         nodeSymbol = getModelBuilderFacade().findAnnotationSymbol(diagram, oidInRequest);
       }
-      return nodeSymbal;
+      return nodeSymbol;
    }
 
    @OnCommand(commandId = "connection.delete")
@@ -362,20 +363,74 @@ public class ConnectionCommandHandler
          ActivitySymbolType targetActivitySymbol, long maxOid)
    {
       JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      TransitionType transition = doCreateTransition(processDefinition,
+            sourceActivitySymbol.getActivity(), targetActivitySymbol.getActivity(),
+            controlFlowJson, ++maxOid);
+
+      doCreateTransitionSymbol(processDefinition, sourceActivitySymbol,
+            targetActivitySymbol, transition, connectionJson, ++maxOid);
+   }
+
+
+   private TransitionConnectionType doCreateTransitionSymbol(
+         ProcessDefinitionType processDefinition, IFlowObjectSymbol sourceActivitySymbol,
+         IFlowObjectSymbol targetActivitySymbol, TransitionType transition,
+         JsonObject connectionJson, long connectionOid)
+   {
+      TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
+
+      transition.getTransitionConnections().add(transitionConnection);
+      if (null != transition)
+      {
+         transitionConnection.setTransition(transition);
+      }
+
+      transitionConnection.setElementOid(connectionOid);
+      transitionConnection.setSourceNode(sourceActivitySymbol);
+      transitionConnection.setTargetNode(targetActivitySymbol);
+      transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
+            connectionJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
+            connectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+
+      // TODO Obtain pool from call
+
+      processDefinition.getDiagram()
+            .get(0)
+            .getPoolSymbols()
+            .get(0)
+            .getTransitionConnection()
+            .add(transitionConnection);
+
+      return transitionConnection;
+   }
+
+
+   private TransitionType doCreateTransition(ProcessDefinitionType processDefinition,
+         ActivityType sourceActivity, ActivityType targetActivity,
+         JsonObject controlFlowJson, long transitionOid)
+   {
       TransitionType transition = AbstractElementBuilder.F_CWM.createTransitionType();
 
       processDefinition.getTransition().add(transition);
 
-      transition.setElementOid(++maxOid);
-      transition.setFrom(sourceActivitySymbol.getActivity());
-      transition.setTo(targetActivitySymbol.getActivity());
-      transition.setId(extractString(controlFlowJson, ModelerConstants.ID_PROPERTY));
+      transition.setElementOid(transitionOid);
+      transition.setFrom(sourceActivity);
+      transition.setTo(targetActivity);
+      String transitionId = extractString(controlFlowJson, ModelerConstants.ID_PROPERTY);
+      if (isEmpty(transitionId))
+      {
+         transitionId = UUID.randomUUID().toString();
+      }
+      transition.setId(transitionId);
 
       // We accept an empty name here
-      
+
       transition.setName(extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY));
-    
-      if (extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY))
+
+      if (controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+            && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY))
       {
          transition.setCondition(ModelerConstants.OTHERWISE_KEY);
       }
@@ -391,64 +446,38 @@ public class ConnectionCommandHandler
 
       // setDescription(transition,
       // controlFlowJson.getString(DESCRIPTION_PROPERTY));
-
-      TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
-
-      transition.getTransitionConnections().add(transitionConnection);
-      transitionConnection.setTransition(transition);
-
-      transitionConnection.setElementOid(++maxOid);
-      transitionConnection.setSourceActivitySymbol(sourceActivitySymbol);
-      transitionConnection.setTargetActivitySymbol(targetActivitySymbol);
-      transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-
-      // TODO Obtain pool from call
-
-      processDefinition.getDiagram()
-            .get(0)
-            .getPoolSymbols()
-            .get(0)
-            .getTransitionConnection()
-            .add(transitionConnection);
+      return transition;
    }
 
    /**
     *
     * @param connectionJson
     * @param processDefinition
-    * @param sourceActivitySymbol
+    * @param sourceEventSymbol
     * @param targetActivitySymbol
     * @param maxOid
     */
    private void createControlFlowConnection(JsonObject connectionJson,
-         ProcessDefinitionType processDefinition, StartEventSymbol startEventSymbol,
+         ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
          ActivitySymbolType targetActivitySymbol, long maxOid)
    {
-      TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
+      TransitionType transition = null;
 
-      transitionConnection.setElementOid(++maxOid);
-      transitionConnection.setSourceNode(startEventSymbol);
-      transitionConnection.setTargetNode(targetActivitySymbol);
-      transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      processDefinition.getDiagram()
-            .get(0)
-            .getPoolSymbols()
-            .get(0)
-            .getTransitionConnection()
-            .add(transitionConnection);
+      ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
+      if (null != hostActivity)
+      {
+         transition = doCreateTransition(processDefinition, hostActivity,
+               targetActivitySymbol.getActivity(), connectionJson, maxOid++ );
+      }
+
+      doCreateTransitionSymbol(processDefinition, sourceEventSymbol, targetActivitySymbol, transition, connectionJson, ++maxOid);
    }
 
-   
+
    /**
     * creates association between model elements and Text Annotations TODO: currently
     * Modeler API is not available
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceSymbol
@@ -475,36 +504,31 @@ public class ConnectionCommandHandler
             .getTransitionConnection()
             .add(transitionConnection);
    }
-   
+
    /**
     *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
-    * @param targetActivitySymbol
+    * @param targetEventSymbol
     * @param maxOid
     */
    private void createControlFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition,
-         ActivitySymbolType sourceActivitySymbol, EndEventSymbol endEventSymbol,
+         ActivitySymbolType sourceActivitySymbol, AbstractEventSymbol targetEventSymbol,
          long maxOid)
    {
-      TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
-      transitionConnection.setElementOid(++maxOid);
-      transitionConnection.setSourceNode(sourceActivitySymbol);
-      transitionConnection.setTargetNode(endEventSymbol);
-      transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-            connectionJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      // TODO Obtain pool from call
+      TransitionType transition = null;
 
-      processDefinition.getDiagram()
-            .get(0)
-            .getPoolSymbols()
-            .get(0)
-            .getTransitionConnection()
-            .add(transitionConnection);
+      ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
+      if (null != hostActivity)
+      {
+         transition = doCreateTransition(processDefinition,
+               sourceActivitySymbol.getActivity(), hostActivity, connectionJson, maxOid++ );
+      }
+
+      doCreateTransitionSymbol(processDefinition, sourceActivitySymbol,
+            targetEventSymbol, transition, connectionJson, ++maxOid);
    }
 
    /**
