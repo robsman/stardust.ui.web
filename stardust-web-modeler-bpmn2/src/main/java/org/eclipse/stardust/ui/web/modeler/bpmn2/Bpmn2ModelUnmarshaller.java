@@ -1,17 +1,12 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
-import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
@@ -22,14 +17,16 @@ import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
-import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.ScriptTask;
+import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.emf.ecore.EClass;
@@ -159,85 +156,156 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       trace.info("Activity Type: " + activity);
       trace.info("Activity JSON: " + activityJson);
 
-      if (activityJson.has(ModelerConstants.ACTIVITY_TYPE))
+      if (activityJson.has(ModelerConstants.TASK_TYPE))
       {
-         if (ModelerConstants.MANUAL_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
+         // if
+         // (ModelerConstants.NONE_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         // {
+         // NoneTask noneTask = null;
+         //
+         // if ( !(activity instanceof NoneTask))
+         // {
+         // noneTask = (NoneTask) switchElementType(activity,
+         // bpmn2Package().getNoneTask());
+         // }
+         // else
+         // {
+         // noneTask = (NoneTask) activity;
+         // }
+         // }
+         // else
+         if (ModelerConstants.MANUAL_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         {
+            ManualTask manualTask = null;
+
+            if ( !(activity instanceof ManualTask))
+            {
+               manualTask = (ManualTask) switchElementType(activity,
+                     bpmn2Package().getManualTask());
+            }
+            else
+            {
+               manualTask = (ManualTask) activity;
+            }
+         }
+         else if (ModelerConstants.USER_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
          {
             UserTask userTask = null;
 
             if ( !(activity instanceof UserTask))
             {
-               trace.error("Conversion to User Task not yet supported");
+               userTask = (UserTask) switchElementType(activity,
+                     bpmn2Package().getUserTask());
             }
             else
             {
                userTask = (UserTask) activity;
-
-               userTask.setImplementation("##unspecified");
             }
+
+            userTask.setImplementation("##unspecified");
          }
-         else if (ModelerConstants.APPLICATION_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
+         else if (ModelerConstants.SERVICE_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
          {
-            if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
+            ServiceTask serviceTask = null;
+
+            if ( !(activity instanceof ServiceTask))
             {
-               UserTask userTask = null;
-
-               if ( !(activity instanceof UserTask))
-               {
-                  userTask = (UserTask) switchElementType(activity,
-                        bpmn2Package().getUserTask());
-               }
-               else
-               {
-                  userTask = (UserTask) activity;
-
-                  userTask.setImplementation("##unspecified");
-               }
+               serviceTask = (ServiceTask) switchElementType(activity,
+                     bpmn2Package().getServiceTask());
             }
             else
             {
-               ServiceTask serviceTask = null;
-
-               if ( !(activity instanceof ServiceTask))
-               {
-                  serviceTask = (ServiceTask) switchElementType(activity,
-                        bpmn2Package().getServiceTask());
-               }
-               else
-               {
-                  serviceTask = (ServiceTask) activity;
-
-                  if (true)
-                  {
-                     serviceTask.setImplementation("##WebService");
-
-                     Operation operation = bpmn2Factory().createOperation();
-
-                     operation.setId(activityJson.get(
-                           ModelerConstants.APPLICATION_FULL_ID_PROPERTY).getAsString());
-
-                     serviceTask.setOperationRef(operation);
-                  }
-                  else
-                  {
-                     serviceTask.setImplementation("##unspecified");
-                  }
-               }
+               serviceTask = (ServiceTask) activity;
             }
-         }
-         else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
-         {
-            SubProcess subProcess;
 
-            if ( !(activity instanceof SubProcess))
+            // Encode Stardust Application Types
+
+            if (true)
             {
-               subProcess = (SubProcess) switchElementType(activity,
-                     bpmn2Package().getSubProcess());
+               serviceTask.setImplementation("##WebService");
+
+               Operation operation = bpmn2Factory().createOperation();
+
+               operation.setId(activityJson.get(
+                     ModelerConstants.APPLICATION_FULL_ID_PROPERTY).getAsString());
+
+               serviceTask.setOperationRef(operation);
             }
             else
             {
-               subProcess = (SubProcess) activity;
+               serviceTask.setImplementation("##unspecified");
             }
+         }
+         else if (ModelerConstants.SCRIPT_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         {
+            ScriptTask scriptTask = null;
+
+            if ( !(activity instanceof ScriptTask))
+            {
+               scriptTask = (ScriptTask) switchElementType(activity,
+                     bpmn2Package().getScriptTask());
+            }
+            else
+            {
+               scriptTask = (ScriptTask) activity;
+            }
+         }
+         else if (ModelerConstants.SEND_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         {
+            SendTask sendTask = null;
+
+            if ( !(activity instanceof SendTask))
+            {
+               sendTask = (SendTask) switchElementType(activity,
+                     bpmn2Package().getSendTask());
+            }
+            else
+            {
+               sendTask = (SendTask) activity;
+            }
+         }
+         else if (ModelerConstants.RECEIVE_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         {
+            ReceiveTask receiveTask = null;
+
+            if ( !(activity instanceof ReceiveTask))
+            {
+               receiveTask = (ReceiveTask) switchElementType(activity,
+                     bpmn2Package().getReceiveTask());
+            }
+            else
+            {
+               receiveTask = (ReceiveTask) activity;
+            }
+         }
+         // else if
+         // (ModelerConstants.RULE_TASK_KEY.equals(activityJson.get(ModelerConstants.TASK_TYPE)))
+         // {
+         // RuleTask ruleTask = null;
+         //
+         // if ( !(activity instanceof RuleTask))
+         // {
+         // ruleTask = (RuleTask) switchElementType(activity,
+         // bpmn2Package().getRuleTask());
+         // }
+         // else
+         // {
+         // ruleTask = (RuleTask) activity;
+         // }
+         // }
+      }
+      else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(activityJson.get(ModelerConstants.ACTIVITY_TYPE)))
+      {
+         SubProcess subProcess;
+
+         if ( !(activity instanceof SubProcess))
+         {
+            subProcess = (SubProcess) switchElementType(activity,
+                  bpmn2Package().getSubProcess());
+         }
+         else
+         {
+            subProcess = (SubProcess) activity;
          }
       }
 
@@ -310,8 +378,10 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
             {
                startEvent = (StartEvent) event;
             }
-            
-            startEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+
+            startEvent.getEventDefinitions().add(
+                  getEventDefinitionForEventClass(eventJson.get(
+                        ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
          }
          else if (eventType.equals(ModelerConstants.INTERMEDIATE_EVENT))
          {
@@ -322,19 +392,24 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                if ( !(event instanceof BoundaryEvent))
                {
                   boundaryEvent = (BoundaryEvent) switchElementType(event,
-                        bpmn2Package().getBoundaryEvent());                  
+                        bpmn2Package().getBoundaryEvent());
                }
                else
                {
                   boundaryEvent = (BoundaryEvent) event;
-               }               
-               
-               boundaryEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
-               
+               }
+
+               boundaryEvent.getEventDefinitions().add(
+                     getEventDefinitionForEventClass(eventJson.get(
+                           ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+
                Process process = Bpmn2Utils.findContainingProcess(boundaryEvent);
-                 
-               boundaryEvent.setAttachedToRef(Bpmn2ExtensionUtils.findActivityById(process, eventJson.get(ModelerConstants.BINDING_ACTIVITY_UUID).getAsString()));
-               boundaryEvent.setCancelActivity(eventJson.get(ModelerConstants.INTERRUPTING_PROPERTY).getAsBoolean());
+
+               boundaryEvent.setAttachedToRef(Bpmn2ExtensionUtils.findActivityById(
+                     process, eventJson.get(ModelerConstants.BINDING_ACTIVITY_UUID)
+                           .getAsString()));
+               boundaryEvent.setCancelActivity(eventJson.get(
+                     ModelerConstants.INTERRUPTING_PROPERTY).getAsBoolean());
             }
             else
             {
@@ -344,15 +419,17 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
                   if ( !(event instanceof IntermediateThrowEvent))
                   {
-                     intermediateThrowEvent = (IntermediateThrowEvent) switchElementType(event,
-                           bpmn2Package().getIntermediateThrowEvent());
+                     intermediateThrowEvent = (IntermediateThrowEvent) switchElementType(
+                           event, bpmn2Package().getIntermediateThrowEvent());
                   }
                   else
                   {
                      intermediateThrowEvent = (IntermediateThrowEvent) event;
-                  }    
-                  
-                  intermediateThrowEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+                  }
+
+                  intermediateThrowEvent.getEventDefinitions().add(
+                        getEventDefinitionForEventClass(eventJson.get(
+                              ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
                }
                else
                {
@@ -360,24 +437,26 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
                   if ( !(event instanceof IntermediateCatchEvent))
                   {
-                     intermediateCatchEvent = (IntermediateCatchEvent) switchElementType(event,
-                           bpmn2Package().getIntermediateCatchEvent());
+                     intermediateCatchEvent = (IntermediateCatchEvent) switchElementType(
+                           event, bpmn2Package().getIntermediateCatchEvent());
                   }
                   else
                   {
                      intermediateCatchEvent = (IntermediateCatchEvent) event;
-                  }               
-                  
-                  intermediateCatchEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+                  }
+
+                  intermediateCatchEvent.getEventDefinitions().add(
+                        getEventDefinitionForEventClass(eventJson.get(
+                              ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
                }
             }
          }
          else if (eventJson.get(ModelerConstants.EVENT_TYPE_PROPERTY)
                .getAsString()
                .equals(ModelerConstants.STOP_EVENT))
-         {            
+         {
             EndEvent endEvent = null;
-            
+
             if ( !(event instanceof EndEvent))
             {
                endEvent = (EndEvent) switchElementType(event,
@@ -386,9 +465,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
             else
             {
                endEvent = (EndEvent) event;
-            }               
-            
-            endEvent.getEventDefinitions().add(getEventDefinitionForEventClass(eventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+            }
+
+            endEvent.getEventDefinitions().add(
+                  getEventDefinitionForEventClass(eventJson.get(
+                        ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
          }
       }
 
@@ -449,7 +530,8 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       }
       else if (ModelerConstants.MESSAGE_EVENT_CLASS_KEY.equals(eventClass))
       {
-         return (EventDefinition) Bpmn2Utils.bpmn2Factory().createMessageEventDefinition();
+         return (EventDefinition) Bpmn2Utils.bpmn2Factory()
+               .createMessageEventDefinition();
       }
       else if (ModelerConstants.ERROR_EVENT_CLASS_KEY.equals(eventClass))
       {
@@ -460,7 +542,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          throw new IllegalArgumentException("Unknown event class " + eventClass + ".");
       }
    }
-   
+
    /**
     * 
     * @param element

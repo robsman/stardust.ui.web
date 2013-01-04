@@ -35,12 +35,16 @@ import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.ScriptTask;
+import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
@@ -762,16 +766,47 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       loadDescription(activity, jto);
       loadExtensions(activity, jto);
 
-      if (activity instanceof ServiceTask)
+//      if (activity instanceof NoneTask)
+//      {
+//         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+//         jto.taskType = ModelerConstants.NONE_TASK_KEY;
+//      }
+//      else 
+         if (activity instanceof ManualTask)
       {
-         jto.activityType = ModelerConstants.APPLICATION_ACTIVITY;
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.MANUAL_TASK_KEY;
       }
       else if (activity instanceof UserTask)
       {
-         // TODO Review
-
-         jto.activityType = ModelerConstants.APPLICATION_ACTIVITY;
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.USER_TASK_KEY;
       }
+      else if (activity instanceof ServiceTask)
+      {
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.SERVICE_TASK_KEY;
+      }
+      else if (activity instanceof ScriptTask)
+      {
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.SCRIPT_TASK_KEY;
+      }      
+      else if (activity instanceof SendTask)
+      {
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.SEND_TASK_KEY;
+      }      
+      else if (activity instanceof ReceiveTask)
+      {
+         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+         jto.taskType = ModelerConstants.RECEIVE_TASK_KEY;
+      }  
+//      else if (activity instanceof RuleTask)
+//      {
+//         jto.activityType = ModelerConstants.TASK_ACTIVITY;
+//         jto.taskType = ModelerConstants.RULE_TASK_KEY;
+//      }            
       else if (activity instanceof SubProcess)
       {
          SubProcess subProcess = (SubProcess) activity;
