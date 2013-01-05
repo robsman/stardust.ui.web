@@ -10,7 +10,7 @@ public class ActivityJto extends ModelElementJto
    }
 
    public String activityType;
-
+   public String taskType;
    public String participantFullId;
    public String applicationFullId;
    public String subprocessFullId;
