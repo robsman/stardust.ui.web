@@ -35,8 +35,6 @@ define(
 			 *
 			 */
 			function ActivityPropertiesPanel(models) {
-				// Inheritance
-
 				var propertiesPanel = m_propertiesPanel
 						.createPropertiesPanel("activityPropertiesPanel");
 

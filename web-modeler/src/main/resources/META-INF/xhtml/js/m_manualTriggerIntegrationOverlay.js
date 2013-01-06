@@ -57,6 +57,8 @@ define(
 
 					this.submitChanges({
 						modelElement : {
+							participantFullId : this.page
+							.getElement().parentSymbol.participantFullId,
 							parameterMappings : parameterMappings,
 							attributes : {
 								"carnot:engine:integration::overlay" : this.id

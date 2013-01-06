@@ -179,11 +179,9 @@ define(
 						return true;
 					}
 
-					var checkProfiles = this.profiles.split(",");
-
-					for ( var n = 0; n < checkProfiles; ++n) {
-						m_utils.debug("... against " + checkProfiles[n]);
-						if (profile == checkProfiles[n].trim()) {
+					for ( var n = 0; n < this.profiles.length; ++n) {
+						m_utils.debug("... against " + this.profiles[n]);
+						if (profile == this.profiles[n]) {
 							return true;
 						}
 					}

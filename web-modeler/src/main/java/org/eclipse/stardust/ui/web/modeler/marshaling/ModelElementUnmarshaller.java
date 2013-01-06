@@ -1607,7 +1607,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             ModelUtils.setReference(attribute, ModelUtils.findContainingModel(trigger),
                   "role+organization");
          }
-
       }
 
       if (triggerJson.has(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY))

@@ -187,7 +187,7 @@ define(
 				FileEventIntegrationOverlay.prototype.activate = function() {
 					this.fileOrDirectoryNameInput
 							.val(m_i18nUtils
-									.getProperty("modeler.element.properties.event.toBeDefined"));
+									.getProperty("modeler.general.toBeDefined"));
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
 

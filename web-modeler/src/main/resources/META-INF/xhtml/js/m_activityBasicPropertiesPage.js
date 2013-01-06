@@ -188,17 +188,20 @@ define(
 							event.data.page.submitTaskTypeChanges();
 						}
 					});
-					this.taskTypeList.change({
-						"page" : this
-					}, function(event) {
-						var page = event.data.page;
+					this.taskTypeList
+							.change(
+									{
+										"page" : this
+									},
+									function(event) {
+										var page = event.data.page;
 
-						if (!page.validate()) {
-							return;
-						}
+										if (!page.validate()) {
+											return;
+										}
 
-						page.submitTaskTypeChanges();
-					});
+										page.submitTaskTypeChanges();
+									});
 					this.subprocessList.change({
 						"page" : this
 					}, function(event) {
@@ -354,7 +357,10 @@ define(
 							.val()) {
 						this.submitChanges({
 							modelElement : {
-								taskType : this.taskTypeList.val()
+								taskType : this.taskTypeList.val(),
+								participantFullId : (this.taskTypeList.val() == m_constants.MANUAL_TASK_TYPE
+										|| this.taskTypeList.val() == m_constants.USER_TASK_TYPE) ? this
+												.getElement().parentSymbol.participantFullId : null
 							}
 						});
 					}

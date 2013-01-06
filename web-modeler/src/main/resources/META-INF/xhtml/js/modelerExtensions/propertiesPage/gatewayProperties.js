@@ -3,27 +3,26 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define([ 'bpm-modeler/js/m_gatewayBasicPropertiesPage',
-         'bpm-modeler/js/m_modelElementCommentsPropertiesPage'], function(
-        		 m_gatewayBasicPropertiesPage,
-        		 m_modelElementCommentsPropertiesPage) {
+		'bpm-modeler/js/m_modelElementCommentsPropertiesPage' ], function(
+		m_gatewayBasicPropertiesPage, m_modelElementCommentsPropertiesPage) {
 	return {
 		propertiesPage : [ {
-			panelId: "gatewayPropertiesPanel",
-			pageId: "basicPropertiesPage",
-			provider: m_gatewayBasicPropertiesPage,
-			visibility: "always"
+			panelId : "gatewayPropertiesPanel",
+			id : "basicPropertiesPage",
+			provider : m_gatewayBasicPropertiesPage,
+			visibility : "always"
 		}, {
-			panelId: "gatewayPropertiesPanel",
-			pageId: "commentsPropertiesPage",
-			pageHtmlUrl: "modelElementCommentsPropertiesPage.html",
-			provider: m_modelElementCommentsPropertiesPage,
-			visibility: "always"
-		}, ],
+			panelId : "gatewayPropertiesPanel",
+			id : "commentsPropertiesPage",
+			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+			provider : m_modelElementCommentsPropertiesPage,
+			visibility : "always"
+		}, ]
 	};
 });

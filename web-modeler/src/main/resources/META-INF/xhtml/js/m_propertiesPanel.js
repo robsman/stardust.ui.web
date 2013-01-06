@@ -12,8 +12,12 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_session",
-				"bpm-modeler/js/m_user", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_user",
+				"bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog" ],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_command, m_commandsController, m_dialog) {
 
@@ -55,7 +59,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function PropertiesPanel(id) {
 				this.id = id;
@@ -73,7 +77,7 @@ define(
 				this.lastSelectedPageIndex = 0;
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.initialize = function(diagram) {
 					this.diagram = diagram;
@@ -83,21 +87,21 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.getModel = function() {
 					return this.diagram.model;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.getModelElement = function() {
 					return this.element.modelElement;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.wrapModelElementProperties = function(
 						modelElementProperties) {
@@ -107,21 +111,21 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.id + " #" + inputId);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.getElementUuid = function() {
 					return this.element.oid;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					this.propertiesPages = [];
@@ -133,35 +137,25 @@ define(
 					for ( var n = 0; n < propertiesPages.length; n++) {
 						var extension = propertiesPages[n];
 
-						extensions[extension.pageId] = extension;
+						extensions[extension.id] = extension;
 
 						if (!m_session.initialize().technologyPreview
 								&& extension.visibility == "preview") {
 
 							if (extension.pageHtmlUrl == null) {
 								m_dialog.makeInvisible(jQuery("#" + this.id
-										+ " #" + extension.pageId));
-							}
-
-							continue;
-						}
-
-						if (!extension.supportedInProfile(m_user
-								.getCurrentRole())) {
-							if (extension.pageHtmlUrl == null) {
-								m_dialog.makeInvisible(jQuery("#" + this.id
-										+ " #" + extension.pageId));
+										+ " #" + extension.id));
 							}
 
 							continue;
 						}
 
 						m_utils.debug("Load Properties Page "
-								+ extension.pageId);
+								+ extension.id);
 
 						if (extension.pageHtmlUrl != null) {
 							var pageDiv = jQuery("<div id=\""
-									+ extension.pageId
+									+ extension.id
 									+ "\" class=\"propertiesPage\"></div>");
 
 							jQuery("#" + this.id + " #propertiesPagesCell")
@@ -173,7 +167,6 @@ define(
 
 							var panel = this;
 
-							// jQuery("#" + this.id + " #" + extension.pageId)
 							pageDiv
 									.load(
 											extension.pageHtmlUrl,
@@ -199,10 +192,11 @@ define(
 													var page = extension.provider
 															.create(
 																	panel,
-																	extension.pageId,
+																	extension.id,
 																	extension.title);
 
 													page.hide();
+													page.profiles = extension.profiles;
 													panel.propertiesPages
 															.push(page);
 												}
@@ -210,14 +204,18 @@ define(
 						} else {
 							// Embedded Markup
 
-							this.propertiesPages.push(extension.provider
-									.create(this));
+							var page = extension.provider
+							.create(this);
+							
+							this.propertiesPages.push(page);
+							
+							page.profiles = extension.profiles;
 						}
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.showPropertiesPageList = function() {
 					if (this.propertiesPages.length == 1) {
@@ -231,6 +229,12 @@ define(
 					this.propertiesPageList.empty();
 
 					for ( var n in this.propertiesPages) {
+						m_utils.debug("Checking page " + this.propertiesPages[n].id);
+						if (!m_user
+								.isCurrentProfileIn(this.propertiesPages[n].profiles)) {
+							continue;
+						}
+
 						this.propertiesPageList.append("<tr>" + "<td>"
 								+ "<input id=\"" + this.propertiesPages[n].id
 								+ "ListItem\" type=\"image\" src=\""
@@ -243,34 +247,40 @@ define(
 						jQuery(
 								"#propertiesPageList #"
 										+ this.propertiesPages[n].id
-										+ "ListItem").click({
-							callbackScope : this,
-							propertiesPage : this.propertiesPages[n],
-							pageIndex: n
-						}, function(event) {
-							event.data.callbackScope.hidePropertiesPages();
-							event.data.propertiesPage.show();
-							event.data.callbackScope.lastSelectedPageIndex = event.data.pageIndex;
-						});
+										+ "ListItem")
+								.click(
+										{
+											callbackScope : this,
+											propertiesPage : this.propertiesPages[n],
+											pageIndex : n
+										},
+										function(event) {
+											event.data.callbackScope
+													.hidePropertiesPages();
+											event.data.propertiesPage.show();
+											event.data.callbackScope.lastSelectedPageIndex = event.data.pageIndex;
+										});
 					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.disablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop("disabled", true);
+					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+							"disabled", true);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.enablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop("disabled", false);
+					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+							"disabled", false);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.hidePropertiesPages = function() {
 					for ( var n in this.propertiesPages) {
@@ -285,7 +295,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.showErrorMessages = function() {
 					if (this.errorMessages.length != 0) {
@@ -299,7 +309,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.show = function(page) {
 					m_dialog.makeVisible(this.panel);
@@ -314,17 +324,19 @@ define(
 								}
 							}
 						} else {
-							this.propertiesPages[this.lastSelectedPageIndex].show();
+							this.propertiesPages[this.lastSelectedPageIndex]
+									.show();
 						}
 					}
 
 					this.clearErrorMessages();
 
-					require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
+					require("bpm-modeler/js/m_modelerViewLayoutManager")
+							.adjustPanels();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.hide = function() {
 					m_dialog.makeInvisible(this.panel);
@@ -332,28 +344,28 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.reset = function() {
 					this.resetPropertiesPages();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.showHelpPanel = function() {
 					m_dialog.makeVisible(this.helpPanel);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.hideHelpPanel = function() {
 					m_dialog.makeInvisible(this.helpPanel);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
@@ -369,7 +381,7 @@ define(
 							&& null != object.changes.modified
 							&& 0 != object.changes.modified.length) {
 
-						for (var i = 0; i < object.changes.modified.length; i++) {
+						for ( var i = 0; i < object.changes.modified.length; i++) {
 							if (object.changes.modified[i].oid == this.element.oid) {
 								m_utils.inheritFields(this.element,
 										object.changes.modified[i]);
@@ -380,7 +392,8 @@ define(
 										.debug("Changes to be applied to Model Element of Properties Page:");
 								m_utils.debug(this.element.modelElement);
 								m_utils.debug(object.changes.modified[i]);
-								m_utils.inheritFields(this.element.modelElement,
+								m_utils.inheritFields(
+										this.element.modelElement,
 										object.changes.modified[i]);
 								m_utils.debug(this.element.modelElement);
 								this.setElement(this.element);
@@ -390,7 +403,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -404,7 +417,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -420,7 +433,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted for UUID "

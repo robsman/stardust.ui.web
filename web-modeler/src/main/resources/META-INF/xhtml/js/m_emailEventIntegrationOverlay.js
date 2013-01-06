@@ -145,10 +145,10 @@ define(
 				EmailEventIntegrationOverlay.prototype.activate = function() {
 					this.mailServerInput
 							.val(m_i18nUtils
-									.getProperty("modeler.element.properties.event.toBeDefined"));
+									.getProperty("modeler.general.toBeDefined"));
 					this.accountInput
 							.val(m_i18nUtils
-									.getProperty("modeler.element.properties.event.toBeDefined"));
+									.getProperty("modeler.general.toBeDefined"));
 					this.portInput.val("30");
 
 					var parameterMappings = [];

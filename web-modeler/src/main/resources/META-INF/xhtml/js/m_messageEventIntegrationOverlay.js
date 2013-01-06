@@ -134,7 +134,7 @@ define(
 				MessageEventIntegrationOverlay.prototype.activate = function() {
 					this.nameInput
 							.val(m_i18nUtils
-									.getProperty("modeler.element.properties.event.toBeDefined"));
+									.getProperty("modeler.general.toBeDefined"));
 
 					var parameterMappings = [];
 

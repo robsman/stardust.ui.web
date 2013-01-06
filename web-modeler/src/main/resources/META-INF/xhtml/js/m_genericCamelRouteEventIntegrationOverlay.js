@@ -48,11 +48,11 @@ define(
 					jQuery("label[for='routeTextarea']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.camelRoute.additionalRoutes"));
+											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalRoutes"));
 					jQuery("label[for='beanTextarea']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent.additionalBeans"));
+											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
 
 					this.configurationSpan = this.mapInputId("configuration");
 					

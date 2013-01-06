@@ -57,7 +57,7 @@ define(
 				this.owner = sessionOwner;
 				this.loggedInUser = sessionOwner;
 				this.joined = false;
-				this.technologyPreview = false; // be careful when committing anything but false
+				this.technologyPreview = true; // be careful when committing anything but false
 				var sessionCallbackObj = this;
 				var startTime = new Date();
 				this.ownerJson = "";

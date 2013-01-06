@@ -35,6 +35,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
@@ -1106,8 +1107,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else
       {
-         System.out.println("Creating dummy Event Model Element");
-
          eventJson = new JsonObject();
 
          eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
@@ -1360,6 +1359,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       loadDescription(eventJson, event);
       loadAttributes(event, eventJson);
+
+      // Load starting Participant
+      // TODO The code below is wrong as full references are not loaded
+      // TODO May be only loaded for None Start Events
+      
+//      eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(event,
+//            PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
 
       // Load BPMN attributes
 
