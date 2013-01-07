@@ -17,9 +17,10 @@
 			<ice:inputText title="editableBookmark" value="#{row.bookmarkText}" partialSubmit="true" rendered="#{row.editable}" style="width : 5.5em;">
 				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-BookmarkText" standAlone="false"/>
 			</ice:inputText>
-			<ice:graphicImage value="/plugins/views-common/images/icons/book-open-bookmark.png" rendered="#{row.defaultBookmark and !row.editable}" />
+			<ice:graphicImage value="/plugins/views-common/images/icons/bookmark/book-open-bookmark.png" rendered="#{row.defaultBookmark and !row.editable}" />
 			<ice:outputLabel value="  " rendered="#{row.defaultBookmark and !row.editable}" />
-			<ice:commandLink value="#{row.bookmarkText}" onclick="javascript: window.parent.EventHub.events.publish('page_click_event', '', #{row.fromPageNo});" rendered="#{!row.editable}">
+			<ice:commandLink value="#{row.bookmarkText}" onclick="javascript: window.parent.EventHub.events.publish('page_click_event', '', #{row.fromPageNo});" rendered="#{!row.editable}"
+			style="vertical-align:super;">
 				<pc:automationTag value="auto-COM-DocView-TiffDocView-BookmarkTbl-Bookmark" standAlone="false"/>
 			</ice:commandLink>
 		</ice:panelGroup>
