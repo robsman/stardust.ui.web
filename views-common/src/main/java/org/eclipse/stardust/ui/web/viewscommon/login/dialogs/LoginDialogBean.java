@@ -135,18 +135,18 @@ public class LoginDialogBean implements Serializable, InitializingBean
                UserPreferencesEntries.F_SKIN);
          TechnicalUserUtils.logout(sessionCtx);
          Map<String, List<String>> pluginAvailableSkins = null;
-         if (skinPreference.contains(Constants.PLUGIN_FOLDER_PATH))
+         if (skinPreference.contains(Constants.SKIN_FOLDER))
          {
-            // if skinPreference =<plugin-id>/public/skins/camino, directly retrieve the
+            // if skinPreference =<plugin-id>/public/skins/<skinId>, directly retrieve the
             // skin
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH,
+            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER,
                   loginStyleSheetName);
          }
          else
          {
-            // If skinPreference ="camino" (i.e loaded from
-            // SungardSkinStaticConfigurationProvider), search skin folder
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
+            // If skinPreference =<skinId> (i.e loaded from
+            // static Configuration Provider), search skin folder
+            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
          }
 
          for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())

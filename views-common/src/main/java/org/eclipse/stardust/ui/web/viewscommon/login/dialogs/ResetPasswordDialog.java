@@ -72,16 +72,8 @@ public class ResetPasswordDialog extends PopupDialog
       try
       {
          sessionCtx = TechnicalUserUtils.login(loginProperties);
-      }
-      catch (Exception e)
-      {
-         ExceptionHandler.handleException(FORM_ID + ":" + COMMON_MESSAGE_ID, e);
-         return;
-      }
 
-      // Reset Password
-      try
-      {
+         // Reset Password
          if (trace.isDebugEnabled())
          {
             trace.debug("Resetting Pwd for - " + account);

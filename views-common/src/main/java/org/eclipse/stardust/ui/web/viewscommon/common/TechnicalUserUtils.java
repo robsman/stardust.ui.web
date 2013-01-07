@@ -1,7 +1,13 @@
-/*
- * $Id$
- * (C) 2000 - 2012 CARNOT AG
- */
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import java.util.Map;
@@ -13,8 +19,12 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 
+/**
+ * 
+ * @author Sidharth.Singh
+ * @version $Revision: $
+ */
 public class TechnicalUserUtils
 {
 
@@ -23,6 +33,9 @@ public class TechnicalUserUtils
    public static final String TECH_USER_PARAM_ACCOUNT = "Security.ResetPassword.TechnicalUser.Account";
    public static final String TECH_USER_PARAM_PASSWORD = "Security.ResetPassword.TechnicalUser.Password";
    public static final String TECH_USER_PARAM_REALM = "Security.ResetPassword.TechnicalUser.Realm";
+   public static final String TECH_USER_ACCOUNT = "motu";
+   public static final String TECH_USER_PASSWORD = "motu";
+   public static final String TECH_USER_REALM = "carnot";
 
    /**
     * 
@@ -35,51 +48,42 @@ public class TechnicalUserUtils
       SessionContext sessionCtx;
 
       // Login With Technical User
-      try
+      trace.debug("Technical User about to log in...");
+
+      Parameters parameters = Parameters.instance();
+
+      String user = parameters.getString(TECH_USER_PARAM_ACCOUNT);
+      String pwd = parameters.getString(TECH_USER_PARAM_PASSWORD);
+      String realm = parameters.getString(TECH_USER_PARAM_REALM);
+
+      Map<String, String> properties = CollectionUtils.newHashMap();
+      properties.put(SecurityProperties.REALM, realm);
+
+      if (StringUtils.isEmpty(user) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(realm))
       {
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Technical User about to log in...");
-         }
+         user = TECH_USER_ACCOUNT;
+         pwd = TECH_USER_PASSWORD;
+         realm = TECH_USER_REALM;
 
-         Parameters parameters = Parameters.instance();
-
-         String user = parameters.getString(TECH_USER_PARAM_ACCOUNT);
-         String pwd = parameters.getString(TECH_USER_PARAM_PASSWORD);
-         String realm = parameters.getString(TECH_USER_PARAM_REALM);
-
-         Map<String, String> properties = CollectionUtils.newHashMap();
-         properties.put(SecurityProperties.REALM, realm);
-
-         if (StringUtils.isEmpty(user) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(realm))
-         {
-            user = "motu";
-            pwd = "motu";
-            realm = "carnot";
-
-            trace.info("The default user credentials were used to initiate the 'Reset Password' request. Please configure a new technical user.");
-         }
-         else
-         {
-            trace.debug("Technical User is found to be configured. Using the same to Reset Password");
-         }
-
-         // Set the partition of Tech User same as the current user
-         if (loginProperties.containsKey(SecurityProperties.PARTITION))
-         {
-            properties.put(SecurityProperties.PARTITION, loginProperties.get(SecurityProperties.PARTITION));
-         }
-
-         sessionCtx = SessionContext.findSessionContext();
-         sessionCtx.initInternalSession(user, pwd, properties);
-
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Technical User Logged in...");
-         }
+         trace.info("The default user credentials were used to initiate the 'Reset Password' request. Please configure a new technical user.");
       }
-      finally
+      else
       {
+         trace.debug("Technical User is found to be configured. Using the same to Reset Password");
+      }
+
+      // Set the partition of Tech User same as the current user
+      if (loginProperties.containsKey(SecurityProperties.PARTITION))
+      {
+         properties.put(SecurityProperties.PARTITION, loginProperties.get(SecurityProperties.PARTITION));
+      }
+
+      sessionCtx = SessionContext.findSessionContext();
+      sessionCtx.initInternalSession(user, pwd, properties);
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Technical User" + user + " Logged in...");
       }
       return sessionCtx;
    }
@@ -91,5 +95,6 @@ public class TechnicalUserUtils
    public static void logout(SessionContext sessionCtx)
    {
       sessionCtx.logout();
+      trace.debug("Technical User Logged out...");
    }
 }

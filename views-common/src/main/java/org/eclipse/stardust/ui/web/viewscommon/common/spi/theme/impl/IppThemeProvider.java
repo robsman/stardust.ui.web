@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
@@ -37,10 +36,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
-import org.springframework.core.io.Resource;
-
-
-
 
 /**
  * @author Subodh.Godbole
@@ -123,7 +118,7 @@ public class IppThemeProvider implements ThemeProvider
    {
       Set<Theme> availablePluginThemes = new HashSet<Theme>();
 
-      pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.PLUGIN_FOLDER_PATH, null);
+      pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
 
       for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
       {
