@@ -22,13 +22,9 @@
 				<c:if test="#{not empty component.matchingData}">
 					<f:facet name="selectInputText">
 						<ice:panelGrid columns="2">
-							<ice:panelGroup rendered="true">
 								<ice:graphicImage value="#{user.icon}" width="24px" height="24px" style="padding-right: 10px;" />
-							</ice:panelGroup>
-							<ice:panelGroup styleClass="participantAutoCplRow">
 								<ice:outputText value="#{user.text}" escape="false"
-									style="white-space:normal;" />
-							</ice:panelGroup>
+									styleClass="participantAutoCplRow"/>
 						</ice:panelGrid>
 					</f:facet>
 				</c:if>

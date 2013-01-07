@@ -1951,5 +1951,6 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	white-space: normal; 
 	word-wrap: break-word;
 	width:85px;
+	display: inline-block;
 }
 /***************Participant Single Select AutoComplete Ends *******************/
