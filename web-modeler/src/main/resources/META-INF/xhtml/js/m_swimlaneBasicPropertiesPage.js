@@ -91,7 +91,8 @@ define(
 						}
 
 						for ( var m in m_model.getModels()[n].participants) {
-							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].participants[m])) {
+							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].participants[m])
+									&& !(m_constants.ADMIN_ROLE_ID === m_model.getModels()[n].participants[m].id)) {
 								this.participantList
 								.append("<option value='"
 										+ m_model.getModels()[n].participants[m]

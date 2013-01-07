@@ -389,7 +389,8 @@ define(function() {
 		EXTERNAL_REFERENCE_PROPERTY : "externalReference",
 		VIEW_ICON_PARAM_KEY : "viewIcon",
 		DEFAULT_TEXT_WIDTH : 50,
-		DEFAULT_TEXT_HEIGHT : 15
+		DEFAULT_TEXT_HEIGHT : 15,
+		ADMIN_ROLE_ID : "Administrator"
 
 	};
 });
