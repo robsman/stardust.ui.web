@@ -380,9 +380,9 @@ public class ConnectionCommandHandler
    {
       TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
 
-      transition.getTransitionConnections().add(transitionConnection);
       if (null != transition)
       {
+         transition.getTransitionConnections().add(transitionConnection);
          transitionConnection.setTransition(transition);
       }
 
