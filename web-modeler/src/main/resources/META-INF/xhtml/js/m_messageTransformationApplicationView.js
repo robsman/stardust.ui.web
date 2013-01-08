@@ -1092,9 +1092,7 @@ define(
 										drop : function(e, ui) {
 											var view = jQuery(this)
 													.data("view");
-											var outputTableRow = tableRows[tableRow];
-											// jQuery(this)
-											// .data("tableRow");
+											var outputTableRow = jQuery(this).data("tableRow");
 											var inputTableRow = ui.draggable
 													.data("tableRow");
 
