@@ -206,6 +206,28 @@ define(
 
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 					this.expressionEditor.disable();
+					
+					this.expressionTextArea.change({
+						"view" : this
+					}, function(event) {
+						var outputTableRow = event.data.view.selectedOutputTableRow;
+
+						if (outputTableRow != null) {
+							var mappingExpression = event.data.view.expressionTextArea.val();
+
+							outputTableRow.mappingExpression = mappingExpression;
+
+							var rowId = outputTableRow.path.replace(/\./g, "-");
+
+							// Set mapping column content
+							var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+
+							mappingCell.empty();
+							mappingCell.append(outputTableRow.mappingExpression);
+
+							event.data.view.submitChanges(view.determineTransformationChanges());
+						}
+					});
 
 					this.sourceFilterInput.keypress({
 						"view" : this
@@ -1076,6 +1098,9 @@ define(
 											var inputTableRow = ui.draggable
 													.data("tableRow");
 
+											var inputAccessPoint = inputTableRow.accessPoint;
+											var outputAccessPoint = outputTableRow.accessPoint;
+
 											outputTableRow.mappingExpression = inputTableRow.path;
 
 											var mappingCell = jQuery(this)
@@ -1084,8 +1109,8 @@ define(
 											mappingCell
 													.append(outputTableRow.mappingExpression);
 
-											// Update expression text
-											// area if needed
+											// Update expression text area if needed
+											// TODO: This should only be done if the dropped row is also selected
 
 											if (view.selectedOutputTableRow == outputTableRow) {
 												view.expressionEditor
@@ -1138,7 +1163,21 @@ define(
 									"highlighted");
 						}
 					}
+					
+					/*if (this.isPrimitive()) {
+						
+					}
+					else if (this.isStructuredType()) {
+						
+					}
+					else if (this.isEnumeration()) {
+						
+					}*/
 				};
+				
+				MessageTransformationApplicationView.prototype.isPrimitive = function() {
+					
+				}
 
 				/**
 				 *
