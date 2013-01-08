@@ -81,29 +81,8 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          ActivityType activity = getModelBuilderFacade().createActivity(model,
-               processDefinition, activityType, null, activityName, participantFullID,
+               processDefinition, activityType, taskType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
-
-         // TODO Add to Facade
-
-         if (activityType.equals(ModelerConstants.TASK_ACTIVITY))
-         {
-            getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
-                  taskType);
-
-            if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
-            {
-               activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
-            }
-            else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
-            {
-               activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
-            }
-            else
-            {
-               activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
-            }
-         }
 
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
