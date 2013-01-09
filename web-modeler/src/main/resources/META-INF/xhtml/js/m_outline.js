@@ -2383,7 +2383,7 @@ define(
 				}
 
 				function changeProfileHandler(profile) {
-					m_user.setCurrentRole(profile);
+					m_session.getInstance().currentProfile = profile;
 					m_commandsController.broadcastCommand(m_command
 							.createUserProfileChangeCommand(profile));
 				}

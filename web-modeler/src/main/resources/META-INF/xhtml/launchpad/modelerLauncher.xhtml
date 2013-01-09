@@ -87,39 +87,8 @@
 	window.parent.EventHub.events.subscribe("CLOSE_VIEWS", closeViewsForElement);
 	window.parent.EventHub.events.subscribe("OPEN_IMPORT_MODEL_DIALOG", openImportModelDialog);
 
-	function findUserProfileSelect() {
-		var userProfileSelect = null;
-		var selects = document.getElementsByTagName("select");
-		var message = "";
-
-		for ( var i = 0; selects.length > i; i++) {
-			var select = selects[i];
-
-			message += select.id + "\n";
-
-			if (select.id.match("userProfileSelect" + "$") == "userProfileSelect") {
-				return select;
-			}
-
-			return null;
-		}
-	}
-
-	function changeUserProfile() {
-		var userProfileSelect = findUserProfileSelect();
-
-		var selectedProfile = userProfileSelect.options[userProfileSelect.selectedIndex].value;
-
-		window.parent.EventHub.events
-				.publish("CHANGE_PROFILE", selectedProfile);
-	}
-
-	// Set the user profile dropdown to selected profile
-	// This is needed as the selected option gets reset to default, if a user has changed
-	// it and then switched perspective and come back to modeler perspective.
-	if (window.top.currentRole) {
-		var userProfileSelect = findUserProfileSelect();
-		userProfileSelect.value = window.top.currentRole;
+	function changeUserProfile(obj) {
+		window.parent.EventHub.events.publish("CHANGE_PROFILE", obj.options[obj.selectedIndex].value);
 	}
 </script>
 </head>
@@ -138,7 +107,7 @@
 	<ice:panelGrid columns="2">
 		<ice:outputText value="#{bpmModelerMessages['launchpanels.profileSelector.list.selectYourProfile']}" escape="false" />
 		<ice:selectOneMenu id="userProfileSelect" value="#{processesView.profile}"
-			onchange="changeUserProfile();">
+			onchange="changeUserProfile(this);">
 			<f:selectItem itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}"
 				itemValue="BusinessAnalyst" />
 			<f:selectItem itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list2.integrator']}" itemValue="Integrator" />

@@ -144,4 +144,9 @@ public class ProcessesView extends AbstractLaunchPanel implements
    {
       return profile;
    }
+
+   public void setProfile(String profile)
+   {
+      this.profile = profile;
+   }
 }

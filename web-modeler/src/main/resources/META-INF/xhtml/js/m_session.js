@@ -58,6 +58,7 @@ define(
 				this.owner = sessionOwner;
 				this.loggedInUser = sessionOwner;
 				this.joined = false;
+				this.currentProfile = m_constants.BUSINESS_ANALYST_ROLE;
 				this.technologyPreview = false; // be careful when committing anything but false
 				var sessionCallbackObj = this;
 				var startTime = new Date();
@@ -151,7 +152,7 @@ define(
 											m_utils.debug(json);
 
 											window.top.modelingSession.technologyPreview = json.showTechnologyPreview;
-											window.top.modelingSession.defaultProfile = json.defaultProfile;
+											window.top.modelingSession.currentProfile = json.defaultProfile;
 										},
 										"error" : function() {
 											alert('Error occured while fetching models');

@@ -14,12 +14,6 @@ define(
 				"bpm-modeler/js/m_communicationController" ], function(m_utils,
 				m_constants, m_urlUtils, m_communicationController) {
 
-			// Set currentRole to default (business analyst)
-			// only if the currentRole is not set already.
-			if (!window.top.currentRole) {
-				window.top.currentRole = m_constants.BUSINESS_ANALYST_ROLE;
-			}
-
 			return {
 				initializeCurrentUser : initializeCurrentUser,
 				createUser : function(account, firstName, lastName, email,
@@ -38,7 +32,6 @@ define(
 				},
 				getCurrentUser : getCurrentUser,
 				getCurrentRole : getCurrentRole,
-				setCurrentRole : setCurrentRole,
 				currentUserHasRole : function(role) {
 					return getCurrentUser().hasRole(role);
 				},
@@ -122,10 +115,18 @@ define(
 			}
 
 			/**
-			 * 
+			 * @deprecated Use m_session.getInstance().currentProfile
 			 */
 			function getCurrentRole() {
-				return window.top.currentRole;
+				// Using directly window.top instead of m_session.
+				// This is because m_user can not have dependency on m_session
+				// As this will make it cyclic
+				
+				if (window.top.modelingSession) {
+					return window.top.modelingSession.currentProfile;
+				} else {
+					m_constants.BUSINESS_ANALYST_ROLE;
+				}
 			}
 
 			/**
@@ -148,12 +149,5 @@ define(
 				}
 				
 				return false;
-			}
-
-			/**
-			 * 
-			 */
-			function setCurrentRole(role) {
-				return window.top.currentRole = role;
-			}
+			};
 		});
