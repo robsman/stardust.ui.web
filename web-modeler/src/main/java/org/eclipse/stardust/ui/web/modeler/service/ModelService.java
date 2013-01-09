@@ -2507,7 +2507,7 @@ public class ModelService
 
       JsonObject preferencesJson = new JsonObject();
       preferencesJson.addProperty("defaultProfile", defaultProfile);
-      preferencesJson.addProperty("showTechnologyPreview", showTechnologyPreview);
+      preferencesJson.addProperty("showTechnologyPreview", Boolean.parseBoolean(showTechnologyPreview));
 
       return preferencesJson;
    }
