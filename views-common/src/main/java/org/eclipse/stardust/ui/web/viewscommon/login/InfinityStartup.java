@@ -40,7 +40,7 @@ public class InfinityStartup
    
    public final static String RETURN_URL_PARAM = "returnUrl";
    
-   private final static String TIMEOUT_COUNTER = "Carnot.Portal.SessionInvalidate.Timeout.counter";
+   private final static String TIMEOUT = "Carnot.Portal.SessionInvalidate.Timeout";
    
    private final ServletContext servletContext;
    
@@ -50,7 +50,7 @@ public class InfinityStartup
 
    private final String params;
    
-   private final int timeoutCounter;
+   private final int timeout; // milliseconds
 
    public InfinityStartup(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)
    {
@@ -70,7 +70,7 @@ public class InfinityStartup
       }
       
       //read parameter
-      this.timeoutCounter = Parameters.instance().getInteger(TIMEOUT_COUNTER, 10);
+      this.timeout = Parameters.instance().getInteger(TIMEOUT, 1000);
    }
    
    private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
@@ -161,17 +161,21 @@ public class InfinityStartup
          {
             trace.debug("#Invalidating Session....");
          }
-         
+
          if (request.isRequestedSessionIdValid())
          {
             try
             {
                httpSession.invalidate();
-
-               int counter = timeoutCounter;
+               
+               //Following code is necessary as in case of Tomcat server, 
+               //session invalidation happens in background thread and 
+               //sometimes it results in IllegalStateException
+               
+               int counter = timeout/100;
                while (counter > 0 && request.isRequestedSessionIdValid())
                {
-                  trace.debug("####################Waiting for 100ms...");
+                  trace.debug("#Waiting for 100ms...");
                   Thread.sleep(100);
                   counter-- ;
                }
