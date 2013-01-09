@@ -43,7 +43,9 @@ public class ProcessesView extends AbstractLaunchPanel implements
    @Resource
    SessionLogPanel sessionLogPanel;
 
-	/**
+   private String profile;
+
+   /**
 	 *
 	 */
 	public ProcessesView() {
@@ -52,6 +54,8 @@ public class ProcessesView extends AbstractLaunchPanel implements
 				.getCurrent();
 		sessionMap.setObject("SESSION_CONTEXT",
 				SessionContext.findSessionContext());
+
+		profile = ModelingConfigurationPanel.getProfile();
 
 		// My processes panel should be expanded by default
 		// Set it to expanded and activate outline IFRAME
@@ -134,7 +138,10 @@ public class ProcessesView extends AbstractLaunchPanel implements
          FacesUtils.refreshPage();
          break;
       }
+   }
 
-
+   public String getProfile()
+   {
+      return profile;
    }
 }

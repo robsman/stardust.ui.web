@@ -50,6 +50,24 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
    }
 
    /**
+    * @return
+    */
+   public static String getProfile()
+   {
+      UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_MODULE);
+      return userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_BA);
+   }
+
+   /**
+    * @return
+    */
+   public static boolean isShowTechologyPreview()
+   {
+      UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_MODULE);
+      return userPrefsHelper.getBoolean(V_MODELER, F_TECH_PREVIEW, false);
+   }
+
+   /**
     * 
     */
    private void initialize()

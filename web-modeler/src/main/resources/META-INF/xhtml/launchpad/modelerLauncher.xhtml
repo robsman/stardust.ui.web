@@ -137,7 +137,7 @@
 
 	<ice:panelGrid columns="2">
 		<ice:outputText value="#{bpmModelerMessages['launchpanels.profileSelector.list.selectYourProfile']}" escape="false" />
-		<ice:selectOneMenu id="userProfileSelect"
+		<ice:selectOneMenu id="userProfileSelect" value="#{processesView.profile}"
 			onchange="changeUserProfile();">
 			<f:selectItem itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}"
 				itemValue="BusinessAnalyst" />
