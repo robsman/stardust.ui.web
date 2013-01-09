@@ -177,6 +177,19 @@ define(
 				 *
 				 */
 				XsdStructuredDataTypeView.prototype.initializeTypeDeclaration = function() {
+					// In case of external schema reference, check if it's
+					// resolved correctly
+					// else display an error message.
+					if (m_constants.EXTERNAL_SCHEMA_CLASSIFIER_TOKEN === this.typeDeclaration.typeDeclaration.type.classifier
+							&& !this.typeDeclaration.typeDeclaration.schema) {
+						this.clearErrorMessages();
+						this.errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.externalSchemaNotResolved")
+										+ " " + this.typeDeclaration.typeDeclaration.type.location);
+						this.showErrorMessages();
+						return;
+					}
 					jQuery(this.typeDeclaration.isSequence() ? ".show-when-struct" : ".show-when-enum").show();
 					jQuery(this.typeDeclaration.isSequence() ? ".show-when-enum" : ".show-when-struct").hide();
 

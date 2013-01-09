@@ -390,7 +390,8 @@ define(function() {
 		VIEW_ICON_PARAM_KEY : "viewIcon",
 		DEFAULT_TEXT_WIDTH : 50,
 		DEFAULT_TEXT_HEIGHT : 15,
-		ADMIN_ROLE_ID : "Administrator"
+		ADMIN_ROLE_ID : "Administrator",
+		EXTERNAL_SCHEMA_CLASSIFIER_TOKEN : "ExternalReference"
 
 	};
 });
