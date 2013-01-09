@@ -40,7 +40,8 @@ define(
 						.getProperty("modeler.element.properties.commonProperties.processInterface");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "processInterfacePropertiesPage",
-						processInterfacetext);
+						processInterfacetext,
+						"../../images/icons/process-interface.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
