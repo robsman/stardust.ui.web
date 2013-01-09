@@ -323,7 +323,7 @@ define(
 																				"fullId" : typeDeclaration
 																						.getFullId(),
 																				"elementId" : typeDeclaration.id,
-																				"rel" : (typeDeclaration.isSequence() ? "compositeStructuredDataType" : "enumStructuredDataType"),
+																				"rel" : typeDeclaration.getType(),
 																				"modelId" : model.id,
 																				"modelUUID" : model.uuid,
 																				"draggable" : true

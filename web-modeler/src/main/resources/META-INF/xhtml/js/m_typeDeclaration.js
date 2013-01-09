@@ -99,7 +99,9 @@ define(
 				};
 
 				TypeDeclaration.prototype.getType = function() {
-					if (this.isSequence()) {
+					if ("ExternalReference" === this.typeDeclaration.type.classifier) {
+						return "importedStructuredDataType";
+					} if (this.isSequence()) {
 						return "compositeStructuredDataType";
 					} else {
 						return "enumStructuredDataType";
