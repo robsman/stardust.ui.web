@@ -247,7 +247,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadAttributes(processDefinition, processJson);
 
       if (null != processDefinition.getFormalParameters()
-            && null != processDefinition.getFormalParameters().getFormalParameter())
+            && null != processDefinition.getFormalParameters().getFormalParameter()
+            && null != processDefinition.getExternalRef())
       {
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);

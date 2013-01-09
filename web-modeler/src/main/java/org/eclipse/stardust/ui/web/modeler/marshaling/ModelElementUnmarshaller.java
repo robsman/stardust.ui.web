@@ -870,8 +870,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             JsonObject formalParameterJson = formalParametersJson.get(n)
                   .getAsJsonObject();
 
-            System.out.println("Formal parameter: " + formalParameterJson);
-
             ModeType mode = null;
 
             if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
