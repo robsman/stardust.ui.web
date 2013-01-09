@@ -241,7 +241,7 @@ define(function() {
 		TASK_ACTIVITY_TYPE : "Task",
 		GATEWAY_ACTIVITY_TYPE : "Gateway",
 		NONE_TASK_TYPE : "none",
-		MANUAL_TASK_TYPE : "Manual",
+		MANUAL_TASK_TYPE : "manual",
 		RECEIVE_TASK_TYPE : "receive",
 		RULE_TASK_TYPE : "rule",
 		SCRIPT_TASK_TYPE : "script",
