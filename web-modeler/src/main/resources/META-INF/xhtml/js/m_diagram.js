@@ -1889,9 +1889,69 @@ define(
 				/**
 				 *
 				 */
+				Diagram.prototype.selectedSymbolsDragStart = function() {
+					if (this.mode == this.NORMAL_MODE) {
+						this.mode = this.SYMBOL_MOVE_MODE;
+						for ( var n in this.currentSelection) {
+							this.currentSelection[n].dragStart_();
+						}
+						this.dragEnabled = true;
+					}
+				};
+
+				/**
+				 *
+				 */
 				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
 					for ( var n in this.currentSelection) {
 						this.currentSelection[n].moveBy(dX, dY);
+					}
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.selectedSymbolsDragStop = function() {
+					if (this.mode == this.SYMBOL_MOVE_MODE) {
+						this.mode = this.NORMAL_MODE;
+						var changeDescriptionsDiagram = [];
+						var failed = false;
+						for ( var n in this.currentSelection) {
+							var changes = this.currentSelection[n].dragStop_();
+							if (null == changes) {
+								failed = true;
+								this.revertDrag();
+								break;
+							}
+							changeDescriptionsDiagram.push(changes);
+						}
+
+						this.dragEnabled = false;
+
+						if (!failed) {
+							//Update new coordinates
+							var command = m_command.createUpdateDiagramCommand(
+									this.model.id, changeDescriptionsDiagram);
+							command.sync = true;
+							m_commandsController.submitCommand(command);
+
+							//Adjust Lanes to fit the symbols
+							var adjustedLanes = [];
+							for ( var n in this.currentSelection) {
+								var swimlane = this.currentSelection[n].parentSymbol;
+								if (-1 == adjustedLanes.indexOf(swimlane)) {
+									swimlane.adjustToSymbolBoundaries();
+									adjustedLanes.push(swimlane);
+								}
+							}
+						}
+						this.clearCurrentSelection();
+					}
+				};
+
+				Diagram.prototype.revertDrag = function() {
+					for ( var n in this.currentSelection) {
+						this.currentSelection[n].revertDrag_();
 					}
 				};
 

@@ -1243,28 +1243,28 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStart = function() {
-					// TODO hide for all selected
-					if (this.diagram.mode == this.diagram.NORMAL_MODE) {
-						this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
-						this.hideProximitySensor();
-
-						if (!this.selected) {
-							// deselect other symbols before drag
-							this.diagram.deselectCurrentSelection();
-							this.diagram.currentSelection = [];
-							this.select();
-						}
-
-						// Bring the symbol to front
-
-						this.toFront();
-
-						// Remember drag start position
-
-						this.dragStartX = this.x;
-						this.dragStartY = this.y;
-						this.diagram.dragEnabled = true;
+					if (!this.selected) {
+						// deselect other symbols before drag
+						this.diagram.deselectCurrentSelection();
+						this.diagram.currentSelection = [];
+						this.select();
 					}
+					this.diagram.selectedSymbolsDragStart();
+				};
+
+				/**
+				 *
+				 */
+				Symbol.prototype.dragStart_ = function() {
+					// TODO hide for all selected
+					this.hideProximitySensor();
+
+					// Bring the symbol to front
+					this.toFront();
+
+					// Remember drag start position
+					this.dragStartX = this.x;
+					this.dragStartY = this.y;
 				};
 
 				/**
@@ -1291,97 +1291,92 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStop = function() {
-					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
-						this.diagram.mode = this.diagram.NORMAL_MODE
-						this.showProximitySensor();
-						// Only process if symbol has been moved at all
-						if (this.x != this.dragStartX
-								|| this.y != this.dragStartY) {
-							if (this.requiresParentSymbol()) {
-								var newParentSymbol = this.diagram.poolSymbol
-										.findContainerSymbol(this.getXCenter(),
-												this.getYCenter());
-
-								if (newParentSymbol == null) {
-									this.moveTo(this.dragStartX,
-											this.dragStartY);
-									this.diagram.hideSnapLines(this);
-									m_utils
-											.removeItemFromArray(
-													this.diagram.currentSelection,
-													this);
-									this.deselect();
-									m_messageDisplay
-											.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
-
-									return;
-								}
-
-								this.diagram.snapSymbol(this);
-								this.postDragStop();
-
-								var newGeometry = {};
-								if (newParentSymbol != this.parentSymbol) {
-									m_utils.removeItemFromArray(
-											this.parentSymbol.containedSymbols,
-											this);
-
-									this.parentSymbol = newParentSymbol;
-
-									this.parentSymbol.containedSymbols
-											.push(this);
-
-									this.parentSymbolId = newParentSymbol.id;
-									newGeometry.modelElement = {
-										participantFullId : this.parentSymbol.participantFullId
-									}
-
-									this.onParentSymbolChange();
-								}
-
-								var adjustedX = this.x - this.clientSideAdjX + this.parentSymbol.symbolXOffset;
-								var adjustedY = this.y + this.parentSymbol.symbolYOffset;
-
-								newGeometry['x'] = adjustedX;
-								newGeometry['y'] = adjustedY;
-								newGeometry['parentSymbolId'] = this.parentSymbol.id;
-								newGeometry['type'] = this.type;
-
-								var command = m_command
-										.createUpdateModelElementCommand(
-												this.diagram.model.id,
-												this.oid, newGeometry);
-								command.sync = true;
-								m_commandsController.submitCommand(command);
-
-								this.parentSymbol.adjustToSymbolBoundaries(
-										this.x, this.y);
-
-							} else {
-								this.diagram.snapSymbol(this);
-								this.postDragStop();
-
-								// TODO Put in method
-
-								if (this.isCompleted() != null) {
-
-									var newGeometry = {
-										"x" : this.x
-												+ this.parentSymbol.symbolXOffset,
-										"y" : this.y,
-										"parentSymbolId" : this.parentSymbol.id
-									};
-
-									var command = m_command
-											.createMoveNodeSymbolCommand(
-													this.diagram.model.id,
-													this.oid, newGeometry);
-									m_commandsController.submitCommand(command);
-								}
-							}
-						}
-						this.diagram.dragEnabled = false;
+					if (this.x != this.dragStartX || this.y != this.dragStartY) {
+						this.diagram.selectedSymbolsDragStop();
 					}
+				}
+
+				/**
+				 *
+				 */
+				Symbol.prototype.revertDrag_ = function() {
+					if (this.dragStartX != 0 && this.dragStartY != 0) {
+						this.moveTo(this.dragStartX, this.dragStartY);
+						this.diagram.hideSnapLines(this);
+					}
+				};
+
+				/**
+				 *
+				 */
+				Symbol.prototype.dragStop_ = function() {
+					this.showProximitySensor();
+					// Only process if symbol has been moved at all
+					var newGeometry = {};
+					if (this.requiresParentSymbol()) {
+						var newParentSymbol = this.diagram.poolSymbol
+								.findContainerSymbol(this.getXCenter(),
+										this.getYCenter());
+
+						if (newParentSymbol == null) {
+							m_messageDisplay
+							.showErrorMessage("Symbol is not contained in Swimlane. Reverting drag.");
+							return null;
+						}
+
+						this.diagram.snapSymbol(this);
+						this.postDragStop();
+
+
+						if (newParentSymbol != this.parentSymbol) {
+							m_utils.removeItemFromArray(
+									this.parentSymbol.containedSymbols,
+									this);
+
+							this.parentSymbol = newParentSymbol;
+
+							this.parentSymbol.containedSymbols
+									.push(this);
+
+							this.parentSymbolId = newParentSymbol.id;
+							newGeometry.modelElement = {
+								participantFullId : this.parentSymbol.participantFullId
+							}
+
+							this.onParentSymbolChange();
+						}
+
+						var adjustedX = this.x - this.clientSideAdjX + this.parentSymbol.symbolXOffset;
+						var adjustedY = this.y + this.parentSymbol.symbolYOffset;
+
+						newGeometry['x'] = adjustedX;
+						newGeometry['y'] = adjustedY;
+						newGeometry['parentSymbolId'] = this.parentSymbol.id;
+						newGeometry['type'] = this.type;
+					} else {
+						this.diagram.snapSymbol(this);
+						this.postDragStop();
+
+						// TODO Put in method
+
+						if (this.isCompleted() != null) {
+
+							newGeometry = {
+								"x" : this.x
+										+ this.parentSymbol.symbolXOffset,
+								"y" : this.y,
+								"parentSymbolId" : this.parentSymbol.id
+							};
+						}
+					}
+
+					var changeDesc = {
+						oid : this.oid,
+						changes : newGeometry
+					};
+
+					return changeDesc;
+
 				};
 
 				/**
