@@ -91,10 +91,12 @@ define(
 										panel : this
 									},
 									function(event) {
-										event.data.panel
-												.setStructuredDataType(event.data.panel.structuredDataTypeSelect
-														.val());
-										event.data.panel.submitChanges();
+										if (event.data.panel.validate()) {
+											event.data.panel
+													.setStructuredDataType(event.data.panel.structuredDataTypeSelect
+															.val());
+											event.data.panel.submitChanges();
+										}
 									});
 					this.documentTypeSelect
 							.change(
@@ -102,12 +104,50 @@ define(
 										panel : this
 									},
 									function(event) {
-										event.data.panel
-												.setDocumentDataType(event.data.panel.documentTypeSelect
-														.val());
-										event.data.panel.submitChanges();
+										if (event.data.panel.validate()) {
+											event.data.panel
+													.setDocumentDataType(event.data.panel.documentTypeSelect
+															.val());
+											event.data.panel.submitChanges();
+										}
 									});
 				};
+
+				DataTypeSelector.prototype.validate = function() {
+					this.validateCircularModelReference();
+				}
+
+				DataTypeSelector.prototype.validateCircularModelReference = function() {
+					if (this.submitHandler.clearErrorMessages) {
+						this.submitHandler.clearErrorMessages();
+					} else {
+						m_messageDisplay.clear();
+					}
+
+					this.structuredDataTypeSelect.removeClass("error");
+					this.documentTypeSelect.removeClass("error");
+
+					var dataInput;
+					if (this.dataTypeSelect.val() === m_constants.STRUCTURED_DATA_TYPE) {
+						dataInput = this.structuredDataTypeSelect;
+					} else if (this.dataTypeSelect.val() === m_constants.DOCUMENT_DATA_TYPE) {
+						dataInput = this.documentTypeSelect;
+					}
+
+					var otherModelId = m_model.stripModelId(dataInput.val());
+					if (this.scopeModel.id != otherModelId
+							&& m_model.isModelReferencedIn(this.scopeModel.id, otherModelId)) {
+						dataInput.addClass("error");
+						if (this.submitHandler.errorMessages) {
+							this.submitHandler.errorMessages.push("Circular references not allowed");
+							this.submitHandler.showErrorMessages();
+						} else {
+							m_messageDisplay.showMessage("Circular references not allowed"); // TODO I18N
+						}
+					}
+
+					return true;
+				}
 
 				/**
 				 *
@@ -158,7 +198,7 @@ define(
 				 */
 				DataTypeSelector.prototype.populatePrimitivesSelectInput = function() {
 					this.primitiveDataTypeSelect.empty();
-					
+
 					var dataType = null;
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
@@ -197,7 +237,7 @@ define(
 							.append("<option value=\"Calendar\">" + dataType
 									+ "</option>");
 				}
-				
+
 				/**
 				 *
 				 */

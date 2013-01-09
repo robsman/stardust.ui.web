@@ -82,7 +82,7 @@ define(
 				},
 				/**
 				 * TODO May not be safe as element OIDs are not unique.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -114,7 +114,7 @@ define(
 
 				/**
 				 * Fetches the model for given element UUID.
-				 * 
+				 *
 				 * @param elementUUID
 				 * @returns model
 				 */
@@ -133,7 +133,7 @@ define(
 
 				/**
 				 * Fetches the element with given OID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -154,7 +154,7 @@ define(
 
 				/**
 				 * Fetches the element with given UUID within the given modelId.
-				 * 
+				 *
 				 * @param guid
 				 * @returns
 				 */
@@ -175,15 +175,17 @@ define(
 				},
 
 				/**
-				 * 
+				 *
 				 */
 				getFullId : function(model, symbolId) {
 					return model.id + ":" + symbolId;
-				}
+				},
+
+				isModelReferencedIn : isModelReferencedIn
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function stripModelId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -194,7 +196,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function stripElementId(fullId) {
 				// TODO Change to format {modelId}/elementId once server has
@@ -205,7 +207,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function Model() {
 				this.type = m_constants.MODEL;
@@ -218,21 +220,21 @@ define(
 				this.participants = {};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toString = function() {
 					return "Lightdust.Model";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getFullId = function() {
 					return this.id;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.rename = function(id, name) {
 					delete getModels()[this.id];
@@ -243,7 +245,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getNewDataIndex = function() {
 					var index = 0;
@@ -258,14 +260,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.getApplicationIndex = function() {
 					var index = 0;
@@ -316,7 +318,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.findModelElementById = function(id) {
 					var n;
@@ -395,7 +397,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Model.prototype.findTypeDeclarationBySchemaName = function(
 						schemaName) {
@@ -412,11 +414,11 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function DefaultModelManager() {
 				/**
-				 * 
+				 *
 				 */
 				DefaultModelManager.prototype.refreshModels = function() {
 					m_communicationController.syncGetData({
@@ -463,7 +465,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function loadModels(force) {
 				if (!force && getModels() != null) {
@@ -474,7 +476,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 //			function refreshModels() {
 //				m_communicationController.syncGetData({
@@ -493,7 +495,7 @@ define(
 //			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModels() {
 				for ( var model in getModels()) {
@@ -502,7 +504,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function bindModel(model) {
 				// TODO Ugly, user prototype
@@ -538,5 +540,53 @@ define(
 
 				m_utils.debug("Model after bind");
 				m_utils.debug(model);
+			}
+
+			/**
+			 *
+			 */
+			function isModelReferencedIn(modelId1, modelId2) {
+				var model1 = findModel(modelId1);
+				var model2 = findModel(modelId2);
+
+				if (model1 && model2) {
+					for (n in model2.dataItems) {
+						if ((model2.dataItems[n][m_constants.EXTERNAL_REFERENCE_PROPERTY]
+							&& stripModelId(model2.dataItems[n].dataFullId) === model1.id)
+								|| (model2.dataItems[n].structuredDataTypeFullId
+										&& stripModelId(model2.dataItems[n].structuredDataTypeFullId) === model1.id)) {
+							return true;
+						}
+					}
+
+					for (n in model2.typeDeclarations) {
+						if (model2.typeDeclarations[n][m_constants.EXTERNAL_REFERENCE_PROPERTY]
+								&& stripModelId(model2.typeDeclarations[n]
+										.getFullId()) === model1.id) {
+							return true;
+						}
+					}
+
+					for (n in model2.participants) {
+						if (model2.participants[n][m_constants.EXTERNAL_REFERENCE_PROPERTY]
+								&& stripModelId(model2.participants[n].participantFullId) === model1.id) {
+							return true;
+						}
+					}
+
+					for (n in model2.processes) {
+						for (m in model2.processes[n].activities) {
+							if (model2.processes[n].activities[m].applicationFullId
+									&& stripModelId(model2.processes[n].activities[m].applicationFullId) === model1.id) {
+								return true;
+							} else if (model2.processes[n].activities[m].subprocessFullId
+									&& stripModelId(model2.processes[n].activities[m].subprocessFullId) === model1.id) {
+								return true;
+							}
+						}
+					}
+				}
+
+				return false;
 			}
 		});

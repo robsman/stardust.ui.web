@@ -115,6 +115,14 @@ define(
 							clickCoordinates.x += scrollPos.left;
 							clickCoordinates.y += scrollPos.top;
 
+							var otherModelId = m_model.stripModelId(parent.iDnD.getTransferObject().attr.fullId);
+							if (otherModelId != diagram.modelId
+									&& m_model.isModelReferencedIn(diagram.modelId, otherModelId)) {
+								m_messageDisplay.clear();
+								m_messageDisplay.showMessage("Circular references not allowed"); // TODO I18N
+								parent.iDnD.hideIframe();
+								return;
+							}
 							if (m_elementConfiguration
 									.isValidDataType(parent.iDnD
 											.getTransferObject().elementType)) {

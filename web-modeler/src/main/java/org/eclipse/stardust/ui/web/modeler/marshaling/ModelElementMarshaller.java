@@ -374,12 +374,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (ActivityType activity : processDefinition.getActivity())
       {
-         JsonObject activityJson = new JsonObject();
-         activitiesJson.add(activity.getId(), activityJson);
-
-         activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-         activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-         loadDescription(activityJson, activity);
+//         JsonObject activityJson = new JsonObject();
+//         activitiesJson.add(activity.getId(), activityJson);
+//
+//         activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
+//         activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
+//         loadDescription(activityJson, activity);
+         activitiesJson.add(activity.getId(), toActivityJson(activity));
       }
 
       JsonObject gatewaysJson = new JsonObject();
@@ -1363,7 +1364,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       // Load starting Participant
       // TODO The code below is wrong as full references are not loaded
       // TODO May be only loaded for None Start Events
-      
+
 //      eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(event,
 //            PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
 
