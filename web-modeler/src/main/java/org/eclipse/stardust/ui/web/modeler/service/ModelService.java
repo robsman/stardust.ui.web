@@ -21,6 +21,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -83,6 +84,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -132,6 +134,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
+import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
@@ -2469,10 +2472,42 @@ public class ModelService
     */
    public JsonObject getPreferences()
    {
-      JsonObject preferencesJson = new JsonObject();
+      String defaultProfile = null;
+      String showTechnologyPreview = null;
 
-      preferencesJson.addProperty("defaultProfile", "BusinessAnalyst");
-      preferencesJson.addProperty("showTechnologyPreview", false);
+      try
+      {
+         Map<String, Serializable> props = getServiceFactory().getAdministrationService().getPreferences(PreferenceScope.USER,
+               UserPreferencesEntries.M_MODULE, UserPreferencesEntries.REFERENCE_ID).getPreferences();
+   
+         // Default Profile
+         String defaultProfileKey = UserPreferencesEntries.M_MODULE + "." + UserPreferencesEntries.V_MODELER + "."
+               + UserPreferencesEntries.F_DEFAULT_PROFILE;
+         defaultProfile = (String) props.get(defaultProfileKey);
+   
+         // Show Technology Preview
+         String showTechnologyPreviewKey = UserPreferencesEntries.M_MODULE + "." + UserPreferencesEntries.V_MODELER + "."
+               + UserPreferencesEntries.F_TECH_PREVIEW;
+         showTechnologyPreview = (String) props.get(showTechnologyPreviewKey);
+      }
+      catch (Exception e)
+      {
+         trace.error("Error occurred while fetching preferences", e);
+      }
+      
+      if (isEmpty(defaultProfile))
+      {
+         defaultProfile = UserPreferencesEntries.PROFILE_BA;
+      }
+
+      if (isEmpty(showTechnologyPreview))
+      {
+         showTechnologyPreview = "false";
+      }
+
+      JsonObject preferencesJson = new JsonObject();
+      preferencesJson.addProperty("defaultProfile", defaultProfile);
+      preferencesJson.addProperty("showTechnologyPreview", showTechnologyPreview);
 
       return preferencesJson;
    }

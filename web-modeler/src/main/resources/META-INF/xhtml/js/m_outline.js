@@ -2477,8 +2477,9 @@ define(
 				 *
 				 */
 				Outline.prototype.initialize = function() {
-					// Register with Event Bus
+					m_session.initialize();
 
+					// Register with Event Bus
 					m_commandsController.registerCommandHandler(this);
 				};
 

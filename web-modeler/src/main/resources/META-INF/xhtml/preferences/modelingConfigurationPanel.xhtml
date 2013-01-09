@@ -9,28 +9,44 @@
 </head>
 <body>
 	<ice:panelGroup>
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{modelingConfigurationPanel.confirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+	
+	<ice:panelGroup>
 		<ice:panelGroup styleClass="heading">
 			<ice:outputText
 				value="#{bpmModelerMessages['configuremodeling.panel.heading']}" />
 		</ice:panelGroup>
-		<ice:panelGrid columns="1">
-			<ice:outputText
-				value="#{bpmModelerMessages['configuremodeling.panel.changes']}" />
-		</ice:panelGrid>
-		<ice:panelGrid columns="2" style="margin-top: 10px;">
+ 		<ice:panelGrid columns="2" style="margin-top: 10px;">
+			<ice:outputLabel styleClass="label-form"
+				value="#{bpmModelerMessages['configuremodeling.panel.preview']}" />
 			<ice:selectBooleanCheckbox partialSubmit="true"
-				value="#{modelingConfigurationPanel.showTechnologyPreview}"
-				valueChangeListener="#{modelingConfigurationPanel.showTechnologyPreviewChanged}" />
-			<ice:outputLabel value="#{bpmModelerMessages['configuremodeling.panel.preview']}" />
-		</ice:panelGrid>
-		<ice:panelGrid columns="2" style="margin-top: 10px;">
-			<ice:outputLabel value="#{bpmModelerMessages['configuremodeling.panel.defaultProfile']}" />
+				value="#{modelingConfigurationPanel.showTechnologyPreview}" />
+
+			<ice:outputLabel styleClass="label-form"
+				value="#{bpmModelerMessages['configuremodeling.panel.defaultProfile']}" />
 			<ice:selectOneMenu partialSubmit="true"
-				value="#{modelingConfigurationPanel.defaultProfile}" valueChangeListener="#{modelingConfigurationPanel.defaultProfileChanged}">
+				value="#{modelingConfigurationPanel.defaultProfile}">
 				<f:selectItem itemValue="BusinessAnalyst"
 					itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}" />
-				<f:selectItem itemValue="Integrator" itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list2.integrator']}" />
+				<f:selectItem itemValue="Integrator"
+					itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list2.integrator']}" />
 			</ice:selectOneMenu>
+		</ice:panelGrid>
+		
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+	
+		<ice:panelGrid columns="3">
+			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
+				action="#{modelingConfigurationPanel.saveConfiguration}" styleClass="button" />
+			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.reset']}" immediate="true"
+				action="#{modelingConfigurationPanel.openConfirmationDialog}" styleClass="button secondary" />
 		</ice:panelGrid>
 	</ice:panelGroup>
 </body>

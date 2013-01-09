@@ -29,6 +29,7 @@ define(
 				if (window.top.modelingSession == null) {
 					window.top.modelingSession = new Session(m_user
 							.getCurrentUser());
+					window.top.modelingSession.initialize();
 					m_commandsController
 							.registerCommandHandler(window.top.modelingSession);
 				}
@@ -156,7 +157,11 @@ define(
 											alert('Error occured while fetching models');
 										}
 									});
-				}
+				};
+
+				Session.prototype.initialize = function() {
+					refreshPreferences();
+				};
 
 				Session.prototype.getColorByUser = function(username) {
 					if (username != this.owner.account) {

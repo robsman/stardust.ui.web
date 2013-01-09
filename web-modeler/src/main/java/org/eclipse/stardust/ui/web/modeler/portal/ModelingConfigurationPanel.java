@@ -11,72 +11,169 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
-import javax.faces.event.ValueChangeEvent;
-
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
-import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.common.views.PortalConfigurationListener;
+import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.modeler.portal.messages.Messages;
 
 /**
  * 
  * @author Marc.Gille
+ * @author Subodh.Godbole
  */
-public class ModelingConfigurationPanel
+public class ModelingConfigurationPanel implements UserPreferencesEntries, PortalConfigurationListener
 {
    private String defaultProfile;
    private boolean showTechnologyPreview;
-   private UserPreferencesHelper userPreferencesHelper;
-   
+
+   private ConfirmationDialog confirmationDialog;
+
    /**
     * 
     */
    public ModelingConfigurationPanel()
    {
-//      userPreferencesHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_WORKFLOW, PortalConfiguration.getInstance()
-//            .getPrefScopesHelper().getSelectedPreferenceScope());
+      PortalConfiguration.getInstance().addListener(this);
+      initialize();
+   }
+
+   /**
+    * 
+    */
+   private void initialize()
+   {
+      UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+      
+      defaultProfile = userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_BA);
+      showTechnologyPreview = userPrefsHelper.getBoolean(V_MODELER, F_TECH_PREVIEW, false);
+   }
+
+   /**
+    * 
+    */
+   public void saveConfiguration()
+   {
+      UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+
+      userPrefsHelper.setString(V_MODELER, F_DEFAULT_PROFILE, defaultProfile);
+      userPrefsHelper.setString(V_MODELER, F_TECH_PREVIEW, String.valueOf(showTechnologyPreview));
+
+      updateJSWorld();
+      
+      MessageDialog.addInfoMessage(Messages.getInstance().getString("configuremodeling.panel.saveSuccessful"));
+   }
+   
+   /**
+    * 
+    */
+   public void resetConfiguration()
+   {
+      UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
+
+      userPrefsHelper.resetValue(V_MODELER, F_DEFAULT_PROFILE);
+      userPrefsHelper.resetValue(V_MODELER, F_TECH_PREVIEW);
+
+      updateJSWorld();
+
+      FacesUtils.clearFacesTreeValues();
+      initialize();
+      MessageDialog.addInfoMessage(Messages.getInstance().getString("configuremodeling.panel.resetSuccessful"));
+   }
+
+   /**
+    * Confirmation Dialog before reseting Config data.
+    */
+   public void openConfirmationDialog()
+   {
+      confirmationDialog = new ConfirmationDialog(DialogContentType.WARNING, DialogActionType.YES_NO,
+            DialogType.NORMAL, DialogStyle.COMPACT, new ConfirmationDialogHandler()
+            {
+               @Override
+               public boolean cancel()
+               {
+                  confirmationDialog = null;
+                  return true;
+               }
+               
+               @Override
+               public boolean accept()
+               {
+                  resetConfiguration();
+                  confirmationDialog = null;
+                  return true;
+               }
+            });
+
+      MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
+      confirmationDialog.setTitle(propsBean.getString("common.configurationPanel.confirmResetTitle"));
+      confirmationDialog.setMessage(propsBean.getParamString("common.configurationPanel.confirmReset",
+            Messages.getInstance().getString("perspectives.ippBpmModeler.label")));
+      confirmationDialog.openPopup();
+   }
+
+   @Override
+   public void preferencesScopeChanged(PreferenceScope arg0)
+   {
+      initialize();
+   }
+
+   @Override
+   public boolean preferencesScopeChanging(PreferenceScope arg0)
+   {
+      return true;
+   }
+
+   /**
+    * 
+    */
+   private void updateJSWorld()
+   {
+      PortalApplication.getInstance().addEventScript("if(window.top.modelingSession){window.top.modelingSession.initialize();}");
+   }
+   
+   /**
+    * @return
+    */
+   private UserPreferencesHelper getUserPrefenceHelper()
+   {
+      return UserPreferencesHelper.getInstance(M_MODULE, PortalConfiguration.getInstance()
+            .getPrefScopesHelper().getSelectedPreferenceScope());
    }
 
    public String getDefaultProfile()
    {
-      System.out.println("Get Default Profile: " + defaultProfile);
-
       return defaultProfile;
    }
 
    public void setDefaultProfile(String defaultProfile)
    {
-      System.out.println("Set Default Profile: " + defaultProfile);
-      
-      //userPrefsHelper.setXYX()/.getXYZ()
-      
       this.defaultProfile = defaultProfile;
    }
-
-   public void defaultProfileChanged(ValueChangeEvent event)
-   {
-      System.out.println("Set Default Profile: " + event.getNewValue());
-      
-      //userPrefsHelper.setXYX()/.getXYZ()
-   }
-   
+  
    public boolean isShowTechnologyPreview()
    {
-      System.out.println("Is Technology Preview: " + showTechnologyPreview);
-
       return showTechnologyPreview;
    }
 
    public void setShowTechnologyPreview(boolean showTechnologyPreview)
    {
-      System.out.println("Set Technology Preview: " + showTechnologyPreview);
-      
       this.showTechnologyPreview = showTechnologyPreview;
    }
 
-   public void showTechnologyPreviewChanged(ValueChangeEvent event)
+   public ConfirmationDialog getConfirmationDialog()
    {
-      System.out.println("Set Technology Preview: " + event.getNewValue());
-      
-      //userPrefsHelper.setXYX()/.getXYZ()
+      return confirmationDialog;
    }
 }
