@@ -1293,6 +1293,7 @@ define(
 				Symbol.prototype.dragStop = function() {
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
 						this.diagram.mode = this.diagram.NORMAL_MODE;
+						this.showProximitySensor();
 						if (this.x != this.dragStartX || this.y != this.dragStartY) {
 							this.diagram.selectedSymbolsDragStop();
 						}
