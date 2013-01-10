@@ -848,15 +848,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
-      // Make sure that formal parameters are never empty
-      // TODO Code should be at a central place for Process Definitions
-      if (processDefinition.getFormalParameters() == null)
-      {
-         processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
-      }
-
       if (processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
       {
+         // Make sure that formal parameters are never empty
+         // TODO Code should be at a central place for Process Definitions
+         if (processDefinition.getFormalParameters() == null)
+         {
+            processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+         }
+         
          if (processDefinition.getFormalParameters().getFormalParameter() != null)
          {
             processDefinition.getFormalParameters().getFormalParameter().clear();
