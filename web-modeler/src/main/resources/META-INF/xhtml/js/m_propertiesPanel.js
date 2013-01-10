@@ -229,7 +229,6 @@ define(
 					this.propertiesPageList.empty();
 
 					for ( var n in this.propertiesPages) {
-						m_utils.debug("Checking page " + this.propertiesPages[n].id);
 						if (!m_user
 								.isCurrentProfileIn(this.propertiesPages[n].profiles)) {
 							continue;
