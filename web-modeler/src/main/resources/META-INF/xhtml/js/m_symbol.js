@@ -1291,8 +1291,12 @@ define(
 				 *
 				 */
 				Symbol.prototype.dragStop = function() {
-					if (this.x != this.dragStartX || this.y != this.dragStartY) {
-						this.diagram.selectedSymbolsDragStop();
+					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
+						this.diagram.mode = this.diagram.NORMAL_MODE;
+						if (this.x != this.dragStartX || this.y != this.dragStartY) {
+							this.diagram.selectedSymbolsDragStop();
+						}
+						this.diagram.dragEnabled = false;
 					}
 				}
 
@@ -1326,7 +1330,6 @@ define(
 
 						this.diagram.snapSymbol(this);
 						this.postDragStop();
-
 
 						if (newParentSymbol != this.parentSymbol) {
 							m_utils.removeItemFromArray(
