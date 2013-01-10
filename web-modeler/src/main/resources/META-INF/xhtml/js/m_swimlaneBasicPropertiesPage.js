@@ -14,9 +14,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_participant","bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_modelElementUtils" ],
+				"bpm-modeler/js/m_modelElementUtils", "bpm-modeler/js/m_messageDisplay" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_basicPropertiesPage, m_participant, m_i18nUtils, m_modelElementUtils) {
+				m_model, m_basicPropertiesPage, m_participant, m_i18nUtils, m_modelElementUtils, m_messageDisplay) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new SwimlaneBasicPropertiesPage(propertiesPanel);
@@ -92,6 +92,7 @@ define(
 
 						for ( var m in m_model.getModels()[n].participants) {
 							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].participants[m])
+									&& !m_model.getModels()[n].participants[m].externalReference
 									&& !(m_constants.ADMIN_ROLE_ID === m_model.getModels()[n].participants[m].id)) {
 								this.participantList
 								.append("<option value='"
@@ -142,7 +143,7 @@ define(
 					} else {
 						this.propertiesPanelTitle.append(this.getModelElement().name);
 					}
-				}
+				};
 
 				/**
 				 *
@@ -155,11 +156,37 @@ define(
 				 *
 				 */
 				SwimlaneBasicPropertiesPage.prototype.validate = function() {
-					if (this.validateModelElement()) {
+					if (this.validateModelElement()
+							&& this.validateCircularModelReference()) {
 						return true;
 					}
 
 					return false;
+				};
+
+				/**
+				 *
+				 */
+				SwimlaneBasicPropertiesPage.prototype.validateCircularModelReference = function() {
+					this.propertiesPanel.clearErrorMessages();
+					this.participantList.removeClass("error");
+
+					var otherModelId = m_model
+							.stripModelId(this.participantList.val());
+					if (this.getModel().id != otherModelId
+							&& m_model.isModelReferencedIn(this.getModel().id,
+									otherModelId)) {
+						this.propertiesPanel.errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
+						this.participantList.addClass("error");
+						this.participantList.focus();
+						this.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
 				};
 			}
 		});

@@ -139,10 +139,13 @@ define(
 							&& m_model.isModelReferencedIn(this.scopeModel.id, otherModelId)) {
 						dataInput.addClass("error");
 						if (this.submitHandler.errorMessages) {
-							this.submitHandler.errorMessages.push("Circular references not allowed");
+							this.submitHandler.errorMessages
+									.push(m_i18nUtils
+											.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
 							this.submitHandler.showErrorMessages();
 						} else {
-							m_messageDisplay.showMessage("Circular references not allowed"); // TODO I18N
+							m_messageDisplay.showMessage(m_i18nUtils
+									.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
 						}
 					}
 
