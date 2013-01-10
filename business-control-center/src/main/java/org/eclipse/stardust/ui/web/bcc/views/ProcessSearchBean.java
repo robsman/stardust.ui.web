@@ -482,11 +482,6 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                   "endTimeFrom", "endTimeTo");
          }
 
-         if (validationMessageBean.isContainMessages())
-         {
-            return;
-         }
-
          // set case attributes
          if (getFilterAttributes().isCaseOnlySearch() & ownerSelector.getSelectedValue() != null)
          {
@@ -500,11 +495,21 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
                }
             }
          }
+         else if (StringUtils.isNotEmpty(ownerSelector.getSearchValue()))
+         {
+               validationMessageBean.addError(this.getMessages().getString("processSearch.invalidCaseOwnerError"),
+                     "caseOwnerId");
+         }
          else
          {
             getFilterAttributes().setUser(null);
          }
-
+         
+         if (validationMessageBean.isContainMessages())
+         {
+            return;
+         }
+         
          initializeProcessTable();
          processSearchProvider.setSelectedProcesses(getSelectedProcessDefs(), descriptorItems, commonDescriptors);
          processTableHelper.getProcessTable().refresh(true);

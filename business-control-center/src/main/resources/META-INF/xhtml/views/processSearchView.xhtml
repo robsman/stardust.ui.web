@@ -194,14 +194,17 @@
 						</ice:panelGroup>	
 					</ice:column>
 					<ice:column>
-							<ice:panelGrid>
-								<ice:panelGroup style="width:159px;vertical-align:top;margin-top:-3px;">
+							<ice:panelGrid columns="2">
+								<ice:panelGroup id="caseOwnerId" style="width:159px;vertical-align:top;margin-top:-3px;">
 									<ui:include
 										src="#{processSearchBean.ownerSelector.autocompleteContentUrl}">
 										<ui:param name="component"
 											value="#{processSearchBean.ownerSelector}" />
 									</ui:include>
 								</ice:panelGroup>
+								<ice:message styleClass="iceMsgImage"  
+									id="caseOwnerIdError" for="caseOwnerId" showDetail="false"
+									showSummary="false" />
 							</ice:panelGrid>
 						</ice:column>
 
