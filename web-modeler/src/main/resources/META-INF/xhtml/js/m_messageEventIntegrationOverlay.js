@@ -9,9 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_eventIntegrationOverlay", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_eventIntegrationOverlay",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
 				m_eventIntegrationOverlay, m_i18nUtils) {
@@ -58,13 +62,13 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.preserveQoS"));
 					jQuery("label[for='selector']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.messageEvent.selector"));
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.selector"));
 					jQuery("label[for='transacted']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.messageEvent.transacted"));
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.transacted"));
 
 					this.configurationSpan = this.mapInputId("configuration");
 
@@ -132,9 +136,8 @@ define(
 				 * 
 				 */
 				MessageEventIntegrationOverlay.prototype.activate = function() {
-					this.nameInput
-							.val(m_i18nUtils
-									.getProperty("modeler.general.toBeDefined"));
+					this.nameInput.val(m_i18nUtils
+							.getProperty("modeler.general.toBeDefined"));
 
 					var parameterMappings = [];
 
@@ -159,27 +162,53 @@ define(
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
-					var uri = uri.split("//");
 
-					if (uri[1] != null) {
-						// uri = uri[1].split("?");
-						// this.fileOrDirectoryNameInput.val(uri[0]);
-						//
-						// if (uri[1] != null) {
-						// var options = uri[1].split("&");
-						//
-						// for ( var n = 0; n < options.length; ++n) {
-						// var option = options[n];
-						//
-						// option = option.split("=");
-						//
-						// var name = option[0];
-						// var value = option[1];
-						//
-						// if (name == "") {
-						// }
-						// }
-						// }
+					m_utils.debug("uri: " + uri);
+
+					if (uri) {
+						var sourceAndProperties = uri.split("?");
+						var source = sourceAndProperties[0];
+
+						m_utils.debug("source: " + source);
+
+						var sourceParts = source.split(":");
+
+						m_utils.debug("type: " + sourceParts[1]);
+
+						this.typeSelect.val(sourceParts[1]);
+						
+						var clientName = "";
+						
+						for ( var i = 2; i < sourceParts.length; ++i) {
+							if (i > 2) {
+								clientName += ":";
+							}
+							
+							clientName += sourceParts[i];
+						}
+						
+						this.nameInput.val(clientName);
+						
+						var nameValues = sourceAndProperties[1].split("&");
+
+						for ( var n = 0; n < nameValues.length; ++n) {
+							var nameValue = nameValues[n].split("=");
+							var name = nameValue[0];
+							var value = nameValue[1];
+
+							m_utils.debug("name: " + name);
+							m_utils.debug("value: " + value);
+
+							if (name == "clientId") {
+								this.clientIdInput.val(value);
+							} else if (name == "selector") {
+								this.selectorInput.val(value);
+							} else if (name == "transacted") {
+								this.transactedInput.attr("checked", value);
+							} else if (name == "preserveMessageQos") {
+								this.preserveQoSInput.attr("checked", value);
+							}
+						}
 					}
 
 					this.parameterMappingsPanel.setScopeModel(this.page

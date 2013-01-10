@@ -9,9 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_eventIntegrationOverlay", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_eventIntegrationOverlay",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
 				m_eventIntegrationOverlay, m_i18nUtils) {
@@ -55,17 +59,16 @@ define(
 											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
 
 					this.configurationSpan = this.mapInputId("configuration");
-					
+
 					this.configurationSpan
-					.text(
-							m_i18nUtils
+							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
-					
-					this.parametersSpan.text(
-							m_i18nUtils
+
+					this.parametersSpan
+							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
-					
+
 					this.endpointUriPrefix = this
 							.mapInputId("endpointUriPrefix");
 					this.endpointUriTextarea = this
@@ -73,7 +76,19 @@ define(
 					this.additionalRouteTextarea = this
 							.mapInputId("routeTextarea");
 					this.additionalBeanTextarea = this
-					.mapInputId("beanTextarea");
+							.mapInputId("beanTextarea");
+
+					this.endpointUriPrefix.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+
+						overlay.submitRouteChanges();
+					});
+
+					this.registerForRouteChanges(this.endpointUriTextarea);
+					this.registerForRouteChanges(this.additionalRouteTextarea);
+					this.registerForRouteChanges(this.additionalBeanTextarea);
 
 					// .append("<option value=\"Message\">(Map)</option>");
 					// .append("<option value=\"EventCategory\">EventCategory
@@ -147,6 +162,10 @@ define(
 												.children()
 												.each(
 														function() {
+															m_utils
+																	.debug("XML Element: "
+																			+ m_utils
+																					.xmlToString(jQuery(this)));
 															if (m_utils
 																	.xmlToString(
 																			jQuery(this))
@@ -161,11 +180,33 @@ define(
 
 					this.endpointUriTextarea.val(fromUri);
 					this.additionalRouteTextarea.val(additionalRoutes);
+					this.additionalBeanTextarea.val(this.page.getEvent().attributes["carnot:engine:camel::additionalBeans"]);										
 
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
 							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+				};
+
+				/**
+				 * 
+				 */
+				GenericCamelRouteEventIntegrationOverlay.prototype.getEndpointUri = function() {
+					return this.endpointUriTextarea.val();
+				};
+
+				/**
+				 * 
+				 */
+				GenericCamelRouteEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return this.additionalRouteTextarea.val();
+				};
+
+				/**
+				 * 
+				 */
+				GenericCamelRouteEventIntegrationOverlay.prototype.getAdditionalBeanSpecifications = function() {
+					return this.additionalBeanTextarea.val();
 				};
 
 				/**

@@ -118,6 +118,27 @@ define(
 				/**
 				 * 
 				 */
+				EventIntegrationOverlay.prototype.getImplementation = function() {
+					return "camel";
+				};
+
+				/**
+				 * Dummy function 
+				 */
+				EventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "";
+				};
+
+				/**
+				 * Dummy function 
+				 */
+				EventIntegrationOverlay.prototype.getAdditionalBeanSpecifications = function() {
+					return "";
+				};
+
+				/**
+				 * 
+				 */
 				EventIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
 					this.page.submitChanges(changes);
@@ -136,19 +157,26 @@ define(
 
 					route += "<from uri=\"";
 					route += this.getEndpointUri();
-					route += "\"/></route>";
+					route += "\"/>" + this.getAdditionalRouteDefinitions() + 
+							"</route>";
 
 					this.submitChanges({
 						modelElement : {
 							parameterMappings : parameterMappings,
+							implementation : this.getImplementation(),
 							attributes : {
 								"carnot:engine:integration::overlay" : this.id,
-								"carnot:engine:camel::camelRouteExt" : route
+								"carnot:engine:camel::camelRouteExt" : route,
+								"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications()
 							}
 						}
 					});
 				};
 
+//				<carnot:Attributes>
+//                <carnot:Attribute Name="carnot:engine:camel::camelContextId" Value="camelContext"/>
+//                <carnot:Attribute Name="carnot:engine:camel::camelRouteExt" Value="&lt;from uri=&quot;jms:queue:in.queue&quot;/&gt;&#13;&#10;&lt;convertBodyTo type=&quot;java.lang.String&quot;/&gt;&#13;&#10;&lt;to uri=&quot;ipp:direct&quot;/&gt;"/>
+//             </carnot:Attributes>
 				/**
 				 * 
 				 */
@@ -157,12 +185,14 @@ define(
 
 					route += "<from uri=\"";
 					route += this.getEndpointUri();
-					route += "\"/></route>";
+					route += "\"/>" + this.getAdditionalRouteDefinitions() + 
+							"</route>";
 
 					this.submitChanges({
 						modelElement : {
 							attributes : {
-								"carnot:engine:camel::camelRouteExt" : route
+								"carnot:engine:camel::camelRouteExt" : route,
+								"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications()
 							}
 						}
 					});
