@@ -15,9 +15,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_user",
-				"bpm-modeler/js/m_session", "bpm-modeler/js/m_dialog" ],
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_user, m_session,
-				m_dialog) {
+				m_dialog, m_i18nUtils) {
 			return {
 				create : function(options) {
 					var panel = new CommentsPanel();
@@ -46,7 +46,11 @@ define(
 							+ " #submitButton");
 					this.deleteButton = jQuery(this.scope
 							+ " #deleteButton");
-					this.deleteButton.attr("title", "+Delete");
+					this.deleteButton
+							.attr(
+									"title",
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.delete"));
 					this.submitButton.click({
 						panel : this
 					}, function(event) {
