@@ -1355,6 +1355,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(eventJson, event);
 
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+      eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, event.getType().getId());
 
       // TODO This may changes
 
