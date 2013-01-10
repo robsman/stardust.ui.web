@@ -16,9 +16,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils" ],
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils",
+				"bpm-modeler/js/m_messageDisplay"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				m_i18nUtils, m_modelElementUtils) {
+				m_i18nUtils, m_modelElementUtils, m_messageDisplay) {
 			return {
 				create : function(options) {
 					var panel = new DataTypeSelector();
@@ -114,7 +115,7 @@ define(
 				};
 
 				DataTypeSelector.prototype.validate = function() {
-					this.validateCircularModelReference();
+					return this.validateCircularModelReference();
 				}
 
 				DataTypeSelector.prototype.validateCircularModelReference = function() {
@@ -135,7 +136,8 @@ define(
 					}
 
 					var otherModelId = m_model.stripModelId(dataInput.val());
-					if (this.scopeModel.id != otherModelId
+					if (this.scopeModel
+							&& this.scopeModel.id != otherModelId
 							&& m_model.isModelReferencedIn(this.scopeModel.id, otherModelId)) {
 						dataInput.addClass("error");
 						if (this.submitHandler.errorMessages) {
@@ -147,6 +149,8 @@ define(
 							m_messageDisplay.showMessage(m_i18nUtils
 									.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
 						}
+
+						return false;
 					}
 
 					return true;
