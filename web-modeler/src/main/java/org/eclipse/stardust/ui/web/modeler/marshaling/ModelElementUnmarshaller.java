@@ -862,6 +862,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             processDefinition.getFormalParameters().getFormalParameter().clear();
          }
 
+         processDefinition.setFormalParameterMappings(null);
+         
          JsonArray formalParametersJson = processDefinitionJson.get(
                ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
 
