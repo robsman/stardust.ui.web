@@ -127,7 +127,7 @@ define(
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
-					return this.name;
+					return this.id;
 					
 					/*var element = this.getElement(this.id);
 					if (element) {
@@ -174,15 +174,22 @@ define(
 					
 					var obj = this;
 					jQuery.each(typeDeclaration.getBody().elements, function (i, element) {
+						var type = element.type;
+						
+						// Strip prefix
+						if (element.type.indexOf(':') !== -1) {
+							type = element.type.split(":")[1];
+						}
+						
 						var childTypeDeclaration = obj.model
-								.findTypeDeclarationBySchemaName(element.type);
+								.findTypeDeclarationBySchemaName(type);
 
 						if (childTypeDeclaration != null) {
 							if (childTypeDeclaration.isSequence()) {
 								instance[element.name] = {};
 
-								this.populateSequenceInstanceRecursively(
-										childTypeDeclaration, instance[obj.id]);
+								obj.populateSequenceInstanceRecursively(
+										childTypeDeclaration, instance[element.name]);
 							} else {
 								for ( var enumerator in childTypeDeclaration
 										.getFacets()) {

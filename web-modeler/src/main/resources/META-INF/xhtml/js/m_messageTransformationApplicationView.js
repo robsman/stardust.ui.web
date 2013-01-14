@@ -554,11 +554,16 @@ define(
 											inputData += "var ";
 											inputData += id;
 											inputData += " = ";
-											inputData += JSON.stringify(
-													typeDeclaration
-															.createInstance(),
-													null, 3);
-											inputData += ";";
+											if (typeDeclaration != null) {
+												inputData += JSON.stringify(
+														typeDeclaration
+																.createInstance(),
+														null, 3);
+											}
+											else {
+												inputData += '""';
+											}
+											inputData += ";\r\n";
 										}
 
 										inputDataTextarea.append(inputData);
@@ -631,12 +636,22 @@ define(
 					var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
-						globalVariables[id] = typeDeclaration.createInstance();
+						if (typeDeclaration != null) {
+							globalVariables[id] = typeDeclaration.createInstance();
+						}
+						else {
+							globalVariables[id] = "";
+						}
 					}
 
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
-						globalVariables[id] = typeDeclaration.createInstance();
+						if (typeDeclaration != null) {
+							globalVariables[id] = typeDeclaration.createInstance();
+						}
+						else {
+							globalVariables[id] = "";
+						}
 					}
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
