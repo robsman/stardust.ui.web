@@ -989,7 +989,7 @@ define(
 
 					if (childElements == null && element.type != null) {
 						var typeDeclaration = scopeModel
-								.findTypeDeclarationBySchemaName(element.type);
+								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
 
 						if (typeDeclaration != null
 								&& typeDeclaration.isSequence()) {
