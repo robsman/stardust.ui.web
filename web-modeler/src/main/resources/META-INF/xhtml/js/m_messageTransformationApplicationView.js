@@ -225,7 +225,7 @@ define(
 							mappingCell.empty();
 							mappingCell.append(outputTableRow.mappingExpression);
 
-							event.data.view.submitChanges(view.determineTransformationChanges());
+							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
 						}
 					});
 
@@ -649,22 +649,27 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
-					var xmlDoc = jQuery.parseXML(xml);
-					var xmlObject = jQuery(xmlDoc);
-
-					var view = this;
-
-					jQuery(xmlObject).find("fieldMappings").each(
-							function() {
-
-								var fieldPath = jQuery(this).attr("fieldPath")
-
-								fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es) 
-								fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
-
-								view.mappingExpressions[fieldPath] = jQuery(
-										this).attr("mappingExpression");
-							});
+					var xmlDoc;
+					try {
+						xmlDoc = jQuery.parseXML(xml);
+						var xmlObject = jQuery(xmlDoc);
+	
+						var view = this;
+	
+						jQuery(xmlObject).find("fieldMappings").each(
+								function() {
+	
+									var fieldPath = jQuery(this).attr("fieldPath")
+	
+									fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es) 
+									fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
+	
+									view.mappingExpressions[fieldPath] = jQuery(
+											this).attr("mappingExpression");
+								});
+					} catch(e) {
+						m_utils.debug(e);
+					}	
 				};
 
 				/**
@@ -694,8 +699,9 @@ define(
 						path, errors) {
 					var rowId = path.replace(/\./g, "-");
 					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
 					
-					if (!jQuery.isEmptyObject(errors)) {
+					if (!jQuery.isEmptyObject(errors) && mappingCell.text().trim() != "") {
 						problemCell.addClass("mappingError");
 					}
 					else {
@@ -766,6 +772,24 @@ define(
 								jQuery(jQuery(this).parents("tr")[0]).trigger(
 										"mousedown");
 							});
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.clearMappingExpression = function(outputTableRow) {
+					var rowId = outputTableRow.path.replace(/\./g, "-");
+
+					// Set mapping column content
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+
+					mappingCell.empty();
+					outputTableRow.mappingExpression = "";
+
+//					var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
+//					clearMappingIcon.addClass("disabled");
+					
+					this.submitChanges(this.determineTransformationChanges());
 				};
 
 				/**
@@ -912,7 +936,7 @@ define(
 					// Recursive resolution
 					if (childElements == null && element.type != null) {
 						var typeDeclaration = scopeModel
-								.findTypeDeclarationBySchemaName(element.type);
+								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
 
 						if (typeDeclaration != null
 								&& typeDeclaration.isSequence()) {
@@ -1061,6 +1085,7 @@ define(
 							content += tableRows[tableRow].mappingExpression;
 							content += "<td class=\"problem\" />";
 							content += "<td>";
+							// content += "<div class=\"clearMappingAction\"></div>";
 							if (tableRows[tableRow].parentPath == null) {
 								content += "<div class=\"deleteAction\"></div>";
 							}
@@ -1068,6 +1093,20 @@ define(
 							content += "</tr>";
 
 							tableBody.append(content);
+
+							// Add click event handler for "clearMapping" action
+							/*var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
+							if (tableRows[tableRow].mappingExpression != "") {
+								clearMappingIcon.click({
+									"view" : this,
+									"outputTableRow" : tableRows[tableRow]
+								}, function(event) {
+									event.data.view.clearMappingExpression(event.data.outputTableRow);
+								});
+							}
+							else {
+								clearMappingIcon.addClass("disabled");
+							}*/
 
 							// Add click event handler for "delete" action
 							if (tableRows[tableRow].parentPath == null) {
@@ -1162,8 +1201,8 @@ define(
 						}
 					}
 					
-					/*if (this.isPrimitive()) {
-						
+					/*if (this.isPrimitive(this.inputTableRows[tableRow])) {
+						alert("primitive");
 					}
 					else if (this.isStructuredType()) {
 						
@@ -1173,8 +1212,9 @@ define(
 					}*/
 				};
 				
-				MessageTransformationApplicationView.prototype.isPrimitive = function() {
-					
+				MessageTransformationApplicationView.prototype.isPrimitive = function(tableRow) {
+					if (tableRow.accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE) return true;
+					if (tableRow.element != null && m_dataTraversal.isBuiltInXsdDataType(tableRow.element.type)) return true;
 				}
 
 				/**
@@ -1337,20 +1377,22 @@ define(
 				 *
 				 */
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
-					var transformationProperty = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
-
+					var transformationProperty = '<?xml version="1.0" encoding="ASCII"?>\r\n';
+					transformationProperty += '<mapping:TransformationProperty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage">\r\n';
+					
 					for ( var n = 0; n < this.outputTableRows.length; ++n) {
 						var outputTableRow = this.outputTableRows[n];
 
-						transformationProperty += "&lt;fieldMappings";
-						transformationProperty += " fieldPath=&quot;";
-						transformationProperty += outputTableRow.path;
-						transformationProperty += "&quot; mappingExpression=&quot;";
-						transformationProperty += outputTableRow.mappingExpression;
-						transformationProperty += "&quot;/&gt;&#13;&#10;";
+						if (outputTableRow.mappingExpression && 0 !== outputTableRow.mappingExpression.length) {
+							transformationProperty += '  <fieldMappings fieldPath="';
+							transformationProperty += outputTableRow.path.replace(/\./g, "/"); // Replace "." with "/"
+							transformationProperty += '" mappingExpression="';
+							transformationProperty += outputTableRow.mappingExpression;
+							transformationProperty += '"/>\r\n';
+						}
 					}
 
-					transformationProperty += "&lt;/mapping:TransformationProperty&gt;&#13;&#10;";
+					transformationProperty += '</mapping:TransformationProperty>\r\n';
 
 					return {
 						attributes : {
