@@ -127,11 +127,13 @@ define(
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
-					var element = this.getElement(this.id);
+					return this.name;
+					
+					/*var element = this.getElement(this.id);
 					if (element) {
 						return element.type;
 					}
-					return null;
+					return null;*/
 				};
 
 				/**
@@ -169,26 +171,28 @@ define(
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
+					
+					var obj = this;
 					jQuery.each(typeDeclaration.getBody().elements, function (i, element) {
-						var childTypeDeclaration = this.model
+						var childTypeDeclaration = obj.model
 								.findTypeDeclarationBySchemaName(element.type);
 
 						if (childTypeDeclaration != null) {
 							if (childTypeDeclaration.isSequence()) {
-								instance[id] = {};
+								instance[element.name] = {};
 
 								this.populateSequenceInstanceRecursively(
-										childTypeDeclaration, instance[id]);
+										childTypeDeclaration, instance[obj.id]);
 							} else {
 								for ( var enumerator in childTypeDeclaration
 										.getFacets()) {
-									instance[id] = enumerator;
+									instance[element.name] = enumerator;
 
 									break;
 								}
 							}
 						} else {
-							instance[id] = "";
+							instance[element.name] = "";
 						}
 					});
 					return instance;

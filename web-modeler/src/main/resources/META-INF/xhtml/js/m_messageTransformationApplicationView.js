@@ -628,7 +628,7 @@ define(
 					
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
-					/*var typeDeclaration;
+					var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
@@ -637,7 +637,7 @@ define(
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
 						globalVariables[id] = typeDeclaration.createInstance();
-					}*/
+					}
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
 					
