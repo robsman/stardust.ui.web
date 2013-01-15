@@ -178,7 +178,7 @@ define(
 
 					var extension = propertiesPagesExtensions[n];
 
-					extensions[extension.pageId] = extension;
+					extensions[extension.id] = extension;
 
 					if (!m_session.initialize().technologyPreview
 							&& extension.visibility == "preview") {
@@ -196,7 +196,7 @@ define(
 
 					propertiesTabHeader += "<li>";
 					propertiesTabHeader += "<a href='";
-					propertiesTabHeader += "#" + extension.pageId;
+					propertiesTabHeader += "#" + extension.id;
 					propertiesTabHeader += "'><img src='";
 					propertiesTabHeader += extension.pageIconUrl;
 					propertiesTabHeader += "'></img><span class='tabLabel'>";
@@ -205,7 +205,7 @@ define(
 
 					this.propertiesTabsList.append(propertiesTabHeader);
 
-					var pageDiv = jQuery("<div id='" + extension.pageId
+					var pageDiv = jQuery("<div id='" + extension.id
 							+ "'></div>");
 
 					this.propertiesTabs.append(pageDiv);
@@ -230,7 +230,7 @@ define(
 								var extension = extensions[jQuery(this).attr(
 										"id")];
 								var page = extension.provider.create(view,
-										extension.pageId);
+										extension.id);
 
 								view.propertiesPages.push(page);
 
