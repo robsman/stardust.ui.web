@@ -973,6 +973,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
          {
+            if (!processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+            {
+               if (processDefinition.getFormalParameters() == null)
+               {
+                  processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+               }
+
+               if (processDefinition.getFormalParameters().getFormalParameter() != null)
+               {
+                  processDefinition.getFormalParameters().getFormalParameter().clear();
+               }
+               processDefinition.setFormalParameterMappings(null);
+            }
          }
          else if (processDefinitionJson.get(
                ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
