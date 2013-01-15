@@ -779,8 +779,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   getModelBuilderFacade().createFullId(
                         ModelUtils.findContainingModel(activity), activity.getPerformer()));
 
-            if (activity.getImplementationProcess() != null)
+            ProcessDefinitionType implementationProcess = null;
+            
+            try
             {
+               implementationProcess = activity.getImplementationProcess();
+            }
+            catch (NullPointerException e)
+            {
+            }
+            
+            if (implementationProcess != null)
+            {               
                activityJson.addProperty(
                      ModelerConstants.SUBPROCESS_ID,
                      getModelBuilderFacade().createFullId(
