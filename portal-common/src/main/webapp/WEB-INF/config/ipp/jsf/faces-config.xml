@@ -55,7 +55,7 @@
 	<managed-bean>
 		<managed-bean-name>loginDialog</managed-bean-name>
 		<managed-bean-class>
-			ag.carnot.web.jsf.common.LoginDialog
+			org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean
         </managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>
 		<managed-property>
