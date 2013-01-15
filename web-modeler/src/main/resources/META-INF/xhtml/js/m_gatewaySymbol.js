@@ -132,6 +132,11 @@ define(
 					transferObject.xorPath = null;
 					transferObject.orCircle = null;
 					transferObject.text = null;
+					transferObject.width = m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH_EC;
+					transferObject.height = m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT_EC;
+					var clientSideAdjX = (m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH_EC / 2)
+					- (m_constants.GATEWAY_SYMBOL_DEFAULT_WIDTH / 2);
+					transferObject.x = transferObject.x - clientSideAdjX;
 
 					return transferObject;
 				};

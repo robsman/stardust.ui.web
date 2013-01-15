@@ -134,6 +134,8 @@ define(
 
 					transferObject.path = null;
 					transferObject.text = null;
+					transferObject.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH_EC;
+					transferObject.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT_EC;
 
 					// Data are not transfered with the symbol
 

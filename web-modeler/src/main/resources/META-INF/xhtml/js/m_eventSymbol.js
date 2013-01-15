@@ -131,7 +131,8 @@ define(
 				 * attributes and then symbol.refresh does not get invoked.
 				 */
 				EventSymbol.prototype.performClientSideAdj = function() {
-					if (this.width && this.width != (2 * m_constants.EVENT_DEFAULT_RADIUS)) {
+					if (this.width
+							&& this.width != (2 * m_constants.EVENT_DEFAULT_RADIUS)) {
 						this.clientSideAdjX = (this.width / 2)
 								- m_constants.EVENT_DEFAULT_RADIUS;
 						this.x = this.x + this.clientSideAdjX;
@@ -157,6 +158,13 @@ define(
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
 					transferObject.bindingActivitySymbol = null;
+					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+						transferObject.width = m_constants.EVENT_ICON_WIDTH_EC;
+						transferObject.height = m_constants.EVENT_ICON_HEIGHT_EC;
+						var clientSideAdjX = (m_constants.EVENT_ICON_WIDTH_EC / 2)
+								- m_constants.EVENT_DEFAULT_RADIUS;
+						transferObject.x = transferObject.x - clientSideAdjX;
+					}
 
 					return transferObject;
 				};

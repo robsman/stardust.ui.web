@@ -856,14 +856,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
          }
-         
+
          if (processDefinition.getFormalParameters().getFormalParameter() != null)
          {
             processDefinition.getFormalParameters().getFormalParameter().clear();
          }
 
          processDefinition.setFormalParameterMappings(null);
-         
+
          JsonArray formalParametersJson = processDefinitionJson.get(
                ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
 
@@ -1080,7 +1080,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       DataType data = dataSymbol.getData();
       JsonObject activityJson = dataSymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      updateData(data, activityJson);
+      if (null != activityJson)
+      {
+         updateData(data, activityJson);
+      }
    }
 
    /**
@@ -1193,6 +1196,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   }
                }
             }
+            //Update pool dimensions
+            poolSymbol.setWidth(poolSymbol.getWidth() + widthOffset);
+            poolSymbol.setHeight(poolSymbol.getHeight() + heightOffset);
          }
          else
          {

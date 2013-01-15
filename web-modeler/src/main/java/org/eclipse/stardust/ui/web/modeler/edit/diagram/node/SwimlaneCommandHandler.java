@@ -76,10 +76,21 @@ public class SwimlaneCommandHandler
                processDefinition, participantFullID, null, laneName, orientation, xPos, yPos,
                width, height, parentSymbol);
 
-         
+
          PoolSymbol containingPool = parentSymbol;
-         int poolWidth = containingPool.getWidth();
-         containingPool.setWidth(poolWidth + width);
+
+         if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL.equals(orientation))
+         {
+            int poolWidth = containingPool.getWidth();
+            containingPool.setWidth(poolWidth + width
+                  + ModelerConstants.POOL_SWIMLANE_MARGIN);
+         }
+         else
+         {
+            int poolHeight = containingPool.getHeight();
+            containingPool.setHeight(poolHeight + height
+                  + ModelerConstants.POOL_SWIMLANE_MARGIN);
+         }
       }
    }
 
@@ -95,7 +106,7 @@ public class SwimlaneCommandHandler
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
       LaneSymbol lane = getModelBuilderFacade().findLaneInProcess(processDefinition, laneId);
       LaneParticipantUtil.deleteLane(lane);
-      
+
       synchronized (model)
       {
          removeLaneAndItsChildElements(lane);
@@ -103,6 +114,20 @@ public class SwimlaneCommandHandler
          parentSymbol.getChildLanes().remove(lane);
          // Update co-ordinates of adjacent Lanes
          updateAdjacentLanes(lane, parentSymbol);
+      }
+
+      String orientation = extractString(request, ModelerConstants.ORIENTATION_PROPERTY);
+      if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL.equals(orientation))
+      {
+         int poolWidth = parentSymbol.getWidth();
+         parentSymbol.setWidth(poolWidth - lane.getWidth()
+               - ModelerConstants.POOL_SWIMLANE_MARGIN);
+      }
+      else
+      {
+         int poolHeight = parentSymbol.getHeight();
+         parentSymbol.setHeight(poolHeight - lane.getHeight()
+               - ModelerConstants.POOL_SWIMLANE_MARGIN);
       }
    }
 

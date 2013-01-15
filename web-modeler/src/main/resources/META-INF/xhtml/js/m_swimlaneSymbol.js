@@ -1130,15 +1130,15 @@ define(
 
 						for ( var n in this.containedSymbols) {
 							left = Math.min(this.containedSymbols[n].x + this.symbolXOffset
-									- m_constants.POOL_SWIMLANE_MARGIN, left);
+									- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
 							right = Math.max(this.containedSymbols[n].x + this.symbolXOffset
 									+ this.containedSymbols[n].width
-									+ m_constants.POOL_SWIMLANE_MARGIN, right);
+									+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
 							top = Math.min(this.containedSymbols[n].y
-									- m_constants.POOL_SWIMLANE_MARGIN, top);
+									- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
 							bottom = Math.max(this.containedSymbols[n].y
 									+ this.containedSymbols[n].height
-									+ m_constants.POOL_SWIMLANE_MARGIN, bottom);
+									+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
 						}
 					}else{
 						left = this.x;
@@ -1156,15 +1156,15 @@ define(
 
 						for ( var n in this.containedSymbols) {
 							top = Math.min(this.containedSymbols[n].y + this.symbolYOffset
-									- m_constants.POOL_SWIMLANE_MARGIN, top);
+									- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
 							bottom = Math.max(this.containedSymbols[n].y + this.symbolYOffset
 									+ this.containedSymbols[n].height
-									+ m_constants.POOL_SWIMLANE_MARGIN, bottom);
+									+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
 							left = Math.min(this.containedSymbols[n].x
-									- m_constants.POOL_SWIMLANE_MARGIN, left);
+									- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
 							right = Math.max(this.containedSymbols[n].x
 									+ this.containedSymbols[n].width
-									+ m_constants.POOL_SWIMLANE_MARGIN, right);
+									+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
 						}
 					}
 					this.x = left;

@@ -115,6 +115,8 @@ define(function() {
 		GATEWAY_SYMBOL_CROSS_STROKE_WIDTH : 3.5,
 		GATEWAY_SYMBOL_OR_RADIUS : 9,
 		GATEWAY_SYMBOL_OR_STROKE_WIDTH : 2.5,
+		GATEWAY_SYMBOL_DEFAULT_WIDTH_EC : 180, //added to be able to see icons properly in Eclipse
+		GATEWAY_SYMBOL_DEFAULT_HEIGHT_EC : 50, //added to be able to see icons properly in Eclipse
 
 		// Event Symbol
 
@@ -127,7 +129,8 @@ define(function() {
 		EVENT_STOP_STROKE_WIDTH : 2.0,
 		EVENT_INTERRUPTING_STROKE_DASHARRAY	: "",
 		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: " -",
-
+		EVENT_ICON_WIDTH_EC : 110, //added to be able to see icons properly in Eclipse
+		EVENT_ICON_HEIGHT_EC : 50, //added to be able to see icons properly in Eclipse
 
 		// Data Symbol
 
@@ -139,6 +142,8 @@ define(function() {
 		DATA_SYMBOL_DEFAULT_STROKE_COLOR : 'black',
 		DATA_SYMBOL_DEFAULT_STROKE_WIDTH : 0.75,
 		DATA_SYMBOL_DOG_EAR_OFFSET : 8,
+		DATA_SYMBOL_DEFAULT_WIDTH_EC : 100, //added to be able to see icons properly in Eclipse
+		DATA_SYMBOL_DEFAULT_HEIGHT_EC : 70, //added to be able to see icons properly in Eclipse
 
 		// Annotation Symbol
 
@@ -174,7 +179,7 @@ define(function() {
 		POOL_SYMBOL : "poolSymbol",
 		SWIMLANE_SYMBOL : "swimlaneSymbol",
 		POOL_SWIMLANE_MARGIN : 12,
-		SWIMLANE_SYMBOL_MARGIN : 12,
+		SWIMLANE_SYMBOL_MARGIN : 50,
 		POOL_SWIMLANE_TOP_BOX_HEIGHT : 20,
 		POOL_SWIMLANE_STROKE_WIDTH : 1.2,
 		POOL_SWIMLANE_SELECT_BOX_COLOR : "black",
