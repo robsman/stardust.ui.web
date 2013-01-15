@@ -206,7 +206,7 @@ define(
 
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 					this.expressionEditor.disable();
-					
+
 					this.expressionTextArea.change({
 						"view" : this
 					}, function(event) {
@@ -406,7 +406,7 @@ define(
 									function(event) {
 										var selectedData = {};
 										event.data.view.inputDataTypeSelector.getDataType(selectedData);
-										
+
 										event.data.view.addInputAccessPoint(jQuery("#inputDataDialog #nameTextInput").val(), selectedData);
 										event.data.view.resume();
 										jQuery("#inputDataDialog").dialog(
@@ -461,7 +461,7 @@ define(
 									function(event) {
 										var selectedData = {};
 										event.data.view.outputDataTypeSelector.getDataType(selectedData);
-										
+
 										event.data.view.addOutputAccessPoint(jQuery("#outputDataDialog #nameTextInput").val(), selectedData);
 										event.data.view.resume();
 										jQuery("#outputDataDialog").dialog(
@@ -577,8 +577,19 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.setModelElement = function(
 						application) {
-					this.initializeModelElement(application);
+					// TODO - needs review
+					// Employs direct manipulations of classes
+					// hence subject to problems in case of version change etc.
+					var inputRowExpandedStatus = [];
+					var outputRowExpandedStatus = [];
+					this.inputTableBody.find("tr").each(function(index) {
+						inputRowExpandedStatus[this.id] = $(this).hasClass("expanded")
+					});
+					this.outputTableBody.find("tr").each(function(index) {
+						outputRowExpandedStatus[this.id] = $(this).hasClass("expanded")
+					});
 
+					this.initializeModelElement(application);
 					this.application = application;
 
 					if (!this.application.attributes["carnot:engine:visibility"]
@@ -621,16 +632,33 @@ define(
 							this.inputTableRows, true);
 					this.populateTableRows(this.outputTableBody,
 							this.outputTableRows, false);
+
+					// TODO - needs review
+					// Employs direct manipulations of classes
+					// hence subject to problems in case of version change etc.
+					this.inputTableBody.find("tr").each(function(index) {
+						if (inputRowExpandedStatus[this.id]) {
+							$(this).addClass("expanded");
+							$(this).removeClass("ui-helper-hidden");
+						}
+					});
+					this.outputTableBody.find("tr").each(function(index) {
+						if (outputRowExpandedStatus[this.id]) {
+							$(this).addClass("expanded");
+							$(this).removeClass("ui-helper-hidden");
+						}
+					});
+
 					this.resume();
 
 					this.inputDataTypeSelector.setScopeModel(this.getModel());
 					this.inputDataTypeSelector.populatePrimitivesSelectInput();
 					this.inputDataTypeSelector.setPrimitiveDataType();
-					
+
 					this.outputDataTypeSelector.setScopeModel(this.getModel());
 					this.outputDataTypeSelector.populatePrimitivesSelectInput();
 					this.outputDataTypeSelector.setPrimitiveDataType();
-					
+
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
 					var typeDeclaration;
@@ -655,7 +683,7 @@ define(
 					}
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
-					
+
 					this.showErrorMessages();
 				};
 
@@ -668,23 +696,23 @@ define(
 					try {
 						xmlDoc = jQuery.parseXML(xml);
 						var xmlObject = jQuery(xmlDoc);
-	
+
 						var view = this;
-	
+
 						jQuery(xmlObject).find("fieldMappings").each(
 								function() {
-	
+
 									var fieldPath = jQuery(this).attr("fieldPath")
-	
-									fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es) 
+
+									fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es)
 									fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
-	
+
 									view.mappingExpressions[fieldPath] = jQuery(
 											this).attr("mappingExpression");
 								});
 					} catch(e) {
 						m_utils.debug(e);
-					}	
+					}
 				};
 
 				/**
@@ -715,7 +743,7 @@ define(
 					var rowId = path.replace(/\./g, "-");
 					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
 					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-					
+
 					if (!jQuery.isEmptyObject(errors) && mappingCell.text().trim() != "") {
 						problemCell.addClass("mappingError");
 					}
@@ -723,9 +751,9 @@ define(
 						problemCell.removeClass("mappingError");
 					}
 				}
-				
+
 				/**
-				 * 
+				 *
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
@@ -777,8 +805,8 @@ define(
 										view.expressionEditor
 												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
-										
-										// Register showOutputMappingError as a callback function after JS validation occurs 
+
+										// Register showOutputMappingError as a callback function after JS validation occurs
 										view.expressionEditor.setJavaScriptValidationOptions(view.showOutputMappingError, view.selectedOutputTableRow.path);
 									});
 
@@ -803,7 +831,7 @@ define(
 
 //					var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
 //					clearMappingIcon.addClass("disabled");
-					
+
 					this.submitChanges(this.determineTransformationChanges());
 				};
 
@@ -839,11 +867,11 @@ define(
 					else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						accessPoint = m_accessPoint.createFromDataStructure(m_model.findTypeDeclaration(data.structuredDataTypeFullId), mappingName, mappingName, m_constants.IN_ACCESS_POINT)
 					}
-					
+
 					if (accessPoint == null) {
 						return;
 					}
-					
+
 					this.application.contexts.application.accessPoints.push(accessPoint);
 
 					this.submitChanges({
@@ -885,11 +913,11 @@ define(
 					else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						accessPoint = m_accessPoint.createFromDataStructure(m_model.findTypeDeclaration(data.structuredDataTypeFullId), mappingName, mappingName, m_constants.OUT_ACCESS_POINT)
 					}
-					
+
 					if (accessPoint == null) {
 						return;
 					}
-					
+
 					this.application.contexts.application.accessPoints.push(accessPoint);
 
 					this.submitChanges({
@@ -936,9 +964,9 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
-					
-					tableRow.typeName = parentPath == null ? 
-							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType) 
+
+					tableRow.typeName = parentPath == null ?
+							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
 							: element.type;
 
 					// Embedded structure
@@ -986,8 +1014,8 @@ define(
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.id
 							: element.name;
-					tableRow.typeName = parentPath == null ? 
-							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType) 
+					tableRow.typeName = parentPath == null ?
+							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
 							: element.type;
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];
@@ -1068,7 +1096,7 @@ define(
 									event.data.view.deleteAccessPoint(event.data.accessPoint);
 								});
 							}
-							
+
 							var dataElement = jQuery("#sourceTable #" + rowId
 									+ " .data-element");
 
@@ -1215,18 +1243,18 @@ define(
 									"highlighted");
 						}
 					}
-					
+
 					/*if (this.isPrimitive(this.inputTableRows[tableRow])) {
 						alert("primitive");
 					}
 					else if (this.isStructuredType()) {
-						
+
 					}
 					else if (this.isEnumeration()) {
-						
+
 					}*/
 				};
-				
+
 				MessageTransformationApplicationView.prototype.isPrimitive = function(tableRow) {
 					if (tableRow.accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE) return true;
 					if (tableRow.element != null && m_dataTraversal.isBuiltInXsdDataType(tableRow.element.type)) return true;
@@ -1394,7 +1422,7 @@ define(
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = '<?xml version="1.0" encoding="ASCII"?>\r\n';
 					transformationProperty += '<mapping:TransformationProperty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage">\r\n';
-					
+
 					for ( var n = 0; n < this.outputTableRows.length; ++n) {
 						var outputTableRow = this.outputTableRows[n];
 
