@@ -13,9 +13,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_dialog" ],
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog) {
+				m_dialog, m_model, m_i18nUtils) {
 
 			return {
 				createPropertiesPage : function(propertiesPanel, id, titel,
@@ -145,7 +145,7 @@ define(
 						var input = event.data.input;
 
 						m_utils.debug("Changed " + property + ": " + input.val());
-						
+
 						if (!page.validate()) {
 							return;
 						}
@@ -256,6 +256,31 @@ define(
 				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
 					this.propertiesPanel.submitChanges(changes);
+				};
+
+				/**
+				 *
+				 */
+				PropertiesPage.prototype.validateCircularModelReference = function(input) {
+					this.propertiesPanel.clearErrorMessages();
+					input.removeClass("error");
+
+					var otherModelId = m_model
+							.stripModelId(input.val());
+					if (this.getModel().id != otherModelId
+							&& m_model.isModelReferencedIn(this.getModel().id,
+									otherModelId)) {
+						this.propertiesPanel.errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
+						input.addClass("error");
+						input.focus();
+						this.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
 				};
 			}
 		});

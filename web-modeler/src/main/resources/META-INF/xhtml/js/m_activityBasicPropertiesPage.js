@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -79,7 +79,7 @@ define(
 						basicPropertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -227,6 +227,7 @@ define(
 										"page" : this
 									},
 									function(event) {
+										event.data.page.validate();
 										event.data.page
 												.setSubprocessMode(event.data.page.subprocessModeSelect
 														.val());
@@ -236,7 +237,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.populateSubprocessSelect = function() {
 					this.subprocessList.empty();
@@ -290,7 +291,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setTaskType = function() {
 					this.taskInput.attr("checked", true);
@@ -324,7 +325,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessType = function(
 						subprocessFullId, executionType, copyData) {
@@ -350,7 +351,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function() {
 					if (this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
@@ -367,7 +368,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
@@ -384,7 +385,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
 						subprocessFullId) {
@@ -408,7 +409,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -459,10 +460,11 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityBasicPropertiesPage.prototype.validate = function() {
-					if (this.validateModelElement()) {
+					if (this.validateModelElement()
+							&& this.validateCircularModelReference(this.subprocessList)) {
 						return true;
 					}
 

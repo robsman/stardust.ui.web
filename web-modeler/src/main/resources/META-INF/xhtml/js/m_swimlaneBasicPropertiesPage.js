@@ -157,36 +157,11 @@ define(
 				 */
 				SwimlaneBasicPropertiesPage.prototype.validate = function() {
 					if (this.validateModelElement()
-							&& this.validateCircularModelReference()) {
+							&& this.validateCircularModelReference(this.participantList)) {
 						return true;
 					}
 
 					return false;
-				};
-
-				/**
-				 *
-				 */
-				SwimlaneBasicPropertiesPage.prototype.validateCircularModelReference = function() {
-					this.propertiesPanel.clearErrorMessages();
-					this.participantList.removeClass("error");
-
-					var otherModelId = m_model
-							.stripModelId(this.participantList.val());
-					if (this.getModel().id != otherModelId
-							&& m_model.isModelReferencedIn(this.getModel().id,
-									otherModelId)) {
-						this.propertiesPanel.errorMessages
-								.push(m_i18nUtils
-										.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
-						this.participantList.addClass("error");
-						this.participantList.focus();
-						this.propertiesPanel.showErrorMessages();
-
-						return false;
-					}
-
-					return true;
 				};
 			}
 		});

@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -44,7 +44,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.initialize = function() {
 					this.heading = this.mapInputId("heading");
@@ -80,7 +80,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.populateApplicationSelect = function() {
 					this.applicationList.empty();
@@ -146,7 +146,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.checkCompatibility = function(
 						application) {
@@ -179,7 +179,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.populateRuleSetSelect = function() {
 					if (m_session.getInstance().technologyPreview) {
@@ -211,7 +211,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.setNoImplementationType = function() {
 					m_dialog.makeVisible(this.noImplementationRow);
@@ -233,7 +233,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.setApplicationType = function() {
 					m_dialog.makeInvisible(this.noImplementationRow);
@@ -249,7 +249,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.setRuleType = function() {
 					m_dialog.makeInvisible(this.noImplementationRow);
@@ -264,7 +264,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.submitApplicationChanges = function() {
 					if (this.propertiesPanel.element.modelElement.applicationFullId != this.applicationList
@@ -281,7 +281,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.setElement = function() {
 					m_utils.debug("===> Activity");
@@ -300,10 +300,10 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.validate = function() {
-					return true;
+					return this.validateCircularModelReference(this.applicationList);
 				};
 			}
 		});
