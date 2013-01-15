@@ -75,7 +75,7 @@ public class ProcessInstanceDetailConfigurationBean extends UIComponentBean
             "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
             "activity_manual.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
 
-      filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("auxilliaryActivities"),
+      filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("auxiliaryActivities"),
             "processHistory.activityTable.showAuxiliaryActivity", "processHistory.activityTable.hideAuxiliaryActivity",
             "activity_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
 
