@@ -170,7 +170,7 @@
    </target>
 		
 	<target name="dist" depends="build, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
-		<copy todir="${portal.wst.plugin.dir}">
+		<copy todir="${portal.wst.plugin.dir}/lib">
 			<fileset dir="${build.lib}">
 				<include name="${process.portal.jarfile}" />
 			</fileset>
