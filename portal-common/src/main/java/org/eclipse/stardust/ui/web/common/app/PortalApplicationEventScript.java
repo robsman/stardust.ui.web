@@ -31,7 +31,7 @@ public class PortalApplicationEventScript implements Serializable
    private static final Logger trace = LogManager.getLogger(PortalApplicationEventScript.class);
 
    // Possibility to have more than one Scripts to be executed
-   private ArrayList<String> eventScripts = new ArrayList<String>(); 
+   private ArrayList<String> eventScripts = new ArrayList<String>();
    private boolean onceRead = false;
    private boolean resetWindowWidth = false;
 
@@ -56,7 +56,7 @@ public class PortalApplicationEventScript implements Serializable
          es.append(eventScript);
          es.append("\n");
       }
-      
+
       onceRead = true;
 
       String scripts = es.toString();
@@ -67,9 +67,14 @@ public class PortalApplicationEventScript implements Serializable
          resetWindowWidth = false;
       }
 
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Event Scripts: " + scripts);
+      }
+
       return scripts;
    }
-   
+
    /**
     * Cleans the scripts as necessary
     * @return
@@ -79,7 +84,7 @@ public class PortalApplicationEventScript implements Serializable
       try
       {
          List<String> cleanScripts = new ArrayList<String>(eventScripts);
-   
+
          for (int i = 0; i < cleanScripts.size(); ++i)
          {
             String script = cleanScripts.get(i).trim();
@@ -87,7 +92,7 @@ public class PortalApplicationEventScript implements Serializable
             {
                int idxOpeningQuote = script.indexOf("'");
                int idxClosingQuote = script.indexOf("'", idxOpeningQuote + 1);
-   
+
                String panelId = script.substring(idxOpeningQuote + 1, idxClosingQuote);
                for (int j = 0; j < i; ++j)
                {
@@ -101,7 +106,7 @@ public class PortalApplicationEventScript implements Serializable
                }
             }
          }
-   
+
          return cleanScripts;
       }
       catch (Exception e)
@@ -110,7 +115,7 @@ public class PortalApplicationEventScript implements Serializable
          return eventScripts;
       }
    }
-   
+
    /**
     * @param eventScript
     */
