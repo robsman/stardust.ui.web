@@ -514,7 +514,7 @@ define(
 										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
 								// Convert
 							} else {
-								content += parameterDefinition.structuredDataTypeFullId; // TODO
+								content += m_model.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
 								// Format
 							}
 
