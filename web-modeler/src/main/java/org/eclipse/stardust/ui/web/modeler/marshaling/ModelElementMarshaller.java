@@ -35,7 +35,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
@@ -2408,7 +2407,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       modelJson.addProperty(ModelerConstants.FILE_PATH,
             modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
-      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, model.getCreated());
+      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, 
+            getModelBuilderFacade().convertDate(model.getCreated()));
       modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
             getModelBuilderFacade().getModified(model));
 
@@ -2991,5 +2991,5 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
          }
       }
-   }
+   }   
 }
