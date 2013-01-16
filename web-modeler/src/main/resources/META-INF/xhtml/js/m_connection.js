@@ -165,11 +165,11 @@ define(
 							this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
 							this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
 
-							if (this.conditionExpressionTextXOffset == null) {
+							if (!this.conditionExpressionTextXOffset) {
 								this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
 							}
 
-							if (this.conditionExpressionTextYOffset == null) {
+							if (!this.conditionExpressionTextYOffset) {
 								this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
 							}
 						}
@@ -1581,7 +1581,7 @@ define(
 							.attr({
 								"stroke-width" : m_constants.CONNECTION_SELECT_STROKE_WIDTH
 							});
-					this.diagram.addToCurrentSelection(this);
+					this.diagram.currentConnection = this;
 					this.fromAnchorPoint.show();
 					this.toAnchorPoint.show();
 					m_propertiesPanel.initializePropertiesPanel(this);
