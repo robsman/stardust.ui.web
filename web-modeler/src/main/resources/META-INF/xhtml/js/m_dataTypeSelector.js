@@ -44,6 +44,7 @@ define(
 					this.submitHandler = options.submitHandler;
 					this.supportsOtherData = options.supportsOtherData;
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
+					this.restrictToCurrentModel = options.restrictToCurrentModel;
 
 					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
@@ -269,31 +270,35 @@ define(
 						}
 					}
 
-					this.structuredDataTypeSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+					if (!this.restrictToCurrentModel) {
+						this.structuredDataTypeSelect
+								.append("</optgroup><optgroup label=\"Other Models\">");
 
-					for ( var n in m_model.getModels()) {
-						if (this.scopeModel
-								&& m_model.getModels()[n] == this.scopeModel) {
-							continue;
-						}
+						for ( var n in m_model.getModels()) {
+							if (this.scopeModel
+									&& m_model.getModels()[n] == this.scopeModel) {
+								continue;
+							}
 
-						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].typeDeclarations[m])) {
-								this.structuredDataTypeSelect
-										.append("<option value='"
-												+ m_model.getModels()[n].typeDeclarations[m]
-														.getFullId()
-												+ "'>"
-												+ m_model.getModels()[n].name
-												+ "/"
-												+ m_model.getModels()[n].typeDeclarations[m].name
-												+ "</option>");
+							for ( var m in m_model.getModels()[n].typeDeclarations) {
+								if (m_modelElementUtils
+										.hasPublicVisibility(m_model
+												.getModels()[n].typeDeclarations[m])) {
+									this.structuredDataTypeSelect
+											.append("<option value='"
+													+ m_model.getModels()[n].typeDeclarations[m]
+															.getFullId()
+													+ "'>"
+													+ m_model.getModels()[n].name
+													+ "/"
+													+ m_model.getModels()[n].typeDeclarations[m].name
+													+ "</option>");
+								}
 							}
 						}
-					}
 
-					this.structuredDataTypeSelect.append("</optgroup>");
+						this.structuredDataTypeSelect.append("</optgroup>");
+					}
 				};
 
 				/**
@@ -326,35 +331,40 @@ define(
 						}
 					}
 
-					this.documentTypeSelect
-							.append("</optgroup><optgroup label=\"Other Models\">");
+					if (!this.restrictToCurrentModel) {
+						this.documentTypeSelect
+								.append("</optgroup><optgroup label=\"Other Models\">");
 
-					for ( var n in m_model.getModels()) {
-						if (this.scopeModel
-								&& m_model.getModels()[n] == this.scopeModel) {
-							continue;
-						}
+						for ( var n in m_model.getModels()) {
+							if (this.scopeModel
+									&& m_model.getModels()[n] == this.scopeModel) {
+								continue;
+							}
 
-						for ( var m in m_model.getModels()[n].typeDeclarations) {
-							// Only composite structured types (with public visibility) and not
-							// enumerations are listed here
-							if (m_model.getModels()[n].typeDeclarations[m]
-									.isSequence()
-									&& m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].typeDeclarations[m])) {
-								this.documentTypeSelect
-										.append("<option value='"
-												+ m_model.getModels()[n].typeDeclarations[m]
-														.getFullId()
-												+ "'>"
-												+ m_model.getModels()[n].name
-												+ "/"
-												+ m_model.getModels()[n].typeDeclarations[m].name
-												+ "</option>");
+							for ( var m in m_model.getModels()[n].typeDeclarations) {
+								// Only composite structured types (with public
+								// visibility) and not
+								// enumerations are listed here
+								if (m_model.getModels()[n].typeDeclarations[m]
+										.isSequence()
+										&& m_modelElementUtils
+												.hasPublicVisibility(m_model
+														.getModels()[n].typeDeclarations[m])) {
+									this.documentTypeSelect
+											.append("<option value='"
+													+ m_model.getModels()[n].typeDeclarations[m]
+															.getFullId()
+													+ "'>"
+													+ m_model.getModels()[n].name
+													+ "/"
+													+ m_model.getModels()[n].typeDeclarations[m].name
+													+ "</option>");
+								}
 							}
 						}
-					}
 
-					this.documentTypeSelect.append("</optgroup>");
+						this.documentTypeSelect.append("</optgroup>");
+					}
 				};
 
 				/**

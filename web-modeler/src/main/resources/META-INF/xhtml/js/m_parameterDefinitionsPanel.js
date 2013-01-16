@@ -103,7 +103,8 @@ define(
 							scope : "parameterDefinitionTypeSelector",
 							submitHandler : this,
 							supportsOtherData : false,
-							supportsDocumentTypes : true
+							supportsDocumentTypes : true,
+							restrictToCurrentModel : true
 						});
 					}
 
@@ -405,33 +406,35 @@ define(
 						}
 					}
 
-					var othermodel = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.otherModel")
-					this.parameterDefinitionDataSelect
-							.append("</optgroup><optgroup label=\""
-									+ othermodel + "\">");
-
-					for ( var n in m_model.getModels()) {
-						if (this.scopeModel
-								&& m_model.getModels()[n] == this.scopeModel) {
-							continue;
-						}
-
-						for ( var m in m_model.getModels()[n].dataItems) {
-							var dataItem = m_model.getModels()[n].dataItems[m];
-
-							if (this.isDataOfSelectedType(dataItem)) {
-								this.parameterDefinitionDataSelect
-										.append("<option value='"
-												+ dataItem.getFullId() + "'>"
-												+ m_model.getModels()[n].name
-												+ "/" + dataItem.name
-												+ "</option>");
-							}
-						}
-					}
-
-					this.parameterDefinitionDataSelect.append("</optgroup>");
+					// TODO - Delete this
+					// Other model types are not not needed for formal parameters
+//					var othermodel = m_i18nUtils
+//							.getProperty("modeler.element.properties.commonProperties.otherModel")
+//					this.parameterDefinitionDataSelect
+//							.append("</optgroup><optgroup label=\""
+//									+ othermodel + "\">");
+//
+//					for ( var n in m_model.getModels()) {
+//						if (this.scopeModel
+//								&& m_model.getModels()[n] == this.scopeModel) {
+//							continue;
+//						}
+//
+//						for ( var m in m_model.getModels()[n].dataItems) {
+//							var dataItem = m_model.getModels()[n].dataItems[m];
+//
+//							if (this.isDataOfSelectedType(dataItem)) {
+//								this.parameterDefinitionDataSelect
+//										.append("<option value='"
+//												+ dataItem.getFullId() + "'>"
+//												+ m_model.getModels()[n].name
+//												+ "/" + dataItem.name
+//												+ "</option>");
+//							}
+//						}
+//					}
+//
+//					this.parameterDefinitionDataSelect.append("</optgroup>");
 
 					if (!this.currentParameterDefinition ||
 							!this.currentParameterDefinition.dataFullId) {
@@ -514,7 +517,9 @@ define(
 										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
 								// Convert
 							} else {
-								content += m_model.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
+								if (parameterDefinition.structuredDataTypeFullId) {
+									content += m_model.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
+								}
 								// Format
 							}
 
