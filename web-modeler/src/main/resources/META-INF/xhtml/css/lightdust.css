@@ -148,7 +148,7 @@ a:hover {
 
 /* Error Messages */
 .error {
-	border: 1px solid #b1252c;
+	border: 1px solid #b1252c !important;
 }
 
 .errorMessagesPanel {

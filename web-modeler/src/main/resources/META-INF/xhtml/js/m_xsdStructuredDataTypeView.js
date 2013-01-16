@@ -533,7 +533,7 @@ define(
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
 						this.errorMessages
-								.push("Data type name must not be empty.");
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyDataType"));
 						this.nameInput.addClass("error");
 					}
 
@@ -553,7 +553,7 @@ define(
 
 					if ((nameInput.val() == null) || (this.nameInput.val() === "")) {
 						this.errorMessages
-								.push("Element name must not be empty.");
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyName"));
 						nameInput.addClass("error");
 					} else {
 						var name = nameInput.val();
@@ -562,7 +562,8 @@ define(
 							try {
 								jQuery.parseXML('<' + name + '/>');
 							} catch (e) {
-								this.errorMessages.push("Invalid element name.");
+								this.errorMessages
+									.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.invalidName"));
 								nameInput.addClass("error");
 							}
 						} else {

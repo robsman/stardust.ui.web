@@ -370,9 +370,18 @@ define(
 					jQuery("#inputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
-										title : m_i18nUtils
-												.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
 									});
+					
+					jQuery("#inputDataDialog").bind("dialogclose", {view : this},function(event, ui) {
+						// Clear the 'name' field and any errors
+						var nameInput = jQuery("#inputDataDialog #nameTextInput"); 
+						nameInput.val('');
+						nameInput.removeClass("error");
+						event.data.view.clearErrorMessages();
+									});
+
 					jQuery("#inputDataDialog #name")
 							.text(
 									m_i18nUtils
@@ -407,10 +416,13 @@ define(
 										var selectedData = {};
 										event.data.view.inputDataTypeSelector.getDataType(selectedData);
 
-										event.data.view.addInputAccessPoint(jQuery("#inputDataDialog #nameTextInput").val(), selectedData);
-										event.data.view.resume();
-										jQuery("#inputDataDialog").dialog(
-												"close");
+										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
+										var isValidName = event.data.view.validateMessageName(nameTextInput);
+										if (isValidName) {
+											event.data.view.addInputAccessPoint(nameTextInput.val(), selectedData);
+											event.data.view.resume();
+											jQuery("#inputDataDialog").dialog("close");
+										}
 									});
 
 					jQuery("#addInputDataButton")
@@ -429,6 +441,15 @@ define(
 										title : m_i18nUtils
 												.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
 									});
+
+					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
+						// Clear the 'name' field and any errors
+						var nameInput = jQuery("#outputDataDialog #nameTextInput"); 
+						nameInput.val('');
+						nameInput.removeClass("error");
+						event.data.view.clearErrorMessages();
+									});
+
 					jQuery("#outputDataDialog #name")
 							.text(
 									m_i18nUtils
@@ -462,10 +483,13 @@ define(
 										var selectedData = {};
 										event.data.view.outputDataTypeSelector.getDataType(selectedData);
 
-										event.data.view.addOutputAccessPoint(jQuery("#outputDataDialog #nameTextInput").val(), selectedData);
-										event.data.view.resume();
-										jQuery("#outputDataDialog").dialog(
-												"close");
+										var nameTextInput = jQuery("#outputDataDialog #nameTextInput");
+										var isValidName = event.data.view.validateMessageName(nameTextInput);
+										if (isValidName) {
+											event.data.view.addOutputAccessPoint(nameTextInput.val(), selectedData);
+											event.data.view.resume();
+											jQuery("#outputDataDialog").dialog("close");
+										}
 									});
 
 					jQuery("#addOutputDataButton")
@@ -653,12 +677,14 @@ define(
 
 					this.inputDataTypeSelector.setScopeModel(this.getModel());
 					this.inputDataTypeSelector.populatePrimitivesSelectInput();
+					this.inputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
 					this.inputDataTypeSelector.setPrimitiveDataType();
-
+					
 					this.outputDataTypeSelector.setScopeModel(this.getModel());
 					this.outputDataTypeSelector.populatePrimitivesSelectInput();
+					this.outputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
 					this.outputDataTypeSelector.setPrimitiveDataType();
-
+					
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
 					var typeDeclaration;
@@ -685,6 +711,52 @@ define(
 					this.expressionEditor.setGlobalVariables(globalVariables);
 
 					this.showErrorMessages();
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.validateMessageName = function(nameInput) {
+					this.clearErrorMessages();
+
+					nameInput.removeClass("error");
+
+					if ((nameInput.val() == null) || (nameInput.val().trim() === "")) {
+						this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.emptyName"));
+					} else {
+						var name = nameInput.val().trim();
+						// name must be valid name according to XML rules
+						try {
+							jQuery.parseXML('<' + name + '/>');
+						} catch (e) {
+							this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidName"));
+						}
+						
+						// Check for duplicate message names
+						for (var key in this.application.contexts) {
+							var context = this.application.contexts[key];
+							for ( var m = 0; m < context.accessPoints.length; ++m) {
+								var accessPoint = context.accessPoints[m];
+								
+								if (name === accessPoint.id) {
+									var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.duplicateName")
+															.replace("{0}", name);
+									this.errorMessages.push(msg);
+								}
+							}
+						}
+					}
+
+					if (this.errorMessages.length > 0) {
+						nameInput.addClass("error");
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
 				};
 
 				/**
@@ -1178,24 +1250,38 @@ define(
 											var inputTableRow = ui.draggable
 													.data("tableRow");
 
-											var inputAccessPoint = inputTableRow.accessPoint;
-											var outputAccessPoint = outputTableRow.accessPoint;
-
-											outputTableRow.mappingExpression = inputTableRow.path;
-
-											var mappingCell = jQuery(this)
-													.children(".mapping");
-											mappingCell.empty();
-											mappingCell
-													.append(outputTableRow.mappingExpression);
-
-											// Update expression text area if needed
-											// TODO: This should only be done if the dropped row is also selected
-
-											if (view.selectedOutputTableRow == outputTableRow) {
-												view.expressionEditor
-														.setValue(outputTableRow.mappingExpression);
-												view.expressionEditor.save();
+											// TODO: @Anoop - Refactor
+											if (view.isStructuredType(inputTableRow) && view.isStructuredType(outputTableRow) &&
+													(inputTableRow.typeName === outputTableRow.typeName)) {
+												var prefix = outputTableRow.path + ".";
+												for (var n = 0; n < view.outputTableRows.length; ++n) {
+													if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
+														if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
+															view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
+															
+															var rowId = view.outputTableRows[n].path.replace(/\./g, "-");
+															var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+															mappingCell.empty();
+															mappingCell.append(view.outputTableRows[n].mappingExpression);
+														}
+													}
+												}
+											}
+											else {
+												outputTableRow.mappingExpression = inputTableRow.path;
+	
+												var mappingCell = jQuery(this)
+														.children(".mapping");
+												mappingCell.empty();
+												mappingCell
+														.append(outputTableRow.mappingExpression);
+												
+												// Update expression text area if needed
+												if (view.selectedOutputTableRow == outputTableRow) {
+													view.expressionEditor
+															.setValue(outputTableRow.mappingExpression);
+													view.expressionEditor.save();
+												}
 											}
 
 											// Remove the drag helper
@@ -1255,9 +1341,47 @@ define(
 					}*/
 				};
 
+				/**
+				 *
+				 */
 				MessageTransformationApplicationView.prototype.isPrimitive = function(tableRow) {
 					if (tableRow.accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE) return true;
 					if (tableRow.element != null && m_dataTraversal.isBuiltInXsdDataType(tableRow.element.type)) return true;
+				}
+
+				/**
+				 *
+				 */
+				// TODO: @Anoop - Refactor
+				MessageTransformationApplicationView.prototype.isStructuredType = function(tableRow) {
+					if (tableRow.accessPoint.dataType != m_constants.STRUCTURED_DATA_TYPE) return false;
+
+					var element = tableRow.element;
+					
+					// Embedded structure
+					if (element == null) {
+						return false;
+					}
+
+					var childElements = element.elements;
+
+					// Recursive resolution
+
+					if (childElements == null && element.type != null) {
+						var typeDeclaration = this.getModel()
+								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
+
+						if (typeDeclaration != null
+								&& typeDeclaration.isSequence()) {
+							return true;
+						}
+					}
+
+					if (childElements == null) {
+						return false;
+					}
+
+					return true;
 				}
 
 				/**
