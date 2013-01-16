@@ -411,6 +411,14 @@ define(
 
 					return null;
 				};
+
+
+				/**
+				 *
+				 */
+				Model.prototype.getAllModels = function() {
+					return getModels();
+				};
 			}
 
 			/**

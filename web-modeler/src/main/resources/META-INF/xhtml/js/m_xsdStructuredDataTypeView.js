@@ -463,21 +463,46 @@ define(
 
 					select += "</optgroup>";
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel") + "'>";
+					var thisTypeDeclaration = this.typeDeclaration;
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
 
-						var tdType = typeDeclaration.asSchemaType();
-						if (tdType) {
-							select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-							if ( !schemaType.isBuiltinType()) {
-								select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+						if (thisTypeDeclaration.uuid != typeDeclaration.uuid) {
+							var tdType = typeDeclaration.asSchemaType();
+							if (tdType) {
+								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+								if ( !schemaType.isBuiltinType()) {
+									select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+								}
+								select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
 							}
-							select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
 						}
 					});
 					select += "</optgroup>";
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+					 for ( var i in m_model.getModels()) {
+							var model = m_model.getModels()[i];
+
+							if (model == this.typeDeclaration.model) {
+								continue;
+							}
+
+							for ( var n in model.typeDeclarations) {
+								var typeDeclaration = model.typeDeclarations[n];
+								var tdType = typeDeclaration.asSchemaType();
+								if (tdType) {
+									var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+									if ( !schemaType.isBuiltinType()) {
+										x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+									}
+									x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
+									select += x;
+								}
+							}
+						}
+
+					select += "</optgroup>";
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
 
@@ -492,34 +517,6 @@ define(
 
 					select += "</optgroup>";
 
-
-					//
-					// for ( var i in m_model.getModels()) {
-					// var model = m_model.getModels()[i];
-					//
-					// if (model == this.typeDeclaration.model) {
-					// continue;
-					// }
-					//
-					// for ( var n in model.typeDeclarations) {
-					// var typeDeclaration = model.typeDeclarations[n];
-					//
-					// if (typeDeclaration.schema.elements[typeDeclaration.id]
-					// == null) {
-					// continue;
-					// }
-					//
-					// select += "<option value=\""
-					// +
-					// typeDeclaration.schema.elements[typeDeclaration.id].type
-					// + "\""
-					// + (type == typeDeclaration.name ? "selected"
-					// : "") + ">" + model.name + "/" + typeDeclaration.name
-					// + "</option>";
-					// }
-					// }
-					//
-					// select += "</optgroup>";
 					select += "</select>";
 
 					return select;

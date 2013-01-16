@@ -128,7 +128,7 @@ define(
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
 					return this.id;
-					
+
 					/*var element = this.getElement(this.id);
 					if (element) {
 						return element.type;
@@ -171,16 +171,16 @@ define(
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
-					
+
 					var obj = this;
 					jQuery.each(typeDeclaration.getBody().elements, function (i, element) {
 						var type = element.type;
-						
+
 						// Strip prefix
 						if (element.type.indexOf(':') !== -1) {
 							type = element.type.split(":")[1];
 						}
-						
+
 						var childTypeDeclaration = obj.model
 								.findTypeDeclarationBySchemaName(type);
 
@@ -451,14 +451,32 @@ define(
 					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
 						return new SchemaType("xsd:" + parsedName.name, parsedName.namespace);
 					} else if (model) {
-						jQuery.each(model.typeDeclarations, function(i, declaration) {
-							if ((null != declaration.typeDeclaration)
-									&& (null != declaration.typeDeclaration.schema)
-									&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
-								schema = declaration.typeDeclaration.schema;
-								return false;
+//						jQuery.each(model.typeDeclarations, function(i, declaration) {
+//							if ((null != declaration.typeDeclaration)
+//									&& (null != declaration.typeDeclaration.schema)
+//									&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+//								schema = declaration.typeDeclaration.schema;
+//								return false;
+//							}
+//						});
+
+						// TODO - review
+						// Looping over all models as there can be external references.
+						var allModels = model.getAllModels();
+						for (var i in allModels) {
+							var mod = window.top.models[i];
+							if (schema) {
+								break;
 							}
-						});
+							jQuery.each(mod.typeDeclarations, function(i, declaration) {
+								if ((null != declaration.typeDeclaration)
+										&& (null != declaration.typeDeclaration.schema)
+										&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+									schema = declaration.typeDeclaration.schema;
+									return false;
+								}
+							});
+						}
 
 						if (schema) {
 							var type = findType(schema, parsedName.name);
