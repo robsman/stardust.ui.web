@@ -59,7 +59,7 @@
         </managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>
 		<managed-property>
-			<property-name>tenant</property-name>
+			<property-name>partition</property-name>
 			<value>#{param.tenant}</value>
 		</managed-property>
 	</managed-bean>
