@@ -391,6 +391,7 @@ define(
 						});
 					});
 
+					this.tree.tableScroll("undo");
 					this.tree.tableScroll({
 						height : 150
 					});

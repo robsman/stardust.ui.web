@@ -652,6 +652,9 @@ define(
 						}
 					}
 
+					this.inputTable.tableScroll("undo");
+					this.outputTable.tableScroll("undo");
+					
 					this.populateTableRows(this.inputTableBody,
 							this.inputTableRows, true);
 					this.populateTableRows(this.outputTableBody,
@@ -769,6 +772,7 @@ define(
 						xmlDoc = jQuery.parseXML(xml);
 						var xmlObject = jQuery(xmlDoc);
 
+						this.mappingExpressions = {};
 						var view = this;
 
 						jQuery(xmlObject).find("fieldMappings").each(
@@ -783,7 +787,8 @@ define(
 											this).attr("mappingExpression");
 								});
 					} catch(e) {
-						m_utils.debug(e);
+						this.errorMessages
+							.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidXml"));
 					}
 				};
 
@@ -1200,7 +1205,7 @@ define(
 							content += tableRows[tableRow].mappingExpression;
 							content += "<td class=\"problem\" />";
 							content += "<td>";
-							// content += "<div class=\"clearMappingAction\"></div>";
+							content += "<div class=\"clearMappingAction\"></div>";
 							if (tableRows[tableRow].parentPath == null) {
 								content += "<div class=\"deleteAction\"></div>";
 							}
@@ -1210,7 +1215,7 @@ define(
 							tableBody.append(content);
 
 							// Add click event handler for "clearMapping" action
-							/*var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
+							var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
 							if (tableRows[tableRow].mappingExpression != "") {
 								clearMappingIcon.click({
 									"view" : this,
@@ -1221,7 +1226,7 @@ define(
 							}
 							else {
 								clearMappingIcon.addClass("disabled");
-							}*/
+							}
 
 							// Add click event handler for "delete" action
 							if (tableRows[tableRow].parentPath == null) {
