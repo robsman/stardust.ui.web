@@ -728,6 +728,7 @@ define(
 					// TODO Make portable/modularize
 
 					if (parent != null && parent.iDnD != null) {
+						parent.iDnD.dragMode = false;
 						parent.iDnD.hideIframe();
 					}
 				};
@@ -1058,6 +1059,7 @@ define(
 															var element = model.findModelElementByUuid(jQuery(insElem).parent().parent().attr("id"));
 															parent.iDnD
 																	.setDrag();
+															parent.iDnD.dragMode = true;
 															var transferObj = {
 																'elementType' : jQuery(
 																		insElem)

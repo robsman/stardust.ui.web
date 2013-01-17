@@ -89,6 +89,12 @@ define(
 					if (!IE)
 						document.captureEvents(Event.MOUSEMOVE);
 					document.onmousemove = function(e) {
+						// De-select any selected elements in the canvas
+						// to avoid they getting dragged inadvertently
+						if (parent.iDnD.dragMode) {
+							diagram.clearCurrentSelection();
+						}
+
 						if (e) {
 							parent.iDnD.setIframeXY(e, window.name);
 						} else {
@@ -106,6 +112,8 @@ define(
 						if (!eve) {
 							eve = window.event;
 						}
+
+						parent.iDnD.dragMode = false;
 
 						if (parent.iDnD.getTransferObject()) {
 							var clickCoordinates = parent.iDnD
