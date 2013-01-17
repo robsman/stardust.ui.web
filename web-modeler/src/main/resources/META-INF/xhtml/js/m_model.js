@@ -356,6 +356,47 @@ define(
 					return null;
 				};
 
+
+				/**
+				 * returns an array of elements with matching IDs.
+				 */
+				Model.prototype.findModelElementsById = function(id) {
+					var elems = [];
+					var n;
+
+					for (n in this.processes) {
+						if (this.processes[n].id == id) {
+							elems.push(this.processes[n]);
+						}
+					}
+
+					for (n in this.applications) {
+						if (this.applications[n].id == id) {
+							elems.push(this.applications[n]);
+						}
+					}
+
+					for (n in this.dataItems) {
+						if (this.dataItems[n].id == id) {
+							elems.push(this.dataItems[n]);
+						}
+					}
+
+					for (n in this.participants) {
+						if (this.participants[n].id == id) {
+							elems.push(this.participants[n]);
+						}
+					}
+
+					for (n in this.typeDeclarations) {
+						if (this.typeDeclarations[n].id == id) {
+							elems.push(this.typeDeclarations[n]);
+						}
+					}
+
+					return elems;
+				};
+
 				/**
 				 * Used to identify if an element with same name exists, used
 				 * while determining name for newly created element.

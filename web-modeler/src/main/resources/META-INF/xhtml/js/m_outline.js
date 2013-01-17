@@ -1054,6 +1054,8 @@ define(
 
 															// parent.iDnD.drawIframeAt(e,
 															// window.name);
+															var model = m_model.findModelByUuid(jQuery(insElem).parent().parent().attr("modelUUID"));
+															var element = model.findModelElementByUuid(jQuery(insElem).parent().parent().attr("id"));
 															parent.iDnD
 																	.setDrag();
 															var transferObj = {
@@ -1069,6 +1071,9 @@ define(
 																		.parent()
 																		.attr(
 																				"elementId"),
+																'type' : element.type,
+																'uuid' : element.uuid,
+																'modelUUID' : model.uuid,
 																'attr' : {}
 															};
 

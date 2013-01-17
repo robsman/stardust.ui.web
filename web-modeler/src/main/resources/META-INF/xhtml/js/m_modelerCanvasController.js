@@ -124,6 +124,31 @@ define(
 								parent.iDnD.hideIframe();
 								return;
 							}
+
+							// Check if there is any element in the model that
+							// has same id and type
+							// as that of the dragged element, if dragged
+							// element belongs to other model.
+							if (diagram.model.uuid != parent.iDnD
+									.getTransferObject().modelUUID) {
+								var matchingElems = diagram.model
+										.findModelElementsById(parent.iDnD
+												.getTransferObject().elementId);
+								if (matchingElems && matchingElems.length > 0) {
+									for ( var i in matchingElems) {
+										if (matchingElems[i].type === parent.iDnD
+												.getTransferObject().type) {
+											m_messageDisplay.clear();
+											m_messageDisplay
+													.showMessage(m_i18nUtils
+															.getProperty("modeler.propertyPages.commonProperties.errorMessage.elementWithSameIdExists"));
+											parent.iDnD.hideIframe();
+											return;
+										}
+									}
+								}
+							}
+
 							if (m_elementConfiguration
 									.isValidDataType(parent.iDnD
 											.getTransferObject().elementType)) {
