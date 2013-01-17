@@ -144,8 +144,9 @@ define(
 												.getTransferObject().elementId);
 								if (matchingElems && matchingElems.length > 0) {
 									for ( var i in matchingElems) {
-										if (matchingElems[i].type === parent.iDnD
-												.getTransferObject().type) {
+										if (!matchingElems[i].externalReference
+												&& matchingElems[i].type === parent.iDnD
+														.getTransferObject().type) {
 											m_messageDisplay.clear();
 											m_messageDisplay
 													.showMessage(m_i18nUtils
