@@ -45,6 +45,7 @@ define(
 					this.supportsOtherData = options.supportsOtherData;
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
 					this.restrictToCurrentModel = options.restrictToCurrentModel;
+					this.hideEnumerations = options.hideEnumerations;
 
 					this.dataTypeSelect = jQuery("#" + this.scope
 							+ " #dataTypeSelect");
@@ -197,6 +198,7 @@ define(
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
 
+					// this.populatePrimitivesSelectInput(); // TODO: Review
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
@@ -260,6 +262,7 @@ define(
 								.append("<optgroup label=\"This Model\">");
 
 						for ( var i in this.scopeModel.typeDeclarations) {
+							if (this.hideEnumerations && !this.scopeModel.typeDeclarations[i].isSequence()) continue;
 							this.structuredDataTypeSelect
 									.append("<option value='"
 											+ this.scopeModel.typeDeclarations[i]
@@ -284,6 +287,7 @@ define(
 								if (m_modelElementUtils
 										.hasPublicVisibility(m_model
 												.getModels()[n].typeDeclarations[m])) {
+									if (this.hideEnumerations && !m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
 									this.structuredDataTypeSelect
 											.append("<option value='"
 													+ m_model.getModels()[n].typeDeclarations[m]

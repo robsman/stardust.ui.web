@@ -197,11 +197,13 @@ define(
 					this.outputTableRows = [];
 
 					this.inputDataTypeSelector = m_dataTypeSelector.create({
-						scope : "inputDataDialog"
+						scope : "inputDataDialog",
+						hideEnumerations : true
 					});
 
 					this.outputDataTypeSelector = m_dataTypeSelector.create({
-						scope : "outputDataDialog"
+						scope : "outputDataDialog",
+						hideEnumerations : true
 					});
 
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
@@ -416,6 +418,15 @@ define(
 										var selectedData = {};
 										event.data.view.inputDataTypeSelector.getDataType(selectedData);
 
+										// Validate if a concrete Structured Type was selected
+										if (selectedData.structuredDataTypeFullId === m_constants.TO_BE_DEFINED) {
+											var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidType");
+											event.data.view.errorMessages.push(msg);
+											event.data.view.showErrorMessages();
+											return;
+										}
+										
+										// Validate message name
 										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
 										var isValidName = event.data.view.validateMessageName(nameTextInput);
 										if (isValidName) {
@@ -634,6 +645,7 @@ define(
 
 					this.inputData = {};
 					this.outputData = {};
+					this.mappingExpressions = {};
 					this.inputTableBody.empty();
 					this.outputTableBody.empty();
 					this.inputTableRows = [];
@@ -678,6 +690,7 @@ define(
 
 					this.resume();
 
+					// Initialize the Input / Output Data Type Selectors
 					this.inputDataTypeSelector.setScopeModel(this.getModel());
 					this.inputDataTypeSelector.populatePrimitivesSelectInput();
 					this.inputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
@@ -772,8 +785,7 @@ define(
 						xmlDoc = jQuery.parseXML(xml);
 						var xmlObject = jQuery(xmlDoc);
 
-						this.mappingExpressions = {};
-						var view = this;
+						var view = this; // required since jQuery.find() below changes context of 'this'
 
 						jQuery(xmlObject).find("fieldMappings").each(
 								function() {
@@ -790,26 +802,6 @@ define(
 						this.errorMessages
 							.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidXml"));
 					}
-				};
-
-				/**
-				 *
-				 */
-				MessageTransformationApplicationView.prototype.convertToMappingsXml = function() {
-					var xml = "&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://com.infinity.bpm.messaging.model&quot; xsi:schemaLocation=&quot;java://com.infinity.bpm.messaging.model java://com.infinity.bpm.messaging.model.mapping.MappingPackage&quot;&gt;&#13;&#10;";
-
-					for ( var n = 0; n < this.outputTableRows.length; ++n) {
-						var outputTableRow = this.outputTableRows[n];
-
-						xml += "&lt;fieldMappings";
-						xml += " fieldPath=&quot;";
-						xml += outputTableRow.path;
-						xml += "&quot; mappingExpression=&quot;";
-						xml += outputTableRow.mappingExpression;
-						xml += "&quot;/&gt;&#13;&#10;";
-					}
-
-					return xml;
 				};
 
 				/**
@@ -1094,6 +1086,7 @@ define(
 					tableRow.typeName = parentPath == null ?
 							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
 							: element.type;
+							
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];
 					tableRow.problems = "";
@@ -1550,14 +1543,21 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = '<?xml version="1.0" encoding="ASCII"?>\r\n';
-					transformationProperty += '<mapping:TransformationProperty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage">\r\n';
+					transformationProperty += '<mapping:TransformationProperty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+						'xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" ' + 
+						'xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model ' + 
+						'java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage">\r\n';
 
 					for ( var n = 0; n < this.outputTableRows.length; ++n) {
 						var outputTableRow = this.outputTableRows[n];
 
 						if (outputTableRow.mappingExpression && 0 !== outputTableRow.mappingExpression.length) {
 							transformationProperty += '  <fieldMappings fieldPath="';
-							transformationProperty += outputTableRow.path.replace(/\./g, "/"); // Replace "." with "/"
+							var fieldPath = outputTableRow.path.replace(/\./g, "/"); // Replace "." with "/"
+							if (outputTableRow.accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE) {
+								fieldPath += "/"; // Primitive access points must have a trailing slash
+							}
+							transformationProperty += fieldPath;
 							transformationProperty += '" mappingExpression="';
 							transformationProperty += outputTableRow.mappingExpression;
 							transformationProperty += '"/>\r\n';
