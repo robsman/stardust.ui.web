@@ -79,15 +79,19 @@ define(
 				jQuery("#elementColumn")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.element"));
+										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.element.name"));
+				jQuery("#enumElementColumn")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.enumElement.name"));
 				jQuery("#typeColumn")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.type"));
+										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.type.name"));
 				jQuery("#cardinalityColumn")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.cardinality"));
+										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.cardinality.name"));
 				jQuery("#fieldProp")
 						.text(
 								m_i18nUtils
