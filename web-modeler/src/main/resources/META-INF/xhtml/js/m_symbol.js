@@ -1083,7 +1083,7 @@ define(
 				 * Low level graphics operation to move all primitives. Should not be invoked directly.
 				 */
 				Symbol.prototype.moveTo = function(x, y) {
-					this.moveBy(x - this.x, y - this.y);
+					this.diagram.moveSelectedSymbolsBy(x - this.x, y - this.y);
 				};
 
 				/**

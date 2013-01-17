@@ -1182,6 +1182,10 @@ define(
 				Diagram.prototype.onGlobalMouseMove = function(x, y) {
 					if (this.newSymbol != null) {
 						if (this.newSymbol.isPrepared()) {
+							//new symbol needs to be added to currentSelection,
+							//m_symbol#moveBy method is common for drag n drop and new symbol drag function
+							this.clearCurrentSelection();
+							this.addToCurrentSelection(this.newSymbol);
 							this.newSymbol.move(x * this.zoomFactor, y
 									* this.zoomFactor);
 							// When creating symbol from flyoutMenu,
@@ -1903,10 +1907,8 @@ define(
 				 *
 				 */
 				Diagram.prototype.moveSelectedSymbolsBy = function(dX, dY) {
-					if (this.mode == this.SYMBOL_MOVE_MODE) {
-						for ( var n in this.currentSelection) {
-							this.currentSelection[n].moveBy(dX, dY);
-						}
+					for ( var n in this.currentSelection) {
+						this.currentSelection[n].moveBy(dX, dY);
 					}
 				};
 
