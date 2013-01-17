@@ -15,10 +15,10 @@ define(
 		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_modelElementUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager) {
+				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager, m_modelElementUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -491,15 +491,17 @@ define(
 
 							for ( var n in model.typeDeclarations) {
 								var typeDeclaration = model.typeDeclarations[n];
-								var tdType = typeDeclaration.asSchemaType();
-								if (tdType) {
-									var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-									if ( !schemaType.isBuiltinType()) {
-										x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
-									}
-									x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
-									select += x;
-								}
+								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
+										var tdType = typeDeclaration.asSchemaType();
+										if (tdType) {
+											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+											if ( !schemaType.isBuiltinType()) {
+												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+											}
+											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
+											select += x;
+										}
+								 }
 							}
 						}
 
