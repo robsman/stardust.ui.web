@@ -112,6 +112,15 @@ public class ExternalDocumentViewerBean
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   public String getPortalHeader()
+   {
+      return FacesUtils.getPortalTitle();
+   }
+  
    public boolean isOpened()
    {
       return opened;
