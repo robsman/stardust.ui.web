@@ -42,6 +42,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
@@ -2237,10 +2238,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   ModelerConstants.ACTIVITY_KEY);
          }
 
-         connectionJson.addProperty(
-               ModelerConstants.TO_MODEL_ELEMENT_OID,
-               resolveSymbolAssociatedWithActivity(transition.getTo(),
-                     findContainingDiagram(transitionConnection)).getElementOid());
+         DiagramType containingDiagram = findContainingDiagram(transitionConnection);
+         if(containingDiagram != null)
+         {
+            connectionJson.addProperty(
+                  ModelerConstants.TO_MODEL_ELEMENT_OID,
+                  resolveSymbolAssociatedWithActivity(transition.getTo(),
+                        containingDiagram).getElementOid());
+         }
 
          if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
          {
