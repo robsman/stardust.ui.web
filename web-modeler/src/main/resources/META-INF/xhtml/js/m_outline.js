@@ -117,7 +117,7 @@ define(
 													"rel" : "participants",
 													"modelUUID" : model.uuid
 												},
-												"data" : "Participants"
+												"data" : m_i18nUtils.getProperty("modeler.outline.participants.name")
 											}, null, true);
 
 									jQuery
@@ -183,7 +183,7 @@ define(
 															+ model.uuid,
 													"rel" : "applications"
 												},
-												"data" : "Applications"
+												"data" : m_i18nUtils.getProperty("modeler.outline.applications.name")
 											}, null, true);
 
 									// Create application nodes
@@ -244,7 +244,7 @@ define(
 															"rel" : "data",
 															"modelUUID" : model.uuid
 														},
-														"data" : "Data"
+														"data" : m_i18nUtils.getProperty("modeler.outline.data.name")
 													}, null, true);
 
 									// Create Data nodes
@@ -299,7 +299,7 @@ define(
 													"modelId" : model.id,
 													"modelUUID" : model.uuid
 												},
-												"data" : "Structured Types"
+												"data" : m_i18nUtils.getProperty("modeler.outline.structuredTypes.name")
 											}, null, true);
 
 									// Create structured data type nodes
@@ -2783,7 +2783,7 @@ define(
 									"modelId" : data.id,
 									"modelUUID" : data.uuid
 								},
-								"data" : "Structured Types"
+								"data" : m_i18nUtils.getProperty("modeler.outline.structuredTypes.name")
 							}, null, true);
 					jQuery(displayScope + "#outline").jstree("create",
 							"#" + data.uuid, "last", {
@@ -2792,7 +2792,7 @@ define(
 									"rel" : "data",
 									"modelUUID" : data.uuid
 								},
-								"data" : "Data"
+								"data" : m_i18nUtils.getProperty("modeler.outline.data.name")
 							}, null, true);
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
@@ -2807,7 +2807,7 @@ define(
 									"rel" : "applications",
 									"modelUUID" : data.uuid
 								},
-								"data" : "Applications"
+								"data" : m_i18nUtils.getProperty("modeler.outline.applications.name")
 							}, null, true);
 					jQuery(displayScope + "#outline").jstree("create",
 							"#" + data.uuid, "last", {
@@ -2816,7 +2816,7 @@ define(
 									"rel" : "participants",
 									"modelUUID" : data.uuid
 								},
-								"data" : "Participants"
+								"data" : m_i18nUtils.getProperty("modeler.outline.participants.name")
 							}, null, true);
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);

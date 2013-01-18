@@ -14,8 +14,8 @@
  * @author Marc.Gille
  */
 define(
-		[],
-		function() {
+		[ "bpm-modeler/js/m_i18nUtils" ],
+		function(m_i18nUtils) {
 
 			return {
 				removeFromArray : function(array, from, to) {
@@ -335,31 +335,31 @@ define(
 					return "-";
 				}
 
-				var time_formats = [ [ 60, 'Less than a Minute' ],
-						[ 90, '1 Minute' ], // 60*1.5
-						[ 3600, 'Minutes', 60 ], // 60*60, 60
-						[ 5400, '1 Hour' ], // 60*60*1.5
-						[ 86400, 'Hours', 3600 ], // 60*60*24, 60*60
-						[ 129600, '1 Day' ], // 60*60*24*1.5
-						[ 604800, 'Days', 86400 ], // 60*60*24*7, 60*60*24
-						[ 907200, '1 Week' ], // 60*60*24*7*1.5
-						[ 2628000, 'Weeks', 604800 ], // 60*60*24*(365/12),
+				var time_formats = [ [ 60, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.lessThanAMinute") ],
+						[ 90, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneMinute") ], // 60*1.5
+						[ 3600, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.minutes"), 60 ], // 60*60, 60
+						[ 5400, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneHour") ], // 60*60*1.5
+						[ 86400, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.hours"), 3600 ], // 60*60*24, 60*60
+						[ 129600, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneDay") ], // 60*60*24*1.5
+						[ 604800, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.days"), 86400 ], // 60*60*24*7, 60*60*24
+						[ 907200, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneWeek") ], // 60*60*24*7*1.5
+						[ 2628000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.weeks"), 604800 ], // 60*60*24*(365/12),
 						// 60*60*24*7
-						[ 3942000, '1 Month' ], // 60*60*24*(365/12)*1.5
-						[ 31536000, 'Months', 2628000 ], // 60*60*24*365,
+						[ 3942000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneMonth") ], // 60*60*24*(365/12)*1.5
+						[ 31536000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.months"), 2628000 ], // 60*60*24*365,
 						// 60*60*24*(365/12)
-						[ 47304000, '1 Year' ], // 60*60*24*365*1.5
-						[ 3153600000, 'Years', 31536000 ], // 60*60*24*365*100,
+						[ 47304000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneYear") ], // 60*60*24*365*1.5
+						[ 3153600000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.years"), 31536000 ], // 60*60*24*365*100,
 						// 60*60*24*365
-						[ 4730400000, '1 Century' ], // 60*60*24*365*100*1.5
+						[ 4730400000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneCentury") ], // 60*60*24*365*100*1.5
 				];
 
 				var seconds = (new Date().getTime() - date.getTime()) / 1000;
-				var suffix = " ago";
+				var suffix = " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.ago");
 
 				if (seconds < 0) {
 					seconds = Math.abs(seconds);
-					suffix = " from now";
+					suffix = " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.fromNow");
 				}
 
 				var n = 0;
@@ -379,10 +379,9 @@ define(
 				}
 
 				if (seconds > 4730400000)
-					return Math.round(seconds / 4730400000) + " Centuries"
-							+ token;
+					return Math.round(seconds / 4730400000) + " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.centuries") + token;
 
-				return "(Unknown)";
+				return m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.unknown");
 			}
 
 			// TODO I18N
