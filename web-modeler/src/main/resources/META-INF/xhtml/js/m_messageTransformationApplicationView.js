@@ -31,12 +31,12 @@ define(
 
 			function i18nmessageTransformationproperties() {
 
-				$("label[for='guidOutput']")
+				jQuery("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				jQuery("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
@@ -132,11 +132,11 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.tab"));
-				$("label[for='inputDataTextArea']")
+				jQuery("label[for='inputDataTextArea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.inputData"));
-				$("label[for='outputDataTable']")
+				jQuery("label[for='outputDataTable']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.outputData"));
@@ -150,7 +150,46 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.resetButton"));
-
+				jQuery("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+				jQuery("label[for='dataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.datatType"));
+				jQuery("label[for='primitiveDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+				jQuery("label[for='structuredDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.structuredType"));
+				jQuery("label[for='nameTextInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+				jQuery("#inputDataDialog #applyButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
+				jQuery("#inputDataDialog #closeButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
+				jQuery("#outputDataDialog #applyButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
+				jQuery("#outputDataDialog #closeButton")
+						.attr(
+								"value",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
 			}
 
 
@@ -384,26 +423,6 @@ define(
 						event.data.view.clearErrorMessages();
 									});
 
-					jQuery("#inputDataDialog #name")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.commonProperties.name"));
-					jQuery("#inputDataDialog #type")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.commonProperties.type"));
-
-					jQuery("#inputDataDialog #applyButton")
-							.attr(
-									"value",
-									m_i18nUtils
-											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
-					jQuery("#inputDataDialog #closeButton")
-							.attr(
-									"value",
-									m_i18nUtils
-											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"))
-
 					jQuery("#inputDataDialog #closeButton").click(function() {
 						jQuery("#inputDataDialog").dialog("close");
 					});
@@ -460,26 +479,6 @@ define(
 						nameInput.removeClass("error");
 						event.data.view.clearErrorMessages();
 									});
-
-					jQuery("#outputDataDialog #name")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.commonProperties.name"));
-					jQuery("#outputDataDialog #type")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.commonProperties.type"));
-
-					jQuery("#outputDataDialog #applyButton")
-							.attr(
-									"value",
-									m_i18nUtils
-											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
-					jQuery("#outputDataDialog #closeButton")
-							.attr(
-									"value",
-									m_i18nUtils
-											.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
 
 					jQuery("#outputDataDialog #closeButton").click(function() {
 						jQuery("#outputDataDialog").dialog("close");
@@ -560,7 +559,7 @@ define(
 												}
 											} else {
 												outputRow.addClass("emptyRow");
-												outputData = "(No Mapping)";
+												outputData = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.testProperties.noMapping");
 											}
 
 											outputRow.append("<td>"
