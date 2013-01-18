@@ -200,12 +200,15 @@ public class EventCommandHandler
          {
             EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(parentLaneSymbol,
                   eventOId);
-            ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endEventSymbol);
-            processDefinition.getDiagram()
-                  .get(0)
-                  .getEndEventSymbols()
-                  .remove(endEventSymbol);
-            parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
+            if(endEventSymbol != null)
+            {
+               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endEventSymbol);
+               processDefinition.getDiagram()
+                     .get(0)
+                     .getEndEventSymbols()
+                     .remove(endEventSymbol);
+               parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
+            }
          }
       }
    }
@@ -214,5 +217,4 @@ public class EventCommandHandler
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
-
 }
