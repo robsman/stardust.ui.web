@@ -255,11 +255,11 @@ define(
 					this.structuredDataTypeSelect.empty();
 					this.structuredDataTypeSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 					if (this.scopeModel) {
 						this.structuredDataTypeSelect
-								.append("<optgroup label=\"This Model\">");
+								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
 						for ( var i in this.scopeModel.typeDeclarations) {
 							if (this.hideEnumerations && !this.scopeModel.typeDeclarations[i].isSequence()) continue;
@@ -275,7 +275,7 @@ define(
 
 					if (!this.restrictToCurrentModel) {
 						this.structuredDataTypeSelect
-								.append("</optgroup><optgroup label=\"Other Models\">");
+								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.general.otherModels") + "'>");
 
 						for ( var n in m_model.getModels()) {
 							if (this.scopeModel
@@ -312,10 +312,10 @@ define(
 					this.documentTypeSelect.empty();
 					this.documentTypeSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 					this.documentTypeSelect
-							.append("<optgroup label=\"This Model\">");
+							.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
 					if (this.scopeModel) {
 						for ( var i in this.scopeModel.typeDeclarations) {
@@ -337,7 +337,7 @@ define(
 
 					if (!this.restrictToCurrentModel) {
 						this.documentTypeSelect
-								.append("</optgroup><optgroup label=\"Other Models\">");
+								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.general.otherModels") + "'>");
 
 						for ( var n in m_model.getModels()) {
 							if (this.scopeModel
