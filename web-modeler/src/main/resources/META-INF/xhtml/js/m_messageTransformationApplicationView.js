@@ -257,14 +257,7 @@ define(
 							var mappingExpression = event.data.view.expressionTextArea.val();
 
 							outputTableRow.mappingExpression = mappingExpression;
-
-							var rowId = outputTableRow.path.replace(/\./g, "-");
-
-							// Set mapping column content
-							var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-
-							mappingCell.empty();
-							mappingCell.append(outputTableRow.mappingExpression);
+							event.data.view.populateMappingCell(outputTableRow);
 
 							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
 						}
@@ -381,17 +374,7 @@ define(
 										view.expressionEditor.setValue(outputTableRow.mappingExpression);
 										view.expressionEditor.save();
 
-										var rowId = outputTableRow.path
-												.replace(/\./g, "-");
-
-										// Set mapping column content
-
-										var mappingCell = jQuery("#targetTable tr#"
-												+ rowId + " .mapping");
-
-										mappingCell.empty();
-										mappingCell
-												.append(outputTableRow.mappingExpression);
+										view.populateMappingCell(outputTableRow);
 
 										// Remove the drag helper
 										ui.helper.remove();
@@ -889,16 +872,8 @@ define(
 				 *
 				 */
 				MessageTransformationApplicationView.prototype.clearMappingExpression = function(outputTableRow) {
-					var rowId = outputTableRow.path.replace(/\./g, "-");
-
-					// Set mapping column content
-					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-
-					mappingCell.empty();
 					outputTableRow.mappingExpression = "";
-
-//					var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
-//					clearMappingIcon.addClass("disabled");
+					this.populateMappingCell(outputTableRow);
 
 					this.submitChanges(this.determineTransformationChanges());
 				};
@@ -1193,8 +1168,7 @@ define(
 							});
 
 						} else {
-							content += "<td class=\"mapping\">";
-							content += tableRows[tableRow].mappingExpression;
+							content += "<td class=\"mapping\" />";
 							content += "<td class=\"problem\" />";
 							content += "<td>";
 							content += "<div class=\"clearMappingAction\"></div>";
@@ -1205,6 +1179,8 @@ define(
 							content += "</tr>";
 
 							tableBody.append(content);
+							
+							this.populateMappingCell(tableRows[tableRow]);
 
 							// Add click event handler for "clearMapping" action
 							var clearMappingIcon = jQuery("#targetTable #" + rowId + " .clearMappingAction");
@@ -1255,24 +1231,15 @@ define(
 													if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
 														if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
 															view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
-															
-															var rowId = view.outputTableRows[n].path.replace(/\./g, "-");
-															var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-															mappingCell.empty();
-															mappingCell.append(view.outputTableRows[n].mappingExpression);
+															view.populateMappingCell(view.outputTableRows[n]);
 														}
 													}
 												}
 											}
 											else {
 												outputTableRow.mappingExpression = inputTableRow.path;
+												view.populateMappingCell(outputTableRow);
 	
-												var mappingCell = jQuery(this)
-														.children(".mapping");
-												mappingCell.empty();
-												mappingCell
-														.append(outputTableRow.mappingExpression);
-												
 												// Update expression text area if needed
 												if (view.selectedOutputTableRow == outputTableRow) {
 													view.expressionEditor
@@ -1576,6 +1543,22 @@ define(
 					};
 				};
 
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.populateMappingCell = function(outputTableRow) {
+					var maxLength = 35;
+
+					var rowId = outputTableRow.path.replace(/\./g, "-");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ? 
+											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
+											outputTableRow.mappingExpression;
+
+					mappingCell.empty();
+					mappingCell.append(trimmedString);
+				}
+				
 				// TODO: Helper methods - review code location?
 				function ancestorsOf(node) {
 					var ancestors = [];
