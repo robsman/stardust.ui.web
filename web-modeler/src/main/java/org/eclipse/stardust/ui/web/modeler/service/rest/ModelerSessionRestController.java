@@ -55,6 +55,13 @@ public class ModelerSessionRestController
 
    @Context
    private UriInfo uriInfo;
+   
+   private static CommandJto CommandJto;
+
+   public static CommandJto getCommandJto()
+   {
+      return CommandJto;
+   }
 
    public String toChangeUri(Modification change)
    {
@@ -236,7 +243,7 @@ public class ModelerSessionRestController
    @Path("/changes")
    public Response applyChange(String postedData)
    {
-      System.out.println("postedData ==============> " + postedData);
+      System.out.println("postedData ==============> " + postedData);    
       try
       {
          CommandJto commandJto = jsonIo().gson().fromJson(postedData, CommandJto.class);
@@ -332,6 +339,8 @@ public class ModelerSessionRestController
          return wae.getResponse();
       }
 
+      ModelerSessionRestController.CommandJto = commandJto;      
+      
       // dispatch to actual command handler
       EditingSession editingSession = modelService().currentSession().getSession(model);
       Modification change = commandHandlingMediator().handleCommand(editingSession,
@@ -346,7 +355,7 @@ public class ModelerSessionRestController
          {
             change.getMetadata().put("account", commandJto.account);
          }
-
+         
          // Notify unsaved models tracker of the change to the model.
          UnsavedModelsTracker.getInstance().notifyModelModfied(modelBinding.getModelId(model));
 
@@ -354,6 +363,8 @@ public class ModelerSessionRestController
 
          commandHandlingMediator().broadcastChange(change.getSession(), changeJto);
 
+         ModelerSessionRestController.CommandJto = null;               
+         
          return Response.created(URI.create(toChangeUri(change))) //
                .entity(jsonIo().writeJsonObject(changeJto))
                .type(MediaType.APPLICATION_JSON_TYPE)
@@ -545,7 +556,7 @@ public class ModelerSessionRestController
       };
    };
 
-   private static class CommandJto
+   public static class CommandJto
    {
       public String commandId;
       public String modelId;
@@ -555,7 +566,7 @@ public class ModelerSessionRestController
       public List<ChangeDescriptionJto> changeDescriptions;
    }
 
-   private static class ChangeDescriptionJto
+   public static class ChangeDescriptionJto
    {
       public String uuid;
       public String oid;
