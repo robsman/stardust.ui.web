@@ -9,9 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_eventIntegrationOverlay", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_eventIntegrationOverlay",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
 				m_eventIntegrationOverlay, m_i18nUtils) {
@@ -49,40 +53,51 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.repeatInterval"));
 					jQuery("label[for='repeatCountInput']")
-					.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.timerEvent.repeatCount"));
-					
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent.repeatCount"));
+
 					this.configurationSpan = this.mapInputId("configuration");
-					
+
 					this.configurationSpan
-					.text(
-							m_i18nUtils
+							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
-					
-					this.parametersSpan.text(
-							m_i18nUtils
-									.getProperty("modeler.element.properties.event.parameters"));
-					
-					this.repeatIntervalInput = this.mapInputId("repeatIntervalInput");
-					this.repeatIntervalUnitSelect = this.mapInputId("repeatIntervalUnitSelect");
 
-					this.repeatIntervalUnitSelect.append("<option value='1'>"
-							+ m_i18nUtils
-							.getProperty("modeler.element.properties.event.milliseconds") + "</option>");
-					this.repeatIntervalUnitSelect.append("<option value='1000'>"
-							+ m_i18nUtils
-							.getProperty("modeler.element.properties.event.seconds") + "</option>");
-					this.repeatIntervalUnitSelect.append("<option value='60000'>"
-							+ m_i18nUtils
-							.getProperty("modeler.element.properties.event.minutes") + "</option>");
-					this.repeatIntervalUnitSelect.append("<option value='3600000'>"
-							+ m_i18nUtils
-							.getProperty("modeler.element.properties.event.hours") + "</option>");
-					this.repeatIntervalUnitSelect.append("<option value='3600000'>"
-							+ m_i18nUtils
-							.getProperty("modeler.element.properties.event.days") + "</option>");
+					this.parametersSpan
+							.text(m_i18nUtils
+									.getProperty("modeler.element.properties.event.parameters"));
+
+					this.repeatIntervalInput = this
+							.mapInputId("repeatIntervalInput");
+					this.repeatIntervalUnitSelect = this
+							.mapInputId("repeatIntervalUnitSelect");
+
+					this.repeatIntervalUnitSelect
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.hours")
+									+ "</option>");
+					this.repeatIntervalUnitSelect
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.days")
+									+ "</option>");
 
 					this.repeatCountInput = this.mapInputId("repeatCountInput");
 				};
@@ -165,27 +180,29 @@ define(
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
-					var uri = uri.split("//");
+					var uri = from.attr("uri");
+					var protocolAndRest = uri.split("://");
 
-					if (uri[1] != null) {
-						// uri = uri[1].split("?");
-						// this.fileOrDirectoryNameInput.val(uri[0]);
-						//
-						// if (uri[1] != null) {
-						// var options = uri[1].split("&");
-						//
-						// for ( var n = 0; n < options.length; ++n) {
-						// var option = options[n];
-						//
-						// option = option.split("=");
-						//
-						// var name = option[0];
-						// var value = option[1];
-						//
-						// if (name == "") {
-						// }
-						// }
-						// }
+					var parametersAndOptions = protocolAndRest[1].split("?");
+					var options = parametersAndOptions[1];
+
+					// Map options
+
+					if (options) {
+						var nameValues = options.split("&");
+
+						for ( var n = 0; n < nameValues.length; ++n) {
+							var nameValue = nameValues[n].split("=");
+							var name = nameValue[0];
+							var value = nameValue[1];
+
+							m_utils.debug("name: " + name);
+							m_utils.debug("value: " + value);
+
+							if (name == "repeatCount") {
+								this.repeatCountInput.val(value);
+							}
+						}
 					}
 
 					this.parameterMappingsPanel.setScopeModel(this.page

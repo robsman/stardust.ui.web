@@ -9,9 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_eventIntegrationOverlay", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_eventIntegrationOverlay",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
 				m_eventIntegrationOverlay, m_i18nUtils) {
@@ -185,9 +189,8 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.activate = function() {
-					this.fileOrDirectoryNameInput
-							.val(m_i18nUtils
-									.getProperty("modeler.general.toBeDefined"));
+					this.fileOrDirectoryNameInput.val(m_i18nUtils
+							.getProperty("modeler.general.toBeDefined"));
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
 
@@ -246,29 +249,34 @@ define(
 						if (uri[1] != null) {
 							var options = uri[1].split("&");
 
-							for ( var n = 0; n < options.length; ++n) {
-								var option = options[n];
+							if (options) {
+								for ( var n = 0; n < options.length; ++n) {
+									var option = options[n];
 
-								option = option.split("=");
+									option = option.split("=");
 
-								var name = option[0];
-								var value = option[1];
+									var name = option[0];
+									var value = option[1];
 
-								if (name == "consumer.recursive") {
-									this.recursiveInput.prop("checked", value);
-								} else if (name == "consumer.initialDelay") {
-									this.initialIntervalInput.val(value);
-									// this.initialIntervalUnitSelect.val();
-								} else if (name == "consumer.alwaysConsume") {
-									this.alwaysConsumeInput.prop("checked",
-											value);
-								} else if (name == "consumer.noop") {
-									if (value == "true") {
-										this.postProcessingSelect.val("noop");
-									}
-								} else if (name == "consumer.delete") {
-									if (value == "true") {
-										this.postProcessingSelect.val("delete");
+									if (name == "consumer.recursive") {
+										this.recursiveInput.prop("checked",
+												value);
+									} else if (name == "consumer.initialDelay") {
+										this.initialIntervalInput.val(value);
+										// this.initialIntervalUnitSelect.val();
+									} else if (name == "consumer.alwaysConsume") {
+										this.alwaysConsumeInput.prop("checked",
+												value);
+									} else if (name == "consumer.noop") {
+										if (value == "true") {
+											this.postProcessingSelect
+													.val("noop");
+										}
+									} else if (name == "consumer.delete") {
+										if (value == "true") {
+											this.postProcessingSelect
+													.val("delete");
+										}
 									}
 								}
 							}

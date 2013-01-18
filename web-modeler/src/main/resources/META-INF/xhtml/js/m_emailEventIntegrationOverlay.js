@@ -9,9 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_eventIntegrationOverlay", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_eventIntegrationOverlay",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_parameterDefinitionsPanel,
 				m_eventIntegrationOverlay, m_i18nUtils) {
@@ -143,12 +147,10 @@ define(
 				 * 
 				 */
 				EmailEventIntegrationOverlay.prototype.activate = function() {
-					this.mailServerInput
-							.val(m_i18nUtils
-									.getProperty("modeler.general.toBeDefined"));
-					this.accountInput
-							.val(m_i18nUtils
-									.getProperty("modeler.general.toBeDefined"));
+					this.mailServerInput.val(m_i18nUtils
+							.getProperty("modeler.general.toBeDefined"));
+					this.accountInput.val(m_i18nUtils
+							.getProperty("modeler.general.toBeDefined"));
 					this.portInput.val("30");
 
 					var parameterMappings = [];
@@ -181,27 +183,89 @@ define(
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
-					var uri = uri.split("//");
+					var protocolAndRest = uri.split("://");
 
-					if (uri[1] != null) {
-						uri = uri[1].split("?");
-						// this.fileOrDirectoryNameInput.val(uri[0]);
-						//
-						// if (uri[1] != null) {
-						// var options = uri[1].split("&");
-						//
-						// for ( var n = 0; n < options.length; ++n) {
-						// var option = options[n];
-						//
-						// option = option.split("=");
-						//
-						// var name = option[0];
-						// var value = option[1];
-						//
-						// if (name == "") {
-						// }
-						// }
-						// }
+					this.protocolSelect.val(protocolAndRest[0]);
+
+					var parametersAndOptions = protocolAndRest[1].split("?");
+					var parameters = parametersAndOptions[0];
+					var options = parametersAndOptions[1];
+
+					var userAndRest = parameters.split("@");
+					var hostAndPort = null;
+					var user = null;
+					var host = null;
+					var port = null;
+
+					if (userAndRest[1]) {
+						user = userAndRest[0];
+						hostAndPort = userAndRest[1].split(":");
+
+						if (hostAndPort[1]) {
+							port = hostAndPort[1];
+							host = hostAndPort[0];
+						} else {
+							host = hostAndPort[0];
+						}
+					} else {
+						hostAndPort = userAndRest[0].split(":");
+
+						if (hostAndPort[1]) {
+							port = hostAndPort[1];
+							host = hostAndPort[0];
+						} else {
+							host = hostAndPort[0];
+						}
+					}
+
+					this.mailServerInput.val(host);
+					this.portInput.val(port);
+					this.accountInput.val(user);
+
+					// Map options
+					
+					var nameValues = options.split("&");
+					
+					for ( var n = 0; n < nameValues.length; ++n) {
+						var nameValue = nameValues[n].split("=");
+						var name = nameValue[0];
+						var value = nameValue[1];
+
+						m_utils.debug("name: " + name);
+						m_utils.debug("value: " + value);
+
+						if (name == "password") {
+							this.passwordInput.val(value);
+						} 
+						else if (name == "username") {
+							this.accountInput.val(value);
+						} 
+						else if (name == "to") {
+						} 
+						else if (name == "replyTo") {
+						} 
+						else if (name == "CC") {
+						} 
+						else if (name == "BCC") {
+						} 
+						else if (name == "from") {
+						} 
+						else if (name == "subject") {
+						} 
+						else if (name == "connectionTimeout") {
+						} 
+						else if (name == "initialDelay") {
+						} 
+						else if (name == "pollingDelay") {
+						} 
+						else if (name == "unseen") {
+						} 
+						else if (name == "delete") {
+						} 
+						else if (name == "copyTo") {
+						} 
+						else if (name == "fetchSize") {
+						} 
 					}
 
 					this.parameterMappingsPanel.setScopeModel(this.page
