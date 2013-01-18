@@ -577,15 +577,7 @@ define(
 													// re-route
 												} else {
 													currentDiagram.currentSelection[i]
-															.move(
-																	event.pageX
-																			- X_OFFSET
-																			+ currentDiagram.scrollPane
-																					.scrollLeft(),
-																	event.pageY
-																			- Y_OFFSET
-																			+ currentDiagram.scrollPane
-																					.scrollTop())
+															.move(event.pageX, event.pageY, true);
 												}
 											}
 										}
@@ -1733,7 +1725,7 @@ define(
 
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.newSymbol.prepare(startSymbol.x,
-								startSymbol.y + 200);
+								startSymbol.y + 100);
 						// Create connection if connectionValidation passes
 						this.currentConnection = m_connection.createConnection(
 								this, startSymbol.anchorPoints[2]);

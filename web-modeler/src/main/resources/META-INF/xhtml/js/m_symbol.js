@@ -1075,8 +1075,19 @@ define(
 				/**
 				 * @Deprecated Shortcut for moveTo
 				 */
-				Symbol.prototype.move = function(x, y) {
-					this.moveTo(x, y);
+				Symbol.prototype.move = function(x, y, adjust) {
+					/**
+					 * This is to handle the move event when the symbol is
+					 * already created, it is being dragged and at the same time
+					 * the scroll bar position changes.
+					 */
+					if (adjust) {
+						var displ = this.getEffectiveDisplacement(x, y);
+						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+								displ.deltaY);
+					} else {
+						this.moveTo(x, y);
+					}
 				};
 
 				/**
@@ -1272,19 +1283,12 @@ define(
 				 */
 				Symbol.prototype.drag = function(dX, dY, x, y) {
 					this.diagram.resetEditableText();
-					var moveX = x * this.diagram.zoomFactor
-							- this.diagram.X_OFFSET
-							+ this.diagram.scrollPane.scrollLeft()
-							- (this.width / 2);
-					var moveY = y * this.diagram.zoomFactor
-							- this.diagram.Y_OFFSET
-							+ this.diagram.scrollPane.scrollTop()
-							- (this.height / 2);
-					var deltaX = moveX - this.x;
-					var deltaY = moveY - this.y;
 
-					this.diagram.moveSelectedSymbolsBy(deltaX, deltaY);
-					this.postDrag(deltaX, deltaY, x, y);
+					var displ = this.getEffectiveDisplacement(x, y);
+					this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+							displ.deltaY);
+
+					this.postDrag(displ.deltaX, displ.deltaY, x, y);
 				};
 
 				/**
@@ -1299,7 +1303,7 @@ define(
 						}
 						this.diagram.dragEnabled = false;
 					}
-				}
+				};
 
 				/**
 				 *
@@ -1381,6 +1385,25 @@ define(
 
 					return changeDesc;
 
+				};
+
+				/**
+				 * This is internal utility method to determine effected
+				 * displacement of symbol
+				 */
+				Symbol.prototype.getEffectiveDisplacement = function(x, y) {
+					var moveX = x * this.diagram.zoomFactor
+							- this.diagram.X_OFFSET
+							+ this.diagram.scrollPane.scrollLeft()
+							- (this.width / 2);
+					var moveY = y * this.diagram.zoomFactor
+							- this.diagram.Y_OFFSET
+							+ this.diagram.scrollPane.scrollTop()
+							- (this.height / 2);
+					return {
+						'deltaX' : moveX - this.x,
+						'deltaY' : moveY - this.y
+					};
 				};
 
 				/**
