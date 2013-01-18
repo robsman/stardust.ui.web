@@ -1588,7 +1588,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (triggerJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY))
       {
-//         trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
+         trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
       }
 
       storeAttributes(trigger, triggerJson);
