@@ -67,7 +67,7 @@ define(
 				jQuery("#elementColumn")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.element"));
+										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.element.name"));
 				jQuery("#typeColumn")
 						.text(
 								m_i18nUtils
