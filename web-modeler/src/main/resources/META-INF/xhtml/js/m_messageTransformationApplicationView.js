@@ -636,12 +636,6 @@ define(
 					m_utils.debug("===> Application");
 					m_utils.debug(application);
 
-					this
-							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
-
-					m_utils.debug("===> Mapping Expressions");
-					m_utils.debug(this.mappingExpressions);
-
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
@@ -649,6 +643,12 @@ define(
 					this.outputTableBody.empty();
 					this.inputTableRows = [];
 					this.outputTableRows = [];
+
+					this
+							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
+
+					m_utils.debug("===> Mapping Expressions");
+					m_utils.debug(this.mappingExpressions);
 
 					for ( var key in this.application.contexts) {
 						var context = this.application.contexts[key];
@@ -1558,7 +1558,11 @@ define(
 							}
 							transformationProperty += fieldPath;
 							transformationProperty += '" mappingExpression="';
-							transformationProperty += outputTableRow.mappingExpression;
+							transformationProperty += outputTableRow.mappingExpression.replace(/&/g, '&amp;')
+																						.replace(/</g, '&lt;')
+																						.replace(/>/g, '&gt;')
+																						.replace(/"/g, '&quot;')
+																						.replace(/\n/g, '&#xA;');
 							transformationProperty += '"/>\r\n';
 						}
 					}
