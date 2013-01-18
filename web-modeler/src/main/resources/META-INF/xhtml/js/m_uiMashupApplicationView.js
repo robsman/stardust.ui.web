@@ -89,6 +89,11 @@ define(
 						"title",
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.delete"));
+				jQuery("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+
 				var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");

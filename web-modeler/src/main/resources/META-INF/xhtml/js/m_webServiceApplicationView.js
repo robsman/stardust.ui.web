@@ -138,6 +138,10 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.browse"));
+				jQuery("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
 
 			}
 
@@ -690,13 +694,15 @@ define(
 						variant = "passwordText";
 					}
 
+					var userNamePassStr = m_i18nUtils.getProperty("modeler.model.propertyView.webService.implementationProperties.credentials");
+
 					if (mechanism == "basic") {
 						this.variantSelect
-								.append("<option value=\"passwordText\">User Name/Password</option>");
+								.append("<option value=\"passwordText\">" + userNamePassStr + "</option>");
 						this.setVariant(variant);
 					} else {
 						this.variantSelect
-								.append("<option value=\"passwordText\">User Name/Password</option><option value=\"passwordDigest\">User Name/Password Digest</option><option value=\"xwssConfiguration\">XWSS Configuration</option>");
+								.append("<option value=\"passwordText\">" + userNamePassStr + "</option><option value=\"passwordDigest\">User Name/Password Digest</option><option value=\"xwssConfiguration\">XWSS Configuration</option>");
 						this.setVariant(variant);
 					}
 				};

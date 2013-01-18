@@ -71,6 +71,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
+				jQuery("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+									.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
 
 				var directioninput = jQuery("#directionInput");
 
