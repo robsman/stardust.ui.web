@@ -48,6 +48,8 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.initialize = function(typeDeclaration) {
 
+					this.internationalizeStaticData();
+
 					this.id = "xsdStructuredDataTypeView";
 					this.tree = jQuery("table#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
@@ -56,7 +58,7 @@ define(
 					this.upButton = jQuery("#moveElementUpButton");
 					this.downButton = jQuery("#moveElementDownButton");
 					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
-					this.visibilitySelect = jQuery("#visibilityCheckbox");
+					this.visibilitySelect = jQuery("#publicVisibilityCheckbox");
 					this.structureKindSelect = jQuery("#structureKind select");
 					this.minimumLengthEdit = jQuery("#minimumLength input");
 					this.maximumLengthEdit = jQuery("#maximumLength input");
@@ -148,6 +150,34 @@ define(
 							});
 
 					this.initializeModelElementView(typeDeclaration);
+				};
+
+				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
+					jQuery("#publicVisibility")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+					jQuery("tr#structureKind td.label")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType")
+											+ ":");
+					jQuery("tr#structureKind select option.label-struct")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType.composite"));
+					jQuery("tr#structureKind select option.label-enum")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType.enumeration"));
+					jQuery("tr#minimumLength td.label")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minLength") + ":");
+					jQuery("tr#maximumLength td.label")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.model.propertyView.structuredTypes.enumeration.maxLength") + ":");
 				};
 
 				/**

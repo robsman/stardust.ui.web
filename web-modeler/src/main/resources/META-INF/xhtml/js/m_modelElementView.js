@@ -56,6 +56,11 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.enumeration"));
+				jQuery("#addElementButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.add"));
 				jQuery("#deleteElementButton")
 						.attr(
 								"title",

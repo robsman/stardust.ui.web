@@ -32,10 +32,16 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.panel"));
+				jQuery("#dialogCloseIcon").attr("title",
+						m_i18nUtils.getProperty("modeler.common.value.close"));
 				jQuery("#import")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.text"));
+				jQuery("#importMessage")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.message"));
 				jQuery("#url")
 						.text(
 								m_i18nUtils
