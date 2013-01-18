@@ -1571,11 +1571,16 @@ define(
 						if (null != this.currentConnection) {
 							var status = this.placeNewSymbol(x - this.X_OFFSET,
 									y - this.Y_OFFSET, true);
-							this.currentConnection.toModelElementOid = this.lastSymbol.oid;
-							this.currentConnection.updateAnchorPointForSymbol();
-							this.currentConnection.complete();
+							if (status) {
+								this.currentConnection.toModelElementOid = this.lastSymbol.oid;
+								this.currentConnection.updateAnchorPointForSymbol();
+								this.currentConnection.complete();
+							}
+  							else {
+								this.currentConnection.remove();
+								this.currentConnection = null;
+							}
 
-							this.currentConnection = null;
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
 									* this.zoomFactor);

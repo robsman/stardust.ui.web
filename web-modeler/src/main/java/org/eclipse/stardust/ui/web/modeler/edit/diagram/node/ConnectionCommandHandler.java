@@ -17,11 +17,13 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.common.util.EList;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -348,8 +350,8 @@ public class ConnectionCommandHandler
                // TODO: handle exception
             }
          }
-      }
-   }
+         }
+         }
 
    /**
     *
@@ -364,6 +366,9 @@ public class ConnectionCommandHandler
    {
       JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
+      //remove duplicate transition connections
+      deleteDuplicateConnections(sourceActivitySymbol.getElementOid(), targetActivitySymbol.getElementOid(), processDefinition);
+
       TransitionType transition = doCreateTransition(processDefinition,
             sourceActivitySymbol.getActivity(), targetActivitySymbol.getActivity(),
             controlFlowJson, ++maxOid);
@@ -372,6 +377,39 @@ public class ConnectionCommandHandler
             targetActivitySymbol, transition, connectionJson, ++maxOid);
    }
 
+   /**
+    * deletes existing duplicate connections
+    * @param sourceOid
+    * @param targetOid
+    * @param processDefinition
+    */
+   private void deleteDuplicateConnections(long sourceOid, long targetOid,
+         ProcessDefinitionType processDefinition)
+   {
+      List<TransitionConnectionType> tobeRemoved = new ArrayList<TransitionConnectionType>();
+
+      EList<TransitionConnectionType> transitionConnections = processDefinition.getDiagram()
+            .get(0)
+            .getPoolSymbols()
+            .get(0)
+            .getTransitionConnection();
+
+      for (TransitionConnectionType transitionConnectionType : transitionConnections)
+      {
+         if (transitionConnectionType.getSourceActivitySymbol().getElementOid() == sourceOid
+               && transitionConnectionType.getTargetActivitySymbol().getElementOid() == targetOid)
+         {
+            tobeRemoved.add(transitionConnectionType);
+         }
+      }
+
+      for (TransitionConnectionType transitionConnectionType : tobeRemoved)
+      {
+         transitionConnections.remove(transitionConnectionType);
+         processDefinition.getTransition().remove(
+               transitionConnectionType.getTransition());
+      }
+   }
 
    private TransitionConnectionType doCreateTransitionSymbol(
          ProcessDefinitionType processDefinition, IFlowObjectSymbol sourceActivitySymbol,
