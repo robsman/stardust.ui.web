@@ -17,4 +17,6 @@ package org.eclipse.stardust.ui.web.common;
 public interface Constants
 {
    String CONTEXT_PARAM_LOGOUT_URI = "com.infinity.bpm.portal.common.logoutURI";
+   String LOGIN_HEADING = "carnot.login.HEADING";
+   String COMMON_MESSAGE_BUNDLE =  "web-ui-common-messages";// "CommonMessages";
 }

@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.faces.FactoryFinder;
@@ -41,13 +43,13 @@ import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-
+import org.eclipse.stardust.ui.web.common.Constants;
 
 /**
  * Provides Utility methods that can be called from XHTMLs
  * @author Subodh.Godbole
  */
-public class FacesUtils
+public class FacesUtils implements Constants
 {
    private static final Logger trace = LogManager.getLogger(FacesUtils.class);
    
@@ -590,4 +592,106 @@ public class FacesUtils
    {
       return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
    }
+   
+   /**
+    * 
+    * @return
+    */
+   public static String getPortalTitle()
+   {
+      String result = null;
+
+      String headingNlsKey = FacesContext.getCurrentInstance().getExternalContext().getInitParameter(LOGIN_HEADING);
+      if (!StringUtils.isEmpty(headingNlsKey) && (-1 != headingNlsKey.indexOf("#")))
+      {
+         String bundleName = null;
+         String nlsKey = null;
+         Iterator<String> i = StringUtils.split(headingNlsKey, "#");
+         if (i.hasNext())
+         {
+            bundleName = i.next();
+         }
+         if (i.hasNext())
+         {
+            nlsKey = i.next();
+         }
+
+         if (!StringUtils.isEmpty(bundleName) && !StringUtils.isEmpty(nlsKey))
+         {
+            result = getString(getLocaleFromRequest(), bundleName, nlsKey);
+         }
+      }
+
+      if (null == result)
+      {
+         result = MessagePropertiesBean.getInstance().getString("portalFramework.title");
+      }
+
+      return result;
+   }
+
+   /**
+    * 
+    * @param locale
+    * @param bundleName
+    * @param key
+    * @return
+    */
+   public static String getString(Locale locale, String bundleName, String key)
+   {
+      String text = null;
+      String failureMsg = null;
+      try
+      {
+         if (bundleName != null)
+         {
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale, getCurrentClassLoader());
+            text = bundle != null ? bundle.getString(key) : null;
+            if (text == null)
+            {
+               // If message-bundle not found, search in common message bundle
+               String baseName = FacesContext.getCurrentInstance().getExternalContext()
+                     .getInitParameter(COMMON_MESSAGE_BUNDLE);
+               if (baseName != null)
+               {
+                  bundle = ResourceBundle.getBundle(baseName, locale, getCurrentClassLoader());
+                  text = bundle != null ? bundle.getString(key) : null;
+               }
+            }
+         }
+      }
+      catch (MissingResourceException e)
+      {
+         failureMsg = "cannot find '" + key + "' in ResourceBundle";
+      }
+      catch (Exception e)
+      {
+         failureMsg = "error getting value of '" + key + "' in resource bundle '";
+      }
+      finally
+      {
+         if (failureMsg != null)
+         {
+            trace.error(failureMsg);
+         }
+      }
+      return text;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   protected static ClassLoader getCurrentClassLoader()
+   {
+      ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+      if (null == loader)
+      {
+         loader = FacesUtils.class.getClassLoader();
+      }
+
+      return loader;
+   }
 }
+   

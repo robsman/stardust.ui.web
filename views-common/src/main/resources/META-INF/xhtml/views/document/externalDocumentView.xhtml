@@ -8,7 +8,7 @@
 
 	<html>
 	<head>
-		<title>#{common_msgPropsBean['portalFramework.title']}</title>
+		<title>#{externalDocumentViewerBean.portalHeader}</title>
 		<ui:include src="/plugins/common/portalHead.xhtml" />
 		<script type="text/javascript">
 			window.onbeforeunload = onWindowUnload;
@@ -53,7 +53,7 @@
 			valueChangeListener="#{externalDocumentViewerBean.closeWindowListener}"
 			partialSubmit="true" immediate="true">
 			<pc:automationTag value="auto-COM-DocView-ExtDocView-ToolbarWindUploaded"/>
-		</ice:inputHidden>	
+		</ice:inputHidden>
 	</ice:form>
 	</body>
 	</html>

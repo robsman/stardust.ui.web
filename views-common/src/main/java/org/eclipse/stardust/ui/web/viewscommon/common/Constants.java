@@ -40,7 +40,6 @@ public class Constants
    public final static String LOGIN_APP_ID = "carnot.login.APPLICATION_ID";
    public final static String LOGIN_ADMIN_ROLE_REQUIRED = "carnot.login.ADMINISTRATOR_ROLE_REQUIRED";
    public final static String LOGIN_MODEL_REQUIRED = "carnot.login.MODEL_REQUIRED";
-   public final static String LOGIN_HEADING = "carnot.login.HEADING";
 
    public final static String SESSION_LISTENER_BEANS = "carnot.SESSION_LISTENERS";
    public final static String PRINCIPAL_PAGE = "carnot.PRINCIPAL_PAGE";

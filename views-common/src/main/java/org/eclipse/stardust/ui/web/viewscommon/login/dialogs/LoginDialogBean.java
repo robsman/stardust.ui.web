@@ -83,6 +83,8 @@ public class LoginDialogBean implements Serializable, InitializingBean
    
    private String pluginLoginStyleSheetPath;
    
+   private String loginHeader;
+   
    public LoginDialogBean()
    {
 	  changePwdDialog = new ChangePasswordDialog();
@@ -180,37 +182,12 @@ public class LoginDialogBean implements Serializable, InitializingBean
    
    public String getLoginHeader()
    {
-      String result = null;
-
-      String headingNlsKey = FacesContext.getCurrentInstance()
-            .getExternalContext()
-            .getInitParameter(Constants.LOGIN_HEADING);
-      if ( !StringUtils.isEmpty(headingNlsKey) && ( -1 != headingNlsKey.indexOf("#")))
+      if (StringUtils.isEmpty(loginHeader))
       {
-         String bundleName = null;
-         String nlsKey = null;
-         Iterator<String> i = StringUtils.split(headingNlsKey, "#");
-         if (i.hasNext())
-         {
-            bundleName = i.next();
-         }
-         if (i.hasNext())
-         {
-            nlsKey = i.next();
-         }
-
-         if ( !StringUtils.isEmpty(bundleName) && !StringUtils.isEmpty(nlsKey))
-         {
-            result = Localizer.getString(new LocalizerKey(bundleName, nlsKey));
-         }
+         loginHeader = FacesUtils.getPortalTitle();
+         trace.debug("Login Header text set");
       }
-
-      if (null == result)
-      {
-         result = MessagePropertiesBean.getInstance().getString("portalFramework.title");
-      }
-
-      return result;
+      return loginHeader;
    }
 
    public String getAccount()

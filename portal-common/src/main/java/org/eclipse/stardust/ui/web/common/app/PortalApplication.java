@@ -333,6 +333,15 @@ public class PortalApplication
    }
 
    /**
+    * 
+    * @return
+    */
+   public String getPortalHeader()
+   {
+      return FacesUtils.getPortalTitle();
+   }
+  
+   /**
     * @param viewDef
     * @param url
     * @param messageBean
