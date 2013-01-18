@@ -82,6 +82,9 @@ import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
+import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeDescriptionJto;
+import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.CommandJto;
 
 /**
  * IPP XPDL marshaller.
@@ -227,6 +230,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toProcessDefinitionJson(ProcessDefinitionType processDefinition)
    {
+      List<ChangeDescriptionJto> changeDescriptions = null;
+      CommandJto commandJto = ModelerSessionRestController.getCommandJto();
+      if(commandJto != null)
+      {
+         changeDescriptions = commandJto.changeDescriptions;
+      }
+      
       JsonObject processJson = new JsonObject();
 
       processJson.addProperty(ModelerConstants.OID_PROPERTY,
@@ -321,12 +331,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                {
                   formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-                  String type = mapPrimitiveTypes(formalParameter.getDataType()
-                        .getBasicType()
-                        .getType()
-                        .getLiteral());
-                  formalParameterJson.addProperty(
-                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+                  
+                  String type = null;
+                  if(changeDescriptions != null)
+                  {
+                     type = findInChangeDescriptions(changeDescriptions, formalParameter.getId());
+                  }
+                  else
+                  {
+                     FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
+                     if (mappingsType != null)
+                     {
+                        DataType data = mappingsType.getMappedData(formalParameter);
+                        if(data != null)
+                        {
+                           type = AttributeUtil.getAttributeValue(data, "carnot:engine:type");
+                        }
+                     }                     
+                  }
+                  
+                  if(type != null)
+                  {
+                     formalParameterJson.addProperty(
+                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+                  }
                }
                FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
                if (mappingsType != null)
@@ -334,7 +362,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   DataType data = mappingsType.getMappedData(formalParameter);
                   setDataFullID(formalParameterJson, model, data);
                }
-
             }
          }
       }
@@ -2991,5 +3018,37 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
          }
       }
-   }   
+   }  
+   
+   String findInChangeDescriptions(List<ChangeDescriptionJto> changeDescriptions, String id)
+   {
+      for(ChangeDescriptionJto description : changeDescriptions)
+      {
+         JsonObject changes = description.changes; 
+         
+         if(changes.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+         {
+            JsonArray formalParametersJson = changes.get(
+                  ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
+            for (int n = 0; n < formalParametersJson.size(); ++n)
+            {
+               JsonObject formalParameterJson = formalParametersJson.get(n)
+                     .getAsJsonObject();
+               if(formalParameterJson.get(ModelerConstants.ID_PROPERTY).getAsString().equals(id))
+               {
+                  if(formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                        .getAsString()
+                        .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+                  {
+                     
+                     return formalParameterJson.get(
+                                    ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                  }
+               }
+            }
+         }
+      }
+      
+      return null;
+   }
 }
