@@ -3,18 +3,22 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_i18nUtils"],
-		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model, m_dataTypeSelector,
-				m_parameterDefinitionsPanel,m_i18nUtils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_urlUtils, m_command,
+				m_commandsController, m_dialog, m_modelElementView, m_model,
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new UiMashupApplicationView();
@@ -26,22 +30,19 @@ define(
 
 					view.initialize(m_model.findApplication(fullId));
 
-
 				}
 			};
 
-
 			function i18uimashupproperties() {
-
 				$("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
 				$("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 
 				jQuery("#applicationName")
 						.text(
@@ -85,10 +86,11 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				jQuery("#deleteParameterDefinitionButton").attr(
-						"title",
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.delete"));
+				jQuery("#deleteParameterDefinitionButton")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.delete"));
 				jQuery("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
@@ -121,10 +123,10 @@ define(
 						+ selectdata + "</option>");
 
 				// Commented as we don't support Money values yet.
-//				selectdata = m_i18nUtils
-//						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
-//				primitiveDataTypeSelect.append("<option value=\"Decimal\">"
-//						+ selectdata + "</option>");
+				// selectdata = m_i18nUtils
+				// .getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+				// primitiveDataTypeSelect.append("<option value=\"Decimal\">"
+				// + selectdata + "</option>");
 
 				selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
@@ -155,10 +157,9 @@ define(
 				parameterDefinitionDirectionSelect
 						.append("<option value=\"INOUT\">" + selectdata
 								+ "</option>");
-
 			}
 			/**
-			 *
+			 * 
 			 */
 			function UiMashupApplicationView() {
 				var view = m_modelElementView.create();
@@ -167,13 +168,14 @@ define(
 				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);
 
 				/**
-				 *
+				 * 
 				 */
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 					this.urlInput = jQuery("#urlInput");
+					this.applicationFrame = jQuery("#applicationFrame");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -217,11 +219,157 @@ define(
 													});
 										}
 									});
+
+					jQuery("#runButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTable = jQuery("#outputDataTable");
+
+										outputDataTable.empty();
+
+										// Send input data
+
+										m_utils.debug("Location:");
+										m_utils.debug(location);
+
+										jQuery
+												.ajax(
+														{
+															type : "POST",
+															url : m_urlUtils
+																	.getModelerEndpointUrl()
+																	+ "/interaction",
+															contentType : "application/json",
+															data : "{input: "
+																	+ inputDataTextarea
+																			.val()
+																	+ "}"
+														})
+												.done(
+														function() {
+															// Refresh external
+															// UI
+
+															view.applicationFrame
+																	.attr(
+																			"src",
+																			view.urlInput
+																					.val()
+																					+ "?ippPortalBaseUri="
+																					+ m_urlUtils
+																							.getModelerEndpointUrl());
+														})
+												.fail(
+														function() {
+															view.applicationFrame
+																	.attr(
+																			"src",
+																			"");
+														});
+									});
+					jQuery("#resetButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTextarea = jQuery("#outputDataTextarea");
+
+										inputDataTextarea.empty();
+										outputDataTextarea.empty();
+
+										var inputData = "{";
+
+										for ( var n = 0; n < view
+												.getApplication().contexts["externalWebApp"].accessPoints.length; ++n) {
+											var parameterDefinition = view
+													.getApplication().contexts["externalWebApp"].accessPoints[n];
+
+											m_utils
+													.debug("Parameter Definition");
+											m_utils.debug(parameterDefinition);
+
+											if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT) {
+												continue;
+											}
+
+											if (n > 0) {
+												inputData += ","
+											}
+
+											if (parameterDefinition.dataType == "struct") {
+												var typeDeclaration = m_model
+														.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+
+												m_utils
+														.debug("Type Declaration");
+												m_utils.debug(typeDeclaration);
+
+												inputData += parameterDefinition.id;
+												inputData += ": ";
+												inputData += JSON
+														.stringify(
+																typeDeclaration
+																		.createInstance(),
+																null, 3);
+											} else {
+												// Deal with primitives and
+												// other types
+											}
+										}
+
+										inputData += "}";
+
+										inputDataTextarea.append(inputData);
+									});
+					jQuery("#retrieveButton")
+					.click(
+							{
+								view : this
+							},
+							function(event) {
+								var view = event.data.view;
+
+								var outputDataTextarea = jQuery("#outputDataTextarea");
+
+								jQuery
+										.ajax(
+												{
+													type : "GET",
+													url : m_urlUtils
+															.getModelerEndpointUrl()
+															+ "/interaction",
+													contentType : "application/json"
+												})
+										.done(
+												function(data) {
+													outputDataTextarea.val(JSON.stringify(data.output));
+												})
+										.fail(
+												function() {
+												});
+							});
+
 					this.initializeModelElementView(application);
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				UiMashupApplicationView.prototype.getApplication = function() {
+					return this.application;
+				};
+
+				/**
+				 * 
 				 */
 				UiMashupApplicationView.prototype.setModelElement = function(
 						application) {
@@ -248,7 +396,7 @@ define(
 					this.initializeModelElement(application);
 
 					this.urlInput
-					.val(this.application.attributes["carnot:engine:ui:externalWebApp:uri"]);
+							.val(this.application.attributes["carnot:engine:ui:externalWebApp:uri"]);
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel
@@ -256,14 +404,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				UiMashupApplicationView.prototype.toString = function() {
 					return "Lightdust.UiMashupApplicationView";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				UiMashupApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -286,7 +434,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {

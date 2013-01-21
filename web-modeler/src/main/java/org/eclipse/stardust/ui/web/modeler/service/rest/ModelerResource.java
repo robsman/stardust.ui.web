@@ -78,6 +78,9 @@ public class ModelerResource
 
    private ModelService modelService;
 
+   // TODO static because of issues with session binding
+   private static JsonObject interactionDataObject;
+
    @Context
    private HttpServletRequest httpRequest;
 
@@ -213,11 +216,13 @@ public class ModelerResource
 
          ClientModelManagementStrategy modelManagementStrategy = getClientModelManagementStrategy();
 
-         JsonObject modelDescriptorJson = modelManagementStrategy.addModelFile(fileName, postedData);
+         JsonObject modelDescriptorJson = modelManagementStrategy.addModelFile(fileName,
+               postedData);
 
          getModelService().setModelManagementStrategy(modelManagementStrategy);
 
-         return Response.ok(modelDescriptorJson.toString(), APPLICATION_JSON_TYPE).build();
+         return Response.ok(modelDescriptorJson.toString(), APPLICATION_JSON_TYPE)
+               .build();
       }
       catch (Exception e)
       {
@@ -814,6 +819,78 @@ public class ModelerResource
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   private JsonObject getInteractionDataObject()
+   {
+      if (interactionDataObject == null)
+      {
+         interactionDataObject = new JsonObject();
+
+         interactionDataObject.add("input", new JsonObject());
+         interactionDataObject.add("output", new JsonObject());
+      }
+
+      return interactionDataObject;
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("interaction")
+   public Response getInteractionInputData()
+   {
+      try
+      {
+         System.out.println("Retrieving interaction input:");
+         System.out.println(getInteractionDataObject());
+
+         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("interaction")
+   public Response setInteractionInputData(String postedData)
+   {
+      try
+      {
+         System.out.println("Set interaction input:");
+         System.out.println(postedData);
+         JsonObject postedObject = jsonIo.readJsonObject(postedData);
+         System.out.println(postedObject);
+
+         if (postedObject.has("input"))
+         {
+            getInteractionDataObject().add("input", postedObject.get("input"));
+         }
+
+         if (postedObject.has("output"))
+         {
+            getInteractionDataObject().add("output", postedObject.get("output"));
+         }
+
+         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @GET
    @Produces(MediaType.TEXT_PLAIN)
    @Path("/language")
@@ -1099,7 +1176,7 @@ public class ModelerResource
          trace.debug(fileContent);
 
          DrlParser parser = new DrlParser();
-         
+
          JsonObject ruleSetJson = parser.parseDrl(fileContent);
 
          return Response.ok(ruleSetJson.toString(), APPLICATION_JSON_TYPE).build();
