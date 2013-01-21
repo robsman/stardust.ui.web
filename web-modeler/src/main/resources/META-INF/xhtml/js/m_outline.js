@@ -2879,9 +2879,7 @@ define(
 							"#" + transferObject.uuid)
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
-					// TODO add delete type declaration code.
-					// m_typeDeclaration.deleteApplication(transferObject.id,
-					// model);
+					m_typeDeclaration.deleteTypeDeclaration(transferObject.id, model);
 				}
 
 				/**

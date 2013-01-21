@@ -630,6 +630,10 @@ define(
 					return type;
 				},
 
+				deleteTypeDeclaration : function(id, model) {
+					delete model.typeDeclarations[id];
+				},
+
 				STRUCTURE_TYPE : STRUCTURE_TYPE,
 				ENUMERATION_TYPE : ENUMERATION_TYPE
 			};
