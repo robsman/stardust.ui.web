@@ -89,7 +89,7 @@ import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestContro
 
 /**
  * IPP XPDL marshaller.
- *
+ * 
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -104,7 +104,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    *
+    * 
     * @param modelElement
     * @return
     */
@@ -233,11 +233,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       List<ChangeDescriptionJto> changeDescriptions = null;
       CommandJto commandJto = ModelerSessionRestController.getCommandJto();
-      if(commandJto != null)
+      if (commandJto != null)
       {
          changeDescriptions = commandJto.changeDescriptions;
       }
-      
+
       JsonObject processJson = new JsonObject();
 
       processJson.addProperty(ModelerConstants.OID_PROPERTY,
@@ -255,7 +255,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       loadDescription(processJson, processDefinition);
       loadAttributes(processDefinition, processJson);
-      
+
       if (null != processDefinition.getFormalParameters()
             && null != processDefinition.getFormalParameters().getFormalParameter())
       {
@@ -332,11 +332,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                {
                   formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                         ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-                  
+
                   String type = null;
-                  if(changeDescriptions != null)
+                  if (changeDescriptions != null)
                   {
-                     type = findInChangeDescriptions(changeDescriptions, formalParameter.getId());
+                     type = findInChangeDescriptions(changeDescriptions,
+                           formalParameter.getId());
                   }
                   else
                   {
@@ -344,14 +345,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      if (mappingsType != null)
                      {
                         DataType data = mappingsType.getMappedData(formalParameter);
-                        if(data != null)
+                        if (data != null)
                         {
-                           type = AttributeUtil.getAttributeValue(data, "carnot:engine:type");
+                           type = AttributeUtil.getAttributeValue(data,
+                                 "carnot:engine:type");
                         }
-                     }                     
+                     }
                   }
-                  
-                  if(type != null)
+
+                  if (type != null)
                   {
                      formalParameterJson.addProperty(
                            ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
@@ -401,12 +403,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (ActivityType activity : processDefinition.getActivity())
       {
-//         JsonObject activityJson = new JsonObject();
-//         activitiesJson.add(activity.getId(), activityJson);
-//
-//         activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-//         activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-//         loadDescription(activityJson, activity);
+         // JsonObject activityJson = new JsonObject();
+         // activitiesJson.add(activity.getId(), activityJson);
+         //
+         // activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
+         // activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
+         // loadDescription(activityJson, activity);
          activitiesJson.add(activity.getId(), toActivityJson(activity));
       }
 
@@ -427,9 +429,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    *
+    * 
     * TODO Review and move to Facade
-    *
+    * 
     * @param type
     * @return
     */
@@ -454,7 +456,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @return
     */
@@ -733,7 +735,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @return
     */
@@ -807,7 +809,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                         ModelUtils.findContainingModel(activity), activity.getPerformer()));
 
             ProcessDefinitionType implementationProcess = null;
-            
+
             try
             {
                implementationProcess = activity.getImplementationProcess();
@@ -815,9 +817,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             catch (NullPointerException e)
             {
             }
-            
+
             if (implementationProcess != null)
-            {               
+            {
                activityJson.addProperty(
                      ModelerConstants.SUBPROCESS_ID,
                      getModelBuilderFacade().createFullId(
@@ -934,7 +936,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activity
     * @param activityJson
     */
@@ -1011,7 +1013,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param activitySymbol
     * @return
     */
@@ -1099,7 +1101,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1159,7 +1161,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -1207,10 +1209,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(endEventSymbol);
       if (null != hostActivity)
       {
-          eventJson.addProperty(ModelerConstants.ID_PROPERTY, hostActivity.getId());
-          eventJson.addProperty(ModelerConstants.NAME_PROPERTY, hostActivity.getName());
-          loadDescription(eventJson, hostActivity);
-          loadAttributes(hostActivity, eventJson);
+         eventJson.addProperty(ModelerConstants.ID_PROPERTY, hostActivity.getId());
+         eventJson.addProperty(ModelerConstants.NAME_PROPERTY, hostActivity.getName());
+         loadDescription(eventJson, hostActivity);
+         loadAttributes(hostActivity, eventJson);
       }
 
       return eventSymbolJson;
@@ -1219,7 +1221,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    /**
     * Generates a transfer object based on an explicit intermediate event symbol. Knows
     * how to handle both intermediate and boundary events.
-    *
+    * 
     * @param eventSymbol
     *           the defining intermediate event symbol
     * @return the transfer object
@@ -1241,7 +1243,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       EventHandlerType eventHandler = null;
       if (null != hostActivity)
       {
-         JsonObject config = EventMarshallingUtils.getEventHostingConfig(hostActivity, eventSymbol, jsonIo);
+         JsonObject config = EventMarshallingUtils.getEventHostingConfig(hostActivity,
+               eventSymbol, jsonIo);
          if (null != config)
          {
             eventJson = config;
@@ -1281,7 +1284,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    /**
     * Generates a transfer object for a event handler that has no explicit intermediate
     * event symbol, guessing a reasonable location of the made up symbol.
-    *
+    * 
     * @param eventHandler
     *           the defining event handler
     * @param hostActivitySymbol
@@ -1289,27 +1292,34 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     *           made up event symbol
     * @return the transfer object
     */
-   public JsonObject toBoundaryEventJson(EventHandlerType eventHandler, ActivitySymbolType hostActivitySymbol)
+   public JsonObject toBoundaryEventJson(EventHandlerType eventHandler,
+         ActivitySymbolType hostActivitySymbol)
    {
       JsonObject eventSymbolJson = new JsonObject();
 
       eventSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.EVENT_SYMBOL);
-      // HACK use event handler element OID for symbol, ensure for the element itself a UUID is being used
+      // HACK use event handler element OID for symbol, ensure for the element itself a
+      // UUID is being used
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventHandler.getElementOid());
 
       // guess coordinates relative to the hosting activity's symbol
-      // TODO handle multiple events per activity, avoid collisions with explicit intermediate event symbols
-      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, hostActivitySymbol.getXPos() + (hostActivitySymbol.getWidth() - 24));
-      eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, hostActivitySymbol.getYPos() + (hostActivitySymbol.getHeight() - 12));
+      // TODO handle multiple events per activity, avoid collisions with explicit
+      // intermediate event symbols
+      eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
+            hostActivitySymbol.getXPos() + (hostActivitySymbol.getWidth() - 24));
+      eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
+            hostActivitySymbol.getYPos() + (hostActivitySymbol.getHeight() - 12));
       eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, 24);
       eventSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, 24);
 
       JsonObject eventJson = new JsonObject();
       toEventJson(eventHandler, eventJson);
-      eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY, ModelerConstants.INTERMEDIATE_EVENT);
-      eventJson.addProperty(ModelerConstants.BINDING_ACTIVITY_UUID, hostActivitySymbol.getActivity().getId());
+      eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
+            ModelerConstants.INTERMEDIATE_EVENT);
+      eventJson.addProperty(ModelerConstants.BINDING_ACTIVITY_UUID,
+            hostActivitySymbol.getActivity().getId());
 
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
 
@@ -1373,7 +1383,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param event
     * @return
     */
@@ -1392,19 +1402,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       setContainingModelIdProperty(eventJson, event);
 
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
-      eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, event.getType().getId());
 
       // TODO This may changes
 
       loadDescription(eventJson, event);
       loadAttributes(event, eventJson);
 
+      if (event.getType() != null)
+      {
+         eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, event.getType()
+               .getId());
+         
+         if (event.getType().getId().equals("manual"))
+         {
+            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "manualTrigger");
+         }
+      }
+
       // Load starting Participant
       // TODO The code below is wrong as full references are not loaded
       // TODO May be only loaded for None Start Events
 
-//      eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(event,
-//            PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
+      // eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID,
+      // getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(event,
+      // PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT)));
 
       // Load BPMN attributes
 
@@ -1478,7 +1499,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param data
     * @return
     */
@@ -1637,7 +1658,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param startEventSymbol
     * @return
     */
@@ -2017,7 +2038,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param annotationSymbol
     * @return
     */
@@ -2068,7 +2089,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param dataMappingConnection
     * @return
     */
@@ -2185,7 +2206,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -2347,7 +2368,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param transitionConnection
     * @return
     */
@@ -2439,7 +2460,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       modelJson.addProperty(ModelerConstants.FILE_PATH,
             modelManagementStrategy().getModelFilePath(model));
       modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
-      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, 
+      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION,
             getModelBuilderFacade().convertDate(model.getCreated()));
       modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
             getModelBuilderFacade().getModified(model));
@@ -2564,10 +2585,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    *
+    * 
     * Returns the organisation for which the role is a team leader, null otherwise returns
     * null if role is not a team leader in the first place
-    *
+    * 
     * @param participant
     * @return
     */
@@ -2753,7 +2774,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -2784,7 +2805,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -2804,7 +2825,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * @param element
     * @param json
     * @throws JSONException
@@ -2892,7 +2913,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
    }
 
-   protected void setNodeSymbolCoordinates(JsonObject nodeSymbolJson, INodeSymbol nodeSymbol)
+   protected void setNodeSymbolCoordinates(JsonObject nodeSymbolJson,
+         INodeSymbol nodeSymbol)
    {
       int laneOffsetX = 0;
       int laneOffsetY = 0;
@@ -2917,9 +2939,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
@@ -3023,15 +3045,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
          }
       }
-   }  
-   
-   String findInChangeDescriptions(List<ChangeDescriptionJto> changeDescriptions, String id)
+   }
+
+   String findInChangeDescriptions(List<ChangeDescriptionJto> changeDescriptions,
+         String id)
    {
-      for(ChangeDescriptionJto description : changeDescriptions)
+      for (ChangeDescriptionJto description : changeDescriptions)
       {
-         JsonObject changes = description.changes; 
-         
-         if(changes.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+         JsonObject changes = description.changes;
+
+         if (changes.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
          {
             JsonArray formalParametersJson = changes.get(
                   ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
@@ -3039,21 +3062,23 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             {
                JsonObject formalParameterJson = formalParametersJson.get(n)
                      .getAsJsonObject();
-               if(formalParameterJson.get(ModelerConstants.ID_PROPERTY).getAsString().equals(id))
+               if (formalParameterJson.get(ModelerConstants.ID_PROPERTY)
+                     .getAsString()
+                     .equals(id))
                {
-                  if(formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
+                  if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                         .getAsString()
                         .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
-                     
+
                      return formalParameterJson.get(
-                                    ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
                   }
                }
             }
          }
       }
-      
+
       return null;
    }
 }

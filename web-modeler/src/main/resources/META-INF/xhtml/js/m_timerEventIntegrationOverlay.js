@@ -73,41 +73,28 @@ define(
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
 
-					this.repeatIntervalUnitSelect
-							.append("<option value='1'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.milliseconds")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='1000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.seconds")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='60000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.minutes")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.hours")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.days")
-									+ "</option>");
+					this.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
 
 					this.repeatCountInput = this.mapInputId("repeatCountInput");
+					
+					this.registerForRouteChanges(this.repeatCountInput);
+					this.registerForRouteChanges(this.repeatIntervalInput);
+					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 				};
 
 				/**
 				 * 
 				 */
 				TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					var uri = "timer://";
+					var uri = "timer://test?";
 
+					uri += "repeatCount";
+					uri += "=";
+					uri += this.repeatCountInput.val();
+					uri += "&amp;repeatInterval";
+					uri += "=";
+					uri += this.getIntervalInMilliseconds(this.repeatIntervalInput.val(), this.repeatIntervalUnitSelect.val());
+						
 					return uri;
 				};
 
@@ -123,7 +110,7 @@ define(
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
-					parameterMappings.push(this
+					/*parameterMappings.push(this
 							.createPrimitiveParameterMapping("Calendar",
 									"calendar", "String"));
 					parameterMappings.push(this
@@ -161,7 +148,7 @@ define(
 									"triggerName", "String"));
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Trigger Group",
-									"triggerGroup", "String"));
+									"triggerGroup", "String"));*/
 
 					this.submitOverlayChanges(parameterMappings);
 				};
@@ -201,6 +188,12 @@ define(
 
 							if (name == "repeatCount") {
 								this.repeatCountInput.val(value);
+							}
+							else if (name == "repeatInterval") {
+								var intervalWithUnit = this.getIntervalWithUnit(value);
+								
+								this.repeatIntervalInput.val(intervalWithUnit.value);
+								this.repeatIntervalUnitSelect.val(intervalWithUnit.unit);
 							}
 						}
 					}

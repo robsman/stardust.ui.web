@@ -54,6 +54,14 @@ define(
 				/**
 				 * 
 				 */
+				ScanEventIntegrationOverlay.prototype.getImplementation = function() {
+					return "scan";
+				};
+
+
+				/**
+				 * 
+				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {

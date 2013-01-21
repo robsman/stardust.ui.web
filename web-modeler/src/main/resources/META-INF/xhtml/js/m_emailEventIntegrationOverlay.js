@@ -109,12 +109,38 @@ define(
 					this.portInput = this.mapInputId("portInput");
 					this.accountInput = this.mapInputId("accountInput");
 					this.passwordInput = this.mapInputId("passwordInput");
+					this.connectionTimeoutInput = this
+							.mapInputId("connectionTimeoutInput");
+					this.connectionTimeoutUnitSelect = this
+							.mapInputId("connectionTimeoutUnitSelect");
+					this.initialDelayInput = this
+							.mapInputId("initialDelayInput");
+					this.initialDelayUnitSelect = this
+							.mapInputId("initialDelayUnitSelect");
+					this.pollingDelayInput = this
+							.mapInputId("pollingDelayInput");
+					this.pollingDelayUnitSelect = this
+							.mapInputId("pollingDelayUnitSelect");
+
+					this
+							.initializeIntervalUnitSelect(this.connectionTimeoutUnitSelect);
+					this
+							.initializeIntervalUnitSelect(this.initialDelayUnitSelect);
+					this
+							.initializeIntervalUnitSelect(this.pollingDelayUnitSelect);
 
 					this.registerForRouteChanges(this.protocolSelect);
 					this.registerForRouteChanges(this.mailServerInput);
 					this.registerForRouteChanges(this.portInput);
 					this.registerForRouteChanges(this.accountInput);
 					this.registerForRouteChanges(this.passwordInput);
+					this.registerForRouteChanges(this.connectionTimeoutInput);
+					this
+							.registerForRouteChanges(this.connectionTimeoutUnitSelect);
+					this.registerForRouteChanges(this.initialDelayInput);
+					this.registerForRouteChanges(this.initialDelayUnitSelect);
+					this.registerForRouteChanges(this.pollingDelayInput);
+					this.registerForRouteChanges(this.pollingDelayUnitSelect);
 				};
 
 				/**
@@ -138,7 +164,18 @@ define(
 						uri += "&amp;password=" + this.passwordInput.val();
 					}
 
-					// More data to be added
+					uri += "&amp;connectionTimeout=";
+					uri += this.getIntervalInMilliseconds(
+							this.connectionTimeoutInput.val(),
+							this.connectionTimeoutUnitSelect.val());
+					uri += "&amp;initialDelay=";
+					uri += this.getIntervalInMilliseconds(
+							this.initialDelayInput.val(),
+							this.initialDelayUnitSelect.val());
+					uri += "&amp;pollingDelay=";
+					uri += this.getIntervalInMilliseconds(
+							this.pollingDelayInput.val(),
+							this.pollingDelayUnitSelect.val());
 
 					return uri;
 				};
@@ -158,13 +195,13 @@ define(
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Mail Body",
-									"mailBody", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Mail Attachments", "mailAttachments",
-									"String"));
+					/*
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Mail Body", "mailBody",
+					 * "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Mail Attachments",
+					 * "mailAttachments", "String"));
+					 */
 
 					this.submitOverlayChanges(parameterMappings);
 				};
@@ -223,9 +260,9 @@ define(
 					this.accountInput.val(user);
 
 					// Map options
-					
+
 					var nameValues = options.split("&");
-					
+
 					for ( var n = 0; n < nameValues.length; ++n) {
 						var nameValue = nameValues[n].split("=");
 						var name = nameValue[0];
@@ -236,36 +273,41 @@ define(
 
 						if (name == "password") {
 							this.passwordInput.val(value);
-						} 
-						else if (name == "username") {
+						} else if (name == "username") {
 							this.accountInput.val(value);
-						} 
-						else if (name == "to") {
-						} 
-						else if (name == "replyTo") {
-						} 
-						else if (name == "CC") {
-						} 
-						else if (name == "BCC") {
-						} 
-						else if (name == "from") {
-						} 
-						else if (name == "subject") {
-						} 
-						else if (name == "connectionTimeout") {
-						} 
-						else if (name == "initialDelay") {
-						} 
-						else if (name == "pollingDelay") {
-						} 
-						else if (name == "unseen") {
-						} 
-						else if (name == "delete") {
-						} 
-						else if (name == "copyTo") {
-						} 
-						else if (name == "fetchSize") {
-						} 
+						} else if (name == "to") {
+						} else if (name == "replyTo") {
+						} else if (name == "CC") {
+						} else if (name == "BCC") {
+						} else if (name == "from") {
+						} else if (name == "subject") {
+						} else if (name == "connectionTimeout") {
+							var intervalWithUnit = this
+									.getIntervalWithUnit(value);
+
+							this.connectionTimeoutInput
+									.val(intervalWithUnit.value);
+							this.connectionTimeoutUnitSelect
+									.val(intervalWithUnit.unit);
+						} else if (name == "initialDelay") {
+							var intervalWithUnit = this
+									.getIntervalWithUnit(value);
+
+							this.initialDelayInput.val(intervalWithUnit.value);
+							this.initialDelayUnitSelect
+									.val(intervalWithUnit.unit);
+						} else if (name == "pollingDelay") {
+							var intervalWithUnit = this
+									.getIntervalWithUnit(value);
+
+							this.pollingDelayInput.val(intervalWithUnit.value);
+							this.pollingDelayUnitSelect
+									.val(intervalWithUnit.unit);
+						} else if (name == "unseen") {
+						} else if (name == "delete") {
+						} else if (name == "copyTo") {
+						} else if (name == "fetchSize") {
+						}
 					}
 
 					this.parameterMappingsPanel.setScopeModel(this.page

@@ -41,9 +41,6 @@ define(
 				ManualTriggerIntegrationOverlay.prototype.initialize = function(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
-
-					this.participantOutput = this
-							.mapInputId("participantOutput");
 				};
 
 				/**
@@ -78,18 +75,6 @@ define(
 				 * 
 				 */
 				ManualTriggerIntegrationOverlay.prototype.update = function() {
-					this.participantOutput.empty();
-
-					// TODO I18N
-					
-					if (this.page.propertiesPanel.participant != null) {
-						this.participantOutput.append("Started by <b>"
-								+ this.page.propertiesPanel.participant.name
-								+ ".</b>");
-					} else {
-						this.participantOutput
-								.append("Starting participant to be defined.</b>");
-					}
 				};
 			}
 		});

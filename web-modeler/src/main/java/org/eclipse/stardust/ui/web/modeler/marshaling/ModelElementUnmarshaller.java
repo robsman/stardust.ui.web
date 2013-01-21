@@ -1600,6 +1600,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          getModelBuilderFacade().setAttribute(trigger, "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
+         
+         if (triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString().equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
+         {
+            trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), "manual"));
+         }
       }
 
       if (triggerJson.has(ModelerConstants.THROWING_PROPERTY))
@@ -1693,12 +1698,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String dataPath = null;
                String dataFullID = parameterMappingJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY))
+               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY) &&
+                     !parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
                {
                   dataPath = parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                         .getAsString();
                }
-               getModelBuilderFacade().createParameterMapping(trigger, dataFullID,
+               
+               getModelBuilderFacade().createParameterMapping(trigger, accessPoint.getId(), dataFullID,
                      dataPath);
             }
          }

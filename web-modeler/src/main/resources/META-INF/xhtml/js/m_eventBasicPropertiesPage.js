@@ -54,6 +54,8 @@ define(
 					this.throwingInput = this.mapInputId("throwingInput");
 					this.catchingInput = this.mapInputId("catchingInput");
 					this.eventClassSelect = this.mapInputId("eventClassSelect");
+					this.participantOutput = this
+							.mapInputId("participantOutput");
 
 					this.interruptingInput
 							.change(
@@ -219,6 +221,21 @@ define(
 
 					this
 							.setEventClass(this.propertiesPanel.element.modelElement.eventClass);
+					
+					// TODO I18N
+					
+					this.participantOutput.empty();
+
+					if (this.propertiesPanel.participant != null &&
+							(this.propertiesPanel.element.modelElement.eventClass == m_constants.NONE_EVENT_CLASS ||
+									this.propertiesPanel.element.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS)) {
+						this.participantOutput.append("Started by <b>"
+								+ this.propertiesPanel.participant.name
+								+ ".</b>");
+					} else {
+						this.participantOutput
+								.append("No starting participant.</b>");
+					}
 				};
 
 				/**

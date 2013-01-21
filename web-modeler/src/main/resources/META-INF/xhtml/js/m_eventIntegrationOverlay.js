@@ -9,10 +9,14 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_parameterDefinitionsPanel" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel) {
+				m_model, m_accessPoint, m_parameterDefinitionsPanel, m_i18nUtils) {
 
 			return {
 				create : function() {
@@ -90,7 +94,7 @@ define(
 					}, function(event) {
 						if (event.data.overlay.validate()) {
 							event.data.overlay.submitRouteChanges();
-						} 
+						}
 					});
 				};
 
@@ -123,14 +127,14 @@ define(
 				};
 
 				/**
-				 * Dummy function 
+				 * Dummy function
 				 */
 				EventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "";
 				};
 
 				/**
-				 * Dummy function 
+				 * Dummy function
 				 */
 				EventIntegrationOverlay.prototype.getAdditionalBeanSpecifications = function() {
 					return "";
@@ -139,9 +143,102 @@ define(
 				/**
 				 * 
 				 */
+				EventIntegrationOverlay.prototype.initializeIntervalUnitSelect = function(
+						select) {
+					select
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					select
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					select
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
+									+ "</option>");
+					select
+							.append("<option value='3600000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.hours")
+									+ "</option>");
+					select
+							.append("<option value='86400000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.days")
+									+ "</option>");
+				};
+
+				/**
+				 * 
+				 */
+				EventIntegrationOverlay.prototype.getIntervalInMilliseconds = function(
+						value, unitFactor) {
+					return (value == null ? 0 : value * unitFactor);
+				};
+
+				/**
+				 * 
+				 */
+				EventIntegrationOverlay.prototype.getIntervalWithUnit = function(
+						value) {
+					if (value > 86400000 && value % 86400000 == 0) {
+						return {
+							value : value / 86400000,
+							unit : 86400000
+
+						};
+					} else if (value > 3600000 && value % 3600000 == 0) {
+						return {
+							value : value / 3600000,
+							unit : 3600000
+
+						};
+					} else if (value > 60000 && value % 60000 == 0) {
+						return {
+							value : value / 60000,
+							unit : 60000
+
+						};
+					} else if (value > 1000 && value % 1000 == 0) {
+						return {
+							value : value / 1000,
+							unit : 1000
+
+						};
+					}
+
+					return {
+						value : value,
+						unit : 1
+					};
+				};
+
+				/**
+				 * 
+				 */
 				EventIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
 					this.page.submitChanges(changes);
+				};
+
+				/**
+				 * Callback for Parameter Definitions Panel
+				 */
+				EventIntegrationOverlay.prototype.submitParameterDefinitionsChanges = function(
+						parameterMappings) {
+					if (parameterMappings == null) {
+						parameterMappings = [];
+					}
+
+					this.submitChanges({
+						modelElement : {
+							parameterMappings : parameterMappings
+						}
+					});
 				};
 
 				/**
@@ -157,26 +254,33 @@ define(
 
 					route += "<from uri=\"";
 					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions() + 
-							"</route>";
+					route += "\"/>" + this.getAdditionalRouteDefinitions()
+							+ "</route>";
 
-					this.submitChanges({
-						modelElement : {
-							parameterMappings : parameterMappings,
-							implementation : this.getImplementation(),
-							attributes : {
-								"carnot:engine:integration::overlay" : this.id,
-								"carnot:engine:camel::camelRouteExt" : route,
-								"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications()
-							}
-						}
-					});
+					this
+							.submitChanges({
+								modelElement : {
+									parameterMappings : parameterMappings,
+									implementation : this.getImplementation(),
+									attributes : {
+										"carnot:engine:integration::overlay" : this.id,
+										"carnot:engine:camel::camelRouteExt" : route,
+										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
+												.getAdditionalBeanSpecifications()
+									}
+								}
+							});
 				};
 
-//				<carnot:Attributes>
-//                <carnot:Attribute Name="carnot:engine:camel::camelContextId" Value="camelContext"/>
-//                <carnot:Attribute Name="carnot:engine:camel::camelRouteExt" Value="&lt;from uri=&quot;jms:queue:in.queue&quot;/&gt;&#13;&#10;&lt;convertBodyTo type=&quot;java.lang.String&quot;/&gt;&#13;&#10;&lt;to uri=&quot;ipp:direct&quot;/&gt;"/>
-//             </carnot:Attributes>
+				// <carnot:Attributes>
+				// <carnot:Attribute Name="carnot:engine:camel::camelContextId"
+				// Value="camelContext"/>
+				// <carnot:Attribute Name="carnot:engine:camel::camelRouteExt"
+				// Value="&lt;from
+				// uri=&quot;jms:queue:in.queue&quot;/&gt;&#13;&#10;&lt;convertBodyTo
+				// type=&quot;java.lang.String&quot;/&gt;&#13;&#10;&lt;to
+				// uri=&quot;ipp:direct&quot;/&gt;"/>
+				// </carnot:Attributes>
 				/**
 				 * 
 				 */
@@ -185,17 +289,19 @@ define(
 
 					route += "<from uri=\"";
 					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions() + 
-							"</route>";
+					route += "\"/>" + this.getAdditionalRouteDefinitions()
+							+ "</route>";
 
-					this.submitChanges({
-						modelElement : {
-							attributes : {
-								"carnot:engine:camel::camelRouteExt" : route,
-								"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications()
-							}
-						}
-					});
+					this
+							.submitChanges({
+								modelElement : {
+									attributes : {
+										"carnot:engine:camel::camelRouteExt" : route,
+										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
+												.getAdditionalBeanSpecifications()
+									}
+								}
+							});
 				};
 			}
 		});

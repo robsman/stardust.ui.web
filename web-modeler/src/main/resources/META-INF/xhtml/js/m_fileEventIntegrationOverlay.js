@@ -84,61 +84,14 @@ define(
 							.mapInputId("initialIntervalInput");
 					this.initialIntervalUnitSelect = this
 							.mapInputId("initialIntervalUnitSelect");
-
-					this.initialIntervalUnitSelect
-							.append("<option value='1'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.milliseconds")
-									+ "</option>");
-					this.initialIntervalUnitSelect
-							.append("<option value='1000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.seconds")
-									+ "</option>");
-					this.initialIntervalUnitSelect
-							.append("<option value='60000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.minutes")
-									+ "</option>");
-					this.initialIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.hours")
-									+ "</option>");
-					this.initialIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.days")
-									+ "</option>");
-					this.repeatIntervalInput = this
-							.mapInputId("repeatIntervalInput");
+					this.repeatIntervalInput = this.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
-					this.repeatIntervalUnitSelect
-							.append("<option value='1'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.milliseconds")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='1000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.seconds")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='60000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.minutes")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.hours")
-									+ "</option>");
-					this.repeatIntervalUnitSelect
-							.append("<option value='3600000'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.days")
-									+ "</option>");
+
+					this
+							.initializeIntervalUnitSelect(this.initialIntervalUnitSelect);
+					this
+							.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
 
 					this.lockBehaviorSelect = this
 							.mapInputId("lockBehaviorSelect");
@@ -150,8 +103,9 @@ define(
 					this.registerForRouteChanges(this.fileOrDirectoryNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
 					this.registerForRouteChanges(this.initialIntervalInput);
-					this
-							.registerForRouteChanges(this.initialIntervalUnitSelect);
+					this.registerForRouteChanges(this.initialIntervalUnitSelect);
+					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
+					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.lockBehaviorSelect);
 					this.registerForRouteChanges(this.postProcessingSelect);
 					this.registerForRouteChanges(this.alwaysConsumeInput);
@@ -167,10 +121,14 @@ define(
 
 					uri += "?consumer.recursive="
 							+ this.recursiveInput.is(":checked");
-					uri += "&amp;consumer.initialDelay="
-							+ (this.initialIntervalInput.val() == null ? 0
-									: this.initialIntervalInput.val())
-							* this.initialIntervalUnitSelect.val();
+					uri += "&amp;consumer.initialInterval=";
+					uri += this.getIntervalInMilliseconds(
+							this.initialIntervalInput.val(),
+							this.initialIntervalUnitSelect.val());
+					uri += "&amp;consumer.repeatInterval=";
+					uri += this.getIntervalInMilliseconds(
+							this.repeatIntervalInput.val(),
+							this.repeatIntervalUnitSelect.val());
 					uri += "&amp;consumer.alwaysConsume="
 							+ this.alwaysConsumeInput.is(":checked");
 
@@ -199,29 +157,28 @@ define(
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("File Name",
-									"CamelFileName", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("File Name Only",
-									"CamelFileNameOnly", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Absolute File Path",
-									"CamelFileAbsolutePath", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("File Path",
-									"CamelFileAbsolutePath", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Relative Path",
-									"CamelFileRelativePath", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("File Parent",
-									"CamelFileParent", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Last Modified Date",
-									"CamelFileLastModified", "String"));
+					/*
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("File Name",
+					 * "CamelFileName", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("File Name Only",
+					 * "CamelFileNameOnly", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Absolute File Path",
+					 * "CamelFileAbsolutePath", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("File Path",
+					 * "CamelFileAbsolutePath", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Relative Path",
+					 * "CamelFileRelativePath", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("File Parent",
+					 * "CamelFileParent", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Last Modified Date",
+					 * "CamelFileLastModified", "String"));
+					 */
 
 					this.submitOverlayChanges(parameterMappings);
 				};
@@ -261,9 +218,22 @@ define(
 									if (name == "consumer.recursive") {
 										this.recursiveInput.prop("checked",
 												value);
-									} else if (name == "consumer.initialDelay") {
-										this.initialIntervalInput.val(value);
-										// this.initialIntervalUnitSelect.val();
+									} else if (name == "consumer.initialInterval") {
+										var intervalWithUnit = this
+												.getIntervalWithUnit(value);
+
+										this.initialIntervalInput
+												.val(intervalWithUnit.value);
+										this.initialIntervalUnitSelect
+												.val(intervalWithUnit.unit);
+									} else if (name == "consumer.repeatInterval") {
+										var intervalWithUnit = this
+												.getIntervalWithUnit(value);
+
+										this.repeatIntervalInput
+												.val(intervalWithUnit.value);
+										this.repeatIntervalUnitSelect
+												.val(intervalWithUnit.unit);
 									} else if (name == "consumer.alwaysConsume") {
 										this.alwaysConsumeInput.prop("checked",
 												value);
