@@ -69,6 +69,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.processInterface"));
+				jQuery("#providesProcessInterfacePanel div.heading")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.parameterDefinitions"));
 				jQuery("#dataPathPropertiesPage div.heading")
 						.text(
 								m_i18nUtils
