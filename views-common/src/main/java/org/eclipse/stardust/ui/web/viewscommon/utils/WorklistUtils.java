@@ -429,6 +429,7 @@ public class WorklistUtils
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
       allAssignedActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
+      allAssignedActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
 
       applyFilterProviders(allAssignedActivitiesQuery);
 
@@ -450,6 +451,7 @@ public class WorklistUtils
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       criticalActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
       criticalActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
+      criticalActivitiesQuery.orderBy(ActivityInstanceQuery.START_TIME);
 
       criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(
             CriticalityConfigurationUtil.getEngineCriticality(criticality.getRangeFrom()),
