@@ -112,21 +112,21 @@ define(
 					}
 
 					if (this.selectorInput.val() != null) {
-						uri += "&amp;selector=" + this.selectorInput.val();
+						uri += "&selector=" + this.selectorInput.val();
 					} else {
-						uri += "&amp;selector=null";
+						uri += "&selector=null";
 					}
 
 					if (this.transactedInput.is(":checked") != null) {
-						uri += "&amp;transacted=true";
+						uri += "&transacted=true";
 					} else {
-						uri += "&amp;transacted=false";
+						uri += "&transacted=false";
 					}
 
 					if (this.preserveQoSInput.is(":checked") != null) {
-						uri += "&amp;preserveMessageQos=true";
+						uri += "&preserveMessageQos=true";
 					} else {
-						uri += "&amp;preserveMessageQos=false";
+						uri += "&preserveMessageQos=false";
 					}
 
 					return uri;
@@ -158,12 +158,14 @@ define(
 						return;
 					}
 
+					// TODO Need better URL encoding
+					
+					route = route.replace(/&/g, "&amp;");
+
 					var xmlDoc = jQuery.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
-
-					m_utils.debug("uri: " + uri);
 
 					if (uri) {
 						var sourceAndProperties = uri.split("?");

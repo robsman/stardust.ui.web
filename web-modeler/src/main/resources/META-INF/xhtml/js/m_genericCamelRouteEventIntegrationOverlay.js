@@ -141,10 +141,14 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.update = function() {
+
+					var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
+					// TODO Need better URL encoding
+					
+					route = route.replace(/&/g, "&amp;");
+
 					var xmlDoc = jQuery
-							.parseXML("<route>"
-									+ this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"]
-									+ "</route>");
+							.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);
 
 					var fromUri = "";

@@ -121,23 +121,23 @@ define(
 
 					uri += "?consumer.recursive="
 							+ this.recursiveInput.is(":checked");
-					uri += "&amp;consumer.initialInterval=";
+					uri += "&consumer.initialInterval=";
 					uri += this.getIntervalInMilliseconds(
 							this.initialIntervalInput.val(),
 							this.initialIntervalUnitSelect.val());
-					uri += "&amp;consumer.repeatInterval=";
+					uri += "&consumer.repeatInterval=";
 					uri += this.getIntervalInMilliseconds(
 							this.repeatIntervalInput.val(),
 							this.repeatIntervalUnitSelect.val());
-					uri += "&amp;consumer.alwaysConsume="
+					uri += "&consumer.alwaysConsume="
 							+ this.alwaysConsumeInput.is(":checked");
 
 					if (this.postProcessingSelect.val() == "noop") {
-						uri += "&amp;consumer.noop=true";
-						uri += "&amp;consumer.delete=false";
+						uri += "&consumer.noop=true";
+						uri += "&consumer.delete=false";
 					} else if (this.postProcessingSelect.val() == "delete") {
-						uri += "&amp;consumer.noop=false";
-						uri += "&amp;consumer.delete=true";
+						uri += "&consumer.noop=false";
+						uri += "&consumer.delete=true";
 					}
 
 					return uri;
@@ -192,6 +192,10 @@ define(
 					if (route == null) {
 						return;
 					}
+
+					// TODO Need better URL encoding
+					
+					route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);

@@ -165,6 +165,11 @@ define(
 						return false;
 					}
 
+					if (this.getModelElement().taskType != m_constants.SCRIPT_TASK_TYPE
+							&& application.applicationType == "messageTransformationBean") {
+						return false;
+					}
+
 					if (this.getModelElement().taskType == m_constants.SEND_TASK_TYPE
 							&& !(application.applicationType == "jms" || application.applicationType == "mailBean")) {
 						return false;

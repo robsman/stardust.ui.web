@@ -91,7 +91,7 @@ define(
 					uri += "repeatCount";
 					uri += "=";
 					uri += this.repeatCountInput.val();
-					uri += "&amp;repeatInterval";
+					uri += "&repeatInterval";
 					uri += "=";
 					uri += this.getIntervalInMilliseconds(this.repeatIntervalInput.val(), this.repeatIntervalUnitSelect.val());
 						
@@ -162,6 +162,10 @@ define(
 					if (route == null) {
 						return;
 					}
+
+					// TODO Need better URL encoding
+					
+					route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);

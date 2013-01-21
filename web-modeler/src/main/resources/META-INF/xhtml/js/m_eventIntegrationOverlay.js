@@ -272,15 +272,6 @@ define(
 							});
 				};
 
-				// <carnot:Attributes>
-				// <carnot:Attribute Name="carnot:engine:camel::camelContextId"
-				// Value="camelContext"/>
-				// <carnot:Attribute Name="carnot:engine:camel::camelRouteExt"
-				// Value="&lt;from
-				// uri=&quot;jms:queue:in.queue&quot;/&gt;&#13;&#10;&lt;convertBodyTo
-				// type=&quot;java.lang.String&quot;/&gt;&#13;&#10;&lt;to
-				// uri=&quot;ipp:direct&quot;/&gt;"/>
-				// </carnot:Attributes>
 				/**
 				 * 
 				 */
@@ -292,6 +283,8 @@ define(
 					route += "\"/>" + this.getAdditionalRouteDefinitions()
 							+ "</route>";
 
+					m_utils.debug("Route: " + route);
+					
 					this
 							.submitChanges({
 								modelElement : {

@@ -121,6 +121,11 @@ define(
 							.mapInputId("pollingDelayInput");
 					this.pollingDelayUnitSelect = this
 							.mapInputId("pollingDelayUnitSelect");
+					this.unseenInput = this.mapInputId("unseenInput");
+					this.deleteInput = this.mapInputId("deleteInput");
+					this.copyToInput = this.mapInputId("copyToInput");
+					this.copyToFolderInput = this
+							.mapInputId("copyToFolderInput");
 
 					this
 							.initializeIntervalUnitSelect(this.connectionTimeoutUnitSelect);
@@ -141,6 +146,11 @@ define(
 					this.registerForRouteChanges(this.initialDelayUnitSelect);
 					this.registerForRouteChanges(this.pollingDelayInput);
 					this.registerForRouteChanges(this.pollingDelayUnitSelect);
+					this.registerForRouteChanges(this.unseenInput);
+					this.registerForRouteChanges(this.deleteInput);
+					this.registerForRouteChanges(this.copyToInput);
+					this.registerForRouteChanges(this.copyToFolderInput);
+
 				};
 
 				/**
@@ -161,21 +171,30 @@ define(
 					uri += "?username=" + this.accountInput.val();
 
 					if (this.passwordInput.val() != null) {
-						uri += "&amp;password=" + this.passwordInput.val();
+						uri += "&password=" + this.passwordInput.val();
 					}
 
-					uri += "&amp;connectionTimeout=";
+					uri += "&connectionTimeout=";
 					uri += this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val());
-					uri += "&amp;initialDelay=";
+					uri += "&initialDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val());
-					uri += "&amp;pollingDelay=";
+					uri += "&pollingDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.pollingDelayInput.val(),
 							this.pollingDelayUnitSelect.val());
+					uri += "&unseen=";					
+					uri += this.unseenInput.prop("checked");
+					uri += "&delete=";
+					uri += this.deleteInput.prop("checked");
+
+					if (this.copyToInput.prop("checked")) {
+						uri += "&copyTo=";
+						uri += this.copyToFolderInput.val();
+					}
 
 					return uri;
 				};
@@ -215,6 +234,10 @@ define(
 					if (route == null) {
 						return;
 					}
+
+					// TODO Need better URL encoding
+					
+					route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);
@@ -304,12 +327,15 @@ define(
 							this.pollingDelayUnitSelect
 									.val(intervalWithUnit.unit);
 						} else if (name == "unseen") {
+							this.unseenInput.prop("checked", value);
 						} else if (name == "delete") {
+							this.deleteInput.prop("checked", value);
 						} else if (name == "copyTo") {
+							this.copyToInput.prop("checked", true);
+							this.copyToFolderInput.val(value);
 						} else if (name == "fetchSize") {
 						}
 					}
-
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
