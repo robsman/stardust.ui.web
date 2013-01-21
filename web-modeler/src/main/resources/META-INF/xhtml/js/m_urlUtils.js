@@ -73,10 +73,10 @@ define(function() {
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function getContextName() {
-		return location.origin + location.pathname
+		return location.pathname
 				.substring(0, location.pathname.indexOf('/', 1));
 	}
 });
