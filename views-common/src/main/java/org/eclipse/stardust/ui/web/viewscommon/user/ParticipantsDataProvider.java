@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.viewscommon.user;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,15 +19,18 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
@@ -53,6 +55,10 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       QueryService service = ServiceFactoryUtils.getQueryService();
 
       UserQuery userQuery = UserQuery.findActive();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
+      userQuery.setPolicy(userPolicy);
+      
       if (!StringUtils.isEmpty(searchValue))
       {
          String name = searchValue.replaceAll("\\*", "%") + "%";

@@ -21,6 +21,7 @@ import java.util.Set;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -46,6 +48,7 @@ import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -94,6 +97,10 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
             UserQuery userQuery = (options.isStrictSearch()) ? buildStrictUserQuery(activityInstances) : UserQuery
                   .findActive();
 
+            UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+            userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
+            userQuery.setPolicy(userPolicy);
+            
             // filter for user names if selected
             if (!StringUtils.isEmpty(options.getNameFilter()))
             {
@@ -301,7 +308,6 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
    private static UserQuery buildStrictUserQuery(List<ActivityInstance> ais)
    {
       UserQuery userQuery = UserQuery.findActive();
-
       FilterAndTerm userAndTerm = userQuery.getFilter();
       if (!CollectionUtils.isEmpty(ais))
       {
