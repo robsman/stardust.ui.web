@@ -3070,9 +3070,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                         .getAsString()
                         .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
-
-                     return formalParameterJson.get(
-                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                     String primitiveDataType = null;
+                     JsonElement jsonElementType = formalParameterJson.get(
+                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+                     if(jsonElementType != null)
+                     {
+                        primitiveDataType = jsonElementType.getAsString();
+                     }
+                     
+                     return primitiveDataType;
                   }
                }
             }
