@@ -532,7 +532,7 @@ define(
 			 *          equivalent to the list of Java primitive types)
 			 */
 			function getXsdCoreTypes() {
-				return [ "string", "boolean", "long", "int", "short", "byte", "double", "float", "char", "decimal", "dateTime"];
+				return [ "string", "boolean", "long", "int", "short", "byte", "double", "float", "decimal", "dateTime"];
 			}
 
 			/**

@@ -478,6 +478,7 @@ define(
 				 */
 				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
 					var select = "<select size='1' class='typeSelect'>";
+					var selected = false;
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.primitives") + "'>";
 
@@ -486,6 +487,7 @@ define(
 						select += "<option value='" + typeQName + "' ";
 						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
+							selected = true;
 						}
 						var label = m_structuredTypeBrowser.getSchemaTypeLabel(typeQName);
 
@@ -504,6 +506,7 @@ define(
 								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
 								if ( !schemaType.isBuiltinType()) {
 									select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+									selected = true;
 								}
 								select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
 							}
@@ -527,6 +530,7 @@ define(
 											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
 											if ( !schemaType.isBuiltinType()) {
 												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+												selected = true;
 											}
 											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
 											select += x;
@@ -544,11 +548,19 @@ define(
 						select += "<option value='" + typeQName + "' ";
 						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
+							selected = true;
 						}
 						select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeQName) || typeQName + "</option>";
 					});
 
 					select += "</optgroup>";
+
+					if (!selected) {
+						select += "<option value=\"other\" selected>"
+						+ m_i18nUtils
+								.getProperty("modeler.element.properties.commonProperties.other")
+						+ "</option>"
+					}
 
 					select += "</select>";
 
