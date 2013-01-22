@@ -13,7 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.login.dialogs;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +32,6 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
-import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
-import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
@@ -46,9 +44,10 @@ import org.springframework.beans.factory.InitializingBean;
 public class LoginDialogBean implements Serializable, InitializingBean
 {
    private static final long serialVersionUID = -2703702864230398366L;
-
+   
    protected static final Logger trace = LogManager.getLogger(LoginDialogBean.class);
 
+   private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
    public static final String DEFAULT_LOGIN_SKIN_CSS_NAME = "login.css";
    public static final String LOGIN_SKIN_CSS_PARAM = "Carnot.Login.Skin.StyleSheet";
 
@@ -309,7 +308,14 @@ public class LoginDialogBean implements Serializable, InitializingBean
       String returnUrl = FacesUtils.getQueryParameterValue(InfinityStartup.RETURN_URL_PARAM);
 
       if (!StringUtils.isEmpty(returnUrl))
-      {
+      { 
+         // When returnUrl contains login.iface, clear current session and redirect to
+         // login Page
+         if (returnUrl.contains(DEFAULT_LOGIN_PAGE))
+         {
+            SessionContext.findSessionContext().logout();
+            return "ippPortalLogout";
+         }
          FacesUtils.sendRedirect(returnUrl);
          return null;
       }
