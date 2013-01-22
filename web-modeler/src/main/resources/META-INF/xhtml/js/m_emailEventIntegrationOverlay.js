@@ -327,9 +327,9 @@ define(
 							this.pollingDelayUnitSelect
 									.val(intervalWithUnit.unit);
 						} else if (name == "unseen") {
-							this.unseenInput.prop("checked", value);
+							this.unseenInput.prop("checked", value == "true");
 						} else if (name == "delete") {
-							this.deleteInput.prop("checked", value);
+							this.deleteInput.prop("checked", value == "true");
 						} else if (name == "copyTo") {
 							this.copyToInput.prop("checked", true);
 							this.copyToFolderInput.val(value);

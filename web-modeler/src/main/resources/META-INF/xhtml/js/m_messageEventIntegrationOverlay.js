@@ -117,17 +117,10 @@ define(
 						uri += "&selector=null";
 					}
 
-					if (this.transactedInput.is(":checked") != null) {
-						uri += "&transacted=true";
-					} else {
-						uri += "&transacted=false";
-					}
-
-					if (this.preserveQoSInput.is(":checked") != null) {
-						uri += "&preserveMessageQos=true";
-					} else {
-						uri += "&preserveMessageQos=false";
-					}
+					uri += "&transacted=";
+					uri += this.transactedInput.prop("checked");
+					uri += "&preserveMessageQos=";
+					uri += this.preserveQoSInput.prop("checked");
 
 					return uri;
 				};
@@ -159,7 +152,7 @@ define(
 					}
 
 					// TODO Need better URL encoding
-					
+
 					route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML(route);
@@ -171,26 +164,22 @@ define(
 						var sourceAndProperties = uri.split("?");
 						var source = sourceAndProperties[0];
 
-						m_utils.debug("source: " + source);
-
 						var sourceParts = source.split(":");
 
-						m_utils.debug("type: " + sourceParts[1]);
-
 						this.typeSelect.val(sourceParts[1]);
-						
+
 						var clientName = "";
-						
+
 						for ( var i = 2; i < sourceParts.length; ++i) {
 							if (i > 2) {
 								clientName += ":";
 							}
-							
+
 							clientName += sourceParts[i];
 						}
-						
+
 						this.nameInput.val(clientName);
-						
+
 						var nameValues = sourceAndProperties[1].split("&");
 
 						for ( var n = 0; n < nameValues.length; ++n) {
@@ -206,9 +195,11 @@ define(
 							} else if (name == "selector") {
 								this.selectorInput.val(value);
 							} else if (name == "transacted") {
-								this.transactedInput.attr("checked", value);
+								this.transactedInput.prop("checked",
+										value == "true");
 							} else if (name == "preserveMessageQos") {
-								this.preserveQoSInput.attr("checked", value);
+								this.preserveQoSInput.prop("checked",
+										value == "true");
 							}
 						}
 					}

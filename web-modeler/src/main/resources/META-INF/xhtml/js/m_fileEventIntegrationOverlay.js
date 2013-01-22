@@ -84,7 +84,8 @@ define(
 							.mapInputId("initialIntervalInput");
 					this.initialIntervalUnitSelect = this
 							.mapInputId("initialIntervalUnitSelect");
-					this.repeatIntervalInput = this.mapInputId("repeatIntervalInput");
+					this.repeatIntervalInput = this
+							.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
 
@@ -103,7 +104,8 @@ define(
 					this.registerForRouteChanges(this.fileOrDirectoryNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
 					this.registerForRouteChanges(this.initialIntervalInput);
-					this.registerForRouteChanges(this.initialIntervalUnitSelect);
+					this
+							.registerForRouteChanges(this.initialIntervalUnitSelect);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.lockBehaviorSelect);
@@ -130,7 +132,7 @@ define(
 							this.repeatIntervalInput.val(),
 							this.repeatIntervalUnitSelect.val());
 					uri += "&consumer.alwaysConsume="
-							+ this.alwaysConsumeInput.is(":checked");
+							+ this.alwaysConsumeInput.prop("checked");
 
 					if (this.postProcessingSelect.val() == "noop") {
 						uri += "&consumer.noop=true";
@@ -194,7 +196,7 @@ define(
 					}
 
 					// TODO Need better URL encoding
-					
+
 					route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML(route);
@@ -240,7 +242,7 @@ define(
 												.val(intervalWithUnit.unit);
 									} else if (name == "consumer.alwaysConsume") {
 										this.alwaysConsumeInput.prop("checked",
-												value);
+												value == "true");
 									} else if (name == "consumer.noop") {
 										if (value == "true") {
 											this.postProcessingSelect
