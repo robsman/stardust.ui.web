@@ -652,9 +652,15 @@ define(
 								this.laneSymbols[n].moveBy(0, laneYMargin);
 							}
 
+							//adjust left side swim-lane boundaries
+							var symbolX = (this.laneSymbols[n].x - dX)
+							+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+
+							var symbolDx = this.evaluateSymbolDx(symbolX, this.laneSymbols[n].containedSymbols);
+
 							for ( var c in this.laneSymbols[n].containedSymbols) {
 								this.laneSymbols[n].containedSymbols[c].moveBy(
-										dX, dY);
+										dX + symbolDx, dY);
 							}
 
 							this.laneSymbols[n].recalculateBoundingBox();
@@ -674,23 +680,16 @@ define(
 							this.laneSymbols[n].adjustGeometry();
 						}
 					} else {
-
 						var dX = 0;
+						var symbolX = (this.x + 2
+								* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + m_constants.POOL_SWIMLANE_MARGIN) + m_constants.SWIMLANE_SYMBOL_MARGIN;
 						for ( var n in this.laneSymbols) {
-
 							this.laneSymbols[n].x = this.x + topMargin;
-
-							var dXNew = (this.x + 2
-									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + m_constants.POOL_SWIMLANE_MARGIN)
-									- this.laneSymbols[n].x;
 							// If child symbols are on lane header, dX is set to
 							// move the child symbols
-							for ( var c in this.laneSymbols[n].containedSymbols) {
-								if (this.laneSymbols[n].containedSymbols[c].x <= dXNew) {
-									if (dX < dXNew) {
-										dX = dXNew;
-									}
-								}
+							var symbolDx = this.evaluateSymbolDx(symbolX, this.laneSymbols[n].containedSymbols);
+							if (dX < symbolDx) {
+								dX = symbolDx;
 							}
 						}
 
@@ -705,7 +704,7 @@ define(
 								this.laneSymbols[n].moveBy(0, dY);
 							}
 
-							for ( var c in this.laneSymbols[n].containedSymbols) {
+						 	for ( var c in this.laneSymbols[n].containedSymbols) {
 								this.laneSymbols[n].containedSymbols[c].moveBy(
 										dX, dY);
 							}
@@ -734,6 +733,45 @@ define(
 					/* Call hideSnapLines, as the moveBy function invokes checkSnaplines causing the
 					 * snap lines to be created. */
 					this.diagram.hideSnapLines();
+				};
+
+				/**
+				 * internal method to evaluate effective dX
+				 */
+				PoolSymbol.prototype.evaluateSymbolDx = function(x, containedSymbols) {
+					var dX = 0;
+						// If child symbols are on lane header, dY is set to
+						// move the child symbols
+					for ( var c in containedSymbols) {
+						if (containedSymbols[c].x < x) {
+							var moveBy = x - containedSymbols[c].x;
+							if (dX < moveBy) {
+								dX = moveBy;
+							}
+						}
+					}
+
+					return dX;
+				};
+
+				/**
+				 * internal method to evaluate effective dY
+				 */
+
+				PoolSymbol.prototype.evaluateSymbolDy = function(y, containedSymbols) {
+					var dY = 0;
+						// If child symbols are on lane header, dY is set to
+						// move the child symbols
+					for ( var c in containedSymbols) {
+						if (containedSymbols[c].y < y) {
+							var moveBy = y - containedSymbols[c].y;
+							if (dY < moveBy) {
+								dY = moveBy;
+							}
+						}
+					}
+
+					return dY;
 				};
 
 				/**
