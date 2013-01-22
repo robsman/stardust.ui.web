@@ -68,7 +68,6 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -902,6 +901,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString()
                   .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
+               String primitiveDataType = null;
+               JsonElement jsonElementType = formalParameterJson.get(
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+               if(jsonElementType != null)
+               {
+                  primitiveDataType = jsonElementType.getAsString();
+               }
+               
                getModelBuilderFacade().createPrimitiveParameter(
                      processDefinition,
                      data,
@@ -909,8 +916,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                            ModelerConstants.NAME_PROPERTY).getAsString()),
                      formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
                            .getAsString(),
-                     formalParameterJson.get(
-                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString(),
+                           primitiveDataType,
                      mode);
             }
             else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
@@ -2733,7 +2739,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(modelManagementStrategy());
+      if(modelBuilderFacade == null)
+      {
+         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
+      }
+      
+      return modelBuilderFacade;
    }
 
    /**
