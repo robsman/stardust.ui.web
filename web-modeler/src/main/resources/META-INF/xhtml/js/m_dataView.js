@@ -125,45 +125,6 @@ define(
 					this.primitiveDefaultTextInput = jQuery("#primitiveDefaultTextInput");
 					this.primitiveDefaultCheckboxInputRow = jQuery("#primitiveDefaultCheckboxInputRow ");
 					this.primitiveDefaultCheckboxInput = jQuery("#primitiveDefaultCheckboxInput");
-					this.primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
-					var selectdata = null;
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"String\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"boolean\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"int\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"long\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"double\">" + selectdata
-									+ "</option>");
-					// Commented as we don't support Money values yet.
-//					selectdata = m_i18nUtils
-//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
-//					this.primitiveDataTypeSelect
-//							.append("<option value=\"Decimal\">" + selectdata
-//									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Calendar\">" + selectdata
-									+ "</option>");
-
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",

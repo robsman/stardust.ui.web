@@ -198,7 +198,7 @@ define(
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
 
-					// this.populatePrimitivesSelectInput(); // TODO: Review
+					this.populatePrimitivesSelectInput();
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
@@ -235,17 +235,17 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"double\">" + dataType
 									+ "</option>");
-					// Commented as we don't support Money values yet.
+					// Commented as we don't support Money and Calendar values yet.
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
 //					this.primitiveDataTypeSelect
 //							.append("<option value=\"Decimal\">" + dataType
 //									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Calendar\">" + dataType
-									+ "</option>");
+//					dataType = m_i18nUtils
+//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+//					this.primitiveDataTypeSelect
+//							.append("<option value=\"Calendar\">" + dataType
+//									+ "</option>");
 				}
 
 				/**
@@ -432,11 +432,23 @@ define(
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
+					// Reinitialize the primitive type options to get rid of "Other" option
+					this.populatePrimitivesSelectInput();
+
 					if (primitiveDataType == null) {
 						primitiveDataType = "String";
 					}
 
-					this.primitiveDataTypeSelect.val(primitiveDataType);
+					if (this.isSupportedPrimitiveDataType(primitiveDataType)) {
+						this.primitiveDataTypeSelect.val(primitiveDataType);
+					} else {
+						this.primitiveDataTypeSelect
+								.append("<option value=\"other\">"
+										+ m_i18nUtils
+												.getProperty("modeler.element.properties.commonProperties.other")
+										+ "</option>");
+						this.primitiveDataTypeSelect.val("other");
+					}
 
 					m_dialog.makeVisible(this.primitiveDataTypeRow);
 					m_dialog.makeInvisible(this.structuredDataTypeRow);
@@ -445,6 +457,20 @@ define(
 					if (this.otherTypeRow != null) {
 						m_dialog.makeInvisible(this.otherTypeRow);
 					}
+				};
+
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
+						primitiveDataType) {
+					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double" ];
+					if (primitiveDataType
+							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
+						return true;
+					}
+
+					return false;
 				};
 
 				/**
