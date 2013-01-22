@@ -625,5 +625,35 @@ define(
 										+ dataTypeViewIcon, this.typeDeclaration.uuid);
 					}
 				};
+
+				/**
+				 * Overrides the postProcessCommand to update the structured
+				 * type list, in case it's changed.
+				 */
+				XsdStructuredDataTypeView.prototype.postProcessCommand = function(
+						command) {
+					var refresh = false;
+
+					var obj = ("string" == typeof (command)) ? jQuery
+							.parseJSON(command) : command;
+					for ( var i = 0; i < obj.changes.added.length; i++) {
+						if (m_constants.TYPE_DECLARATION_PROPERTY == obj.changes.added[i].type) {
+							refresh = true;
+						}
+					}
+					for ( var i = 0; i < obj.changes.modified.length; i++) {
+						if (m_constants.TYPE_DECLARATION_PROPERTY == obj.changes.modified[i].type) {
+							refresh = true;
+						}
+					}
+					for ( var i = 0; i < obj.changes.removed.length; i++) {
+						if (m_constants.TYPE_DECLARATION_PROPERTY == obj.changes.removed[i].type) {
+							refresh = true;
+						}
+					}
+					if (refresh) {
+						this.refreshElementsTable();
+					}
+				};
 			}
 		});

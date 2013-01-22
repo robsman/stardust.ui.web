@@ -483,7 +483,7 @@ define(
 						}
 					}
 
-					this.postProcessCommand();
+					this.postProcessCommand(command);
 				};
 
 				/**
