@@ -1308,11 +1308,10 @@ define(
 							src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
-							title : "Confirm",
+							title : m_i18nUtils.getProperty("modeler.messages.confirm"),
 							message : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.delete").replace("{0}", cbObj.auxiliaryProperties.callbackScope.text.attr("text")),
-							acceptButtonText : "Yes",
-							cancelButtonText : "Cancel",
-
+							acceptButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.yes"),
+							cancelButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.cancel"),
 							acceptFunction : function() {
 								var thisLane = cbObj.auxiliaryProperties.callbackScope;
 								thisLane.createAndSubmitDeleteCommand();

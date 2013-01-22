@@ -548,10 +548,10 @@ define(
 											+ "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
 								},
 								payload : {
-									title : "Confirm",
-									message : "All models will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>",
-									acceptButtonText : "Yes",
-									cancelButtonText : "No",
+									title : m_i18nUtils.getProperty("modeler.messages.confirm"),
+									message : m_i18nUtils.getProperty("modeler.messages.confirm.modelReload"),
+									acceptButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.yes"),
+									cancelButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.no"),
 									acceptFunction : reloadOutlineTree
 								}
 							});
@@ -584,9 +584,9 @@ define(
 												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
-										title : "Warning",
-										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
-										acceptButtonText : "Close",
+										title : m_i18nUtils.getProperty("modeler.messages.warning"),
+										message : m_i18nUtils.getProperty("modeler.messages.info.modelNotSaved"),
+										acceptButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.close"),
 										acceptFunction : function() {
 											// Do nothing
 										}
@@ -1942,7 +1942,7 @@ define(
 									+ "bpm-modeler/popups/errorDialog.html"
 						},
 						payload : {
-							title : "Error",
+							title : m_i18nUtils.getProperty("modeler.messages.error"),
 							message : msg,
 							okButtonText : okText
 						}
@@ -2098,12 +2098,10 @@ define(
 									+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
-							title : "Confirm",
-							message : "Are you sure you want to delete "
-									+ name
-									+ "?<BR>This change cannot be undone.<BR><BR>Continue?",
-							acceptButtonText : "Yes",
-							cancelButtonText : "Cancel",
+							title : m_i18nUtils.getProperty("modeler.messages.confirm"),
+							message : m_i18nUtils.getProperty("modeler.messages.confirm.deleteElement").replace("{0}", name),
+							acceptButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.yes"),
+							cancelButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.cancel"),
 							acceptFunction : callback
 						}
 					};
@@ -2672,22 +2670,22 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "created";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.created");
 							element = this
 									.getChangedElementsText(command.changes.added);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "deleted";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.deleted");
 							element = this
 									.getChangedElementsText(command.changes.removed);
 						} else {
-							action = "modified";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.modified");
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
 						jQuery("#undoChange").attr("title",
-								"Undo: " + element + " " + action);
+								m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.undo") + ": " + element + " " + action);
 					} else {
-						jQuery("#undoChange").attr("title", "Undo");
+						jQuery("#undoChange").attr("title", m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.undo"));
 					}
 				}
 
@@ -2699,22 +2697,22 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "create";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.create");
 							element = this
 									.getChangedElementsText(command.changes.removed);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "delete";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.delete");
 							element = this
 									.getChangedElementsText(command.changes.added);
 						} else {
-							action = "modify";
+							action = m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.modify");
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
 						jQuery("#redoChange").attr("title",
-								"Redo: " + element + " " + action);
+								m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.redo") + ": " + element + " " + action);
 					} else {
-						jQuery("#redoChange").attr("title", "Redo");
+						jQuery("#redoChange").attr("title", m_i18nUtils.getProperty("modeler.outline.toolbar.tooltip.redo"));
 					}
 				}
 
