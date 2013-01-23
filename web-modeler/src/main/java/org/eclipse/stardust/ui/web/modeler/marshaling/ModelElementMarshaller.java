@@ -1419,6 +1419,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "manualTrigger");
          }
+         else if (event.getType().getId().equals("scan"))
+         {
+            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "scanEvent");
+         }
       }
 
       // Load starting Participant
@@ -1442,8 +1446,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else
       {
-         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-               ModelerConstants.NONE_EVENT_CLASS_KEY);
+         if (event.getType().getId().equals("scan"))
+         {
+            eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+                  ModelerConstants.MESSAGE_EVENT_CLASS_KEY);
+         }
+         else
+         {
+            eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+                  ModelerConstants.NONE_EVENT_CLASS_KEY);            
+         }
       }
 
       // TODO Validate defaults (e.g. Start Events cannot be throwing
