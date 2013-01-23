@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.EvaluateByWorkitemsPolicy;
 import org.eclipse.stardust.engine.api.query.ExcludeUserPolicy;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
@@ -405,6 +406,7 @@ public class WorklistUtils
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       // only evaluate count
       query.setPolicy(new SubsetPolicy(0, true));
+      query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
       query.where(new ProcessDefinitionFilter(process.getQualifiedId(), false));
       FilterOrTerm or = query.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
@@ -425,6 +427,8 @@ public class WorklistUtils
    {
       ActivityInstanceQuery allAssignedActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+      allAssignedActivitiesQuery.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+      
       FilterOrTerm or = allAssignedActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
@@ -450,7 +454,8 @@ public class WorklistUtils
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       criticalActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
       criticalActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
-
+      criticalActivitiesQuery.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+      
       criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(
             CriticalityConfigurationUtil.getEngineCriticality(criticality.getRangeFrom()),
             CriticalityConfigurationUtil.getEngineCriticality(criticality.getRangeTo())));
