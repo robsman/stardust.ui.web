@@ -1594,7 +1594,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (triggerJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY))
       {
+         System.out.println("===> Implementation: " + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
          trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
+         System.out.println("===> Implementation: " + trigger.getType());
       }
 
       storeAttributes(trigger, triggerJson);
@@ -1691,7 +1693,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {
-                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+                  accessPoint = getModelBuilderFacade().createDocumentAccessPoint(trigger, id, name, direction);
                }
             }
 

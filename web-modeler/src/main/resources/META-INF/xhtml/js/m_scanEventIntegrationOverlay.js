@@ -49,6 +49,12 @@ define(
 					this.initializeEventIntegrationOverlay(page, id);
 
 					this.documentDataList = this.mapInputId("documentDataList");
+					
+					this.documentDataList.change({overlay: this}, function(event){
+						var overlay = event.data.overlay;
+						
+						overlay.submitOverlayChanges();
+					});
 				};
 
 				/**
@@ -62,15 +68,13 @@ define(
 				/**
 				 * 
 				 */
-				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function(
-						parameterMappings) {
-					if (parameterMappings == null) {
-						parameterMappings = [];
-					}
-
+				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
+					var data = m_model.findData(this.documentDataList.val());
+					
 					this.submitChanges({
 						modelElement : {
-							parameterMappings : parameterMappings,
+							parameterMappings : [{id: data.id, name: data.name, direction: m_constants.OUT_ACCESS_POINT, dataType: "dmsDocument", dataFullId: this.documentDataList.val()}],
+							implementation: this.getImplementation(),
 							attributes : {
 								"carnot:engine:integration::overlay" : this.id
 							}
@@ -147,9 +151,10 @@ define(
 				ScanEventIntegrationOverlay.prototype.update = function() {
 					this.populateDataItemsList();
 
-					if (this.page.propertiesPanel.element.modelElement.documentDataId != null) {
+					if (this.page.getModelElement().parameterMappings != null &&
+							this.page.getModelElement().parameterMappings[0]) {
 						this.documentDataList
-								.val(this.page.propertiesPanel.element.modelElement.documentDataId);
+								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
 					} else {
 						this.documentDataList.val(m_constants.TO_BE_DEFINED);
 					}
