@@ -514,32 +514,33 @@ define(
 					});
 					select += "</optgroup>";
 
-					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
-					 for ( var i in m_model.getModels()) {
-							var model = m_model.getModels()[i];
-
-							if (model == this.typeDeclaration.model) {
-								continue;
-							}
-
-							for ( var n in model.typeDeclarations) {
-								var typeDeclaration = model.typeDeclarations[n];
-								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
-										var tdType = typeDeclaration.asSchemaType();
-										if (tdType) {
-											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-											if ( !schemaType.isBuiltinType()) {
-												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
-												selected = true;
-											}
-											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
-											select += x;
-										}
-								 }
-							}
-						}
-
-					select += "</optgroup>";
+//					Disabling selection of external structured types as there isn't kernel support for it yet
+//					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+//					 for ( var i in m_model.getModels()) {
+//							var model = m_model.getModels()[i];
+//
+//							if (model == this.typeDeclaration.model) {
+//								continue;
+//							}
+//
+//							for ( var n in model.typeDeclarations) {
+//								var typeDeclaration = model.typeDeclarations[n];
+//								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
+//										var tdType = typeDeclaration.asSchemaType();
+//										if (tdType) {
+//											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+//											if ( !schemaType.isBuiltinType()) {
+//												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+//												selected = true;
+//											}
+//											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
+//											select += x;
+//										}
+//								 }
+//							}
+//						}
+//
+//					select += "</optgroup>";
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
 
