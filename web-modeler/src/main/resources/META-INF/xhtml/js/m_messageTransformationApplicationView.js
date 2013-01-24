@@ -31,15 +31,16 @@ define(
 
 			function i18nmessageTransformationproperties() {
 
+				// Common properties
 				jQuery("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
 				jQuery("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 				jQuery("#application")
 						.text(
 								m_i18nUtils
@@ -48,10 +49,18 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
+				jQuery("label[for='publicVisibilityCheckbox']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+
+				// Configuration
 				jQuery("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
+
+				// Configuration - Source
 				jQuery("#sourcemessage")
 						.text(
 								m_i18nUtils
@@ -61,11 +70,6 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.addInput"));
-				jQuery("#filterHighlightedSourceFieldsInput")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.infoMsg"));
 				jQuery("#element")
 						.text(
 								m_i18nUtils
@@ -74,10 +78,18 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.type"));
-				jQuery("#advancedMapping")
-						.text(
+				jQuery("#filterHighlightedSourceFieldsInput")
+						.attr(
+								"title",
 								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.advancedMapping"));
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.infoMsg"));
+				jQuery("#showAllSourceFieldsInput")
+						.attr(
+								"title",
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.highlighted"));
+				
+				// Configuration - Target
 				jQuery("#targetmessage")
 						.text(
 								m_i18nUtils
@@ -123,23 +135,18 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.invalidMapping"));
-				jQuery("#showAllSourceFieldsInput")
-						.attr(
-								"title",
+
+				// Code Editor
+				jQuery("#advancedMapping")
+						.text(
 								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.highlighted"));
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.advancedMapping"));
+
+				// Test
 				jQuery("#testdata")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.tab"));
-				jQuery("label[for='inputDataTextArea']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.inputData"));
-				jQuery("label[for='outputDataTable']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.outputData"));
 				jQuery("#runButton")
 						.attr(
 								"title",
@@ -150,10 +157,16 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.resetButton"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				jQuery("label[for='inputDataTextArea']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.inputData"));
+				jQuery("label[for='outputDataTable']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.outputData"));
+
+				// Data Type Selector
 				jQuery("label[for='dataTypeSelect']")
 						.text(
 								m_i18nUtils
@@ -170,6 +183,8 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
+
+				// Add Input Message dialog
 				jQuery("#inputDataDialog #applyButton")
 						.attr(
 								"value",
@@ -180,6 +195,8 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
+
+				// Add Output Message dialog
 				jQuery("#outputDataDialog #applyButton")
 						.attr(
 								"value",
@@ -190,6 +207,56 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
+				
+				// Index Configuration pop-up dialog
+				jQuery("#idx-sourcemessage")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.sourceMessage"));
+				jQuery("#idx-targetmessage")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.targetMessage"));
+				jQuery("#idx-sourceTable-name")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+				jQuery("#idx-sourceTable-index")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.index"));
+				jQuery("#idx-targetTable-name")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.name"));
+				jQuery("#idx-targetTable-index")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.index"));
+				jQuery("label[for='idx-showAffectedTreePaths']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.showAffectedPaths"));
+				jQuery("#idx-mappingStrategy")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.mappingStrategy"));
+				jQuery("label[for='idx-mappingStrategy-append']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.append"));
+				jQuery("label[for='idx-mappingStrategy-overwrite']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.overwrite"));
+				jQuery("#idx-okButton")
+						.prop('value',
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.ok"));
+				jQuery("#idx-cancelButton")
+						.prop('value',
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.cancel"));
 			}
 
 
@@ -245,79 +312,13 @@ define(
 						hideEnumerations : true
 					});
 
-					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
-					this.expressionEditor.disable();
-
-					this.expressionTextArea.change({
-						"view" : this
-					}, function(event) {
-						var outputTableRow = event.data.view.selectedOutputTableRow;
-
-						if (outputTableRow != null) {
-							var mappingExpression = event.data.view.expressionTextArea.val();
-
-							outputTableRow.mappingExpression = mappingExpression;
-							event.data.view.populateMappingCell(outputTableRow);
-
-							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
-						}
-					});
-
-					this.sourceFilterInput.keypress({
-						"view" : this
-					}, function(event) {
-						event.data.view
-								.filterSource(event.data.view.sourceFilterInput
-										.val());
-					});
-
-					this.targetFilterInput.keypress({
-						"view" : this
-					}, function(event) {
-						event.data.view
-								.filterTarget(event.data.view.targetFilterInput
-										.val());
-					});
-
-					this.filterHighlightedSourceFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterHighlightedSourceFields();
-					});
-
-					this.filterHighlightedTargetFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterHighlightedTargetFields();
-					});
-
-					this.showAllSourceFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.showAllSourceFields();
-					});
-
-					this.showAllTargetFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.showAllTargetFields();
-					});
-
 					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
 					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
 
-					this.filterFieldsWithNoMappingInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterFieldsWithNoMapping();
-					});
+					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
+					this.expressionEditor.disable();
 
-					this.filterFieldsWithMappingInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterFieldsWithMapping();
-					});
-
+					// Common
 					this.publicVisibilityCheckbox
 							.change(
 									{
@@ -347,6 +348,22 @@ define(
 													});
 										}
 									});
+
+					// Code Editor
+					this.expressionTextArea.change({
+						"view" : this
+					}, function(event) {
+						var outputTableRow = event.data.view.selectedOutputTableRow;
+
+						if (outputTableRow != null) {
+							var mappingExpression = event.data.view.expressionTextArea.val();
+
+							outputTableRow.mappingExpression = mappingExpression;
+							event.data.view.populateMappingCell(outputTableRow);
+
+							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
+						}
+					});
 
 					jQuery(this.expressionEditor.getWrapper())
 							.droppable({
@@ -391,6 +408,61 @@ define(
 								}
 							});
 
+					// Source Message
+					this.sourceFilterInput.keypress({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterSource(event.data.view.sourceFilterInput
+										.val());
+					});
+
+					this.filterHighlightedSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedSourceFields();
+					});
+
+					this.showAllSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllSourceFields();
+					});
+
+					// Target Message
+					this.targetFilterInput.keypress({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterTarget(event.data.view.targetFilterInput
+										.val());
+					});
+
+					this.filterHighlightedTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedTargetFields();
+					});
+
+					this.showAllTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllTargetFields();
+					});
+
+					this.filterFieldsWithNoMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithNoMapping();
+					});
+
+					this.filterFieldsWithMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithMapping();
+					});
+
+					// Add Input Message dialog 
 					jQuery("#inputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
@@ -406,10 +478,16 @@ define(
 						event.data.view.clearErrorMessages();
 									});
 
-					jQuery("#inputDataDialog #closeButton").click(function() {
-						jQuery("#inputDataDialog").dialog("close");
-					});
-
+					jQuery("#addInputDataButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										jQuery("#inputDataDialog").dialog(
+												"open");
+//										jQuery("#indexConfigurationDialog").dialog("open");
+									});
 
 					jQuery("#inputDataDialog #applyButton")
 							.click(
@@ -438,21 +516,16 @@ define(
 										}
 									});
 
-					jQuery("#addInputDataButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery("#inputDataDialog").dialog(
-												"open");
-									});
+					jQuery("#inputDataDialog #closeButton").click(function() {
+						jQuery("#inputDataDialog").dialog("close");
+					});
 
+					// Add Output Message dialog 
 					jQuery("#outputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
-										title : m_i18nUtils
-												.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
 									});
 
 					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
@@ -463,9 +536,15 @@ define(
 						event.data.view.clearErrorMessages();
 									});
 
-					jQuery("#outputDataDialog #closeButton").click(function() {
-						jQuery("#outputDataDialog").dialog("close");
-					});
+					jQuery("#addOutputDataButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										jQuery("#outputDataDialog").dialog(
+												"open");
+									});
 
 					jQuery("#outputDataDialog #applyButton")
 							.click(
@@ -485,16 +564,35 @@ define(
 										}
 									});
 
-					jQuery("#addOutputDataButton")
+					jQuery("#outputDataDialog #closeButton").click(function() {
+						jQuery("#outputDataDialog").dialog("close");
+					});
+
+					// Index Configuration Dialog 
+					jQuery("#indexConfigurationDialog").dialog({
+						autoOpen : false,
+						draggable : true,
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.title"),
+						width : 'auto'
+									});
+					
+					jQuery("#idx-okButton")
 							.click(
 									{
-										view : this
+										"view" : this
 									},
 									function(event) {
-										jQuery("#outputDataDialog").dialog(
-												"open");
+										if (true) {
+											jQuery("#indexConfigurationDialog").dialog("close");
+										}
 									});
 
+					jQuery("#idx-cancelButton").click(function() {
+						jQuery("#indexConfigurationDialog").dialog("close");
+					});
+
+					// Test 
 					jQuery("#runButton")
 							.click(
 									{
@@ -594,6 +692,9 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.setModelElement = function(
 						application) {
+					// Store the tree nodes that are expanded as 
+					// this information will be lost after the trees are refreshed
+
 					// TODO - needs review
 					// Employs direct manipulations of classes
 					// hence subject to problems in case of version change etc.
@@ -606,6 +707,10 @@ define(
 						outputRowExpandedStatus[this.id] = $(this).hasClass("expanded")
 					});
 
+//					var x = jQuery("table#sourceTable tr.selected").first();
+//					var y = jQuery("table#targetTable tr.selected");
+//					var z = y.attr('id');
+					
 					this.initializeModelElement(application);
 					this.application = application;
 
@@ -654,6 +759,8 @@ define(
 					this.populateTableRows(this.outputTableBody,
 							this.outputTableRows, false);
 
+					// Restore the expanded tree nodes
+					
 					// TODO - needs review
 					// Employs direct manipulations of classes
 					// hence subject to problems in case of version change etc.

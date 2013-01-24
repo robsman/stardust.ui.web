@@ -428,5 +428,112 @@
 			</tr>
 		</table>
 	</div>
+	<div id="indexConfigurationDialog" title="Index Configuration"
+		style="min-width: 600px; min-height: 200px;">
+		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr valign="top">
+							<td>
+								<div class="heading" id="idx-sourcemessage" style="margin-bottom: 5px;">Source Message</div>
+							</td>
+							<td>
+								<div class="heading" id="idx-targetmessage"
+									style="margin-bottom: 5px; margin-left: 10px;">Target Message</div>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<div class="panelBorder">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td>
+												<div class="dataTable">
+													<table id="idx-sourceTable" cellpadding="0"
+														cellspacing="0" class="treeTable"
+														style="width: 300px;">
+														<thead>
+															<tr>
+																<th style="width: 150px;" id="idx-sourceTable-name">Name</th>
+																<th style="width: 100px;" id="idx-sourceTable-index">Index</th>
+															</tr>
+														</thead>
+														<tbody />
+													</table>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td>
+								<div class="panelBorder">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td>
+												<div class="dataTable">
+													<table id="idx-targetTable" cellpadding="0"
+														cellspacing="0" class="treeTable"
+														style="width: 300px;">
+														<thead>
+															<tr>
+																<th style="width: 150px;" id="idx-targetTable-name">Name</th>
+																<th style="width: 100px;" id="idx-targetTable-index">Index</th>
+															</tr>
+														</thead>
+														<tbody />
+													</table>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table  cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><input id="idx-showAffectedTreePaths" type="checkbox" checked /></td>
+							<td><label for="idx-showAffectedTreePaths">Show affected tree paths only</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div id="idx-mappingStrategy" class="heading">Mapping Strategy (1 to N of same type)</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><input id="idx-mappingStrategy-append" type="radio" disabled="disabled" /></td>
+							<td><label for="idx-mappingStrategy-append">Append element</label></td>
+						</tr>
+						<tr>
+							<td><input id="idx-mappingStrategy-overwrite" type="radio" checked="checked" disabled="disabled" /></td>
+							<td><label for="idx-mappingStrategy-overwrite">Overwrite existing element</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><input id="idx-okButton" type="button" value="OK" /></td>
+							<td><input id="idx-cancelButton" type="button" value="Cancel" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
 </body>
 </html>
