@@ -581,7 +581,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          // Create input mapping
 
-         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY) &&
+               !dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY).isJsonNull())
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -593,7 +594,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          // Create output mapping
 
-         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY) &&
+               !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY).isJsonNull())
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
