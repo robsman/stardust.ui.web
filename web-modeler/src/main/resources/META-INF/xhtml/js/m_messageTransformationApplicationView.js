@@ -821,98 +821,6 @@ define(
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.validateMessageName = function(nameInput) {
-					this.clearErrorMessages();
-
-					nameInput.removeClass("error");
-
-					if ((nameInput.val() == null) || (nameInput.val().trim() === "")) {
-						this.errorMessages
-								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.emptyName"));
-					} else {
-						var name = nameInput.val().trim();
-						// name must be valid name according to XML rules
-						try {
-							jQuery.parseXML('<' + name + '/>');
-						} catch (e) {
-							this.errorMessages
-								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidName"));
-						}
-						
-						// Check for duplicate message names
-						for (var key in this.application.contexts) {
-							var context = this.application.contexts[key];
-							for ( var m = 0; m < context.accessPoints.length; ++m) {
-								var accessPoint = context.accessPoints[m];
-								
-								if (name === accessPoint.id) {
-									var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.duplicateName")
-															.replace("{0}", name);
-									this.errorMessages.push(msg);
-								}
-							}
-						}
-					}
-
-					if (this.errorMessages.length > 0) {
-						nameInput.addClass("error");
-						this.showErrorMessages();
-
-						return false;
-					}
-
-					return true;
-				};
-
-				/**
-				 *
-				 */
-				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
-						xml) {
-					var xmlDoc;
-					try {
-						xmlDoc = jQuery.parseXML(xml);
-						var xmlObject = jQuery(xmlDoc);
-
-						var view = this; // required since jQuery.find() below changes context of 'this'
-
-						jQuery(xmlObject).find("fieldMappings").each(
-								function() {
-
-									var fieldPath = jQuery(this).attr("fieldPath")
-
-									fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es)
-									fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
-
-									view.mappingExpressions[fieldPath] = jQuery(
-											this).attr("mappingExpression");
-								});
-					} catch(e) {
-						this.errorMessages
-							.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidXml"));
-					}
-				};
-
-				/**
-				 *
-				 */
-				MessageTransformationApplicationView.prototype.showOutputMappingError = function(
-						path, errors) {
-					var rowId = path.replace(/\./g, "-");
-					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
-					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-
-					if (!jQuery.isEmptyObject(errors) && mappingCell.text().trim() != "") {
-						problemCell.addClass("mappingError");
-					}
-					else {
-						problemCell.removeClass("mappingError");
-					}
-				}
-
-				/**
-				 *
-				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
 						height : 200
@@ -964,8 +872,8 @@ define(
 												.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
 
-										// Register showOutputMappingError as a callback function after JS validation occurs
-										view.expressionEditor.setJavaScriptValidationOptions(view.showOutputMappingError, view.selectedOutputTableRow.path);
+										// Register showMappingError as a callback function after JS validation occurs
+										view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
 									});
 
 					jQuery("table#targetTable tbody tr span").mousedown(
@@ -973,16 +881,6 @@ define(
 								jQuery(jQuery(this).parents("tr")[0]).trigger(
 										"mousedown");
 							});
-				};
-
-				/**
-				 *
-				 */
-				MessageTransformationApplicationView.prototype.clearMappingExpression = function(outputTableRow) {
-					outputTableRow.mappingExpression = "";
-					this.populateMappingCell(outputTableRow);
-
-					this.submitChanges(this.determineTransformationChanges());
 				};
 
 				/**
@@ -1415,49 +1313,6 @@ define(
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.isPrimitive = function(tableRow) {
-					if (tableRow.accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE) return true;
-					if (tableRow.element != null && m_dataTraversal.isBuiltInXsdDataType(tableRow.element.type)) return true;
-				}
-
-				/**
-				 *
-				 */
-				// TODO: @Anoop - Refactor
-				MessageTransformationApplicationView.prototype.isStructuredType = function(tableRow) {
-					if (tableRow.accessPoint.dataType != m_constants.STRUCTURED_DATA_TYPE) return false;
-
-					var element = tableRow.element;
-					
-					// Embedded structure
-					if (element == null) {
-						return false;
-					}
-
-					var childElements = element.elements;
-
-					// Recursive resolution
-
-					if (childElements == null && element.type != null) {
-						var typeDeclaration = this.getModel()
-								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
-
-						if (typeDeclaration != null
-								&& typeDeclaration.isSequence()) {
-							return true;
-						}
-					}
-
-					if (childElements == null) {
-						return false;
-					}
-
-					return true;
-				}
-
-				/**
-				 *
-				 */
 				MessageTransformationApplicationView.prototype.highlightTarget = function(
 						tableRow) {
 					jQuery("#sourceTable .data-element").removeClass(
@@ -1590,25 +1445,73 @@ define(
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.validate = function() {
-					this.clearErrorMessages();
+				MessageTransformationApplicationView.prototype.populateMappingCell = function(outputTableRow) {
+					var maxLength = 35;
 
-					this.nameInput.removeClass("error");
+					var rowId = outputTableRow.path.replace(/\./g, "-");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ? 
+											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
+											outputTableRow.mappingExpression;
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					mappingCell.empty();
+					mappingCell.append(trimmedString);
+				}
+				
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.clearMappingExpression = function(outputTableRow) {
+					outputTableRow.mappingExpression = "";
+					this.populateMappingCell(outputTableRow);
+
+					this.submitChanges(this.determineTransformationChanges());
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.showMappingError = function(
+						path, errors) {
+					var rowId = path.replace(/\./g, "-");
+					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+
+					if (!jQuery.isEmptyObject(errors) && mappingCell.text().trim() != "") {
+						problemCell.addClass("mappingError");
+					}
+					else {
+						problemCell.removeClass("mappingError");
+					}
+				}
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
+						xml) {
+					var xmlDoc;
+					try {
+						xmlDoc = jQuery.parseXML(xml);
+						var xmlObject = jQuery(xmlDoc);
+
+						var view = this; // required since jQuery.find() below changes context of 'this'
+
+						jQuery(xmlObject).find("fieldMappings").each(
+								function() {
+
+									var fieldPath = jQuery(this).attr("fieldPath")
+
+									fieldPath = fieldPath.replace(/\/$/g, ""); // Remove trailing slash(es)
+									fieldPath = fieldPath.replace(/\//g, "."); // Replace slash(es) with "."
+
+									view.mappingExpressions[fieldPath] = jQuery(
+											this).attr("mappingExpression");
+								});
+					} catch(e) {
 						this.errorMessages
-								.push("Application name must not be empty.");
-						this.nameInput.addClass("error");
+							.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidXml"));
 					}
-
-					if (this.errorMessages.length > 0) {
-						this.showErrorMessages();
-
-						return false;
-					}
-
-					return true;
 				};
 
 				/**
@@ -1653,19 +1556,116 @@ define(
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.populateMappingCell = function(outputTableRow) {
-					var maxLength = 35;
+				MessageTransformationApplicationView.prototype.validate = function() {
+					this.clearErrorMessages();
 
-					var rowId = outputTableRow.path.replace(/\./g, "-");
-					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
-					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ? 
-											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
-											outputTableRow.mappingExpression;
+					this.nameInput.removeClass("error");
 
-					mappingCell.empty();
-					mappingCell.append(trimmedString);
+					if (this.nameInput.val() == null
+							|| this.nameInput.val() == "") {
+						this.errorMessages
+								.push("Application name must not be empty.");
+						this.nameInput.addClass("error");
+					}
+
+					if (this.errorMessages.length > 0) {
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.validateMessageName = function(nameInput) {
+					this.clearErrorMessages();
+
+					nameInput.removeClass("error");
+
+					if ((nameInput.val() == null) || (nameInput.val().trim() === "")) {
+						this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.emptyName"));
+					} else {
+						var name = nameInput.val().trim();
+						// name must be valid name according to XML rules
+						try {
+							jQuery.parseXML('<' + name + '/>');
+						} catch (e) {
+							this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidName"));
+						}
+						
+						// Check for duplicate message names
+						for (var key in this.application.contexts) {
+							var context = this.application.contexts[key];
+							for ( var m = 0; m < context.accessPoints.length; ++m) {
+								var accessPoint = context.accessPoints[m];
+								
+								if (name === accessPoint.id) {
+									var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.duplicateName")
+															.replace("{0}", name);
+									this.errorMessages.push(msg);
+								}
+							}
+						}
+					}
+
+					if (this.errorMessages.length > 0) {
+						nameInput.addClass("error");
+						this.showErrorMessages();
+
+						return false;
+					}
+
+					return true;
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.isPrimitive = function(tableRow) {
+					if (tableRow.accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE) return true;
+					if (tableRow.element != null && m_dataTraversal.isBuiltInXsdDataType(tableRow.element.type)) return true;
 				}
-				
+
+				/**
+				 *
+				 */
+				// TODO: @Anoop - Refactor
+				MessageTransformationApplicationView.prototype.isStructuredType = function(tableRow) {
+					if (tableRow.accessPoint.dataType != m_constants.STRUCTURED_DATA_TYPE) return false;
+
+					var element = tableRow.element;
+					
+					// Embedded structure
+					if (element == null) {
+						return false;
+					}
+
+					var childElements = element.elements;
+
+					// Recursive resolution
+
+					if (childElements == null && element.type != null) {
+						var typeDeclaration = this.getModel()
+								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
+
+						if (typeDeclaration != null
+								&& typeDeclaration.isSequence()) {
+							return true;
+						}
+					}
+
+					if (childElements == null) {
+						return false;
+					}
+
+					return true;
+				}
+
 				// TODO: Helper methods - review code location?
 				function ancestorsOf(node) {
 					var ancestors = [];
