@@ -21,6 +21,7 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -76,7 +77,8 @@ public class SelectProcessPopup extends PopupUIComponentBean
    public void initializeBean()
    {
       this.setPopupAutoCenter(false);
-      setTitle("Select Processes");
+      setTitle(MessagePropertiesBean.getInstance().getString(
+            "views.worklistPanelConfiguration.selectProcessPopup.title"));
       processes = new ArrayList<SelectItem>();
       processDefinitions = new HashMap<String, ProcessDefinition>();
       List<ProcessDefinition> allProcessDefinitions = null;
