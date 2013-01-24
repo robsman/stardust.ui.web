@@ -1127,32 +1127,27 @@ public class ProcessInstanceUtils
 
    /**
     * 
-    * @param pi
+    * @param priority
     * @return
     */
-   public static String getPriorityValue(ProcessInstance pi)
+   public static String getPriorityValue(int priority)
    {
       String priorityValue = null;
 
-      if (null != pi)
+      switch (priority)
       {
-         int priority = pi.getPriority();
-
-         switch (priority)
-         {
-         case ProcessInstancePriority.LOW:
-            priorityValue = PRIORITY_LOW;
-            break;
-         case ProcessInstancePriority.NORMAL:
-            priorityValue = PRIORITY_NORMAL;
-            break;
-         case ProcessInstancePriority.HIGH:
-            priorityValue = PRIORITY_HIGH;
-            break;
-         default:
-            priorityValue = PRIORITY_NORMAL;
-            break;
-         }
+      case ProcessInstancePriority.LOW:
+         priorityValue = PRIORITY_LOW;
+         break;
+      case ProcessInstancePriority.NORMAL:
+         priorityValue = PRIORITY_NORMAL;
+         break;
+      case ProcessInstancePriority.HIGH:
+         priorityValue = PRIORITY_HIGH;
+         break;
+      default:
+         priorityValue = PRIORITY_NORMAL;
+         break;
       }
 
       return priorityValue;

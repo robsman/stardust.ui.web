@@ -708,13 +708,13 @@ public class WorklistTableBean extends UIComponentBean
             {
                pi = ProcessInstanceUtils.getProcessInstance(ai);
             }
-            String priorityValue = ProcessInstanceUtils.getPriorityValue(pi);
+            
             List<Note> notes = ProcessInstanceUtils.getNotes(pi);
             int notesSize = null != notes ? ProcessInstanceUtils.getNotes(pi).size() : 0;
 
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
-                  ActivityInstanceUtils.getLastPerformer(ai), priorityValue, pi.getPriority(), ai.getStartTime(),
+                  ActivityInstanceUtils.getLastPerformer(ai), pi.getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
                   ai.getProcessInstanceOID(), ai, currentPerformerOID);
          }
