@@ -143,12 +143,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
       processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOID, true, true);
      
-      //set process Name
-      if (null != thisView && StringUtils.isEmpty((String) thisView.getViewParams().get("processInstanceName")))
-      {
-         thisView.getViewParams().put("processInstanceName", getProcessName());
-      }
-      
       duration=ProcessInstanceUtils.getDuration(processInstance);
       // Only initialize in refresh/update, for 1st time this will be initialized in
       // expand methods
@@ -205,6 +199,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                {
                   processInstanceOID = Long.parseLong(pOID);
                   initialize();
+                  // set process Name
+                  thisView.getViewParams().put("processInstanceName", getProcessName());
                }
                catch (Exception ex)
                {
