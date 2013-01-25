@@ -910,6 +910,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   primitiveDataType = jsonElementType.getAsString();
                }
+               else
+               {
+                  primitiveDataType = "String"; //$NON-NLS-1$
+               }
                
                getModelBuilderFacade().createPrimitiveParameter(
                      processDefinition,
