@@ -23,6 +23,8 @@ import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -48,7 +50,7 @@ public class ModelHelper
    public static ParticipantLabel getParticipantLabel(ParticipantInfo participantInfo)
    {
       ParticipantLabel participantlabel = new ParticipantLabel();
-
+      User loggedInUser = SessionContext.findSessionContext().getUser();
       if (participantInfo instanceof ModelParticipantInfo)
       {
          ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;
@@ -78,14 +80,28 @@ public class ModelHelper
          }
          else
          {
-            participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
-                  .getParticipant(participantInfo)));
+            if (participantInfo.getId().equals(loggedInUser.getId()))
+            {
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(loggedInUser));
+            }
+            else
+            {
+               participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
+                     .getParticipant(participantInfo)));
+            }
          }
       }
       else if (participantInfo instanceof DynamicParticipantInfo)
       {
-         participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
-               .getParticipant(participantInfo)));
+         if (participantInfo.getId().equals(loggedInUser.getId()))
+         {
+            participantlabel.setParticipantName(I18nUtils.getParticipantName(loggedInUser));
+         }
+         else
+         {
+            participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
+                  .getParticipant(participantInfo)));
+         }
       }
 
       return participantlabel;

@@ -57,24 +57,24 @@ import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterBetween;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPickList;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
@@ -93,9 +93,9 @@ import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnPreferenceHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
@@ -122,6 +122,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -184,6 +185,8 @@ public class WorklistTableBean extends UIComponentBean
    
    private String preferenceId;
    
+   private String defaultUserDisplayFormat = null;
+   
    public WorklistTableBean()
    {
       super("worklistPanel");
@@ -204,7 +207,7 @@ public class WorklistTableBean extends UIComponentBean
       {
       case CREATED:
          this.view = event.getView();
-         currentPerformerOID = ServiceFactoryUtils.getUserService().getUser().getOID();
+         currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
          initViewParams();
          break;
          
@@ -711,10 +714,13 @@ public class WorklistTableBean extends UIComponentBean
             
             List<Note> notes = ProcessInstanceUtils.getNotes(pi);
             int notesSize = null != notes ? ProcessInstanceUtils.getNotes(pi).size() : 0;
-
+            defaultUserDisplayFormat = null == defaultUserDisplayFormat
+                  ? UserUtils.getDefaultUserNameDisplayFormat()
+                  : defaultUserDisplayFormat;
+            
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
-                  ActivityInstanceUtils.getLastPerformer(ai), pi.getPriority(), ai.getStartTime(),
+                  ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), pi.getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
                   ai.getProcessInstanceOID(), ai, currentPerformerOID);
          }

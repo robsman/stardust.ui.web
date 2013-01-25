@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -120,6 +121,38 @@ public class I18nUtils
       return label;
    }
    
+   /**
+    * 
+    * @param user
+    * @param defaultUserDisplayFormat
+    * @return
+    */
+   public static String getUserLabel(User user, String defaultUserDisplayFormat)
+   {
+      String label = "";
+
+      if (null != user)
+      {
+         String userDisplayFormat = (String) user.getProperty(USER_NAME_DISPLAY_FORMAT_PREF_ID);
+         if (StringUtils.isNotEmpty(userDisplayFormat))
+         {
+            label = MessageFormat.format(userDisplayFormat, user.getFirstName(), user.getLastName(), user.getAccount());
+         }
+         else
+         {
+            label = MessageFormat.format(defaultUserDisplayFormat, user.getFirstName(), user.getLastName(),
+                  user.getAccount());
+         }
+      }
+
+      if (StringUtils.isEmpty(label))
+      {
+         label = getUserLabelDefault(user);
+      }
+
+      return label;
+   }
+
    public static String getProcessName(ProcessDefinition process)
    {
       return getProcessLabel(process, "<Unknown Process>", ModelElementLocalizerKey.KEY_NAME);

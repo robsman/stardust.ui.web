@@ -278,14 +278,14 @@ public class ActivityInstanceUtils
     * @param ai
     * @return
     */
-   public static String getLastPerformer(ActivityInstance ai)
+   public static String getLastPerformer(ActivityInstance ai, String defaultDisplayFormat)
    {
       for (HistoricalState hs : ai.getHistoricalStates())
       {
          Participant performer = hs.getPerfomer();
          if (performer instanceof User && hs.getState() == ActivityInstanceState.Application)
          {
-            return I18nUtils.getUserLabel((User) performer);
+            return I18nUtils.getUserLabel((User) performer, defaultDisplayFormat);
          }
       }
       return null;
