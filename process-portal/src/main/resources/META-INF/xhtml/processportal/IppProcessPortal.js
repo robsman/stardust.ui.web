@@ -11,11 +11,11 @@
 if ( !window["InfinityBpm"]) {
 
 	InfinityBpm = new function() {
-
+		
 	};
-
+	
 } // !InfinityBpm
-
+	
 var InfinityBpm = window["InfinityBpm"];
 
 var CONTENT_FRAME_CLOSE_DELAY  = 100;
@@ -23,18 +23,18 @@ var CONTENT_FRAME_CLOSE_DELAY  = 100;
 if ( !InfinityBpm.ProcessPortal || !InfinityBpm.ProcessPortal.isFullApi()) {
 
 InfinityBpm.ProcessPortal = new function() {
-
+	
 	// Contains custom object like {id:'frmId1', posX: 20, posY: 30}
 	var iFrames = new Array();
 
 	var mainIppWindow = null;
 
 	// define module private functions
-
+	
 	function debug(msg) {
 		//alert(msg);
 	}
-
+	
 	/*
 	 * Called on potalMain.xhtml body onload
 	 */
@@ -59,13 +59,13 @@ InfinityBpm.ProcessPortal = new function() {
 			  if (ippPortalWin.addEventListener) {
 			    //alert('Subscribing for postMessage ..');
 				  ippPortalWin.addEventListener("message", handleRemoteControlMessage, true);
-
+			    
 			    // main window will just forward to portal window
 				  ippMainWind.addEventListener("message", handleRemoteControlMessage, true);
               } else if (ippPortalWin.attachEvent) {
                 //alert('Attaching to onmessage event ..');
             	  ippPortalWin.attachEvent("onmessage", handleRemoteControlMessage);
-
+                
                 // main window will just forward to portal window
             	  ippMainWind.attachEvent("onmessage", handleRemoteControlMessage);
               } else {
@@ -78,7 +78,7 @@ InfinityBpm.ProcessPortal = new function() {
 			alert(getMessage("portal.common.js.safeCrossDomainMessaging.enable.failed", 'Failed enabling safe cross domain iframe messaging: ') + e.message);
 		}
     }
-
+	
 	/*
 	 * Adjusts all active iFrames as per current browser scroll position
 	 */
@@ -96,22 +96,22 @@ InfinityBpm.ProcessPortal = new function() {
 						scrollX = portalWin.document.documentElement.scrollLeft;
 						scrollY = portalWin.document.documentElement.scrollTop;
 					}
-
+					
 					var iFrame = getIframe(contentFrame.getAttribute('name'));
 					if (iFrame != null) {
 						var newX = iFrame.posX - scrollX;
 						var newY = iFrame.posY - scrollY;
-
+		
 						var diffX = getAbsoluteSize(contentFrame.style.left) - newX;
 						if (diffX < 0) {
 							diffX = -diffX;
 						}
-
+		
 						var diffY = getAbsoluteSize(contentFrame.style.top) - newY;
 						if (diffY < 0) {
 							diffY = -diffY;
 						}
-
+						
 						// It's observed that sometimes scrollX/scrollY is 1 when there is no scroll on UI.
 						// Also, 1px is very small, can be ignored. So check if it's greater than 1
 						if (diffX > 1 || diffY > 1) {
@@ -124,11 +124,11 @@ InfinityBpm.ProcessPortal = new function() {
 				}
 			}
 		});
-	}
+	}	
 
 	function getAbsoluteSize(size) {
 		if (size.indexOf('px') != -1) {
-			return size.substr(0, size.indexOf('px'));
+			return size.substr(0, size.indexOf('px'));	
 		} else {
 			return size;
 		}
@@ -168,7 +168,7 @@ InfinityBpm.ProcessPortal = new function() {
 			iFrames.splice(index, 1);
 			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -185,12 +185,12 @@ InfinityBpm.ProcessPortal = new function() {
 	// >>> Copied from InfinityBpm_Core - START
     function isThisIppWindow(win) {
         var baseLocation = String(win.document.location);
-
+        
         // Remove Query Params
         if (-1 != baseLocation.indexOf("?")) {
         	baseLocation = baseLocation.substr(0, baseLocation.indexOf("?"));
         }
-
+        
         // Check url, it should either read main.iface or login.iface
         if (-1 != baseLocation.indexOf("main.iface") || -1 != baseLocation.indexOf("login.iface")) {
         	return true;
@@ -213,7 +213,7 @@ InfinityBpm.ProcessPortal = new function() {
     	}
         else{
         	return win;
-        }
+        }	
     }
 
     function findIppWindowBottomUp(win){
@@ -224,7 +224,7 @@ InfinityBpm.ProcessPortal = new function() {
     	}
         else{
         	return win;
-        }
+        }	
     }
 
     function getIppWindow() {
@@ -240,10 +240,10 @@ InfinityBpm.ProcessPortal = new function() {
     	}
     }
     // >>> Copied from InfinityBpm_Core - END
-
+    
     function ippMainWindow() {
       if (null != mainIppWindow) {
-      	return mainIppWindow;
+      	return mainIppWindow;  
       }
 
       var ippWindow;
@@ -275,7 +275,7 @@ InfinityBpm.ProcessPortal = new function() {
 
 		if (targetWindow) {
 			try {
-
+				
 				if (targetWindow.InfinityBpm.ProcessPortal) {
 					//alert('Using direct invocation ... ');
 
@@ -292,7 +292,7 @@ InfinityBpm.ProcessPortal = new function() {
 					} else if ('abort' === commandId) {
 						targetWindow.InfinityBpm.ProcessPortal.abortActivity();
 					}
-
+					
 					return;
 				} else {
 					alert(getMessage("portal.common.js.infinityBpm.processPortal.notFound", 'Did not find InfinityBpm.ProcessPortal module in main page') + typeof targetWindow.InfinityBpm.ProcessPortal);
@@ -300,27 +300,27 @@ InfinityBpm.ProcessPortal = new function() {
 			} catch (x1) {
 				// probably forbidden to access location, assuming other page
 				//alert('Failed invoking top level IPP function: ' + x1);
-
+				
 			}
 
 			// trying postMessage
 			try {
 				if (targetWindow.postMessage) {
 					//alert('Using post message ... ');
-
+					
 					targetWindow.postMessage(commandId, "*");
-
+					
 					return;
 				}
 			} catch (x2) {
 				// failed using postMessage, fall back to FIM
 				//alert('Failed invoking postMessage: ' + x2);
 			}
-
+			
 			try {
 				alert(getMessage("portal.common.js.browser.notSupported", 'Unfortunately this browser is currently not yet supported.'));
 				return;
-
+				
 				ifrm = document.createElement("IFRAME");
 				ifrm.setAttribute('style', 'display: none; width: 0px; height: 0px;');
 				// TODO replace with dynamic URL determination
@@ -331,10 +331,10 @@ InfinityBpm.ProcessPortal = new function() {
 			}
 		}
 	}
-
+	
 	function handleIppAiClosePanelCommandConfirmation(commandId) {
 	  //alert("In IPP frame: " + window.location);
-
+	  
 	  var ippPortalDom = ippPortalWindow().document;
 	  var divRemoteControl = ippPortalDom.getElementById('ippProcessPortalActivityPanelRemoteControl');
 	  if ( !divRemoteControl) {
@@ -347,7 +347,7 @@ InfinityBpm.ProcessPortal = new function() {
 	  {
 	    //alert("Setting commandId to " + commandId);
 	    fldCommandId.value = commandId;
-
+	    
 	    try
 	    {
 	      //alert('Blanked screen ...');
@@ -393,7 +393,7 @@ InfinityBpm.ProcessPortal = new function() {
 		var jsonStr;
 		try {
 			if (typeof input === 'string' || input instanceof String){
-				// String. So it will be Stringified JSON, Validation is done at serverside
+				// String. So it will be Stringified JSON, Validation is done at serverside 
 				jsonStr = input;
 				proceed = true;
 			} else if (typeof input === 'object') {
@@ -422,11 +422,11 @@ InfinityBpm.ProcessPortal = new function() {
 			//debug('Not in main IPP frame');
 			return;
 		}
-
+		
 		if ( !ippMainWindow().InfinityBpm.ProcessPortal) {
-
+		  
 		  debug("Installing IPP activity panel browser API in main window.");
-
+		  
 		  // provide activity panel API at top frame
 		  ippMainWindow().InfinityBpm.ProcessPortal = new function() {
 		    return {
@@ -439,17 +439,17 @@ InfinityBpm.ProcessPortal = new function() {
     		    debug("Delegating qaPassActivity() to portal frame.");
     		    ippPortalWindow().InfinityBpm.ProcessPortal.qaPassActivity();
               },
-
+      
 	          qaFailActivity: function() {
 	            debug("Delegating qaFailActivity() to portal frame.");
 		        ippPortalWindow().InfinityBpm.ProcessPortal.qaFailActivity();
-	          },
+	          },  
 
               suspendActivity: function(saveOutParams) {
                 debug("Delegating suspend() to portal frame.");
                 ippPortalWindow().InfinityBpm.ProcessPortal.suspendActivity(saveOutParams);
               },
-
+          
               abortActivity: function() {
                 debug("Delegating abort() to portal frame.");
                 ippPortalWindow().InfinityBpm.ProcessPortal.abortActivity();
@@ -457,16 +457,16 @@ InfinityBpm.ProcessPortal = new function() {
 		    };
           };
 		}
-
+		
 		//debug("Ready ..");
-
+		
 		var ippPortalDom = ippPortalWindow().document;
 		var parentDiv = ippPortalDom.getElementById('ippProcessPortalActivityPanelRemoteControl');
-
+		
 		try {
 
 		  //debug("Parent DIV: " + parentDiv);
-
+			
 		  if (parentDiv) {
 
 			var clientApiContainer = parentDiv.getElementsByTagName('div');
@@ -480,14 +480,14 @@ InfinityBpm.ProcessPortal = new function() {
 			alert(getMessage("portal.common.js.remoteControlInfrastructure.enable.failed", 'Failed enabling IPP remote control infrastructure: ') + e.message);
 		}
 	}
-
+	
 	function findPosition(node) {
 	  var curleft = curtop = 0;
 	  do {
 	    curleft += node.offsetLeft;
 	    curtop += node.offsetTop;
 	  } while (node = node.offsetParent);
-
+	  
 	  var pos = new Object();
 	  pos.x = curleft;
 	  pos.y = curtop;
@@ -506,21 +506,21 @@ InfinityBpm.ProcessPortal = new function() {
             // invoke callback function
             action(frame);
             if (contentId != null) {
-                break;
+                break;            	
             }
           }
         }
       }
     }
-
+    
     /*
      * advanceArgs Example:
-     *    {anchorId:'ippProcessAttachmentsAnchor', width:100, height:30, maxWidth:500, maxHeight:550,
+     *    {anchorId:'ippProcessAttachmentsAnchor', width:100, height:30, maxWidth:500, maxHeight:550, 
      *    "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid black'}
-     */
+     */ 
     function activateContentFrame(contentId, advanceArgs) {
       debug("About to activate content frame with ID " + contentId);
-
+      
       if (advanceArgs != undefined)
       {
 	      var anchorId = advanceArgs.anchorId;
@@ -536,17 +536,17 @@ InfinityBpm.ProcessPortal = new function() {
       doWithContentFrame(contentId, function(contentFrame) {
         debug("Activating content frame: " + contentFrame);
         var ippPortalDom = ippPortalWindow().document;
-
+        
         var anchor = anchorId == undefined ? 'ippActivityPanelAnchor' : anchorId;
         var contentPanelAnchor = ippPortalDom.getElementById(anchor);
         if (contentPanelAnchor) {
           debug('Repositioning content frame: ' + contentId + ' (using anchor: ' + contentPanelAnchor + ')');
           var pos = findPosition(contentPanelAnchor);
           debug('Moving to (' + pos.x + ', ' + pos.y + ')');
-
+          
           var iFrameWith = (width == undefined) ? contentPanelAnchor.offsetWidth : width;
           var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
-
+         
           openOnRight = (openOnRight == undefined) ?  true : openOnRight;
           anchorXAdjustment = (anchorXAdjustment == undefined) ? 0 : anchorXAdjustment;
           anchorYAdjustment = (anchorYAdjustment == undefined) ? 0 : anchorYAdjustment;
@@ -560,11 +560,11 @@ InfinityBpm.ProcessPortal = new function() {
           contentFrame.style.top = posY + 'px';
           contentFrame.style.width = iFrameWith + 'px';
           contentFrame.style.height = iFrameHeight + 'px';
-
+          
           if (border != undefined) {
           	contentFrame.style.border = border;
           }
-
+          
           if (zIndex != undefined) {
         	  contentFrame.style.zIndex = zIndex;
           }
@@ -576,7 +576,7 @@ InfinityBpm.ProcessPortal = new function() {
         }
 
         debug('Displaying content frame: ' + contentId);
-        contentFrame.style.display = 'inline';
+        contentFrame.style.display = 'inline';       
       });
     }
 
@@ -589,7 +589,7 @@ InfinityBpm.ProcessPortal = new function() {
     			var newWidth = (advanceArgs.maxWidth != undefined && advanceArgs.maxWidth < advanceArgs.width) ? advanceArgs.maxWidth : advanceArgs.width;
     			contentFrame.style.width = newWidth + 'px';
     		}
-
+    		
     		if (advanceArgs.height != undefined) {
     			var newHeight = (advanceArgs.maxHeight != undefined && advanceArgs.maxHeight < advanceArgs.height) ? advanceArgs.maxHeight : advanceArgs.height;
     			contentFrame.style.height = newHeight + 'px';
@@ -605,52 +605,6 @@ InfinityBpm.ProcessPortal = new function() {
         removeIframe(contentId);
       });
     }
-
-    /**
-     * resizes modeler Outline Iframe and adjust associated div
-     */
-    function resizeModelerOutlineIFrame(elementId){
-    	if (InfinityBpm && InfinityBpm.Core){
-        	var heightDivOffsetTop = InfinityBpm.Core.getOffsetTop(ippPortalWindow().document.getElementById("outlineAnchor"));
-      	  	var windowSize = InfinityBpm.Core.getBrowserDimensions();
-
-        	// set hieght and width
-      	  	var dimensions = {};
-      	    dimensions.height = windowSize.height - heightDivOffsetTop - 80;
-      	    dimensions.width = 280;
-
-    		resizeAndRepositionContentFrame(elementId, dimensions);
-
-    		var div = InfinityBpm.Core.getElementsWithIDLike('div', "outlineAnchor", ippPortalWindow().document);
-      		div[0].style.height = (dimensions.height + 5) + "px";
-    		div[0].style.width = (dimensions.width + 5) + "px";
-    	}
-	 }
-
-    /**
-     * resizes Process Definition Iframe and adjust associated div
-     */
-    function resizeProcessDefinitionIFrame(elementId, event) {
-		if (InfinityBpm && InfinityBpm.Core){
-	    	var divOffsetTop = InfinityBpm.Core.getOffsetTop(ippPortalWindow().document.getElementById("processDefinitionFrameAnchor"));
-	       	var divOffsetLeft = InfinityBpm.Core.getOffsetLeft(ippPortalWindow().document.getElementById("processDefinitionFrameAnchor"));
-
-	  	  	var windowSize = InfinityBpm.Core.getBrowserDimensions();
-
-	  	  	// set height and width
-	  	  	var dimensions = {};
-	  	  	dimensions.height = windowSize.height - divOffsetTop - 80;
-	  	  	dimensions.width = windowSize.width - divOffsetLeft - 20;
-
-	  	  	resizeAndRepositionContentFrame(elementId, dimensions);
-
-			window.parent.EventHub.events.publish('PROCESS_IFRAME_RESIZED', dimensions);
-
-			var div = InfinityBpm.Core.getElementsWithIDLike('div', "processDefinitionFrameAnchor", ippPortalWindow().document);
-			div[0].style.height = (dimensions.height + 5) + "px";
-			div[0].style.width = (dimensions.width + 5) + "px";
-		}
-	 }
 
     function closeContentFrame(contentId) {
       debug('About to close content frame: ' + contentId);
@@ -671,7 +625,7 @@ InfinityBpm.ProcessPortal = new function() {
         removeIframe(contentId);
       });
     }
-
+    
     function invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId) {
       try {
         //alert("Found embedded AI panel notification function: " + wndEmbeddedWebApp.performIppAiClosePanelCommand);
@@ -702,7 +656,7 @@ InfinityBpm.ProcessPortal = new function() {
                 // unregister self to fire event only once
                 debug("Loaded external Web App: " + event);
                 event.target.onload = undefined;
-
+                
                 var wndEmbeddedWebApp = event.target.contentWindow;
                 if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
                   invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
@@ -722,7 +676,7 @@ InfinityBpm.ProcessPortal = new function() {
         }
       });
     }
-
+    
     function createOrActivateContentFrame(contentId, contentUrl, advanceArgs) {
 
       var ippMainDom = ippMainWindow().document;
@@ -746,7 +700,7 @@ InfinityBpm.ProcessPortal = new function() {
           //frame.style.display = 'none';
         }
       }
-
+      
       if ( !contentFrame) {
         // create content frame
         debug('Creating new content frame: ' + contentId);
@@ -764,13 +718,13 @@ InfinityBpm.ProcessPortal = new function() {
         }
 
         contentFrame.setAttribute('src', contentUrl);
-
+        
         frameContainer.appendChild(contentFrame);
       }
 
       activateContentFrame(contentId, advanceArgs);
     }
-
+    
     function getMessage(messageProp, defaultMsg) {
 		if (InfinityBPMI18N && InfinityBPMI18N.common)
 		{
@@ -783,9 +737,9 @@ InfinityBpm.ProcessPortal = new function() {
 
 		return defaultMsg;
     }	//// interface
-
+	
 	return {
-
+	  
 	    isFullApi : function() {
 	      return true;
 	    },
@@ -811,7 +765,7 @@ InfinityBpm.ProcessPortal = new function() {
 			  alert(getMessage("portal.common.js.activity.complete.failed", 'Failed completing activity: ') + e.message);
 		  }
 		},
-
+		
 		qaPassActivity: function() {
 		  try {
 			if (ippPortalWindow() == window) {
@@ -835,7 +789,7 @@ InfinityBpm.ProcessPortal = new function() {
 			  alert(getMessage("portal.common.js.activity.qaFail.failed", 'Exception occurred while Quality Assurance Fail activity: ') + e.message);
 		  }
 		},
-
+		
 		suspendActivity: function(saveOutParams) {
 		  try {
 			if (ippPortalWindow() == window) {
@@ -847,7 +801,7 @@ InfinityBpm.ProcessPortal = new function() {
         	  alert(getMessage("portal.common.js.activity.suspend.failed", 'Failed suspending activity: ') + e.message);
           }
 		},
-
+		
 		abortActivity: function() {
 		  try {
 			if (ippPortalWindow() == window) {
@@ -859,7 +813,7 @@ InfinityBpm.ProcessPortal = new function() {
         	  alert(getMessage("portal.common.js.activity.abort.failed", 'Failed aborting activity: ') + e.message);
           }
 		},
-
+		
 		createOrActivateContentFrame: function(contentId, contentUrl, advanceArgs) {
 		  try {
 		    createOrActivateContentFrame(contentId, contentUrl, advanceArgs);
@@ -867,7 +821,7 @@ InfinityBpm.ProcessPortal = new function() {
 			  alert(getMessage("portal.common.js.contentFrame.activate.failed", 'Failed during content frame activation: ') + e.message);
 		  }
 		},
-
+		
         deactivateContentFrame: function(contentId) {
           try {
             deactivateContentFrame(contentId);
@@ -875,7 +829,7 @@ InfinityBpm.ProcessPortal = new function() {
         	  alert(getMessage("portal.common.js.contentFrame.deactivate.failed", 'Failed during content frame deactivation: ') + e.message);
           }
         },
-
+        
         closeContentFrame: function(contentId) {
           try {
             closeContentFrame(contentId);
@@ -910,16 +864,9 @@ InfinityBpm.ProcessPortal = new function() {
 
         postMessage: function(input) {
         	postMessageReceived(input);
-        },
-
-        resizeProcessDefinitionIFrame: function(elementId, event) {
-        	resizeProcessDefinitionIFrame(elementId, event);
-		},
-
-		resizeModelerOutlineIFrame : function(elementId) {
-		   	resizeModelerOutlineIFrame(elementId);
-		}
+        }
 	};
+	
 };
 
 } // !InfinityBpm.ProcessPortal

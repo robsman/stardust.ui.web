@@ -114,7 +114,7 @@
 		</ice:selectOneMenu>
 	</ice:panelGrid>
 
-	<ice:panelGroup styleClass="panelHeader">
+	<ice:panelGroup styleClass="panelHeader" style="width: 290px;">
 		<ice:commandLink action="#{processesView.toggle}">
 			<ice:panelGrid columns="2">
 				<ice:graphicImage rendered="#{!processesView.expanded}"
@@ -129,8 +129,9 @@
 		</ice:commandLink>
 	</ice:panelGroup>
 
-	<ice:panelGrid columns="1" rendered="#{processesView.expanded}">
-		<div id="outlineAnchor"></div>
+	<ice:panelGrid columns="1" rendered="#{processesView.expanded}"
+		style="width: 280px;">
+		<div id="outlineAnchor" style="width: 280px; height: 540px;"></div>
 		<ice:panelGroup style="display: none;">
 			<ice:commandLink id="model_view_link"
 				action="#{ippPortalApp.openView}" visible="false">

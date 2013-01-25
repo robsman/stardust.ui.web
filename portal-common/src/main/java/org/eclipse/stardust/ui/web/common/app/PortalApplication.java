@@ -208,10 +208,10 @@ public class PortalApplication
 
          closeOverflowTabIframePopup();
 
-         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
-         
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_ACTIVATED);
+
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
 
          if (isPinViewOpened())
          {
@@ -323,13 +323,11 @@ public class PortalApplication
          
          fullScreenModeActivated = false;
          
-         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
-         
          // Vetoed not processed here. This is FYI only event,
          // As this view already returned success for TO_BE_FULL_SCREENED
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
-         
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
          FacesUtils.refreshPage();
       }
    }
