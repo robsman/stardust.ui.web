@@ -235,6 +235,11 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"double\">" + dataType
 									+ "</option>");
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"Timestamp\">" + dataType
+									+ "</option>");
 					// Commented as we don't support Money and Calendar values yet.
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
@@ -464,7 +469,7 @@ define(
 				 */
 				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
 						primitiveDataType) {
-					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double" ];
+					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp" ];
 					if (primitiveDataType
 							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
 						return true;
