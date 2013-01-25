@@ -345,10 +345,8 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          validTo = user.getValidTo();
          description = user.getDescription();
          qaOverride = user.getQualityAssuranceProbability();
-         if (null != user.getProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID))
-         {
-            initUserDisplayPreference();
-         }
+         UserUtils.loadDisplayPreferenceForUser(user);
+         
          if (isModifyProfileConfiguration())
          {
             myPicturePreference = new MyPicturePreferenceBean(user);
@@ -358,25 +356,6 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       initDisplayFormats();
    }
    
-   /**
-    * Read the user display format preference
-    */
-   private void initUserDisplayPreference()
-   {
-      Serializable value = null;
-      QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
-      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user.getRealm()
-            .getId(), user.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCE_ID));
-      for (Preferences userPref : prefs)
-      {
-         value = userPref.getPreferences().get(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID);
-      }
-      if (value != null)
-      {
-         user.setProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, value);
-      }
-   }
-
    /**
     * sets Default realm id
     */
