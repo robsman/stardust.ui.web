@@ -1119,6 +1119,136 @@ define(
 				/**
 				 *
 				 */
+				MessageTransformationApplicationView.prototype.openIndexConfigurationDialog = function() {
+					this.initializeIndexConfigurationDialog();
+					jQuery("#indexConfigurationDialog").dialog("open");
+
+					// Note: tableScroll must be added after the dialog is visible for correct behavior 
+					var indexConfigSourceTable = jQuery("#idx-sourceTable");
+					var indexConfigTargetTable = jQuery("#idx-targetTable");
+
+					indexConfigSourceTable.tableScroll({
+						height : 100
+					});
+					indexConfigSourceTable.treeTable({
+						indent: 14
+					});
+
+					indexConfigTargetTable.tableScroll({
+						height : 100
+					});
+					indexConfigTargetTable.treeTable({
+						indent: 14
+					});
+					
+					var dragSource = jQuery("#idx-sourceTable tbody tr#n-New1-one");
+					var dropTarget = jQuery("#idx-targetTable tbody tr#n2-New2-three");
+
+					// Make the affected nodes highlighted
+					jQuery(dragSource).find(".data-element").addClass("highlighted");
+					jQuery(ancestorsOf(jQuery(dragSource))).find(".data-element").addClass("highlighted");
+
+					// Make the affected nodes highlighted
+					jQuery(dropTarget).find(".data-element").addClass("highlighted");
+					jQuery(ancestorsOf(jQuery(dropTarget))).find(".data-element").addClass("highlighted");
+					
+					// Make all rows invisible
+					jQuery("#idx-sourceTable tbody tr").addClass("invisible");
+					// Make the affected nodes visible
+					jQuery(dragSource).removeClass("invisible");
+					jQuery(ancestorsOf(jQuery(dragSource))).removeClass("invisible");
+					
+					// Make all rows invisible
+					jQuery("#idx-targetTable tbody tr").addClass("invisible");
+					// Make the affected nodes visible
+					jQuery(dropTarget).removeClass("invisible");
+					jQuery(ancestorsOf(jQuery(dropTarget))).removeClass("invisible");
+				}
+				
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.initializeIndexConfigurationDialog = function() {
+					var indexConfigSourceTable = jQuery("#idx-sourceTable");
+					var indexConfigTargetTable = jQuery("#idx-targetTable");
+
+					indexConfigSourceTable.tableScroll("undo");
+					indexConfigTargetTable.tableScroll("undo");
+					
+					this.populateIndexConfigurationTableRows(jQuery("#idx-sourceTable tbody"), this.inputTableRows);
+					this.populateIndexConfigurationTableRows(jQuery("#idx-targetTable tbody"), this.outputTableRows);
+					
+					jQuery("#idx-sourceTable tbody tr").mousedown(
+							function() {
+								jQuery("#idx-sourceTable tr.selected").removeClass("selected");
+								jQuery(this).addClass("selected");
+							});
+
+					jQuery("#idx-targetTable tbody tr").mousedown(
+							function() {
+								jQuery("#idx-targetTable tr.selected").removeClass("selected");
+								jQuery(this).addClass("selected");
+							});
+
+					jQuery("#idx-showAffectedTreePaths").click(
+							function() {
+								var dragSource = jQuery("#idx-sourceTable tbody tr#n-New1-one");
+								var dropTarget = jQuery("#idx-targetTable tbody tr#n2-New2-three");
+
+								if (jQuery(this).is(':checked')) {
+									// Make all rows invisible
+									jQuery("#idx-sourceTable tbody tr").addClass("invisible");
+									// Make the affected node visible
+									jQuery(dragSource).removeClass("invisible");
+									jQuery(ancestorsOf(jQuery(dragSource))).removeClass("invisible");
+									
+									// Make all rows invisible
+									jQuery("#idx-targetTable tbody tr").addClass("invisible");
+									// Make the affected nodes visible
+									jQuery(dropTarget).removeClass("invisible");
+									jQuery(ancestorsOf(jQuery(dropTarget))).removeClass("invisible");
+								}
+								else {
+									// Make all rows visible
+									jQuery("#idx-sourceTable tbody tr").removeClass("invisible");
+									jQuery("#idx-targetTable tbody tr").removeClass("invisible");
+								}
+							});
+				}
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.populateIndexConfigurationTableRows = function(tableBody, tableRows) {
+					tableBody.empty();
+
+					for (var tableRow in tableRows) {
+						var rowId = tableRows[tableRow].path.replace(/\./g, "-");
+
+						var content = '<tr id="' + rowId + '" '
+								+ (tableRows[tableRow].parentPath != null ?
+										('class="child-of-' + tableRows[tableRow].parentPath .replace(/\./g, "-") + '"') : '')
+								+ '>';
+
+						content += '<td>';
+						content += '<span class="data-element">' + tableRows[tableRow].name + '</span>';
+						content += '</td>';
+						content += '<td>' + '' + '</td>';
+						content += '</tr>';
+
+						tableBody.append(content);
+
+						/*var dataElement = jQuery("#sourceTable #" + rowId + " .data-element");
+
+						dataElement.data({
+							"view" : this,
+							"tableRow" : tableRows[tableRow]
+						});*/
+					}
+				};
+
+				/**
+				 *
+				 */
 				MessageTransformationApplicationView.prototype.convertFromMappingsXml = function(
 						xml) {
 					var xmlDoc;
@@ -1336,6 +1466,7 @@ define(
 					jQuery("#inputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
+						resizable : false,
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
 									});
@@ -1356,7 +1487,8 @@ define(
 									function(event) {
 										jQuery("#inputDataDialog").dialog(
 												"open");
-//										jQuery("#indexConfigurationDialog").dialog("open");
+										
+//										event.data.view.openIndexConfigurationDialog();
 									});
 
 					jQuery("#inputDataDialog #applyButton")
@@ -1394,6 +1526,7 @@ define(
 					jQuery("#outputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
+						resizable : false,
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
 									});
@@ -1442,6 +1575,7 @@ define(
 					jQuery("#indexConfigurationDialog").dialog({
 						autoOpen : false,
 						draggable : true,
+						resizable : false,
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.title"),
 						width : 'auto'
