@@ -25,10 +25,12 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
-				   }
+					}
 				};
 
-
+			/**
+			 *
+			 */
 			function i18nmessageTransformationproperties() {
 
 				// Common properties
@@ -259,7 +261,6 @@ define(
 										.getProperty("modeler.element.properties.commonProperties.cancel"));
 			}
 
-
 			/**
 			 *
 			 */
@@ -318,372 +319,8 @@ define(
 					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
 					this.expressionEditor.disable();
 
-					// Common
-					this.publicVisibilityCheckbox
-							.change(
-									{
-										"view" : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
-
-										if (view.modelElement.attributes["carnot:engine:visibility"]
-												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:visibility" : "Public"
-														}
-													});
-										} else {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:visibility" : "Private"
-														}
-													});
-										}
-									});
-
-					// Code Editor
-					this.expressionTextArea.change({
-						"view" : this
-					}, function(event) {
-						var outputTableRow = event.data.view.selectedOutputTableRow;
-
-						if (outputTableRow != null) {
-							var mappingExpression = event.data.view.expressionTextArea.val();
-
-							outputTableRow.mappingExpression = mappingExpression;
-							event.data.view.populateMappingCell(outputTableRow);
-
-							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
-						}
-					});
-
-					jQuery(this.expressionEditor.getWrapper())
-							.droppable({
-								accept : ".data-element",
-								drop : function(e, ui) {
-									var view = ui.draggable.data("view");
-									var outputTableRow = view.selectedOutputTableRow;
-
-									if (outputTableRow != null) {
-										var mappingExpression = outputTableRow.mappingExpression;
-
-										if (mappingExpression != null
-												&& mappingExpression != "") {
-											mappingExpression += " + ";
-										} else {
-											mappingExpression = "";
-										}
-
-										var inputTableRow = ui.draggable
-												.data("tableRow")
-										mappingExpression += inputTableRow.path;
-
-										outputTableRow.mappingExpression = mappingExpression;
-
-										view.expressionEditor.setValue(outputTableRow.mappingExpression);
-										view.expressionEditor.save();
-
-										view.populateMappingCell(outputTableRow);
-
-										// Remove the drag helper
-										ui.helper.remove();
-
-										view
-												.submitChanges(view
-														.determineTransformationChanges());
-									}
-								},
-								hoverClass : "accept",
-								over : function(e, ui) {
-									var view = ui.draggable.data("view");
-									var outputTableRow = view.selectedOutputTableRow;
-								}
-							});
-
-					// Source Message
-					this.sourceFilterInput.keypress({
-						"view" : this
-					}, function(event) {
-						event.data.view
-								.filterSource(event.data.view.sourceFilterInput
-										.val());
-					});
-
-					this.filterHighlightedSourceFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterHighlightedSourceFields();
-					});
-
-					this.showAllSourceFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.showAllSourceFields();
-					});
-
-					// Target Message
-					this.targetFilterInput.keypress({
-						"view" : this
-					}, function(event) {
-						event.data.view
-								.filterTarget(event.data.view.targetFilterInput
-										.val());
-					});
-
-					this.filterHighlightedTargetFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterHighlightedTargetFields();
-					});
-
-					this.showAllTargetFieldsInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.showAllTargetFields();
-					});
-
-					this.filterFieldsWithNoMappingInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterFieldsWithNoMapping();
-					});
-
-					this.filterFieldsWithMappingInput.click({
-						"view" : this
-					}, function(event) {
-						event.data.view.filterFieldsWithMapping();
-					});
-
-					// Add Input Message dialog 
-					jQuery("#inputDataDialog").dialog({
-						autoOpen : false,
-						draggable : true,
-						title : m_i18nUtils
-									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
-									});
+					this.bindEventHandlers();
 					
-					jQuery("#inputDataDialog").bind("dialogclose", {view : this},function(event, ui) {
-						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#inputDataDialog #nameTextInput"); 
-						nameInput.val('');
-						nameInput.removeClass("error");
-						event.data.view.clearErrorMessages();
-									});
-
-					jQuery("#addInputDataButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery("#inputDataDialog").dialog(
-												"open");
-//										jQuery("#indexConfigurationDialog").dialog("open");
-									});
-
-					jQuery("#inputDataDialog #applyButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										var selectedData = {};
-										event.data.view.inputDataTypeSelector.getDataType(selectedData);
-
-										// Validate if a concrete Structured Type was selected
-										if (selectedData.structuredDataTypeFullId === m_constants.TO_BE_DEFINED) {
-											var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidType");
-											event.data.view.errorMessages.push(msg);
-											event.data.view.showErrorMessages();
-											return;
-										}
-										
-										// Validate message name
-										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
-										var isValidName = event.data.view.validateMessageName(nameTextInput);
-										if (isValidName) {
-											event.data.view.addInputAccessPoint(nameTextInput.val(), selectedData);
-											event.data.view.resume();
-											jQuery("#inputDataDialog").dialog("close");
-										}
-									});
-
-					jQuery("#inputDataDialog #closeButton").click(function() {
-						jQuery("#inputDataDialog").dialog("close");
-					});
-
-					// Add Output Message dialog 
-					jQuery("#outputDataDialog").dialog({
-						autoOpen : false,
-						draggable : true,
-						title : m_i18nUtils
-									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
-									});
-
-					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
-						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#outputDataDialog #nameTextInput"); 
-						nameInput.val('');
-						nameInput.removeClass("error");
-						event.data.view.clearErrorMessages();
-									});
-
-					jQuery("#addOutputDataButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										jQuery("#outputDataDialog").dialog(
-												"open");
-									});
-
-					jQuery("#outputDataDialog #applyButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										var selectedData = {};
-										event.data.view.outputDataTypeSelector.getDataType(selectedData);
-
-										var nameTextInput = jQuery("#outputDataDialog #nameTextInput");
-										var isValidName = event.data.view.validateMessageName(nameTextInput);
-										if (isValidName) {
-											event.data.view.addOutputAccessPoint(nameTextInput.val(), selectedData);
-											event.data.view.resume();
-											jQuery("#outputDataDialog").dialog("close");
-										}
-									});
-
-					jQuery("#outputDataDialog #closeButton").click(function() {
-						jQuery("#outputDataDialog").dialog("close");
-					});
-
-					// Index Configuration Dialog 
-					jQuery("#indexConfigurationDialog").dialog({
-						autoOpen : false,
-						draggable : true,
-						title : m_i18nUtils
-									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.title"),
-						width : 'auto'
-									});
-					
-					jQuery("#idx-okButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										if (true) {
-											jQuery("#indexConfigurationDialog").dialog("close");
-										}
-									});
-
-					jQuery("#idx-cancelButton").click(function() {
-						jQuery("#indexConfigurationDialog").dialog("close");
-					});
-
-					// Test 
-					jQuery("#runButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTable = jQuery("#outputDataTable");
-
-										outputDataTable.empty();
-
-										for ( var n = 0; n < view.outputTableRows.length; ++n) {
-											var tableRow = view.outputTableRows[n];
-
-											var outputRow = jQuery("<tr></tr>");
-
-											outputDataTable.append(outputRow);
-											outputRow.append("<td>"
-													+ tableRow.path + "</td>");
-
-											var outputData;
-
-											if (tableRow.mappingExpression != null
-													&& tableRow.mappingExpression.length != 0) {
-												try {
-													var functionBody = inputDataTextarea
-															.val()
-															+ " return "
-															+ tableRow.mappingExpression
-															+ ";";
-
-													var mappingFunction = new Function(
-															functionBody);
-
-													var result = mappingFunction();
-
-													outputData = result;
-												} catch (exception) {
-													outputRow
-															.addClass("errorRow");
-
-													outputData = exception;
-												}
-											} else {
-												outputRow.addClass("emptyRow");
-												outputData = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.testProperties.noMapping");
-											}
-
-											outputRow.append("<td>"
-													+ outputData + "</td>");
-										}
-									});
-
-					jQuery("#resetButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTable = jQuery("#outputDataTable");
-
-										inputDataTextarea.empty();
-										outputDataTable.empty();
-
-										var inputData = "";
-
-										for ( var id in view.inputData) {
-											var typeDeclaration = view.inputData[id];
-
-											inputData += "var ";
-											inputData += id;
-											inputData += " = ";
-											if (typeDeclaration != null) {
-												inputData += JSON.stringify(
-														typeDeclaration
-																.createInstance(),
-														null, 3);
-											}
-											else {
-												inputData += '""';
-											}
-											inputData += ";\r\n";
-										}
-
-										inputDataTextarea.append(inputData);
-									});
-
 					this.initializeModelElementView(application);
 				}
 
@@ -721,9 +358,6 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					m_utils.debug("===> Application");
-					m_utils.debug(application);
-
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
@@ -734,9 +368,6 @@ define(
 
 					this
 							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
-
-					m_utils.debug("===> Mapping Expressions");
-					m_utils.debug(this.mappingExpressions);
 
 					for ( var key in this.application.contexts) {
 						var context = this.application.contexts[key];
@@ -766,14 +397,14 @@ define(
 					// hence subject to problems in case of version change etc.
 					this.inputTableBody.find("tr").each(function(index) {
 						if (inputRowExpandedStatus[this.id]) {
-							$(this).addClass("expanded");
-							$(this).removeClass("ui-helper-hidden");
+							jQuery(this).addClass("expanded");
+							jQuery(this).removeClass("ui-helper-hidden");
 						}
 					});
 					this.outputTableBody.find("tr").each(function(index) {
 						if (outputRowExpandedStatus[this.id]) {
-							$(this).addClass("expanded");
-							$(this).removeClass("ui-helper-hidden");
+							jQuery(this).addClass("expanded");
+							jQuery(this).removeClass("ui-helper-hidden");
 						}
 					});
 
@@ -1553,6 +1184,378 @@ define(
 					};
 				};
 
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.bindEventHandlers = function() {
+					// Common
+					this.publicVisibilityCheckbox
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										if (!view.validate()) {
+											return;
+										}
+
+										if (view.modelElement.attributes["carnot:engine:visibility"]
+												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Public"
+														}
+													});
+										} else {
+											view
+													.submitChanges({
+														attributes : {
+															"carnot:engine:visibility" : "Private"
+														}
+													});
+										}
+									});
+
+					// Code Editor
+					this.expressionTextArea.change({
+						"view" : this
+					}, function(event) {
+						var outputTableRow = event.data.view.selectedOutputTableRow;
+
+						if (outputTableRow != null) {
+							var mappingExpression = event.data.view.expressionTextArea.val();
+
+							outputTableRow.mappingExpression = mappingExpression;
+							event.data.view.populateMappingCell(outputTableRow);
+
+							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
+						}
+					});
+
+					jQuery(this.expressionEditor.getWrapper())
+							.droppable({
+								accept : ".data-element",
+								drop : function(e, ui) {
+									var view = ui.draggable.data("view");
+									var outputTableRow = view.selectedOutputTableRow;
+
+									if (outputTableRow != null) {
+										var mappingExpression = outputTableRow.mappingExpression;
+
+										if (mappingExpression != null
+												&& mappingExpression != "") {
+											mappingExpression += " + ";
+										} else {
+											mappingExpression = "";
+										}
+
+										var inputTableRow = ui.draggable
+												.data("tableRow")
+										mappingExpression += inputTableRow.path;
+
+										outputTableRow.mappingExpression = mappingExpression;
+
+										view.expressionEditor.setValue(outputTableRow.mappingExpression);
+										view.expressionEditor.save();
+
+										view.populateMappingCell(outputTableRow);
+
+										// Remove the drag helper
+										ui.helper.remove();
+
+										view
+												.submitChanges(view
+														.determineTransformationChanges());
+									}
+								},
+								hoverClass : "accept",
+								over : function(e, ui) {
+									var view = ui.draggable.data("view");
+									var outputTableRow = view.selectedOutputTableRow;
+								}
+							});
+
+					// Source Message
+					this.sourceFilterInput.keypress({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterSource(event.data.view.sourceFilterInput
+										.val());
+					});
+
+					this.filterHighlightedSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedSourceFields();
+					});
+
+					this.showAllSourceFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllSourceFields();
+					});
+
+					// Target Message
+					this.targetFilterInput.keypress({
+						"view" : this
+					}, function(event) {
+						event.data.view
+								.filterTarget(event.data.view.targetFilterInput
+										.val());
+					});
+
+					this.filterHighlightedTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterHighlightedTargetFields();
+					});
+
+					this.showAllTargetFieldsInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.showAllTargetFields();
+					});
+
+					this.filterFieldsWithNoMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithNoMapping();
+					});
+
+					this.filterFieldsWithMappingInput.click({
+						"view" : this
+					}, function(event) {
+						event.data.view.filterFieldsWithMapping();
+					});
+
+					// Add Input Message dialog 
+					jQuery("#inputDataDialog").dialog({
+						autoOpen : false,
+						draggable : true,
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
+									});
+					
+					jQuery("#inputDataDialog").bind("dialogclose", {view : this},function(event, ui) {
+						// Clear the 'name' field and any errors
+						var nameInput = jQuery("#inputDataDialog #nameTextInput"); 
+						nameInput.val('');
+						nameInput.removeClass("error");
+						event.data.view.clearErrorMessages();
+									});
+
+					jQuery("#addInputDataButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										jQuery("#inputDataDialog").dialog(
+												"open");
+//										jQuery("#indexConfigurationDialog").dialog("open");
+									});
+
+					jQuery("#inputDataDialog #applyButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var selectedData = {};
+										event.data.view.inputDataTypeSelector.getDataType(selectedData);
+
+										// Validate if a concrete Structured Type was selected
+										if (selectedData.structuredDataTypeFullId === m_constants.TO_BE_DEFINED) {
+											var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidType");
+											event.data.view.errorMessages.push(msg);
+											event.data.view.showErrorMessages();
+											return;
+										}
+										
+										// Validate message name
+										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
+										var isValidName = event.data.view.validateMessageName(nameTextInput);
+										if (isValidName) {
+											event.data.view.addInputAccessPoint(nameTextInput.val(), selectedData);
+											event.data.view.resume();
+											jQuery("#inputDataDialog").dialog("close");
+										}
+									});
+
+					jQuery("#inputDataDialog #closeButton").click(function() {
+						jQuery("#inputDataDialog").dialog("close");
+					});
+
+					// Add Output Message dialog 
+					jQuery("#outputDataDialog").dialog({
+						autoOpen : false,
+						draggable : true,
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
+									});
+
+					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
+						// Clear the 'name' field and any errors
+						var nameInput = jQuery("#outputDataDialog #nameTextInput"); 
+						nameInput.val('');
+						nameInput.removeClass("error");
+						event.data.view.clearErrorMessages();
+									});
+
+					jQuery("#addOutputDataButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										jQuery("#outputDataDialog").dialog(
+												"open");
+									});
+
+					jQuery("#outputDataDialog #applyButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										var selectedData = {};
+										event.data.view.outputDataTypeSelector.getDataType(selectedData);
+
+										var nameTextInput = jQuery("#outputDataDialog #nameTextInput");
+										var isValidName = event.data.view.validateMessageName(nameTextInput);
+										if (isValidName) {
+											event.data.view.addOutputAccessPoint(nameTextInput.val(), selectedData);
+											event.data.view.resume();
+											jQuery("#outputDataDialog").dialog("close");
+										}
+									});
+
+					jQuery("#outputDataDialog #closeButton").click(function() {
+						jQuery("#outputDataDialog").dialog("close");
+					});
+
+					// Index Configuration Dialog 
+					jQuery("#indexConfigurationDialog").dialog({
+						autoOpen : false,
+						draggable : true,
+						title : m_i18nUtils
+									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.title"),
+						width : 'auto'
+									});
+					
+					jQuery("#idx-okButton")
+							.click(
+									{
+										"view" : this
+									},
+									function(event) {
+										if (true) {
+											jQuery("#indexConfigurationDialog").dialog("close");
+										}
+									});
+
+					jQuery("#idx-cancelButton").click(function() {
+						jQuery("#indexConfigurationDialog").dialog("close");
+					});
+
+					// Test 
+					jQuery("#runButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTable = jQuery("#outputDataTable");
+
+										outputDataTable.empty();
+
+										for ( var n = 0; n < view.outputTableRows.length; ++n) {
+											var tableRow = view.outputTableRows[n];
+
+											var outputRow = jQuery("<tr></tr>");
+
+											outputDataTable.append(outputRow);
+											outputRow.append("<td>"
+													+ tableRow.path + "</td>");
+
+											var outputData;
+
+											if (tableRow.mappingExpression != null
+													&& tableRow.mappingExpression.length != 0) {
+												try {
+													var functionBody = inputDataTextarea
+															.val()
+															+ " return "
+															+ tableRow.mappingExpression
+															+ ";";
+
+													var mappingFunction = new Function(
+															functionBody);
+
+													var result = mappingFunction();
+
+													outputData = result;
+												} catch (exception) {
+													outputRow
+															.addClass("errorRow");
+
+													outputData = exception;
+												}
+											} else {
+												outputRow.addClass("emptyRow");
+												outputData = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.testProperties.noMapping");
+											}
+
+											outputRow.append("<td>"
+													+ outputData + "</td>");
+										}
+									});
+
+					jQuery("#resetButton")
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										var view = event.data.view;
+										var inputDataTextarea = jQuery("#inputDataTextarea");
+										var outputDataTable = jQuery("#outputDataTable");
+
+										inputDataTextarea.empty();
+										outputDataTable.empty();
+
+										var inputData = "";
+
+										for ( var id in view.inputData) {
+											var typeDeclaration = view.inputData[id];
+
+											inputData += "var ";
+											inputData += id;
+											inputData += " = ";
+											if (typeDeclaration != null) {
+												inputData += JSON.stringify(
+														typeDeclaration
+																.createInstance(),
+														null, 3);
+											}
+											else {
+												inputData += '""';
+											}
+											inputData += ";\r\n";
+										}
+
+										inputDataTextarea.append(inputData);
+									});
+					
+				}
+				
 				/**
 				 *
 				 */
