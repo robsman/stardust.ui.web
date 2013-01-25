@@ -2486,6 +2486,7 @@ define(
 
 					// Register with Event Bus
 					m_commandsController.registerCommandHandler(this);
+					window.parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeModelerOutlineIFrame(window.frameElement.id);
 				};
 
 				/**

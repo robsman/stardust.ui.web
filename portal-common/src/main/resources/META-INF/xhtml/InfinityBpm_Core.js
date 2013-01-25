@@ -421,7 +421,7 @@ if ( !InfinityBpm.Core) {
   	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
 
 	  //Set portalMainContainer width
-	  var widthEndDivOffsetLeft = getOffsetleft(mainIppFrame["ippPortalMain"].document.getElementById("ippPortalContentWidthEnd"));
+	  var widthEndDivOffsetLeft = getOffsetLeft(mainIppFrame["ippPortalMain"].document.getElementById("ippPortalContentWidthEnd"));
 	  var windowSize = getBrowserDimensions();
 	  var width = (widthEndDivOffsetLeft > windowSize.width) ? widthEndDivOffsetLeft : windowSize.width;
 	  if (isIE()) {
@@ -555,12 +555,12 @@ if ( !InfinityBpm.Core) {
     	return false;
     }
     
-    function getOffsetleft(element)
+    function getOffsetLeft(element)
     {
     	var offsetLeft = 0;
     	while (element.tagName != 'BODY') {
     		offsetLeft += element.offsetLeft;
-    		element = element.parentNode;
+    		element = element.offsetParent;
     	}
     	
     	return offsetLeft;
@@ -571,7 +571,7 @@ if ( !InfinityBpm.Core) {
     	var offsetTop = 0;
     	while (element.tagName != 'BODY') {
     		offsetTop += element.offsetTop;
-    		element = element.parentNode;
+    		element = element.offsetParent;
     	}
     	
     	return offsetTop;
@@ -638,6 +638,22 @@ if ( !InfinityBpm.Core) {
       
       isFF : function() {
     	  return isFF();
+      },
+      
+      getBrowserDimensions : function() {
+    	  return getBrowserDimensions();
+      },
+
+      getOffsetTop : function(element) {
+    	  return getOffsetTop(element);
+      },
+
+      getOffsetLeft : function(element) {
+    	  return getOffsetLeft(element);
+      },
+
+      getElementsWithIDLike : function(tagName, elementId, doc) {
+    	  return getElementsWithIDLike(tagName, elementId, doc);
       }
     };
   };

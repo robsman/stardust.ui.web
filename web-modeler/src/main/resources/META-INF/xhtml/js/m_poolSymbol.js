@@ -740,7 +740,7 @@ define(
 				 */
 				PoolSymbol.prototype.evaluateSymbolDx = function(x, containedSymbols) {
 					var dX = 0;
-						// If child symbols are on lane header, dY is set to
+						// If child symbols are on lane header, dX is set to
 						// move the child symbols
 					for ( var c in containedSymbols) {
 						if (containedSymbols[c].x < x) {
