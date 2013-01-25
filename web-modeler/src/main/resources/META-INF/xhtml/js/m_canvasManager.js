@@ -1,6 +1,6 @@
 /**
  * Low-level drawing functions.
- * 
+ *
  * @author Omkar.Patil, Marc.Gille
  */
 
@@ -12,16 +12,16 @@ define(["bpm-modeler/js/m_utils"], function(m_utils){
 			canvasHeight = cHeight;
 			bgImage = bImage;
 		},
-		
+
 		// TODO Stille needed?
 		setWindow : function (frame) {
 			Raphael.setWindow(frame);
 		},
-		
+
 		getCanvas: function() {
 			return canvas;
 		},
-		
+
 		getCanvasWidth: function() {
 			return canvasWidth;
 		},
@@ -35,11 +35,11 @@ define(["bpm-modeler/js/m_utils"], function(m_utils){
 			setBGImage();
 			return canvas.image(imageURL, 0, 0, width, height);
 		},
-		
+
 		drawImageAt: function(imageURL, x, y, width, height) {
 			return canvas.image(imageURL, x, y, width, height);
 		},
-		
+
 		drawRectangle: function(x, y, width, height, attributes) {
 			var rect = canvas.rect(x, y, width, height);
 			jQuery.each(attributes, function (name, value) {
@@ -48,7 +48,7 @@ define(["bpm-modeler/js/m_utils"], function(m_utils){
 
 			return rect;
 		},
-		
+
 		drawPath: function(svgPathString, attributes) {
 			var path = canvas.path(svgPathString);
 			jQuery.each(attributes, function (name, value) {
@@ -65,26 +65,26 @@ define(["bpm-modeler/js/m_utils"], function(m_utils){
 			});
 			return circle;
 		},
-		
+
 		drawTextNode : function (x, y, textContent, fontSize) {
 			return canvas.text(x, y, textContent).attr('font-size', parseInt(fontSize));
 		},
-		
+
 		getNewSet : function () {
 			return canvas.set();
 		},
-		
+
 		setViewBox : function(panX, panY, zoomFactor) {
 			canvas.setViewBox(panX, panY, canvasWidth * zoomFactor, canvasHeight * zoomFactor);
 		},
 
 		setCanvasSize : function (width, height) {
-			canvasWidth = width;
-			canvasHeight = height;
-			canvas.setSize(parseInt(width), parseInt(height));
-		}
+			canvasWidth = width * 1.25;
+			canvasHeight = height * 1.25;
+			canvas.setSize(parseInt(canvasWidth), parseInt(canvasHeight));
+		},
 	};
-	
+
 	var canvas;
 	var canvasWidth;
 	var canvasHeight;
@@ -95,6 +95,6 @@ define(["bpm-modeler/js/m_utils"], function(m_utils){
 		if (bgImage)
 		{
 			canvas.image(bgImage, -10, -10, canvasWidth * 11, canvasHeight * 11);
-		}	
+		}
 	}
 });
