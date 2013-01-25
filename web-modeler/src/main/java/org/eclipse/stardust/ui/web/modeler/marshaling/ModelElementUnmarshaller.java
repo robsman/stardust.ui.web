@@ -12,7 +12,6 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
@@ -67,7 +66,6 @@ import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -125,7 +123,6 @@ import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -794,14 +791,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          EStructuralFeature eFtrName, JsonObject elementJson)
    {
       boolean wasModified = false;
-      String newId = null;
-
-      if (elementJson.has(ModelerConstants.ID_PROPERTY))
-      {
-         // provided ID has precedence over generated ID
-         newId = extractString(elementJson, ModelerConstants.ID_PROPERTY);
-      }
-
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
          String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
@@ -809,26 +798,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             wasModified = true;
             element.eSet(eFtrName, newName);
-
-            if (isEmpty(newId))
-            {
-               if (element instanceof IIdentifiableElement)
-               {
-                  newId = NameIdUtils.createIdFromName(null,
-                        (IIdentifiableElement) element);
-               }
-               else
-               {
-                  newId = NameIdUtils.createIdFromName(newName);
-               }
-            }
          }
-      }
-
-      if ( !isEmpty(newId) && !element.eGet(eFtrId).equals(newId))
-      {
-         wasModified = true;
-         element.eSet(eFtrId, newId);
       }
 
       return wasModified;
@@ -1849,101 +1819,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(typeDeclaration, json);
       storeDescription(typeDeclaration, json);
 
-      String oldId = typeDeclaration.getId();
-      if (updateElementNameAndId(typeDeclaration,
+      updateElementNameAndId(typeDeclaration,
             XpdlPackage.eINSTANCE.getTypeDeclarationType_Id(),
-            XpdlPackage.eINSTANCE.getTypeDeclarationType_Name(), json))
-      {
-         // propagate ID change
-         if (null != typeDeclaration.getSchemaType())
-         {
-            XSDSchema schema = typeDeclaration.getSchemaType().getSchema();
-
-            // update target namespace
-            String oldTargetNs = TypeDeclarationUtils.computeTargetNamespace(
-                  ModelUtils.findContainingModel(typeDeclaration), oldId);
-            String newTargetNs = TypeDeclarationUtils.computeTargetNamespace(
-                  ModelUtils.findContainingModel(typeDeclaration),
-                  typeDeclaration.getId());
-
-            if (schema.getTargetNamespace().equals(oldTargetNs))
-            {
-               schema.setTargetNamespace(newTargetNs);
-
-               while (schema.getQNamePrefixToNamespaceMap().containsValue(oldTargetNs))
-               {
-                  for (String nsPrefix : schema.getQNamePrefixToNamespaceMap().keySet())
-                  {
-                     if (schema.getQNamePrefixToNamespaceMap()
-                           .get(nsPrefix)
-                           .equals(oldTargetNs))
-                     {
-                        schema.getQNamePrefixToNamespaceMap().remove(nsPrefix);
-                        // restart iteration after edit
-                        break;
-                     }
-                  }
-               }
-               String newNsPrefix = TypeDeclarationUtils.computePrefix(
-                     typeDeclaration.getId().toLowerCase(),
-                     schema.getQNamePrefixToNamespaceMap().keySet());
-               schema.getQNamePrefixToNamespaceMap().put(newNsPrefix, newTargetNs);
-            }
-
-            // update location, if internal
-            if (TypeDeclarationUtils.isInternalSchema(typeDeclaration))
-            {
-               schema.setSchemaLocation(StructuredDataConstants.URN_INTERNAL_PREFIX
-                     + typeDeclaration.getId());
-               if (null != typeDeclaration.getExternalReference())
-               {
-                  ExternalReferenceType schemaRef = typeDeclaration.getExternalReference();
-                  schemaRef.setLocation(schema.getSchemaLocation());
-               }
-            }
-
-            // update "main" element end type
-            List<XSDElementDeclaration> changedElements = newArrayList();
-            for (XSDElementDeclaration elementDeclaration : schema.getElementDeclarations())
-            {
-               if (elementDeclaration.getName().equals(oldId))
-               {
-                  // file for later change to avoid concurrent modification exceptions
-                  changedElements.add(elementDeclaration);
-               }
-            }
-            for (XSDElementDeclaration elementDeclaration : changedElements)
-            {
-               if ((null != elementDeclaration.getType())
-                     && elementDeclaration.getTypeDefinition().getName().equals(oldId))
-               {
-                  elementDeclaration.getTypeDefinition().setName(typeDeclaration.getId());
-               }
-
-               elementDeclaration.setName(typeDeclaration.getId());
-            }
-
-            List<XSDTypeDefinition> renamedTypes = newArrayList();
-            for (XSDTypeDefinition typeDefinition : schema.getTypeDefinitions())
-            {
-               if (typeDefinition.getName().equals(oldId))
-               {
-                  // file for later change to avoid concurrent modification exceptions
-                  renamedTypes.add(typeDefinition);
-               }
-            }
-            for (XSDTypeDefinition typeDefinition : renamedTypes)
-            {
-               typeDefinition.setName(typeDeclaration.getId());
-            }
-
-            // TODO adjust cross references
-
-            // adjust underlying DOM
-            schema.updateElement(true);
-         }
-      }
-
+            XpdlPackage.eINSTANCE.getTypeDeclarationType_Name(), json);
+      
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
       JsonObject typeJson = (null != declarationJson)
             ? declarationJson.getAsJsonObject("type")
@@ -1955,7 +1834,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          updateXSDSchemaType(typeDeclaration.getSchemaType(),
                declarationJson.getAsJsonObject("schema"));
       }
-
       // ExternalReference ?
    }
 
