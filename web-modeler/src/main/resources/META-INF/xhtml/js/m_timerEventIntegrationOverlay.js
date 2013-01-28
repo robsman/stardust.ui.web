@@ -212,6 +212,57 @@ define(
 				 * 
 				 */
 				TimerEventIntegrationOverlay.prototype.validate = function() {
+					this.repeatCountInput.removeClass("error");
+					this.repeatIntervalInput.removeClass("error");
+
+					if (m_utils.isEmptyString(this.repeatCountInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.repeatCountInput.addClass("error");
+						this.repeatCountInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (!m_utils.isNumber(this.repeatCountInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustContainANumber"));
+						this.repeatCountInput.addClass("error");
+						this.repeatCountInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (m_utils.isEmptyString(this.repeatIntervalInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.repeatIntervalInput.addClass("error");
+						this.repeatIntervalInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (!m_utils.isNumber(this.repeatIntervalInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustContainANumber"));
+						this.repeatIntervalInput.addClass("error");
+						this.repeatIntervalInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
 					return true;
 				};
 			}

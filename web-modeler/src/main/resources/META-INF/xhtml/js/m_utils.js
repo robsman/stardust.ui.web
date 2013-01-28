@@ -66,8 +66,26 @@ define(
 
 				contentWrap : contentWrap,
 
-				isArray : isArray
+				isArray : isArray,
+				
+				isEmptyString : isEmptyString,
+
+				isNumber : isNumber
 			};
+
+			/**
+			 * 
+			 */
+			function isEmptyString(str) {
+				return str == null || jQuery.trim(str).length == 0;
+			}
+			
+			/**
+			 * 
+			 */
+			function isNumber(n) {
+				  return !isNaN(parseFloat(n)) && isFinite(n);
+				}
 
 			function getLastIndexOf(str, searchStr) {
 				var index = -1;
@@ -81,6 +99,7 @@ define(
 
 				return index;
 			}
+			
 			/**
 			 *
 			 * @param from
