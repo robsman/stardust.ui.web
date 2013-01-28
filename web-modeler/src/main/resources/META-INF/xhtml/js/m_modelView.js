@@ -134,18 +134,32 @@ define(
 										"view" : this
 									},
 									function(event) {
-										var dt = $(this).datepicker("getDate");
-										var validFrom = dt.getFullYear() + "/"
-												+ (dt.getMonth() + 1) + "/"
-												+ dt.getDate()
-												+ " 00:00:00:000";
-										var attribute = "carnot:engine:validFrom";
 										var view = event.data.view;
-										if (view.getModelElement().attributes[attribute] != validFrom) {
+										var attribute = "carnot:engine:validFrom";
+										if ($(this).val()
+												&& "" != $(this).val()) {
+											var dt = $(this).datepicker(
+													"getDate");
+											var validFrom = dt.getFullYear()
+													+ "/" + (dt.getMonth() + 1)
+													+ "/" + dt.getDate()
+													+ " 00:00:00:000";
+											if (view.getModelElement().attributes[attribute] != validFrom) {
+												var modelElement = {
+													attributes : {}
+												};
+												modelElement.attributes[attribute] = validFrom;
+
+												view
+														.submitChanges(modelElement);
+											}
+										} else if (view.getModelElement().attributes
+												&& view.getModelElement().attributes[attribute]
+												&& "" != view.getModelElement().attributes[attribute]) {
 											var modelElement = {
 												attributes : {}
 											};
-											modelElement.attributes[attribute] = validFrom;
+											modelElement.attributes[attribute] = "";
 
 											view.submitChanges(modelElement);
 										}
