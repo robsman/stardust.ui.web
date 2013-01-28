@@ -1983,10 +1983,17 @@ define(
 					// Do nothing
 				};
 
+				/**
+				 *
+				 */
+				Symbol.prototype.performClientSideAdj = function() {
+					// Do nothing
+				};
 				/*
 				 *
 				 */
 				Symbol.prototype.flipFlowOrientation = function(flowOrientation) {
+					this.performClientSideAdj();
 					var temp = this.x;
 					this.x = this.y;
 					this.y = temp;
@@ -2003,11 +2010,12 @@ define(
 						// diagramHeaderMargin;
 						this.y = this.y + (this.width / 2 - this.height / 2);
 					}
+
 					this.moveBy(0, 0);
 
 					var changesSymbol = {
 						parentSymbolId : this.parentSymbol.id,
-						x : this.x,
+						x : this.x - this.clientSideAdjX,
 						y : this.y
 					};
 					var changeDesc = {
