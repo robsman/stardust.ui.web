@@ -1410,8 +1410,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       if (event.getType() != null)
       {
-         System.out.println("***> Implementation: " + event.getType());
-
          eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, event.getType()
                .getId());
          
