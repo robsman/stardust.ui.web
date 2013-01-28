@@ -122,8 +122,22 @@ define(
 				/**
 				 * 
 				 */
+				EventIntegrationOverlay.prototype.getPropertiesPanel = function() {
+					return this.page.propertiesPanel;
+				};
+
+				/**
+				 * 
+				 */
 				EventIntegrationOverlay.prototype.getImplementation = function() {
 					return "camel";
+				};
+
+				/**
+				 * 
+				 */
+				EventIntegrationOverlay.prototype.getCamelContext = function() {
+					return "camelContext";
 				};
 
 				/**
@@ -220,6 +234,20 @@ define(
 				/**
 				 * 
 				 */
+				EventIntegrationOverlay.prototype.getRouteContent = function()
+				{
+					var route = "<from uri=\"";
+					
+					route += this.getEndpointUri();
+					route += "\"/>";
+					route += this.getAdditionalRouteDefinitions();
+
+					return route;
+				};
+				
+				/**
+				 * 
+				 */
 				EventIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
 					this.page.submitChanges(changes);
@@ -250,13 +278,6 @@ define(
 						parameterMappings = [];
 					}
 
-					var route = "<route>";
-
-					route += "<from uri=\"";
-					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions()
-							+ "</route>";
-
 					this
 							.submitChanges({
 								modelElement : {
@@ -264,7 +285,8 @@ define(
 									implementation : this.getImplementation(),
 									attributes : {
 										"carnot:engine:integration::overlay" : this.id,
-										"carnot:engine:camel::camelRouteExt" : route,
+										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
 										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 												.getAdditionalBeanSpecifications()
 									}
@@ -276,20 +298,12 @@ define(
 				 * 
 				 */
 				EventIntegrationOverlay.prototype.submitRouteChanges = function() {
-					var route = "<route>";
-
-					route += "<from uri=\"";
-					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions()
-							+ "</route>";
-
-					m_utils.debug("Route: " + route);
-					
 					this
 							.submitChanges({
 								modelElement : {
 									attributes : {
-										"carnot:engine:camel::camelRouteExt" : route,
+										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
 										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 												.getAdditionalBeanSpecifications()
 									}
@@ -297,4 +311,11 @@ define(
 							});
 				};
 			}
+
+			/**
+			 * 
+			 */
+			EventIntegrationOverlay.prototype.validate = function() {
+				return true;
+			};
 		});

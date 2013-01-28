@@ -15,6 +15,7 @@
 	margin-left: 0px;
 	padding-left: 0px;
 }
+
 .emphasis {
 	font-weight: bold;
 }
@@ -30,8 +31,7 @@
 							src="../../images/icons/refresh.png"
 							title="Configuration Variables Refresh"
 							alt="Configuration Variables Refresh" class="toolbarButton" />
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
@@ -40,6 +40,7 @@
 							style="width: 750px;">
 							<thead>
 								<tr>
+									<th style="width: 20px;" id="delete"></th>
 									<th style="width: 150px;" id="name">Name</th>
 									<th style="width: 300px;" id="defaultValue">Default Value</th>
 									<th style="width: 300px;" id="references">References</th>
@@ -47,7 +48,49 @@
 							</thead>
 							<tbody />
 						</table>
-					</div>
+					</div></td>
+			</tr>
+		</table>
+	</div>
+	<div id="deleteConfigurationVariableDialog"
+		title="Delete Configuration Variable"
+		style="min-width: 400px; min-height: 200px;">
+		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+			<tr>
+				<td>
+					<table style="margin-top: 10px;">
+						<tr>
+							<td colspan="3"><label>Substitute all occurences of
+									the variable to be removed with ...</label></td>
+						</tr>
+						<tr>
+							<td><input id="emptyLiteralCheckbox" type="checkbox" /></td>
+							<td colspan="2"><label for="emptyLiteralCheckbox">...
+									with an empty literal.</label></td>
+						</tr>
+						<tr>
+							<td><input id="defaultValueCheckbox" type="checkbox" /></td>
+							<td colspan="2"><label for="defaultValueCheckbox">...
+									with its default value.</label></td>
+						</tr>
+						<tr>
+							<td><input id="withLiteralCheckbox" type="checkbox" /></td>
+							<td><label for="withLiteralCheckbox">... with
+									literal</label></td>
+							<td><input id="literalValueInput" type="text" /></td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" />
+							</td>
+						</tr>
+					</table>
 				</td>
 			</tr>
 		</table>

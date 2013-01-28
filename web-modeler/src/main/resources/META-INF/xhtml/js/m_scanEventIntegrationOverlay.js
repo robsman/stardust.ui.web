@@ -49,10 +49,12 @@ define(
 					this.initializeEventIntegrationOverlay(page, id);
 
 					this.documentDataList = this.mapInputId("documentDataList");
-					
-					this.documentDataList.change({overlay: this}, function(event){
+
+					this.documentDataList.change({
+						overlay : this
+					}, function(event) {
 						var overlay = event.data.overlay;
-						
+
 						overlay.submitOverlayChanges();
 					});
 				};
@@ -64,22 +66,46 @@ define(
 					return "scan";
 				};
 
-
 				/**
 				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
-					var data = m_model.findData(this.documentDataList.val());
-					
-					this.submitChanges({
-						modelElement : {
-							parameterMappings : [{id: data.id, name: data.name, direction: m_constants.OUT_ACCESS_POINT, dataType: "dmsDocument", dataFullId: this.documentDataList.val()}],
-							implementation: this.getImplementation(),
-							attributes : {
-								"carnot:engine:integration::overlay" : this.id
-							}
-						}
-					});
+					var data = null;
+
+					if (this.documentDataList.val() != null) {
+						data = m_model.findData(this.documentDataList.val());
+
+						this
+								.submitChanges({
+									modelElement : {
+										parameterMappings : [ {
+											id : data.id,
+											name : data.name,
+											direction : m_constants.OUT_ACCESS_POINT,
+											dataType : "dmsDocument",
+											dataFullId : this.documentDataList
+													.val()
+										} ],
+										implementation : this
+												.getImplementation(),
+										attributes : {
+											"carnot:engine:integration::overlay" : this.id
+										}
+									}
+								});
+					} else {
+						this
+								.submitChanges({
+									modelElement : {
+										parameterMappings : [],
+										implementation : this
+												.getImplementation(),
+										attributes : {
+											"carnot:engine:integration::overlay" : this.id
+										}
+									}
+								});
+					}
 				};
 
 				/**
@@ -151,8 +177,8 @@ define(
 				ScanEventIntegrationOverlay.prototype.update = function() {
 					this.populateDataItemsList();
 
-					if (this.page.getModelElement().parameterMappings != null &&
-							this.page.getModelElement().parameterMappings[0]) {
+					if (this.page.getModelElement().parameterMappings != null
+							&& this.page.getModelElement().parameterMappings[0]) {
 						this.documentDataList
 								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
 					} else {

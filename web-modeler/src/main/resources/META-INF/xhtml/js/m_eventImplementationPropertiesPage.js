@@ -34,10 +34,11 @@ define(
 			 * 
 			 */
 			function EventImplementationPropertiesPage(propertiesPanel) {
-				var propertiesPage = m_propertiesPage.createPropertiesPage(
-						propertiesPanel, "implementationPropertiesPage",
-						"Implementation", // TODO I18N
-						"../../images/icons/event-implementation-properties-page.png");
+				var propertiesPage = m_propertiesPage
+						.createPropertiesPage(propertiesPanel,
+								"implementationPropertiesPage",
+								"Implementation", // TODO I18N
+								"../../images/icons/event-implementation-properties-page.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -60,6 +61,7 @@ define(
 							.findExtensions("eventIntegrationOverlay");
 
 					this.overlays = {};
+					this.overlay = null;
 					this.supportedOverlays = {};
 					this.overlayControllers = {};
 					this.extensions = {};
@@ -219,21 +221,22 @@ define(
 
 						var overlay = null;
 
-						if (this.getModelElement().attributes["carnot:engine:camel::camelContextId"] != null) {
-							this.overlayControllers["genericCamelRouteEvent"]
-									.activate();
-
-							overlay = "genericCamelRouteEvent";
-						} else if (this.getModelElement().documentDataId != null) {
-							this.overlayControllers["scanEvent"].activate();
-
+						if (this.getModelElement().implementation == "manual") {
+							overlay = "manualTrigger";
+						} else if (this.getModelElement().implementation == "scan") {
 							overlay = "scanEvent";
-						} else {
+						} else if (this.getModelElement().implementation == "camel") {
 							overlay = this.getModelElement().attributes["carnot:engine:integration::overlay"];
+
+							if (overlay == null) {
+								overlay = "genericCamelRouteEvent";
+							}
 						}
 
 						if (this.supportedOverlays[overlay]) {
 							this.setOverlay(overlay);
+							this.overlay = this.overlayControllers[overlay];
+							this.overlay.update();
 						} else {
 							this.setOverlay(null);
 						}
@@ -266,7 +269,16 @@ define(
 				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.validate = function() {
+					m_utils.debug("===> Validate EventImplementationPropertiesPage");
 					this.propertiesPanel.clearErrorMessages();
+
+					if (this.overlay) {
+						if (this.overlay.validate()) {
+							return true;
+						}
+
+						return false;
+					}
 
 					return true;
 				};

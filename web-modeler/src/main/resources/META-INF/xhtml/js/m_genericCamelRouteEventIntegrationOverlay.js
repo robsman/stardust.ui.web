@@ -49,6 +49,10 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
+					jQuery("label[for='camelContextInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.genericCamelRouteEvent.camelContext"));
 					jQuery("label[for='routeTextarea']")
 							.text(
 									m_i18nUtils
@@ -58,6 +62,8 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
 
+					this.camelContextInput = this
+							.mapInputId("camelContextInput");
 					this.configurationSpan = this.mapInputId("configuration");
 
 					this.configurationSpan
@@ -86,6 +92,7 @@ define(
 						overlay.submitRouteChanges();
 					});
 
+					this.registerForRouteChanges(this.camelContextInput);
 					this.registerForRouteChanges(this.endpointUriTextarea);
 					this.registerForRouteChanges(this.additionalRouteTextarea);
 					this.registerForRouteChanges(this.additionalBeanTextarea);
@@ -100,28 +107,8 @@ define(
 				/**
 				 * 
 				 */
-				GenericCamelRouteEventIntegrationOverlay.prototype.mapInputId = function(
-						inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
-				};
-
-				/**
-				 * 
-				 */
-				GenericCamelRouteEventIntegrationOverlay.prototype.submitOverlayChanges = function(
-						parameterMappings) {
-					if (parameterMappings == null) {
-						parameterMappings = [];
-					}
-
-					this.submitChanges({
-						modelElement : {
-							parameterMappings : parameterMappings,
-							attributes : {
-								"carnot:engine:integration::overlay" : this.id
-							}
-						}
-					});
+				GenericCamelRouteEventIntegrationOverlay.prototype.getCamelContext = function() {
+					return this.camelContextInput.val();
 				};
 
 				/**
@@ -141,14 +128,12 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.update = function() {
-
 					var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
 					// TODO Need better URL encoding
-					
+
 					route = route.replace(/&/g, "&amp;");
 
-					var xmlDoc = jQuery
-							.parseXML(route);
+					var xmlDoc = jQuery.parseXML(route);
 					var xmlObject = jQuery(xmlDoc);
 
 					var fromUri = "";
@@ -182,10 +167,12 @@ define(
 														});
 									});
 
+					this.camelContextInput
+							.val(this.page.getEvent().attributes["carnot:engine:camel::camelContextId"]);
 					this.endpointUriTextarea.val(fromUri);
 					this.additionalRouteTextarea.val(additionalRoutes);
-					this.additionalBeanTextarea.val(this.page.getEvent().attributes["carnot:engine:camel::additionalBeans"]);										
-
+					this.additionalBeanTextarea
+							.val(this.page.getEvent().attributes["carnot:engine:camel::additionalBeans"]);
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
@@ -217,6 +204,37 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.validate = function() {
+					this.camelContextInput.removeClass("error");
+					this.endpointUriTextarea.removeClass("error");
+
+					if (m_utils.isEmptyString(this.camelContextInput.val()) ||
+							this.camelContextInput.val() == m_i18nUtils
+							.getProperty("modeler.general.toBeDefined")) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.camelContextInput.addClass("error");
+						this.camelContextInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (m_utils.isEmptyString(this.endpointUriTextarea.val()) ||
+							this.endpointUriTextarea.val() == m_i18nUtils
+							.getProperty("modeler.general.toBeDefined")) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.endpointUriTextarea.addClass("error");
+						this.endpointUriTextarea.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
 					return true;
 				};
 			}

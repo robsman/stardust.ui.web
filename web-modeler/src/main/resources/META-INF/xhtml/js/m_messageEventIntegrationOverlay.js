@@ -105,21 +105,22 @@ define(
 					uri += ":";
 					uri += this.nameInput.val();
 
-					if (this.clientIdInput.val() != null) {
-						uri += "?clientId=" + this.clientIdInput.val();
-					} else {
-						uri += "?clientId=null";
-					}
+					var separator = "?";
+					
+					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
+						uri += separator + "clientId=" + this.clientIdInput.val();
+						separator = "&";
+					} 
 
-					if (this.selectorInput.val() != null) {
-						uri += "&selector=" + this.selectorInput.val();
-					} else {
-						uri += "&selector=null";
-					}
+					if (this.selectorInput.val() != null && this.selectorInput.val().length != 0) {
+						uri += separator + "selector=" + this.selectorInput.val();
+						separator = "&";
+					} 
 
-					uri += "&transacted=";
+					uri += separator + "transacted=";
+					separator = "&";
 					uri += this.transactedInput.prop("checked");
-					uri += "&preserveMessageQos=";
+					uri += separator + "preserveMessageQos=";
 					uri += this.preserveQoSInput.prop("checked");
 
 					return uri;
@@ -216,13 +217,16 @@ define(
 				MessageEventIntegrationOverlay.prototype.validate = function() {
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.page.propertiesPanel.errorMessages
-								.push("Topic/queue name must not be empty.");
+					if (m_utils.isEmptyString(this.nameInput.val()) ||
+							this.nameInput.val() == m_i18nUtils
+							.getProperty("modeler.general.toBeDefined")) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
 						this.nameInput.addClass("error");
+						this.nameInput.focus();
 
-						this.page.propertiesPanel.showErrorMessages();
+						this.getPropertiesPanel().showErrorMessages();
 
 						return false;
 					}

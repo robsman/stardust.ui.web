@@ -288,6 +288,7 @@ define(
 				};
 
 				PropertiesPanel.prototype.clearErrorMessages = function() {
+					m_utils.debug("Clear error messages");
 					m_dialog.makeInvisible(this.errorMessagesRow);
 					this.errorMessages = [];
 					this.errorMessagesList.empty();
