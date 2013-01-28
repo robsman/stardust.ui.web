@@ -2146,10 +2146,19 @@ define(
 									.showErrorMessage("A connection must connect two different symbols.");
 							return false;
 						}
+
+						//to be removed in future
+						if (m_constants.ANNOTATION_SYMBOL == toAnchorPoint.symbol.type
+								|| m_constants.ANNOTATION_SYMBOL == fromAnchorPoint.symbol.type) {
+							m_messageDisplay
+							.showErrorMessage("Connection from/to Annotation is not supported.");
+							return false;
+						}
+
 					}
 
 					return true;
-				}
+				};
 
 				/**
 				 *

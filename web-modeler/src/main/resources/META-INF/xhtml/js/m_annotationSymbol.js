@@ -199,13 +199,14 @@ define(
 					this
 							.addFlyOutMenuItems(
 									[],
+									//This is commented temporarily
 									[
-											{
+											/*{
 												imageUrl : "../../images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : AnnotationSymbol_connectToClosure
-											}],
+											}*/],
 									[ {
 										imageUrl : "../../images/icons/remove.png",
 										imageWidth : 16,
