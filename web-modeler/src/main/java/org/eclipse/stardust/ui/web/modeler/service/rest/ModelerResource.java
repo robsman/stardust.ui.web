@@ -620,6 +620,29 @@ public class ModelerResource
       }
    }
 
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{modelId}/configurationVariables/{variableName}")
+   public Response deleteConfigurationVariable(@PathParam("modelId") String modelId, @PathParam("variableName") String variableName,
+         String postedData)
+   {
+      try
+      {
+         System.out.println("Delete parameter: " + postedData);
+         
+         return Response.ok(
+               getModelService().getConfigurationVariables(modelId).toString(),
+               APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
