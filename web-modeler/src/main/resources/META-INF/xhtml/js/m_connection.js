@@ -80,8 +80,8 @@ define(
 				this.toAnchorPointOrientation = 3;
 				this.toModelElementOid = null;
 				this.toModelElementType = null;
-				this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-				this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+				this.conditionExpressionTextXOffset;
+				this.conditionExpressionTextYOffset;
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -161,18 +161,8 @@ define(
 						this.propertiesPanel = m_controlFlowPropertiesPanel
 								.getInstance();
 
-						if (this.modelElement.attributes != null) {
-							this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
-							this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
+						this.adjustConditionExpressionText();
 
-							if (!this.conditionExpressionTextXOffset) {
-								this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							}
-
-							if (!this.conditionExpressionTextYOffset) {
-								this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							}
-						}
 					}
 
 					this.completeNoTransfer();
@@ -581,9 +571,9 @@ define(
 
 					if (this.isControlFlow()) {
 						// TODO Can we store in graphical element?
-						if (null != this.conditionExpressionTextXOffset)
+						if (!this.conditionExpressionTextXOffset)
 							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"] = this.conditionExpressionTextXOffset;
-						if (null != this.conditionExpressionTextYOffset)
+						if (!this.conditionExpressionTextYOffset)
 							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"] = this.conditionExpressionTextYOffset;
 						// TODO Add later
 						transferObject.segments = null;
@@ -791,10 +781,8 @@ define(
 
 					this.conditionExpressionText = m_canvasManager
 							.drawTextNode(
-									this.fromAnchorPoint.x
-											+ this.conditionExpressionTextXOffset,
-									this.fromAnchorPoint.y
-											+ this.conditionExpressionTextYOffset,
+									this.fromAnchorPoint.x,
+									this.fromAnchorPoint.y,
 									"").attr({
 								"text-anchor" : "start",
 								"fill" : m_constants.CONTROL_FLOW_COLOR,
@@ -802,8 +790,12 @@ define(
 							});
 
 					this.addToPrimitives(this.conditionExpressionText);
-					this.addToEditableTextPrimitives(this.conditionExpressionText);
 
+					this.conditionExpressionText.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					//this.addToEditableTextPrimitives(this.conditionExpressionText);
 					this.conditionExpressionText.hide();
 
 					this.defaultIndicatorPath = m_canvasManager.drawPath("", {
@@ -882,13 +874,13 @@ define(
 											.trim() != "true") {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.conditionExpression);
-								this.conditionExpressionText
-										.attr({
-											x : this.fromAnchorPoint.x
-													+ this.conditionExpressionTextXOffset,
-											y : this.fromAnchorPoint.y
-													+ this.conditionExpressionTextYOffset
-										});
+
+								this.conditionExpressionText.attr({
+									x : this.fromAnchorPoint.x
+											+ this.conditionExpressionTextXOffset,
+									y : this.fromAnchorPoint.y
+											+ this.conditionExpressionTextYOffset
+								});
 
 								this.conditionExpressionText.show();
 							} else if (this.modelElement.name) {
@@ -960,6 +952,37 @@ define(
 						}
 					}
 				};
+
+				/**
+				 *
+				 */
+				Connection.prototype.adjustConditionExpressionText = function() {
+					if (this.modelElement.attributes) {
+						this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
+						this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
+					}
+					if (!this.conditionExpressionTextXOffset
+							|| !this.conditionExpressionTextYOffset) {
+						if (this.fromAnchorPoint.orientation == m_constants.NORTH) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
+									* -3;
+						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 3;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
+									* -1;
+						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 3;
+						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
+									* -5;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
+									* -1;
+						}
+					}
+				};
+
 
 				/**
 				 *
@@ -1706,16 +1729,14 @@ define(
 						dY, x, y, event) {
 					this.conditionExpressionTextXOffset = x
 							* this.diagram.zoomFactor - this.diagram.X_OFFSET
-							- this.fromAnchorPoint.x;
+							- this.fromAnchorPoint.x + this.diagram.scrollPane.scrollLeft() ;
 					this.conditionExpressionTextYOffset = y
 							* this.diagram.zoomFactor - this.diagram.Y_OFFSET
-							- this.fromAnchorPoint.y;
+							- this.fromAnchorPoint.y + this.diagram.scrollPane.scrollTop();
 
 					this.conditionExpressionText.attr({
-						"x" : x * this.diagram.zoomFactor
-								- this.diagram.X_OFFSET,
-						"y" : y * this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET
+						"x" : this.conditionExpressionTextXOffset + this.fromAnchorPoint.x,
+						"y" : this.conditionExpressionTextYOffset + this.fromAnchorPoint.y
 					});
 				};
 
