@@ -38,7 +38,7 @@ define(
 				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
 						"overflow", "hidden");
 
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
+				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
 				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
@@ -360,7 +360,7 @@ define(
 							(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px");
 				}
 
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
+				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
 				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
@@ -386,10 +386,10 @@ define(
 					var diagWidth = innerWidth - $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET;
 
 					if (diagWidth < getToolbarWidth()) {
-						diagWidth = getToolbarWidth() + 10;
+						diagWidth = getToolbarWidth() + 2;
 					}
 
-					setDrawingPaneDivWidths((diagWidth - 10));
+					setDrawingPaneDivWidths((diagWidth - 2));
 
 					$("#modelerDiagramPanelWrapper").css("width", (diagWidth) + "px").css("overflow", "auto");
 				}
