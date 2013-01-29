@@ -11,10 +11,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_dataTypeSelector" ],
+				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_model" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_basicPropertiesPage,
-				m_dataTypeSelector) {
+				m_dataTypeSelector, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataBasicPropertiesPage(propertiesPanel);
@@ -122,6 +122,18 @@ define(
 											"false"));
 						}
 					});
+				};
+
+				/**
+				 *
+				 */
+				DataBasicPropertiesPage.prototype.getModelElement = function() {
+					if (this.propertiesPanel.element.modelElement
+							&& this.propertiesPanel.element.modelElement.externalReference) {
+						return m_model.findData(this.propertiesPanel.element.modelElement.dataFullId);
+					}
+
+					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
