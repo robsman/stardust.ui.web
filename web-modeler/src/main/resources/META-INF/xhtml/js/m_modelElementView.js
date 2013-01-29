@@ -409,17 +409,21 @@ define(
 											return;
 										}
 
-										if (view.getModelElement().attributes[attribute] != input
-												.val()) {
-											var modelElement = {
-												attributes : {}
-											};
-											modelElement.attributes[attribute] = input
-													.val();
-
-											view.submitChanges(modelElement);
-										}
+										submitModelElementAttributeChange(attribute, input.val());
 									});
+				};
+
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.submitModelElementAttributeChange = function(attribute, value) {
+					if (this.getModelElement().attributes[attribute] != value) {
+						var modelElement = {
+							attributes : {}
+						};
+						modelElement.attributes[attribute] = value;
+						this.submitChanges(modelElement);
+					}
 				};
 
 				/**

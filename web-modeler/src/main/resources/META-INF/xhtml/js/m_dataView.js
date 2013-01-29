@@ -17,7 +17,9 @@ define(
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_jsfViewManager",
-				"bpm-modeler/js/m_elementConfiguration" ],
+				"bpm-modeler/js/m_elementConfiguration",
+				"angularjs"], 
+
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration) {
@@ -121,10 +123,6 @@ define(
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.primitiveDefaultTextInputRow = jQuery("#primitiveDefaultTextInputRow");
-					this.primitiveDefaultTextInput = jQuery("#primitiveDefaultTextInput");
-					this.primitiveDefaultCheckboxInputRow = jQuery("#primitiveDefaultCheckboxInputRow ");
-					this.primitiveDefaultCheckboxInput = jQuery("#primitiveDefaultCheckboxInput");
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
@@ -162,37 +160,6 @@ define(
 													});
 										}
 									});
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.primitiveDefaultTextInput,
-							"carnot:engine:defaultValue");
-
-					// carnot:engine:defaultValue, in spite of being a checkbox (for boolean type)
-					// is a string attribute
-					// Hence not using the usual change listener for checkboxes
-					this.primitiveDefaultCheckboxInput.change({
-						"view" : this
-					}, function(event) {
-						var view = event.data.view;
-
-						if (!view.validate()) {
-							return;
-						}
-
-						if (view.primitiveDefaultCheckboxInput.is(":checked")) {
-							view.submitChanges({
-								attributes : {
-									"carnot:engine:defaultValue" : "true"
-								}
-							});
-						} else {
-							view.submitChanges({
-								attributes : {
-									"carnot:engine:defaultValue" : "false"
-								}
-							});
-						}
-					});
-
 					this.initializeModelElementView(data);
 				};
 
@@ -267,31 +234,38 @@ define(
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						if (data.primitiveDataType == m_constants.BOOLEAN_PRIMITIVE_DATA_TYPE) {
-							m_dialog
-									.makeInvisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeVisible(this.primitiveDefaultCheckboxInputRow);
-							this.primitiveDefaultCheckboxInput.attr("checked",
-									(defaultValue == "true"));
-						} else {
-							m_dialog
-									.makeVisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						var self = this;
+						var scope = angular.element(document.body).scope();
+						scope.$apply(function($scope) {
+							var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+							$scope.dataType = primitiveDataTypeSelect.val();
 
-							if (defaultValue != null) {
-								this.primitiveDefaultTextInput
-										.val(defaultValue);
-							} else {
-								this.primitiveDefaultTextInput.val(null);
+							$scope.defaultValue = defaultValue;
+							if ($scope.dataType == 'boolean') {
+								$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
 							}
-						}
+
+							$scope.inputId = $scope.dataType + 'InputText';
+
+							// Somehow initializeDataType() gets called again and again! hence the check 
+							if (!$scope.watchRegistered) {
+								$scope.$watch('defaultValue', function(newValue, oldValue) {
+									// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
+									if (newValue !== oldValue && $scope.form[$scope.inputId].$valid) {
+										if ($scope.dataType == 'boolean') {
+											newValue = newValue ? "true" : "false";
+										}
+										self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);	
+									}
+								});
+								$scope.watchRegistered = true;
+							}
+						});
 					} else {
-						m_dialog
-								.makeInvisible(this.primitiveDefaultTextInputRow);
-						m_dialog
-								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						var scope = angular.element(document.body).scope();
+						scope.$apply(function($scope) {
+							$scope.dataType = null;
+						});
 					}
 				};
 
