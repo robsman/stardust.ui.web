@@ -60,6 +60,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.FormalParameter;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -90,6 +91,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
@@ -102,6 +104,7 @@ import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
 import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
@@ -126,7 +129,11 @@ import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -720,7 +727,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
                participantModel, participantId);
-
+ 
          if ( !participantModelID.equals(model.getId()))
          {
             String fileConnectionId = WebModelerConnectionManager.createFileConnection(
@@ -1943,7 +1950,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             // adjust underlying DOM
             schema.updateElement(true);
          }
-         
+
+         // TODO
+         // move this into a new ChangePostprocessor and send notification to the client
          if(!typeDeclaration.getId().equals(oldId))
          {
             ModelType model = ModelUtils.findContainingModel(typeDeclaration);
@@ -1967,6 +1976,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      AttributeUtil.setAttribute(data, DmsConstants.RESOURCE_METADATA_SCHEMA_ATT,
                            typeDeclaration.getId());                                    
                   }
+               }               
+            } 
+            
+            for(ProcessDefinitionType process : model.getProcessDefinition())
+            {
+               FormalParametersType parametersType = process.getFormalParameters();
+               if(parametersType != null)
+               {
+                  for(FormalParameterType type : parametersType.getFormalParameter())
+                  {
+                     DataTypeType dataType = type.getDataType();
+                     DeclaredTypeType declaredType = dataType.getDeclaredType();
+                     String declaredTypeId = declaredType.getId();
+                     if(!StringUtils.isEmpty(declaredTypeId)
+                           && declaredTypeId.equals(oldId))
+                     {
+                        declaredType.setId(typeDeclaration.getId());
+                     }
+                  }                  
                }               
             }            
          }         
@@ -2675,12 +2703,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             else
             {
                // TODO Trick to create document
-
+               
                if (key.equals("documentation:externalDocumentUrl")
                      && attributes.get(key).getAsString().equals("@CREATE"))
                {
                   getModelBuilderFacade().setAttribute(element, key,
                         createModelElementDocumentation(json));
+               }
+               else if (key.equals(PredefinedConstants.VALID_FROM_ATT))
+               {
+                  String stringValue = attributes.get(key).getAsString();
+                  getModelBuilderFacade().setTimestampAttribute((IExtensibleElement) element, key, stringValue);
                }
                else
                {
