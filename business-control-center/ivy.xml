@@ -50,9 +50,6 @@
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-portal-common-runtime" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-views-common-runtime" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-graphics-common" rev="${ipp.version.full}" conf="ipp-business-control-center-runtime->ipp-graphics-common-runtime" />
-      <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="${jxl.version}" conf="ipp-business-control-center-runtime->default">
-         <exclude org="log4j" module="log4j"/>
-      </dependency>
 
       <!-- ipp-business-control-center-provided -->
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
