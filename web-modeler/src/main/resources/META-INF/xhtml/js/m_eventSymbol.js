@@ -495,6 +495,7 @@ define(
 				};
 
 				EventSymbol.prototype.showEditable = function() {
+					this.performClientSideAdj();
 					this.text.hide();
 					var editableText = this.diagram.editableText;
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
