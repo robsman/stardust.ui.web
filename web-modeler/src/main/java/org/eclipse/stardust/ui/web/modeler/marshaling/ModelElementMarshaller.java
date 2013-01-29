@@ -89,7 +89,7 @@ import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestContro
 
 /**
  * IPP XPDL marshaller.
- * 
+ *
  * @author Marc.Gille
  * @author Robert Sauer
  */
@@ -104,7 +104,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
    /**
-    * 
+    *
     * @param modelElement
     * @return
     */
@@ -429,9 +429,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * To resolve inconsistency between Access Point and
-    * 
+    *
     * TODO Review and move to Facade
-    * 
+    *
     * @param type
     * @return
     */
@@ -456,7 +456,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @return
     */
@@ -735,7 +735,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @return
     */
@@ -936,7 +936,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param activityJson
     */
@@ -1013,7 +1013,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @return
     */
@@ -1043,12 +1043,37 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             activitySymbol.getXPos() + laneOffsetX);
       activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
             activitySymbol.getYPos() + laneOffsetY);
-      activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-            activitySymbol.getWidth());
-      activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-            activitySymbol.getHeight());
 
       ActivityType activity = activitySymbol.getActivity();
+
+      // set default height and width if not defined
+      int width = activitySymbol.getWidth();
+      int height = activitySymbol.getHeight();
+      if ( -1 == width)
+      {
+         if (activity.getId().toLowerCase().startsWith("gateway"))
+         {
+            width = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
+         }
+         else
+         {
+            width = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
+         }
+      }
+      if ( -1 == height)
+      {
+         if (activity.getId().toLowerCase().startsWith("gateway"))
+         {
+            height = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
+         }
+         else
+         {
+            height = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_HEIGHT;
+         }
+      }
+
+      activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
+      activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, height);
 
       if (null != activity)
       {
@@ -1101,7 +1126,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1135,8 +1160,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
             + laneOffsetY);
 
-      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-            startEventSymbol.getWidth());
+      //set default height and width if not defined
+      int width = startEventSymbol.getWidth();
+      if ( -1 == width)
+      {
+         width = ModelerConstants.EVENT_ICON_WIDTH;
+      }
+
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
 
       JsonObject eventJson = null;
       TriggerType trigger = (TriggerType) startEventSymbol.getModelElement();
@@ -1161,7 +1192,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -1190,8 +1221,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       setNodeSymbolCoordinates(eventSymbolJson, endEventSymbol);
 
-      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-            endEventSymbol.getWidth());
+      //set default height and width if not defined
+      int width = endEventSymbol.getWidth();
+      if ( -1 == width)
+      {
+         width = ModelerConstants.EVENT_ICON_WIDTH;
+      }
+
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
 
       JsonObject eventJson = new JsonObject();
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
@@ -1221,7 +1258,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    /**
     * Generates a transfer object based on an explicit intermediate event symbol. Knows
     * how to handle both intermediate and boundary events.
-    * 
+    *
     * @param eventSymbol
     *           the defining intermediate event symbol
     * @return the transfer object
@@ -1234,6 +1271,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventSymbol.getElementOid());
+
+      //set default height and width if not defined
+      int width = eventSymbol.getWidth();
+      if ( -1 == width)
+      {
+         width = ModelerConstants.EVENT_ICON_WIDTH;
+      }
+      eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
 
       setNodeSymbolCoordinates(eventSymbolJson, eventSymbol);
 
@@ -1284,7 +1329,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    /**
     * Generates a transfer object for a event handler that has no explicit intermediate
     * event symbol, guessing a reasonable location of the made up symbol.
-    * 
+    *
     * @param eventHandler
     *           the defining event handler
     * @param hostActivitySymbol
@@ -1383,7 +1428,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -1412,7 +1457,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, event.getType()
                .getId());
-         
+
          if (event.getType().getId().equals("manual"))
          {
             eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "manualTrigger");
@@ -1452,7 +1497,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          else
          {
             eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-                  ModelerConstants.NONE_EVENT_CLASS_KEY);            
+                  ModelerConstants.NONE_EVENT_CLASS_KEY);
          }
       }
 
@@ -1511,7 +1556,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param data
     * @return
     */
@@ -1670,7 +1715,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @return
     */
@@ -2050,7 +2095,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @return
     */
@@ -2082,10 +2127,20 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             annotationSymbol.getXPos() + laneOffsetX);
       annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
             annotationSymbol.getYPos() + laneOffsetY);
-      annotationSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
-            annotationSymbol.getWidth());
-      annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
-            annotationSymbol.getHeight());
+
+      //set default height and width if not defined
+      int width = annotationSymbol.getWidth();
+      int height = annotationSymbol.getHeight();
+      if ( -1 == width)
+      {
+         width = ModelerConstants.ANNOTATION_SYMBOL_DEFAULT_WIDTH;
+      }
+      if ( -1 == height)
+      {
+         height = ModelerConstants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT;
+      }
+      annotationSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
+      annotationSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, height);
 
       if (null != annotationSymbol.getText())
       {
@@ -2101,7 +2156,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param dataMappingConnection
     * @return
     */
@@ -2218,7 +2273,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2380,7 +2435,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param transitionConnection
     * @return
     */
@@ -2597,10 +2652,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    /**
     * TODO - is there a better way to do this?
-    * 
+    *
     * Returns the organisation for which the role is a team leader, null otherwise returns
     * null if role is not a team leader in the first place
-    * 
+    *
     * @param participant
     * @return
     */
@@ -2786,7 +2841,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2817,7 +2872,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2837,7 +2892,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     * @throws JSONException
@@ -2951,9 +3006,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -3089,7 +3144,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      {
                         primitiveDataType = jsonElementType.getAsString();
                      }
-                     
+
                      return primitiveDataType;
                   }
                }
