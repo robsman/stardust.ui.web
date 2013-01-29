@@ -55,6 +55,14 @@ define(
 				 */
 				Drawable.prototype.applyChanges = function(changedObject) {
 					m_utils.inheritFields(this, changedObject);
+					this.applySymbolSpecific(changedObject);
+				};
+
+				/**
+				 * Should be overridden by symbols if they need to do more
+				 * than what's done in #applyChanges function.
+				 */
+				Drawable.prototype.applySymbolSpecific = function(changedObject) {
 				};
 
 				/**

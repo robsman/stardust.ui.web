@@ -180,6 +180,16 @@ define(
 				};
 
 				/**
+				 * Overrides function in Drawable to to remove assigned participant if
+				 * participant is deleted.
+				 */
+				SwimlaneSymbol.prototype.applySymbolSpecific = function(changedObject) {
+					if (!changedObject.participantFullId) {
+						this.participantFullId = null;
+					}
+				};
+
+				/**
 				 * Overridden as we do now want the create REST call to be made at this point but
 				 * after the swimlane is repositioned.
 				 */
