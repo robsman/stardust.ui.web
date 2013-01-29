@@ -121,10 +121,10 @@
 													<label for="primitiveDefaultTextInput" id="defaultValue">DefaultValue</label>
 												</td>
 												<td>
-													<!-- Somehow with ng-switch with $watch is not working, hence using multiple ifs -->
+													<!-- Somehow ng-switch with $watch is not working, hence using multiple ng-show -->
 													<!-- For name or id - Angular Expression is not working -->
-													<!-- For pattern - Angular Expression is not working -->
-													<!-- No way to inject attributes (e.g. pattern) after input element is placed -->
+													<!-- For ng-pattern - Angular Expression is not working -->
+													<!-- No way to inject attributes (e.g. ng-pattern) after input element is placed -->
 													<!-- TODO: RegEx needs to be reviewed/refined -->
 													<div ng-show="dataType == 'boolean'">
 														<input type="checkbox" id="booleanInputText" name="booleanInputText"
