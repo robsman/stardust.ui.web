@@ -133,10 +133,7 @@
          <exclude org="org.springframework" module="spring-tx"/>
       </dependency>
 
-      <dependency org="com.sun.el" name="el-ri" rev="${el-ri.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="${jxl.version}" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="log4j" module="log4j"/>
-      </dependency>
+
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.springframework" name="spring-web" transitive="false" rev="${spring-web.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="${geronimo-ejb_2.1_spec.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
