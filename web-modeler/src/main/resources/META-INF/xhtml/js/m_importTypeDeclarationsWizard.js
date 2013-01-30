@@ -99,6 +99,8 @@ define(
 				this.importButton = jQuery("#importButton");
 				this.cancelButton = jQuery("#cancelButton");
 				this.closeButton = jQuery("#dialogCloseIcon");
+				this.selectAllCheckbox = jQuery("#selectAllCheckbox");
+				this.selectAll = false;
 
 				var view = this;
 				this.loadFromUrlButton.click(function(event) {
@@ -116,6 +118,17 @@ define(
 
 				this.closeButton.click(function(event) {
 					closePopup();
+				});
+
+				/**
+				 *
+				 */
+				this.selectAllCheckbox.click(function(event) {
+					view.selectAll = !view.selectAll;
+					jQuery("table#typeDeclarationsTable tbody tr.top-level")
+						.each(function() {
+							jQuery(this).toggleClass("selected", view.selectAll);
+					});
 				});
 
 				/**
