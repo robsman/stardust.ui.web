@@ -298,10 +298,16 @@ define(
 					var view = event.data.view;
 					var scope = angular.element(document.body).scope();
 					scope.$apply(function($scope) {
-						// If valid datepicker returns date as seen in textbox, else it returns current date
-						var dtObj = view.timestampInputText.datepicker("getDate");
-						var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
-						view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
+						try {
+							var dateValue = view.timestampInputText.val();
+							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
+							$scope.timestampInputTextError = false;
+						} catch(e){
+							// Parse Error
+							$scope.timestampInputTextError = true;
+						}
 					});
 				}
 				

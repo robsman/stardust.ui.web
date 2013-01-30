@@ -149,6 +149,7 @@
 													</div>
 													<div ng-show="dataType == 'Timestamp'">
 														<input id="TimestampInputText" name="TimestampInputText" type="text" />
+														<div ng-show="timestampInputTextError" style="color:red">Not a valid date</div>
 													</div>
 													<div ng-show="dataType == 'String'">
 														<input id="StringInputText" name="StringInputText"
