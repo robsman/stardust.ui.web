@@ -49,6 +49,8 @@ define(
 					this.initializeEventIntegrationOverlay(page, id);
 
 					this.documentDataList = this.mapInputId("documentDataList");
+					this.metadataStructureLabel = this
+							.mapInputId("metadataStructureLabel");
 
 					this.documentDataList.change({
 						overlay : this
@@ -69,11 +71,42 @@ define(
 				/**
 				 * 
 				 */
-				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
-					var data = null;
+				ScanEventIntegrationOverlay.prototype.setDocumentData = function() {
+					this.metadataStructureLabel.empty();
 
-					if (this.documentDataList.val() != null) {
-						data = m_model.findData(this.documentDataList.val());
+					if (this.page.getModelElement().parameterMappings != null
+							&& this.page.getModelElement().parameterMappings[0]
+							&& this.page.getModelElement().parameterMappings[0].dataFullId
+							&& this.page.getModelElement().parameterMappings[0].dataFullId != m_constants.TO_BE_DEFINED) {
+						this.documentDataList
+								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
+
+						var data = m_model
+								.findData(this.documentDataList.val());
+						var structuredDataType = m_model
+								.findTypeDeclaration(data.structuredDataTypeFullId);
+						var model = m_model.findModel(m_model
+								.stripModelId(structuredDataType.getFullId()));
+
+						if (model.id == this.scopeModel.id) {
+							this.metadataStructureLabel
+									.append(structuredDataType.name);
+						} else {
+							this.metadataStructureLabel.append(model.name + "/"
+									+ structuredDataType.name);
+						}
+					} else {
+						this.documentDataList.val(m_constants.TO_BE_DEFINED);
+					}
+				};
+
+				/**
+				 * 
+				 */
+				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
+					if (this.documentDataList.val() != null &&
+							this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
+						var data = m_model.findData(this.documentDataList.val());
 
 						this
 								.submitChanges({
@@ -89,7 +122,9 @@ define(
 										implementation : this
 												.getImplementation(),
 										attributes : {
-											"carnot:engine:integration::overlay" : this.id
+											"carnot:engine:integration::overlay" : this.id,
+											"carnot:engine:participant" : this.page
+													.getElement().parentSymbol.participantFullId
 										}
 									}
 								});
@@ -101,7 +136,9 @@ define(
 										implementation : this
 												.getImplementation(),
 										attributes : {
-											"carnot:engine:integration::overlay" : this.id
+											"carnot:engine:integration::overlay" : this.id,
+											"carnot:engine:participant" : this.page
+													.getElement().parentSymbol.participantFullId
 										}
 									}
 								});
@@ -114,11 +151,12 @@ define(
 				ScanEventIntegrationOverlay.prototype.populateDataItemsList = function() {
 					this.documentDataList.empty();
 
-					this.documentDataList
-							.append("<option value=\"TO_BE_DEFINED\">"
-									+ m_i18nUtils
-											.getProperty("modeler.general.toBeDefined")
-									+ "</option>");
+					this.documentDataList.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>"
+							+ m_i18nUtils
+									.getProperty("modeler.general.toBeDefined")
+							+ "</option>");
 
 					if (this.scopeModel) {
 						this.documentDataList
@@ -175,15 +213,14 @@ define(
 				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.update = function() {
+					m_utils.debug("Scan Trigger");
+					m_utils.debug(this.page.getModelElement());
+
+					this.scopeModel = this.page.getModel();
+
 					this.populateDataItemsList();
 
-					if (this.page.getModelElement().parameterMappings != null
-							&& this.page.getModelElement().parameterMappings[0]) {
-						this.documentDataList
-								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
-					} else {
-						this.documentDataList.val(m_constants.TO_BE_DEFINED);
-					}
+					this.setDocumentData();
 				};
 
 				/**
