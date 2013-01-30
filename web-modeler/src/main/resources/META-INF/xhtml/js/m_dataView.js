@@ -105,6 +105,15 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
 
+
+				jQuery("#doubleInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#intInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#longInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#TimestampInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 			}
 
 			/**
