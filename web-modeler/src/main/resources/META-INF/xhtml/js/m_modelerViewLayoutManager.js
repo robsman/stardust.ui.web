@@ -105,7 +105,7 @@ define(
 				$("label[for='defaultPriorityInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.processDefinition.propertyPages.general.defaultProperty"));
+										.getProperty("modeler.processDefinition.propertyPages.general.defaultPriority"));
 
 				$(
 						"#dataPathPropertiesPage label[for='parameterDefinitionNameInput']")
