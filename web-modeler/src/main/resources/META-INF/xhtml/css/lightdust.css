@@ -593,7 +593,7 @@ td.keyDescriptorDataPathListItem {
 }
 
 #selectModeButton {
-	background: url("../images/icons/select.png") center center;
+	background: url("../images/icons/select.png") no-repeat center center;
 }
 
 td.infoSeverityIssueItem {
