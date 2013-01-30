@@ -719,41 +719,49 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantFullId = swimlaneSymbolJson.get(
                ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
 
-         ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
-         String participantModelID = getModelBuilderFacade().getModelId(participantFullId);
-         ModelType participantModel = getModelBuilderFacade().findModel(
-               participantModelID);
-         String participantId = getModelBuilderFacade().stripFullId(participantFullId);
-
-         IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
-               participantModel, participantId);
- 
-         if ( !participantModelID.equals(model.getId()))
+         if (ModelerConstants.NONE_LITERAL.equals(participantFullId))
          {
-            String fileConnectionId = WebModelerConnectionManager.createFileConnection(
-                  model, participantModel);
-
-            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
-            URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
-
-            ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
-                  .loadModel(participantModelID + ".xpdl");
-            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
-                  loadModel, participantId);
-            if (participantCopy == null)
-            {
-               ElementCopier copier = new ElementCopier(loadModel, null);
-               participantCopy = (IModelParticipant) copier.copy(findParticipant);
-            }
-
-            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
-                  uri, participantCopy, bundleId, null, true);
-            PepperIconFactory iconFactory = new PepperIconFactory();
-            descriptor.importElements(iconFactory, model, true);
-            findParticipant = getModelBuilderFacade().findParticipant(model,
-                  participantId);
+            LaneParticipantUtil.setParticipant(swimlaneSymbol, null);
          }
-         LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
+         else
+         {
+            ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
+            String participantModelID = getModelBuilderFacade().getModelId(
+                  participantFullId);
+            ModelType participantModel = getModelBuilderFacade().findModel(
+                  participantModelID);
+            String participantId = getModelBuilderFacade().stripFullId(participantFullId);
+
+            IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
+                  participantModel, participantId);
+
+            if ( !participantModelID.equals(model.getId()))
+            {
+               String fileConnectionId = WebModelerConnectionManager.createFileConnection(
+                     model, participantModel);
+
+               String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
+               URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
+
+               ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
+                     .loadModel(participantModelID + ".xpdl");
+               IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
+                     loadModel, participantId);
+               if (participantCopy == null)
+               {
+                  ElementCopier copier = new ElementCopier(loadModel, null);
+                  participantCopy = (IModelParticipant) copier.copy(findParticipant);
+               }
+
+               ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
+                     uri, participantCopy, bundleId, null, true);
+               PepperIconFactory iconFactory = new PepperIconFactory();
+               descriptor.importElements(iconFactory, model, true);
+               findParticipant = getModelBuilderFacade().findParticipant(model,
+                     participantId);
+            }
+            LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
+         }
       }
 
       storeAttributes(swimlaneSymbol, swimlaneSymbolJson);
@@ -922,7 +930,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   primitiveDataType = "String"; //$NON-NLS-1$
                }
-               
+
                getModelBuilderFacade().createPrimitiveParameter(
                      processDefinition,
                      data,
@@ -1622,7 +1630,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          getModelBuilderFacade().setAttribute(trigger, "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
-         
+
          if (triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString().equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
          {
             trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), "manual"));
@@ -1726,7 +1734,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataPath = parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                         .getAsString();
                }
-               
+
                getModelBuilderFacade().createParameterMapping(trigger, accessPoint.getId(), dataFullID,
                      dataPath);
             }
@@ -1962,23 +1970,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   AttributeType attribute = AttributeUtil.getAttribute(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
                   if(attribute != null && attribute.getAttributeValue().equals(oldId))
-                  {                  
+                  {
                      AttributeUtil.setAttribute(data, StructuredDataConstants.TYPE_DECLARATION_ATT,
-                           typeDeclaration.getId());                  
+                           typeDeclaration.getId());
                   }
                }
-               
+
                if(data.getType().getId().equals(DmsConstants.DATA_TYPE_DMS_DOCUMENT))
                {
                   AttributeType attribute = AttributeUtil.getAttribute(data, DmsConstants.RESOURCE_METADATA_SCHEMA_ATT);
                   if(attribute != null && attribute.getAttributeValue().equals(oldId))
-                  {                  
+                  {
                      AttributeUtil.setAttribute(data, DmsConstants.RESOURCE_METADATA_SCHEMA_ATT,
-                           typeDeclaration.getId());                                    
+                           typeDeclaration.getId());
                   }
-               }               
-            } 
-            
+               }
+            }
+
             for(ProcessDefinitionType process : model.getProcessDefinition())
             {
                FormalParametersType parametersType = process.getFormalParameters();
@@ -1994,10 +2002,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      {
                         declaredType.setId(typeDeclaration.getId());
                      }
-                  }                  
-               }               
-            }            
-         }         
+                  }
+               }
+            }
+         }
       }
 
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
@@ -2703,7 +2711,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             else
             {
                // TODO Trick to create document
-               
+
                if (key.equals("documentation:externalDocumentUrl")
                      && attributes.get(key).getAsString().equals("@CREATE"))
                {
@@ -2812,7 +2820,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
       }
-      
+
       return modelBuilderFacade;
    }
 
