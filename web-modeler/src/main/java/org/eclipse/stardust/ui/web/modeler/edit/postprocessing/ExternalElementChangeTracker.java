@@ -174,6 +174,15 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    {
       if (modelElement != null)
       {
+         if (modelElement instanceof DataType)
+         {
+            DataType dataType = (DataType) modelElement;
+            if (dataType.eIsProxy())
+            {
+               return true;
+            }
+         }         
+         
          if (modelElement instanceof IExtensibleElement)
          {
             if (AttributeUtil.getAttributeValue((IExtensibleElement) modelElement,
@@ -228,5 +237,4 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       }
       return false;
    }
-
 }
