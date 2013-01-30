@@ -160,6 +160,12 @@ define(
 													});
 										}
 									});
+					
+					// Timestamp handling
+					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
+					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
+					
 					this.initializeModelElementView(data);
 				};
 
@@ -234,31 +240,47 @@ define(
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
+						var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+
 						var self = this;
 						var scope = angular.element(document.body).scope();
 						scope.$apply(function($scope) {
-							var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
 							$scope.dataType = primitiveDataTypeSelect.val();
 
-							$scope.defaultValue = defaultValue;
-							if ($scope.dataType == 'boolean') {
-								$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
-							}
+							if (primitiveDataTypeSelect.val() == 'Timestamp') {
+								var dateValue = defaultValue;
+								if (defaultValue.indexOf(" ") > -1) {
+									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));
+								}
+								
+								try {
+									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
+									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
+									self.timestampInputText.val(dateFormat);
+								} catch(e){
+									// Date parsing error.
+								}
+							} else {
+								$scope.defaultValue = defaultValue;
+								if ($scope.dataType == 'boolean') {
+									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
+								}
+	
+								$scope.inputId = $scope.dataType + 'InputText';
 
-							$scope.inputId = $scope.dataType + 'InputText';
-
-							// Somehow initializeDataType() gets called again and again! hence the check 
-							if (!$scope.watchRegistered) {
-								$scope.$watch('defaultValue', function(newValue, oldValue) {
-									// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
-									if (newValue !== oldValue && $scope.form[$scope.inputId].$valid) {
-										if ($scope.dataType == 'boolean') {
-											newValue = newValue ? "true" : "false";
+								// Somehow initializeDataType() gets called again and again! hence the check 
+								if (!$scope.watchRegistered) {
+									$scope.$watch('defaultValue', function(newValue, oldValue) {
+										// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
+										if (newValue !== oldValue && $scope.form[$scope.inputId].$valid) {
+											if ($scope.dataType == 'boolean') {
+												newValue = newValue ? "true" : "false";
+											}
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);	
 										}
-										self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);	
-									}
-								});
-								$scope.watchRegistered = true;
+									});
+									$scope.watchRegistered = true;
+								}
 							}
 						});
 					} else {
@@ -269,6 +291,20 @@ define(
 					}
 				};
 
+				/*
+				 * Handler function only applies when Data type is Timestamp
+				 */
+				function timestampChangeHandler(event) {
+					var view = event.data.view;
+					var scope = angular.element(document.body).scope();
+					scope.$apply(function($scope) {
+						// If valid datepicker returns date as seen in textbox, else it returns current date
+						var dtObj = view.timestampInputText.datepicker("getDate");
+						var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+						view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
+					});
+				}
+				
 				/**
 				 *
 				 */
