@@ -266,8 +266,11 @@ define(
 									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
 									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
 									self.timestampInputText.val(dateFormat);
+									$scope.timestampInputTextError = false;
 								} catch(e){
 									// Date parsing error.
+									$scope.timestampInputTextError = true;
+									self.timestampInputText.val(dateValue);
 								}
 							} else {
 								$scope.defaultValue = defaultValue;
