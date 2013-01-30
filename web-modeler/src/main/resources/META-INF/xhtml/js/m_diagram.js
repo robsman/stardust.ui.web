@@ -1177,7 +1177,6 @@ define(
 							//new symbol needs to be added to currentSelection,
 							//m_symbol#moveBy method is common for drag n drop and new symbol drag function
 							this.clearCurrentSelection();
-							this.addToCurrentSelection(this.newSymbol);
 							this.newSymbol.move(x * this.zoomFactor, y
 									* this.zoomFactor);
 							// When creating symbol from flyoutMenu,
@@ -1584,6 +1583,7 @@ define(
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
 									* this.zoomFactor);
+							$(".selected-tool").removeClass("selected-tool");
 						}
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
@@ -2167,7 +2167,7 @@ define(
 						"width" : width,
 						"height" : height
 					});
-					m_canvasManager.setCanvasSize(width, height);
+					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};
 
 				/**
