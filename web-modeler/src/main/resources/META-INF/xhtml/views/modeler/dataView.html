@@ -143,8 +143,8 @@
 													</div>
 													<div ng-show="dataType == 'long'">
 														<input id="longInputText" name="longInputText"
-																type="text" ng-model="defaultValue" maxlength="20"
-																ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,19})$/" />
+																type="text" ng-model="defaultValue" maxlength="19"
+																ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,18})$/" />
 														<div ng-show="form.longInputText.$error.pattern" style="color:red">Not a valid number</div>
 													</div>
 													<div ng-show="dataType == 'Timestamp'">
