@@ -367,10 +367,10 @@ define(
 					var elementName = element.name;
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
-					var nameColumn = jQuery("<td></td>").appendTo(row);
+					var nameColumn = jQuery("<td class='elementCell'></td>").appendTo(row);
 					nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 
-					var typeColumn = jQuery("<td></td>").appendTo(row);
+					var typeColumn = jQuery("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
 						if ( !this.typeDeclaration.isReadOnly()) {
@@ -380,7 +380,7 @@ define(
 						}
 					}
 
-					var cardinalityColumn = jQuery("<td></td>").appendTo(row);
+					var cardinalityColumn = jQuery("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 						if ( !this.typeDeclaration.isReadOnly()) {
 							var cardinalityBox = jQuery("<select size='1' class='cardinalitySelect'></select>");
@@ -421,7 +421,7 @@ define(
 						});
 					});
 
-					this.tree.tableScroll("undo");
+					//this.tree.tableScroll("undo");
 					this.tree.tableScroll({
 						height : 150
 					});
