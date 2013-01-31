@@ -202,12 +202,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.dataTypeProperties.defaultValue"));
-				$("#datatableid")
-						.find(
-								"#primitiveDefaultCheckboxInputRow label[for='primitiveDefaultCheckboxInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.propertyView.dataTypeProperties.defaultValue"));
 
 				jQuery("#activityheading")
 						.text(
