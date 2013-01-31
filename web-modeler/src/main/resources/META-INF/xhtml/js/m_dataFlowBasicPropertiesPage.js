@@ -341,7 +341,8 @@ define(
 							m_utils.debug("m = " + m);
 							m_utils.debug(accessPoint);
 
-							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT
+									|| accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT) {
 								count++;
 							}
 						}
@@ -409,7 +410,8 @@ define(
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
 
-							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
+									|| accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT) {
 								count++;
 							}
 						}
