@@ -897,9 +897,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                mode = ModeType.IN;
             }
-            else
+            else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
+                  .getAsString()
+                  .equals(DirectionType.OUT_LITERAL.getLiteral()))
             {
                mode = ModeType.OUT;
+            }
+            else
+            {
+               mode = ModeType.INOUT;
             }
 
             DataType data = null;

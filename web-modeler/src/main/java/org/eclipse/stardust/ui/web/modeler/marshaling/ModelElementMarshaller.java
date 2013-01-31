@@ -283,10 +283,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                      DirectionType.IN_LITERAL.getLiteral());
             }
-            else
+            else if (formalParameter.getMode().equals(ModeType.OUT))
             {
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                      DirectionType.OUT_LITERAL.getLiteral());
+            }
+            else {
+               formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     DirectionType.INOUT_LITERAL.getLiteral());
             }
 
             DataTypeType dataType = formalParameter.getDataType();

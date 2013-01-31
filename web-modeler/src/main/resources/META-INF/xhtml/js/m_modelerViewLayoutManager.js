@@ -335,6 +335,9 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
 				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
 
+				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
+				directionSelect.append("<option value=\"INOUT\">" + selectdata + "</option>");
+
 				directionSelect = $("#directionlistTable").find("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
