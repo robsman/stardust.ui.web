@@ -60,6 +60,9 @@ define(
 				findProcess : function(fullId) {
 					return findModel(stripModelId(fullId)).processes[stripElementId(fullId)];
 				},
+
+				findElementByUuid : findElementByUuid,
+
 				createModel : function(id, name, uuid) {
 					var model = new Model();
 
@@ -514,6 +517,19 @@ define(
 				}
 
 				getModelManager().refreshModels();
+			}
+
+			/**
+			 *
+			 */
+			function findElementByUuid(uuid) {
+				var models = getModels();
+				for ( var i in models) {
+					var elem = models[i].findModelElementByUuid(uuid);
+					if (elem) {
+						return elem;
+					}
+				}
 			}
 
 			/**

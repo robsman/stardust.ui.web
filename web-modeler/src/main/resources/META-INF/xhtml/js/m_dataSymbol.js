@@ -288,6 +288,21 @@ define(
 				};
 
 				/**
+				 * Overrides function in Drawable to to to check if modelEleemnt
+				 * has changed and if yes assigns it
+				 */
+				DataSymbol.prototype.applySymbolSpecific = function(
+						changedObject) {
+					if (this.modelElement
+							&& this.modelElement.getFullId() != changedObject.dataFullId) {
+						var data = m_model.findData(this.dataFullId);
+						if (data != null) {
+							this.modelElement = data;
+						}
+					}
+				};
+
+				/**
 				 *
 				 */
 				DataSymbol.prototype.createFlyOutMenu = function() {

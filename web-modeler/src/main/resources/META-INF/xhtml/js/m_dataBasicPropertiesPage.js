@@ -112,6 +112,19 @@ define(
 					return this.propertiesPanel.element.modelElement;
 				};
 
+
+				/**
+				 *
+				 */
+				DataBasicPropertiesPage.prototype.getModel = function() {
+					if (this.propertiesPanel.element.modelElement
+							&& this.propertiesPanel.element.modelElement.externalReference) {
+						return m_model.findModel(m_model.stripModelId(this.propertiesPanel.element.modelElement.dataFullId));
+					}
+
+					return this.propertiesPanel.getModel();
+				};
+
 				/**
 				 *
 				 */
@@ -177,7 +190,7 @@ define(
 								if (defaultValue.indexOf(" ") > -1) {
 									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));
 								}
-								
+
 								try {
 									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
 									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
@@ -193,10 +206,10 @@ define(
 								if ($scope.dataType == 'boolean') {
 									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
 								}
-	
+
 								$scope.inputId = $scope.dataType + 'InputText';
 
-								// Somehow initializeDataType() gets called again and again! hence the check 
+								// Somehow initializeDataType() gets called again and again! hence the check
 								if (!$scope.watchRegistered) {
 									$scope.$watch('defaultValue', function(newValue, oldValue) {
 										// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
@@ -204,7 +217,7 @@ define(
 											if ($scope.dataType == 'boolean') {
 												newValue = newValue ? "true" : "false";
 											}
-											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);	
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);
 										}
 									});
 									$scope.watchRegistered = true;
@@ -240,7 +253,7 @@ define(
 				};
 
 				/*
-				 * 
+				 *
 				 */
 				DataBasicPropertiesPage.prototype.submitModelElementAttributeChange = function(attribute, value) {
 					console.log('Can Submit' + value);

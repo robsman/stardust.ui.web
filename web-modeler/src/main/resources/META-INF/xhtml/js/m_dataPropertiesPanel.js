@@ -91,8 +91,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 			// dataFullId doesn't get updated on rename, using
 			// modelElement.getFullId() to find data
 			if (this.element.modelElement != null) {
-				this.data = m_model.findData(this.element.modelElement
-						.getFullId());
+				this.data = m_model.findElementByUuid(this.element.modelElement.uuid);
 			} else {
 				this.data = m_model.findData(this.element.dataFullId);
 			}
