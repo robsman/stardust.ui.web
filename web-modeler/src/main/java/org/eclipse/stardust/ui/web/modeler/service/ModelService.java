@@ -1749,6 +1749,11 @@ public class ModelService
       return getModelManagementStrategy().getModels().get(modelId);
    }
 
+   public ModelType refreshAndFindModel(String modelId)
+   {
+      return getModelManagementStrategy().getModels(true).get(modelId);
+   }   
+   
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
    {
       return currentSession().modelRepository().getModelBinding(model);
@@ -1763,7 +1768,7 @@ public class ModelService
    {
       System.out.println("Validating model " + modelId);
 
-      ModelType model = findModel(modelId);
+      ModelType model = refreshAndFindModel(modelId);
 
       ValidatorRegistry.setFilters(new HashMap<String, String>());
       ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
