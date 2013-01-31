@@ -93,7 +93,8 @@ define(
 
 				TypeDeclaration.prototype.asSchemaType = function() {
 					return this.resolveSchemaType(
-							("ExternalReference" === this.typeDeclaration.type.classifier)
+							("ExternalReference" === this.typeDeclaration.type.classifier
+									&& this.typeDeclaration.type.xref)
                             		? this.typeDeclaration.type.xref
                             		: this.id);
 				};

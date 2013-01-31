@@ -283,6 +283,7 @@ define(
 
 					var view = this;
 					jQuery.each(typeDeclarations, function() {
+						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : undefined;
 						m_commandsController.submitCommand(
 								m_command.createCreateTypeDeclarationCommand(
 										view.model.id,
@@ -295,7 +296,7 @@ define(
 												type: {
 													classifier: "ExternalReference",
 													location: view.urlTextInput.val(),
-													xref: "{" + view.schema.targetNamespace + "}" + this.name
+													xref: xref
 												}
 											}
 										}));

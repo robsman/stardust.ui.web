@@ -2985,7 +2985,7 @@ define(
 					jQuery(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
-									"rel" : "compositeStructuredDataType",
+									"rel" : dataStructure.getType(),
 									"modelId" : model.id,
 									"modelUUID" : model.uuid,
 									"id" : dataStructure.uuid,
