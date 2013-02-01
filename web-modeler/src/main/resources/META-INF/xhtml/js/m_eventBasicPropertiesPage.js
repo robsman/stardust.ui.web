@@ -15,10 +15,10 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_event", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model"],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_commandsController, m_command, m_event, m_dialog,
-				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils) {
+				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new EventBasicPropertiesPage(propertiesPanel);
@@ -264,9 +264,28 @@ define(
 				/**
 				 *
 				 */
-				EventBasicPropertiesPage.prototype.validate = function() {
-					// We allow empty names
+				EventBasicPropertiesPage.prototype.validate = function(changes) {
+					m_utils.debug("===> Validate EventBasicPropertiesPage");
+					this.propertiesPanel.clearErrorMessages();
+					if (changes && !this.validateEventClass(changes.modelElement.eventClass)){
+							return false;
+					}
+					return true;
+				};
 
+				EventBasicPropertiesPage.prototype.validateEventClass = function(eventClass){
+					if (m_constants.NONE_EVENT_CLASS == eventClass
+							&& this.getElement().parentSymbol.participantFullId) {
+						var participant = m_model.findParticipant(this.getElement().parentSymbol.participantFullId);
+
+						if (m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == participant.type) {
+							this.propertiesPanel.errorMessages
+									.push(m_i18nUtils
+											.getProperty("modeler.swimlane.properties.conditionalParticipant.manualTrigger.error"));
+							this.propertiesPanel.showErrorMessages();
+							return false;
+						}
+					}
 					return true;
 				};
 			}

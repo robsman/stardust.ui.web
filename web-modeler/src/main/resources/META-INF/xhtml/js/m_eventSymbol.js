@@ -19,9 +19,13 @@ define(
 		  "bpm-modeler/js/m_gatewaySymbol",
 		  "bpm-modeler/js/m_eventPropertiesPanel",
 		  "bpm-modeler/js/m_event",
-		  "bpm-modeler/js/m_modelerUtils"],
-		function(m_utils, m_constants, m_command, m_commandsController, m_messageDisplay,
-				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventPropertiesPanel, m_event, m_modelerUtils) {
+		  "bpm-modeler/js/m_modelerUtils",
+		  "bpm-modeler/js/m_model",
+		  "bpm-modeler/js/m_i18nUtils"],
+		function(m_utils, m_constants, m_command, m_commandsController,
+				m_messageDisplay, m_canvasManager, m_symbol, m_gatewaySymbol,
+				m_eventPropertiesPanel, m_event, m_modelerUtils, m_model,
+				m_i18nUtils) {
 
 			return {
 				createStartEventSymbol : function(diagram) {
@@ -242,6 +246,16 @@ define(
 					this.diagram.eventSymbols[this.oid] = this;
 					this.diagram.process.events[this.modelElement.id] = this.modelElement;
 				};
+
+				/**
+				 * Registers symbol in specific lists in the diagram and model
+				 * element in the process.
+				 */
+				EventSymbol.prototype.unRegister = function() {
+					delete this.diagram.eventSymbols[this.oid];
+					delete this.diagram.process.events[this.modelElement.id];
+				};
+
 
 				/**
 				 *
@@ -492,6 +506,15 @@ define(
 							// TODO Submit Change
 						}
 					}
+					//display warning message
+					if (this.modelElement.participantFullId) {
+						var participant = m_model.findParticipant(this.modelElement.participantFullId);
+						if (m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == participant.type) {
+							m_messageDisplay
+									.showMessage(m_i18nUtils
+											.getProperty("modeler.swimlane.properties.conditionalParticipant.manualTrigger.error"));
+						}
+					}
 				};
 
 				EventSymbol.prototype.showEditable = function() {
@@ -635,6 +658,7 @@ define(
 			 *
 			 */
 			function EventSymbol_removeClosure() {
+				this.auxiliaryProperties.callbackScope.unRegister();
 				this.auxiliaryProperties.callbackScope
 						.createAndSubmitDeleteCommand();
 			}

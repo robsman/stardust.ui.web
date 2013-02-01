@@ -153,7 +153,7 @@ define(
 						m_utils.debug("Changed " + property + ": "
 								+ input.val());
 
-						if (!page.validate()) {
+						if (!page.validate(input, property)) {
 							return;
 						}
 
@@ -262,7 +262,7 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
-					if (this.validate()) {
+					if (this.validate(changes)) {
 						this.propertiesPanel.submitChanges(changes);
 					}
 				};
@@ -272,9 +272,6 @@ define(
 				 */
 				PropertiesPage.prototype.validateCircularModelReference = function(
 						input) {
-					this.propertiesPanel.clearErrorMessages();
-					input.removeClass("error");
-
 					var otherModelId = m_model.stripModelId(input.val());
 					if (this.getModel().id != otherModelId
 							&& m_model.isModelReferencedIn(this.getModel().id,
