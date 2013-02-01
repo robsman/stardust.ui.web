@@ -132,7 +132,7 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.infoMsg"));
-				jQuery("#filterFieldsWithMappingInvalid")
+				jQuery("#filterFieldsWithMappingInvalidInput")
 						.attr(
 								"title",
 								m_i18nUtils
@@ -292,8 +292,13 @@ define(
 					this.filterFieldsWithNoMappingInput = jQuery("#filterFieldsWithNoMappingInput");
 					this.filterHighlightedSourceFieldsInput = jQuery("#filterHighlightedSourceFieldsInput");
 					this.filterHighlightedTargetFieldsInput = jQuery("#filterHighlightedTargetFieldsInput");
+					this.filterFieldsWithMappingInvalidInput = jQuery("#filterFieldsWithMappingInvalidInput");
 					this.showAllSourceFieldsInput = jQuery("#showAllSourceFieldsInput");
 					this.showAllTargetFieldsInput = jQuery("#showAllTargetFieldsInput");
+
+					this.filterFieldsWithMappingInput.data('enabled', false);
+					this.filterFieldsWithNoMappingInput.data('enabled', false);
+					this.filterFieldsWithMappingInvalidInput.data('enabled', false);
 
 					this.selectedOutputTableRow = null;
 
@@ -1006,23 +1011,49 @@ define(
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function() {
-					jQuery("table#targetTable tbody tr").addClass("invisible");
-					m_utils
-							.debug(jQuery("table#targetTable tbody tr .mapping:empty"));
-					jQuery("table#targetTable tbody tr .mapping:empty")
-							.parent().removeClass("invisible");
+				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function(enabled) {
+					if (enabled) {
+						jQuery("table#targetTable tbody tr").addClass("invisible");
+						jQuery("table#targetTable tbody tr .mapping:empty").parent().each(function() {
+							jQuery(this).removeClass("invisible");
+							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						});
+					}
+					else {
+						jQuery("table#targetTable tbody tr").removeClass("invisible");
+					}
 				};
 
 				/**
 				 *
 				 */
-				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function() {
-					jQuery("table#targetTable tbody tr").addClass("invisible");
-					m_utils
-							.debug(jQuery("table#targetTable tbody tr .mapping:not(:empty)"));
-					jQuery("table#targetTable tbody tr .mapping:not(:empty)")
-							.parent().removeClass("invisible");
+				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function(enabled) {
+					if (enabled) {
+						jQuery("table#targetTable tbody tr").addClass("invisible");
+						jQuery("table#targetTable tbody tr .mapping:not(:empty)").parent().each(function() {
+							jQuery(this).removeClass("invisible");
+							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						});
+					}
+					else {
+						jQuery("table#targetTable tbody tr").removeClass("invisible");
+					}
+				};
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.filterFieldsWithMappingInvalid = function(enabled) {
+					if (enabled) {
+						jQuery("table#targetTable tbody tr").addClass("invisible");
+						jQuery("table#targetTable tbody tr .mappingError").parent().each(function() {
+							jQuery(this).removeClass("invisible");
+							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						});
+					}
+					else {
+						jQuery("table#targetTable tbody tr").removeClass("invisible");
+					}
 				};
 
 				/**
@@ -1453,13 +1484,25 @@ define(
 					this.filterFieldsWithNoMappingInput.click({
 						"view" : this
 					}, function(event) {
-						event.data.view.filterFieldsWithNoMapping();
+						var enabled = event.data.view.filterFieldsWithNoMappingInput.data('enabled');
+						event.data.view.filterFieldsWithNoMappingInput.data('enabled', !enabled);
+						event.data.view.filterFieldsWithNoMapping(!enabled);
 					});
 
 					this.filterFieldsWithMappingInput.click({
 						"view" : this
 					}, function(event) {
-						event.data.view.filterFieldsWithMapping();
+						var enabled = event.data.view.filterFieldsWithMappingInput.data('enabled');
+						event.data.view.filterFieldsWithMappingInput.data('enabled', !enabled);
+						event.data.view.filterFieldsWithMapping(!enabled);
+					});
+
+					this.filterFieldsWithMappingInvalidInput.click({
+						"view" : this
+					}, function(event) {
+						var enabled = event.data.view.filterFieldsWithMappingInvalidInput.data('enabled');
+						event.data.view.filterFieldsWithMappingInvalidInput.data('enabled', !enabled);
+						event.data.view.filterFieldsWithMappingInvalid(!enabled);
 					});
 
 					// Add Input Message dialog 
