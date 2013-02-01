@@ -745,9 +745,9 @@ define(
 														.attr("id"));
 
 										viewManager.openView("modelView",
-												"modelId=" + encodeURIComponent(model.id)
+												"modelId=" + model.id
 														+ "&modelName="
-														+ encodeURIComponent(model.name) + "&uuid="
+														+ model.name + "&uuid="
 														+ model.uuid,
 												model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
@@ -761,13 +761,13 @@ define(
 
 										viewManager
 												.openView("roleView", "roleId="
-														+ encodeURIComponent(role.id) + "&modelId="
-														+ encodeURIComponent(model.id)
+														+ role.id + "&modelId="
+														+ model.id
 														+ "&roleName="
-														+ encodeURIComponent(role.name)
+														+ role.name
 														+ "&fullId="
-														+ encodeURIComponent(role.getFullId())
-														+ "&uuid=" + encodeURIComponent(role.uuid)
+														+ role.getFullId()
+														+ "&uuid=" + role.uuid
 														+ "&modelUUID="
 														+ model.uuid, role.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
@@ -781,14 +781,13 @@ define(
 										viewManager.openView(
 												"organizationView",
 												"organizationId="
-														+ encodeURIComponent(organization.id)
+														+ organization.id
 														+ "&modelId="
-														+ encodeURIComponent(model.id)
+														+ model.id
 														+ "&organizationName="
-														+ encodeURIComponent(organization.name)
+														+ organization.name
 														+ "&fullId="
-														+ encodeURIComponent(organization
-																.getFullId())
+														+ organization.getFullId()
 														+ "&uuid="
 														+ organization.uuid
 														+ "&modelUUID="
@@ -808,12 +807,12 @@ define(
 
 										viewManager
 												.openView("dataView", "dataId="
-														+ encodeURIComponent(data.id) + "&modelId="
-														+ encodeURIComponent(model.id)
+														+ data.id + "&modelId="
+														+ model.id
 														+ "&dataName="
-														+ encodeURIComponent(data.name)
+														+ data.name
 														+ "&fullId="
-														+ encodeURIComponent(data.getFullId())
+														+ data.getFullId()
 														+ "&uuid=" + data.uuid
 														+ "&modelUUID="
 														+ model.uuid, data.uuid);
@@ -827,13 +826,13 @@ define(
 
 										viewManager.openView(
 												"processDefinitionView",
-												"processId=" + encodeURIComponent(process.id)
+												"processId=" + process.id
 														+ "&modelId="
-														+ encodeURIComponent(model.id)
+														+ model.id
 														+ "&processName="
-														+ encodeURIComponent(process.name)
+														+ process.name
 														+ "&fullId="
-														+ encodeURIComponent(process.getFullId())
+														+ process.getFullId()
 														+ "&uuid="
 														+ process.uuid
 														+ "&modelUUID="
