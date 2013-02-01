@@ -2017,6 +2017,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             contextsJson.add(context.getType().getId(), contextJson);
 
+            loadAttributes(context, contextJson);
+
             JsonArray accessPointsJson = new JsonArray();
 
             contextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);

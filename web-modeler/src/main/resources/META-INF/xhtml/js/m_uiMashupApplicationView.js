@@ -374,9 +374,12 @@ define(
 				UiMashupApplicationView.prototype.setModelElement = function(
 						application) {
 					this.application = application;
-
+					this.context = this.application.contexts["externalWebApp"];
+						
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
+					m_utils.debug("===> Context");
+					m_utils.debug(this.context);
 
 					if (!this.application.attributes["carnot:engine:visibility"]
 							|| "Public" == this.application.attributes["carnot:engine:visibility"]) {
@@ -387,8 +390,8 @@ define(
 
 					// TODO Guard needed?
 
-					if (this.application.contexts["externalWebApp"] == null) {
-						this.application.contexts["externalWebApp"] = {
+					if (this.context == null) {
+						this.context = {
 							accessPoints : []
 						};
 					}
@@ -396,11 +399,11 @@ define(
 					this.initializeModelElement(application);
 
 					this.urlInput
-							.val(this.application.attributes["carnot:engine:ui:externalWebApp:uri"]);
+							.val(this.context.attributes["carnot:engine:ui:externalWebApp:uri"]);
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel
-							.setParameterDefinitions(this.application.contexts["externalWebApp"].accessPoints);
+							.setParameterDefinitions(this.context.accessPoints);
 				};
 
 				/**

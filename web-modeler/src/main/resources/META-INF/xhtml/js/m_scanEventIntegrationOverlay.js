@@ -104,9 +104,27 @@ define(
 				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
-					if (this.documentDataList.val() != null &&
-							this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
-						var data = m_model.findData(this.documentDataList.val());
+					if (this.documentDataList.val() != null
+							&& this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
+						var data = m_model
+								.findData(this.documentDataList.val());
+						var participantFullId = this.page.getElement().parentSymbol.participantFullId;
+						var modelId = null;
+						var participantId = null;
+						var participantAttribute = null;
+
+						if (participantFullId) {
+							modelId = m_model.stripModelId(participantFullId);
+							participantId = m_model
+									.stripElementId(participantFullId);
+
+							if (modelId == this.scopeModel.id) {
+								participantAttribute = participantId;
+							} else {
+								participantAttribute = "{" + modelId + "}"
+										+ participantId;
+							}
+						}
 
 						this
 								.submitChanges({
@@ -123,8 +141,7 @@ define(
 												.getImplementation(),
 										attributes : {
 											"carnot:engine:integration::overlay" : this.id,
-											"carnot:engine:participant" : this.page
-													.getElement().parentSymbol.participantFullId
+											"carnot:engine:participant" : participantAttribute
 										}
 									}
 								});
@@ -137,8 +154,7 @@ define(
 												.getImplementation(),
 										attributes : {
 											"carnot:engine:integration::overlay" : this.id,
-											"carnot:engine:participant" : this.page
-													.getElement().parentSymbol.participantFullId
+											"carnot:engine:participant" : participantAttribute
 										}
 									}
 								});

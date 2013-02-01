@@ -1808,6 +1808,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
+
+            storeAttributes(context, contextJson);
+
             JsonArray accessPointsJson = contextJson.get(
                   ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
 
