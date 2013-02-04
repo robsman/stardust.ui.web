@@ -773,7 +773,7 @@ define(
 					});
 
 					this.addToPrimitives(this.path);
-					this.addToEditableTextPrimitives(this.path);
+					//this.addToEditableTextPrimitives(this.path);
 
 					this.path.auxiliaryProperties = {
 						callbackScope : this
@@ -883,11 +883,11 @@ define(
 								});
 
 								this.conditionExpressionText.show();
-							} else if (this.modelElement.name) {
+							} /*else if (this.modelElement.name) {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.name);
 								this.conditionExpressionText.show();
-							} else {
+							} */else {
 								this.conditionExpressionText.hide();
 							}
 						}
