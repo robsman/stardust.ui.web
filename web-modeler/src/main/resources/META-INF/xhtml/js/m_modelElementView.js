@@ -409,12 +409,12 @@ define(
 											return;
 										}
 
-										submitModelElementAttributeChange(attribute, input.val());
+										view.submitModelElementAttributeChange(attribute, input.val());
 									});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ModelElementView.prototype.submitModelElementAttributeChange = function(attribute, value) {
 					if (this.getModelElement().attributes[attribute] != value) {
