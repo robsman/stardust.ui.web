@@ -495,7 +495,7 @@ define(
 					});
 
 					select += "</optgroup>";
-					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel") + "'>";
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
 					var thisTypeDeclaration = this.typeDeclaration;
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
