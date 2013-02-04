@@ -267,7 +267,7 @@ define(
 				EventBasicPropertiesPage.prototype.validate = function(changes) {
 					m_utils.debug("===> Validate EventBasicPropertiesPage");
 					this.propertiesPanel.clearErrorMessages();
-					if (changes && !this.validateEventClass(changes.modelElement.eventClass)){
+					if (changes && changes.modelElement && !this.validateEventClass(changes.modelElement.eventClass)){
 							return false;
 					}
 					return true;
