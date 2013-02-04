@@ -25,7 +25,7 @@
 -->
 
    <properties>
-      <ipp.version>0.7.1-NIGHTLY-SNAPSHOT</ipp.version>
+      <ipp.version>1.0.0-NIGHTLY-SNAPSHOT</ipp.version>
    </properties>
 
    <dependencyManagement>
