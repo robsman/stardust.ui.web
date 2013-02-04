@@ -80,6 +80,7 @@ define(
 				this.CONNECTION_MODE = "CONNECTION_MODE";
 				this.SYMBOL_MOVE_MODE = "SYMBOL_MOVE_MODE";
 				this.SEPARATOR_MODE = "SEPARATOR_MODE";
+				this.CREATE_MODE = "CREATE_MODE";
 				this.X_OFFSET = X_OFFSET;
 				this.Y_OFFSET = Y_OFFSET;
 				this.width = m_canvasManager.getCanvasWidth();
@@ -1612,6 +1613,8 @@ define(
 						return false;
 					}
 
+					this.mode = this.NORMAL_MODE;
+
 					this.snapSymbol(this.newSymbol);
 
 					this.lastSymbol = this.newSymbol;
@@ -1726,7 +1729,9 @@ define(
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
+
 					this.newSymbol = targetSymbol;
+					this.mode = this.CREATE_MODE;
 
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.newSymbol.prepare(startSymbol.x,
@@ -1763,7 +1768,7 @@ define(
 					}
 
 					// TODO Is this needed
-					this.mode = this.NORMAL_MODE;
+					// this.mode = this.NORMAL_MODE;
 				};
 
 				/**
