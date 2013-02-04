@@ -49,14 +49,17 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='typeSelect']")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.messageEvent.type"));
 					jQuery("label[for='nameInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.name"));
+					jQuery("label[for='typeSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.messageEvent.type"));
+
+					/*
+					
 					jQuery("label[for='preserveQoSInput']")
 							.text(
 									m_i18nUtils
@@ -69,12 +72,15 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
+											
+					
+					*/
+				/*	this.configurationSpan = this.mapInputId("configuration");*/
 
-					this.configurationSpan = this.mapInputId("configuration");
-
-					this.configurationSpan
+				/*	this.configurationSpan
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
+									*/
 					this.parametersSpan = this.mapInputId("parameters");
 
 					this.parametersSpan
@@ -83,16 +89,21 @@ define(
 
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
+					
+					/*
 					this.clientIdInput = this.mapInputId("clientIdInput");
 					this.selectorInput = this.mapInputId("selectorInput");
 					this.transactedInput = this.mapInputId("transactedInput");
 					this.preserveQoSInput = this.mapInputId("preserveQoSInput");
-
+					*/
 					this.registerForRouteChanges(this.typeSelect);
 					this.registerForRouteChanges(this.nameInput);
+					
+					/*
 					this.registerForRouteChanges(this.selectorInput);
 					this.registerForRouteChanges(this.transactedInput);
 					this.registerForRouteChanges(this.preserveQoSInput);
+					*/
 				};
 
 				/**
@@ -104,7 +115,7 @@ define(
 					uri += this.typeSelect.val();
 					uri += ":";
 					uri += this.nameInput.val();
-
+/*
 					var separator = "?";
 					
 					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
@@ -122,7 +133,7 @@ define(
 					uri += this.transactedInput.prop("checked");
 					uri += separator + "preserveMessageQos=";
 					uri += this.preserveQoSInput.prop("checked");
-
+*/
 					return uri;
 				};
 
@@ -141,7 +152,20 @@ define(
 
 					this.submitOverlayChanges(parameterMappings);
 				};
+				MessageEventIntegrationOverlay.prototype.getRouteContent = function()
+				{
+					var route = "<from uri=\"";
+					
+					route += this.getEndpointUri();
+					route += "\"/>";
+					route += this.getAdditionalRouteDefinitions();
 
+					return route;
+				};
+				
+				MessageEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "<to uri=\"ipp:direct\"/>";
+				};
 				/**
 				 * 
 				 */
@@ -156,7 +180,7 @@ define(
 
 					route = route.replace(/&/g, "&amp;");
 
-					var xmlDoc = jQuery.parseXML(route);
+					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
@@ -170,18 +194,22 @@ define(
 						this.typeSelect.val(sourceParts[1]);
 
 						var clientName = "";
+						
 
 						for ( var i = 2; i < sourceParts.length; ++i) {
 							if (i > 2) {
 								clientName += ":";
 							}
-
 							clientName += sourceParts[i];
 						}
 
 						this.nameInput.val(clientName);
+						
+							/* parsing the last part of the URI*/
+						
 
-						var nameValues = sourceAndProperties[1].split("&");
+						if(sourceAndProperties[1] != null){
+							var nameValues = sourceAndProperties[1].split('&');
 
 						for ( var n = 0; n < nameValues.length; ++n) {
 							var nameValue = nameValues[n].split("=");
@@ -203,6 +231,7 @@ define(
 										value == "true");
 							}
 						}
+						}/* end URI parsing*/
 					}
 
 					this.parameterMappingsPanel.setScopeModel(this.page
@@ -235,3 +264,4 @@ define(
 				};
 			}
 		});
+		
