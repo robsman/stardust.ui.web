@@ -406,6 +406,7 @@ public class WorklistUtils
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       // only evaluate count
       query.setPolicy(new SubsetPolicy(0, true));
+      query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
       query.where(new ProcessDefinitionFilter(process.getQualifiedId(), false));
       FilterOrTerm or = query.getFilter().addOrTerm();
