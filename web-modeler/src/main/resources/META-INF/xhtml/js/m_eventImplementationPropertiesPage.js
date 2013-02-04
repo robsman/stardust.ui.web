@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -31,7 +31,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function EventImplementationPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage
@@ -46,7 +46,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.initialize = function() {
 					this.noImplementationPanel = this
@@ -126,7 +126,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.populateSupportedOverlays = function() {
 					this.supportedOverlays = {};
@@ -146,7 +146,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.populateOverlaySelect = function() {
 					this.eventIntegrationOverlaySelect.empty();
@@ -174,7 +174,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.setOverlay = function(
 						overlay) {
@@ -206,7 +206,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.setElement = function() {
 					m_utils.debug("Event ");
@@ -259,21 +259,20 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.getEvent = function() {
 					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.validate = function(changes) {
 					m_utils.debug("===> Validate EventImplementationPropertiesPage");
 					this.propertiesPanel.clearErrorMessages();
 
-					if (changes
-							&& "scan" == changes.modelElement.implementation
+					if (changes	&& changes.modelElement && "scan" == changes.modelElement.implementation
 							&& this.getElement().parentSymbol.participantFullId) {
 						var participant = m_model.findParticipant(this.getElement().parentSymbol.participantFullId);
 
