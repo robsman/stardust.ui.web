@@ -322,6 +322,8 @@ define(
 					this.sendTaskIcon.hide();
 					this.serviceTaskIcon.hide();
 					this.userTaskIcon.hide();
+					this.sequentialMultiProcessingMarkerIcon.hide();
+					this.parallelMultiProcessingMarkerIcon.hide();
 
 					if (this.modelElement.taskType == m_constants.MANUAL_TASK_TYPE) {
 						this.manualTaskIcon.show();
