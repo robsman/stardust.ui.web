@@ -12,17 +12,17 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants","bpm-modeler/js/m_i18nUtils"  ],
-		function(m_utils, m_constants, m_i18nUtils){
+		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants","bpm-modeler/js/m_i18nUtils"  ],
+		function(jquery, m_utils, m_constants, m_i18nUtils){
 
 			var INFO_MESSAGE = 0;
 			var ERROR_MESSAGE = 1;
 			var lastSaveDate;
 
-			var messagePanel = jQuery("#messagePanel");
-			var messageDisplay = jQuery("#messageDisplay");
-			var messageIcon = jQuery("#messageIcon");
-			var lastSaveDateDisplay = jQuery("#lastSaveDateDisplay");
+			var messagePanel = jquery("#messagePanel");
+			var messageDisplay = jquery("#messageDisplay");
+			var messageIcon = jquery("#messageIcon");
+			var lastSaveDateDisplay = jquery("#lastSaveDateDisplay");
 			var selectdata = m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title");
 			updateLastSavedLabel(selectdata);
 
