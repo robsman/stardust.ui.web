@@ -530,9 +530,12 @@ define(
 
 					if (extension) {
 						this.otherTypeName
-						.append("<b>"
-								+ extension.readableName
-								+ "</b> not yet supported for the Browser Modeler.");
+								.append(m_i18nUtils
+										.getProperty(
+												"modeler.propertyPages.commonProperties.infoMessage.elementNotSupported")
+										.replace(
+												"{0}",
+												"<b>" + extension.readableName + "</b>"));
 					}
 				};
 
