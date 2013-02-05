@@ -143,7 +143,8 @@ define(
 									this.getModelElement(),
 									this.getModelElement().attributes["carnot:engine:defaultValue"]);
 
-					if ("Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
+					if (!this.getModelElement().attributes["carnot:engine:visibility"]
+							|| "Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
