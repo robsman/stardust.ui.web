@@ -37,6 +37,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 public class PortalPluginSkinResourceResolver
 {
    public static final Logger trace = LogManager.getLogger(PortalPluginSkinResourceResolver.class);
+   public static final String IE_USER_AGENT = "_ie";
+   public static final String SAFARI_USER_AGENT = "_safari";
    private static ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
    /**
@@ -90,6 +92,11 @@ public class PortalPluginSkinResourceResolver
                {
                   // File URI
                   String extensionResUri = extensionResource.getURI().toString();
+                  // Skip adding browser version specific .css fileNames.
+                  if (extensionResUri.contains(IE_USER_AGENT) || extensionResUri.contains(SAFARI_USER_AGENT))
+                  {
+                     continue;
+                  }
                   // Create webURi something like <plugin-id> + public/skins + folder
                   // containing file ex: <views-common/public/skins/skin1/images>
                   String extensionWebUri = webUriPrefix + extensionResUri.substring(webContentBaseUri.length());
