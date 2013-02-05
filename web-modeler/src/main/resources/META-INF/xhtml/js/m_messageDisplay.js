@@ -34,7 +34,8 @@ define(
 				showMessage : showMessage,
 				showErrorMessage : showErrorMessage,
 				clear : clear,
-				clearErrorMessages : clearErrorMessages
+				clearErrorMessages : clearErrorMessages,
+				clearAllMessages : clearAllMessages
 			};
 
 			/**
@@ -139,6 +140,22 @@ define(
 						//messageDisplay.append(message.content);
 					}
 				}
+			}
+
+			/**
+			 *
+			 */
+			function clearAllMessages() {
+				clearDisplay();
+				messagePanel.removeAttr("class");
+				messageIcon.parent().removeAttr("class");
+				messageDisplay.removeAttr("class");
+				messageDisplay.empty();
+				messages.length = 0;
+			}
+
+			function collapse() {
+
 			}
 
 			/**

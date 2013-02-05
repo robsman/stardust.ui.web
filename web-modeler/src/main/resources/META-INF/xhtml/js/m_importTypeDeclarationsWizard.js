@@ -11,10 +11,11 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser","bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser","bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_urlUtils" ],
 		function(m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_model,
-				m_dialog, m_typeDeclaration, m_structuredTypeBrowser,m_i18nUtils) {
+				m_dialog, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_messageDisplay, m_urlUtils) {
 			return {
 				initialize : function() {
 					var wizard = new ImportTypeDeclarationsWizard();
@@ -149,11 +150,19 @@ define(
 				 */
 				ImportTypeDeclarationsWizard.prototype.loadFromUrl = function(structure) {
 
-					if ( !this.urlTextInput.val()) {
+					if (!this.urlTextInput.val()) {
 						this.urlTextInput.addClass("error");
+						m_messageDisplay
+								.showErrorMessage(m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.emptyURL"));
+						return;
+					} else if (!m_urlUtils.validate(this.urlTextInput.val())) {
+						this.urlTextInput.addClass("error");
+						m_messageDisplay
+								.showErrorMessage(m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.invalidURL"));
 						return;
 					}
-
 					jQuery("body").css("cursor", "progress");
 					// this.clearErrorMessages();
 					this.urlTextInput.removeClass("error");
@@ -172,20 +181,19 @@ define(
 									}),
 									{
 										"success" : function(serverData) {
+											m_messageDisplay.clearAllMessages();
+											view.urlTextInput.removeClass("error");
 											jQuery.proxy(view.setSchema, view)(serverData);
 											jQuery("body").css("cursor", "auto");
 										},
 										"error" : function() {
 											jQuery("body").css("cursor", "auto");
 											if (structure == null) {
-												view.errorMessages
-														.push("Could not load XSD from URL.");
-												view.showErrorMessages();
+												m_messageDisplay
+														.showErrorMessage(m_i18nUtils
+																.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.xsdLoadFailed"));
 												view.urlTextInput
 														.addClass("error");
-												view.serviceSelect.empty();
-												view.portSelect.empty();
-												view.operationSelect.empty();
 											} else {
 												jQuery.proxy(view.setSchema, view)(structure);
 											}
