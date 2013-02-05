@@ -11,10 +11,11 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils", "angularjs"],
+				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_angularContextUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_basicPropertiesPage,
-				m_dataTypeSelector, m_model, m_i18nUtils) {
+				m_dataTypeSelector, m_model, m_i18nUtils, m_angularContextUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataBasicPropertiesPage(propertiesPanel);
@@ -182,8 +183,7 @@ define(
 						var primitiveDataTypeSelect = this.dataTypeSelector.primitiveDataTypeSelect;
 
 						var self = this;
-						var scope = angular.element(document.body).scope();
-						scope.$apply(function($scope) {
+						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = primitiveDataTypeSelect.val();
 
 							if (primitiveDataTypeSelect.val() == 'Timestamp') {
@@ -226,8 +226,7 @@ define(
 							}
 						});
 					} else {
-						var scope = angular.element(document.body).scope();
-						scope.$apply(function($scope) {
+						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
 						});
 					}
@@ -238,8 +237,7 @@ define(
 				 */
 				function timestampChangeHandler(event) {
 					var view = event.data.view;
-					var scope = angular.element(document.body).scope();
-					scope.$apply(function($scope) {
+					m_angularContextUtils.runInAngularContext(function($scope) {
 						try {
 							var dateValue = view.timestampInputText.val();
 							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);

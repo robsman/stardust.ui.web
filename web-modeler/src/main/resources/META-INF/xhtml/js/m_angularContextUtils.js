@@ -9,19 +9,17 @@
  ******************************************************************************/
 
 /**
- * @author Subodh.Godbole
+ * Used to run a piece of code (usually non-angular) in angular context
+ *
+ * @author Shrikant.Gangal
  */
-'use strict';
+define(function() {
+	return {
+		runInAngularContext : runInAngularContext
+	};
 
-define(["bpm-modeler/angular/app"],
-		function(app) {
-			var controller = app.angularApp.controller('DataCtrl', DataCtrl);
-			DataCtrl.$inject = ['$scope'];
-			return {ctrl : controller};
-		
-			/**
-			 *
-			 */
-			function DataCtrl($scope) {
-			};
-		});
+	function runInAngularContext(func) {
+		var scope = angular.element(document.body).scope();
+		scope.$apply(func);
+	}
+});

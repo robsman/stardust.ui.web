@@ -112,8 +112,7 @@ require(["require",
 	 "bpm-modeler/js/extensions_raphael",
 	 "bpm-modeler/js/m_modelerViewLayoutManager",
 	 "i18n",
-	 "bpm-modeler/angular/app",
-	 "bpm-modeler/angular/dataController"
+	 "bpm-modeler/angular/app"
 	 ], function (require) {
 
 		require("bpm-modeler/angular/app").init();

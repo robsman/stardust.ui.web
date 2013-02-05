@@ -59,8 +59,7 @@ require(["require",
 		 "common-plugins",
 		 "i18n",
 		 "bpm-modeler/js/m_dataView",
-		 "bpm-modeler/angular/app",
-		 "bpm-modeler/angular/dataController"
+		 "bpm-modeler/angular/app"
 		 ], function(require) {
 
 		require("bpm-modeler/angular/app").init();

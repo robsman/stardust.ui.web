@@ -18,11 +18,12 @@ define(
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_elementConfiguration",
-				"angularjs"], 
+				"bpm-modeler/js/m_angularContextUtils" ],
 
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration) {
+				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration,
+				m_angularContextUtils) {
 			var view;
 
 			return {
@@ -169,12 +170,12 @@ define(
 													});
 										}
 									});
-					
+
 					// Timestamp handling
 					this.timestampInputText = jQuery("#TimestampInputText");
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
-					
+
 					this.initializeModelElementView(data);
 				};
 
@@ -252,8 +253,7 @@ define(
 						var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
 
 						var self = this;
-						var scope = angular.element(document.body).scope();
-						scope.$apply(function($scope) {
+						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = primitiveDataTypeSelect.val();
 
 							if (primitiveDataTypeSelect.val() == 'Timestamp') {
@@ -261,7 +261,7 @@ define(
 								if (defaultValue.indexOf(" ") > -1) {
 									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));
 								}
-								
+
 								try {
 									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
 									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
@@ -277,10 +277,10 @@ define(
 								if ($scope.dataType == 'boolean') {
 									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
 								}
-	
+
 								$scope.inputId = $scope.dataType + 'InputText';
 
-								// Somehow initializeDataType() gets called again and again! hence the check 
+								// Somehow initializeDataType() gets called again and again! hence the check
 								if (!$scope.watchRegistered) {
 									$scope.$watch('defaultValue', function(newValue, oldValue) {
 										// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
@@ -288,7 +288,7 @@ define(
 											if ($scope.dataType == 'boolean') {
 												newValue = newValue ? "true" : "false";
 											}
-											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);	
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);
 										}
 									});
 									$scope.watchRegistered = true;
@@ -296,8 +296,7 @@ define(
 							}
 						});
 					} else {
-						var scope = angular.element(document.body).scope();
-						scope.$apply(function($scope) {
+						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
 						});
 					}
@@ -308,8 +307,7 @@ define(
 				 */
 				function timestampChangeHandler(event) {
 					var view = event.data.view;
-					var scope = angular.element(document.body).scope();
-					scope.$apply(function($scope) {
+					m_angularContextUtils.runInAngularContext(function($scope) {
 						try {
 							var dateValue = view.timestampInputText.val();
 							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
@@ -322,7 +320,7 @@ define(
 						}
 					});
 				}
-				
+
 				/**
 				 *
 				 */
