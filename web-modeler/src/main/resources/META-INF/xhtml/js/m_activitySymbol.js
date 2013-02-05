@@ -325,7 +325,10 @@ define(
 					this.sequentialMultiProcessingMarkerIcon.hide();
 					this.parallelMultiProcessingMarkerIcon.hide();
 
-					if (this.modelElement.taskType == m_constants.MANUAL_TASK_TYPE) {
+					if (this.modelElement.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+						this.subprocessMarkerIcon.show();
+						this.subprocessMarkerIcon.toFront();
+					}else if (this.modelElement.taskType == m_constants.MANUAL_TASK_TYPE) {
 						this.manualTaskIcon.show();
 						this.manualTaskIcon.toFront();
 					} else if (this.modelElement.taskType == m_constants.RECEIVE_TASK_TYPE) {
@@ -346,9 +349,6 @@ define(
 					} else if (this.modelElement.taskType == m_constants.USER_TASK_TYPE) {
 						this.userTaskIcon.show();
 						this.userTaskIcon.toFront();
-					} else if (this.modelElement.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
-						this.subprocessMarkerIcon.show();
-						this.subprocessMarkerIcon.toFront();
 					}
 
 					if (this.modelElement.processingType == m_constants.SINGLE_PROCESSING_TYPE) {

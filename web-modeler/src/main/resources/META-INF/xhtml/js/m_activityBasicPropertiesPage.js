@@ -185,7 +185,7 @@ define(
 					}, function(event) {
 						if (event.data.page.taskInput.is(":checked")) {
 							event.data.page.setTaskType();
-							event.data.page.submitTaskTypeChanges();
+							event.data.page.submitTaskTypeChanges(true);
 						}
 					});
 					this.taskTypeList
@@ -353,8 +353,8 @@ define(
 				/**
 				 *
 				 */
-				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function() {
-					if (this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
+				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function(force) {
+					if (force || this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
 							.val()) {
 						this.submitChanges({
 							modelElement : {
