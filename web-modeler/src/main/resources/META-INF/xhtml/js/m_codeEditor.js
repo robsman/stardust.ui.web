@@ -84,8 +84,6 @@ define(
 					var errors = {};
 					var err, lineNumber;
 					
-					if (disabled) return;
-					
 					var options = {undef: true, smarttabs: false};
 					var globals = {};
 					for (var variable in globalVars) {
@@ -110,7 +108,10 @@ define(
 						errorLineNumbers.length = 0;
 					
 						var html;
-						var errors = getErrors(jsValidationPrefix + " = " + editor.getValue(), globalVariables);
+						var errors = null;
+						if (!disabled) {
+							errors = getErrors(jsValidationPrefix + " = " + editor.getValue(), globalVariables);
+						}
 						if (jsValidationCallback != null) jsValidationCallback(jsValidationPrefix, errors);
 						for (var lineNumber in errors) {
 							html = '<div class="gutter-warning"><div class="tooltip"><ul>';
@@ -193,7 +194,7 @@ define(
 				};
 
 				CodeEditor.prototype.getErrors = function(source) {
-					getErrors(source, globalVariables);
+					return getErrors(source, globalVariables);
 				};
 				
 				CodeEditor.prototype.setSize = function(width, height) {

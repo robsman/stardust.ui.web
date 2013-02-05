@@ -49,6 +49,32 @@
 	color: #dddddd;
 }
 
+/*
+#inputElementColumn, #outputElementColumn, .elementCell {
+	width: 200px !important;
+}
+
+#inputTypeColumn, #outputTypeColumn, .typeCell {
+	width: 100px !important;
+}
+
+#inputActionsColumn, .inputActionsCell {
+	width: 225px !important;
+}
+
+#mappingColumn, .mappingCell {
+	width: 200px !important;
+}
+
+#problemsColumn, .problemsCell {
+	width: 25px !important;
+}
+
+#outputActionsColumn, .outputActionsCell {
+	width: 50px !important;
+}
+*/
+
 .keySpan {
 	color: green;
 	font-weight: bold;
@@ -201,12 +227,12 @@
 																	<div class="dataTable">
 																		<table id="sourceTable" cellpadding="0"
 																			cellspacing="0" class="treeTable"
-																			style="width: 500px;">
+																			style="width: 525px;">
 																			<thead>
 																				<tr>
-																					<th style="width: 400px;" id="element">Element</th>
-																					<th style="width: 100px;" id="type">Type</th>
-																					<th style="width: 50px;"></th>
+																					<th style="width: 200px;" id="inputElementColumn">Element</th>
+																					<th style="width: 100px;" id="inputTypeColumn">Type</th>
+																					<th style="width: 225px;" id="inputActionsColumn"></th>
 																				</tr>
 																			</thead>
 																			<tbody />
@@ -262,14 +288,14 @@
 																		<div class="dataTable">
 																			<table id="targetTable" cellpadding="0"
 																				cellspacing="0" class="treeTable"
-																				style="width: 900px;">
+																				style="width: 575px;">
 																				<thead>
 																					<tr>
-																						<th style="width: 400px;" id="element1">Element</th>
-																						<th style="width: 100px;" id="type1">Type</th>
-																						<th style="width: 200px;" id="mapping">Mapping</th>
-																						<th style="width: 200px;" id="problem">Problem</th>
-																						<th style="width: 50px;"></th>
+																						<th style="width: 200px;" id="outputElementColumn">Element</th>
+																						<th style="width: 100px;" id="outputTypeColumn">Type</th>
+																						<th style="width: 200px;" id="mappingColumn">Mapping</th>
+																						<th style="width: 25px;" id="problemsColumn">Problem</th>
+																						<th style="width: 50px;" id="outputActionsColumn"></th>
 																					</tr>
 																				</thead>
 																				<tbody />

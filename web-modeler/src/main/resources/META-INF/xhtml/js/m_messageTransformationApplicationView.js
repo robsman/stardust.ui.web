@@ -72,11 +72,11 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.addInput"));
-				jQuery("#element")
+				jQuery("#inputElementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.element"));
-				jQuery("#type")
+				jQuery("#inputTypeColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.type"));
@@ -96,19 +96,19 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.heading.targetMessage"));
-				jQuery("#element1")
+				jQuery("#outputElementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.element"));
-				jQuery("#type1")
+				jQuery("#outputTypeColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.type"));
-				jQuery("#mapping")
+				jQuery("#mappingColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.mapping"));
-				jQuery("#problem")
+				jQuery("#problemsColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.problem"));
@@ -349,9 +349,9 @@ define(
 						outputRowExpandedStatus[this.id] = $(this).hasClass("expanded")
 					});
 
-//					var x = jQuery("table#sourceTable tr.selected").first();
-//					var y = jQuery("table#targetTable tr.selected");
-//					var z = y.attr('id');
+					// Store the table rows that are selected
+					var selectedInputRowId = jQuery("table#sourceTable tr.selected").first().attr('id');
+					var selectedOutputRowId = jQuery("table#targetTable tr.selected").first().attr('id');
 					
 					this.initializeModelElement(application);
 					this.application = application;
@@ -370,6 +370,10 @@ define(
 					this.outputTableBody.empty();
 					this.inputTableRows = [];
 					this.outputTableRows = [];
+					this.selectedOutputTableRow = null;
+					jQuery("#elementIndicatorText").empty();
+					this.expressionEditor.setValue("");
+					this.expressionEditor.disable();
 
 					this
 							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
@@ -396,7 +400,7 @@ define(
 							this.outputTableRows, false);
 
 					// Restore the expanded tree nodes
-					
+
 					// TODO - needs review
 					// Employs direct manipulations of classes
 					// hence subject to problems in case of version change etc.
@@ -413,9 +417,20 @@ define(
 						}
 					});
 
-					this.resume();
+					// Restore the selected tree nodes
+					jQuery("#sourceTable #" + selectedInputRowId).addClass("selected");
+					jQuery("#targetTable #" + selectedOutputRowId).addClass("selected");
 
-					// Initialize the Input / Output Data Type Selectors
+					this.selectedOutputTableRow = jQuery("#targetTable tr.selected").data("tableRow");
+
+					// Initialize the state of the code editor 
+					if (this.selectedOutputTableRow != null) {
+						jQuery("#elementIndicatorText").append(this.selectedOutputTableRow.path + " = ");
+						this.expressionEditor.setValue(this.selectedOutputTableRow.mappingExpression);
+						this.expressionEditor.enable();
+					}
+
+					// Initialize the Input / Output Data Type Selector dialogs
 					this.inputDataTypeSelector.setScopeModel(this.getModel());
 					this.inputDataTypeSelector.populatePrimitivesSelectInput();
 					this.inputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
@@ -451,6 +466,18 @@ define(
 
 					this.expressionEditor.setGlobalVariables(globalVariables);
 
+					// Perform mapping expression validation
+					var source, errors;
+					for (var n = 0; n < this.outputTableRows.length; ++n) {
+						if (this.outputTableRows[n].mappingExpression === "") continue;
+						source = this.outputTableRows[n].path + " = " + this.outputTableRows[n].mappingExpression;
+						errors = this.expressionEditor.getErrors(source, globalVariables);
+						this.showMappingError(this.outputTableRows[n].path, errors);
+					}
+
+					this.resume();
+
+					// Show View-related error messages
 					this.showErrorMessages();
 				};
 
@@ -490,26 +517,31 @@ define(
 									function() {
 										var view = jQuery(this).data("view");
 
-										jQuery("table#targetTable tr.selected").removeClass(
-												"selected");
-										jQuery(this).addClass("selected");
+										var self = this;
+										
+										// Using setTimeout so that blur event of code editor (if applicable) is called first
+										setTimeout(function() {
+											jQuery("table#targetTable tr.selected").removeClass(
+													"selected");
+											jQuery(self).addClass("selected");
 
-										view.selectedOutputTableRow = jQuery(
-												this).data("tableRow");
+											view.selectedOutputTableRow = jQuery(
+													self).data("tableRow");
 
-										jQuery("#elementIndicatorText").empty();
-										jQuery("#elementIndicatorText")
-												.append(
-														view.selectedOutputTableRow.path
-																+ " = ");
+											jQuery("#elementIndicatorText").empty();
+											jQuery("#elementIndicatorText")
+													.append(
+															view.selectedOutputTableRow.path
+																	+ " = ");
 
-										view.expressionEditor.enable();
-										view.expressionEditor
-												.setValue(view.selectedOutputTableRow.mappingExpression);
-										view.expressionEditor.save();
+											view.expressionEditor.enable();
+											view.expressionEditor
+													.setValue(view.selectedOutputTableRow.mappingExpression);
+											view.expressionEditor.save();
 
-										// Register showMappingError as a callback function after JS validation occurs
-										view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
+											// Register showMappingError as a callback function after JS validation occurs
+											view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
+										}, 0);
 									});
 
 					jQuery("table#targetTable tbody tr span").mousedown(
@@ -754,15 +786,15 @@ define(
 												.replace(/\./g, "-") + "\"")
 										: "") + ">";
 
-						content += "<td>";
+						content += "<td class='elementCell'>";
 						content += "<span class=\"data-element\">"
 								+ tableRows[tableRow].name + "</span>";
 						content += "</td>";
-						content += "<td>" + tableRows[tableRow].typeName;
+						content += "<td class='typeCell'>" + tableRows[tableRow].typeName;
 						+"</td>";
 
 						if (source) {
-							content += "<td>";
+							content += "<td class='inputActionsCell'>";
 							if (tableRows[tableRow].parentPath == null) {
 								content += "<div class=\"deleteAction\"></div>";
 							}
@@ -809,9 +841,9 @@ define(
 							});
 
 						} else {
-							content += "<td class=\"mapping\" />";
-							content += "<td class=\"problem\" />";
-							content += "<td>";
+							content += "<td class='mappingCell' />";
+							content += "<td class='problemCell' />";
+							content += "<td class='outputActionsCell'>";
 							content += "<div class=\"clearMappingAction\"></div>";
 							if (tableRows[tableRow].parentPath == null) {
 								content += "<div class=\"deleteAction\"></div>";
@@ -1014,7 +1046,7 @@ define(
 				MessageTransformationApplicationView.prototype.filterFieldsWithNoMapping = function(enabled) {
 					if (enabled) {
 						jQuery("table#targetTable tbody tr").addClass("invisible");
-						jQuery("table#targetTable tbody tr .mapping:empty").parent().each(function() {
+						jQuery("table#targetTable tbody tr .mappingCell:empty").parent().each(function() {
 							jQuery(this).removeClass("invisible");
 							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
 						});
@@ -1030,7 +1062,7 @@ define(
 				MessageTransformationApplicationView.prototype.filterFieldsWithMapping = function(enabled) {
 					if (enabled) {
 						jQuery("table#targetTable tbody tr").addClass("invisible");
-						jQuery("table#targetTable tbody tr .mapping:not(:empty)").parent().each(function() {
+						jQuery("table#targetTable tbody tr .mappingCell:not(:empty)").parent().each(function() {
 							jQuery(this).removeClass("invisible");
 							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
 						});
@@ -1111,7 +1143,7 @@ define(
 					var maxLength = 35;
 
 					var rowId = outputTableRow.path.replace(/\./g, "-");
-					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mappingCell");
 					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ? 
 											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
 											outputTableRow.mappingExpression;
@@ -1136,11 +1168,26 @@ define(
 				MessageTransformationApplicationView.prototype.showMappingError = function(
 						path, errors) {
 					var rowId = path.replace(/\./g, "-");
-					var problemCell = jQuery("#targetTable tr#" + rowId + " .problem");
-					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mapping");
+					var problemCell = jQuery("#targetTable tr#" + rowId + " .problemCell");
+					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mappingCell");
 
+					// Ignore any errors due to "Missing semicolon."
+					var hasError = false;
 					if (!jQuery.isEmptyObject(errors) && mappingCell.text().trim() != "") {
-						problemCell.addClass("mappingError");
+						for (var lineNumber in errors) {
+							for (var i = 0; i < errors[lineNumber].length; i++) {
+								// TODO: Hard-coded reference to "Missing semicolon" error from JS validator
+								if (!(errors[lineNumber][i] == "Missing semicolon.")) {
+									hasError = true;
+									break;
+								}
+							}
+							if (hasError) break;
+						}
+
+						if (hasError) {
+							problemCell.addClass("mappingError");
+						}
 					}
 					else {
 						problemCell.removeClass("mappingError");
@@ -1384,13 +1431,19 @@ define(
 					this.expressionTextArea.change({
 						"view" : this
 					}, function(event) {
-						var outputTableRow = event.data.view.selectedOutputTableRow;
-
-						if (outputTableRow != null) {
+						if (event.data.view.selectedOutputTableRow != null) {
 							var mappingExpression = event.data.view.expressionTextArea.val();
 
-							outputTableRow.mappingExpression = mappingExpression;
-							event.data.view.populateMappingCell(outputTableRow);
+							// Update "mappingExpression" for selectedOutputTableRow and corresponding row in outputTableRows[] array
+							for (var n = 0; n < event.data.view.outputTableRows.length; ++n) {
+								if (event.data.view.selectedOutputTableRow === event.data.view.outputTableRows[n]) {
+									event.data.view.selectedOutputTableRow.mappingExpression = mappingExpression;
+									event.data.view.outputTableRows[n].mappingExpression = mappingExpression;
+									break;
+								}
+							}
+
+							event.data.view.populateMappingCell(event.data.view.selectedOutputTableRow);
 
 							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
 						}
@@ -1401,10 +1454,9 @@ define(
 								accept : ".data-element",
 								drop : function(e, ui) {
 									var view = ui.draggable.data("view");
-									var outputTableRow = view.selectedOutputTableRow;
 
-									if (outputTableRow != null) {
-										var mappingExpression = outputTableRow.mappingExpression;
+									if (view.selectedOutputTableRow != null) {
+										var mappingExpression = view.selectedOutputTableRow.mappingExpression;
 
 										if (mappingExpression != null
 												&& mappingExpression != "") {
@@ -1417,12 +1469,19 @@ define(
 												.data("tableRow")
 										mappingExpression += inputTableRow.path;
 
-										outputTableRow.mappingExpression = mappingExpression;
+										// Update "mappingExpression" for selectedOutputTableRow and corresponding row in outputTableRows[] array
+										for (var n = 0; n < view.outputTableRows.length; ++n) {
+											if (view.selectedOutputTableRow === view.outputTableRows[n]) {
+												view.selectedOutputTableRow.mappingExpression = mappingExpression;
+												view.outputTableRows[n].mappingExpression = mappingExpression;
+												break;
+											}
+										}
 
-										view.expressionEditor.setValue(outputTableRow.mappingExpression);
+										view.expressionEditor.setValue(view.selectedOutputTableRow.mappingExpression);
 										view.expressionEditor.save();
 
-										view.populateMappingCell(outputTableRow);
+										view.populateMappingCell(view.selectedOutputTableRow);
 
 										// Remove the drag helper
 										ui.helper.remove();
