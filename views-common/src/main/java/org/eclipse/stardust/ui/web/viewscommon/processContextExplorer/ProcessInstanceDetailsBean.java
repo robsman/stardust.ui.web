@@ -41,6 +41,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -880,7 +881,9 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
    public String getStartingUser()
    {
-      return UserUtils.getUserDisplayLabel(getProcessInstance().getStartingUser());
+      User startingUser = getProcessInstance().getStartingUser();
+      UserUtils.loadDisplayPreferenceForUser(startingUser);
+      return UserUtils.getUserDisplayLabel(startingUser);
    }
 
    /**

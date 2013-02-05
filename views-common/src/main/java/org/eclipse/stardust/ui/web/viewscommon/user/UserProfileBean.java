@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.security.InvalidPasswordException;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -40,7 +41,6 @@ import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
@@ -328,11 +328,10 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       }
       else if ((isModifyMode() || isModifyProfileConfiguration()) && null != user)
       {
-         UserService userService = ServiceFactoryUtils.getUserService();
          Long userOid = user.getOID();
-         if ((userOid != null) && (userService != null))
+         if (userOid != null)
          {
-            user = userService.getUser(userOid.longValue());
+            user = UserUtils.getUser(userOid.longValue(), UserDetailsLevel.Full);
          }
          headerTitle = propsBean.getString("views.modifyUser.title");
          changePassword = false;
@@ -345,7 +344,6 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          validTo = user.getValidTo();
          description = user.getDescription();
          qaOverride = user.getQualityAssuranceProbability();
-         UserUtils.loadDisplayPreferenceForUser(user);
          
          if (isModifyProfileConfiguration())
          {

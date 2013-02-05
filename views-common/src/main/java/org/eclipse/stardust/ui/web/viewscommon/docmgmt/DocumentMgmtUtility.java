@@ -51,7 +51,6 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
@@ -72,6 +71,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider;
@@ -1127,8 +1127,7 @@ public class DocumentMgmtUtility
       {
          try
          {
-            UserService service = ServiceFactoryUtils.getUserService();
-            return service.getUser(document.getOwner());
+            return UserUtils.getUser(document.getOwner());
          }
          catch (Exception e)
          {

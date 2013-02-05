@@ -29,6 +29,7 @@ import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Role;
+import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
@@ -123,6 +124,78 @@ public class UserUtils
             .getAllUsers(userQuery);
       
       return users;
+   }
+   
+   /**
+    * 
+    * @param account
+    * @return
+    */
+   public static User getUser(String account)
+   {
+      // When call is made to display only user label, we use 'Core' details Level
+      return getUser(account, null, UserDetailsLevel.Core);
+   }
+
+   /**
+    * 
+    * @param account
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(String account, UserDetailsLevel userDetailsLevel)
+   {
+      return getUser(account, null, userDetailsLevel);
+   }
+
+   /**
+    * 
+    * @param account
+    * @return
+    */
+   public static User getUser(Long oid)
+   {
+      // When call is made to display only user label, we use 'Core' details Level
+      return getUser(null, oid, UserDetailsLevel.Core);
+   }
+
+   /**
+    * 
+    * @param oid
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(Long oid, UserDetailsLevel userDetailsLevel)
+   {
+      return getUser(null, oid, userDetailsLevel);
+   }
+
+   /**
+    * 
+    * @param account
+    * @param oid
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(String account, Long oid, UserDetailsLevel userDetailsLevel)
+   {
+      UserQuery userQuery = UserQuery.findAll();
+
+      String[] prefModules = {UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON};
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(userDetailsLevel);
+      userPolicy.setPreferenceModules(prefModules);
+      userQuery.setPolicy(userPolicy);
+
+      FilterAndTerm filter = userQuery.getFilter().addAndTerm();
+      if (null != account)
+         filter.and(UserQuery.ACCOUNT.like(account));
+      if (null != oid)
+         filter.and(UserQuery.OID.isEqual(oid));
+      userQuery.where(filter);
+
+      Users users = SessionContext.findSessionContext().getServiceFactory().getQueryService().getAllUsers(userQuery);
+
+      return users.isEmpty() ? null : users.get(0);
    }
    
    /**

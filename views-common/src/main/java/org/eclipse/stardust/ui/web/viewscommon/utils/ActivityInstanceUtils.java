@@ -302,7 +302,7 @@ public class ActivityInstanceUtils
       if (ai.isAssignedToUser())
       {
          UserInfo userInfo = (UserInfo) ai.getCurrentPerformer();
-         User user = ServiceFactoryUtils.getUserService().getUser(userInfo.getId());
+         User user = UserUtils.getUser(userInfo.getId());
          performerName = I18nUtils.getUserLabel(user);
       }
       else

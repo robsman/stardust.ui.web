@@ -35,6 +35,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -44,6 +45,7 @@ import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserGroupQuery;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
@@ -59,6 +61,7 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataFilterOnOff;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -522,6 +525,9 @@ public class ParticipantTree
       {
          UserQuery userQuery = UserQuery.findAll();
          userQuery.getFilter().add(ParticipantAssociationFilter.forParticipant(participantInfo, false));
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         userQuery.setPolicy(userPolicy);
          Users allUsers = getQryService().getAllUsers(userQuery);
          int index = 0;
          for (User user : allUsers)

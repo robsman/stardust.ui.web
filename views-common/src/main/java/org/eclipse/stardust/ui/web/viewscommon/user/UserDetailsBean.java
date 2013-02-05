@@ -16,12 +16,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
@@ -103,10 +101,9 @@ public class UserDetailsBean extends PopupUIComponentBean
             return;
          }
 
-         UserService userService = ServiceFactoryUtils.getUserService();
-         if ((userOid != null) && (userService != null))
+         if (userOid != null)
          {
-            user = userService.getUser(userOid.longValue());
+            user = UserUtils.getUser(userOid.longValue());
          }
       }
       catch (Exception e)

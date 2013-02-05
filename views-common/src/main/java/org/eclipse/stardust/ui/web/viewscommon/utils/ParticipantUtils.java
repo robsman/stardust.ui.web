@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
@@ -193,11 +194,12 @@ public class ParticipantUtils
             break;
 
          case USER:
-            participant = ServiceFactoryUtils.getUserService().getUser(participantInfo.getId());
+            participant = UserUtils.getUser(participantInfo.getId(), UserDetailsLevel.Full);
             break;
 
          case USERGROUP:
             participant = ServiceFactoryUtils.getUserService().getUserGroup(participantInfo.getId());
+            UserUtils.loadDisplayPreferenceForUser((User)participant);
             break;
          }
       }
