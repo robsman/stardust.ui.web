@@ -118,7 +118,7 @@ define(
 					transferObject.propertiesPanel = null;
 					transferObject.commentCountIcon = null;
 					transferObject.commentCountText = null;
-
+					transferObject.glow = null;
 					return transferObject;
 				}
 
