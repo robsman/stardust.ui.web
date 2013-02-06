@@ -1869,8 +1869,9 @@ define(
 				Diagram.prototype.clearCurrentToolSelection = function() {
 					this.clearCurrentSelection();
 					if (this.currentConnection != null) {
-						this.currentConnection.remove();
-
+						if(!this.currentConnection.oid){
+							this.currentConnection.remove();
+						}
 						this.currentConnection = null;
 					}
 					if (this.newSymbol != null) {
@@ -1980,23 +1981,23 @@ define(
 					if (content == '') {
 						this.cancelEditable();
 					} else {
-						this.editableText.css("visibility", "hidden").hide()
-								.trigger("blur");
-						this.currentTextPrimitive.attr("text", content);
-						m_utils.debug("text set");
-						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+					this.editableText.css("visibility", "hidden").hide()
+							.trigger("blur");
+					this.currentTextPrimitive.attr("text", content);
+					m_utils.debug("text set");
+					var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
 
-						m_commandsController
-								.submitCommand(m_command
-										.createUpdateModelElementCommand(
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
-												changes));
-						this.currentTextPrimitive.show();
-						this.currentTextPrimitive.auxiliaryProperties.callbackScope
-								.adjustPrimitivesOnShrink();
-						this.symbolEditMode = false;
-						m_utils.debug("text primitive shown");
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+											changes));
+					this.currentTextPrimitive.show();
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope
+							.adjustPrimitivesOnShrink();
+					this.symbolEditMode = false;
+					m_utils.debug("text primitive shown");
 					}
 				};
 
@@ -2004,23 +2005,23 @@ define(
 					if (content == '') {
 						this.cancelEditableArea();
 					} else {
-						this.editableTextArea.css("visibility", "hidden")
-								.hide().trigger("blur");
-						this.currentTextPrimitive.attr("text", content);
-						m_utils.debug("textarea set");
-						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+					this.editableTextArea.css("visibility", "hidden")
+							.hide().trigger("blur");
+					this.currentTextPrimitive.attr("text", content);
+					m_utils.debug("textarea set");
+					var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
 
-						m_commandsController
-								.submitCommand(m_command
-										.createUpdateModelElementCommand(
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
-												changes));
-						this.currentTextPrimitive.show();
-						this.currentTextPrimitive.auxiliaryProperties.callbackScope
-								.adjustPrimitives();
-						this.symbolEditMode = false;
-						m_utils.debug("textarea primitive shown");
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+											changes));
+					this.currentTextPrimitive.show();
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope
+							.adjustPrimitives();
+					this.symbolEditMode = false;
+					m_utils.debug("textarea primitive shown");
 					}
 				};
 
