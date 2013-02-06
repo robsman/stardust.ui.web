@@ -15,10 +15,12 @@ define(
 		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_modelElementUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_modelElementUtils",
+				"bpm-modeler/js/m_angularContextUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager, m_modelElementUtils) {
+				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager, m_modelElementUtils,
+				m_angularContextUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -60,8 +62,8 @@ define(
 					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
 					this.visibilitySelect = jQuery("#publicVisibilityCheckbox");
 					this.structureKindSelect = jQuery("#structureKind select");
-					this.minimumLengthEdit = jQuery("#minimumLength input");
-					this.maximumLengthEdit = jQuery("#maximumLength input");
+					this.minimumLengthEdit = jQuery("#minLenghtInput");
+					this.maximumLengthEdit = jQuery("#maxLenghtInput");
 
 					this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
 
@@ -97,40 +99,60 @@ define(
 								view.initializeTypeDeclaration();
 							}
 						});
-					this.minimumLengthEdit.change(
-							function(event) {
-								if ( !view.typeDeclaration.isSequence()) {
-									var currentValue = view.typeDeclaration.getTypeDeclaration().minLength;
-									var newValue = parseInt(jQuery(event.target).val());
-									if (currentValue !== newValue) {
-										if (isNaN(newValue)) {
-											delete view.typeDeclaration.getTypeDeclaration().minLength;
-										} else {
-											view.typeDeclaration.getTypeDeclaration().minLength = newValue;
-										}
-										view.submitChanges({
-											typeDeclaration : view.typeDeclaration.typeDeclaration
-										});
+
+					var self = this;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.$watch("minLength", function(newValue, oldValue) {
+							if (newValue !== oldValue && $scope.form.minLenghtInput.$valid) {
+								if (newValue == "" || validateRange(parseInt(newValue), $scope.maxLength)){
+									if (newValue == "") {
+										$scope.minLength = undefined;
+										self.typeDeclaration.getTypeDeclaration().minLength = undefined;
+									} else {
+										self.typeDeclaration.getTypeDeclaration().minLength = parseInt(newValue);
 									}
-								}
-							});
-					this.maximumLengthEdit.change(
-							function(event) {
-								if ( !view.typeDeclaration.isSequence()) {
-									var currentValue = view.typeDeclaration.getTypeDeclaration().maxLength;
-									var newValue = parseInt(jQuery(event.target).val());
-									if (currentValue !== newValue) {
-										if (isNaN(newValue)) {
-											delete view.typeDeclaration.getTypeDeclaration().maxLength;
-										} else {
-											view.typeDeclaration.getTypeDeclaration().maxLength = newValue;
-										}
-										view.submitChanges({
-											typeDeclaration : view.typeDeclaration.typeDeclaration
-										});
+									if ($scope.maxLength) {
+										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt($scope.maxLength);
 									}
+									$scope.minMaxError = false;
+									self.submitChanges({
+										typeDeclaration : self.typeDeclaration.typeDeclaration
+									});
+								} else {
+									$scope.minMaxError = true;
 								}
-							});
+							}
+						});
+						$scope.$watch("maxLength", function(newValue, oldValue) {
+							if (newValue !== oldValue && $scope.form.maxLenghtInput.$valid) {
+								if (newValue == "" || validateRange($scope.minLength, parseInt(newValue))){
+									if (newValue == "") {
+										$scope.maxLength = undefined;
+										self.typeDeclaration.getTypeDeclaration().maxLength = undefined;
+									} else {
+										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt(newValue);
+									}
+									if ($scope.minLength) {
+										self.typeDeclaration.getTypeDeclaration().minLength = parseInt($scope.minLength);
+									}
+									$scope.minMaxError = false;
+									self.submitChanges({
+										typeDeclaration : self.typeDeclaration.typeDeclaration
+									});
+								} else {
+									$scope.minMaxError = true;
+								}
+							}
+						});
+
+						function validateRange(min, max) {
+							if (min && max) {
+								return (min <= max);
+							}
+
+							return true;
+						}
+					});
 
 					jQuery(this.addButton).click(
 						function(event) {
@@ -188,6 +210,12 @@ define(
 
 					this.typeDeclaration = typeDeclaration;
 
+					var self = this;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
+						$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
+					});
+
 					this.updateViewIcon();
 
 					m_utils.debug("===> Type Declaration");
@@ -226,9 +254,6 @@ define(
 					this.visibilitySelect.prop("checked", (!this.typeDeclaration.attributes["carnot:engine:visibility"]
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
-
-					this.minimumLengthEdit.val(this.typeDeclaration.getTypeDeclaration().minLength);
-					this.maximumLengthEdit.val(this.typeDeclaration.getTypeDeclaration().maxLength);
 
 					this.refreshElementsTable();
 				};

@@ -46,6 +46,7 @@ table.layoutTable tr.widget td .widget {
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
+<form name="form">
 	<div id="xsdStructuredDataTypeView" class="panel">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
@@ -129,13 +130,25 @@ table.layoutTable tr.widget td .widget {
 												<tr id="minimumLength" class="widget show-when-enum">
 													<td class="label">Minimum length:</td>
 													<td class="widget">
-														<input type="text" class="widget" />
+														<input id="minLenghtInput" name="minLenghtInput" ng-model="minLength"
+															ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
+															type="text"
+															class="widget" />
+														<div id="intMinLengthError"
+															ng-show="form.minLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 													</td>
 												</tr>
 												<tr id="maximumLength" class="widget show-when-enum">
 													<td class="label">Maximum length:</td>
 													<td class="widget">
-														<input type="text" class="widget" />
+														<input id="maxLenghtInput" name="maxLenghtInput"
+															ng-model="maxLength" ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
+															type="text"
+															class="widget" />
+														<div id="intMaxLengthError"
+															ng-show="form.maxLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
+														<div id="minGreaterThanMax"
+															ng-show="minMaxError" style="color:red">Range not valid</div>
 													</td>
 												</tr>
 											</table>
@@ -238,5 +251,6 @@ table.layoutTable tr.widget td .widget {
 			</tr>
 		</table>
 	</div>
+</form>
 </body>
 </html>
