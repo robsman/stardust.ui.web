@@ -328,5 +328,15 @@ define(
 					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
 				};
+
+				/**
+				 * Overrides the postProcessCommand to update the structured
+				 * type list, in case it's changed.
+				 */
+				DataView.prototype.postProcessCommand = function(
+						command) {
+					this.dataTypeSelector.setScopeModel(this.data.model);
+					this.dataTypeSelector.setDataTypeSelectVal(this.data);
+				};
 			}
 		});
