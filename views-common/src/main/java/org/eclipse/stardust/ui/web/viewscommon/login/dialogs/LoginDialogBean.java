@@ -135,6 +135,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
                PreferenceScope.PARTITION);
          String skinPreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_PORTAL_CONFIG,
                UserPreferencesEntries.F_SKIN);
+         trace.info("Read login skin preference from partition -" + skinPreference);
          TechnicalUserUtils.logout(sessionCtx);
          Map<String, List<String>> pluginAvailableSkins = null;
          if (skinPreference.contains(Constants.SKIN_FOLDER))
