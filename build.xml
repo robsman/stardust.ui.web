@@ -33,7 +33,6 @@
    <target name="initBuild">
       <property name="nirvana.build.dir" location="${project.dir}/build"/>
       <property name="build.lib" location="${nirvana.build.dir}/lib"/>
-      <property name="build.config" location="${nirvana.build.dir}/config/ipp-portal"/>
       <property name="build.deploy" location="${nirvana.build.dir}/deploy"/>
    </target>
 
@@ -48,7 +47,6 @@
 
    <target name="portal-common" depends="init">
       <ant dir="portal-common" antfile="build.xml" target="${subtarget}" inheritall="false">
-         <property name="build.config" value="${build.config}"/>
          <property name="build.lib" value="${build.lib}"/>
          <property name="build.deploy" value="${build.deploy}"/>
 			<property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
