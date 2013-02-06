@@ -200,6 +200,14 @@ define(
 					.text(
 							m_i18nUtils
 									.getProperty("modeler.model.propertyView.structuredTypes.enumeration.maxLength") + ":");
+					jQuery("#intMinLengthError, #intMaxLengthError")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+					jQuery("#minGreaterThanMax")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minGreaterThanMaxError"));
 				};
 
 				/**
