@@ -116,6 +116,7 @@ public class IppThemeProvider implements ThemeProvider
     */
    private Set<Theme> bootstrapPluginThemes()
    {
+      trace.info("Inside Loading plugin skin folders");
       Set<Theme> availablePluginThemes = new HashSet<Theme>();
 
       pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
@@ -129,7 +130,11 @@ public class IppThemeProvider implements ThemeProvider
          {
             this.themeId = key;
          }
+         // TODO - Added for test CRNT-27828 on JBoss, to change to trace.debug
+         trace.info("Selected Skin Id is " + this.themeId);
+         trace.info("Added " + fileName + " as plugin skin folders");
       }
+      
      return availablePluginThemes;
    }
 
@@ -203,8 +208,8 @@ public class IppThemeProvider implements ThemeProvider
                      if (fileName.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
                      {
                         // path : a string concat of plugin-root (/plugin) + folderId +
-                        // skinFile(say camino.css) ex:
-                        // "/plugin/views-common/public/skins/red/camino.css"
+                        // skinFile(say skin1.css) ex:
+                        // "/plugin/views-common/public/skins/red/red.css"
                         String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolder + "/" + fileName;
                         pluginStyleSheets.add(path);
                      }
