@@ -416,6 +416,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.ACTIVITY_TYPE)))
          {
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
+            activity.setPerformer(null);
 
             if (activityJson.has(ModelerConstants.SUBPROCESS_ID)
                   && !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
