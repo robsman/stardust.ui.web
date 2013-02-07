@@ -2638,6 +2638,46 @@ public class ModelService
     */
 
    /**
+    * @return 
+   *
+   */
+  public void deleteConfigurationVariable(String modelId, String variableName, JsonObject json)
+  {
+     System.out.println("Configuration Variable:");
+
+     ModelType model = findModel(modelId);
+     VariableContext variableContext = new VariableContext();
+     variableContext.initializeVariables(model);
+     variableContext.refreshVariables(model);
+     variableContext.saveVariables();
+     
+     JsonElement jsonMode = json.get("mode");
+     String mode = jsonMode.getAsString();
+     
+     ModelVariable modelVariableByName = variableContext.getModelVariableByName(variableName);
+     if(modelVariableByName != null)
+     {     
+        modelVariableByName.setRemoved(true);
+        if(mode.equals("withLiteral"))
+        {
+           JsonElement jsonValue = json.get("literalValue");
+           modelVariableByName.setName(jsonValue.getAsString());                         
+        }
+        else if(mode.equals("defaultValue"))
+        {
+           modelVariableByName.setName(modelVariableByName.getDefaultValue());           
+        }
+        else
+        {
+           modelVariableByName.setName("");                         
+        }
+        
+        variableContext.cleanupReferences();        
+        variableContext.saveVariables();        
+     }
+  }
+   
+   /**
     *
     */
    public JsonArray getConfigurationVariables(String modelId)
@@ -2647,6 +2687,7 @@ public class ModelService
       System.out.println("Configuration Variables:");
 
       ModelType model = findModel(modelId);
+         
       VariableContext variableContext = new VariableContext();
 
       variableContext.initializeVariables(model);
@@ -2756,5 +2797,4 @@ public class ModelService
 
       return postedData;
    }
-
 }

@@ -16,14 +16,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -31,7 +28,6 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,7 +42,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -56,15 +51,10 @@ import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.core.compatibility.el.SyntaxError;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
-import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
@@ -630,6 +620,10 @@ public class ModelerResource
       try
       {
          System.out.println("Delete parameter: " + postedData);
+            
+         variableName = URLDecoder.decode(variableName);
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         //getModelService().deleteConfigurationVariable(modelId, variableName, json);
          
          return Response.ok(
                getModelService().getConfigurationVariables(modelId).toString(),
