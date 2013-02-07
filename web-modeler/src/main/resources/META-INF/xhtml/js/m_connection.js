@@ -872,6 +872,10 @@ define(
 											.trim() != ""
 									&& this.modelElement.conditionExpression
 											.trim() != "true") {
+								if (!this.conditionExpressionTextXOffset
+										|| !this.conditionExpressionTextYOffset) {
+									this.adjustConditionExpressionText();
+								}
 								this.conditionExpressionText.attr("text",
 										this.modelElement.conditionExpression);
 
