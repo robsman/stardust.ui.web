@@ -317,8 +317,7 @@ div.toolBar {
 }
 
 .treeTable span.data-element {
-	background: url(../images/data-element.gif) no-repeat;
-	padding-left: 20px;
+	padding-left: 5px;
 }
 
 .treeTable span.data-element.highlighted {
