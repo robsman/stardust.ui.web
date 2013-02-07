@@ -84,14 +84,16 @@ define(
 					var errors = {};
 					var err, lineNumber;
 					
-					var options = {undef: true, smarttabs: false};
 					var globals = {};
 					for (var variable in globalVars) {
 						globals[variable] = true;
 					}
-					JSHINT(source, options, globals);
-					for (var i = 0; i < JSHINT.errors.length; ++i) {
-						err = JSHINT.errors[i];
+
+					var options = { predef: globals };
+					JSLINT(source, options);
+
+					for (var i = 0; i < JSLINT.errors.length; ++i) {
+						err = JSLINT.errors[i];
 						if (!err) continue;
 						lineNumber = err.line - 1;
 						if (!errors[lineNumber]) errors[lineNumber] = []; 
@@ -109,7 +111,7 @@ define(
 					
 						var html;
 						var errors = null;
-						if (!disabled) {
+						if (!disabled && editor.getValue() !== "") {
 							errors = getErrors(jsValidationPrefix + " = " + editor.getValue(), globalVariables);
 						}
 						if (jsValidationCallback != null) jsValidationCallback(jsValidationPrefix, errors);

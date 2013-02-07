@@ -33,7 +33,7 @@ require.config({
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url'],
 		'jquery.jqprint': ['bpm-modeler/js/libs/jquery/plugins/jquery.jqprint-0.3', 'https://raw.github.com/tanathos/jquery.jqprint/master/jquery.jqprint-0.3'],
 
-		'jshint': ['bpm-modeler/js/libs/jshint/jshint-r12', 'https://raw.github.com/jshint/jshint/80277ef7cf1f35137ee653a25ce5664e2752b0db/jshint'],
+		'jslint': ['bpm-modeler/js/libs/jslint/jslint', 'https://raw.github.com/douglascrockford/JSLint/996246308b755df665bd6c4f3ae59d655ae0a97e/jslint'],
 
 		'codemirror': ['bpm-modeler/js/libs/codemirror/codemirror-2.34', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/codemirror'],
 		'codemirror.mode.javascript': ['bpm-modeler/js/libs/codemirror/mode/javascript/javascript', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/mode/javascript/javascript'],
@@ -96,7 +96,7 @@ require(["require",
 	 "jquery.url",
 	 "jquery.jqprint",
 
-	 "jshint",
+	 "jslint",
 
 	 "codemirror",
 	 "codemirror.mode.javascript",

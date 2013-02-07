@@ -1177,7 +1177,7 @@ define(
 						for (var lineNumber in errors) {
 							for (var i = 0; i < errors[lineNumber].length; i++) {
 								// TODO: Hard-coded reference to "Missing semicolon" error from JS validator
-								if (!(errors[lineNumber][i] == "Missing semicolon.")) {
+								if (!(errors[lineNumber][i] == "Expected ';' and instead saw '(end)'.")) {
 									hasError = true;
 									break;
 								}
