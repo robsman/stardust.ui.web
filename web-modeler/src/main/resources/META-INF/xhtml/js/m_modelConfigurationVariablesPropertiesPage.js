@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -30,7 +30,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ConfigurationVariablesPropertiesPage(propertiesPanel, id) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
@@ -43,7 +43,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.initialize = function() {
 					this.refreshConfigurationVariablesButton = jQuery("#refreshConfigurationVariablesButton");
@@ -150,7 +150,7 @@ define(
 																	+ event.data.page
 																			.getModel().id
 																	+ "/configurationVariables/"
-																	+ event.data.page.currentConfigurationVariable.name,
+																	+ stripVariableName(event.data.page.currentConfigurationVariable.name),
 															contentType : "application/json",
 															data : JSON
 																	.stringify(deleteOptions)
@@ -167,14 +167,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.setElement = function() {
 					this.refreshConfigurationVariables();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariables = function() {
 					var page = this;
@@ -311,7 +311,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVariable = function(
 						variableName, defaultValue) {
@@ -333,7 +333,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function stripVariableName(fullName) {
 				return fullName.substring(fullName.indexOf("${") + 2, fullName
