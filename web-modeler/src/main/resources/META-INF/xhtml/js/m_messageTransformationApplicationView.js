@@ -793,10 +793,11 @@ define(
 						content += "<td class='typeCell'>" + tableRows[tableRow].typeName;
 						+"</td>";
 
+						var deleteTooltip = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete");
 						if (source) {
 							content += "<td class='inputActionsCell'>";
 							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class=\"deleteAction\"></div>";
+								content += "<div class='deleteAction' title='" + deleteTooltip + "'></div>";
 							}
 							content += "</td>";
 							content += "</tr>";
@@ -841,12 +842,13 @@ define(
 							});
 
 						} else {
+							var clearMappingTooltip = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.clearMapping");
 							content += "<td class='mappingCell' />";
 							content += "<td class='problemCell' />";
 							content += "<td class='outputActionsCell'>";
-							content += "<div class=\"clearMappingAction\"></div>";
+							content += "<div class='clearMappingAction' title='" + clearMappingTooltip + "'></div>";
 							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class=\"deleteAction\"></div>";
+								content += "<div class='deleteAction' title='" + "Delete" + "'></div>";
 							}
 							content += "</td>";
 							content += "</tr>";
@@ -1569,6 +1571,7 @@ define(
 						autoOpen : false,
 						draggable : true,
 						resizable : false,
+						minWidth : 400,
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
 									});
@@ -1629,6 +1632,7 @@ define(
 						autoOpen : false,
 						draggable : true,
 						resizable : false,
+						minWidth : 400,
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
 									});
