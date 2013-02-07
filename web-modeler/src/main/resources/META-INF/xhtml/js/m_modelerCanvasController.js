@@ -19,14 +19,14 @@ define(
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_diagram", "bpm-modeler/js/m_activitySymbol",
 				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_process", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_data", "bpm-modeler/js/m_elementConfiguration",
-				"bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils" ],
 		function(m_utils, m_constants, m_messageDisplay,
 				m_canvasManager,
 				m_communicationController, m_constants, m_logger,
 				m_commandsController, m_diagram, m_activitySymbol,
 				m_eventSymbol, m_gatewaySymbol, m_dataSymbol, m_model,
 				m_process, m_activity, m_data, m_elementConfiguration,
-				m_modelerUtils, m_i18nUtils) {
+				m_modelerUtils, m_i18nUtils, m_modelElementUtils) {
 			var activityDefaultWidth = 180;
 			var activityDefaultHeight = 50;
 			var activityDefaultColour = '0-white-#DEE0E0';
@@ -167,6 +167,12 @@ define(
 												.getTransferObject().elementId)) {
 									var data = m_model.findData(parent.iDnD
 											.getTransferObject().attr.fullId);
+
+									if (isElementExternalAndPrivate(data)) {
+										diaplayPrivateElementMessage();
+										return;
+									}
+
 									var dataSymbol = m_dataSymbol
 											.createDataSymbolFromData(diagram,
 													data);
@@ -188,6 +194,10 @@ define(
 								var participant = m_model
 										.findParticipant(parent.iDnD
 												.getTransferObject().attr.fullId);
+								if (isElementExternalAndPrivate(participant)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
 								diagram.poolSymbol
 										.createSwimlaneSymbolFromParticipant(participant);
 							} else if ('structuredDataType' == parent.iDnD.getTransferObject().elementType
@@ -196,6 +206,11 @@ define(
 										|| 'importedStructuredDataType' == parent.iDnD.getTransferObject().elementType) {
 								var dataStructure = m_model.findTypeDeclaration(parent.iDnD
 												.getTransferObject().attr.fullId);
+								if (isElementExternalAndPrivate(dataStructure)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
+
 								var data = m_data.createDataFromDataStructure(
 										diagram.model, dataStructure);
 
@@ -243,6 +258,11 @@ define(
 								m_utils.debug("Retrieved Application");
 								m_utils.debug(application);
 
+								if (isElementExternalAndPrivate(application)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
+
 								var activitySymbol = m_activitySymbol
 										.createActivitySymbolFromApplication(
 												diagram, application);
@@ -260,6 +280,25 @@ define(
 						}
 
 						parent.iDnD.hideIframe();
+
+						function isElementExternalAndPrivate(modelElement) {
+							if (diagram.model.uuid != parent.iDnD
+									.getTransferObject().modelUUID
+									&& !m_modelElementUtils.hasPublicVisibility(modelElement)) {
+								return true
+							}
+
+							return false;
+						}
+
+						function diaplayPrivateElementMessage() {
+							parent.iDnD.hideIframe();
+							m_messageDisplay.clear();
+							m_messageDisplay
+									.showMessage(m_i18nUtils
+											.getProperty("modeler.diagram.message.privateElementDnDNotAllowed"));
+
+						}
 					}
 
 					function addImage() {
