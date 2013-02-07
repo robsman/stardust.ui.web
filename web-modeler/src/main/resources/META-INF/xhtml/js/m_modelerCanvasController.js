@@ -237,6 +237,18 @@ define(
 									.getTransferObject().elementType) {
 								var process = m_model.findProcess(parent.iDnD
 										.getTransferObject().attr.fullId);
+
+								if (diagram.model.uuid != parent.iDnD
+										.getTransferObject().modelUUID
+										&& !(process.processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
+									parent.iDnD.hideIframe();
+									m_messageDisplay.clear();
+									m_messageDisplay
+											.showMessage(m_i18nUtils
+													.getProperty("modeler.diagram.message.noProcessInterfaceDnDNotAllowed"));
+									return;
+								}
+
 								var activitySymbol = m_activitySymbol
 										.createActivitySymbolFromProcess(
 												diagram, process);
@@ -285,7 +297,7 @@ define(
 							if (diagram.model.uuid != parent.iDnD
 									.getTransferObject().modelUUID
 									&& !m_modelElementUtils.hasPublicVisibility(modelElement)) {
-								return true
+								return true;
 							}
 
 							return false;
