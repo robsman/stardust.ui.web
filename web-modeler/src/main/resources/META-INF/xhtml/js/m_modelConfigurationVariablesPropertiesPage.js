@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -30,7 +30,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ConfigurationVariablesPropertiesPage(propertiesPanel, id) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
@@ -43,7 +43,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.initialize = function() {
 					this.refreshConfigurationVariablesButton = jQuery("#refreshConfigurationVariablesButton");
@@ -147,8 +147,7 @@ define(
 															url : m_urlUtils
 																	.getModelerEndpointUrl()
 																	+ "/models/"
-																	+ event.data.page
-																			.getModel().id
+																	+ encodeURIComponent(event.data.page.getModel().id)
 																	+ "/configurationVariables/"
 																	+ event.data.page.currentConfigurationVariable.name,
 															contentType : "application/json",
@@ -167,14 +166,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.setElement = function() {
 					this.refreshConfigurationVariables();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariables = function() {
 					var page = this;
@@ -185,7 +184,7 @@ define(
 										url : m_communicationController
 												.getEndpointUrl()
 												+ "/models/"
-												+ this.getModel().id
+												+ encodeURIComponent(this.getModel().id)
 												+ "/configurationVariables"
 									},
 									{
@@ -311,13 +310,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVariable = function(
 						variableName, defaultValue) {
 					m_communicationController.postData({
 						url : m_communicationController.getEndpointUrl()
-								+ "/models/" + this.getModel().id
+								+ "/models/" + encodeURIComponent(this.getModel().id)
 								+ "/configurationVariables/" + variableName
 					}, JSON.stringify({
 						variableName : variableName,
@@ -333,7 +332,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function stripVariableName(fullName) {
 				return fullName.substring(fullName.indexOf("${") + 2, fullName

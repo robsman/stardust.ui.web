@@ -399,7 +399,7 @@ define(
 
 				window.location = require("bpm-modeler/js/m_urlUtils")
 						.getModelerEndpointUrl()
-						+ "/models/" + model.id + "/download";
+						+ "/models/" + encodeURIComponent(model.id) + "/download";
 			}
 
 			var openModelReport = function(modelUUID) {
@@ -2360,7 +2360,7 @@ define(
 										.submitCommand(m_command
 												.createCreateCommand(
 														"/models/"
-																+ application.model.id
+																+ encodeURIComponent(application.model.id)
 																+ "/processes/createWrapperProcess",
 														parameter));
 							}

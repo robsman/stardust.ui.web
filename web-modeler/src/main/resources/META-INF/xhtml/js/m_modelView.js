@@ -299,7 +299,7 @@ define(
 										url : m_communicationController
 												.getEndpointUrl()
 												+ "/models/"
-												+ this.getModel().id
+												+ encodeURIComponent(this.getModel().id)
 												+ "/problems"
 									},
 									{
