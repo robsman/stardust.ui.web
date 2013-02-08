@@ -623,7 +623,7 @@ public class ModelerResource
             
          variableName = URLDecoder.decode(variableName);
          JsonObject json = jsonIo.readJsonObject(postedData);
-         //getModelService().deleteConfigurationVariable(modelId, variableName, json);
+         getModelService().deleteConfigurationVariable(modelId, variableName, json);
          
          return Response.ok(
                getModelService().getConfigurationVariables(modelId).toString(),
