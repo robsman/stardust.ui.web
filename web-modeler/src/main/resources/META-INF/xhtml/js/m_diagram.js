@@ -1752,10 +1752,10 @@ define(
 							// validation fails
 							if (this.currentConnection) {
 								this.currentConnection.remove();
-								this.currentConnection
 							}
 							this.newSymbol.remove();
 							this.newSymbol = null;
+							this.mode = this.NORMAL_MODE;
 						}
 					} else {
 						this.newSymbol.prepare(startSymbol.x + 200,
