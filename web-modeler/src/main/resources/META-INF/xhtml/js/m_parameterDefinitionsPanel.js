@@ -396,7 +396,7 @@ define(
 							var dataItem = this.scopeModel.dataItems[i];
 							// Show only data items from this model and not
 							// external references.
-							if (!dataItem.externalReference
+							if ((!dataItem.externalReference || this.options.showExternalDataReferences)
 									&& this.isDataOfSelectedType(dataItem)) {
 								this.parameterDefinitionDataSelect
 										.append("<option value='"

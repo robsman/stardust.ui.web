@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -28,7 +28,7 @@ define(
 						newPropertiesPanel, "dataPathPropertiesPage",
 						datapathText,
 						"../../images/icons/data-path-properties-page.png");
-  
+
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ProcessDataPathPropertiesPage.prototype,
 						propertiesPage);
@@ -41,11 +41,12 @@ define(
 					supportsDataMappings : true,
 					supportsDataPathes : true,
 					supportsDescriptors : true,
-					supportsDataTypeSelection : false
+					supportsDataTypeSelection : false,
+					showExternalDataReferences : true
 				});
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ProcessDataPathPropertiesPage.prototype.setElement = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -55,14 +56,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessDataPathPropertiesPage.prototype.getModelElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ProcessDataPathPropertiesPage.prototype.validate = function() {
 					this.propertiesPanel.clearErrorMessages();
@@ -96,9 +97,9 @@ define(
 
 					return true;
 				};
-				
+
 				/**
-				 * Callback for parameterDefinitionsPanel. 
+				 * Callback for parameterDefinitionsPanel.
 				 */
 				ProcessDataPathPropertiesPage.prototype.submitParameterDefinitionsChanges = function(dataPathes)
 				{
