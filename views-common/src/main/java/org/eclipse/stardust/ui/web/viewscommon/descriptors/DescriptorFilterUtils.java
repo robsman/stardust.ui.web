@@ -137,25 +137,34 @@ public class DescriptorFilterUtils
    
                   // For performance get data from Cache
                   IXPathMap xPathMap = XPathCacheManager.getInstance().getXpathMap(model, dataPath);
-   
-                  // but, if, for example, indexes are removed, the semantics of the query is
-                  // then different!
-                  // my current favourite solution would be not allowing entering indexes in
-                  // the modeller,
-                  // in the XPath dialog for process data descriptors
-                  TypedXPath typedXPath = xPathMap.getXPath(myXPath);
-   
-                  if (typedXPath == null)
+                  if (null == xPathMap)
                   {
                      trace.warn("Invalid structured data reference. Data path id was '" + dataPath.getId()
                            + "' and has referenced the following access path '" + myXPath + "'");
                   }
-                  // test, if the XPath returns a primitive
-                  else if (typedXPath.getType() != BigData.NULL)
+                  else
                   {
-                     // it is a list of primitives or a single primitive
-                     flags.filterable = true;
-                     flags.sortable = !typedXPath.isList();
+                     // but, if, for example, indexes are removed, the semantics of the
+                     // query is
+                     // then different!
+                     // my current favourite solution would be not allowing entering
+                     // indexes in
+                     // the modeller,
+                     // in the XPath dialog for process data descriptors
+                     TypedXPath typedXPath = xPathMap.getXPath(myXPath);
+
+                     if (typedXPath == null)
+                     {
+                        trace.warn("Invalid structured data reference. Data path id was '" + dataPath.getId()
+                              + "' and has referenced the following access path '" + myXPath + "'");
+                     }
+                     // test, if the XPath returns a primitive
+                     else if (typedXPath.getType() != BigData.NULL)
+                     {
+                        // it is a list of primitives or a single primitive
+                        flags.filterable = true;
+                        flags.sortable = !typedXPath.isList();
+                     }
                   }
                }
                else
