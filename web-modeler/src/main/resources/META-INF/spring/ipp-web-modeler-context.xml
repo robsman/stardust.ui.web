@@ -101,6 +101,7 @@
 		<property name="modelService" ref="modelService" />
 	</bean>
 
+<!-- TODO - delete the following views related code if not needed anymore.
 	<bean id="modelingWorklistView" class="org.eclipse.stardust.ui.web.modeler.portal.ModelingWorklistView">
 		<property name="modelService" ref="modelService" />
 	</bean>
@@ -108,7 +109,7 @@
 	<bean id="modelingWorkAssignmentView"
 		class="org.eclipse.stardust.ui.web.modeler.portal.ModelingWorkAssignmentView">
 		<property name="modelService" ref="modelService" />
-	</bean>
+	</bean> -->
 
 	<bean id="inviteParticipantsDialog"
 		class="org.eclipse.stardust.ui.web.modeler.portal.InviteParticipantsDialog">

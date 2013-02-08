@@ -40,12 +40,13 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="camelApplicationView"
 			include="/plugins/bpm-modeler/views/modeler/camelApplicationFrameAdapter.xhtml"
 			controller="camelApplicationView" />
+<!-- 		TODO - delete the following views related code if not needed anymore.
 		<ippui:view name="modelingWorklistView"
 			include="/plugins/bpm-modeler/views/modeler/modelingWorklistView.xhtml"
 			controller="modelingWorklistView" />
 		<ippui:view name="modelingWorkAssignmentView"
 			include="/plugins/bpm-modeler/views/modeler/modelingWorkAssignmentView.xhtml"
-			controller="modelingWorkAssignmentView" />
+			controller="modelingWorkAssignmentView" /> -->
 		<ippui:view name="roleView"
 			include="/plugins/bpm-modeler/views/modeler/roleFrameAdapter.xhtml"
 			controller="roleView" />
