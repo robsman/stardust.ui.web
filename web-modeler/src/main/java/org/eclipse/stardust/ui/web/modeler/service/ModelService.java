@@ -2658,21 +2658,23 @@ public class ModelService
      if(modelVariableByName != null)
      {     
         modelVariableByName.setRemoved(true);
+        String newValue = null;
+        
         if(mode.equals("withLiteral"))
         {
            JsonElement jsonValue = json.get("literalValue");
-           modelVariableByName.setName(jsonValue.getAsString());                         
+           newValue = jsonValue.getAsString();
         }
         else if(mode.equals("defaultValue"))
         {
-           modelVariableByName.setName(modelVariableByName.getDefaultValue());           
+           newValue = modelVariableByName.getDefaultValue();           
         }
         else
         {
-           modelVariableByName.setName("");                         
+           newValue = "";
         }
         
-        variableContext.cleanupReferences();        
+        variableContext.replaceVariable(modelVariableByName, newValue);
         variableContext.saveVariables();        
      }
   }
