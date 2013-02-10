@@ -15,17 +15,6 @@
 	data-main="../../js/uiMashupApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 <style>
-#inputDataTextarea {
-	font-family: monospace;
-	font-size: 11px;
-	color: #333333;
-}
-
-#outputDataTextarea {
-	font-family: monospace;
-	font-size: 11px;
-	color: #333333;
-}
 </style>
 </head>
 <body>
@@ -37,29 +26,32 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label></td>
-							<td><div id="guidOutput" class="output">168999</div></td>
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label></td>
-							<td><div id="idOutput" class="output"></div></td>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr>
 							<td><label for="nameInput" id="applicationName">Application
-									Name</label></td>
+									Name</label>
+							</td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
 				<td><label for="descriptionTextarea" id="description">Description</label>
@@ -77,10 +69,10 @@
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
 							<td><label for="publicVisibilityCheckbox"
-								id="publicVisibility">Public Visibility</label>
-							</td>
+								id="publicVisibility">Public Visibility</label></td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -88,26 +80,80 @@
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab" id="configuration"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Configuration</span> </a>
-							</li>
+									class="tabLabel">Configuration</span></a></li>
+							<li><a href="#parametersTab" id="parameters"><img
+									src="../../images/icons/data-path-properties-page.png"></img><span
+									class="tabLabel">Parameters</span></a></li>
 							<li><a href="#testTab" id="test"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Test</span> </a>
-							</li>
+									class="tabLabel">Test</span> </a></li>
 						</ul>
 						<div id="configurationTab">
 							<table cellpadding="0" cellspacing="0" class="layoutTable">
 								<tr>
 									<td>
-										<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+										<table cellpadding="0" cellspacing="0" class="layoutTable"
 											style="margin-bottom: 10px;">
 											<tr>
-												<td><label for="urlInput" id="url">URL</label></td>
-												<td><input id="urlInput" type="text"
-													style="width: 300px;"></input></td>
+												<td><input id="viaUriInput" type="radio"></input>
+												</td>
+												<td><label for="viaUriInput" id="url">Via URI</label>
+												</td>
+												<td><input id="embeddedInput" type="radio"></input>
+												</td>
+												<td><label for="embeddedInput" id="url">Embedded</label>
+												</td>
 											</tr>
-										</table></td>
+										</table>
+									</td>
 								</tr>
+								<tr id="viaUriRow">
+									<td>
+										<table cellpadding="0" cellspacing="0" class="layoutTable"
+											style="margin-bottom: 10px;">
+											<tr>
+												<td><label for="urlInput" id="url">URL</label>
+												</td>
+												<td><input id="urlInput" type="text"
+													style="width: 500px;"></input>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr id="embeddedRow">
+									<td>
+										<table cellpadding="0" cellspacing="0" class="layoutTable"
+											style="margin-bottom: 10px;">
+											<tr>
+												<td>
+												<a id="generateMarkupForAngularLink">Generate Markup for HTML5/Angular JS &raquo;</a>
+												</td>
+											</tr>
+											<tr>
+												<td>
+												<a id="generateMarkupForJQueryLink">Generate Markup for JQuery &raquo;</a>
+												</td>
+											</tr>
+											<tr>
+												<td>
+												<a id="generateMarkupForWrapper"><div style="margin-bottom: 10px;">Generate HTML5 Framework Wrapper Code only &raquo;</div></a>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="markupTextarea">HTML Markup</label></td>
+											</tr>
+											<tr>
+												<td><textarea id="markupTextarea" cols="150" rows="25" class="code"></textarea>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="parametersTab">
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
 								<tr>
 									<td>
 										<div class="heading" id="paramDef">Parameter Definitions</div>
@@ -128,8 +174,7 @@
 																	</td>
 																</tr>
 															</table>
-														</div>
-													</td>
+														</div></td>
 												</tr>
 												<tr>
 													<td>
@@ -138,11 +183,11 @@
 																cellspacing="0">
 																<tbody />
 															</table>
-														</div></td>
+														</div>
+													</td>
 												</tr>
 											</table>
-										</div>
-									</td>
+										</div></td>
 								</tr>
 								<tr>
 									<td>
@@ -151,58 +196,60 @@
 											<tr>
 												<td><input id="addParameterDefinitionButton"
 													type="image" src="../../images/icons/add.png" title="Add"
-													alt="Add" class="toolbarButton" /></td>
+													alt="Add" class="toolbarButton" />
+												</td>
 												<td></td>
 											</tr>
 											<tr>
 												<td><label for="parameterDefinitionNameInput" id="name">Name</label>
 												</td>
 												<td><input id="parameterDefinitionNameInput"
-													type="text" />
-												</td>
+													type="text" /></td>
 											</tr>
 											<tr>
 												<td><label for="parameterDefinitionDirectionSelect"
-													id="direction">Direction</label></td>
+													id="direction">Direction</label>
+												</td>
 												<td><select id="parameterDefinitionDirectionSelect">
 														<!-- <option value="IN">In</option>
 														<option value="OUT">Out</option>
 														<option value="INOUT">In/Out</option> -->
-												</select></td>
+												</select>
+												</td>
 											</tr>
 											<tr>
 												<td><label for="dataTypeSelect" id="dataType">Data
-														Type</label>
-												</td>
+														Type</label></td>
 												<td><select id="dataTypeSelect" size="1">
 														<!-- <option value="primitive">Primitive</option>
 														<option value="struct">Data Structure</option>
 														<option value="dmsDocument">Document</option>
 														<option value="other">Other</option>  -->
-												</select></td>
-											</tr>
-											<tr id="primitiveDataTypeRow">
-												<td><label for="primitiveDataTypeSelect"
-													id="primitiveType" />Primitive Type</label>
-												</td>
-												<td><select id="primitiveDataTypeSelect" size="1">
 												</select>
 												</td>
 											</tr>
+											<tr id="primitiveDataTypeRow">
+												<td><label for="primitiveDataTypeSelect" id="primitiveType"/>Primitive Type</label></td>
+												<td><select id="primitiveDataTypeSelect" size="1">
+												</select></td>
+											</tr>
 											<tr id="structuredDataTypeRow">
 												<td><label for="structuredDataTypeSelect">Data
-														Structure</label></td>
+														Structure</label>
+												</td>
 												<td><select id="structuredDataTypeSelect" size="1">
-												</select></td>
+												</select>
+												</td>
 											</tr>
 											<tr id="documentTypeRow">
 												<td><label for="documentTypeSelect">Document
-														Type</label></td>
+														Type</label>
+												</td>
 												<td><select id="documentTypeSelect" size="1">
-												</select></td>
+												</select>
+												</td>
 											</tr>
-										</table>
-									</td>
+										</table></td>
 								</tr>
 							</table>
 						</div>
@@ -217,37 +264,38 @@
 														<tr>
 															<td><input id="resetButton" type="image"
 																src="../../images/icons/clear.png"
-																title="Reinitialize Input Data Fields" /></td>
+																title="Reinitialize Input Data Fields" />
+															</td>
 															<td><input id="runButton" type="image"
 																src="../../images/icons/run.png"
-																title="Reinitialize External Web Application" />
-															</td>
+																title="Reinitialize External Web Application" /></td>
 															<td><input id="retrieveButton" type="image"
 																src="../../images/icons/upload.png"
-																title="Retrieve Output Data" /></td>
+																title="Retrieve Output Data" />
+															</td>
 														</tr>
-													</table></td>
+													</table>
+												</td>
 											</tr>
 											<tr>
 												<td><label for="inputDataTextArea" id="inputData">Input
-														Data</label>
-												</td>
+														Data</label></td>
 											</tr>
 											<tr>
 												<td><textarea id="inputDataTextarea" rows="10"
-														cols="80" style="width: 400px;"></textarea></td>
-											</tr>
-											<tr>
-												<td><label for="outputDataTextarea" id="outputData">Output
-														Data</label>
+														cols="80"  class="code" style="width: 400px;"></textarea>
 												</td>
 											</tr>
 											<tr>
-												<td><textarea id="outputDataTextarea" rows="10"
-														cols="80" style="width: 400px;"></textarea></td>
+												<td><label for="outputDataTextarea" id="outputData">Output
+														Data</label></td>
 											</tr>
-										</table>
-									</td>
+											<tr>
+												<td><textarea id="outputDataTextarea" rows="10"
+														cols="80"  class="code" style="width: 400px;"></textarea>
+												</td>
+											</tr>
+										</table></td>
 									<td><iframe id="applicationFrame"
 											src="../../public/emptyUiMashup.html"
 											style="width: 800px; height: 500px; border: 1px solid grey; margin-left: 10px;"></iframe>
@@ -255,8 +303,7 @@
 								</tr>
 							</table>
 						</div>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 		</table>
 	</div>

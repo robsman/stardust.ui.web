@@ -531,6 +531,24 @@ public class ModelerResource
       }
    }
 
+   @GET
+   @Produces(MediaType.TEXT_HTML)
+   @Path("models/{modelId}/embeddedWebApplication/{applicationId}")
+   public Response getProblems(@PathParam("modelId") String modelId, @PathParam("applicationId") String applicationId)
+   {
+      try
+      {
+         return Response.ok(getModelService().retrieveEmbeddedExternalWebApplicationMarkup(modelId, applicationId),
+               MediaType.TEXT_HTML_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)

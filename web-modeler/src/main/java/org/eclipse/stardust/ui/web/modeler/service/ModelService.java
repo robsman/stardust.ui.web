@@ -2799,4 +2799,27 @@ public class ModelService
 
       return postedData;
    }
+   /**
+   * Might be redundant as we could do this entirely on the client, but good test for equivalent Runtime functionality.
+   */
+  public String retrieveEmbeddedExternalWebApplicationMarkup(String modelId, String applicationId)
+  {
+     ApplicationType application = getModelBuilderFacade().findApplication(modelId + ":" + applicationId);
+
+     // TODO Improper coding - need better ways to find context
+     
+     for (ContextType context: application.getContext())
+     {
+        Object attribute = getModelBuilderFacade().getAttribute(context, "carnot:engine:ui:externalWebApp:markup");
+
+        if (attribute != null)
+        {
+           return getModelBuilderFacade().getAttributeValue(attribute);
+        }
+     }
+     
+     // TODO I18N
+     
+     return "Embedded Web Application is not configured.";
+  }
 }
