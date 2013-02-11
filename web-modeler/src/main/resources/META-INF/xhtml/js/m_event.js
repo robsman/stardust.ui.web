@@ -3,14 +3,14 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ],
-		function(m_utils, m_constants) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_i18nUtils) {
 
 			return {
 				createStartEvent : function(process) {
@@ -31,7 +31,7 @@ define(
 				createStopEvent : function(process) {
 					var event = new Event();
 
-					event.initialize("", "", m_constants.STOP_EVENT_TYPE);
+					event.initialize("", m_i18nUtils.getProperty("modeler.diagram.endEvent.defaultName"), m_constants.STOP_EVENT_TYPE);
 
 					return event;
 				},
@@ -45,7 +45,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Event() {
 				this.type = m_constants.EVENT;
@@ -58,14 +58,14 @@ define(
 				this.documentDataId = null;
 
 				/**
-				 * 
+				 *
 				 */
 				Event.prototype.toString = function() {
 					return "Lightdust.Event";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Event.prototype.initialize = function(id, name, eventType) {
 					this.id = id;
@@ -94,7 +94,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Event.prototype.bindWithActivity = function(activity) {
 					this.bindingActivityUuid = activity.id; // TODO use UUID
@@ -102,14 +102,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Event.prototype.unbindFromActivity = function() {
 					this.bindingActivityUuid = null;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Event.prototype.isBoundaryEvent = function() {
 					return this.bindingActivityUuid != null;
@@ -117,7 +117,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getPossibleEventClasses(eventType, interrupting, throwing,
 					boundary, subProcess) {

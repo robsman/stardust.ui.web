@@ -150,9 +150,14 @@ public class EventCommandHandler
 
             parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
 
+            String eventName = request.getAsJsonObject(
+                  ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
+                  ModelerConstants.NAME_PROPERTY)
+                  ? extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+                        ModelerConstants.NAME_PROPERTY) : "End Event";
             // add a host activity
             ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
-                  .withIdAndName("event_" + UUID.randomUUID(), "End Event")
+                  .withIdAndName("event_" + UUID.randomUUID(), eventName)
                   .build();
             hostActivity.setElementOid(++maxOid);
             EventMarshallingUtils.tagAsEndEventHost(hostActivity);
