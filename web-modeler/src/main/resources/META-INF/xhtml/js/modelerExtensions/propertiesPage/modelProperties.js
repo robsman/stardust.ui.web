@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -32,7 +32,8 @@ define(
 							pageHtmlUrl : "modelConfigurationVariablesPropertiesPage.html",
 							provider : m_modelConfigurationVariablesPropertiesPage,
 							visibility : "always",
-							pageName : "Configuration Variables", // TODO I18N
+							pageName : m_i18nUtils
+									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
 							pageIconUrl : "../../images/icons/basic-properties-page.png"
 						} ]
 			};

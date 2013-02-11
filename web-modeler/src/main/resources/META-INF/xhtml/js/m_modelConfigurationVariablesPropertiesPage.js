@@ -46,6 +46,22 @@ define(
 				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.initialize = function() {
+					jQuery("#cofigurationVariableHeading")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.title"));
+					jQuery("th#name")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.name"));
+					jQuery("th#defaultValue")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.defaultValue"));
+					jQuery("th#references")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.references"));
 					this.refreshConfigurationVariablesButton = jQuery("#refreshConfigurationVariablesButton");
 					this.refreshConfigurationVariablesButton.click({
 						"page" : this
@@ -276,7 +292,7 @@ define(
 
 													var info = "";
 
-													info += variables[n].references[m].elementType; // I18N
+													info +=  m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.elementType." + variables[n].references[m].elementType);
 
 													if (variables[n].references[m].elementName) {
 														info += " <span class='emphasis'>";
@@ -285,8 +301,8 @@ define(
 													}
 
 													if (variables[n].references[m].scopeType) {
-														info += " of "; // I18N
-														info += variables[n].references[m].scopeType; // I18N
+														info += " " + m_i18nUtils.getProperty("modeler.general.ofLiteral") + " ";
+														info += m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.scopeType." + variables[n].references[m].scopeType);
 
 														if (variables[n].references[m].scopeType) {
 															info += " <span class='emphasis'>";
