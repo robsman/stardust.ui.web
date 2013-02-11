@@ -736,9 +736,12 @@ define(
 										command.modelId);
 							}
 							if (null == symbol) {
-								symbol = this.findConnectionByGuid(
-										obj.changes.removed[i].oid,
-										command.modelId);
+								if (obj.changes.removed[i].type
+										&& obj.changes.removed[i].type != m_constants.CONTROL_FLOW) {
+									symbol = this.findConnectionByGuid(
+											obj.changes.removed[i].oid,
+											command.modelId);
+								}
 							}
 							if (null != symbol) {
 								symbol.remove();
