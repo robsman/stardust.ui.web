@@ -2835,16 +2835,20 @@ define(
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 				}
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
@@ -2854,8 +2858,10 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_application.deleteApplication(transferObject.id, model);
@@ -2865,8 +2871,10 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_participant.deleteParticipantRole(transferObject.id,
@@ -2878,8 +2886,10 @@ define(
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_typeDeclaration.deleteTypeDeclaration(transferObject.id, model);
@@ -2889,8 +2899,10 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_data.deleteData(transferObject.id, model);
