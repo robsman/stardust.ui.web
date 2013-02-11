@@ -156,6 +156,7 @@ define(
 
 					jQuery(this.addButton).click(
 						function(event) {
+							jQuery("tr.selected", view.tableBody).removeClass("selected")
 							view.addElement();
 						});
 					jQuery(this.deleteButton).click(
@@ -373,7 +374,6 @@ define(
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
 
-						view.refreshElementsTable();
 					});
 				};
 
@@ -388,7 +388,6 @@ define(
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
 
-						view.refreshElementsTable();
 					});
 				};
 
@@ -428,6 +427,8 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
+					var selectedRowId = jQuery("table#typeDeclarationsTable tr.selected").first().attr('id');
+
 					// TODO merge instead of fully rebuild table
 					this.tableBody.empty();
 
@@ -453,6 +454,8 @@ define(
 							view.tableBody.append(childRow);
 						});
 					});
+
+					jQuery("table#typeDeclarationsTable #" + selectedRowId).addClass("selected");
 
 					//this.tree.tableScroll("undo");
 					this.tree.tableScroll({
