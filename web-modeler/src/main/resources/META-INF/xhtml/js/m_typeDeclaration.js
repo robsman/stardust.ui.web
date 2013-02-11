@@ -510,7 +510,7 @@ define(
 
 			function findType(schema, typeName) {
 				var parsedName = parseQName(typeName);
-				if ( !parsedName.namespace || (parsedName.namespace === schema.targetNamespace)) {
+				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
 					jQuery.each(schema.types, function() {
 						if (this.name === parsedName.name) {
 							type = this;
