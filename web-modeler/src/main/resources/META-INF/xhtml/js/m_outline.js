@@ -1170,15 +1170,20 @@ define(
 															downloadModel(obj
 																	.attr("id"));
 														}
-													},
-													"openModelReport" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.model.contextMenu.openModelReport"),
-														"action" : function(obj) {
-															openModelReport(obj
-																	.attr("id"));
-														}
 													}
+
+													// openModelReport options is Commented out as,
+													// this will not be supported in 7.1.1
+													// Uncomment when needed.
+//													,
+//													"openModelReport" : {
+//														"label" : m_i18nUtils
+//																.getProperty("modeler.outline.model.contextMenu.openModelReport"),
+//														"action" : function(obj) {
+//															openModelReport(obj
+//																	.attr("id"));
+//														}
+//													}
 												};
 											} else if ('process' == node
 													.attr('rel')) {
