@@ -880,9 +880,9 @@ define(
 										this.modelElement.conditionExpression);
 
 								this.conditionExpressionText.attr({
-									x : this.fromAnchorPoint.x
+									x : this.toAnchorPoint.x
 											+ this.conditionExpressionTextXOffset,
-									y : this.fromAnchorPoint.y
+									y : this.toAnchorPoint.y
 											+ this.conditionExpressionTextYOffset
 								});
 
@@ -967,22 +967,18 @@ define(
 					}
 					if (!this.conditionExpressionTextXOffset
 							|| !this.conditionExpressionTextYOffset) {
-						if (this.fromAnchorPoint.orientation == m_constants.NORTH) {
+						if (this.toAnchorPoint.orientation == m_constants.NORTH) {
 							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
-									* -3;
-						} else if (this.fromAnchorPoint.orientation == m_constants.EAST) {
-							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 3;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
-									* -1;
-						} else if (this.fromAnchorPoint.orientation == m_constants.SOUTH) {
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
+						} else if (this.toAnchorPoint.orientation == m_constants.EAST) {
 							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 3;
-						} else if (this.fromAnchorPoint.orientation == m_constants.WEST) {
-							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
-									* -5;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET
-									* -1;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
+						} else if (this.toAnchorPoint.orientation == m_constants.SOUTH) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 1;
+						} else if (this.toAnchorPoint.orientation == m_constants.WEST) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -3;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
 						}
 					}
 				};
@@ -1226,9 +1222,9 @@ define(
 						}
 
 						this.conditionExpressionText.attr({
-							x : this.fromAnchorPoint.x
+							x : this.toAnchorPoint.x
 									+ this.conditionExpressionTextXOffset,
-							y : this.fromAnchorPoint.y
+							y : this.toAnchorPoint.y
 									+ this.conditionExpressionTextYOffset
 						});
 					}
@@ -1734,14 +1730,14 @@ define(
 						dY, x, y, event) {
 					this.conditionExpressionTextXOffset = x
 							* this.diagram.zoomFactor - this.diagram.X_OFFSET
-							- this.fromAnchorPoint.x + this.diagram.scrollPane.scrollLeft() ;
+							- this.toAnchorPoint.x + this.diagram.scrollPane.scrollLeft() ;
 					this.conditionExpressionTextYOffset = y
 							* this.diagram.zoomFactor - this.diagram.Y_OFFSET
-							- this.fromAnchorPoint.y + this.diagram.scrollPane.scrollTop();
+							- this.toAnchorPoint.y + this.diagram.scrollPane.scrollTop();
 
 					this.conditionExpressionText.attr({
-						"x" : this.conditionExpressionTextXOffset + this.fromAnchorPoint.x,
-						"y" : this.conditionExpressionTextYOffset + this.fromAnchorPoint.y
+						"x" : this.conditionExpressionTextXOffset + this.toAnchorPoint.x,
+						"y" : this.conditionExpressionTextYOffset + this.toAnchorPoint.y
 					});
 				};
 
