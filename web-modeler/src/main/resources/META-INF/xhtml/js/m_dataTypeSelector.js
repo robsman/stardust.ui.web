@@ -213,43 +213,43 @@ define(
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"String\">" + dataType
+							.append("<option value=\"String\" title=\"String\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"boolean\">" + dataType
+							.append("<option value=\"boolean\" title=\"boolean\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"int\">" + dataType
+							.append("<option value=\"int\" title=\"int\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"long\">" + dataType
+							.append("<option value=\"long\" title=\"long\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"double\">" + dataType
+							.append("<option value=\"double\" title=\"double\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"Timestamp\">" + dataType
+							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
 									+ "</option>");
 					// Commented as we don't support Money and Calendar values yet.
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
 //					this.primitiveDataTypeSelect
-//							.append("<option value=\"Decimal\">" + dataType
+//							.append("<option value=\"Decimal\" title=\"Decimal\">" + dataType
 //									+ "</option>");
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
 //					this.primitiveDataTypeSelect
-//							.append("<option value=\"Calendar\">" + dataType
+//							.append("<option value=\"Calendar\" title=\"Calendar\">" + dataType
 //									+ "</option>");
 				}
 
