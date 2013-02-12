@@ -118,30 +118,63 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.getEndpointUri = function() {
 					var uri = "file://";
-
-					uri += this.fileOrDirectoryNameInput.val();
-
-					uri += "?consumer.recursive="
-							+ this.recursiveInput.is(":checked");
-					uri += "&consumer.initialInterval=";
-					uri += this.getIntervalInMilliseconds(
+					//if(this.fileOrDirectoryNameInput!=null && this.fileOrDirectoryNameInput.val()!="Please specify ..."){
+						uri += this.fileOrDirectoryNameInput.val();
+					//}
+					
+					var separator = "?";
+					
+					if(this.recursiveInput.is(":checked")== true){
+						uri += separator + "recursive="+this.recursiveInput.is(":checked");
+						separator = "&";
+						
+					}
+					
+					if(this.getIntervalInMilliseconds(
+							this.initialIntervalInput.val(),
+							this.initialIntervalUnitSelect.val())!=null){
+						uri += separator + "initialDelay="+this.getIntervalInMilliseconds(
 							this.initialIntervalInput.val(),
 							this.initialIntervalUnitSelect.val());
-					uri += "&consumer.repeatInterval=";
-					uri += this.getIntervalInMilliseconds(
+						separator = "&";
+					}
+					
+					if(this.getIntervalInMilliseconds(
+							this.repeatIntervalInput.val(),
+							this.repeatIntervalUnitSelect.val())!=null){
+						uri += separator + "delay="+this.getIntervalInMilliseconds(
 							this.repeatIntervalInput.val(),
 							this.repeatIntervalUnitSelect.val());
+						separator = "&";
+					}
+					if (this.lockBehaviorSelect.val() == "none") {
+					//nothing to do
+					}else{
+							if (this.lockBehaviorSelect.val() == "markerFile") {
+								uri += separator + "readLock=markerFile";
+								separator = "&";
+							}else{
+								if (this.lockBehaviorSelect.val() == "changed") {
+								uri += separator + "readLock=changed";
+									separator = "&";
+								}
+							}
+					}
+					
+					/*
 					uri += "&consumer.alwaysConsume="
-							+ this.alwaysConsumeInput.prop("checked");
+							+ this.alwaysConsumeInput.prop("checked");*/
 
 					if (this.postProcessingSelect.val() == "noop") {
-						uri += "&consumer.noop=true";
-						uri += "&consumer.delete=false";
+						uri += "&noop=true";
+						uri += "&delete=false";
 					} else if (this.postProcessingSelect.val() == "delete") {
-						uri += "&consumer.noop=false";
-						uri += "&consumer.delete=true";
+						uri += "&noop=false";
+						uri += "&delete=true";
 					}
-
+					
+					uri=uri.replace(/&/g, "&amp;")
+					
 					return uri;
 				};
 
@@ -184,7 +217,9 @@ define(
 
 					this.submitOverlayChanges(parameterMappings);
 				};
-
+				FileEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "<to uri=\"ipp:direct\"/>";
+				};
 				/**
 				 * 
 				 */
@@ -197,9 +232,9 @@ define(
 
 					// TODO Need better URL encoding
 
-					route = route.replace(/&/g, "&amp;");
+					//route = route.replace(/&/g,"&amp;");
 
-					var xmlDoc = jQuery.parseXML(route);
+					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
@@ -221,10 +256,10 @@ define(
 									var name = option[0];
 									var value = option[1];
 
-									if (name == "consumer.recursive") {
+									if (name == "recursive") {
 										this.recursiveInput.prop("checked",
 												value);
-									} else if (name == "consumer.initialInterval") {
+									} else if (name == "initialDelay") {
 										var intervalWithUnit = this
 												.getIntervalWithUnit(value);
 
@@ -232,7 +267,7 @@ define(
 												.val(intervalWithUnit.value);
 										this.initialIntervalUnitSelect
 												.val(intervalWithUnit.unit);
-									} else if (name == "consumer.repeatInterval") {
+									} else if (name == "delay") {
 										var intervalWithUnit = this
 												.getIntervalWithUnit(value);
 
@@ -240,15 +275,15 @@ define(
 												.val(intervalWithUnit.value);
 										this.repeatIntervalUnitSelect
 												.val(intervalWithUnit.unit);
-									} else if (name == "consumer.alwaysConsume") {
+									/*} else if (name == "consumer.alwaysConsume") {
 										this.alwaysConsumeInput.prop("checked",
-												value == "true");
-									} else if (name == "consumer.noop") {
+												value == "true");*/
+									} else if (name == "noop") {
 										if (value == "true") {
 											this.postProcessingSelect
 													.val("noop");
 										}
-									} else if (name == "consumer.delete") {
+									} else if (name == "delete") {
 										if (value == "true") {
 											this.postProcessingSelect
 													.val("delete");
