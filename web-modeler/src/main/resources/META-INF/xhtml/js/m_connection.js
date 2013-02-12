@@ -1724,7 +1724,7 @@ define(
 				 */
 				Connection.prototype.dragStartConditionExpressionText = function(
 						x, y, event) {
-					this.diagram.mode = this.SYMBOL_MOVE_MODE;
+					this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
 				};
 
 				/**
@@ -1761,7 +1761,7 @@ define(
 					};
 
 					this.createUpdateCommand(changes);
-					this.diagram.mode = this.NORMAL_MODE;
+					this.diagram.mode = this.diagram.NORMAL_MODE;
 				};
 
 				/**
