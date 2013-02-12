@@ -40,6 +40,8 @@ define(
 			function XsdStructuredDataTypeView() {
 				var view = m_modelElementView.create();
 				var viewManager = m_jsfViewManager.create();
+				var rowAdded = false;
+				var rowMoved = false;
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(XsdStructuredDataTypeView.prototype,
@@ -158,6 +160,7 @@ define(
 						function(event) {
 							jQuery("tr.selected", view.tableBody).removeClass("selected")
 							view.addElement();
+							rowAdded = true;
 						});
 					jQuery(this.deleteButton).click(
 						function(event) {
@@ -166,10 +169,12 @@ define(
 					jQuery(this.upButton).click(
 							function(event) {
 								view.moveElementUp(jQuery("tr.selected", view.tableBody));
+								rowMoved = true;
 							});
 					jQuery(this.downButton).click(
 							function(event) {
 								view.moveElementDown(jQuery("tr.selected", view.tableBody));
+								rowMoved = true;
 							});
 
 					this.initializeModelElementView(typeDeclaration);
@@ -472,6 +477,37 @@ define(
 					// bind events after tree got initialized, otherwise renames
 					// in parent rows don't get triggered
 					this.bindTableEventHandlers();
+
+					// Scrolls down if the a row is added
+					if (rowAdded) {
+						jQuery("div.tablescroll_wrapper").scrollTop(
+								jQuery("div.tablescroll_wrapper table")
+										.height());
+						jQuery("tr:last", "div.tablescroll_wrapper table")
+								.find("input.nameInput").focus();
+						rowAdded = false;
+					}
+
+					// Keeps the selected row within the wrapper div's view port
+					// TODO - check if the logic can be simplified.
+					if (rowMoved) {
+						var wrapperDiv = jQuery("div.tablescroll_wrapper");
+						var divTop = wrapperDiv.position().top;
+						var divBottom = wrapperDiv.position().top
+								+ wrapperDiv.height();
+						var selectedRow = jQuery("div.tablescroll_wrapper table tr.selected");
+						var rowPosition = selectedRow.position();
+						if (rowPosition
+								&& !((rowPosition.top > (divTop + selectedRow
+										.height())) && (rowPosition.top < (divBottom - selectedRow
+										.height())))) {
+							wrapperDiv.scrollTop(rowPosition.top
+									- jQuery("div.tablescroll_wrapper table")
+											.position().top
+									- selectedRow.height());
+							rowMoved = false;
+						}
+					}
 				};
 
 				/**
@@ -691,7 +727,8 @@ define(
 						}
 					}
 					for ( var i = 0; i < obj.changes.modified.length; i++) {
-						if (m_constants.TYPE_DECLARATION_PROPERTY == obj.changes.modified[i].type) {
+						if (m_constants.TYPE_DECLARATION_PROPERTY == obj.changes.modified[i].type
+								&& obj.changes.modified[i].uuid != this.getModelElement().uuid) {
 							refresh = true;
 						}
 					}

@@ -279,16 +279,15 @@ div.toolBar {
 }
 
 .dataTable input {
-	border: none;
-	background: none;
+	border-width: 1;
 }
 
-.dataTable input:HOVER {
-	border: #9b9b9b;
+.dataTable input:hover {
+	border-color: #9b9b9b;
 }
 
 .dataTable input:focus {
-	border: gray;
+	border-color: gray;
 }
 
 .treeTable tr td.expander {
