@@ -2939,7 +2939,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   getModelBuilderFacade().getAttributeValue(attribute));
          }
          else if (getModelBuilderFacade().getAttributeName(attribute).equals(
-               "carnot:engine:dataType"))
+               ModelerConstants.DATA_TYPE))
          {
             // For Access Points
 

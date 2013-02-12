@@ -613,7 +613,7 @@ public class ConnectionCommandHandler
          for (AttributeType attributeType : attr)
          {
             if (getModelBuilderFacade().getAttributeName(attributeType).equals(
-                  "carnot:engine:dataType"))
+                  ModelerConstants.DATA_TYPE))
             {
                dataId = getModelBuilderFacade().getAttributeValue(attributeType);
                break;

@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -60,7 +61,6 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.FormalParameter;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -91,7 +91,6 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
@@ -144,9 +143,9 @@ import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelE
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
@@ -198,7 +197,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -299,7 +298,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -453,7 +452,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param controlFlowJson
     */
@@ -528,7 +527,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataFlowConnection
     * @param dataFlowConnectionJson
     */
@@ -589,7 +588,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // have to be created for both
 
          // Create input mapping
-
          if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                && !dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                      .isJsonNull())
@@ -603,23 +601,43 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          // Create output mapping
-
          if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
                && !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
                      .isJsonNull())
          {
-            createDataMapping(
+            DataMappingType outDataMapping = createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
                   dataFlowConnection.getDataSymbol().getData(),
                   dataFlowJson,
                   DirectionType.OUT_LITERAL,
                   dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
+
+            //update context and data access point
+            if (null != outDataMapping && dataFlowConnection.getActivitySymbol().getActivity().getImplementation().getLiteral().equals("Application"))
+            {
+               outDataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+               EList<AttributeType> dataAttr = dataFlowConnection.getDataSymbol().getData().getAttribute();
+               String dataId = null;
+               for (AttributeType attributeType : dataAttr)
+               {
+                  if (getModelBuilderFacade().getAttributeName(attributeType).equals(
+                        ModelerConstants.DATA_TYPE))
+                  {
+                     dataId = getModelBuilderFacade().getAttributeValue(attributeType);
+                     break;
+                  }
+               }
+               if (null != dataId)
+               {
+                  outDataMapping.setApplicationAccessPoint(dataId);
+               }
+            }
          }
       }
    }
 
    /**
-    * 
+    *
     * @param activity
     * @param data
     * @param direction
@@ -689,7 +707,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param json
     */
@@ -792,7 +810,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     */
@@ -854,7 +872,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param processDefinition
     * @param processDefinitionJson
     */
@@ -1095,7 +1113,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1134,7 +1152,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param activitySymbolJson
     */
@@ -1276,7 +1294,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * assist retrieving diagram - orientation
-    * 
+    *
     * @param nodeSymbol
     * @return
     */
@@ -1303,7 +1321,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * Update the x,y co-ordinates of symbols contained in the lane
-    * 
+    *
     * @param laneSymbol
     * @param xOffset
     * @param yOffset
@@ -1335,7 +1353,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    /**
     * remove the association from existing lane and add symbol to new Lane
-    * 
+    *
     * @param nodeSymbol
     * @param newParentSymbol
     * @param symbolType
@@ -1396,7 +1414,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param activitySymbol
     * @param gatewaySymbolJson
     */
@@ -1415,7 +1433,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param startEventSymbol
     * @param startEventSymbolJson
     */
@@ -1589,7 +1607,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param endEventSymbol
     * @param endEventSymbolJson
     */
@@ -1618,7 +1636,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param trigger
     * @param triggerJson
     */
@@ -1766,7 +1784,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param annotationSymbol
     * @param annotationSymbolJson
     */
@@ -1807,7 +1825,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (applicationJson.has(ModelerConstants.CONTEXTS_PROPERTY))
       {
          // TODO This is too invasive as client may ship incomplete context(s)
-         
+
          application.getContext().clear();
          application.getAccessPoint().clear();
 
@@ -2153,7 +2171,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param simpleTypeJson
     */
@@ -2252,7 +2270,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param def
     * @param json
     */
@@ -2425,7 +2443,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param schema
     * @param json
     */
@@ -2610,7 +2628,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param elementJson
     * @param elementProperties
@@ -2631,7 +2649,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param targetElement
     * @param request
     * @param property
@@ -2701,7 +2719,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -2773,7 +2791,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2797,7 +2815,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -2821,7 +2839,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -2848,7 +2866,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
@@ -2862,7 +2880,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param json
     * @param memberName
     * @return
@@ -2941,7 +2959,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param elementType
     * @return
     */
@@ -2968,7 +2986,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -2982,7 +3000,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ServiceFactory getServiceFactory()
