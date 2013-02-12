@@ -1045,10 +1045,11 @@
 																				Value</label></td>
 																		<td>
 																			<form name="form">
-																				<!-- Somehow ng-switch with $watch is not working, hence using multiple ng-show -->
-																				<!-- For name or id - Angular Expression is not working -->
-																				<!-- For ng-pattern - Angular Expression is not working -->
-																				<!-- No way to inject attributes (e.g. ng-pattern) after input element is placed -->
+																				<!-- Limitations / TODOs to make it more elegant/compact -->
+																				<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap, 
+																									and then jQuery does not find elements, hence using multiple ng-show -->
+																				<!-- For name or id - Angular Expression cannot be used -->
+																				<!-- For ng-pattern - Angular Expression is somehow not working -->
 																				<div ng-show="dataType == 'boolean'">
 																					<input type="checkbox" id="booleanInputText" name="booleanInputText"
 																							ng-model="defaultValue" />
