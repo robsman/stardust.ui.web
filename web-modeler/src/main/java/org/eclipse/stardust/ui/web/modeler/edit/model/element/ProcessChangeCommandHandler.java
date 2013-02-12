@@ -76,7 +76,7 @@ public class ProcessChangeCommandHandler
       poolSymbol.setElementOid(++maxOid);
       poolSymbol.setXPos(0);
       poolSymbol.setYPos(0);
-      poolSymbol.setWidth(514);
+      poolSymbol.setWidth(ModelerConstants.DEFAULT_SWIMLANE_WIDTH + 34);
       poolSymbol.setHeight(670);
       poolSymbol.setName(defaultPoolName);
       poolSymbol.setId("_default_pool__1");
@@ -95,7 +95,7 @@ public class ProcessChangeCommandHandler
       //TODO - Move this code to javascript
       laneSymbol.setXPos(12);
       laneSymbol.setYPos(32);
-      laneSymbol.setWidth(poolSymbol.getWidth() - 34);
+      laneSymbol.setWidth(ModelerConstants.DEFAULT_SWIMLANE_WIDTH);
       laneSymbol.setHeight(poolSymbol.getHeight() - 70);
       laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
 

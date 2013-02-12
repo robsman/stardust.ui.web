@@ -185,7 +185,7 @@ define(function() {
 		POOL_SWIMLANE_SELECT_BOX_COLOR : "black",
 		POOL_COLOR : "#d5d5d2",
 		SWIMLANE_COLOR : "#c7d8db",
-		LANE_DEFAULT_WIDTH : 480,
+		LANE_DEFAULT_WIDTH : 375,
 		LANE_DEFAULT_HEIGHT : 580,
 		LANE_MIN_WIDTH : 80,
 		// Adjustment required on Symbols
