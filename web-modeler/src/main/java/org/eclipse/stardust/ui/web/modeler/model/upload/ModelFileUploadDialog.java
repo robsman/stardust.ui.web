@@ -88,16 +88,12 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
          }
          else
          {
-            closePopup();
             switch (fileInfo.getStatus())
             {
             case FileInfo.UNSPECIFIED_NAME:
-               ExceptionHandler.handleException(
-                     "commonFile" + getBeanId(),
-                     MessagesViewsCommonBean.getInstance().getString(
-                           "views.genericRepositoryView.UNSPECIFIED_NAME"));
                break;
             default:
+               closePopup();
                ExceptionHandler.handleException(
                      "commonFile" + getBeanId(),
                      MessagesViewsCommonBean.getInstance().getString(
