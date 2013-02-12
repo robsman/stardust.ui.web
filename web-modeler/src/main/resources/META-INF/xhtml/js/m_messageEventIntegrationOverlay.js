@@ -58,7 +58,6 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.type"));
 
-					/*
 					
 					jQuery("label[for='preserveQoSInput']")
 							.text(
@@ -74,13 +73,11 @@ define(
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
 											
 					
-					*/
-				/*	this.configurationSpan = this.mapInputId("configuration");*/
+					this.configurationSpan = this.mapInputId("configuration");
 
-				/*	this.configurationSpan
+				this.configurationSpan
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
-									*/
 					this.parametersSpan = this.mapInputId("parameters");
 
 					this.parametersSpan
@@ -90,32 +87,38 @@ define(
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
 					
-					/*
+					
 					this.clientIdInput = this.mapInputId("clientIdInput");
 					this.selectorInput = this.mapInputId("selectorInput");
 					this.transactedInput = this.mapInputId("transactedInput");
 					this.preserveQoSInput = this.mapInputId("preserveQoSInput");
-					*/
+					
+					this.jmsComponentIdInput= this.mapInputId("jmsComponentIdInput")
+					
 					this.registerForRouteChanges(this.typeSelect);
 					this.registerForRouteChanges(this.nameInput);
-					
-					/*
 					this.registerForRouteChanges(this.selectorInput);
 					this.registerForRouteChanges(this.transactedInput);
 					this.registerForRouteChanges(this.preserveQoSInput);
-					*/
+					this.registerForRouteChanges(this.jmsComponentIdInput);
+					
 				};
 
 				/**
 				 * 
 				 */
 				MessageEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					var uri = "jms:";
+					var defaultJmsComponentId="jms";
+					if(this.jmsComponentIdInput.val() != null && this.jmsComponentIdInput.val().length != 0)
+					{
+						defaultJmsComponentId=this.jmsComponentIdInput.val();
+					}
+					var uri = defaultJmsComponentId+":";
 
 					uri += this.typeSelect.val();
 					uri += ":";
 					uri += this.nameInput.val();
-/*
+
 					var separator = "?";
 					
 					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
@@ -128,12 +131,15 @@ define(
 						separator = "&";
 					} 
 
-					uri += separator + "transacted=";
-					separator = "&";
-					uri += this.transactedInput.prop("checked");
-					uri += separator + "preserveMessageQos=";
-					uri += this.preserveQoSInput.prop("checked");
-*/
+					if(this.transactedInput.prop("checked")== true){
+						uri += separator + "transacted=";
+						separator = "&";
+						uri += this.transactedInput.prop("checked");
+					}
+					if(this.preserveQoSInput.prop("checked")==true){
+						uri += separator + "preserveMessageQos=";
+						uri += this.preserveQoSInput.prop("checked");
+					}
 					return uri;
 				};
 
@@ -190,7 +196,7 @@ define(
 						var source = sourceAndProperties[0];
 
 						var sourceParts = source.split(":");
-
+						this.jmsComponentIdInput.val(sourceParts[0])
 						this.typeSelect.val(sourceParts[1]);
 
 						var clientName = "";
@@ -246,6 +252,21 @@ define(
 				MessageEventIntegrationOverlay.prototype.validate = function() {
 					this.nameInput.removeClass("error");
 
+					if (m_utils.isEmptyString(this.jmsComponentIdInput.val()) ||
+							this.jmsComponentIdInput.val() == m_i18nUtils
+							.getProperty("modeler.general.toBeDefined")) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.jmsComponentIdInput.addClass("error");
+						this.jmsComponentIdInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+					
+					
 					if (m_utils.isEmptyString(this.nameInput.val()) ||
 							this.nameInput.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
