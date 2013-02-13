@@ -47,10 +47,8 @@ define(
 
 					if (this.options.scope == null) {
 						this.options.scope = "";
-						this.dataTypeSelectorScope = "parameterDefinitionTypeSelector";
 					} else {
 						this.options.scope = "#" + this.options.scope + " ";
-						this.dataTypeSelectorScope = this.options.scope;
 					}
 
 					// TODO: Change width via CSS and classes here
@@ -102,7 +100,7 @@ define(
 
 					if (this.options.supportsDataTypeSelection) {
 						this.dataTypeSelector = m_dataTypeSelector.create({
-							scope : this.dataTypeSelectorScope,
+							scope : "parameterDefinitionTypeSelector",
 							submitHandler : this,
 							supportsOtherData : false,
 							supportsDocumentTypes : true,
