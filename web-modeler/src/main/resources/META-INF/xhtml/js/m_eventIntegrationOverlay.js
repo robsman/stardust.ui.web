@@ -137,7 +137,7 @@ define(
 				 * 
 				 */
 				EventIntegrationOverlay.prototype.getCamelContext = function() {
-					return "camelContext";
+					return "defaultCamelContext";
 				};
 
 				/**
