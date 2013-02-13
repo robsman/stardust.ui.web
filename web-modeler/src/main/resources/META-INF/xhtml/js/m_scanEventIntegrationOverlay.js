@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -31,7 +31,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ScanEventIntegrationOverlay() {
 				var eventIntegrationOverlay = m_eventIntegrationOverlay
@@ -42,7 +42,7 @@ define(
 						eventIntegrationOverlay);
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
@@ -62,14 +62,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.getImplementation = function() {
 					return "scan";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.setDocumentData = function() {
 					this.metadataStructureLabel.empty();
@@ -83,17 +83,26 @@ define(
 
 						var data = m_model
 								.findData(this.documentDataList.val());
-						var structuredDataType = m_model
-								.findTypeDeclaration(data.structuredDataTypeFullId);
-						var model = m_model.findModel(m_model
-								.stripModelId(structuredDataType.getFullId()));
+						if (data.structuredDataTypeFullId) {
+							var structuredDataType = m_model
+									.findTypeDeclaration(data.structuredDataTypeFullId);
+							var model = m_model.findModel(m_model
+									.stripModelId(structuredDataType
+											.getFullId()));
 
-						if (model.id == this.scopeModel.id) {
-							this.metadataStructureLabel
-									.append(structuredDataType.name);
+							if (model.id == this.scopeModel.id) {
+								this.metadataStructureLabel
+										.append(structuredDataType.name);
+							} else {
+								this.metadataStructureLabel.append(model.name
+										+ "/" + structuredDataType.name);
+							}
 						} else {
-							this.metadataStructureLabel.append(model.name + "/"
-									+ structuredDataType.name);
+							this.metadataStructureLabel
+									.append("<span style='color: grey;'><i>"
+											+ m_i18nUtils
+													.getProperty("modeler.general.defaultLiteral")
+											+ "</i></span>");
 						}
 					} else {
 						this.documentDataList.val(m_constants.TO_BE_DEFINED);
@@ -101,7 +110,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
 					if (this.documentDataList.val() != null
@@ -162,7 +171,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.populateDataItemsList = function() {
 					this.documentDataList.empty();
@@ -219,14 +228,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.activate = function() {
 					this.submitOverlayChanges();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.update = function() {
 					m_utils.debug("Scan Trigger");
@@ -240,7 +249,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.validate = function() {
 					return true;
