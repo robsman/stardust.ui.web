@@ -314,7 +314,7 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpoint",
-									"carnot:engine:camel::camelContextId" : "camelContext",
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
 								},
 								contexts : {
