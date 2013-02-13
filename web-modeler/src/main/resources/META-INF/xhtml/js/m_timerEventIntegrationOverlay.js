@@ -57,6 +57,11 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.repeatCount"));
 
+					jQuery("label[for='fixedRateInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent.fixedRate"));
+
 					this.configurationSpan = this.mapInputId("configuration");
 
 					this.configurationSpan
@@ -72,29 +77,45 @@ define(
 							.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
+					this.fixedRateInput = this.mapInputId("fixedRateInput");
 
-					this.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
+					this
+							.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
 
 					this.repeatCountInput = this.mapInputId("repeatCountInput");
-					
+
 					this.registerForRouteChanges(this.repeatCountInput);
 					this.registerForRouteChanges(this.repeatIntervalInput);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
+					this.registerForRouteChanges(this.fixedRateInput);
 				};
 
 				/**
 				 * 
 				 */
 				TimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					var uri = "timer://test?";
+					var uri = "timer://timerEndpoint";
+					var separator = "?";
 
-					uri += "repeatCount";
-					uri += "=";
-					uri += this.repeatCountInput.val();
-					uri += "&repeatInterval";
-					uri += "=";
-					uri += this.getIntervalInMilliseconds(this.repeatIntervalInput.val(), this.repeatIntervalUnitSelect.val());
-						
+					if (this.repeatCountInput.val() != null) {
+						uri += separator + "repeatCount="
+								+ this.repeatCountInput.val();
+						separator = "&";
+					}
+					if (this.fixedRateInput.prop("checked") == true) {
+						uri += separator + "fixedRate=true";
+						separator = "&";
+					}
+
+					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
+							.val(), this.repeatIntervalUnitSelect.val()) != null) {
+						uri += separator
+								+ "period="
+								+ this.getIntervalInMilliseconds(
+										this.repeatIntervalInput.val(),
+										this.repeatIntervalUnitSelect.val());
+					}
+					uri = uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 
@@ -107,52 +128,48 @@ define(
 
 					var parameterMappings = [];
 
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Message",
-									"message", "String"));
-					/*parameterMappings.push(this
-							.createPrimitiveParameterMapping("Calendar",
-									"calendar", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Fire Time",
-									"fireTime", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Job Detail",
-									"jobDetail", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Job Instance",
-									"jobInstance", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Job Runtime",
-									"jobRuntTime", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Merged Job Data Map", "mergedJobDataMap",
-									"String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Next Fire Time",
-									"nextFireTime", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Previous Fire Time", "previousFireTime",
-									"String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping(
-									"Scheduled Fire Time", "scheduledFireTime",
-									"String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Refire Count",
-									"refireCount", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Trigger Name",
-									"triggerName", "String"));
-					parameterMappings.push(this
-							.createPrimitiveParameterMapping("Trigger Group",
-									"triggerGroup", "String"));*/
+					/*
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Message", "message",
+					 * "String"));
+					 */
+					/*
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Calendar", "calendar",
+					 * "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Fire Time", "fireTime",
+					 * "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Job Detail",
+					 * "jobDetail", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Job Instance",
+					 * "jobInstance", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Job Runtime",
+					 * "jobRuntTime", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Merged Job Data Map",
+					 * "mergedJobDataMap", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Next Fire Time",
+					 * "nextFireTime", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Previous Fire Time",
+					 * "previousFireTime", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping( "Scheduled Fire Time",
+					 * "scheduledFireTime", "String"));
+					 * parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Refire Count",
+					 * "refireCount", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Trigger Name",
+					 * "triggerName", "String")); parameterMappings.push(this
+					 * .createPrimitiveParameterMapping("Trigger Group",
+					 * "triggerGroup", "String"));
+					 */
 
 					this.submitOverlayChanges(parameterMappings);
 				};
 
+				TimerEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "<to uri=\"ipp:direct\"/>";
+				};
 				/**
 				 * 
 				 */
@@ -164,13 +181,13 @@ define(
 					}
 
 					// TODO Need better URL encoding
-					
-					route = route.replace(/&/g, "&amp;");
 
-					var xmlDoc = jQuery.parseXML(route);
+					// route = route.replace(/&/g, "&amp;");
+
+					var xmlDoc = jQuery
+							.parseXML("<route>" + route + "</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
-					var uri = from.attr("uri");
 					var uri = from.attr("uri");
 					var protocolAndRest = uri.split("://");
 
@@ -192,20 +209,25 @@ define(
 
 							if (name == "repeatCount") {
 								this.repeatCountInput.val(value);
-							}
-							else if (name == "repeatInterval") {
-								var intervalWithUnit = this.getIntervalWithUnit(value);
-								
-								this.repeatIntervalInput.val(intervalWithUnit.value);
-								this.repeatIntervalUnitSelect.val(intervalWithUnit.unit);
+							} else if (name == "period") {
+								var intervalWithUnit = this
+										.getIntervalWithUnit(value);
+								this.repeatIntervalInput
+										.val(intervalWithUnit.value);
+								this.repeatIntervalUnitSelect
+										.val(intervalWithUnit.unit);
+							} else if (name == "fixedRate") {
+								if(value =="true")
+								this.fixedRateInput.prop("checked",
+										value == "true");
 							}
 						}
 					}
 
-					this.parameterMappingsPanel.setScopeModel(this.page
-							.getModel());
-					this.parameterMappingsPanel
-							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+					// this.parameterMappingsPanel.setScopeModel(this.page
+					// .getModel());
+					// this.parameterMappingsPanel
+					// .setParameterDefinitions(this.page.getEvent().parameterMappings);
 				};
 
 				/**
