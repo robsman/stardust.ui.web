@@ -69,7 +69,6 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -128,6 +127,7 @@ import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
@@ -1890,8 +1890,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         }
 
                         accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                              context, id, name, structuredDataFullId, direction);
-                     }
+                              context, id, name, structuredDataFullId, direction);                        
+                        TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
+                        if(typeDeclaration != null)
+                        {
+                           StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
+                        }
+                     }                        
                      else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                      {
                         // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
@@ -2014,33 +2019,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if ( !typeDeclaration.getId().equals(oldId))
          {
             ModelType model = ModelUtils.findContainingModel(typeDeclaration);
-            for (DataType data : model.getData())
-            {
-               if (data.getType().getId().equals(PredefinedConstants.STRUCTURED_DATA))
-               {
-                  AttributeType attribute = AttributeUtil.getAttribute(data,
-                        StructuredDataConstants.TYPE_DECLARATION_ATT);
-                  if (attribute != null && attribute.getAttributeValue().equals(oldId))
-                  {
-                     AttributeUtil.setAttribute(data,
-                           StructuredDataConstants.TYPE_DECLARATION_ATT,
-                           typeDeclaration.getId());
-                  }
-               }
-
-               if (data.getType().getId().equals(DmsConstants.DATA_TYPE_DMS_DOCUMENT))
-               {
-                  AttributeType attribute = AttributeUtil.getAttribute(data,
-                        DmsConstants.RESOURCE_METADATA_SCHEMA_ATT);
-                  if (attribute != null && attribute.getAttributeValue().equals(oldId))
-                  {
-                     AttributeUtil.setAttribute(data,
-                           DmsConstants.RESOURCE_METADATA_SCHEMA_ATT,
-                           typeDeclaration.getId());
-                  }
-               }
-            }
-
             for (ProcessDefinitionType process : model.getProcessDefinition())
             {
                FormalParametersType parametersType = process.getFormalParameters();
