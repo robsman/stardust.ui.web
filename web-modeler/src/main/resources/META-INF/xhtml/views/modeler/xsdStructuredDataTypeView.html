@@ -133,7 +133,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="minLenghtInput" name="minLenghtInput" ng-model="minLength"
 															ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget" />
+															class="widget rightAligned" />
 														<div id="intMinLengthError"
 															ng-show="form.minLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 													</td>
@@ -144,7 +144,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="maxLenghtInput" name="maxLenghtInput"
 															ng-model="maxLength" ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget" />
+															class="widget rightAligned" />
 														<div id="intMaxLengthError"
 															ng-show="form.maxLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 														<div id="minGreaterThanMax"
