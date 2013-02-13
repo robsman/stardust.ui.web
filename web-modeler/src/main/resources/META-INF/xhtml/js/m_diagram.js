@@ -1592,6 +1592,10 @@ define(
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
 						m_messageDisplay.clear();
+						if (this.currentConnection) {
+							this.currentConnection.deselect();
+							this.currentConnection = null;
+						}
 					} else if (this.mode == this.CONNECTION_MODE
 							&& this.currentConnection != null) {
 						this.currentConnection.remove();

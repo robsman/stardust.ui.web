@@ -1604,6 +1604,11 @@ define(
 							.attr({
 								"stroke-width" : m_constants.CONNECTION_SELECT_STROKE_WIDTH
 							});
+
+					if (this.diagram.currentConnection) {
+						this.diagram.currentConnection.deselect();
+					}
+
 					this.diagram.currentConnection = this;
 					this.fromAnchorPoint.show();
 					this.toAnchorPoint.show();
