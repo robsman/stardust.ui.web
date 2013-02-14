@@ -62,6 +62,32 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.references"));
+
+					jQuery("label#deleteVariableDialogMsg")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.message"));
+					jQuery("label[for='emptyLiteralCheckbox']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithEmptyLiteral"));
+					jQuery("label[for='defaultValueCheckbox']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithDefaultValueCheckbox"));
+					jQuery("label[for='withLiteralCheckbox']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithArbitaryVariable"));
+					jQuery("input#applyButton")
+							.val(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.applyButtonText"));
+					jQuery("input#closeButton")
+							.val(
+									m_i18nUtils
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.closeButtonText"));
+
 					this.refreshConfigurationVariablesButton = jQuery("#refreshConfigurationVariablesButton");
 					this.refreshConfigurationVariablesButton.click({
 						"page" : this
@@ -72,7 +98,7 @@ define(
 					jQuery("#deleteConfigurationVariableDialog").dialog({
 						autoOpen : false,
 						draggable : true,
-						title : m_i18nUtils.getProperty("Bla")
+						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title")
 					});
 					jQuery(
 							"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
