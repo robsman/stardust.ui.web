@@ -343,7 +343,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      type = findInChangeDescriptions(changeDescriptions,
                            formalParameter.getId());
                   }
-                  else
+
+                  if (null == type)
                   {
                      FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
                      if (mappingsType != null)
