@@ -72,14 +72,6 @@ define(
 				jQuery("#dataType")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.dataType "));
-				jQuery("#dataType1")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.dataType"));
-				jQuery("#dataType")
-						.text(
-								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
 				jQuery("#primitiveType")
 						.text(

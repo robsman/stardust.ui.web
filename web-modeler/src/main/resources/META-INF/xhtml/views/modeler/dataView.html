@@ -77,9 +77,9 @@
 				<td>
 					<div id="propertiesTabs">
 						<ul id="propertiesTabsList">
-							<li><a href="#dataTypeTab" id="dataType"><img
+							<li><a href="#dataTypeTab"><img
 									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Data Type</span> </a>
+									class="tabLabel" id="dataType">Data Type</span> </a>
 							</li>
 						</ul>
 						<div id="dataTypeTab">
@@ -122,7 +122,7 @@
 												</td>
 												<td>
 													<!-- Limitations / TODOs to make it more elegant/compact -->
-													<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap, 
+													<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap,
 																		and then jQuery does not find elements, hence using multiple ng-show -->
 													<!-- For name or id - Angular Expression cannot be used -->
 													<!-- For ng-pattern - Angular Expression is somehow not working -->
@@ -161,7 +161,7 @@
 															type="text" ng-model="defaultValue" ng-model-onblur />
 													</div>
 													<div ng-show="dataType == 'other'">
-														<input id="otherInputText" name="otherInputText" 
+														<input id="otherInputText" name="otherInputText"
 															type="text" ng-model="defaultValue" ng-model-onblur />
 													</div>
 												</td>
