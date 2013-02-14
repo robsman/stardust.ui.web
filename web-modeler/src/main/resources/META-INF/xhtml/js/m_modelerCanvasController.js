@@ -190,6 +190,8 @@ define(
 									|| m_constants.TEAM_LEADER_TYPE == parent.iDnD
 									.getTransferObject().elementType
 									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parent.iDnD
+									.getTransferObject().elementType
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == parent.iDnD
 									.getTransferObject().elementType) {
 								var participant = m_model
 										.findParticipant(parent.iDnD
