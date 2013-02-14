@@ -907,6 +907,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, false, context))
                   {
+                     if (DirectionType.INOUT_LITERAL == accessPoint.getDirection())
+                     {
+                        // skip INOUT access points since they were already added for IN direction.
+                        continue;
+                     }
                      JsonObject accessPointJson = new JsonObject();
 
                      accessPointsJson.add(accessPointJson);
