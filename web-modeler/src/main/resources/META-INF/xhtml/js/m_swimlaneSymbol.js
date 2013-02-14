@@ -74,6 +74,7 @@ define(
 				this.participantFullId = null;
 				this.participantName = null;
 				this.minimizeIcon = null;
+				this.shrinkToFitIcon = null;
 				this.cacheWidth = 0;
 				this.cacheHeight = 0;
 				this.maximizeIcon = null;
@@ -117,6 +118,7 @@ define(
 					this.text = null;
 					this.minimizeIcon = null;
 					this.maximizeIcon = null;
+					this.shrinkToFitIcon = null;
 					this.symbolXOffset = 0;
 					this.symbolYOffset = 0;
 
@@ -222,6 +224,7 @@ define(
 					transferObject.laneSymbols = [];
 					transferObject.minimizeIcon = null;
 					transferObject.maximizeIcon = null;
+					transferObject.shrinkToFitIcon = null;
 
 					for ( var laneSymbol in this.laneSymbols) {
 						transferObject.laneSymbols[laneSymbol] = this.laneSymbols[laneSymbol]
@@ -363,28 +366,44 @@ define(
 									.attr(
 											{
 												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-														: "R270"
+														: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.minimizeLane")
 											});
 
 					this.addToPrimitives(this.minimizeIcon);
 
 					this.maximizeIcon = m_canvasManager
-							.drawImageAt(
-									"../../images/icons/max.png",
-									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
-											+ this.width - 20)
-											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
-											: (this.y + .35 * this.height), 16,
-									16)
-									.attr(
-											{
-												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-														: "R270"
-											});
+					.drawImageAt(
+							"../../images/icons/max.png",
+							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
+									+ this.width - 20)
+									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+									: (this.y + .35 * this.height), 16,
+							16)
+							.attr(
+									{
+										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+												: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.maximizeLane")
+									});
 
 					this.maximizeIcon.hide();
 					this.addToPrimitives(this.maximizeIcon);
+
+					this.shrinkToFitIcon = m_canvasManager
+					.drawImageAt(
+							"../../images/icons/model.png",
+							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
+									+ this.width - 20)
+									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+									: (this.y + 0.5 * this.height), 16,
+							16)
+							.attr(
+									{
+										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+												: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.shrinkToFit")
+									});
+					this.addToPrimitives(this.shrinkToFitIcon);
 				};
 
 				/**
@@ -423,7 +442,12 @@ define(
 							"y" : this.y + 0.12
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
-
+						this.shrinkToFitIcon.attr({
+							"transform" : "R0",
+							"x" : this.x + this.width - 40,
+							"y" : this.y + 0.15
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+						});
 					} else {
 						this.topRectangle.attr({
 							"x" : this.x,
@@ -451,7 +475,13 @@ define(
 							"y" : this.y + 0.5
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
-
+						this.shrinkToFitIcon.attr({
+							"transform" : "R270",
+							"x" : this.x + 0.2
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
+							"y" : this.y + 0.5
+									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + 20
+						});
 					}
 				};
 
@@ -542,6 +572,8 @@ define(
 							.click(SwimlaneSymbol_minimizeClickClosure);
 					this.maximizeIcon
 							.click(SwimlaneSymbol_maximizeClickClosure);
+					this.shrinkToFitIcon
+							.click(SwimlaneSymbol_shrinkToFitClickClosure);
 				};
 
 
@@ -557,6 +589,11 @@ define(
 						this.height = m_constants.LANE_MIN_WIDTH;
 					}
 					this.minimizeIcon.hide();
+
+					//hide all Shrink to fit symbols
+					for ( var n in this.parentSymbol.laneSymbols) {
+						this.parentSymbol.laneSymbols[n].shrinkToFitIcon.hide();
+					}
 					this.maximizeIcon.show();
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustPrimitives();
@@ -585,6 +622,11 @@ define(
 					}
 					this.maximizeIcon.hide();
 					this.minimizeIcon.show();
+					//show all Shrink to fit symbols
+					for ( var n in this.parentSymbol.laneSymbols) {
+						this.parentSymbol.laneSymbols[n].shrinkToFitIcon.show();
+					}
+
 					this.minimized = false;
 					this.text.attr("text", this.name);
 					this.parentSymbol.recalculateBoundingBox();
@@ -1043,23 +1085,26 @@ define(
 					};
 				}
 
+				/**
+				 *
+				 */
 				SwimlaneSymbol.prototype.getChildSymbolsBindingRect = function () {
-					var left = this.x + this.width;
-					var right = this.x;
-					var top = this.y + this.height;
-					var bottom = this.y;
+					var left = this.x + this.symbolXOffset + this.width;
+					var right = this.x + this.symbolXOffset;
+					var top = this.y + this.symbolYOffset + this.height;
+					var bottom = this.y + this.symbolYOffset;
 
 					for ( var n in this.containedSymbols) {
-						left = Math.min(this.containedSymbols[n].x
-								- m_constants.POOL_SWIMLANE_MARGIN, left);
-						right = Math.max(this.containedSymbols[n].x
+						left = Math.min(this.containedSymbols[n].x + this.symbolXOffset
+								- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
+						right = Math.max(this.containedSymbols[n].x + this.symbolXOffset
 								+ this.containedSymbols[n].width
-								+ m_constants.POOL_SWIMLANE_MARGIN, right);
-						top = Math.min(this.containedSymbols[n].y
-								- m_constants.POOL_SWIMLANE_MARGIN, top);
-						bottom = Math.max(this.containedSymbols[n].y
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
+						top = Math.min(this.containedSymbols[n].y + this.symbolYOffset
+								- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
+						bottom = Math.max(this.containedSymbols[n].y + this.symbolYOffset
 								+ this.containedSymbols[n].height
-								+ m_constants.POOL_SWIMLANE_MARGIN, bottom);
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
 					}
 
 					return {
@@ -1068,7 +1113,7 @@ define(
 						top : top,
 						bottom : bottom
 					};
-				}
+				};
 
 				/**
 				 *
@@ -1244,6 +1289,145 @@ define(
 					this.parentSymbol.adjustGeometry();
 				};
 
+
+				/**
+				 *
+				 * @author Yogesh.Manware
+				 */
+				SwimlaneSymbol.prototype.shrinkToFit = function() {
+					if(this.containedSymbols.length < 1){
+						return;
+					}
+
+					// check if any lane is already minimized
+//					for ( var n in this.parentSymbol.laneSymbols) {
+//						if (this.parentSymbol.laneSymbols[1].minimizeIcon.node.style.display == "none") {
+//							return;
+//						}
+//					}
+
+					var moveX=0;
+					var moveY=0;
+					var childSymbolsBindingRect, otherChildSymbolsBindingRect;
+					//evaluate binding rectangle for current lane
+					childSymbolsBindingRect = this
+							.getChildSymbolsBindingRect();
+
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+
+						//evaluate binding rectangle for other lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							otherChildSymbolsBindingRect = this.parentSymbol.laneSymbols[n]
+									.getChildSymbolsBindingRect();
+							//determine the minimum top margin that can be reduced by
+							if (childSymbolsBindingRect.top > otherChildSymbolsBindingRect.top) {
+								childSymbolsBindingRect.top = otherChildSymbolsBindingRect.top;
+							}
+							//determine the minimum bottom margin that can be reduced by
+							if (childSymbolsBindingRect.bottom < otherChildSymbolsBindingRect.bottom) {
+								childSymbolsBindingRect.bottom = otherChildSymbolsBindingRect.bottom;
+							}
+						}
+						// move symbols towards swimlane header
+						moveY = (this.y + this.symbolYOffset + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+								- (childSymbolsBindingRect.top - m_constants.SWIMLANE_SYMBOL_MARGIN);
+						// move symbols towards swimlane's left border
+						moveX = this.x + this.symbolXOffset
+								- (childSymbolsBindingRect.left - m_constants.SWIMLANE_SYMBOL_MARGIN);
+
+						if (moveX != 0 || moveY != 0) {
+							// move current lane's symbols towards left border and towards header
+							for ( var n in this.containedSymbols) {
+								this.containedSymbols[n].moveBy(moveX, moveY);
+							}
+							// move current lane's symbols towards header
+							for ( var n in this.parentSymbol.laneSymbols) {
+								for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+									if (this.parentSymbol.laneSymbols[n].oid != this.oid) {
+										this.parentSymbol.laneSymbols[n].containedSymbols[c]
+												.moveBy(0, moveY);
+									}
+								}
+							}
+						}
+
+						// force set height of all lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							this.parentSymbol.laneSymbols[n].height = childSymbolsBindingRect.bottom
+									- childSymbolsBindingRect.top;
+						}
+
+						this.parentSymbol.adjustGeometry();
+						// Adjust current lane width
+						this.width = childSymbolsBindingRect.right
+								- childSymbolsBindingRect.left;
+					} else {
+						//evaluate binding rectangle for other lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							otherChildSymbolsBindingRect = this.parentSymbol.laneSymbols[n]
+									.getChildSymbolsBindingRect();
+							//determine the minimum left margin that can be reduced by
+							if (childSymbolsBindingRect.left > otherChildSymbolsBindingRect.left) {
+								childSymbolsBindingRect.left = otherChildSymbolsBindingRect.left;
+							}
+							//determine the minimum right margin that can be reduced by
+							if (childSymbolsBindingRect.right < otherChildSymbolsBindingRect.right) {
+								childSymbolsBindingRect.right = otherChildSymbolsBindingRect.right;
+							}
+						}
+						// move symbols towards swimlane header
+						moveX = (this.x + this.symbolXOffset + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+								- (childSymbolsBindingRect.left - m_constants.SWIMLANE_SYMBOL_MARGIN);
+						// move symbols towards swimlane's top border
+						moveY = this.y + this.symbolYOffset
+								- (childSymbolsBindingRect.top - m_constants.SWIMLANE_SYMBOL_MARGIN);
+
+						if (moveX != 0 || moveY != 0) {
+							// move current lane's symbols towards left and towards header
+							for ( var n in this.containedSymbols) {
+								this.containedSymbols[n].moveBy(moveX, moveY);
+							}
+							// move current lane's symbols towards header
+							for ( var n in this.parentSymbol.laneSymbols) {
+								for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+									if (this.parentSymbol.laneSymbols[n].oid != this.oid) {
+										this.parentSymbol.laneSymbols[n].containedSymbols[c]
+												.moveBy(moveX, 0);
+									}
+								}
+							}
+						}
+
+						// force set width of all lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							this.parentSymbol.laneSymbols[n].width = childSymbolsBindingRect.right
+									- childSymbolsBindingRect.left;
+						}
+
+						this.parentSymbol.adjustGeometry();
+						// Adjust current lane height
+						this.height = childSymbolsBindingRect.bottom
+								- childSymbolsBindingRect.top;
+					}
+
+					var changes = {
+						x : this.x,
+						y : this.y,
+						width : this.width,
+						height : this.height,
+						xOffset : moveX,
+						yOffset : moveY
+					};
+
+					var command = m_command.createUpdateModelElementCommand(
+							this.diagram.modelId, this.oid, changes);
+					command.sync = true;
+					m_commandsController.submitCommand(command);
+
+					this.parentSymbol.recalculateBoundingBox();
+					this.parentSymbol.adjustGeometry();
+				};
+
 				/**
 				 * TODO Adjust contained symbols
 				 */
@@ -1345,6 +1529,12 @@ define(
 			 */
 			function SwimlaneSymbol_maximizeClickClosure() {
 				this.auxiliaryProperties.callbackScope.onMaximizeIconClick();
+			}
+			/**
+			 *
+			 */
+			function SwimlaneSymbol_shrinkToFitClickClosure() {
+				this.auxiliaryProperties.callbackScope.shrinkToFit();
 			}
 
 		});

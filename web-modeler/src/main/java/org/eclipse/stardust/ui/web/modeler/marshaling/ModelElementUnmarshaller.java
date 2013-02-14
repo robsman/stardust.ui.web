@@ -723,10 +723,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL.equals(orientation))
          {
             swimlaneSymbol.setOrientation(OrientationType.HORIZONTAL_LITERAL);
+            setDiagramOrientationType(swimlaneSymbol, OrientationType.HORIZONTAL_LITERAL);
          }
          else
          {
             swimlaneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
+            setDiagramOrientationType(swimlaneSymbol, OrientationType.VERTICAL_LITERAL);
          }
       }
 
@@ -1288,6 +1290,32 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                updateParentSymbolForSymbol(nodeSymbol, newParentSymbol, symbolType);
             }
+         }
+      }
+   }
+
+   /**
+    * assist updating diagram - orientation
+    *
+    * @param nodeSymbol
+    * @param orientation
+    */
+   private void setDiagramOrientationType(INodeSymbol nodeSymbol,
+         OrientationType orientation)
+   {
+      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
+            : null;
+
+      if (null != container)
+      {
+         DiagramType diagram = (container.eContainer() instanceof DiagramType)
+               ? (DiagramType) container.eContainer()
+               : null;
+
+         if (null != diagram)
+         {
+            diagram.setOrientation(orientation);
          }
       }
    }
