@@ -48,7 +48,7 @@ define(
 				GenericCamelRouteEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
-
+					
 					jQuery("label[for='camelContextInput']")
 							.text(
 									m_i18nUtils
@@ -104,7 +104,7 @@ define(
 					this.registerForRouteChanges(this.camelContextInput);
 					this.registerForRouteChanges(this.routeTextarea);
 					this.registerForRouteChanges(this.additionalBeanTextarea);
-
+					this.camelContextInput.val("defaultCamelContext");
 				};
 
 				/**
@@ -135,7 +135,7 @@ define(
 					var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
 					
 					// TODO Need better URL encoding
-					route = route.replace(/&/g, "&amp;");
+				//	route = route.replace(/&/g, "&amp;");
 					
 					this.camelContextInput
 							.val(this.page.getEvent().attributes["carnot:engine:camel::camelContextId"]);
@@ -156,7 +156,7 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
-					return this.routeTextarea.val();
+					return this.routeTextarea.val().replace(/&/g, "&amp;");
 				};
 
 				/**
