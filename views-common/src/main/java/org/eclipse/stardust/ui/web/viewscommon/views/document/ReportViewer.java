@@ -12,6 +12,8 @@ package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -21,6 +23,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.reports.ArchiveReportDialog;
 
@@ -75,8 +78,9 @@ public class ReportViewer implements IDocumentViewer
       }
       this.documentContentInfo = documentContentInfo;
       setFavoriteStatus(documentContentInfo.getId());
-     
-      sourceURI = getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri;
+      String queryString = getQueryString();
+      sourceURI = getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString + "&realmId="
+            + UserUtils.getRealmId() + "&workflowUserSessionId=" + ServiceFactoryUtils.getWorkflowUserSessionId();
    }
    
    /**
@@ -120,6 +124,25 @@ public class ReportViewer implements IDocumentViewer
       }
    }
 
+   /**
+    */
+   private String getQueryString()
+   {
+      if (CollectionUtils.isNotEmpty(view.getViewParams()))
+      {
+         String modelId = (String) view.getViewParams().get("ModelID");
+         String modelOId = (String) view.getViewParams().get("ModelOID");
+         StringBuilder strBuilder = new StringBuilder();
+         if (StringUtils.isNotEmpty(modelId) && StringUtils.isNotEmpty(modelOId))
+         {
+            strBuilder.append("&").append("ModelID").append("=").append(modelId);
+            strBuilder.append("&").append("ModelOID").append("=").append(modelOId);
+         }
+         return strBuilder.toString();
+      }
+      return "";
+   }
+   
    /**
     * @return
     */
