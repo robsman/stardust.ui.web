@@ -116,6 +116,10 @@ public class XPathCacheManager
       if (null == xPathMap)
       {
          TypeDeclarationCacheKey typeCachKey = getTypeCacheKey(refModel, data);
+         if (null == typeCachKey)
+         {
+            return null;
+         }
          xPathMap = typeXPathMapCache.get(typeCachKey);
          if (null == xPathMap)
          {
@@ -183,7 +187,11 @@ public class XPathCacheManager
          String metadataComplexTypeName = (String)data.getAttribute(DmsConstants.RESOURCE_METADATA_SCHEMA_ATT);
          typeDeclaration = model.getTypeDeclaration(metadataComplexTypeName);
       }
-
+      // return null if typeDeclaration is missing on ref struct type
+      if (null == typeDeclaration)
+      {
+         return null;
+      }
       XSDSchema schema = StructuredTypeRtUtils.getXSDSchema(model, typeDeclaration);
       XSDNamedComponent component = StructuredTypeRtUtils.findElementOrTypeDeclaration(schema, typeDeclaration.getId(),
             true);
