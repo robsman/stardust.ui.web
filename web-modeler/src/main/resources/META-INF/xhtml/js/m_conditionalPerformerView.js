@@ -171,7 +171,12 @@ define(
 					m_utils.debug("===> Conditional Performer");
 					m_utils.debug(conditionalPerformer);
 
-					this.populateBindingDataSelect();
+					if (this.conditionalPerformer.dataFullId) {
+						this.populateBindingDataSelect();
+					} else {
+						this.populateBindingDataSelect(true);
+					}
+
 
 					if (!this.conditionalPerformer.attributes["carnot:engine:visibility"]
 							|| "Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
@@ -196,9 +201,18 @@ define(
 				/**
 				 *
 				 */
-				ConditionalPerformerView.prototype.populateBindingDataSelect = function() {
+				ConditionalPerformerView.prototype.populateBindingDataSelect = function(includeToBeDefined) {
 					this.bindingDataSelect.empty();
 					var modellabel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
+					if (includeToBeDefined) {
+						this.bindingDataSelect
+								.append("<option value='"
+										+ m_constants.TO_BE_DEFINED
+										+ "'>"
+										+ m_i18nUtils
+												.getProperty("modeler.general.toBeDefined")
+										+ "</option>");
+					}
 					this.bindingDataSelect
 							.append("<optgroup label=\""+modellabel+"\">");
 

@@ -2513,7 +2513,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(conditionalPerformer, conditionalPerformerJson,
             propertiesMap.get(ConditionalPerformerType.class));
 
-      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY))
+      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY)
+            && !(conditionalPerformerJson.get(
+                  ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY).getAsString().equals(ModelerConstants.TO_BE_DEFINED)))
       {
          ModelType model = ModelUtils.findContainingModel(conditionalPerformer);
          DataType data = getModelBuilderFacade().importData(
