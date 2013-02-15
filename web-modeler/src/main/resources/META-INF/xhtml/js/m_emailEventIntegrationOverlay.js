@@ -76,10 +76,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.initialDelay"));
-					jQuery("label[for='pollingDelayInput']")
+				/*	jQuery("label[for='pollingDelayInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.emailEvent.pollingDelay"));
+											.getProperty("modeler.element.properties.emailEvent.pollingDelay")); */
 					jQuery("label[for='unseenInput']")
 							.text(
 									m_i18nUtils
@@ -117,10 +117,10 @@ define(
 							.mapInputId("initialDelayInput");
 					this.initialDelayUnitSelect = this
 							.mapInputId("initialDelayUnitSelect");
-					this.pollingDelayInput = this
+				/*	this.pollingDelayInput = this
 							.mapInputId("pollingDelayInput");
 					this.pollingDelayUnitSelect = this
-							.mapInputId("pollingDelayUnitSelect");
+							.mapInputId("pollingDelayUnitSelect"); */
 					this.unseenInput = this.mapInputId("unseenInput");
 					this.deleteInput = this.mapInputId("deleteInput");
 					this.copyToInput = this.mapInputId("copyToInput");
@@ -131,8 +131,8 @@ define(
 							.initializeIntervalUnitSelect(this.connectionTimeoutUnitSelect);
 					this
 							.initializeIntervalUnitSelect(this.initialDelayUnitSelect);
-					this
-							.initializeIntervalUnitSelect(this.pollingDelayUnitSelect);
+				/*	this
+							.initializeIntervalUnitSelect(this.pollingDelayUnitSelect);*/
 
 					this.registerForRouteChanges(this.protocolSelect);
 					this.registerForRouteChanges(this.mailServerInput);
@@ -144,8 +144,8 @@ define(
 							.registerForRouteChanges(this.connectionTimeoutUnitSelect);
 					this.registerForRouteChanges(this.initialDelayInput);
 					this.registerForRouteChanges(this.initialDelayUnitSelect);
-					this.registerForRouteChanges(this.pollingDelayInput);
-					this.registerForRouteChanges(this.pollingDelayUnitSelect);
+				/*	this.registerForRouteChanges(this.pollingDelayInput);
+					this.registerForRouteChanges(this.pollingDelayUnitSelect); */
 					this.registerForRouteChanges(this.unseenInput);
 					this.registerForRouteChanges(this.deleteInput);
 					this.registerForRouteChanges(this.copyToInput);
@@ -168,24 +168,40 @@ define(
 						uri += ":" + this.portInput.val();
 					}
 
+					if(this.accountInput.val()!= null){
 					uri += "?username=" + this.accountInput.val();
+					}
 
 					if (this.passwordInput.val() != null) {
 						uri += "&password=" + this.passwordInput.val();
 					}
 
+					
+					if(this.getIntervalInMilliseconds(
+							this.connectionTimeoutInput.val(),
+							this.connectionTimeoutUnitSelect.val()) != null){						
 					uri += "&connectionTimeout=";
 					uri += this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val());
+						}
+					
+					if(this.getIntervalInMilliseconds(
+							this.initialDelayInput.val(),
+							this.initialDelayUnitSelect.val()) != null){
 					uri += "&initialDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val());
+					}
+					
+					/*
 					uri += "&pollingDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.pollingDelayInput.val(),
 							this.pollingDelayUnitSelect.val());
+							*/
+										
 					uri += "&unseen=";					
 					uri += this.unseenInput.prop("checked");
 					uri += "&delete=";
@@ -195,10 +211,14 @@ define(
 						uri += "&copyTo=";
 						uri += this.copyToFolderInput.val();
 					}
-
+					uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
-
+				
+				
+				EmailEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "<to uri=\"ipp:direct\"/>";
+				};
 				/**
 				 * 
 				 */
@@ -237,9 +257,9 @@ define(
 
 					// TODO Need better URL encoding
 					
-					route = route.replace(/&/g, "&amp;");
+				//	route = route.replace(/&/g, "&amp;");
 
-					var xmlDoc = jQuery.parseXML(route);
+					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
@@ -319,14 +339,18 @@ define(
 							this.initialDelayInput.val(intervalWithUnit.value);
 							this.initialDelayUnitSelect
 									.val(intervalWithUnit.unit);
-						} else if (name == "pollingDelay") {
+						} 
+						
+					/*	else if (name == "pollingDelay") {
 							var intervalWithUnit = this
 									.getIntervalWithUnit(value);
 
 							this.pollingDelayInput.val(intervalWithUnit.value);
 							this.pollingDelayUnitSelect
 									.val(intervalWithUnit.unit);
-						} else if (name == "unseen") {
+						} */
+						
+						else if (name == "unseen") {
 							this.unseenInput.prop("checked", value == "true");
 						} else if (name == "delete") {
 							this.deleteInput.prop("checked", value == "true");
