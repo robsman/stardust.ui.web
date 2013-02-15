@@ -506,7 +506,7 @@ public class ConnectionCommandHandler
       if (null != hostActivity)
       {
          transition = doCreateTransition(processDefinition, hostActivity,
-               targetActivitySymbol.getActivity(), connectionJson, maxOid++ );
+               targetActivitySymbol.getActivity(), connectionJson, ++maxOid );
       }
 
       doCreateTransitionSymbol(processDefinition, sourceEventSymbol, targetActivitySymbol, transition, connectionJson, ++maxOid);
@@ -563,7 +563,7 @@ public class ConnectionCommandHandler
       if (null != hostActivity)
       {
          transition = doCreateTransition(processDefinition,
-               sourceActivitySymbol.getActivity(), hostActivity, connectionJson, maxOid++ );
+               sourceActivitySymbol.getActivity(), hostActivity, connectionJson, ++maxOid );
       }
 
       doCreateTransitionSymbol(processDefinition, sourceActivitySymbol,
