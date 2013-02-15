@@ -36,9 +36,9 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
@@ -607,33 +607,40 @@ public class ConnectionCommandHandler
       dataMapping.setData(data);
       dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
 
-//      if (activity.getImplementation().getLiteral().equals("Application"))
-//      {
-//         dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-//         EList<AttributeType> attr = data.getAttribute();
-//         String dataId = null;
-//         for (AttributeType attributeType : attr)
-//         {
-//            if (getModelBuilderFacade().getAttributeName(attributeType).equals(
-//                  ModelerConstants.DATA_TYPE))
-//            {
-//               dataId = getModelBuilderFacade().getAttributeValue(attributeType);
-//               break;
-//            }
-//         }
-//         if (null != dataId)
-//         {
-//            dataMapping.setApplicationAccessPoint(dataId);
-//         }
-//      }
-//      else if (activity.getImplementation().getLiteral().equals("Subprocess"))
-//      {
-//         dataMapping.setContext(PredefinedConstants.ENGINE_CONTEXT);
-//      }
-//      else
-//      {
-//         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
-//      }
+      if (activity.getImplementation().getLiteral().equals("Application"))
+      {
+         dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+
+         String dataId = null;
+         if (activity.getApplication() != null
+               && activity.getApplication().getAccessPoint() != null)
+         {
+            for (AccessPointType accPoints : activity.getApplication().getAccessPoint())
+            {
+               if (accPoints.getDirection().getValue() == DirectionType.OUT)
+               {
+                  if (accPoints.getType().equals(data.getType()))
+                  {
+                     dataId = accPoints.getId();
+                     break;
+                  }
+               }
+            }
+         }
+
+         if (null != dataId)
+         {
+            dataMapping.setApplicationAccessPoint(dataId);
+         }
+      }
+      else if (activity.getImplementation().getLiteral().equals("Subprocess"))
+      {
+         dataMapping.setContext(PredefinedConstants.ENGINE_CONTEXT);
+      }
+      else
+      {
+         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+      }
 
       activity.getDataMapping().add(dataMapping);
 

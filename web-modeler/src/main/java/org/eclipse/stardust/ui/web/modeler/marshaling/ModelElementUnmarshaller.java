@@ -34,7 +34,6 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -605,33 +604,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                && !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
                      .isJsonNull())
          {
-            DataMappingType outDataMapping = createDataMapping(
+            createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
                   dataFlowConnection.getDataSymbol().getData(),
                   dataFlowJson,
                   DirectionType.OUT_LITERAL,
                   dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
-
-            //update context and data access point
-//            if (null != outDataMapping && dataFlowConnection.getActivitySymbol().getActivity().getImplementation().getLiteral().equals("Application"))
-//            {
-//               outDataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-//               EList<AttributeType> dataAttr = dataFlowConnection.getDataSymbol().getData().getAttribute();
-//               String dataId = null;
-//               for (AttributeType attributeType : dataAttr)
-//               {
-//                  if (getModelBuilderFacade().getAttributeName(attributeType).equals(
-//                        ModelerConstants.DATA_TYPE))
-//                  {
-//                     dataId = getModelBuilderFacade().getAttributeValue(attributeType);
-//                     break;
-//                  }
-//               }
-//               if (null != dataId)
-//               {
-//                  outDataMapping.setApplicationAccessPoint(dataId);
-//               }
-//            }
          }
       }
    }
@@ -686,10 +664,32 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         // TODO Review
+         //update context and data access point
+         if (activity.getImplementation().getLiteral().equals("Application"))
+         {
+            dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+            String dataId = null;
+            if (activity.getApplication() != null
+                  && activity.getApplication().getAccessPoint() != null)
+            {
+               for (AccessPointType accPoints : activity.getApplication().getAccessPoint())
+               {
+                  if (accPoints.getDirection().getValue() == DirectionType.OUT)
+                  {
+                     if (accPoints.getType().equals(data.getType()))
+                     {
+                        dataId = accPoints.getId();
+                        break;
+                     }
+                  }
+               }
+            }
 
-         dataMapping.setApplicationAccessPoint(null);
-         dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
+            if (null != dataId)
+            {
+               dataMapping.setApplicationAccessPoint(dataId);
+            }
+         }
       }
 
       if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
