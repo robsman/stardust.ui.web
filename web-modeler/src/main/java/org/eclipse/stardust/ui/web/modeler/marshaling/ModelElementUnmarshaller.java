@@ -613,25 +613,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
 
             //update context and data access point
-            if (null != outDataMapping && dataFlowConnection.getActivitySymbol().getActivity().getImplementation().getLiteral().equals("Application"))
-            {
-               outDataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-               EList<AttributeType> dataAttr = dataFlowConnection.getDataSymbol().getData().getAttribute();
-               String dataId = null;
-               for (AttributeType attributeType : dataAttr)
-               {
-                  if (getModelBuilderFacade().getAttributeName(attributeType).equals(
-                        ModelerConstants.DATA_TYPE))
-                  {
-                     dataId = getModelBuilderFacade().getAttributeValue(attributeType);
-                     break;
-                  }
-               }
-               if (null != dataId)
-               {
-                  outDataMapping.setApplicationAccessPoint(dataId);
-               }
-            }
+//            if (null != outDataMapping && dataFlowConnection.getActivitySymbol().getActivity().getImplementation().getLiteral().equals("Application"))
+//            {
+//               outDataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+//               EList<AttributeType> dataAttr = dataFlowConnection.getDataSymbol().getData().getAttribute();
+//               String dataId = null;
+//               for (AttributeType attributeType : dataAttr)
+//               {
+//                  if (getModelBuilderFacade().getAttributeName(attributeType).equals(
+//                        ModelerConstants.DATA_TYPE))
+//                  {
+//                     dataId = getModelBuilderFacade().getAttributeValue(attributeType);
+//                     break;
+//                  }
+//               }
+//               if (null != dataId)
+//               {
+//                  outDataMapping.setApplicationAccessPoint(dataId);
+//               }
+//            }
          }
       }
    }
@@ -859,10 +859,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                else if (element instanceof TypeDeclarationType)
                {
                   newId = NameIdUtils.createIdFromName(null,
-                        (TypeDeclarationType) element);                  
+                        (TypeDeclarationType) element);
                }
                else
-               {                  
+               {
                   newId = NameIdUtils.createIdFromName(newName);
                }
             }
@@ -1923,13 +1923,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         }
 
                         accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                              context, id, name, structuredDataFullId, direction);                        
+                              context, id, name, structuredDataFullId, direction);
                         TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
                         if(typeDeclaration != null)
                         {
                            StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
                         }
-                     }                        
+                     }
                      else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                      {
                         // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));

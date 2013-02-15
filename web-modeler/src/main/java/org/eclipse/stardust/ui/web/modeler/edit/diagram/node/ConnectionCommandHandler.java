@@ -605,33 +605,35 @@ public class ConnectionCommandHandler
          dataMapping.setDirection(DirectionType.get(DirectionType.OUT));
       }
       dataMapping.setData(data);
-      if (activity.getImplementation().getLiteral().equals("Application"))
-      {
-         dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
-         EList<AttributeType> attr = data.getAttribute();
-         String dataId = null;
-         for (AttributeType attributeType : attr)
-         {
-            if (getModelBuilderFacade().getAttributeName(attributeType).equals(
-                  ModelerConstants.DATA_TYPE))
-            {
-               dataId = getModelBuilderFacade().getAttributeValue(attributeType);
-               break;
-            }
-         }
-         if (null != dataId)
-         {
-            dataMapping.setApplicationAccessPoint(dataId);
-         }
-      }
-      else if (activity.getImplementation().getLiteral().equals("Subprocess"))
-      {
-         dataMapping.setContext(PredefinedConstants.ENGINE_CONTEXT);
-      }
-      else
-      {
-         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
-      }
+      dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+
+//      if (activity.getImplementation().getLiteral().equals("Application"))
+//      {
+//         dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+//         EList<AttributeType> attr = data.getAttribute();
+//         String dataId = null;
+//         for (AttributeType attributeType : attr)
+//         {
+//            if (getModelBuilderFacade().getAttributeName(attributeType).equals(
+//                  ModelerConstants.DATA_TYPE))
+//            {
+//               dataId = getModelBuilderFacade().getAttributeValue(attributeType);
+//               break;
+//            }
+//         }
+//         if (null != dataId)
+//         {
+//            dataMapping.setApplicationAccessPoint(dataId);
+//         }
+//      }
+//      else if (activity.getImplementation().getLiteral().equals("Subprocess"))
+//      {
+//         dataMapping.setContext(PredefinedConstants.ENGINE_CONTEXT);
+//      }
+//      else
+//      {
+//         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+//      }
 
       activity.getDataMapping().add(dataMapping);
 
