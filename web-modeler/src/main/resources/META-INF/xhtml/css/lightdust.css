@@ -73,7 +73,7 @@ input[type="text"]:focus {
 }
 
 input[type="text"][disabled] {
-	background-color: #ffffff;
+	background-color: #f0f0f0;
 }
 
 input[type="password"] {

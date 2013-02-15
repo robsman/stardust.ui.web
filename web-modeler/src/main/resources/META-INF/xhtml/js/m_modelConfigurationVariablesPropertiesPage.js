@@ -67,15 +67,15 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.message"));
-					jQuery("label[for='emptyLiteralCheckbox']")
+					jQuery("label[for='emptyLiteralRadio']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithEmptyLiteral"));
-					jQuery("label[for='defaultValueCheckbox']")
+					jQuery("label[for='defaultValueRadio']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithDefaultValueCheckbox"));
-					jQuery("label[for='withLiteralCheckbox']")
+											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithDefaultValue"));
+					jQuery("label[for='withLiteralRadio']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithArbitaryVariable"));
@@ -98,40 +98,39 @@ define(
 					jQuery("#deleteConfigurationVariableDialog").dialog({
 						autoOpen : false,
 						draggable : true,
-						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title")
+						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title"),
+						open : function() {
+							jQuery(
+									"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+									.prop("checked", true);
+							jQuery(
+									"#deleteConfigurationVariableDialog #literalValueInput")
+									.val("");
+							jQuery(
+									"#deleteConfigurationVariableDialog #literalValueInput")
+									.prop('disabled', true);
+						}
 					});
+
 					jQuery(
-							"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
+							"#deleteConfigurationVariableDialog input[name='deleteVariableOptions']")
 							.click(
 									function() {
-										jQuery(
-												"#deleteConfigurationVariableDialog #defaultValueCheckbox")
-												.prop("checked", false);
-										jQuery(
-												"#deleteConfigurationVariableDialog #withLiteralCheckbox")
-												.prop("checked", false);
-									});
-					jQuery(
-							"#deleteConfigurationVariableDialog #defaultValueCheckbox")
-							.click(
-									function() {
-										jQuery(
-												"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
-												.prop("checked", false);
-										jQuery(
-												"#deleteConfigurationVariableDialog #withLiteralCheckbox")
-												.prop("checked", false);
-									});
-					jQuery(
-							"#deleteConfigurationVariableDialog #withLiteralCheckbox")
-							.click(
-									function() {
-										jQuery(
-												"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
-												.prop("checked", false);
-										jQuery(
-												"#deleteConfigurationVariableDialog #defaultValueCheckbox")
-												.prop("checked", false);
+										if (jQuery(
+												"#deleteConfigurationVariableDialog #withLiteralRadio")
+												.prop("checked")) {
+											jQuery(
+													"#deleteConfigurationVariableDialog #literalValueInput")
+													.prop('disabled', false).focus();
+
+										} else {
+											jQuery(
+													"#deleteConfigurationVariableDialog #literalValueInput")
+													.val("");
+											jQuery(
+													"#deleteConfigurationVariableDialog #literalValueInput")
+													.prop('disabled', true);
+										}
 									});
 
 					jQuery("#deleteConfigurationVariableDialog #closeButton")
@@ -154,19 +153,19 @@ define(
 										var deleteOptions = "{}";
 
 										if (jQuery(
-												"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
+												"#deleteConfigurationVariableDialog #emptyLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "emptyLiteral"
 											};
 										} else if (jQuery(
-												"#deleteConfigurationVariableDialog #defaultValueCheckbox")
+												"#deleteConfigurationVariableDialog #defaultValueRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "defaultValue"
 											};
 										} else if (jQuery(
-												"#deleteConfigurationVariableDialog #withLiteralCheckbox")
+												"#deleteConfigurationVariableDialog #withLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "withLiteral",
@@ -260,7 +259,7 @@ define(
 																	event.data.page.currentConfigurationVariable = event.data.configurationVariable;
 
 																	jQuery(
-																			"#deleteConfigurationVariableDialog #emptyLiteralCheckbox")
+																			"#deleteConfigurationVariableDialog #emptyLiteralRadio")
 																			.prop(
 																					"checked",
 																					true);
