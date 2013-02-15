@@ -391,7 +391,7 @@ define(
 
 					this.shrinkToFitIcon = m_canvasManager
 					.drawImageAt(
-							"../../images/icons/model.png",
+							"../../images/icons/shrinktofit.png",
 							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 									+ this.width - 20)
 									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
