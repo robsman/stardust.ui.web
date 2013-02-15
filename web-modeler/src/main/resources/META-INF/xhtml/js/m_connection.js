@@ -969,15 +969,15 @@ define(
 							|| !this.conditionExpressionTextYOffset) {
 						if (this.toAnchorPoint.orientation == m_constants.NORTH) {
 							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -2;
 						} else if (this.toAnchorPoint.orientation == m_constants.EAST) {
-							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 2;
 							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
 						} else if (this.toAnchorPoint.orientation == m_constants.SOUTH) {
 							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 1;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 2;
 						} else if (this.toAnchorPoint.orientation == m_constants.WEST) {
-							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -3;
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -4;
 							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
 						}
 					}
