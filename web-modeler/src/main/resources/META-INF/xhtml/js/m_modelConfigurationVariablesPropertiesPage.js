@@ -99,6 +99,8 @@ define(
 						autoOpen : false,
 						draggable : true,
 						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title"),
+						width : "auto",
+						height : "auto",
 						open : function() {
 							jQuery(
 									"#deleteConfigurationVariableDialog #emptyLiteralRadio")
