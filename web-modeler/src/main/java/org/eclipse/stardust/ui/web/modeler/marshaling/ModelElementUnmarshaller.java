@@ -856,8 +856,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   newId = NameIdUtils.createIdFromName(null,
                         (IIdentifiableElement) element);
                }
-               else
+               else if (element instanceof TypeDeclarationType)
                {
+                  newId = NameIdUtils.createIdFromName(null,
+                        (TypeDeclarationType) element);                  
+               }
+               else
+               {                  
                   newId = NameIdUtils.createIdFromName(newName);
                }
             }
