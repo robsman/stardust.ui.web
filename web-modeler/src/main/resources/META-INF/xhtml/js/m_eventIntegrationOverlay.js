@@ -236,13 +236,7 @@ define(
 				 */
 				EventIntegrationOverlay.prototype.getRouteContent = function()
 				{
-					var route = "<from uri=\"";
-					
-					route += this.getEndpointUri();
-					route += "\"/>";
-					route += this.getAdditionalRouteDefinitions();
-
-					return route;
+					return this.getRouteDefinitions();
 				};
 				
 				/**

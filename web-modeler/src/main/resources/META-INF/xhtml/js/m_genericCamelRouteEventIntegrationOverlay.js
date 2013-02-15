@@ -56,7 +56,7 @@ define(
 					jQuery("label[for='routeTextarea']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalRoutes"));
+											.getProperty("modeler.element.properties.genericCamelRouteEvent.routeDefinition"));
 					jQuery("label[for='beanTextarea']")
 							.text(
 									m_i18nUtils
@@ -64,8 +64,8 @@ define(
 
 					this.camelContextInput = this
 							.mapInputId("camelContextInput");
+					
 					this.configurationSpan = this.mapInputId("configuration");
-
 					this.configurationSpan
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
@@ -75,33 +75,36 @@ define(
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 
-					this.endpointUriPrefix = this
-							.mapInputId("endpointUriPrefix");
-					this.endpointUriTextarea = this
-							.mapInputId("endpointUriTextarea");
-					this.additionalRouteTextarea = this
+					this.routeTextarea = this
 							.mapInputId("routeTextarea");
 					this.additionalBeanTextarea = this
 							.mapInputId("beanTextarea");
 
-					this.endpointUriPrefix.change({
+					this.routeTextarea.change({
 						overlay : this
 					}, function(event) {
 						var overlay = event.data.overlay;
-
+						overlay.submitRouteChanges();
+					});
+					
+					this.additionalBeanTextarea.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+						overlay.submitRouteChanges();
+					});
+					
+					this.camelContextInput.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
 						overlay.submitRouteChanges();
 					});
 
 					this.registerForRouteChanges(this.camelContextInput);
-					this.registerForRouteChanges(this.endpointUriTextarea);
-					this.registerForRouteChanges(this.additionalRouteTextarea);
+					this.registerForRouteChanges(this.routeTextarea);
 					this.registerForRouteChanges(this.additionalBeanTextarea);
 
-					// .append("<option value=\"Message\">(Map)</option>");
-					// .append("<option value=\"EventCategory\">EventCategory
-					// .append("<option value=\"SessionID\">SessionID
-					// .append("<option value=\"MessageType\">MessageType
-					// .append("<option value=\"DataDictionary\">DataDictionary
 				};
 
 				/**
@@ -128,69 +131,32 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.update = function() {
+					
 					var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
+					
 					// TODO Need better URL encoding
-
 					route = route.replace(/&/g, "&amp;");
-
-					var xmlDoc = jQuery.parseXML(route);
-					var xmlObject = jQuery(xmlDoc);
-
-					var fromUri = "";
-					var additionalRoutes = "";
-
-					jQuery(xmlObject).find("from").each(function() {
-						fromUri = jQuery(this).attr("uri");
-					});
-
-					jQuery(xmlObject)
-							.find("route")
-							.each(
-									function() {
-										jQuery(this)
-												.children()
-												.each(
-														function() {
-															m_utils
-																	.debug("XML Element: "
-																			+ m_utils
-																					.xmlToString(jQuery(this)));
-															if (m_utils
-																	.xmlToString(
-																			jQuery(this))
-																	.indexOf(
-																			"<from") < 0) {
-																additionalRoutes += m_utils
-																		.xmlToString(jQuery(this))
-																		+ "\n";
-															}
-														});
-									});
-
+					
 					this.camelContextInput
 							.val(this.page.getEvent().attributes["carnot:engine:camel::camelContextId"]);
-					this.endpointUriTextarea.val(fromUri);
-					this.additionalRouteTextarea.val(additionalRoutes);
+					
+					this.routeTextarea.val(route);
+					
 					this.additionalBeanTextarea
-							.val(this.page.getEvent().attributes["carnot:engine:camel::additionalBeans"]);
+							.val(this.page.getEvent().attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
+					
 					this.parameterMappingsPanel
 							.setParameterDefinitions(this.page.getEvent().parameterMappings);
-				};
+				};	
 
 				/**
 				 * 
 				 */
-				GenericCamelRouteEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					return this.endpointUriTextarea.val();
-				};
-
-				/**
-				 * 
-				 */
-				GenericCamelRouteEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
-					return this.additionalRouteTextarea.val();
+				GenericCamelRouteEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
+					return this.routeTextarea.val();
 				};
 
 				/**
@@ -204,9 +170,7 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.validate = function() {
-					this.camelContextInput.removeClass("error");
-					this.endpointUriTextarea.removeClass("error");
-
+					
 					if (m_utils.isEmptyString(this.camelContextInput.val()) ||
 							this.camelContextInput.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
@@ -221,14 +185,14 @@ define(
 						return false;
 					}
 
-					if (m_utils.isEmptyString(this.endpointUriTextarea.val()) ||
-							this.endpointUriTextarea.val() == m_i18nUtils
+					if (m_utils.isEmptyString(this.routeTextarea.val()) ||
+							this.routeTextarea.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
 						this.getPropertiesPanel().errorMessages
 								.push(m_i18nUtils
 										.getProperty("modeler.general.fieldMustNotBeEmpty"));
-						this.endpointUriTextarea.addClass("error");
-						this.endpointUriTextarea.focus();
+						this.routeTextarea.addClass("error");
+						this.routeTextarea.focus();
 
 						this.getPropertiesPanel().showErrorMessages();
 
