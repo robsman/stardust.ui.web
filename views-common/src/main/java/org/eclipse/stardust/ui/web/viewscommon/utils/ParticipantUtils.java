@@ -199,7 +199,6 @@ public class ParticipantUtils
 
          case USERGROUP:
             participant = ServiceFactoryUtils.getUserService().getUserGroup(participantInfo.getId());
-            UserUtils.loadDisplayPreferenceForUser((User)participant);
             break;
          }
       }
