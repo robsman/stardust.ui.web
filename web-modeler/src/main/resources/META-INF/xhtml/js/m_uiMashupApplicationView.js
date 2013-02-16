@@ -301,21 +301,16 @@ define(
 
 										// Send input data
 
-										m_utils.debug("Location:");
-										m_utils.debug(location);
-
 										jQuery
 												.ajax(
 														{
 															type : "POST",
 															url : m_urlUtils
 																	.getModelerEndpointUrl()
-																	+ "/interaction",
+																	+ "/interactions/4711/inData",
 															contentType : "application/json",
-															data : "{input: "
-																	+ inputDataTextarea
+															data : inputDataTextarea
 																			.val()
-																	+ "}"
 														})
 												.done(
 														function() {
@@ -334,7 +329,7 @@ define(
 																				.getApplication().id
 																		+ "?ippPortalBaseUri="
 																		+ m_urlUtils
-																				.getModelerEndpointUrl();
+																				.getModelerEndpointUrl() + "/interactions/4711";
 																m_utils
 																		.debug("===> URL for Embedded");
 																m_utils
@@ -352,7 +347,7 @@ define(
 																						.val()
 																						+ "?ippPortalBaseUri="
 																						+ m_urlUtils
-																								.getModelerEndpointUrl());
+																								.getModelerEndpointUrl() + "/interactions/4711");
 															}
 														})
 												.fail(
@@ -436,14 +431,14 @@ define(
 															type : "GET",
 															url : m_urlUtils
 																	.getModelerEndpointUrl()
-																	+ "/interaction",
+																	+ "/interactions/4711/outData",
 															contentType : "application/json"
 														})
 												.done(
 														function(data) {
 															outputDataTextarea
 																	.val(JSON
-																			.stringify(data.output));
+																			.stringify(data));
 														}).fail(function() {
 												});
 									});
