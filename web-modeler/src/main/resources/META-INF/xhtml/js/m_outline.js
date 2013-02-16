@@ -1229,14 +1229,14 @@ define(
 													"rename" : false,
 													// Options to create webservice and UI mashup applications to be disabled
 													// as they are not fully supported in 7.1.1
-//													"createWebServiceApplication" : {
-//														"label" : m_i18nUtils
-//																.getProperty("modeler.outline.applications.contextMenu.createWebService"),
-//														"action" : function(obj) {
-//															createWebServiceApplication(obj
-//																	.attr("modelUUID"));
-//														}
-//													},
+													"createWebServiceApplication" : {
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createWebService"),
+														"action" : function(obj) {
+															createWebServiceApplication(obj
+																	.attr("modelUUID"));
+														}
+													},
 													"createMessageTransformationApplication" : {
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.applications.contextMenu.createTransformation"),
@@ -1253,17 +1253,15 @@ define(
 																	.attr("modelUUID"));
 														}
 													}
-													// Options to create webservice and UI mashup applications to be disabled
-													// as they are not fully supported in 7.1.1
-//													,
-//													"createUiMashupApplication" : {
-//														"label" : m_i18nUtils
-//																.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
-//														"action" : function(obj) {
-//															createUiMashupApplication(obj
-//																	.attr("modelUUID"));
-//														}
-//													}
+													,
+													"createUiMashupApplication" : {
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
+														"action" : function(obj) {
+															createUiMashupApplication(obj
+																	.attr("modelUUID"));
+														}
+													}
 												};
 											} else if ('data' == node
 													.attr('rel')) {
