@@ -2010,6 +2010,7 @@ define(
 				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
+					this.conditionExpressionText.hide();
 					this.visible = false;
 					this.hideFlyOutMenu();
 				}
@@ -2019,6 +2020,7 @@ define(
 				 */
 				Connection.prototype.show = function() {
 					this.path.show();
+					this.conditionExpressionText.show();
 					this.visible = true;
 				}
 
