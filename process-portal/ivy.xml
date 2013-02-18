@@ -69,9 +69,11 @@
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
 
+<!--
       <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
       <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
       <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
       <conflict org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
+-->
    </dependencies>
 </ivy-module>

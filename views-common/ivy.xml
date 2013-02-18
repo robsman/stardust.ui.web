@@ -87,11 +87,13 @@
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
       
+<!--
       <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
       <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
       <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
       <override org="javax.ws.rs" module="jsr311-api" rev="${jsr311-api.version}" />
       <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
       <override org="org.apache.cxf" module="cxf-api" rev="${cxf-api.version}" />
+-->
    </dependencies>
 </ivy-module>

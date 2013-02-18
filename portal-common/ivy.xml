@@ -153,12 +153,14 @@
       <exclude org="commons-httpclient" module="commons-httpclient" conf="ipp-portal-base-lib-module-runtime"/>
       <exclude org="commons-codec" module="commons-codec" conf="ipp-portal-base-lib-module-runtime"/>
       
+<!--
       <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
       <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
       <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
       <override org="commons-lang" module="commons-lang" rev="${commons-lang.version}" />
       <override org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
       <override org="backport-util-concurrent" module="backport-util-concurrent" rev="${backport-util-concurrent.version}"/>
+-->
       
    </dependencies>   
 </ivy-module>
