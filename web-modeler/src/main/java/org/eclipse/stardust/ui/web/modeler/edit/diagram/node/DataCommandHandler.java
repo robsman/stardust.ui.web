@@ -45,6 +45,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 @CommandHandler
 public class DataCommandHandler
 {
+
    @Resource
    private ApplicationContext springContext;
 
@@ -60,6 +61,8 @@ public class DataCommandHandler
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
+      String dataID = extractString(request, ModelerConstants.DATA_ID_PROPERTY);
+      String dataName = extractString(request, ModelerConstants.DATA_NAME_PROPERTY);
       int xProperty = extractInt(request, ModelerConstants.X_PROPERTY);
       int yProperty = extractInt(request, ModelerConstants.Y_PROPERTY);
       int widthProperty = extractInt(request, ModelerConstants.WIDTH_PROPERTY);
@@ -74,6 +77,12 @@ public class DataCommandHandler
          try
          {
             data = getModelBuilderFacade().importData(model, dataFullID);
+            if (null == data)
+            {
+               data = getModelBuilderFacade().createPrimitiveData(model, dataID,
+                     dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+               mapper.map(data);
+            }
          }
          catch (ObjectNotFoundException x)
          {
@@ -106,7 +115,6 @@ public class DataCommandHandler
          processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
          parentLaneSymbol.getDataSymbol().remove(dataSymbol);
       }
-
    }
 
    private ModelService modelService()
