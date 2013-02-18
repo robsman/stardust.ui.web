@@ -17,6 +17,14 @@ define([ 'bpm-modeler/js/m_dataFlowBasicPropertiesPage',
 			id : "basicPropertiesPage",
 			provider : m_dataFlowBasicPropertiesPage,
 			visibility : "always"
-		} ]
+		}
+//		, {
+//			panelId : "dataFlowPropertiesPanel",
+//			id : "dataFlowgatewayAnnotationsPropertiesPage",
+//			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+//			provider : m_modelElementCommentsPropertiesPage,
+//			visibility : "always"
+//		}
+		]
 	};
 });
