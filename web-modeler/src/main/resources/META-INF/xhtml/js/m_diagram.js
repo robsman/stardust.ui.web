@@ -2005,6 +2005,7 @@ define(
 							.adjustPrimitivesOnShrink();
 					this.symbolEditMode = false;
 					m_utils.debug("text primitive shown");
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}
 				};
 
@@ -2029,6 +2030,7 @@ define(
 							.adjustPrimitives();
 					this.symbolEditMode = false;
 					m_utils.debug("textarea primitive shown");
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}
 				};
 

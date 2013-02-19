@@ -137,6 +137,43 @@ define(
 				};
 
 				/**
+				 * @author Yogesh.Manware
+				 * Get comprehensive dimensions of this
+				 *         symbol, consider all primitives
+				 */
+				Symbol.prototype.getCompSymbolBindingRect = function() {
+					var left = this.x + this.parentSymbol.symbolXOffset;
+					var right = this.x + this.parentSymbol.symbolXOffset
+							+ this.width;
+					var top = this.y + this.parentSymbol.symbolYOffset;
+					var bottom = this.y + this.parentSymbol.symbolYOffset
+							+ this.height;
+
+					for ( var n in this.editableTextPrimitives) {
+						if (this.editableTextPrimitives[n].type == "text") {
+							bBox = this.editableTextPrimitives[n].getBBox();
+							if (bBox.width > 0) {
+								left = Math.min(bBox.x + this.parentSymbol.symbolXOffset, left);
+								right = Math.max(bBox.x
+										+ this.parentSymbol.symbolXOffset
+										+ bBox.width, right);
+								top = Math.min(bBox.y
+										+ this.parentSymbol.symbolYOffset, top);
+								bottom = Math.max(bBox.y
+										+ this.parentSymbol.symbolYOffset
+										+ bBox.height, bottom);
+							}
+						}
+					}
+					return {
+						left : left,
+						right : right,
+						top : top,
+						bottom : bottom,
+					};
+				};
+
+				/**
 				 *
 				 */
 				Symbol.prototype.prepare = function(x, y) {
@@ -1082,9 +1119,11 @@ define(
 					 * the scroll bar position changes.
 					 */
 					if (adjust) {
-						var displ = this.getEffectiveDisplacement(x, y);
-						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
-								displ.deltaY);
+						if (this.diagram.mode != this.diagram.NORMAL_MODE) {
+							var displ = this.getEffectiveDisplacement(x, y);
+							this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+									displ.deltaY);
+						}
 					} else {
 						this.moveTo(x, y);
 					}
@@ -1302,6 +1341,7 @@ define(
 							this.diagram.selectedSymbolsDragStop();
 						}
 						this.diagram.dragEnabled = false;
+						this.deselect();
 					}
 				};
 
