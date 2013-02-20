@@ -17,9 +17,10 @@ define(
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_user",
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_dialog" ],
+				"bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_communicationController" ],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
-				m_command, m_commandsController, m_dialog) {
+				m_command, m_commandsController, m_dialog, m_communicationController) {
 
 			var currentPropertiesPanel = null;
 
@@ -59,7 +60,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function PropertiesPanel(id) {
 				this.id = id;
@@ -77,7 +78,7 @@ define(
 				this.lastSelectedPageIndex = 0;
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.initialize = function(diagram) {
 					this.diagram = diagram;
@@ -87,21 +88,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getModel = function() {
 					return this.diagram.model;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getModelElement = function() {
 					return this.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.wrapModelElementProperties = function(
 						modelElementProperties) {
@@ -111,21 +112,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.id + " #" + inputId);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.getElementUuid = function() {
 					return this.element.oid;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.initializePropertiesPages = function() {
 					this.propertiesPages = [];
@@ -167,28 +168,33 @@ define(
 
 							var panel = this;
 
-							pageDiv
-									.load(
-											extension.pageHtmlUrl,
-											function(response, status, xhr) {
-												if (status == "error") {
+							// TODO - review
+							// Replaced jQuery(<div>).load call with a synchronous ajax request as, the
+							// async load request caused the property page tabs to not get loaded in time,
+							// and in Chrome browser, these tabs didn't get displayed in the first instance.
+							m_communicationController
+									.syncGetData(
+											{
+												url : extension.pageHtmlUrl
+											},
+											{
+												error : function(err) {
 													var msg = "Properties Page Load Error: "
-															+ xhr.status
+															+ err.status
 															+ " "
-															+ xhr.statusText;
+															+ err.statusText;
 
 													jQuery(this).append(msg);
 													m_utils.debug(msg);
-												} else {
+												},
+												success : function(data) {
 													m_utils
 															.debug("Page loaded: "
-																	+ jQuery(
-																			this)
+																	+ pageDiv
 																			.attr(
 																					"id"));
-
-													var extension = extensions[jQuery(
-															this).attr("id")];
+													pageDiv.append(data);
+													var extension = extensions[pageDiv.attr("id")];
 													var page = extension.provider
 															.create(
 																	panel,
@@ -206,16 +212,16 @@ define(
 
 							var page = extension.provider
 							.create(this);
-							
+
 							this.propertiesPages.push(page);
-							
+
 							page.profiles = extension.profiles;
 						}
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showPropertiesPageList = function() {
 					if (this.propertiesPages.length == 1) {
@@ -263,7 +269,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.disablePropertiesPage = function(id) {
 					jQuery("#" + this.id + " #" + id + "ListItem").prop(
@@ -271,7 +277,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.enablePropertiesPage = function(id) {
 					jQuery("#" + this.id + " #" + id + "ListItem").prop(
@@ -279,7 +285,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hidePropertiesPages = function() {
 					for ( var n in this.propertiesPages) {
@@ -295,7 +301,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showErrorMessages = function() {
 					if (this.errorMessages.length != 0) {
@@ -309,7 +315,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.show = function(page) {
 					m_dialog.makeVisible(this.panel);
@@ -336,7 +342,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hide = function() {
 					m_dialog.makeInvisible(this.panel);
@@ -344,28 +350,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.reset = function() {
 					this.resetPropertiesPages();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.showHelpPanel = function() {
 					m_dialog.makeVisible(this.helpPanel);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.hideHelpPanel = function() {
 					m_dialog.makeInvisible(this.helpPanel);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
@@ -403,7 +409,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
@@ -417,7 +423,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
@@ -433,7 +439,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
 					m_utils.debug("Changes to be submitted for UUID "
