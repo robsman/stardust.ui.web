@@ -555,11 +555,6 @@ define(
 						this.height = m_constants.LANE_MIN_WIDTH;
 					}
 					this.minimizeIcon.hide();
-
-					//hide all Shrink to fit symbols
-					for ( var n in this.parentSymbol.laneSymbols) {
-						this.parentSymbol.laneSymbols[n].shrinkToFitIcon.hide();
-					}
 					this.maximizeIcon.show();
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustPrimitives();
@@ -588,11 +583,6 @@ define(
 					}
 					this.maximizeIcon.hide();
 					this.minimizeIcon.show();
-					//show all Shrink to fit symbols
-					for ( var n in this.parentSymbol.laneSymbols) {
-						this.parentSymbol.laneSymbols[n].shrinkToFitIcon.show();
-					}
-
 					this.minimized = false;
 					this.text.attr("text", this.name);
 					this.parentSymbol.recalculateBoundingBox();
