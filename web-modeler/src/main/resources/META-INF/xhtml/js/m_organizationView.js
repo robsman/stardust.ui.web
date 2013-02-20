@@ -379,9 +379,11 @@ define(
 					for ( var i in this.getModelElement().model.dataItems) {
 						var dataItem = this.getModelElement().model.dataItems[i];
 
-						this.departmentDataSelect.append("<option value='"
-								+ dataItem.id + "'>" + dataItem.name
-								+ "</option>");
+						if (!this.getModelElement().model.dataItems[i].externalReference) {
+							this.departmentDataSelect.append("<option value='"
+									+ dataItem.id + "'>" + dataItem.name
+									+ "</option>");
+						}
 					}
 
 					 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");

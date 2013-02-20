@@ -1874,11 +1874,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             conditionalPerformer.getElementOid());
       conditionalPerformerJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY);
-      conditionalPerformerJson.addProperty(
-            ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY,
-            getModelBuilderFacade().createFullId(
-                  ModelUtils.findContainingModel(conditionalPerformer.getData()),
-                  conditionalPerformer.getData()));
+      String bindingDataFullID = getDataFullID(
+            ModelUtils.findContainingModel(conditionalPerformer.getData()),
+            conditionalPerformer.getData());
+      if (null != bindingDataFullID)
+      {
+         conditionalPerformerJson.addProperty(
+               ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY, bindingDataFullID);
+      }
+
+
       conditionalPerformerJson.addProperty(ModelerConstants.BINDING_DATA_PATH_PROPERTY,
             conditionalPerformer.getDataPath());
       conditionalPerformerJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -3095,6 +3100,21 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     */
    private void setDataFullID(JsonObject jsonObj, ModelType model, DataType data)
    {
+      String fullID = getDataFullID(model, data);
+      if (null != fullID)
+      {
+         jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
+      }
+   }
+
+
+   /**
+    * @param data
+    * @param model
+    * @param jsonObj
+    */
+   private String getDataFullID(ModelType model, DataType data)
+   {
       if (null != data)
       {
          String dataUri = AttributeUtil.getAttributeValue((IExtensibleElement) data,
@@ -3114,16 +3134,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
             if (referencedModel != null)
             {
-               String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
-               jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);
+               return getModelBuilderFacade().createFullId(referencedModel, data);
             }
          }
          else
          {
-            String fullID = getModelBuilderFacade().createFullId(model, data);
-            jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
+            return getModelBuilderFacade().createFullId(model, data);
          }
       }
+
+      return null;
    }
 
    String findInChangeDescriptions(List<ChangeDescriptionJto> changeDescriptions,
