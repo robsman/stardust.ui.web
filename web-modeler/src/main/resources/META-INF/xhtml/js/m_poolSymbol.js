@@ -663,8 +663,6 @@ define(
 										dX + symbolDx, dY);
 							}
 
-							this.laneSymbols[n].recalculateBoundingBox();
-
 							if (swimLaneHeight < this.laneSymbols[n].height) {
 								swimLaneHeight = this.laneSymbols[n].height;
 							}
@@ -709,7 +707,6 @@ define(
 										dX, dY);
 							}
 
-							this.laneSymbols[n].recalculateBoundingBox();
 							if (swimLaneWidth < this.laneSymbols[n].width) {
 								swimLaneWidth = this.laneSymbols[n].width;
 							}

@@ -1096,38 +1096,53 @@ define(
 					return false;
 				};
 
+				/**
+				 * internal method to evaludate change in lane width
+				 */
+				SwimlaneSymbol.prototype.recalculateBoundingBox_ = function() {
+					var newHeight = this.height;
+					var newWidth = this.width;
 
-				SwimlaneSymbol.prototype.recalculateBoundingBox = function() {
+					var childSymbolsBindingRect = this
+							.getChildSymbolsBindingRect();
 
-					for ( var c in this.containedSymbols) {
-						containedSymbol = this.containedSymbols[c];
+					var sX2 = childSymbolsBindingRect.right
+							+ m_constants.SWIMLANE_SYMBOL_MARGIN;
 
-						var sX2 = containedSymbol.x + containedSymbol.width
-								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+					var lX2 = this.x + newWidth;
 
-						var lX2 = this.x + this.width;
-						if (sX2 > lX2) {
-							this.width += (sX2 - lX2);
-						}
-
-						var sY2 = containedSymbol.y + containedSymbol.height
-								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
-
-						var lY2 = this.y + this.height;
-						if (sY2 > lY2) {
-							this.height += (sY2 - lY2);
-						}
+					if (sX2 > lX2) {
+						newWidth += (sX2 - lX2);
 					}
+
+					var sY2 = childSymbolsBindingRect.bottom
+							+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+					var lY2 = this.y + newHeight;
+					if (sY2 > lY2) {
+						newHeight += (sY2 - lY2);
+					}
+
+					return {
+						width : newWidth,
+						height : newHeight
+					};
 				};
 
 				/**
 				 * @author Yogesh.Manware
 				 */
-				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function(x,
-						y) {
+				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function() {
 
 					var moveX = 0;
 					var moveY = 0;
+					var preAdjustmentPos = {
+						width : this.width,
+						height : this.height
+					};
+
+					var dimensions = this.recalculateBoundingBox_();
+					this.height = dimensions.height;
+					this.width = dimensions.width;
 
 					var childSymbolsBindingRect = this
 							.getChildSymbolsBindingRect();
@@ -1154,6 +1169,11 @@ define(
 						for ( var n in this.containedSymbols) {
 							this.containedSymbols[n].moveBy(moveX, moveY);
 						}
+					}
+
+					//width and height changes in above move call
+					if (preAdjustmentPos.width != this.width
+							|| preAdjustmentPos.height != this.height) {
 
 						// Update server
 						var changes = {
@@ -1165,7 +1185,6 @@ define(
 							yOffset : moveY
 						};
 
-						this.parentSymbol.adjustGeometry();
 						var command = m_command
 								.createUpdateModelElementCommand(
 										this.diagram.modelId, this.oid, changes);
