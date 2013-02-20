@@ -1295,7 +1295,8 @@ define(
 						// force set width of all lanes
 						for ( var n in this.parentSymbol.laneSymbols) {
 							this.parentSymbol.laneSymbols[n].width = childSymbolsBindingRect.right
-									- childSymbolsBindingRect.left;
+									- childSymbolsBindingRect.left
+									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT;
 						}
 
 						this.parentSymbol.adjustGeometry();
