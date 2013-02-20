@@ -48,9 +48,8 @@ define(
 				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
 				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
 
-			var canvasPos = $("#canvas").position();
-			var X_OFFSET = canvasPos.left; // Set fpr #panningSensor
-			var Y_OFFSET = canvasPos.top; // Set for #toolbar +
+			var X_OFFSET; // Set fpr #panningSensor
+			var Y_OFFSET; // Set for #toolbar +
 			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
 
@@ -69,6 +68,11 @@ define(
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
+				
+				var canvasPos = $("#canvas").position();
+				X_OFFSET = canvasPos.left; // Set fpr #panningSensor
+				Y_OFFSET = canvasPos.top; // Set for #toolbar +
+
 				// Constants
 
 				var SNAP_LINE_THRESHOLD = 15;
@@ -514,6 +518,7 @@ define(
 					}
 
 					this.process = this.model.processes[this.processId];
+					this.process.diagram = this;
 
 					// Initialize Properties Panels
 
