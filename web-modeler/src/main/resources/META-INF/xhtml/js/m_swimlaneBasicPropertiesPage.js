@@ -162,30 +162,32 @@ define(
 
 						if("participantFullId" == property){
 							var participantId = input.val();
-							var participant = m_model.findParticipant(participantId);
+							if (participantId != "NONE") {
+								var participant = m_model.findParticipant(participantId);
 
-							if(m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == participant.type){
-								var eventSymbols = this.getModelElement().diagram.eventSymbols;
-								for ( var n in eventSymbols) {
-									if (eventSymbols[n]
-											&& m_constants.NONE_EVENT_CLASS == eventSymbols[n].modelElement.eventClass) {
-										this.propertiesPanel.errorMessages
-										.push(m_i18nUtils
-												.getProperty("modeler.swimlane.properties.conditionalParticipant.manualTrigger.error"));
-										input.addClass("error");
-										input.focus();
-										this.propertiesPanel.showErrorMessages();
-										return false;
-									}
-									else if(m_constants.MESSAGE_EVENT_CLASS == eventSymbols[n].modelElement.eventClass
-											&& "scan" == eventSymbols[n].modelElement.implementation){
-										this.propertiesPanel.errorMessages
-										.push(m_i18nUtils
-												.getProperty("modeler.swimlane.properties.conditionalParticipant.scanTrigger.error"));
-										input.addClass("error");
-										input.focus();
-										this.propertiesPanel.showErrorMessages();
-										return false;
+								if(m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == participant.type){
+									var eventSymbols = this.getModelElement().diagram.eventSymbols;
+									for ( var n in eventSymbols) {
+										if (eventSymbols[n]
+												&& m_constants.NONE_EVENT_CLASS == eventSymbols[n].modelElement.eventClass) {
+											this.propertiesPanel.errorMessages
+											.push(m_i18nUtils
+													.getProperty("modeler.swimlane.properties.conditionalParticipant.manualTrigger.error"));
+											input.addClass("error");
+											input.focus();
+											this.propertiesPanel.showErrorMessages();
+											return false;
+										}
+										else if(m_constants.MESSAGE_EVENT_CLASS == eventSymbols[n].modelElement.eventClass
+												&& "scan" == eventSymbols[n].modelElement.implementation){
+											this.propertiesPanel.errorMessages
+											.push(m_i18nUtils
+													.getProperty("modeler.swimlane.properties.conditionalParticipant.scanTrigger.error"));
+											input.addClass("error");
+											input.focus();
+											this.propertiesPanel.showErrorMessages();
+											return false;
+										}
 									}
 								}
 							}
