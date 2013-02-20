@@ -560,9 +560,9 @@ public class ModelerResource
    {
       try
       {
-         String result = getModelService().createWrapperProcess(modelId,
+         getModelService().createWrapperProcess(modelId,
                jsonIo.readJsonObject(postedData));
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+         return Response.ok("", APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {

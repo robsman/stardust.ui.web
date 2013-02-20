@@ -9,42 +9,48 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint",
-				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/ChangeSynchronization",
+				"bpm-modeler/js/EventSynchronization",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process",
+				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
+				"bpm-modeler/js/m_activitySymbol" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_model, m_accessPoint, m_dataTraversal,
-				m_dialog) {
+				ChangeSynchronization, EventSynchronization, m_model,
+				m_process, m_accessPoint, m_dataTraversal, m_dialog,
+				m_activitySymbol) {
 			return {
 				initialize : function() {
-					var wizard = new ServiceWrapperWizard(
-							payloadObj.createCallback);
+					var wizard = new ServiceWrapperWizard();
 
-					wizard.initialize(payloadObj.application);
+					wizard.initialize(payloadObj.callerWindow, payloadObj.application,
+							payloadObj.viewManager, payloadObj.createCallback);
 				}
 			};
 
 			/**
 			 * 
 			 */
-			function ServiceWrapperWizard(createCallback) {
-				this.createCallback = createCallback;
+			function ServiceWrapperWizard() {
 				this.modelInput = jQuery("#modelInput");
 				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
-				this.requestParameterDataNameInput = jQuery("#requestParameterDataNameInput");
-				this.responseParameterDataNameInput = jQuery("#responseParameterDataNameInput");
-				this.requestTransformationActivityNameInput = jQuery("#requestTransformationActivityNameInput");
+				this.requestDataTypeInput = jQuery("#requestDataTypeInput");
+				this.requestDataNameInput = jQuery("#requestDataNameInput");
+				this.responseDataTypeInput = jQuery("#responseDataTypeInput");
+				this.responseDataNameInput = jQuery("#responseDataNameInput");
 				this.serviceInvocationActivityNameInput = jQuery("#serviceInvocationActivityNameInput");
-				this.responseTransformationActivityNameInput = jQuery("#responseTransformationActivityNameInput");
-				this.serviceRequestParameterTypeInput = jQuery("#serviceRequestParameterTypeInput");
-				this.serviceResponseParameterTypeInput = jQuery("#serviceResponseParameterTypeInput");
 				this.createButton = jQuery("#createButton");
 				this.cancelButton = jQuery("#cancelButton");
 
+				var self = this;
+				
 				this.createButton.click({
 					"wizard" : this
 				}, function(event) {
-					event.data.wizard.create();
+					event.data.wizard.createViaCallback();
 					closePopup();
 				});
 
@@ -57,8 +63,13 @@ define(
 				/**
 				 * 
 				 */
-				ServiceWrapperWizard.prototype.initialize = function(application) {
+				ServiceWrapperWizard.prototype.initialize = function(callerWindow,
+						application, viewManager, createCallback) {
+					this.callerWindow = callerWindow;
+
 					this.application = application;
+					this.viewManager = viewManager;
+					this.createCallback = createCallback;
 
 					this.modelInput.empty();
 
@@ -69,80 +80,128 @@ define(
 								+ "'>" + models[n].name + "</option>");
 					}
 
-					this.serviceRequestParameterTypeInput.empty();
+					this.requestDataTypeInput.empty();
+					this.responseDataTypeInput.empty();
 
-					for ( var n in models) {
-						for ( var m in models[n].structuredDataTypes) {
-							this.serviceRequestParameterTypeInput
-									.append("<option value='"
-											+ models[n].structuredDataTypes[m]
-													.getFullId()
-											+ "'>"
-											+ models[n].name
-											+ "/"
-											+ models[n].structuredDataTypes[m].name
-											+ "</option>");
-						}
-					}
+					for ( var n in this.application.contexts.application.accessPoints) {
+						var accessPoint = this.application.contexts.application.accessPoints[n];
 
-					this.serviceResponseParameterTypeInput.empty();
-
-					for ( var n in models) {
-						for ( var m in models[n].structuredDataTypes) {
-							this.serviceResponseParameterTypeInput
-									.append("<option value='"
-											+ models[n].structuredDataTypes[m]
-													.getFullId()
-											+ "'>"
-											+ models[n].name
-											+ "/"
-											+ models[n].structuredDataTypes[m].name
-											+ "</option>");
+						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
+							this.requestDataTypeInput.append("<option value='"
+									+ accessPoint.structuredDataTypeFullId
+									+ "'>"
+									+ accessPoint.structuredDataTypeFullId
+									+ "</option>");
+						} else {
+							this.responseDataTypeInput.append("<option value='"
+									+ accessPoint.structuredDataTypeFullId
+									+ "'>"
+									+ accessPoint.structuredDataTypeFullId
+									+ "</option>");
 						}
 					}
 
 					this.modelInput.val(this.application.model.id);
 					this.processDefinitionNameInput.val(this.application.name);
-					this.requestParameterDataNameInput.val(this.application.name
-							+ " Request Parameter");
-					this.requestTransformationActivityNameInput
-							.val(this.application.name
-									+ " Request Transformation");
+					this.requestDataNameInput.val(this.application.name
+							+ " Request Data");
 					this.serviceInvocationActivityNameInput
 							.val(this.application.name);
-					this.responseTransformationActivityNameInput
-							.val(this.application.name
-									+ " Response Transformation");
-					this.responseParameterDataNameInput
-							.val(this.application.name + " Response Parameter");
+					this.responseDataNameInput.val(this.application.name
+							+ " Response Data");
+				};
+
+				/**
+				 * 
+				 */
+				ServiceWrapperWizard.prototype.createViaCallback = function() {
+					this
+							.createCallback({
+								processDefinitionName : this.processDefinitionNameInput
+										.val(),
+								requestDataTypeFullId : this.requestDataTypeInput
+										.val(),
+								requestDataName : this.requestDataNameInput
+										.val(),
+								responseDataTypeFullId : this.responseDataTypeInput
+										.val(),
+								responseDataName : this.responseDataNameInput
+										.val(),
+								serviceInvocationActivityName : this.serviceInvocationActivityNameInput
+										.val(),
+								applicationId : this.application.id
+							});
 				};
 
 				/**
 				 * 
 				 */
 				ServiceWrapperWizard.prototype.create = function() {
-					this
-							.createCallback({
-								id : this.application.id,
-								name : this.processDefinitionNameInput
-										.val(),
-								applicationId : this.application.id,
-								requestParameterDataNameInput : this.requestParameterDataNameInput
-										.val(),
-								serviceRequestParameterTypeId : this.serviceRequestParameterTypeInput
-										.val(),
-								requestTransformationActivityName : this.requestTransformationActivityNameInput
-										.val(),
-								serviceInvocationActivityName : this.serviceInvocationActivityNameInput
-										.val(),
-								responseTransformationActivityName : this.responseTransformationActivityNameInput
-										.val(),
-								serviceResponseParameterTypeId : this.serviceResponseParameterTypeInput
-										.val(),
-								responseParameterDataNameInput : this.responseParameterDataNameInput
-										.val()
-							});
+					var self = this;
+					var model = m_model.findModel(this.modelInput.val());
+					var process;
+					var activitySymbol;
+
+					m_process
+							.createSynchronized(model,
+									self.processDefinitionNameInput.val(),
+									"Default", "Default")
+							.done(
+									function(process) {
+										// TODO Should have a clear point to
+										// define a View Manager > JIRA
+
+										// TODO Open View functionality should
+										// be added to the views > JIRA
+
+										EventSynchronization
+												.create(
+														"VIEW_LOADED",
+														"",
+														function() {
+															self.viewManager
+																	.openView(
+																			"processDefinitionView",
+																			"processId="
+																					+ encodeURIComponent(process.id)
+																					+ "&modelId="
+																					+ encodeURIComponent(process.model.id)
+																					+ "&processName="
+																					+ encodeURIComponent(process.name)
+																					+ "&fullId="
+																					+ encodeURIComponent(process
+																							.getFullId())
+																					+ "&uuid="
+																					+ process.uuid
+																					+ "&modelUUID="
+																					+ model.uuid,
+																			process.uuid);
+														}, self.callerWindow)
+												.done(
+														function() {
+															try
+															{
+																self.callerWindow.alert("Diagram loaded");
+
+															process.diagram.clearCurrentToolSelection();
+															process.diagram.mode = process.diagram.CREATE_MODE;
+															
+															var symbol = m_activitySymbol
+															.createActivitySymbolFromApplication(
+																	process.diagram,
+																	self.application);
+															
+															self.callerWindow.alert("Symbol created " + symbol);
+															process.diagram.newSymbol = symbol;
+															//process.diagram.placeNewSymbol(100, 100, true);
+															self.callerWindow.alert("Activity symbol created");
+															}
+															catch (x)
+															{
+																self.callerWindow.alert(x);																															
+															}
+														}).fail();
+									}).fail();
 				};
 			}
-			;
 		});

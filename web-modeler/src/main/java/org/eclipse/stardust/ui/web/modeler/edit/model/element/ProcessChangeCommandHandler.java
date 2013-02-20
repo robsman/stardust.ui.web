@@ -51,69 +51,13 @@ public class ProcessChangeCommandHandler
    @OnCommand(commandId = "process.create")
    public void createProcess(ModelType model, JsonObject request)
    {
-      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
-      String defaultLaneName = extractString(request, "defaultLaneName");
-      String defaultPoolName = extractString(request, "defaultPoolName");
-      ProcessDefinitionType processDefinition = newProcessDefinition(model).withIdAndName(null, name).build();
-      //Added process definition to UUID map.
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(model, null, extractString(request, ModelerConstants.NAME_PROPERTY), 
+            extractString(request, "defaultLaneName"), extractString(request, "defaultPoolName"));
+
+      // Add process definition to UUID map.
+      
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(processDefinition);
-
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      processDefinition.setElementOid(++maxOid);
-      // Create diagram bits too
-
-      DiagramType diagram = AbstractElementBuilder.F_CWM.createDiagramType();
-      diagram.setMode(DiagramModeType.MODE_450_LITERAL);
-      diagram.setOrientation(OrientationType.VERTICAL_LITERAL);
-      diagram.setElementOid(++maxOid);
-      diagram.setName("Diagram 1");
-
-      PoolSymbol poolSymbol = AbstractElementBuilder.F_CWM.createPoolSymbol();
-
-      diagram.getPoolSymbols().add(poolSymbol);
-
-      poolSymbol.setElementOid(++maxOid);
-      poolSymbol.setXPos(0);
-      poolSymbol.setYPos(0);
-      poolSymbol.setWidth(ModelerConstants.DEFAULT_SWIMLANE_WIDTH + 34);
-      poolSymbol.setHeight(670);
-      poolSymbol.setName(defaultPoolName);
-      poolSymbol.setId("_default_pool__1");
-      poolSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
-
-      LaneSymbol laneSymbol = AbstractElementBuilder.F_CWM.createLaneSymbol();
-
-      poolSymbol.getChildLanes().add(laneSymbol);
-      laneSymbol.setParentPool(poolSymbol);
-
-      laneSymbol.setElementOid(++maxOid);
-      laneSymbol.setId(ModelerConstants.DEF_LANE_ID);
-      laneSymbol.setName(defaultLaneName);
-
-      // Setting the x,y for default swimlane
-      //TODO - Move this code to javascript
-      laneSymbol.setXPos(12);
-      laneSymbol.setYPos(32);
-      laneSymbol.setWidth(ModelerConstants.DEFAULT_SWIMLANE_WIDTH);
-      laneSymbol.setHeight(poolSymbol.getHeight() - 70);
-      laneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
-
-      processDefinition.getDiagram().add(diagram);
-
-      JsonObject processDefinitionJson = new JsonObject();
-
-      processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");
-      processDefinitionJson.addProperty(ID_PROPERTY, processDefinition.getId());
-      processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
-      processDefinitionJson.addProperty(MODEL_ID_PROPERTY, model.getId());
-      processDefinitionJson.addProperty(ModelerConstants.TYPE_PROPERTY, "process");
-      processDefinitionJson.add(ATTRIBUTES_PROPERTY, new JsonObject());
-      processDefinitionJson.add(ACTIVITIES_PROPERTY, new JsonObject());
-      processDefinitionJson.add(GATEWAYS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(EVENTS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(DATA_FLOWS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(CONTROL_FLOWS_PROPERTY, new JsonObject());
    }
 
    /**

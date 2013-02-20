@@ -1467,7 +1467,7 @@ public class ModelService
    /**
 	 *
 	 */
-   public String createWrapperProcess(String modelId, JsonObject json)
+   public void createWrapperProcess(String modelId, JsonObject json)
    {
       ModelType model = findModel(modelId);
       long maxOid = XpdlModelUtils.getMaxUsedOid(model);
@@ -1476,10 +1476,9 @@ public class ModelService
 
       System.out.println(json);
 
-      JsonObject wizardParameterJson = (JsonObject) json.get(NEW_OBJECT_PROPERTY);
-      JsonObject processDefinitionJson = (JsonObject) createProcessJson(modelId, json);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, extractString(json, NEW_OBJECT_PROPERTY, ModelerConstants.ID_PROPERTY));
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
+            model, null, extractString(json, "processDefinitionName"), "Default", "Default");
+      
       LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
@@ -1496,23 +1495,9 @@ public class ModelService
 
       // Request data
 
-      // DataTypeType structuredDataType = AbstractElementBuilder.F_CWM
-      // .createDataTypeType();
-      //
-      // structuredDataType.setId(id + "Request");
-      // structuredDataType.setName(name + " Request");
-      //
-      // model.getDataType().add(structuredDataType);
-
-      DataType data = newStructVariable(model).withIdAndName(null,
-            extractString(wizardParameterJson, "requestParameterDataNameInput"))
-            .ofType(
-                  /* Dummy */getModelBuilderFacade().stripFullId(
-                        extractString(wizardParameterJson,
-                              "serviceRequestParameterTypeId")))
-            .build();
-
-      model.getData().add(data);
+      DataType data = getModelBuilderFacade().createStructuredData(model, null, extractString(json, "requestDataName"),
+            extractString(json,
+            "requestDataTypeFullId"));
 
       DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1525,70 +1510,20 @@ public class ModelService
 
       parentLaneSymbol.getDataSymbol().add(dataSymbol);
 
-      // Create Request Transformation Activity
+      // Create Application Activity
 
       ActivityType activity = newApplicationActivity(processDefinition).withIdAndName(
             null,
-            extractString(wizardParameterJson, "requestTransformationActivityName"))
-            .invokingApplication(
-                  getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId")))
+            extractString(json, "serviceInvocationActivityName"))
+//            .invokingApplication(
+//                  getModelBuilderFacade().getApplication(modelId,
+//                        extractString(json, "applicationId")))
             .build();
 
       // setDescription(activity,
       // "Invocation of wrapped application.");
 
       ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-
-      activitySymbol.setElementOid(++maxOid);
-
-      activitySymbol.setXPos(200);
-      activitySymbol.setYPos(100);
-      activitySymbol.setWidth(180);
-      activitySymbol.setHeight(50);
-      activitySymbol.setActivity(activity);
-      activity.getActivitySymbols().add(activitySymbol);
-
-      processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
-      parentLaneSymbol.getActivitySymbol().add(activitySymbol);
-
-      // Request data
-
-      data = newStructVariable(model).withIdAndName(null,
-            "Service Request")
-            .ofType(
-                  getModelBuilderFacade().stripFullId(
-                        extractString(wizardParameterJson,
-                              "serviceRequestParameterTypeId")))
-            .build();
-
-      model.getData().add(data);
-
-      dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
-
-      dataSymbol.setElementOid(++maxOid);
-      dataSymbol.setData(data);
-      processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
-      data.getDataSymbols().add(dataSymbol);
-      dataSymbol.setXPos(100);
-      dataSymbol.setYPos(150);
-
-      parentLaneSymbol.getDataSymbol().add(dataSymbol);
-
-      // Create Application Activity
-
-      activity = newApplicationActivity(processDefinition).withIdAndName(
-            null,
-            extractString(wizardParameterJson, "serviceInvocationActivityName"))
-            .invokingApplication(
-                  getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId")))
-            .build();
-
-      // setDescription(activity,
-      // "Invocation of wrapped application.");
-
-      activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
       activitySymbol.setElementOid(++maxOid);
 
@@ -1602,72 +1537,11 @@ public class ModelService
       processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
-      // Response data
-
-      data = newStructVariable(model).withIdAndName(null,
-            "Service Response")
-            .ofType(
-                  getModelBuilderFacade().stripFullId(
-                        extractString(wizardParameterJson,
-                              "serviceResponseParameterTypeId")))
-            .build();
-
-      model.getData().add(data);
-
-      dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
-
-      dataSymbol.setElementOid(++maxOid);
-      dataSymbol.setData(data);
-      processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
-      data.getDataSymbols().add(dataSymbol);
-      dataSymbol.setXPos(100);
-      dataSymbol.setYPos(250);
-
-      parentLaneSymbol.getDataSymbol().add(dataSymbol);
-
-      // Create Response Transformation Activity
-
-      activity = newApplicationActivity(processDefinition).withIdAndName(null,
-            extractString(wizardParameterJson, "responseTransformationActivityName"))
-            .invokingApplication(
-                  getModelBuilderFacade().getApplication(modelId,
-                        extractString(wizardParameterJson, "applicationId")))
-            .build();
-
-      // setDescription(activity,
-      // "Invocation of wrapped application.");
-
-      activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-
-      activitySymbol.setElementOid(++maxOid);
-
-      activitySymbol.setXPos(200);
-      activitySymbol.setYPos(300);
-      activitySymbol.setWidth(180);
-      activitySymbol.setHeight(50);
-      activitySymbol.setActivity(activity);
-      activity.getActivitySymbols().add(activitySymbol);
-
-      processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
-      parentLaneSymbol.getActivitySymbol().add(activitySymbol);
-
       // Create Response Data
 
-      // structuredDataType = AbstractElementBuilder.F_CWM
-      // .createDataTypeType();
-      //
-      // structuredDataType.setId(id + "Response");
-      // structuredDataType.setName(name + " Response");
-      //
-      // model.getDataType().add(structuredDataType);
-
-      data = newStructVariable(model).withIdAndName(null,
-            extractString(wizardParameterJson, "responseParameterDataNameInput"))
-            .ofType(
-                  /* Dummy */getModelBuilderFacade().stripFullId(
-                        extractString(wizardParameterJson,
-                              "serviceResponseParameterTypeId")))
-            .build();
+      data = getModelBuilderFacade().createStructuredData(model, null, extractString(json, "responseDataName"),
+            extractString(json,
+            "requestDataTypeFullId"));
 
       dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1683,18 +1557,14 @@ public class ModelService
       // Create End Symbol
 
       EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
+      
       endEventSymbol.setElementOid(++maxOid);
-
       endEventSymbol.setXPos(250);
       endEventSymbol.setYPos(400);
 
       processDefinition.getDiagram().get(0).getEndEventSymbols().add(endEventSymbol);
 
       parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
-
-      processDefinitionJson.addProperty("scope", "all");
-
-      return processDefinitionJson.toString();
    }
 
    /**

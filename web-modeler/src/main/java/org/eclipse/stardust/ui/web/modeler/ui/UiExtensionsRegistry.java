@@ -34,12 +34,17 @@ public class UiExtensionsRegistry
    public void discoverExtensionDescriptors()
    {
       this.extensionDescriptors = unmodifiableMap(ExtensionDiscoveryUtils.findExtensions(
-            context, asList("viewManager", "diagramToolbar", "propertiesPage", "metaModel", "integrationOverlay", "modelDecoration", "view", "ruleSetProvider")));
+            context, asList("viewManager", "outline", "diagramToolbar", "propertiesPage", "metaModel", "integrationOverlay", "modelDecoration", "view", "ruleSetProvider")));
    }
 
    public List<String> getViewManagerExtensions()
    {
       return unmodifiableList(extensionDescriptors.get("viewManager"));
+   }
+
+   public List<String> getOutlineExtensions()
+   {
+      return unmodifiableList(extensionDescriptors.get("outline"));
    }
 
    public List<String> getDiagramToolbarExtensions()

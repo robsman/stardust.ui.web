@@ -348,6 +348,10 @@ define(
 							getEndpointUrl() + "/models/" + modelId);
 					// toolActions.loadToolAction();
 					diagram.loadProcess();
+					
+					// TODO Used temporarily to indicate the VIEW_LOADED event for the Process Definition View
+					
+					window.parent.EventHub.events.publish("VIEW_LOADED", "");
 				}
 			};
 

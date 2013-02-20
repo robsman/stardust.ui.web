@@ -88,6 +88,9 @@ public class ModelingUiExtensionsController
       buffer.append("    // View Manager\n");
       listExtensionDependencies(buffer, registry.getViewManagerExtensions());
 
+      buffer.append("    // Outline\n");
+      listExtensionDependencies(buffer, registry.getOutlineExtensions());
+
       buffer.append("    // Meta Model\n");
       listExtensionDependencies(buffer, registry.getMetaModelExtensions());
 
@@ -98,6 +101,7 @@ public class ModelingUiExtensionsController
             .append("\n");
 
       listExtensionInitialization(buffer, "registerViewManager", registry.getViewManagerExtensions());
+      listExtensionInitialization(buffer, "registerOutlineExtensions", registry.getOutlineExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerViewExtensions", registry.getViewExtensions());
 

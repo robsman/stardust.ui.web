@@ -55,7 +55,7 @@
 										<tr>
 											<td><label for="modelInput">Model</label>
 											</td>
-											<td><select id="modelInput" style="min-width: 250px;">
+											<td colspan="2"><select id="modelInput" style="min-width: 200px;">
 											</select>
 											</td>
 										</tr>
@@ -63,67 +63,40 @@
 											<td><label for="processDefinitionNameInput">Process
 													Definition Name</label>
 											</td>
-											<td><input id="processDefinitionNameInput" type="text" style="min-width: 250px;"></input>
+											<td colspan="2"><input id="processDefinitionNameInput" type="text" style="min-width: 200px;"></input>
 											</td>
 										</tr>
 										<tr>
-											<td><label for="requestParameterDataNameInput">Request
-													Parameter Data Name</label>
+											<td><label for="requestDataNameInput">Request
+													Data Name</label>
 											</td>
-											<td><input id="requestParameterDataNameInput"
-												type="text" style="min-width: 250px;"></input>
+											<td><select id="requestDataTypeInput"></select>
 											</td>
-										</tr>
-										<tr>
-											<td><label for="requestTransformationActivityNameInput">Request
-													Transformation Activity Name</label>
-											</td>
-											<td><input id="requestTransformationActivityNameInput"
-												type="text" style="min-width: 250px;"></input>
+											<td><input id="requestDataNameInput"
+												type="text" style="min-width: 200px;"></input>
 											</td>
 										</tr>
 										<tr>
-											<td><label for="serviceRequestParameterTypeInput">Service
-													Request Parameter Type</label>
+											<td><label for="serviceInvocationActivityNameInput">Service Invocation Activity Name</label>
 											</td>
-											<td><select id="serviceRequestParameterTypeInput" style="min-width: 250px;">
-											</select>
-											</td>
-										</tr>
-										<tr>
-											<td><label for="serviceInvocationActivityNameInput">Service
-													Invocation Activity Name</label>
-											</td>
-											<td><input id="serviceInvocationActivityNameInput"
-												type="text" style="min-width: 250px;"></input>
+											<td colspan="2"><input id="serviceInvocationActivityNameInput"
+												type="text" style="min-width: 200px;"></input>
 											</td>
 										</tr>
 										<tr>
-											<td><label for="serviceResponseParameterTypeInput">Service
-													Request Parameter Type</label>
+											<td><label for="responseDataNameInput">Response
+													Data Name</label>
 											</td>
-											<td><select id="serviceResponseParameterTypeInput" style="min-width: 250px;">
-											</select>
+											<td><select id="responseDataTypeInput"></select>
 											</td>
-										</tr>
-										<tr>
-											<td><label for="responseTransformationActivityNameInput">Response
-													Transformation Activity Name</label>
-											</td>
-											<td><input id="responseTransformationActivityNameInput"
-												type="text" style="min-width: 250px;"></input>
-											</td>
-										</tr>
-										<tr>
-											<td><label for="responseParameterDataNameInput">Response
-													Parameter Data Name</label>
-											</td>
-											<td><input id="responseParameterDataNameInput"
-												type="text" style="min-width: 250px;"></input>
+											<td><input id="responseDataNameInput"
+												type="text" style="min-width: 200px;"></input>
 											</td>
 										</tr>
 									</table>
-								</td>
+								</td>	
+								</tr>
+								<tr>							
 								<td valign="top"><table>
 										<tr>
 											<td><label for="createWebServiceInput">Expose
