@@ -14,7 +14,11 @@
 <script type="text/javascript"
 	data-main="../../js/uiMashupApplicationViewMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
-<style>
+<style type="text/css" media="screen">
+	#markupTextareaDiv { 
+		position: relative;
+		height: 250px;
+	}
 </style>
 </head>
 <body>
@@ -89,7 +93,7 @@
 									class="tabLabel" id="test">Test</span> </a></li>
 						</ul>
 						<div id="configurationTab">
-							<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<table cellpadding="0" cellspacing="0" class="layoutTable" style="width: 100%">
 								<tr>
 									<td>
 										<table cellpadding="0" cellspacing="0" class="layoutTable"
@@ -124,7 +128,7 @@
 								<tr id="embeddedRow">
 									<td>
 										<table cellpadding="0" cellspacing="0" class="layoutTable"
-											style="margin-bottom: 10px;">
+											style="margin-bottom: 10px; width: 100%">
 											<tr>
 												<td>
 												<a id="generateMarkupForAngularLink">Generate Markup for HTML5/Angular JS &raquo;</a>
@@ -144,7 +148,7 @@
 												<td><label for="markupTextarea">HTML Markup</label></td>
 											</tr>
 											<tr>
-												<td><textarea id="markupTextarea" cols="150" rows="25" class="code"></textarea>
+												<td><textarea id="markupTextarea" cols="150" rows="25" style="display:none;"></textarea><div id="markupTextareaDiv"></div>
 												</td>
 											</tr>
 										</table>

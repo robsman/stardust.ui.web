@@ -15,11 +15,12 @@ define(
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_codeEditorAce",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_markupGenerator" ],
 		function(m_utils, m_constants, m_urlUtils, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils,
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_codeEditorAce, m_i18nUtils,
 				m_markupGenerator) {
 			return {
 				initialize : function(fullId) {
@@ -188,7 +189,7 @@ define(
 					this.viaUriRow = jQuery("#viaUriRow");
 					this.embeddedRow = jQuery("#embeddedRow");
 					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
-					this.markupTextarea = jQuery("#markupTextarea");
+					this.markupTextarea = jQuery("#markupTextareaDiv");
 					this.urlInput = jQuery("#urlInput");
 					this.applicationFrame = jQuery("#applicationFrame");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
@@ -201,6 +202,16 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true
 							});
+
+					var self = this;
+					this.embeddedHTMLEditor = m_codeEditorAce.getCodeEditor("markupTextareaDiv");
+					this.embeddedHTMLEditor.getEditor().on('blur', function(e){
+						if (!self.validate()) {
+							return;
+						}
+						m_utils.debug("Code editor blur.");
+						self.submitEmbeddedModeChanges();
+					});
 
 					this.urlInput
 							.change(
@@ -218,20 +229,22 @@ define(
 															.val()
 												});
 									});
-					this.markupTextarea.change({
+					/*this.markupTextarea.change({
 						view : this
 					}, function(event) {
 						if (!event.data.view.validate()) {
 							return;
 						}
 						event.data.view.submitEmbeddedModeChanges();
-					});
+					});*/
 					this.generateMarkupForJQueryLink.click({
 						view : this
 					}, function(event) {
-						event.data.view.markupTextarea.val("");
-						event.data.view.markupTextarea.val(event.data.view
-								.generateMarkupForJQuery());
+//						event.data.view.markupTextarea.val("");
+//						event.data.view.markupTextarea.val(event.data.view
+//								.generateMarkupForJQuery());
+						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForJQuery());
+
 						event.data.view.submitEmbeddedModeChanges();
 					});
 					this.viaUriInput
@@ -451,8 +464,7 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
-								"carnot:engine:ui:externalWebApp:markup" : this.markupTextarea
-										.val()
+								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor.getValue()
 							});
 				};
 
@@ -553,7 +565,8 @@ define(
 
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
-						this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+//						this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						this.embeddedHTMLEditor.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
 					} else {
 						this.setViaUri();
 						this.urlInput.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
