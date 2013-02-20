@@ -74,7 +74,6 @@ define(
 				this.participantFullId = null;
 				this.participantName = null;
 				this.minimizeIcon = null;
-				this.shrinkToFitIcon = null;
 				this.cacheWidth = 0;
 				this.cacheHeight = 0;
 				this.maximizeIcon = null;
@@ -118,7 +117,6 @@ define(
 					this.text = null;
 					this.minimizeIcon = null;
 					this.maximizeIcon = null;
-					this.shrinkToFitIcon = null;
 					this.symbolXOffset = 0;
 					this.symbolYOffset = 0;
 
@@ -224,7 +222,6 @@ define(
 					transferObject.laneSymbols = [];
 					transferObject.minimizeIcon = null;
 					transferObject.maximizeIcon = null;
-					transferObject.shrinkToFitIcon = null;
 
 					for ( var laneSymbol in this.laneSymbols) {
 						transferObject.laneSymbols[laneSymbol] = this.laneSymbols[laneSymbol]
@@ -388,22 +385,6 @@ define(
 
 					this.maximizeIcon.hide();
 					this.addToPrimitives(this.maximizeIcon);
-
-					this.shrinkToFitIcon = m_canvasManager
-					.drawImageAt(
-							"../../images/icons/shrink-to-fit.png",
-							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
-									+ this.width - 20)
-									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
-									: (this.y + 0.5 * this.height), 16,
-							16)
-							.attr(
-									{
-										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-												: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.shrinkToFit")
-									});
-					this.addToPrimitives(this.shrinkToFitIcon);
 				};
 
 				/**
@@ -442,12 +423,6 @@ define(
 							"y" : this.y + 0.12
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
-						this.shrinkToFitIcon.attr({
-							"transform" : "R0",
-							"x" : this.x + this.width - 40,
-							"y" : this.y + 0.15
-									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-						});
 					} else {
 						this.topRectangle.attr({
 							"x" : this.x,
@@ -474,13 +449,6 @@ define(
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							"y" : this.y + 0.5
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
-						});
-						this.shrinkToFitIcon.attr({
-							"transform" : "R270",
-							"x" : this.x + 0.2
-									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
-							"y" : this.y + 0.5
-									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + 20
 						});
 					}
 				};
@@ -572,8 +540,6 @@ define(
 							.click(SwimlaneSymbol_minimizeClickClosure);
 					this.maximizeIcon
 							.click(SwimlaneSymbol_maximizeClickClosure);
-					this.shrinkToFitIcon
-							.click(SwimlaneSymbol_shrinkToFitClickClosure);
 				};
 
 
@@ -660,8 +626,8 @@ define(
 					var n = 0;
 					while (n < this.rightFlyOutMenuItems.length) {
 						this.rightFlyOutMenuItems[n].attr({
-							x : x + 15,
-							y : y +5
+							x : x + 10 + (n * 25),
+							y : y + 5
 						});
 						n++;
 					}
@@ -671,13 +637,17 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenu = function() {
-					this.addFlyOutMenuItems(
-							[],[{
-								imageUrl : "../../images/icons/remove.png",
-								imageWidth : 16,
-								imageHeight : 16,
-								clickHandler : SwimlaneSymbol_removeClosure
-							}],[]);
+					this.addFlyOutMenuItems([], [ {
+						imageUrl : "../../images/icons/shrink-to-fit.png",
+						imageWidth : 16,
+						imageHeight : 16,
+						clickHandler : SwimlaneSymbol_shrinkToFitClickClosure
+					}, {
+						imageUrl : "../../images/icons/remove.png",
+						imageWidth : 16,
+						imageHeight : 16,
+						clickHandler : SwimlaneSymbol_removeClosure
+					} ], []);
 				};
 
 
