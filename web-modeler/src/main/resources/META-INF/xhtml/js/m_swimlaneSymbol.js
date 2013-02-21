@@ -1147,22 +1147,46 @@ define(
 					var childSymbolsBindingRect = this
 							.getChildSymbolsBindingRect();
 
-					// If Symbol is moved beyond the starting Y margin and
-					// Height has increased, calculate the height change to move
-					// Symbol
-					if ((this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT) > childSymbolsBindingRect.top) {
-						moveY = Math
-								.abs(childSymbolsBindingRect.top
-										- (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
-						this.height = this.height + moveY;
-					}
 
-					// If Symbol is moved beyond the starting X margin and
-					// width has increased, calculate the width change to move
-					// Symbol
-					if (this.x > childSymbolsBindingRect.left) {
-						moveX = Math.abs(childSymbolsBindingRect.left - this.x);
-						this.width = this.width + moveX;
+
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						// If Symbol is moved beyond the starting Y margin and
+						// Height has increased, calculate the height change to
+						// move Symbol
+						if ((this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT) > childSymbolsBindingRect.top) {
+							moveY = Math
+									.abs(childSymbolsBindingRect.top
+											- (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
+							this.height = this.height + moveY;
+						}
+
+						// If Symbol is moved beyond the starting X margin and
+						// width has increased, calculate the width change to
+						// move Symbol
+						if (this.x > childSymbolsBindingRect.left) {
+							moveX = Math.abs(childSymbolsBindingRect.left
+									- this.x);
+							this.width = this.width + moveX;
+						}
+					} else {
+						// If Symbol is moved beyond the starting Y margin and
+						// Height has increased, calculate the height change to
+						// move Symbol
+						if ((this.x + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT) > childSymbolsBindingRect.left) {
+							moveX = Math
+									.abs(childSymbolsBindingRect.left
+											- (this.x + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
+							this.width = this.width + moveX;
+						}
+
+						// If Symbol is moved beyond the starting X margin and
+						// width has increased, calculate the width change to
+						// move Symbol
+						if (this.y > childSymbolsBindingRect.top) {
+							moveY = Math.abs(childSymbolsBindingRect.top
+									- this.y);
+							this.height = this.height + moveY;
+						}
 					}
 
 					if (moveX > 0 || moveY > 0) {
@@ -1171,7 +1195,6 @@ define(
 						}
 					}
 
-					//width and height changes in above move call
 					if (preAdjustmentPos.width != this.width
 							|| preAdjustmentPos.height != this.height) {
 
@@ -1324,6 +1347,9 @@ define(
 								- childSymbolsBindingRect.top;
 					}
 
+					this.parentSymbol.recalculateBoundingBox();
+					this.parentSymbol.adjustGeometry();
+
 					var changes = {
 						x : this.x,
 						y : this.y,
@@ -1343,9 +1369,6 @@ define(
 					} else {
 						this.y -= this.symbolYOffset;
 					}
-
-					this.parentSymbol.recalculateBoundingBox();
-					this.parentSymbol.adjustGeometry();
 				};
 
 				/**
