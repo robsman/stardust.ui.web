@@ -93,7 +93,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function CommandsController(newCommunicationController) {
 				// Initialize members
@@ -103,7 +103,7 @@ define(
 				this.commandHandlers = [];
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.toString = function() {
 					return "Lightdust.CommandController";
@@ -190,7 +190,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.submitCommand = function(command) {
 					var url = m_communicationController.getEndpointUrl()
@@ -274,7 +274,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.registerCommandHandler = function(
 						commandHandler) {
@@ -282,7 +282,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.unregisterCommandHandler = function(
 						commandHandler) {
@@ -291,7 +291,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommand = function(
 						command) {
@@ -301,20 +301,20 @@ define(
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
 						m_utils.debug("Process command on");
 						m_utils.debug(this.commandHandlers[n]);
-//						try {
+						try {
 							if (this.commandHandlers[n]) {
 								this.commandHandlers[n].processCommand(command);
 							}
-//						} catch (e) {
-//							m_utils
-//									.debug("Exception while invoking command handler "
-//											+ e);
-//						}
+						} catch (e) {
+							m_utils
+									.debug("Exception while invoking command handler "
+											+ e);
+						}
 					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommandUndo = function(
 						command) {
