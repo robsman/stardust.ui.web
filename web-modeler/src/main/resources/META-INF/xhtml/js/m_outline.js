@@ -1956,8 +1956,8 @@ define(
 										}
 									},
 									"themes" : {
-										"theme" : "classic",
-										"url" : "../css/thirdparty/jstree/classic/style.css"
+										"theme" : "custom",
+										"url" : "../css/jsTreeCustom/style.css"
 									}
 								});
 
