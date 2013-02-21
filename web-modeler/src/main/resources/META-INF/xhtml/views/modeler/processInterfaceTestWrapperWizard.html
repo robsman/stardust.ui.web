@@ -22,7 +22,7 @@
 }
 </style>
 <script type="text/javascript"
-	data-main="../../js/serviceWrapperWizardMain"
+	data-main="../../js/processInterfaceTestWrapperWizardMain"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body style="width: 100%; height: 100%; overflow: auto; margin: 0px;">
@@ -40,8 +40,7 @@
 						<table>
 							<tr>
 								<td><img src="../../images/icons/wand.png" /></td>
-								<td><label>Create a wrapper Process Definition for
-										the Application with the following data:</label></td>
+								<td><label id="introLabel"></label></td>
 							</tr>
 						</table>
 					</td>
@@ -53,7 +52,7 @@
 								<td valign="top">
 									<table>
 										<tr>
-											<td><label for="modelInput">Model</label></td>
+											<td><label for="modelInput">Target Model</label></td>
 											<td colspan="2"><select id="modelInput"
 												style="min-width: 200px;">
 											</select></td>
@@ -65,55 +64,29 @@
 												type="text" style="min-width: 200px;"></input></td>
 										</tr>
 										<tr>
-											<td><label for="requestDataNameInput">Request
-													Data Name</label></td>
-											<td><select id="requestDataTypeInput"></select></td>
-											<td><input id="requestDataNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+											<td><label for="participantSelect">Executing Participant</label></td>
+											<td colspan="2"><select id="participantSelect"
+												type="text" style="min-width: 200px;"></select></td>
 										</tr>
 										<tr>
-											<td><label for="serviceInvocationActivityNameInput">Service
-													Invocation Activity Name</label></td>
-											<td colspan="2"><input
-												id="serviceInvocationActivityNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+											<td><label for="dataInputActivityNameInput">Data
+													Input Activity Name</label></td>
+											<td colspan="2"><input id="dataInputActivityNameInput"
+												type="text" style="min-width: 200px;"></input></td>
 										</tr>
 										<tr>
-											<td><label for="responseDataNameInput">Response
-													Data Name</label></td>
-											<td><select id="responseDataTypeInput"></select></td>
-											<td><input id="responseDataNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+											<td><label for="subprocessActivityNameInput">Process
+													Interface Invocation Activity Name</label></td>
+											<td colspan="2"><input id="subprocessActivityNameInput"
+												type="text" style="min-width: 200px;"></input></td>
+										</tr>
+										<tr>
+											<td><label for="dataOutputActivityNameInput">Data
+													Output Activity Name</label></td>
+											<td colspan="2"><input id="dataOutputActivityNameInput"
+												type="text" style="min-width: 200px;"></input></td>
 										</tr>
 									</table></td>
-							</tr>
-							<tr>
-								<td valign="top"><table>
-										<tr>
-											<td><label for="createWebServiceInput">Expose
-													Web Service</label></td>
-											<td><input id="createWebServiceInput" type="checkbox"></input>
-											</td>
-										</tr>
-										<tr>
-											<td><label for="createRestServiceInput">Expose
-													REST Service</label></td>
-											<td><input id="createRestServiceInput" type="checkbox"></input>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td valign="top"><table>
-										<tr>
-											<td><label for="createTestWrapperProcessInput">Create
-													Test Wrapper Process</label></td>
-											<td><input id="createTestWrapperProcessInput"
-												type="checkbox"></input></td>
-										</tr>
-									</table>
-								</td>
 							</tr>
 						</table></td>
 				</tr>
