@@ -371,7 +371,7 @@ define(
 					this.departmentDataSelect.empty();
 					this.departmentDataSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
-							+ "'>(To be defined)</option>");
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 				var	 modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
 					this.departmentDataSelect
 							.append("<optgroup label=\""+modellabel+"\">");

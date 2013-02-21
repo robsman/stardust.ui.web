@@ -11,9 +11,9 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity" ],
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage, m_activity) {
+				m_propertiesPage, m_activity, m_i18nUtils) {
 			return {
 				create: function(propertiesPanel) {
 					return new ActivityProcessingPropertiesPage(propertiesPanel);
@@ -88,7 +88,10 @@ define(
 				this.listDataMappingInput.empty();
 				this.listDataMappingInput.append("<option value='"
 						+ m_constants.TO_BE_DEFINED
-						+ "'>(To be defined)</option>");
+						+ "'>"
+						+ m_i18nUtils
+								.getProperty("modeler.general.toBeDefined")
+						+ "</option>");
 
 				for ( var n in this.propertiesPanel.models) {
 					for ( var m in this.propertiesPanel.models[n].dataItems) {
@@ -108,7 +111,7 @@ define(
 				this.itemDataList.empty();
 				this.itemDataList.append("<option value='"
 						+ m_constants.TO_BE_DEFINED
-						+ "'>(To be defined)</option>");
+						+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 				for ( var n in this.propertiesPanel.models) {
 					for ( var m in this.propertiesPanel.models[n].dataItems) {
@@ -124,7 +127,7 @@ define(
 				}
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.setSingleProcessingType = function() {
 					this.singleProcessingTypeInput.attr("checked", true);
@@ -137,7 +140,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.setParallelMultiProcessingType = function() {
 					this.singleProcessingTypeInput.attr("checked", false);
@@ -149,7 +152,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.setSequentialMultiProcessingType = function() {
 					this.singleProcessingTypeInput.attr("checked", false);
@@ -162,7 +165,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.setElement = function() {
 					if (this.propertiesPanel.element.modelElement.processingType == m_constants.SINGLE_PROCESSING_TYPE) {
@@ -175,7 +178,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.apply = function() {
 					if (this.singleProcessingTypeInput.is(":checked")) {

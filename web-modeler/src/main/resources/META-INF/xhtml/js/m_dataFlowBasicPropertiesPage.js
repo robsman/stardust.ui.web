@@ -15,8 +15,8 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_basicPropertiesPage" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage) {
+				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -322,7 +322,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>"); // I18N
 					} else {
 						this.inputAccessPointSelectInput
-								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>"); // I18N
 					}
 
 					m_utils.debug("Contexts");
@@ -400,7 +400,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>");
 					} else {
 						this.outputAccessPointSelectInput
-								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>"); // I18N
 					}
 
 					for ( var i in dataFlow.activity.getContexts()) {

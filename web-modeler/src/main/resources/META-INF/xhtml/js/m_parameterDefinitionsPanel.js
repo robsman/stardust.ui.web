@@ -385,7 +385,7 @@ define(
 					this.parameterDefinitionDataSelect.empty();
 
 					this.parameterDefinitionDataSelect
-							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
+							.append("<option value=\"TO_BE_DEFINED\">" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 					if (this.scopeModel) {
 						var modelname = m_i18nUtils
