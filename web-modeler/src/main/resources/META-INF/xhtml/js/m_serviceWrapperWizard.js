@@ -36,6 +36,7 @@ define(
 			 * 
 			 */
 			function ServiceWrapperWizard() {
+				this.introLabel = jQuery("#introLabel");
 				this.modelInput = jQuery("#modelInput");
 				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
 				this.requestDataTypeInput = jQuery("#requestDataTypeInput");
@@ -67,9 +68,11 @@ define(
 				ServiceWrapperWizard.prototype.initialize = function(callerWindow,
 						application, viewManager) {
 					this.callerWindow = callerWindow;
-
 					this.application = application;
 					this.viewManager = viewManager;
+
+					this.introLabel.empty();
+					this.introLabel.append("Create a Wrapper Process Definition for the Application <b>" + this.application.name + "</b> with the following data:");
 
 					this.modelInput.empty();
 
