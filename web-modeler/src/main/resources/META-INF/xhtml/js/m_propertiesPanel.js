@@ -380,6 +380,10 @@ define(
 						return;
 					}
 
+					if (!this.element) {
+						return;
+					}
+
 					var object = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
