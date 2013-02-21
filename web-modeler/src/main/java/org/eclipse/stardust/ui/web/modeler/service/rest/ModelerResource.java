@@ -572,6 +572,26 @@ public class ModelerResource
       }
    }
 
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{id}/processes/createProcessInterfaceTestWrapperProcess")
+   public Response createProcessInterfaceTestWrapperProcess(@PathParam("id") String modelId, String postedData)
+   {
+      try
+      {
+         getModelService().createProcessInterfaceTestWrapperProcess(modelId,
+               jsonIo.readJsonObject(postedData));
+         return Response.ok("", APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/problems")

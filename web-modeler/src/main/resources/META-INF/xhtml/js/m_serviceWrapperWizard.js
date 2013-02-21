@@ -10,6 +10,7 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+			"bpm-modeler/js/m_urlUtils",
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/ChangeSynchronization",
@@ -18,7 +19,7 @@ define(
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_activitySymbol" ],
-		function(m_utils, m_constants, m_command, m_commandsController,
+		function(m_utils, m_constants, m_urlUtils, m_command, m_commandsController,
 				ChangeSynchronization, EventSynchronization, m_model,
 				m_process, m_accessPoint, m_dataTraversal, m_dialog,
 				m_activitySymbol) {
@@ -27,7 +28,7 @@ define(
 					var wizard = new ServiceWrapperWizard();
 
 					wizard.initialize(payloadObj.callerWindow, payloadObj.application,
-							payloadObj.viewManager, payloadObj.createCallback);
+							payloadObj.viewManager);
 				}
 			};
 
@@ -64,12 +65,11 @@ define(
 				 * 
 				 */
 				ServiceWrapperWizard.prototype.initialize = function(callerWindow,
-						application, viewManager, createCallback) {
+						application, viewManager) {
 					this.callerWindow = callerWindow;
 
 					this.application = application;
 					this.viewManager = viewManager;
-					this.createCallback = createCallback;
 
 					this.modelInput.empty();
 
@@ -115,8 +115,7 @@ define(
 				 * 
 				 */
 				ServiceWrapperWizard.prototype.createViaCallback = function() {
-					this
-							.createCallback({
+					var parameter = {
 								processDefinitionName : this.processDefinitionNameInput
 										.val(),
 								requestDataTypeFullId : this.requestDataTypeInput
@@ -129,12 +128,24 @@ define(
 										.val(),
 								serviceInvocationActivityName : this.serviceInvocationActivityNameInput
 										.val(),
-								applicationId : this.application.id
-							});
+								applicationFullId : this.application.getFullId()
+							};
+					
+					jQuery
+					.ajax({
+						type : "POST",
+						url : m_urlUtils
+								.getModelerEndpointUrl()
+								+ "/models/"
+								+ encodeURIComponent(this.application.model.id)
+								+ "/processes/createWrapperProcess",
+						contentType : "application/json",
+						data : JSON.stringify(parameter)
+					}).done().fail();
 				};
 
 				/**
-				 * 
+				 * Experiment for local create
 				 */
 				ServiceWrapperWizard.prototype.create = function() {
 					var self = this;

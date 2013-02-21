@@ -21,11 +21,6 @@ define(
 				openCreateApplicationWrapperProcessWizard : function(node) {
 					var application = m_model.findApplication(node
 							.attr("fullId"));
-					m_utils.debug("Application");
-					m_utils.debug(application);
-
-					m_utils.debug("Application to wrap");
-					m_utils.debug(application);
 
 					var popupData = {
 						attributes : {
@@ -37,27 +32,32 @@ define(
 						payload : {
 							callerWindow : window,
 							application : application,
-							viewManager : viewManager,
-							createCallback : function(parameter) {
-								jQuery
-										.ajax({
-											type : "POST",
-											url : m_urlUtils
-													.getModelerEndpointUrl()
-													+ "/models/"
-													+ encodeURIComponent(application.model.id)
-													+ "/processes/createWrapperProcess",
-											contentType : "application/json",
-											data : JSON.stringify(parameter)
-										}).done().fail();
-							}
+							viewManager : viewManager
 						}
 					};
 					
 
 					parent.iPopupDialog.openPopup(popupData);
 				},
-				openCreateUiTestWrapperProcessWizard : function(node) {
+				openProcessInterfaceTestWrapperProcessWizard : function(node) {
+					var process = m_model.findProcess(node
+							.attr("fullId"));
+
+					var popupData = {
+						attributes : {
+							width : "700px",
+							height : "500px",
+							src : m_urlUtils.getPlugsInRoot()
+									+ "bpm-modeler/views/modeler/processInterfaceTestWrapperWizard.html"
+						},
+						payload : {
+							callerWindow : window,
+							process : process,
+							viewManager : viewManager						}
+					};
+					
+
+					parent.iPopupDialog.openPopup(popupData);
 				}
 			};
 		});

@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
+import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newStructVariable;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
@@ -64,6 +65,7 @@ import org.eclipse.xsd.XSDSimpleTypeDefinition;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.omg.CORBA.CTX_RESTRICT_SCOPE;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -95,6 +97,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
@@ -120,12 +123,15 @@ import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
@@ -142,9 +148,9 @@ import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
 /**
- *
+ * 
  * @author Shrikant.Gangal, Marc.Gille
- *
+ * 
  */
 public class ModelService
 {
@@ -371,7 +377,7 @@ public class ModelService
    /**
     * Removes the modelling session from cached list when user session ends. TODO -
     * commented pending review by Robert S
-    *
+    * 
     */
    @PreDestroy
    public void destroyModelingSession()
@@ -383,7 +389,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -398,7 +404,7 @@ public class ModelService
 
    /**
     * Only used for ORION integration
-    *
+    * 
     * @param modelManagementStrategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
@@ -412,7 +418,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param attrs
     * @param attrType
     */
@@ -429,7 +435,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
@@ -464,7 +470,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param model
     * @param processDefinition
     * @return
@@ -475,7 +481,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -529,7 +535,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param account
     * @return
     */
@@ -573,12 +579,12 @@ public class ModelService
 
    /**
     * Invite Mechanism works the following:
-    *
+    * 
     * When the user is logged in any messages can be broadcasted directly to him. The user
     * recives a broadcast about a notification that he was in invited. He can decide now
     * if he really wants to join the session or not. It broadcasts a JsonObject to every
     * user online directly.
-    *
+    * 
     * @param userAccountList
     *           A list of all invited users provided by the icefaces backing bean
     * @param sessionOwnerId
@@ -710,9 +716,9 @@ public class ModelService
     * Uses the ModelingSessionManager to check whether a given user was invited to session
     * while he was offline. Broadcasts a REQUEST_JOIN_JSON Object back to the requester
     * specified through the username.
-    *
+    * 
     * @param username
-    *
+    * 
     */
    public void getOfflineInvites(String username)
    {
@@ -775,7 +781,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    *
+    * 
     * @return
     */
    public String getAllModels(boolean reload)
@@ -812,7 +818,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param httpRequest
     * @param modelId
     * @return
@@ -839,7 +845,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       *
+       * 
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -863,7 +869,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param id
     * @return
     */
@@ -874,7 +880,7 @@ public class ModelService
 
    /**
     * TODO - This should probably be delegated to the model management strategy?
-    *
+    * 
     * @param id
     * @return
     */
@@ -885,7 +891,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param id
     * @param postedData
@@ -902,7 +908,8 @@ public class ModelService
       JsonObject processDefinitionJson = new JsonObject();
 
       processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
-      processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY, processDefinition.getId());
+      processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY,
+            processDefinition.getId());
       processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
       processDefinitionJson.addProperty(MODEL_ID_PROPERTY, modelId);
       processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
@@ -919,7 +926,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param activityId
@@ -954,7 +961,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -1013,7 +1020,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1032,7 +1039,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1059,9 +1066,9 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
@@ -1103,7 +1110,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1179,7 +1186,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1215,7 +1222,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1245,7 +1252,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1438,7 +1445,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1474,11 +1481,13 @@ public class ModelService
 
       // Create process definition
 
-      System.out.println(json);
-
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
-            model, null, extractString(json, "processDefinitionName"), "Default", "Default");
-      
+            model, null, extractString(json, "processDefinitionName"), "Default",
+            "Default");
+
+      getModelBuilderFacade().setAttribute(processDefinition, "carnot:engine:externalInvocationType",
+            "BOTH"); // Process Interface only
+
       LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
@@ -1495,9 +1504,15 @@ public class ModelService
 
       // Request data
 
-      DataType data = getModelBuilderFacade().createStructuredData(model, null, extractString(json, "requestDataName"),
-            extractString(json,
-            "requestDataTypeFullId"));
+      DataType data = getModelBuilderFacade().createStructuredData(model, null,
+            extractString(json, "requestDataName"),
+            extractString(json, "requestDataTypeFullId"));
+
+      getModelBuilderFacade().createStructuredParameter(
+            processDefinition,
+            data,
+            NameIdUtils.createIdFromName(extractString(json, "requestDataName")),
+            extractString(json, "requestDataName"), extractString(json, "requestDataTypeFullId"), ModeType.IN);
 
       DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1513,15 +1528,11 @@ public class ModelService
       // Create Application Activity
 
       ActivityType activity = newApplicationActivity(processDefinition).withIdAndName(
-            null,
-            extractString(json, "serviceInvocationActivityName"))
-//            .invokingApplication(
-//                  getModelBuilderFacade().getApplication(modelId,
-//                        extractString(json, "applicationId")))
-            .build();
+            null, extractString(json, "serviceInvocationActivityName")).build();
 
-      // setDescription(activity,
-      // "Invocation of wrapped application.");
+      activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+      getModelBuilderFacade().setApplication(activity,
+            extractString(json, "applicationFullId"));
 
       ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
@@ -1539,9 +1550,15 @@ public class ModelService
 
       // Create Response Data
 
-      data = getModelBuilderFacade().createStructuredData(model, null, extractString(json, "responseDataName"),
-            extractString(json,
-            "requestDataTypeFullId"));
+      data = getModelBuilderFacade().createStructuredData(model, null,
+            extractString(json, "responseDataName"),
+            extractString(json, "requestDataTypeFullId"));
+
+      getModelBuilderFacade().createStructuredParameter(
+            processDefinition,
+            data,
+            NameIdUtils.createIdFromName(extractString(json, "responseDataName")),
+            extractString(json, "responseDataName"), extractString(json, "responseDataTypeFullId"), ModeType.OUT);
 
       dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1557,7 +1574,7 @@ public class ModelService
       // Create End Symbol
 
       EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
-      
+
       endEventSymbol.setElementOid(++maxOid);
       endEventSymbol.setXPos(250);
       endEventSymbol.setYPos(400);
@@ -1568,7 +1585,159 @@ public class ModelService
    }
 
    /**
-    *
+   *
+   */
+   public void createProcessInterfaceTestWrapperProcess(String modelId, JsonObject json)
+   {
+      ModelType model = findModel(modelId);
+      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
+
+      // Create process definition
+
+      ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
+            model, null, extractString(json, "processDefinitionName"), "Default",
+            "Default");
+      ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
+            extractString(json, "processFullId"));
+
+      LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
+            processDefinition, ModelerConstants.DEF_LANE_ID);
+
+      parentLaneSymbol.setParticipant(getModelBuilderFacade().findParticipant(
+            extractString(json, "participantFullId")));
+
+      int activityWidth = 180;
+      int activityHeight = 50;
+      int eventWidth = 20;
+      int xOffset = (parentLaneSymbol.getWidth() - activityWidth) / 2;
+
+      // Create Start Event
+
+      StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
+      startEventSymbol.setElementOid(++maxOid);
+
+      startEventSymbol.setXPos(xOffset - eventWidth / 2);
+      startEventSymbol.setYPos(50);
+
+      processDefinition.getDiagram().get(0).getStartEventSymbols().add(startEventSymbol);
+      parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
+
+      TriggerType manualTrigger = newManualTrigger(processDefinition).accessibleTo(
+            getModelBuilderFacade().findParticipant(
+                  extractString(json, "participantFullId"))).build();
+      manualTrigger.setName("");
+      manualTrigger.setElementOid(++maxOid);
+      startEventSymbol.setTrigger(manualTrigger);
+
+      // Create Enter Data Activity
+
+      ActivityType activity = newApplicationActivity(processDefinition).withIdAndName(
+            null, extractString(json, "dataInputActivityName")).build();
+
+      activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+
+      ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
+
+      activitySymbol.setElementOid(++maxOid);
+
+      activitySymbol.setXPos(xOffset - activityWidth / 2);
+      activitySymbol.setYPos(100);
+      activitySymbol.setWidth(activityWidth);
+      activitySymbol.setHeight(activityHeight);
+      activitySymbol.setActivity(activity);
+      activity.getActivitySymbols().add(activitySymbol);
+
+      processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
+      parentLaneSymbol.getActivitySymbol().add(activitySymbol);
+
+      // Create Input Data
+
+      if (processDefinition.getFormalParameters() != null)
+      {
+         for (FormalParameterType formalParameter : processDefinition.getFormalParameters()
+               .getFormalParameter())
+         {
+            if (formalParameter.getMode() == ModeType.IN ||
+                  formalParameter.getMode() == ModeType.INOUT)
+            {
+            }
+         }
+      }
+
+      // Create Subprocess Activity
+
+      activity = newApplicationActivity(processDefinition).withIdAndName(null,
+            extractString(json, "subprocessActivityName")).build();
+
+      activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
+      getModelBuilderFacade().setSubProcess(activity,
+            extractString(json, "processFullId"));
+
+      activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
+
+      activitySymbol.setElementOid(++maxOid);
+
+      activitySymbol.setXPos(xOffset - activityWidth / 2);
+      activitySymbol.setYPos(200);
+      activitySymbol.setWidth(activityWidth);
+      activitySymbol.setHeight(activityHeight);
+      activitySymbol.setActivity(activity);
+      activity.getActivitySymbols().add(activitySymbol);
+
+      processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
+      parentLaneSymbol.getActivitySymbol().add(activitySymbol);
+
+      // Create Output Data
+
+      if (processDefinition.getFormalParameters() != null)
+      {
+         for (FormalParameterType formalParameter : processDefinition.getFormalParameters()
+               .getFormalParameter())
+         {
+            if (formalParameter.getMode() == ModeType.OUT ||
+                  formalParameter.getMode() == ModeType.INOUT)
+            {
+               
+            }
+         }
+      }
+
+      // Create Retrieve Data Activity
+
+      activity = newApplicationActivity(processDefinition).withIdAndName(null,
+            extractString(json, "dataOutputActivityName")).build();
+
+      activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+
+      activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
+
+      activitySymbol.setElementOid(++maxOid);
+
+      activitySymbol.setXPos(xOffset - activityWidth / 2);
+      activitySymbol.setYPos(300);
+      activitySymbol.setWidth(activityWidth);
+      activitySymbol.setHeight(activityHeight);
+      activitySymbol.setActivity(activity);
+      activity.getActivitySymbols().add(activitySymbol);
+
+      processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
+      parentLaneSymbol.getActivitySymbol().add(activitySymbol);
+
+      // Create End Symbol
+
+      EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
+
+      endEventSymbol.setElementOid(++maxOid);
+      endEventSymbol.setXPos(xOffset - eventWidth / 2);
+      endEventSymbol.setYPos(400);
+
+      processDefinition.getDiagram().get(0).getEndEventSymbols().add(endEventSymbol);
+
+      parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+   }
+
+   /**
+    * 
     * @return
     */
    private DocumentManagementService getDocumentManagementService()
@@ -1582,7 +1751,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private UserService getUserService()
@@ -1596,7 +1765,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private QueryService getQueryService()
@@ -1622,15 +1791,15 @@ public class ModelService
    public ModelType refreshAndFindModel(String modelId)
    {
       return getModelManagementStrategy().getModels(true).get(modelId);
-   }   
-   
+   }
+
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
    {
       return currentSession().modelRepository().getModelBinding(model);
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @return
     */
@@ -1730,7 +1899,7 @@ public class ModelService
     * </ul>
     * </li>
     * </ul>
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
@@ -1756,7 +1925,7 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    *
+    * 
     * @param webServiceJson
     *           the parent json object.
     * @param services
@@ -1795,7 +1964,7 @@ public class ModelService
 
    /**
     * Adds port or binding definitions to the service json.
-    *
+    * 
     * @param serviceJson
     *           the json object representing the parent service.
     * @param ports
@@ -1848,7 +2017,7 @@ public class ModelService
 
    /**
     * Adds operation definitions to the port json.
-    *
+    * 
     * @param portJson
     *           the json object representing the parent port.
     * @param operations
@@ -1896,7 +2065,7 @@ public class ModelService
    /**
     * Computes a string containing a comma separated list of the parts composing the
     * message.
-    *
+    * 
     * @param message
     *           the Message
     * @return the computed list of parts
@@ -1933,7 +2102,7 @@ public class ModelService
    /**
     * Computes a unique label for the operation by appending the input and output names to
     * the operation name.
-    *
+    * 
     * @param operation
     *           the BindingOperation
     * @return the computed label
@@ -2038,10 +2207,10 @@ public class ModelService
     * <li><code>classifier</code> a string identifying the type of the facet, i.e.
     * <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    *
+    * 
     * Each item described above has a member <code>icon</code> that specifies the
     * corresponding icon.
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name "url"
     *           that specifies the URL from where the XSD should be loaded.
@@ -2342,7 +2511,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public JsonObject getPreferences()
@@ -2352,16 +2521,20 @@ public class ModelService
 
       try
       {
-         Map<String, Serializable> props = getServiceFactory().getAdministrationService().getPreferences(PreferenceScope.USER,
-               UserPreferencesEntries.M_MODULE, UserPreferencesEntries.REFERENCE_ID).getPreferences();
-   
+         Map<String, Serializable> props = getServiceFactory().getAdministrationService()
+               .getPreferences(PreferenceScope.USER, UserPreferencesEntries.M_MODULE,
+                     UserPreferencesEntries.REFERENCE_ID)
+               .getPreferences();
+
          // Default Profile
-         String defaultProfileKey = UserPreferencesEntries.M_MODULE + "." + UserPreferencesEntries.V_MODELER + "."
+         String defaultProfileKey = UserPreferencesEntries.M_MODULE + "."
+               + UserPreferencesEntries.V_MODELER + "."
                + UserPreferencesEntries.F_DEFAULT_PROFILE;
          defaultProfile = (String) props.get(defaultProfileKey);
-   
+
          // Show Technology Preview
-         String showTechnologyPreviewKey = UserPreferencesEntries.M_MODULE + "." + UserPreferencesEntries.V_MODELER + "."
+         String showTechnologyPreviewKey = UserPreferencesEntries.M_MODULE + "."
+               + UserPreferencesEntries.V_MODELER + "."
                + UserPreferencesEntries.F_TECH_PREVIEW;
          showTechnologyPreview = (String) props.get(showTechnologyPreviewKey);
       }
@@ -2369,7 +2542,7 @@ public class ModelService
       {
          trace.error("Error occurred while fetching preferences", e);
       }
-      
+
       if (isEmpty(defaultProfile))
       {
          defaultProfile = UserPreferencesEntries.PROFILE_BA;
@@ -2382,7 +2555,8 @@ public class ModelService
 
       JsonObject preferencesJson = new JsonObject();
       preferencesJson.addProperty("defaultProfile", defaultProfile);
-      preferencesJson.addProperty("showTechnologyPreview", Boolean.parseBoolean(showTechnologyPreview));
+      preferencesJson.addProperty("showTechnologyPreview",
+            Boolean.parseBoolean(showTechnologyPreview));
 
       return preferencesJson;
    }
@@ -2394,11 +2568,11 @@ public class ModelService
     * ); postedData.addProperty("url",
     * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
     * );
-    *
+    * 
     * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
     * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
     * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new java.io.File(
@@ -2406,26 +2580,26 @@ public class ModelService
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
     * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
     * = new EObjectUUIDMapper();
-    *
+    * 
     * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } };
-    *
+    * 
     * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
     * getTypeDeclaration("Pattern1"))));
-    *
+    * 
     * TypeDeclarationType typeDeclaration =
     * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
     * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
     * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * modifyComplexType(json); //modifyEnumType(json);
-    *
+    * 
     * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
     * json); System.out.println(typeDeclaration); }
@@ -2437,7 +2611,7 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
     * cs.getAsJsonObject("facets");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
     * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
     * d); }
@@ -2449,11 +2623,11 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
     * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
-    *
+    * 
     * es.remove("b");
-    *
+    * 
     * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
     * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
     * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
@@ -2462,27 +2636,27 @@ public class ModelService
    /*
     * public static void testTD() { DataChangeCommandHandler handler = new
     * DataChangeCommandHandler();
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    *
+    * 
     * String structId = "Composite3", structName = "Composite3";
-    *
+    * 
     * JsonObject structJson = new JsonObject();
     * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
     * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
     * typeDeclarationJson = new JsonObject();
     * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-    *
+    * 
     * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
     * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
     * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
     * schema.add("types", types); JsonObject typesType = new JsonObject();
     * types.add(structId, typesType); typesType.addProperty("name", structId);
-    *
+    * 
     * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
     * facet = new JsonObject(); facet.addProperty("name", "abceee");
     * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
@@ -2498,9 +2672,9 @@ public class ModelService
     * "at least one");
     */
    /*
-    *
+    * 
     * handler.createTypeDeclaration(model, structJson);
-    *
+    * 
     * try { wmm.save(URI.createFileURI(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
     * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block
@@ -2508,47 +2682,48 @@ public class ModelService
     */
 
    /**
-    * @return 
-   *
-   */
-  public void deleteConfigurationVariable(String modelId, String variableName, JsonObject json)
-  {
-     System.out.println("Configuration Variable:");
+    * @return
+    * 
+    */
+   public void deleteConfigurationVariable(String modelId, String variableName,
+         JsonObject json)
+   {
+      System.out.println("Configuration Variable:");
 
-     ModelType model = findModel(modelId);
-     VariableContext variableContext = new VariableContext();
-     variableContext.initializeVariables(model);
-     variableContext.refreshVariables(model);
-     variableContext.saveVariables();
-     
-     JsonElement jsonMode = json.get("mode");
-     String mode = jsonMode.getAsString();
-     
-     ModelVariable modelVariableByName = variableContext.getModelVariableByName(variableName);
-     if(modelVariableByName != null)
-     {     
-        modelVariableByName.setRemoved(true);
-        String newValue = null;
-        
-        if(mode.equals("withLiteral"))
-        {
-           JsonElement jsonValue = json.get("literalValue");
-           newValue = jsonValue.getAsString();
-        }
-        else if(mode.equals("defaultValue"))
-        {
-           newValue = modelVariableByName.getDefaultValue();           
-        }
-        else
-        {
-           newValue = "";
-        }
-        
-        variableContext.replaceVariable(modelVariableByName, newValue);
-        variableContext.saveVariables();        
-     }
-  }
-   
+      ModelType model = findModel(modelId);
+      VariableContext variableContext = new VariableContext();
+      variableContext.initializeVariables(model);
+      variableContext.refreshVariables(model);
+      variableContext.saveVariables();
+
+      JsonElement jsonMode = json.get("mode");
+      String mode = jsonMode.getAsString();
+
+      ModelVariable modelVariableByName = variableContext.getModelVariableByName(variableName);
+      if (modelVariableByName != null)
+      {
+         modelVariableByName.setRemoved(true);
+         String newValue = null;
+
+         if (mode.equals("withLiteral"))
+         {
+            JsonElement jsonValue = json.get("literalValue");
+            newValue = jsonValue.getAsString();
+         }
+         else if (mode.equals("defaultValue"))
+         {
+            newValue = modelVariableByName.getDefaultValue();
+         }
+         else
+         {
+            newValue = "";
+         }
+
+         variableContext.replaceVariable(modelVariableByName, newValue);
+         variableContext.saveVariables();
+      }
+   }
+
    /**
     *
     */
@@ -2559,7 +2734,7 @@ public class ModelService
       System.out.println("Configuration Variables:");
 
       ModelType model = findModel(modelId);
-         
+
       VariableContext variableContext = new VariableContext();
 
       variableContext.initializeVariables(model);
@@ -2605,10 +2780,11 @@ public class ModelService
 
                   if (attribute.eContainer() instanceof IIdentifiableModelElement)
                   {
-                     referenceJson.addProperty("scopeName", ((IIdentifiableModelElement) attribute.eContainer()).getName());
+                     referenceJson.addProperty("scopeName",
+                           ((IIdentifiableModelElement) attribute.eContainer()).getName());
                      referenceJson.addProperty("scopeType", "modelElement");
                   }
-                  else if (attribute.eContainer()instanceof ModelType)
+                  else if (attribute.eContainer() instanceof ModelType)
                   {
                      referenceJson.addProperty("scopeName", model.getName());
                      referenceJson.addProperty("scopeType", "model");
@@ -2626,10 +2802,12 @@ public class ModelService
 
                   if (description.eContainer() instanceof IIdentifiableModelElement)
                   {
-                     referenceJson.addProperty("scopeName", ((IIdentifiableModelElement) description.eContainer()).getName());
+                     referenceJson.addProperty(
+                           "scopeName",
+                           ((IIdentifiableModelElement) description.eContainer()).getName());
                      referenceJson.addProperty("scopeType", "modelElement");
                   }
-                  else if (description.eContainer()instanceof ModelType)
+                  else if (description.eContainer() instanceof ModelType)
                   {
                      referenceJson.addProperty("scopeName", model.getName());
                      referenceJson.addProperty("scopeType", "model");
@@ -2662,34 +2840,41 @@ public class ModelService
       variableContext.refreshVariables(model);
       variableContext.saveVariables();
 
-      ModelVariable modelVariable = variableContext.getModelVariableByName(postedData.get("variableName").getAsString());
+      ModelVariable modelVariable = variableContext.getModelVariableByName(postedData.get(
+            "variableName")
+            .getAsString());
 
       modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
       variableContext.saveVariables();
 
       return postedData;
    }
+
    /**
-   * Might be redundant as we could do this entirely on the client, but good test for equivalent Runtime functionality.
-   */
-  public String retrieveEmbeddedExternalWebApplicationMarkup(String modelId, String applicationId)
-  {
-     ApplicationType application = getModelBuilderFacade().findApplication(modelId + ":" + applicationId);
+    * Might be redundant as we could do this entirely on the client, but good test for
+    * equivalent Runtime functionality.
+    */
+   public String retrieveEmbeddedExternalWebApplicationMarkup(String modelId,
+         String applicationId)
+   {
+      ApplicationType application = getModelBuilderFacade().findApplication(
+            modelId + ":" + applicationId);
 
-     // TODO Improper coding - need better ways to find context
-     
-     for (ContextType context: application.getContext())
-     {
-        Object attribute = getModelBuilderFacade().getAttribute(context, "carnot:engine:ui:externalWebApp:markup");
+      // TODO Improper coding - need better ways to find context
 
-        if (attribute != null)
-        {
-           return getModelBuilderFacade().getAttributeValue(attribute);
-        }
-     }
-     
-     // TODO I18N
-     
-     return "Embedded Web Application is not configured.";
-  }
+      for (ContextType context : application.getContext())
+      {
+         Object attribute = getModelBuilderFacade().getAttribute(context,
+               "carnot:engine:ui:externalWebApp:markup");
+
+         if (attribute != null)
+         {
+            return getModelBuilderFacade().getAttributeValue(attribute);
+         }
+      }
+
+      // TODO I18N
+
+      return "Embedded Web Application is not configured.";
+   }
 }
