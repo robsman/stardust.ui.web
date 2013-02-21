@@ -510,13 +510,44 @@ define(
 
 			function findType(schema, typeName) {
 				var parsedName = parseQName(typeName);
+				
+				// (fh) spec says we should search for elements
 				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
-					jQuery.each(schema.types, function() {
-						if (this.name === parsedName.name) {
-							type = this;
-							return false;
+					if (schema.elements) {
+						jQuery.each(schema.elements, function() {
+							if (this.name === parsedName.name) {
+								element = this;
+								return false;
+							}
+						});
+					}
+					
+					if (element) {
+						if (element.body) {
+							// (fh) anonymous type declaration
+							return element;
 						}
-					});
+						if (element.type) {
+							// (fh) referenced type
+							parsedName = parseQName(element.type);
+							if (parsedName.prefix) {
+								// (fh) resolve prefix to actual namespace
+								parsedName.namespace = schema.nsMappings[parsedName.prefix];
+							}
+						}
+					}
+				}
+						
+				// (fh) now search the type
+				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
+					if (schema.types) {
+						jQuery.each(schema.types, function() {
+							if (this.name === parsedName.name) {
+								type = this;
+								return false;
+							}
+						});
+					}
 				}
 
 				return type;
