@@ -167,6 +167,10 @@ define(
 					this.submitOverlayChanges(parameterMappings);
 				};
 
+				TimerEventIntegrationOverlay.prototype.getRouteDefinitions= function() {
+					return "<from uri=\""+this.getEndpointUri()+"\"/>"+this.getAdditionalRouteDefinitions();
+				}
+				
 				TimerEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};

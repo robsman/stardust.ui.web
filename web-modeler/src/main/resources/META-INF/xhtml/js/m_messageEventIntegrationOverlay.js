@@ -172,6 +172,10 @@ define(
 				MessageEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};
+				
+				MessageEventIntegrationOverlay.prototype.getRouteDefinitions= function() {
+					return "<from uri=\""+this.getEndpointUri()+"\"/>"+this.getAdditionalRouteDefinitions();
+				}
 				/**
 				 * 
 				 */

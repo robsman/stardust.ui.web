@@ -118,52 +118,59 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.getEndpointUri = function() {
 					var uri = "file://";
-					//if(this.fileOrDirectoryNameInput!=null && this.fileOrDirectoryNameInput.val()!="Please specify ..."){
-						uri += this.fileOrDirectoryNameInput.val();
-					//}
-					
+					// if(this.fileOrDirectoryNameInput!=null &&
+					// this.fileOrDirectoryNameInput.val()!="Please specify
+					// ..."){
+					uri += this.fileOrDirectoryNameInput.val();
+					// }
+
 					var separator = "?";
-					
-					if(this.recursiveInput.is(":checked")== true){
-						uri += separator + "recursive="+this.recursiveInput.is(":checked");
+
+					if (this.recursiveInput.is(":checked") == true) {
+						uri += separator + "recursive="
+								+ this.recursiveInput.is(":checked");
 						separator = "&";
-						
+
 					}
-					
-					if(this.getIntervalInMilliseconds(
+
+					if (this.getIntervalInMilliseconds(
 							this.initialIntervalInput.val(),
-							this.initialIntervalUnitSelect.val())!=null){
-						uri += separator + "initialDelay="+this.getIntervalInMilliseconds(
-							this.initialIntervalInput.val(),
-							this.initialIntervalUnitSelect.val());
+							this.initialIntervalUnitSelect.val()) != null) {
+						uri += separator
+								+ "initialDelay="
+								+ this.getIntervalInMilliseconds(
+										this.initialIntervalInput.val(),
+										this.initialIntervalUnitSelect.val());
 						separator = "&";
 					}
-					
-					if(this.getIntervalInMilliseconds(
-							this.repeatIntervalInput.val(),
-							this.repeatIntervalUnitSelect.val())!=null){
-						uri += separator + "delay="+this.getIntervalInMilliseconds(
-							this.repeatIntervalInput.val(),
-							this.repeatIntervalUnitSelect.val());
+
+					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
+							.val(), this.repeatIntervalUnitSelect.val()) != null) {
+						uri += separator
+								+ "delay="
+								+ this.getIntervalInMilliseconds(
+										this.repeatIntervalInput.val(),
+										this.repeatIntervalUnitSelect.val());
 						separator = "&";
 					}
 					if (this.lockBehaviorSelect.val() == "none") {
-					//nothing to do
-					}else{
-							if (this.lockBehaviorSelect.val() == "markerFile") {
-								uri += separator + "readLock=markerFile";
-								separator = "&";
-							}else{
-								if (this.lockBehaviorSelect.val() == "changed") {
+						// nothing to do
+					} else {
+						if (this.lockBehaviorSelect.val() == "markerFile") {
+							uri += separator + "readLock=markerFile";
+							separator = "&";
+						} else {
+							if (this.lockBehaviorSelect.val() == "changed") {
 								uri += separator + "readLock=changed";
-									separator = "&";
-								}
+								separator = "&";
 							}
+						}
 					}
-					
+
 					/*
-					uri += "&consumer.alwaysConsume="
-							+ this.alwaysConsumeInput.prop("checked");*/
+					 * uri += "&consumer.alwaysConsume=" +
+					 * this.alwaysConsumeInput.prop("checked");
+					 */
 
 					if (this.postProcessingSelect.val() == "noop") {
 						uri += "&noop=true";
@@ -172,9 +179,9 @@ define(
 						uri += "&noop=false";
 						uri += "&delete=true";
 					}
-					
-					uri=uri.replace(/&/g, "&amp;")
-					
+
+					uri = uri.replace(/&/g, "&amp;")
+
 					return uri;
 				};
 
@@ -220,6 +227,11 @@ define(
 				FileEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};
+
+				FileEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
+					return "<from uri=\"" + this.getEndpointUri() + "\"/>"
+							+ this.getAdditionalRouteDefinitions();
+				};
 				/**
 				 * 
 				 */
@@ -232,9 +244,10 @@ define(
 
 					// TODO Need better URL encoding
 
-					//route = route.replace(/&/g,"&amp;");
+					// route = route.replace(/&/g,"&amp;");
 
-					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
+					var xmlDoc = jQuery
+							.parseXML("<route>" + route + "</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
@@ -275,9 +288,12 @@ define(
 												.val(intervalWithUnit.value);
 										this.repeatIntervalUnitSelect
 												.val(intervalWithUnit.unit);
-									/*} else if (name == "consumer.alwaysConsume") {
-										this.alwaysConsumeInput.prop("checked",
-												value == "true");*/
+										/*
+										 * } else if (name ==
+										 * "consumer.alwaysConsume") {
+										 * this.alwaysConsumeInput.prop("checked",
+										 * value == "true");
+										 */
 									} else if (name == "noop") {
 										if (value == "true") {
 											this.postProcessingSelect
@@ -288,6 +304,8 @@ define(
 											this.postProcessingSelect
 													.val("delete");
 										}
+									} else if (name == "readLock") {
+										this.lockBehaviorSelect.val(value)
 									}
 								}
 							}
