@@ -219,6 +219,9 @@ define(
 				EmailEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};
+				EmailEventIntegrationOverlay.prototype.getRouteDefinitions= function() {
+					return "<from uri=\""+this.getEndpointUri()+"\"/>"+this.getAdditionalRouteDefinitions();
+				}
 				/**
 				 * 
 				 */

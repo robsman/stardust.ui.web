@@ -40,7 +40,7 @@ define(
 				m_utils.inheritFields(this, eventIntegrationOverlay);
 				m_utils.inheritMethods(FileEventIntegrationOverlay.prototype,
 						eventIntegrationOverlay);
-
+ 
 				/**
 				 * 
 				 */
