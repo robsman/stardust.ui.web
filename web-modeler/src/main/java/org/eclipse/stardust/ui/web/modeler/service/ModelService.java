@@ -1478,8 +1478,6 @@ public class ModelService
    public void createWrapperProcess(String modelId, JsonObject json)
    {
       ModelType model = findModel(modelId);
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
       // Create process definition
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
@@ -1495,7 +1493,6 @@ public class ModelService
       // Create Start Event
 
       StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
-      startEventSymbol.setElementOid(++maxOid);
 
       startEventSymbol.setXPos(250);
       startEventSymbol.setYPos(50);
@@ -1516,8 +1513,6 @@ public class ModelService
             extractString(json, "requestDataName"), extractString(json, "requestDataTypeFullId"), ModeType.IN);
 
       DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
-
-      dataSymbol.setElementOid(++maxOid);
       dataSymbol.setData(data);
       processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
       data.getDataSymbols().add(dataSymbol);
@@ -1536,8 +1531,6 @@ public class ModelService
             extractString(json, "applicationFullId"));
 
       ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-
-      activitySymbol.setElementOid(++maxOid);
 
       activitySymbol.setXPos(200);
       activitySymbol.setYPos(200);
@@ -1563,7 +1556,6 @@ public class ModelService
 
       dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
-      dataSymbol.setElementOid(++maxOid);
       dataSymbol.setData(data);
       processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
       data.getDataSymbols().add(dataSymbol);
@@ -1576,7 +1568,6 @@ public class ModelService
 
       EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
 
-      endEventSymbol.setElementOid(++maxOid);
       endEventSymbol.setXPos(250);
       endEventSymbol.setYPos(400);
 
@@ -1591,8 +1582,6 @@ public class ModelService
    public void createProcessInterfaceTestWrapperProcess(String modelId, JsonObject json)
    {
       ModelType model = findModel(modelId);
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
       // Create process definition
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
@@ -1615,7 +1604,6 @@ public class ModelService
       // Create Start Event
 
       StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
-      startEventSymbol.setElementOid(++maxOid);
 
       startEventSymbol.setXPos(xOffset - eventWidth / 2);
       startEventSymbol.setYPos(50);
@@ -1627,7 +1615,6 @@ public class ModelService
             getModelBuilderFacade().findParticipant(
                   extractString(json, "participantFullId"))).build();
       manualTrigger.setName("");
-      manualTrigger.setElementOid(++maxOid);
       startEventSymbol.setTrigger(manualTrigger);
 
       // Create Enter Data Activity
@@ -1638,8 +1625,6 @@ public class ModelService
       activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
 
       ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-
-      activitySymbol.setElementOid(++maxOid);
 
       activitySymbol.setXPos(xOffset - activityWidth / 2);
       activitySymbol.setYPos(100);
@@ -1676,8 +1661,6 @@ public class ModelService
 
       activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
-      activitySymbol.setElementOid(++maxOid);
-
       activitySymbol.setXPos(xOffset - activityWidth / 2);
       activitySymbol.setYPos(200);
       activitySymbol.setWidth(activityWidth);
@@ -1712,8 +1695,6 @@ public class ModelService
 
       activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
-      activitySymbol.setElementOid(++maxOid);
-
       activitySymbol.setXPos(xOffset - activityWidth / 2);
       activitySymbol.setYPos(300);
       activitySymbol.setWidth(activityWidth);
@@ -1728,7 +1709,6 @@ public class ModelService
 
       EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
 
-      endEventSymbol.setElementOid(++maxOid);
       endEventSymbol.setXPos(xOffset - eventWidth / 2);
       endEventSymbol.setYPos(400);
 

@@ -31,7 +31,6 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -94,18 +93,15 @@ public class ModelChangeCommandHandler
             mapper.map(data);
          }
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
       AttributeUtil.setAttribute(model, PredefinedConstants.VERSION_ATT, "1");
 
       RoleType admin = AbstractElementBuilder.F_CWM.createRoleType();
       admin.setName(ADMINISTRATOR_ROLE);
       admin.setId(ADMINISTRATOR_ROLE);
-      long adminOid = ++maxOid;
-      admin.setElementOid(adminOid);
 
       model.getRole().add(admin);
       mapper.map(admin);
-
+      
       modelService().getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);

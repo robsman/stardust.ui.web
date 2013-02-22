@@ -628,10 +628,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
-      long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
-
-      dataMapping.setElementOid(++maxOid);
-
       if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
       {
          dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
@@ -1080,8 +1076,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
 
                DataType data = getModelBuilderFacade().importData(model, dataFullId);
-               long maxOID = XpdlModelUtils.getMaxUsedOid(model);
-               dataPath.setElementOid(++maxOID);
                dataPath.setData(data);
             }
 

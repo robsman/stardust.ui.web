@@ -425,7 +425,6 @@ public class ConnectionCommandHandler
          transitionConnection.setTransition(transition);
       }
 
-      transitionConnection.setElementOid(connectionOid);
       transitionConnection.setSourceNode(sourceActivitySymbol);
       transitionConnection.setTargetNode(targetActivitySymbol);
       transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
@@ -454,7 +453,6 @@ public class ConnectionCommandHandler
 
       processDefinition.getTransition().add(transition);
 
-      transition.setElementOid(transitionOid);
       transition.setFrom(sourceActivity);
       transition.setTo(targetActivity);
       String transitionId = extractString(controlFlowJson, ModelerConstants.ID_PROPERTY);
@@ -528,7 +526,6 @@ public class ConnectionCommandHandler
          INodeSymbol targetSymbol, long maxOid)
    {
       TransitionConnectionType transitionConnection = AbstractElementBuilder.F_CWM.createTransitionConnectionType();
-      transitionConnection.setElementOid(++maxOid);
       transitionConnection.setSourceNode(sourceSymbol);
       transitionConnection.setTargetNode(targetSymbol);
       transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
@@ -590,10 +587,8 @@ public class ConnectionCommandHandler
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
       DataMappingConnectionType dataMappingConnection = AbstractElementBuilder.F_CWM.createDataMappingConnectionType();
 
-      dataMapping.setElementOid(++maxOid);
       dataMapping.setId(data.getId());
       dataMapping.setName(data.getName());
-      dataMappingConnection.setElementOid(++maxOid);
 
       if (connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
             ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
