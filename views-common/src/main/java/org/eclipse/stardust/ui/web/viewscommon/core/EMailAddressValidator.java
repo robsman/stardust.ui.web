@@ -12,16 +12,18 @@ package org.eclipse.stardust.ui.web.viewscommon.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -32,6 +34,8 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
  */
 public class EMailAddressValidator implements Validator
 {
+   private static final Logger trace = LogManager.getLogger(EMailAddressValidator.class);
+   
    public EMailAddressValidator()
    {
       viewsCommonMessage= MessagesViewsCommonBean.getInstance();
@@ -70,21 +74,20 @@ public class EMailAddressValidator implements Validator
     */
    public static boolean validateEmailAddress(String emailAddress)
    {
-      // Convert to Lower Case so that (or because) in RegEx only lower case can be used
-      // (or is used)
-      emailAddress = emailAddress.trim().toLowerCase();
-
-      // Set the email pattern string
       boolean matchFound = false;
-      Pattern p = Pattern
-            .compile("^[a-z][a-z|0-9|]*([_][a-z|0-9]+)*([.][a-z|0-9]+([_][a-z|0-9]+)*)?@[a-z][a-z|0-9|]*\\.([a-z][a-z|0-9]*(\\.[a-z][a-z|0-9]*)?)$");
-
-      // Match the given string with the pattern
-      if (StringUtils.isNotEmpty(emailAddress))
+      try
       {
-         Matcher m = p.matcher(emailAddress);
-         // check whether match is found
-         matchFound = m.matches();
+         if (StringUtils.isNotEmpty(emailAddress))
+         {
+            // Validate the email address with InternetAddress,confirming RFC822
+            // standard.
+            new InternetAddress(emailAddress).validate();
+            matchFound = true;
+         }
+      }
+      catch (AddressException e)
+      {
+         trace.warn("Email address validation failed :" + e.getLocalizedMessage());
       }
       return matchFound;
    }
