@@ -14,7 +14,10 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 import javax.annotation.Resource;
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
@@ -23,6 +26,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +40,14 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 @Scope("session")
 public class ProcessesView extends AbstractLaunchPanel implements
 		PerspectiveEventHandler {
-
+   
+   private static final Logger trace = LogManager.getLogger(ProcessesView.class);
+   
    /**
     *
     */
    @Resource
    SessionLogPanel sessionLogPanel;
-
    private String profile;
 
    /**
@@ -84,7 +89,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
 		String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('modelOutlineFrame');";
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
 				deActivateIframeJS);
-		PortalApplication.getInstance().addEventScript(deActivateIframeJS);
+		PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
 		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.html', {anchorId:'outlineAnchor', width:280, height:570, maxWidth:350, maxHeight:1000, zIndex:200, noUnloadWarning: 'true'});";
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
 				deActivateIframeJS);
-		PortalApplication.getInstance().addEventScript(deActivateIframeJS);
+        PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
 	}
 
 	@Override
@@ -117,10 +122,20 @@ public class ProcessesView extends AbstractLaunchPanel implements
       case LAUNCH_PANELS_ACTIVATED:
          //Create "process-models" folder if it doesn't exist already.
          DocumentMgmtUtility.createFolderIfNotExists("/process-models");
-
-         if (isExpanded() && PortalApplication.getInstance().isLaunchPanelsActivated())
+         Boolean launchPanelActivated = null;
+         try
          {
-            activateIframe();
+            // If web modeler is set as default perspective ,on first login activation
+            // PortalApplication loading is not complete
+            launchPanelActivated = PortalApplication.getInstance().isLaunchPanelsActivated();
+         }
+         catch (BeanCreationException e)
+         {
+            trace.warn("PortalApplication instance not found"+e.getLocalizedMessage());
+         }
+         if (isExpanded() && (launchPanelActivated == null || launchPanelActivated))
+         {
+               activateIframe();
          }
 
          if (null != sessionLogPanel && sessionLogPanel.isExpanded())
