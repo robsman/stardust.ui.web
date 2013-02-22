@@ -34,6 +34,16 @@ define(
 			 *
 			 */
 			function DataTypeSelector() {
+			
+			DataTypeSelector.prototype.startsWith = function(str, prefix) {
+						return str.indexOf(prefix) === 0;
+				}
+			DataTypeSelector.prototype.checkElementId = function(id, prefix) {
+						if(this.startsWith(id,"#"))
+							return id;
+					return "#"+id;
+				}
+				
 				/**
 				 * Options are
 				 *
@@ -46,25 +56,17 @@ define(
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
 					this.restrictToCurrentModel = options.restrictToCurrentModel;
 					this.hideEnumerations = options.hideEnumerations;
-
-					this.dataTypeSelect = jQuery("#" + this.scope
-							+ " #dataTypeSelect");
-					this.primitiveDataTypeRow = jQuery("#" + this.scope
-							+ " #primitiveDataTypeRow");
-					this.primitiveDataTypeSelect = jQuery("#" + this.scope
-							+ " #primitiveDataTypeSelect");
-					this.structuredDataTypeRow = jQuery("#" + this.scope
-							+ " #structuredDataTypeRow");
-					this.structuredDataTypeSelect = jQuery("#" + this.scope
-							+ " #structuredDataTypeSelect");
-					this.documentTypeSelect = jQuery("#" + this.scope
-							+ " #documentTypeSelect");
-					this.documentTypeRow = jQuery("#" + this.scope
-							+ " #documentTypeRow");
-					this.otherTypeRow = jQuery("#" + this.scope
-							+ " #otherTypeRow");
-					this.otherTypeName = jQuery("#" + this.scope
-							+ " #otherTypeName");
+					
+					
+					this.dataTypeSelect = jQuery(this.checkElementId(this.scope) + " #dataTypeSelect");
+					this.primitiveDataTypeRow = jQuery(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
+					this.primitiveDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #primitiveDataTypeSelect");
+					this.structuredDataTypeRow = jQuery(this.checkElementId(this.scope)	+ " #structuredDataTypeRow");
+					this.structuredDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #structuredDataTypeSelect");
+					this.documentTypeSelect = jQuery(this.checkElementId(this.scope)+ " #documentTypeSelect");
+					this.documentTypeRow = jQuery(this.checkElementId(this.scope)+ " #documentTypeRow");
+					this.otherTypeRow = jQuery(this.checkElementId(this.scope)+ " #otherTypeRow");
+					this.otherTypeName = jQuery(this.checkElementId(this.scope)	+ " #otherTypeName");
 
 					this.initializeDataTypeOptions();
 
