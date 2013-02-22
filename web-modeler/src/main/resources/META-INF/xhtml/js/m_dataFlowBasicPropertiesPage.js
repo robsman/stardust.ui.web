@@ -243,10 +243,12 @@ define(
 
 										page
 												.submitChanges({
-													// TODO Usually, we are not
-													// submitting the object
-													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
 												});
 									});
 					this.outputAccessPointSelectInput
@@ -271,10 +273,12 @@ define(
 
 										page
 												.submitChanges({
-													// TODO Usually, we are not
-													// submitting the object
-													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
 												});
 									});
 				};
@@ -322,7 +326,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>"); // I18N
 					} else {
 						this.inputAccessPointSelectInput
-								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 					}
 
 					m_utils.debug("Contexts");
@@ -400,7 +404,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>");
 					} else {
 						this.outputAccessPointSelectInput
-								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 					}
 
 					for ( var i in dataFlow.activity.getContexts()) {
