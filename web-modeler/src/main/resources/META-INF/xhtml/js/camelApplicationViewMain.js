@@ -32,7 +32,7 @@ require.config({
 		'jquery.tablescroll': ['bpm-modeler/js/libs/jquery/plugins/jquery.tablescroll', 'https://raw.github.com/farinspace/jquery.tableScroll/master/jquery.tablescroll'],
 		'jquery.treeTable': ['bpm-modeler/js/libs/jquery/plugins/jquery.treeTable', 'https://raw.github.com/ludo/jquery-treetable/master/src/javascripts/jquery.treeTable'],
 		'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url'],
-
+		'ace': ['bpm-modeler/js/libs/ace/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
 		'common-plugins': '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 		'i18n' : 'common/InfinityBPMI18N'
 	},
@@ -59,6 +59,7 @@ require(["require",
 		 "jquery.tablescroll",
 		 "jquery.treeTable",
 		 "jquery.url",
+		 "ace",
 		 "i18n",
 		 "common-plugins",
 		 "bpm-modeler/js/m_camelApplicationView"],

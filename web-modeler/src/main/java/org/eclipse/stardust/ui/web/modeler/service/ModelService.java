@@ -14,7 +14,6 @@ package org.eclipse.stardust.ui.web.modeler.service;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newStructVariable;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
@@ -99,7 +98,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -113,6 +111,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
@@ -131,6 +130,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
@@ -148,9 +148,9 @@ import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
 /**
- *
+ * 
  * @author Shrikant.Gangal, Marc.Gille
- *
+ * 
  */
 public class ModelService
 {
@@ -378,7 +378,7 @@ public class ModelService
    /**
     * Removes the modeling session from cached list when user session ends. TODO -
     * commented pending review by Robert S
-    *
+    * 
     */
    @PreDestroy
    public void destroyModelingSession()
@@ -390,7 +390,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -405,7 +405,7 @@ public class ModelService
 
    /**
     * Only used for ORION integration
-    *
+    * 
     * @param modelManagementStrategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
@@ -419,7 +419,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param attrs
     * @param attrType
     */
@@ -436,7 +436,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
@@ -471,7 +471,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param model
     * @param processDefinition
     * @return
@@ -482,7 +482,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -536,7 +536,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param account
     * @return
     */
@@ -580,12 +580,12 @@ public class ModelService
 
    /**
     * Invite Mechanism works the following:
-    *
+    * 
     * When the user is logged in any messages can be broadcasted directly to him. The user
     * recives a broadcast about a notification that he was in invited. He can decide now
     * if he really wants to join the session or not. It broadcasts a JsonObject to every
     * user online directly.
-    *
+    * 
     * @param userAccountList
     *           A list of all invited users provided by the icefaces backing bean
     * @param sessionOwnerId
@@ -717,9 +717,9 @@ public class ModelService
     * Uses the ModelingSessionManager to check whether a given user was invited to session
     * while he was offline. Broadcasts a REQUEST_JOIN_JSON Object back to the requester
     * specified through the username.
-    *
+    * 
     * @param username
-    *
+    * 
     */
    public void getOfflineInvites(String username)
    {
@@ -782,7 +782,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    *
+    * 
     * @return
     */
    public String getAllModels(boolean reload)
@@ -819,7 +819,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param httpRequest
     * @param modelId
     * @return
@@ -846,7 +846,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       *
+       * 
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -870,7 +870,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param id
     * @return
     */
@@ -881,7 +881,7 @@ public class ModelService
 
    /**
     * TODO - This should probably be delegated to the model management strategy?
-    *
+    * 
     * @param id
     * @return
     */
@@ -892,7 +892,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param id
     * @param postedData
@@ -927,7 +927,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param activityId
@@ -962,7 +962,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -1021,7 +1021,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -1040,7 +1040,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1067,9 +1067,9 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
@@ -1111,7 +1111,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1187,7 +1187,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1223,7 +1223,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1253,7 +1253,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1446,7 +1446,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1478,14 +1478,41 @@ public class ModelService
    public void createWrapperProcess(String modelId, JsonObject json)
    {
       ModelType model = findModel(modelId);
+      
       // Create process definition
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
 
-      getModelBuilderFacade().setAttribute(processDefinition, "carnot:engine:externalInvocationType",
-            "BOTH"); // Process Interface only
+      // TODO Correct flags
+      
+      if (extractBoolean(json, "createWebService"))
+      {
+         if (extractBoolean(json, "createRestService"))
+         {
+            getModelBuilderFacade().setAttribute(processDefinition,
+                  "carnot:engine:externalInvocationType", "BOTH"); 
+         }
+         else
+         {
+            getModelBuilderFacade().setAttribute(processDefinition,
+                  "carnot:engine:externalInvocationType", "BOTH"); 
+         }
+      }
+      else
+      {
+         getModelBuilderFacade().setAttribute(processDefinition,
+               "carnot:engine:externalInvocationType", "BOTH"); 
+      }
+
+      // TODO Find out flag
+      
+      if (extractBoolean(json, "transientProcess"))
+      {
+         getModelBuilderFacade().setAttribute(processDefinition,
+               "????", "????"); 
+      }
 
       LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
@@ -1506,11 +1533,10 @@ public class ModelService
             extractString(json, "requestDataName"),
             extractString(json, "requestDataTypeFullId"));
 
-      getModelBuilderFacade().createStructuredParameter(
-            processDefinition,
-            data,
+      getModelBuilderFacade().createStructuredParameter(processDefinition, data,
             NameIdUtils.createIdFromName(extractString(json, "requestDataName")),
-            extractString(json, "requestDataName"), extractString(json, "requestDataTypeFullId"), ModeType.IN);
+            extractString(json, "requestDataName"),
+            extractString(json, "requestDataTypeFullId"), ModeType.IN);
 
       DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
       dataSymbol.setData(data);
@@ -1542,17 +1568,26 @@ public class ModelService
       processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
+      // Create connection from Start Event
+
+      // TODO Host activity for start event?
+
+      getModelBuilderFacade().createTransitionSymbol(processDefinition, startEventSymbol,
+            activitySymbol, null, "bottom", "top");
+
+      getModelBuilderFacade().createDataFlowConnection(processDefinition, activitySymbol,
+            dataSymbol, DirectionType.IN_LITERAL, "right", "left");
+
       // Create Response Data
 
       data = getModelBuilderFacade().createStructuredData(model, null,
             extractString(json, "responseDataName"),
             extractString(json, "requestDataTypeFullId"));
 
-      getModelBuilderFacade().createStructuredParameter(
-            processDefinition,
-            data,
+      getModelBuilderFacade().createStructuredParameter(processDefinition, data,
             NameIdUtils.createIdFromName(extractString(json, "responseDataName")),
-            extractString(json, "responseDataName"), extractString(json, "responseDataTypeFullId"), ModeType.OUT);
+            extractString(json, "responseDataName"),
+            extractString(json, "responseDataTypeFullId"), ModeType.OUT);
 
       dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
@@ -1574,6 +1609,35 @@ public class ModelService
       processDefinition.getDiagram().get(0).getEndEventSymbols().add(endEventSymbol);
 
       parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+
+      // Create connection to End Event
+
+      // TODO Host activity for end event?
+
+      getModelBuilderFacade().createTransitionSymbol(processDefinition, activitySymbol,
+            endEventSymbol, null, "bottom", "top");
+
+      getModelBuilderFacade().createDataFlowConnection(processDefinition, activitySymbol,
+            dataSymbol, DirectionType.OUT_LITERAL, "left", "right");
+
+      if (extractBoolean(json, "generateTestWrapper"))
+      {
+         JsonObject wrapperJson = new JsonObject();
+
+         wrapperJson.addProperty("processDefinitionName", processDefinition.getName()
+               + " Test");
+         wrapperJson.addProperty("processFullId",
+               getModelBuilderFacade().createFullId(model, processDefinition));
+         wrapperJson.addProperty(
+               "participantFullId",
+               getModelBuilderFacade().createFullId(model,
+                     getModelBuilderFacade().findParticipant(model, "Administrator")));
+         wrapperJson.addProperty("dataInputActivityName", "Enter Data");
+         wrapperJson.addProperty("subprocessActivityName", processDefinition.getName());
+         wrapperJson.addProperty("dataOutputActivityName", "Retrieve Data");
+
+         createProcessInterfaceTestWrapperProcess(modelId, wrapperJson);
+      }
    }
 
    /**
@@ -1582,7 +1646,6 @@ public class ModelService
    public void createProcessInterfaceTestWrapperProcess(String modelId, JsonObject json)
    {
       ModelType model = findModel(modelId);
-      // Create process definition
 
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
@@ -1599,13 +1662,14 @@ public class ModelService
       int activityWidth = 180;
       int activityHeight = 50;
       int eventWidth = 20;
-      int xOffset = (parentLaneSymbol.getWidth() - activityWidth) / 2;
+      int xActivityOffset = 100;
+      int xDataOffset = 10;
 
       // Create Start Event
 
       StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
 
-      startEventSymbol.setXPos(xOffset - eventWidth / 2);
+      startEventSymbol.setXPos(xActivityOffset + activityWidth / 2 - eventWidth / 2);
       startEventSymbol.setYPos(50);
 
       processDefinition.getDiagram().get(0).getStartEventSymbols().add(startEventSymbol);
@@ -1626,7 +1690,7 @@ public class ModelService
 
       ActivitySymbolType activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
-      activitySymbol.setXPos(xOffset - activityWidth / 2);
+      activitySymbol.setXPos(xActivityOffset);
       activitySymbol.setYPos(100);
       activitySymbol.setWidth(activityWidth);
       activitySymbol.setHeight(activityHeight);
@@ -1636,19 +1700,14 @@ public class ModelService
       processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
-      // Create Input Data
+      // Create connection from Start Event
 
-      if (processDefinition.getFormalParameters() != null)
-      {
-         for (FormalParameterType formalParameter : processDefinition.getFormalParameters()
-               .getFormalParameter())
-         {
-            if (formalParameter.getMode() == ModeType.IN ||
-                  formalParameter.getMode() == ModeType.INOUT)
-            {
-            }
-         }
-      }
+      // TODO Host activity for start event?
+
+      getModelBuilderFacade().createTransitionSymbol(processDefinition, startEventSymbol,
+            activitySymbol, null, "bottom", "top");
+
+      ActivitySymbolType previousActivitySymbol = activitySymbol;
 
       // Create Subprocess Activity
 
@@ -1661,8 +1720,8 @@ public class ModelService
 
       activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
-      activitySymbol.setXPos(xOffset - activityWidth / 2);
-      activitySymbol.setYPos(200);
+      activitySymbol.setXPos(xActivityOffset);
+      activitySymbol.setYPos(300);
       activitySymbol.setWidth(activityWidth);
       activitySymbol.setHeight(activityHeight);
       activitySymbol.setActivity(activity);
@@ -1671,20 +1730,55 @@ public class ModelService
       processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
-      // Create Output Data
+      getModelBuilderFacade().createControlFlowConnection(processDefinition,
+            previousActivitySymbol, activitySymbol, "Transition1", "", "", true, "",
+            "bottom", "top");
 
-      if (processDefinition.getFormalParameters() != null)
+      // Create Input Data
+
+      int yDataOffset = 200;
+
+      if (processInterface.getFormalParameters() != null)
       {
-         for (FormalParameterType formalParameter : processDefinition.getFormalParameters()
+         for (FormalParameterType formalParameter : processInterface.getFormalParameters()
                .getFormalParameter())
          {
-            if (formalParameter.getMode() == ModeType.OUT ||
-                  formalParameter.getMode() == ModeType.INOUT)
+            if (formalParameter.getMode() == ModeType.IN
+                  || formalParameter.getMode() == ModeType.INOUT)
             {
-               
+               String typeDeclarationId = formalParameter.getDataType()
+                     .getDeclaredType()
+                     .getId();
+               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+               String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
+                     model, typeDeclaration);
+
+               DataType data = getModelBuilderFacade().createStructuredData(model,
+                     formalParameter.getId(), formalParameter.getName(),
+                     structuredDataTypeFullId);
+               DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
+               dataSymbol.setData(data);
+               processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
+               data.getDataSymbols().add(dataSymbol);
+               dataSymbol.setXPos(xDataOffset);
+               dataSymbol.setYPos(yDataOffset);
+
+               parentLaneSymbol.getDataSymbol().add(dataSymbol);
+
+               yDataOffset += 50;
+
+               getModelBuilderFacade().createDataFlowConnection(processDefinition,
+                     previousActivitySymbol, dataSymbol, DirectionType.OUT_LITERAL,
+                     "left", "right");
+               getModelBuilderFacade().createDataFlowConnection(processDefinition,
+                     activitySymbol, dataSymbol, DirectionType.IN_LITERAL, "right",
+                     "left");
             }
          }
       }
+
+      previousActivitySymbol = activitySymbol;
 
       // Create Retrieve Data Activity
 
@@ -1695,8 +1789,8 @@ public class ModelService
 
       activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
-      activitySymbol.setXPos(xOffset - activityWidth / 2);
-      activitySymbol.setYPos(300);
+      activitySymbol.setXPos(xActivityOffset);
+      activitySymbol.setYPos(500);
       activitySymbol.setWidth(activityWidth);
       activitySymbol.setHeight(activityHeight);
       activitySymbol.setActivity(activity);
@@ -1705,16 +1799,69 @@ public class ModelService
       processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
+      getModelBuilderFacade().createControlFlowConnection(processDefinition,
+            previousActivitySymbol, activitySymbol, "Transition2", "", "", true, "",
+            "bottom", "top");
+
+      // Create Output Data
+
+      yDataOffset = 400;
+
+      if (processInterface.getFormalParameters() != null)
+      {
+         for (FormalParameterType formalParameter : processInterface.getFormalParameters()
+               .getFormalParameter())
+         {
+            if (formalParameter.getMode() == ModeType.OUT
+                  || formalParameter.getMode() == ModeType.INOUT)
+            {
+               String typeDeclarationId = formalParameter.getDataType()
+                     .getDeclaredType()
+                     .getId();
+               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+               String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
+                     model, typeDeclaration);
+               DataType data = getModelBuilderFacade().createStructuredData(model,
+                     formalParameter.getId(), formalParameter.getName(),
+                     structuredDataTypeFullId);
+               DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
+
+               dataSymbol.setData(data);
+               processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
+               data.getDataSymbols().add(dataSymbol);
+               dataSymbol.setXPos(xDataOffset);
+               dataSymbol.setYPos(yDataOffset);
+
+               parentLaneSymbol.getDataSymbol().add(dataSymbol);
+
+               yDataOffset += 50;
+
+               getModelBuilderFacade().createDataFlowConnection(processDefinition,
+                     previousActivitySymbol, dataSymbol, DirectionType.OUT_LITERAL,
+                     "left", "right");
+               getModelBuilderFacade().createDataFlowConnection(processDefinition,
+                     activitySymbol, dataSymbol, DirectionType.IN_LITERAL, "right",
+                     "left");
+            }
+         }
+      }
+
       // Create End Symbol
 
       EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
 
-      endEventSymbol.setXPos(xOffset - eventWidth / 2);
-      endEventSymbol.setYPos(400);
+      endEventSymbol.setXPos(xActivityOffset + activityWidth / 2 - eventWidth / 2);
+      endEventSymbol.setYPos(600);
 
       processDefinition.getDiagram().get(0).getEndEventSymbols().add(endEventSymbol);
 
       parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+
+      // Create connection to End Event
+
+      getModelBuilderFacade().createTransitionSymbol(processDefinition, activitySymbol,
+            endEventSymbol, null, "bottom", "top");
    }
 
    /**
@@ -1732,7 +1879,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private UserService getUserService()
@@ -1746,7 +1893,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private QueryService getQueryService()
@@ -1780,7 +1927,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @return
     */
@@ -1880,7 +2027,7 @@ public class ModelService
     * </ul>
     * </li>
     * </ul>
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
@@ -1906,7 +2053,7 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    *
+    * 
     * @param webServiceJson
     *           the parent json object.
     * @param services
@@ -1945,7 +2092,7 @@ public class ModelService
 
    /**
     * Adds port or binding definitions to the service json.
-    *
+    * 
     * @param serviceJson
     *           the json object representing the parent service.
     * @param ports
@@ -1998,7 +2145,7 @@ public class ModelService
 
    /**
     * Adds operation definitions to the port json.
-    *
+    * 
     * @param portJson
     *           the json object representing the parent port.
     * @param operations
@@ -2046,7 +2193,7 @@ public class ModelService
    /**
     * Computes a string containing a comma separated list of the parts composing the
     * message.
-    *
+    * 
     * @param message
     *           the Message
     * @return the computed list of parts
@@ -2083,7 +2230,7 @@ public class ModelService
    /**
     * Computes a unique label for the operation by appending the input and output names to
     * the operation name.
-    *
+    * 
     * @param operation
     *           the BindingOperation
     * @return the computed label
@@ -2188,10 +2335,10 @@ public class ModelService
     * <li><code>classifier</code> a string identifying the type of the facet, i.e.
     * <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    *
+    * 
     * Each item described above has a member <code>icon</code> that specifies the
     * corresponding icon.
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name "url"
     *           that specifies the URL from where the XSD should be loaded.
@@ -2289,13 +2436,13 @@ public class ModelService
                childJs.addProperty("icon", ip.doSwitch(child).getSimpleName());
                lp.setColumn(1);
                String type = lp.doSwitch(child);
-               if (!type.isEmpty())
+               if ( !type.isEmpty())
                {
                   childJs.addProperty("type", type);
                }
                lp.setColumn(2);
                String cardinality = lp.doSwitch(child);
-               if (!cardinality.isEmpty())
+               if ( !cardinality.isEmpty())
                {
                   childJs.addProperty("cardinality", cardinality);
                }
@@ -2401,7 +2548,7 @@ public class ModelService
    /* remove */private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
 
    private WebModelerUriConverter uriConverter;
-   
+
    public WebModelerUriConverter getClasspathUriConverter()
    {
       if (uriConverter == null)
@@ -2502,7 +2649,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public JsonObject getPreferences()
@@ -2559,11 +2706,11 @@ public class ModelService
     * ); postedData.addProperty("url",
     * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
     * );
-    *
+    * 
     * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
     * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
     * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new java.io.File(
@@ -2571,26 +2718,26 @@ public class ModelService
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
     * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
     * = new EObjectUUIDMapper();
-    *
+    * 
     * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } };
-    *
+    * 
     * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
     * getTypeDeclaration("Pattern1"))));
-    *
+    * 
     * TypeDeclarationType typeDeclaration =
     * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
     * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
     * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * modifyComplexType(json); //modifyEnumType(json);
-    *
+    * 
     * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
     * json); System.out.println(typeDeclaration); }
@@ -2602,7 +2749,7 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
     * cs.getAsJsonObject("facets");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
     * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
     * d); }
@@ -2614,11 +2761,11 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
     * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
-    *
+    * 
     * es.remove("b");
-    *
+    * 
     * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
     * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
     * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
@@ -2627,27 +2774,27 @@ public class ModelService
    /*
     * public static void testTD() { DataChangeCommandHandler handler = new
     * DataChangeCommandHandler();
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    *
+    * 
     * String structId = "Composite3", structName = "Composite3";
-    *
+    * 
     * JsonObject structJson = new JsonObject();
     * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
     * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
     * typeDeclarationJson = new JsonObject();
     * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-    *
+    * 
     * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
     * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
     * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
     * schema.add("types", types); JsonObject typesType = new JsonObject();
     * types.add(structId, typesType); typesType.addProperty("name", structId);
-    *
+    * 
     * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
     * facet = new JsonObject(); facet.addProperty("name", "abceee");
     * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
@@ -2663,9 +2810,9 @@ public class ModelService
     * "at least one");
     */
    /*
-    *
+    * 
     * handler.createTypeDeclaration(model, structJson);
-    *
+    * 
     * try { wmm.save(URI.createFileURI(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
     * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block

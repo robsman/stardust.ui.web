@@ -162,7 +162,7 @@ define(
 				 * 
 				 */
 				ProcessInterfaceTestWrapper.prototype.createViaCallback = function() {
-					var parameter = {
+					var parameters = {
 						processDefinitionName : this.processDefinitionNameInput.val(),
 						participantFullId : this.participantSelect.val(),
 						processFullId : this.process.getFullId(),
@@ -173,18 +173,13 @@ define(
 								.val()
 					};
 
-					jQuery
-							.ajax(
-									{
-										type : "POST",
-										url : m_urlUtils
-												.getModelerEndpointUrl()
-												+ "/models/"
-												+ encodeURIComponent(this.process.model.id)
-												+ "/processes/createProcessInterfaceTestWrapperProcess",
-										contentType : "application/json",
-										data : JSON.stringify(parameter)
-									}).done().fail();
+					m_commandsController
+					.submitCommand(m_command
+							.createCreateNodeCommand(
+									"processInterfaceTestWrapperProcess.create",
+									this.process.model.id,
+									this.process.model.id,
+									parameters));
 				};
 			}
 		});

@@ -44,6 +44,10 @@ define(
 				this.responseDataTypeInput = jQuery("#responseDataTypeInput");
 				this.responseDataNameInput = jQuery("#responseDataNameInput");
 				this.serviceInvocationActivityNameInput = jQuery("#serviceInvocationActivityNameInput");
+				this.createWebServiceInput = jQuery("#createWebServiceInput");
+				this.createRestServiceInput = jQuery("#createRestServiceInput");
+				this.transientInput = jQuery("#transientInput");
+				this.createTestWrapperProcessInput = jQuery("#createTestWrapperProcessInput");
 				this.createButton = jQuery("#createButton");
 				this.cancelButton = jQuery("#cancelButton");
 
@@ -52,6 +56,7 @@ define(
 				this.createButton.click({
 					"wizard" : this
 				}, function(event) {
+					//event.data.wizard.create();
 					event.data.wizard.createViaCallback();
 					closePopup();
 				});
@@ -118,7 +123,7 @@ define(
 				 * 
 				 */
 				ServiceWrapperWizard.prototype.createViaCallback = function() {
-					var parameter = {
+					var parameters = {
 								processDefinitionName : this.processDefinitionNameInput
 										.val(),
 								requestDataTypeFullId : this.requestDataTypeInput
@@ -131,20 +136,20 @@ define(
 										.val(),
 								serviceInvocationActivityName : this.serviceInvocationActivityNameInput
 										.val(),
-								applicationFullId : this.application.getFullId()
+								applicationFullId : this.application.getFullId(),
+								createWebService: this.createWebServiceInput.prop("checked"),
+								createRestService: this.createRestServiceInput.prop("checked"),
+								transientProcess: this.transientInput.prop("checked"),
+								generateTestWrapper: this.createTestWrapperProcessInput.prop("checked")
 							};
-					
-					jQuery
-					.ajax({
-						type : "POST",
-						url : m_urlUtils
-								.getModelerEndpointUrl()
-								+ "/models/"
-								+ encodeURIComponent(this.application.model.id)
-								+ "/processes/createWrapperProcess",
-						contentType : "application/json",
-						data : JSON.stringify(parameter)
-					}).done().fail();
+				
+					m_commandsController
+					.submitCommand(m_command
+							.createCreateNodeCommand(
+									"serviceWrapperProcess.create",
+									this.application.model.id,
+									this.application.model.id,
+									parameters));
 				};
 
 				/**

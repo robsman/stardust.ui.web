@@ -21,6 +21,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		UPDATE : UPDATE,
 		DELETE : DELETE,
 
+		createCreateCommand : function(command, modelId, oid, changes) {
+			return new ChangeDescriptor(command, modelId, [ {
+				oid : oid,
+				changes : changes
+			} ]);
+		},
 		createCreateProcessCommand : function(modelId, oid, changes) {
 			return new ChangeDescriptor("process.create", modelId, [ {
 				oid : oid,
