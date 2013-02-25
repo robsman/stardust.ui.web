@@ -100,7 +100,13 @@ public class XPathCacheManager
       Model refModel = getReferenceModel(model, dataPath);
 
       Data data = refModel.getData(dataPath.getData());
-
+      if (null == data)
+      {
+         // When data is created in consumer model using Composite Type of Provider model,
+         // search the data in consumer model (Pass by reference)
+         data = model.getData(dataPath.getData());
+      }
+      
       if (!cacheEnabled)
       {
          if (trace.isDebugEnabled())
@@ -109,7 +115,7 @@ public class XPathCacheManager
          }
          return ClientXPathMap.getXpathMap(refModel, data);
       }
-
+      
       // Caching Mechanism
       Long dataCachKey = getDataCacheKey(refModel, data);
       IXPathMap xPathMap = dataXPathMapCache.get(dataCachKey);
@@ -179,7 +185,13 @@ public class XPathCacheManager
       {
          // user-defined structured data
          String typeDeclarationId = (String) data.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
-         typeDeclaration = model.getTypeDeclaration(typeDeclarationId);
+         typeDeclaration = typeDeclarationId != null ? model.getTypeDeclaration(typeDeclarationId) : model
+               .getTypeDeclaration(data.getReference().getId()); // Use dataReferenceId
+                                                                 // to get TypeDeclaration
+                                                                 // for pass by
+                                                                 // reference(using
+                                                                 // composite type of
+                                                                 // Provider model)
       }
       else
       {
@@ -208,7 +220,7 @@ public class XPathCacheManager
 
       return new TypeDeclarationCacheKey(qName, model.getModelOID());
    }
-
+   
    /**
     * @param model
     * @param data
