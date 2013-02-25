@@ -405,7 +405,11 @@ define(
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
 					var nameColumn = jQuery("<td class='elementCell'></td>").appendTo(row);
-					nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
+					if ( !this.typeDeclaration.isReadOnly()) {
+						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
+					} else {
+						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
+					}
 
 					var typeColumn = jQuery("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {

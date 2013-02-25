@@ -510,7 +510,8 @@ define(
 
 			function findType(schema, typeName) {
 				var parsedName = parseQName(typeName);
-				
+				var element;
+
 				// (fh) spec says we should search for elements
 				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
 					if (schema.elements) {
@@ -521,7 +522,7 @@ define(
 							}
 						});
 					}
-					
+
 					if (element) {
 						if (element.body) {
 							// (fh) anonymous type declaration
@@ -537,7 +538,7 @@ define(
 						}
 					}
 				}
-						
+
 				// (fh) now search the type
 				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
 					if (schema.types) {
