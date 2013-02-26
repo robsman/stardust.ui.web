@@ -100,6 +100,7 @@ define(
 										this.propertiesPanel.element.modelElement.otherwise);
 						this.conditionExpressionInputEditor
 								.setValue(this.propertiesPanel.element.modelElement.conditionExpression);
+						this.conditionExpressionInputEditor.gotoLine(1);
 
 						if (this.propertiesPanel.element.modelElement.otherwise) {
 							this.conditionExpressionInputEditor.disable();

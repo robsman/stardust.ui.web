@@ -69,6 +69,10 @@ define([ "jquery" ], function(jquery) {
 		CodeEditor.prototype.hideGutter = function() {
 			editor.renderer.setShowGutter(false);
 		};
+
+		CodeEditor.prototype.gotoLine = function(lineNo) {
+			editor.gotoLine(lineNo);
+		};
 	}
 
 	/*
