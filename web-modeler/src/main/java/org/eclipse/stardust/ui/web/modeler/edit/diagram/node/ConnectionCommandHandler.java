@@ -87,13 +87,13 @@ public class ConnectionCommandHandler
                         ModelerConstants.TO_MODEL_ELEMENT_TYPE)))
             {
                JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-               
+
                getModelBuilderFacade().createControlFlowConnection(processDefinition,
                      fromActivitySymbol,
-                     getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid), extractString(controlFlowJson, ModelerConstants.ID_PROPERTY), 
-                     extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY), extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY), 
+                     getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid), extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
+                     extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY), extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY),
                      controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY)
-                     && extractBoolean(request, ModelerConstants.OTHERWISE_PROPERTY), "", mapAnchorOrientation(extractInt(request,
+                     && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY), "", mapAnchorOrientation(extractInt(request,
                            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)), mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
             }
@@ -242,7 +242,7 @@ public class ConnectionCommandHandler
 
    /**
     * Finds NodeSymbol in Model based on input parameters
-    * 
+    *
     * @param request
     *           : json Object
     * @param diagram
@@ -357,7 +357,7 @@ public class ConnectionCommandHandler
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceEventSymbol
@@ -398,7 +398,7 @@ public class ConnectionCommandHandler
    }
 
    /**
-    * 
+    *
     * @param connectionJson
     * @param processDefinition
     * @param sourceActivitySymbol
@@ -439,7 +439,7 @@ public class ConnectionCommandHandler
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -466,7 +466,7 @@ public class ConnectionCommandHandler
    }
 
    /**
-    * 
+    *
     * @return
     */
    private ModelBuilderFacade getModelBuilderFacade()
