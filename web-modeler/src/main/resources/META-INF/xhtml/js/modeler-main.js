@@ -45,7 +45,8 @@ require.config({
 		'codemirror.util.simple-hint': ['bpm-modeler/js/libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
 
 		'modeler-plugins': '../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins',
-		'i18n' : 'common/InfinityBPMI18N'
+		'i18n' : 'common/InfinityBPMI18N',
+		'ace': ['bpm-modeler/js/libs/ace/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace']
 	},
 	shim: {
 		'angularjs': {
@@ -94,6 +95,7 @@ require(["require",
 	 "jquery.tablescroll",
 	 "jquery.treeTable",
 	 "jquery.url",
+	 "ace",
 	 "jquery.jqprint",
 
 	 "jslint",

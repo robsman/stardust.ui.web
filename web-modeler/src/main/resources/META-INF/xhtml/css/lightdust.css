@@ -637,3 +637,14 @@ td.mapping {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 }
+
+/* Ace code editor style overrides and additional styles */
+.ace_active-line {
+    background: none repeat scroll 0 0 #E8F2FF !important;
+}
+
+.editorDivDefault {
+	position: relative !important;
+	height: 250px;
+	border: 1px solid #BBBBBB !important;
+}

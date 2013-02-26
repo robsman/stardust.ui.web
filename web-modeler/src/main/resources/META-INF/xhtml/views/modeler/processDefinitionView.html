@@ -1046,7 +1046,7 @@
 																		<td>
 																			<form name="form">
 																				<!-- Limitations / TODOs to make it more elegant/compact -->
-																				<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap, 
+																				<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap,
 																									and then jQuery does not find elements, hence using multiple ng-show -->
 																				<!-- For name or id - Angular Expression cannot be used -->
 																				<!-- For ng-pattern - Angular Expression is somehow not working -->
@@ -1310,8 +1310,9 @@
 																			</td>
 																		</tr>
 																		<tr>
-																			<td><textarea id="conditionExpressionInput"
-																					cols="40" rows="3"></textarea></td>
+																			<td><div id="conditionExpressionDiv"
+																					class="editorDivDefault"></div>
+																			</td>
 																		</tr>
 																	</table>
 																</div>
