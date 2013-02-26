@@ -2470,7 +2470,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       if (null != transition.getCondition()
             && transition.getCondition().equals("CONDITION"))
       {
-         if (null != transition.getExpression())
+         if (null != transition.getExpression()
+               && null != transition.getExpression().getMixed()
+               && transition.getExpression().getMixed().size() > 0)
          {
             controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
                   (String) transition.getExpression().getMixed().getValue(0));
