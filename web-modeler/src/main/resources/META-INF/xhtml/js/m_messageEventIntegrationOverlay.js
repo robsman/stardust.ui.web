@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -29,9 +29,9 @@ define(
 					return overlay;
 				}
 			};
- 
+
 			/**
-			 * 
+			 *
 			 */
 			function MessageEventIntegrationOverlay() {
 				var eventIntegrationOverlay = m_eventIntegrationOverlay
@@ -43,7 +43,7 @@ define(
 						eventIntegrationOverlay);
 
 				/**
-				 * 
+				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
@@ -58,7 +58,7 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.type"));
 
-					
+
 					jQuery("label[for='preserveQoSInput']")
 							.text(
 									m_i18nUtils
@@ -71,8 +71,8 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
-											
-					
+
+
 					this.configurationSpan = this.mapInputId("configuration");
 
 				this.configurationSpan
@@ -86,26 +86,27 @@ define(
 
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
-					
-					
+
+
 					this.clientIdInput = this.mapInputId("clientIdInput");
 					this.selectorInput = this.mapInputId("selectorInput");
 					this.transactedInput = this.mapInputId("transactedInput");
 					this.preserveQoSInput = this.mapInputId("preserveQoSInput");
-					
+
 					this.jmsComponentIdInput= this.mapInputId("jmsComponentIdInput")
-					
+
 					this.registerForRouteChanges(this.typeSelect);
 					this.registerForRouteChanges(this.nameInput);
+					this.registerForRouteChanges(this.clientIdInput);
 					this.registerForRouteChanges(this.selectorInput);
 					this.registerForRouteChanges(this.transactedInput);
 					this.registerForRouteChanges(this.preserveQoSInput);
 					this.registerForRouteChanges(this.jmsComponentIdInput);
-					
+
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.getEndpointUri = function() {
 					var defaultJmsComponentId="jms";
@@ -120,16 +121,16 @@ define(
 					uri += this.nameInput.val();
 
 					var separator = "?";
-					
+
 					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
-						uri += separator + "clientId=" + this.clientIdInput.val();
+						uri += separator + "clientId=" + encodeURIComponent(this.clientIdInput.val());
 						separator = "&";
-					} 
+					}
 
 					if (this.selectorInput.val() != null && this.selectorInput.val().length != 0) {
-						uri += separator + "selector=" + this.selectorInput.val();
+						uri += separator + "selector=" + encodeURIComponent(this.selectorInput.val());
 						separator = "&";
-					} 
+					}
 
 					if(this.transactedInput.prop("checked")== true){
 						uri += separator + "transacted=";
@@ -144,7 +145,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.activate = function() {
 					this.nameInput.val(m_i18nUtils
@@ -161,23 +162,23 @@ define(
 				MessageEventIntegrationOverlay.prototype.getRouteContent = function()
 				{
 					var route = "<from uri=\"";
-					
+
 					route += this.getEndpointUri();
 					route += "\"/>";
 					route += this.getAdditionalRouteDefinitions();
 
 					return route;
 				};
-				
+
 				MessageEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};
-				
+
 				MessageEventIntegrationOverlay.prototype.getRouteDefinitions= function() {
 					return "<from uri=\""+this.getEndpointUri()+"\"/>"+this.getAdditionalRouteDefinitions();
 				}
 				/**
-				 * 
+				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.update = function() {
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
@@ -204,7 +205,7 @@ define(
 						this.typeSelect.val(sourceParts[1]);
 
 						var clientName = "";
-						
+
 
 						for ( var i = 2; i < sourceParts.length; ++i) {
 							if (i > 2) {
@@ -214,9 +215,9 @@ define(
 						}
 
 						this.nameInput.val(clientName);
-						
+
 							/* parsing the last part of the URI*/
-						
+
 
 						if(sourceAndProperties[1] != null){
 							var nameValues = sourceAndProperties[1].split('&');
@@ -230,9 +231,9 @@ define(
 							m_utils.debug("value: " + value);
 
 							if (name == "clientId") {
-								this.clientIdInput.val(value);
+								this.clientIdInput.val(decodeURIComponent(value));
 							} else if (name == "selector") {
-								this.selectorInput.val(value);
+								this.selectorInput.val(decodeURIComponent(value));
 							} else if (name == "transacted") {
 								this.transactedInput.prop("checked",
 										value == "true");
@@ -251,7 +252,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.validate = function() {
 					this.nameInput.removeClass("error");
@@ -269,8 +270,8 @@ define(
 
 						return false;
 					}
-					
-					
+
+
 					if (m_utils.isEmptyString(this.nameInput.val()) ||
 							this.nameInput.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
@@ -289,4 +290,3 @@ define(
 				};
 			}
 		});
-		
