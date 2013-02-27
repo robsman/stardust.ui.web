@@ -72,10 +72,13 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
          StartEventSymbol startEventSymbol = startEventSymbols.get(i);
          TriggerType trigger = startEventSymbol.getTrigger();
 
-         if ((null != trigger)
-               && PredefinedConstants.MANUAL_TRIGGER.equals(trigger.getType().getId()))
+         if (trigger != null && trigger.getType() != null)
          {
-            setPerformer(trigger, participant);
+            String id = trigger.getType().getId();
+            if (PredefinedConstants.MANUAL_TRIGGER.equals(id) || PredefinedConstants.SCAN_TRIGGER.equals(id))
+            {
+               setPerformer(trigger, participant);
+            }
          }
       }
    }
@@ -94,12 +97,12 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
    private void setPerformer(TriggerType manualTrigger, IModelParticipant newPerformer)
    {
       String originalPerformerId = AttributeUtil.getAttributeValue(manualTrigger,
-            PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT);
+            PredefinedConstants.PARTICIPANT_ATT);
       String newPerformerId = (null != newPerformer) ? newPerformer.getId() : null;
       if ( !CompareHelper.areEqual(newPerformerId, originalPerformerId))
       {
          AttributeType attribute = AttributeUtil.setAttribute(manualTrigger,
-               PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, newPerformerId);
+               PredefinedConstants.PARTICIPANT_ATT, newPerformerId);
          ModelUtils.setReference(attribute,
                ModelUtils.findContainingModel(manualTrigger), "role+organization");
          modification.markAlsoModified(manualTrigger);
