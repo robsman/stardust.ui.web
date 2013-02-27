@@ -77,7 +77,7 @@ define(
 					}
 
 					this.populateCommentsTable();
-					this.deleteButton.attr("disabled", true);
+					this.disableDelete();
 				};
 
 				/**
@@ -154,7 +154,7 @@ define(
 					var selectedRows = jQuery(this.scope + " table#commentsTable tr.selected");
 
 					if (selectedRows.length == 0) {
-						this.deleteButton.attr("disabled", true);
+						this.disableDelete();
 
 						return;
 					}
@@ -164,13 +164,13 @@ define(
 								.attr("id")];
 
 						if (comment.userAccount != m_user.getCurrentUser().account) {
-							this.deleteButton.attr("disabled", true);
+							this.disableDelete();
 
 							return;
 						}
 					}
 
-					this.deleteButton.removeAttr("disabled");
+					this.enableDelete();
 				};
 
 				/**
@@ -201,6 +201,32 @@ define(
 						this.options.submitHandler
 								.submitCommentsChanges(this.comments);
 					}
+				};
+
+
+				/**
+				 *
+				 */
+				CommentsPanel.prototype.disableDelete = function() {
+					this.deleteButton.attr("disabled", true);
+					this.deleteButton.fadeTo(0, 0.5);
+					this.deleteButton.removeClass("toolbarButton");
+					this.deleteButton.css("cursor", "default");
+					this.deleteButton.css("background", "none");
+					this.deleteButton.css("border", "none");
+				};
+
+
+				/**
+				 *
+				 */
+				CommentsPanel.prototype.enableDelete = function() {
+					this.deleteButton.removeAttr("disabled");
+					this.deleteButton.css("background", "");
+					this.deleteButton.css("border", "");
+					this.deleteButton.fadeTo(0, 1);
+					this.deleteButton.css("cursor", "pointer");
+					this.deleteButton.addClass("toolbarButton");
 				};
 			}
 		});
