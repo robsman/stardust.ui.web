@@ -78,7 +78,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
@@ -319,12 +318,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (isGateway)
       {
-         if ( !activity.getId().toLowerCase().startsWith("gateway"))
-         {
-            // fix accidental ID change
-            activity.setId("gateway_" + activity.getId());
-         }
-
          if (activityJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
          {
             if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
@@ -829,17 +822,29 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          EStructuralFeature eFtrName, JsonObject elementJson)
    {
       boolean wasModified = false;
+      boolean isGateway = false;
       String newId = null;
 
+      if(element instanceof ActivityType)
+      {      
+         isGateway = ((IIdentifiableElement) element).getId().toLowerCase().startsWith("gateway");
+      }
+      
       if (elementJson.has(ModelerConstants.ID_PROPERTY))
       {
          // provided ID has precedence over generated ID
          newId = extractString(elementJson, ModelerConstants.ID_PROPERTY);
-      }
-
+      }      
+      
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
+         String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);         
+         String base = null;
+         if(isGateway && !newName.toLowerCase().startsWith("gateway"))
+         {
+            base = "gateway_" + newName;
+         }
+                  
          if ( !element.eIsSet(eFtrName) || !element.eGet(eFtrName).equals(newName))
          {
             wasModified = true;
@@ -850,7 +855,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                if (element instanceof IIdentifiableElement)
                {
                   newId = NameIdUtils.createIdFromName(null,
-                        (IIdentifiableElement) element);
+                        (IIdentifiableElement) element, base);
                }
                else if (element instanceof TypeDeclarationType)
                {
