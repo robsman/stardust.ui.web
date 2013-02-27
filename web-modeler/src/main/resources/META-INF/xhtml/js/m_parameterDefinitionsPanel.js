@@ -289,6 +289,13 @@ define(
 						m_dialog
 								.makeInvisible(this.addParameterDefinitionButton);
 					}
+
+					if (this.options.hideDirectionSelection) {
+						m_dialog
+								.makeInvisible(jQuery(this.options.scope + "label[for='parameterDefinitionDirectionSelect']"));
+						m_dialog
+								.makeInvisible(this.parameterDefinitionDirectionSelect);
+					}
 				};
 
 				/**
