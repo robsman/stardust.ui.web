@@ -78,7 +78,7 @@ public class PortalPluginSkinResourceResolver
                List<Resource> extensionResources;
                try
                {
-                  extensionResources = discoverModelerExtensions(resolver, webContentBaseUri, pluginFolder, fileName);
+                  extensionResources = discoverSkinExtensions(resolver, webContentBaseUri, pluginFolder, fileName);
                }
                // JBoss is throwing an IOException instead of FileNotFoundException if a
                // file cannot be found
@@ -103,8 +103,38 @@ public class PortalPluginSkinResourceResolver
                   // Split the above path to create 2 paths ex: a) <views-common> b)
                   // skin1/images
                   String[] splitArr = extensionWebUri.split(pluginFolder + "/");
-                  String extensionWebUriKey = webUriPrefix.substring(0, webUriPrefix.lastIndexOf("/")) + pluginFolder
-                        + "/" + splitArr[1].substring(0, splitArr[1].indexOf("/"));
+                  String extensionWebUriKey = (pluginFolder.startsWith(Constants.SKIN_FOLDER, 0) ? webUriPrefix
+                        .substring(0, webUriPrefix.lastIndexOf("/")) : "") // if
+                                                                           // plugin-folder
+                                                                           // is
+                                                                           // plugin-id>/public/skins>
+                                                                           // skip this
+                                                                           // String
+                                                                           // manipulation
+                                                                           // which
+                                                                           // returns the
+                                                                           // <plugin-id>
+                        + pluginFolder
+                        + "/"
+                        + (splitArr[1].contains("/") ? splitArr[1].substring(0, splitArr[1].indexOf("/")) : ""); // if
+                                                                                                                 // splitArr[1]
+                                                                                                                 // contains
+                                                                                                                 // the
+                                                                                                                 // fileName
+                                                                                                                 // only
+                                                                                                                 // i.e
+                                                                                                                 // Red.css
+                                                                                                                 // skip
+                                                                                                                 // this
+                                                                                                                 // manipulation
+                                                                                                                 // which
+                                                                                                                 // returns
+                                                                                                                 // the
+                                                                                                                 // parent
+                                                                                                                 // folder
+                                                                                                                 // for
+                                                                                                                 // skinFile(i.e
+                                                                                                                 // skin1/images)
 
                   List<String> resourceFile = allExtensions.get(extensionWebUriKey);
                   if (null == resourceFile)
@@ -113,7 +143,7 @@ public class PortalPluginSkinResourceResolver
                      allExtensions.put(extensionWebUriKey, resourceFile);
                   }
                   resourceFile.add(extensionResUri);
-                  trace.info("Discovered '" + pluginFolder + "' modeler extensions descriptor at " + extensionWebUri);
+                  trace.info("Discovered '" + pluginFolder + "' plugin resource at " + extensionWebUri);
                }
             }
             finally
@@ -132,22 +162,22 @@ public class PortalPluginSkinResourceResolver
    /**
     * 
     * @param resolver
-    * @param modelerExtensionsBaseUri
+    * @param extensionBaseUri
     * @param category
     * @param fileName
     * @return
     * @throws IOException
     */
-   private static List<Resource> discoverModelerExtensions(ResourcePatternResolver resolver,
-         String modelerExtensionsBaseUri, String category, String fileName) throws IOException
+   private static List<Resource> discoverSkinExtensions(ResourcePatternResolver resolver,
+         String extensionBaseUri, String category, String fileName) throws IOException
    {
       List<Resource> extensions = CollectionUtils.newArrayList();
       Resource[] jsModules = null;
       if (null == fileName)
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
                + "/*/*.*");
       else
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
                + "/**/" + fileName);
       for (Resource jsModule : jsModules)
       {

@@ -37,6 +37,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -130,6 +131,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
    {
       try
       {
+         // Login with technical user and read the skin preference from partition
          SessionContext sessionCtx = TechnicalUserUtils.login(getLoginProperties());
          UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_PORTAL,
                PreferenceScope.PARTITION);
@@ -137,32 +139,38 @@ public class LoginDialogBean implements Serializable, InitializingBean
                UserPreferencesEntries.F_SKIN);
          trace.info("Read login skin preference from partition -" + skinPreference);
          TechnicalUserUtils.logout(sessionCtx);
-         Map<String, List<String>> pluginAvailableSkins = null;
-         if (skinPreference.contains(Constants.SKIN_FOLDER))
-         {
-            // if skinPreference =<plugin-id>/public/skins/<skinId>, directly retrieve the
-            // skin
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER,
-                  loginStyleSheetName);
-         }
-         else
-         {
-            // If skinPreference =<skinId> (i.e loaded from
-            // static Configuration Provider), search skin folder
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
-         }
+         // If no preference is set, check if default is provided by spring configuration
+         skinPreference = StringUtils.isNotEmpty(skinPreference) ? skinPreference : DefaultPreferenceProviderUtils
+               .getDefaultSkinPreference();
 
-         for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+         // If no preference is set, neither spring config available for default skin,
+         // skip setting pluginLoginStyleSheetPath
+         if (StringUtils.isNotEmpty(skinPreference))
          {
-            if (entry.getKey().endsWith(skinPreference))
+            Map<String, List<String>> pluginAvailableSkins = null;
+            if (skinPreference.contains(Constants.SKIN_FOLDER))
+            {
+               // if skinPreference =<plugin-id>/public/skins/<skinId>, directly retrieve
+               // the
+               // skin
+               pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(skinPreference,
+                     loginStyleSheetName);
+            }
+            else
+            {
+               // If skinPreference =<skinId> (i.e loaded from
+               // static Configuration Provider), create skin folder path as
+               // <public/skins/<skinId>
+               String skinFolder = Constants.SKIN_FOLDER + "/" + skinPreference;
+               pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(skinFolder, loginStyleSheetName);
+            }
+
+            for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
             {
                for (String filePath : entry.getValue())
                {
                   String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-                  if (fileName.equals(loginStyleSheetName))
-                  {
-                     pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
-                  }
+                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
                }
             }
          }

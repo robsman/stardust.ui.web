@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 
 /**
  * @author Subodh.Godbole
@@ -71,7 +72,7 @@ public class IppThemeProvider implements ThemeProvider
     */
    public void loadTheme(String themeId)
    {
-      this.themeId = themeId;
+      this.themeId = StringUtils.isNotEmpty(themeId) ? themeId : DefaultPreferenceProviderUtils.getDefaultSkinPreference();
       availableThemes = new ArrayList<Theme>();
       themeStyleSheets = new ArrayList<String>();
       availableThemes.add(new IppTheme("", MessagePropertiesBean.getInstance().getString(
@@ -130,9 +131,11 @@ public class IppThemeProvider implements ThemeProvider
          {
             this.themeId = key;
          }
-         // TODO - Added for test CRNT-27828 on JBoss, to change to trace.debug
-         trace.info("Selected Skin Id is " + this.themeId);
-         trace.info("Added " + fileName + " as plugin skin folders");
+         if(trace.isDebugEnabled())
+         {
+            trace.debug("Selected Skin Id is " + this.themeId);
+            trace.debug("Added " + fileName + " as plugin skin folders");   
+         }
       }
       
      return availablePluginThemes;
