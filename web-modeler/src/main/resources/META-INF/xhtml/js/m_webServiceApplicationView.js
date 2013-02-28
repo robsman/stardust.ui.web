@@ -150,6 +150,7 @@ define(
 			 */
 			function WebServiceApplicationView() {
 				var view = m_modelElementView.create();
+				var initializing;
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(WebServiceApplicationView.prototype,
@@ -160,6 +161,7 @@ define(
 				 */
 				WebServiceApplicationView.prototype.initialize = function(
 						application) {
+					initializing = true;
 					this.id = "webServiceApplicationView";
 					this.webServiceStructure = {};
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
@@ -353,40 +355,41 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					// Build dummy Web Service structure - allows too initialize
-					// selects even without full WSDL information
+					if (initializing) {
+						// Build dummy Web Service structure - allows too initialize
+						// selects even without full WSDL information
+						var structure = {};
+						var services = {};
+						var ports = {};
+						var operations = {};
 
-					var structure = {};
-					var services = {};
-					var ports = {};
-					var operations = {};
+						if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
+							operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
+								name : this.application.attributes["carnot:engine:wsOperationName"]
+							};
+						}
 
-					if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
-						operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
-							name : this.application.attributes["carnot:engine:wsOperationName"]
-						};
-					}
+						if (this.application.attributes["carnot:engine:wsPortName"] != null) {
+							ports[this.application.attributes["carnot:engine:wsPortName"]] = {
+								name : this.application.attributes["carnot:engine:wsPortName"],
+								operations : operations
+							};
+						}
 
-					if (this.application.attributes["carnot:engine:wsPortName"] != null) {
-						ports[this.application.attributes["carnot:engine:wsPortName"]] = {
-							name : this.application.attributes["carnot:engine:wsPortName"],
-							operations : operations
-						};
-					}
+						if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
+							services[this.application.attributes["carnot:engine:wsServiceName"]] = {
+								name : this.application.attributes["carnot:engine:wsServiceName"],
+								ports : ports
+							};
+						}
 
-					if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
-						services[this.application.attributes["carnot:engine:wsServiceName"]] = {
-							name : this.application.attributes["carnot:engine:wsServiceName"],
-							ports : ports,
+						structure = {
+							services : services,
 							url : this.application.attributes["carnot:engine:wsdlUrl"]
 						};
+
+						this.loadWebServiceStructure(structure);
 					}
-
-					structure = {
-						services : services
-					};
-
-					this.loadWebServiceStructure(structure);
 
 					// Populate inputs from application
 
@@ -415,6 +418,7 @@ define(
 					} else {
 						this.setAuthentication(false);
 					}
+					initializing = false;
 				};
 
 				/**
@@ -602,9 +606,10 @@ define(
 					this.useOutput.empty();
 					this.useOutput.append(operation.use);
 
-					if (this.serviceSelect.val() != this.application.attributes["carnot:engine:wsServiceName"]
-							&& this.portSelect.val() != this.application.attributes["carnot:engine:wsPortName"]
-							&& this.operationSelect.val() != this.application.attributes["carnot:engine:wsOperationName"]) {
+					if (!initializing
+							&& (this.serviceSelect.val() != this.application.attributes["carnot:engine:wsServiceName"]
+								|| this.portSelect.val() != this.application.attributes["carnot:engine:wsPortName"]
+								|| this.operationSelect.val() != this.application.attributes["carnot:engine:wsOperationName"])) {
 						this
 								.submitChanges({
 									attributes : {
