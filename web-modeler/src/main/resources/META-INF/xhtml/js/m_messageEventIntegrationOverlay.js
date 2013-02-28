@@ -141,6 +141,7 @@ define(
 						uri += separator + "preserveMessageQos=";
 						uri += this.preserveQoSInput.prop("checked");
 					}
+					uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 
@@ -189,7 +190,7 @@ define(
 
 					// TODO Need better URL encoding
 
-					route = route.replace(/&/g, "&amp;");
+				//	route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
 					var xmlObject = jQuery(xmlDoc);
