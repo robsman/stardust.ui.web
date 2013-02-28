@@ -377,7 +377,8 @@ define(
 					if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
 						services[this.application.attributes["carnot:engine:wsServiceName"]] = {
 							name : this.application.attributes["carnot:engine:wsServiceName"],
-							ports : ports
+							ports : ports,
+							url : this.application.attributes["carnot:engine:wsdlUrl"]
 						};
 					}
 
@@ -464,6 +465,7 @@ define(
 
 					var view = this;
 
+					var wsdlURL = (structure && structure.url) ? structure.url : this.wsdlUrlInput.val();
 					m_communicationController
 							.syncPostData(
 									{
@@ -472,7 +474,7 @@ define(
 												+ "/webServices/structure"
 									},
 									JSON.stringify({
-										wsdlUrl : this.wsdlUrlInput.val()
+										wsdlUrl : wsdlURL
 									}),
 									{
 										"success" : function(serverData) {
