@@ -57,41 +57,44 @@ public class ParticipantChangeTracker implements ChangePostprocessor
       }
       
       ModelType model = (ModelType) container;
-      for(ProcessDefinitionType process : model.getProcessDefinition())
-      {         
-         for(DiagramType diagram : process.getDiagram())
-         {
-            for(PoolSymbol pool : diagram.getPoolSymbols())
+      if(model != null)
+      {
+         for(ProcessDefinitionType process : model.getProcessDefinition())
+         {         
+            for(DiagramType diagram : process.getDiagram())
             {
-               for(LaneSymbol lane : pool.getLanes())
+               for(PoolSymbol pool : diagram.getPoolSymbols())
                {
-                  IModelParticipant oldParticipant = LaneParticipantUtil.getParticipant(lane);
-                  if(removed && oldParticipant != null && oldParticipant.equals(candidate))
+                  for(LaneSymbol lane : pool.getLanes())
                   {
-                     LaneParticipantUtil.setParticipant(lane, null);
-                     change.markAlsoModified(lane);                     
-                  }
-                  else if(!removed && oldParticipant != null && oldParticipant.equals(candidate))
-                  {
-                     LaneParticipantUtil.setParticipant(lane, (IModelParticipant) candidate);                     
-                     change.markAlsoModified(lane);                     
-                  }
-               }               
+                     IModelParticipant oldParticipant = LaneParticipantUtil.getParticipant(lane);
+                     if(removed && oldParticipant != null && oldParticipant.equals(candidate))
+                     {
+                        LaneParticipantUtil.setParticipant(lane, null);
+                        change.markAlsoModified(lane);                     
+                     }
+                     else if(!removed && oldParticipant != null && oldParticipant.equals(candidate))
+                     {
+                        LaneParticipantUtil.setParticipant(lane, (IModelParticipant) candidate);                     
+                        change.markAlsoModified(lane);                     
+                     }
+                  }               
+               }
             }
-         }
-         
-         for(ActivityType activity : process.getActivity())
-         {
-            IModelParticipant oldParticipant = activity.getPerformer();
-            if(removed && oldParticipant != null && oldParticipant.equals(candidate))
+            
+            for(ActivityType activity : process.getActivity())
             {
-               activity.setPerformer(null);               
-               change.markAlsoModified(activity);                     
-            }
-            else if(!removed && oldParticipant != null && oldParticipant.equals(candidate))
-            {
-               activity.setPerformer((IModelParticipant) candidate);               
-               change.markAlsoModified(activity);                     
+               IModelParticipant oldParticipant = activity.getPerformer();
+               if(removed && oldParticipant != null && oldParticipant.equals(candidate))
+               {
+                  activity.setPerformer(null);               
+                  change.markAlsoModified(activity);                     
+               }
+               else if(!removed && oldParticipant != null && oldParticipant.equals(candidate))
+               {
+                  activity.setPerformer((IModelParticipant) candidate);               
+                  change.markAlsoModified(activity);                     
+               }
             }
          }
       }
