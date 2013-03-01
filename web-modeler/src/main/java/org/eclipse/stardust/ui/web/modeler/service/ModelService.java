@@ -1492,18 +1492,18 @@ public class ModelService
          if (extractBoolean(json, "createRestService"))
          {
             getModelBuilderFacade().setAttribute(processDefinition,
-                  "carnot:engine:externalInvocationType", "BOTH"); 
+                  "carnot:engine:externalInvocationType", PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH); 
          }
          else
          {
             getModelBuilderFacade().setAttribute(processDefinition,
-                  "carnot:engine:externalInvocationType", "BOTH"); 
+                  "carnot:engine:externalInvocationType", PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH); 
          }
       }
       else
       {
          getModelBuilderFacade().setAttribute(processDefinition,
-               "carnot:engine:externalInvocationType", "BOTH"); 
+               "carnot:engine:externalInvocationType", PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH); 
       }
 
       // TODO Find out flag
