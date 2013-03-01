@@ -274,7 +274,7 @@ public void init()
                else if (obj[j] instanceof AggregateActivityColumnItem)
                {
                   aggregateActivityColumnItem = (AggregateActivityColumnItem) obj[j];
-
+                  
                   trafficLightDyna.add(new TrafficLightViewDynamicUserObject(aggregateActivityColumnItem.getId(),
                         aggregateActivityColumnItem.getQualifiedId(), Integer.toString(aggregateActivityColumnItem
                               .getCompleted()), aggregateActivityColumnItem.getSymbolUrl(), aggregateActivityColumnItem
@@ -479,6 +479,8 @@ public void init()
       ActivityInstance aInstance;
       IColumnItem columnItem;
       Long totalCount;
+      //Calcualte the pending activities count for all rows
+      int pendingActivityCount = 0;
       for (int i = 0; i < rows.size(); i++)
       {
 
@@ -506,6 +508,10 @@ public void init()
                      columnItem.addCompletedActivity();
                      columnItem.addActivityInstance(aInstance);
                   }
+                  else
+                  {
+                     pendingActivityCount+= pendingActivityCount+1;
+                  }
                }
 
                if (value == null && UNDEFINED_ROW_ITEM_ID.equals(categoryValue))
@@ -517,6 +523,10 @@ public void init()
                   {
                      columnItem.addCompletedActivity();
                      columnItem.addActivityInstance(aInstance);
+                  }
+                  else
+                  {
+                     pendingActivityCount+= pendingActivityCount+1;
                   }
                   
                }
@@ -567,6 +577,7 @@ public void init()
             {
                AggregateActivityColumnItem aggregateActivity = (AggregateActivityColumnItem) columnItem;
                aggregateActivity.addTotalActivityCnt();
+               aggregateActivity.setPendingActivityCnt(pendingActivityCount);
             }
          }
 
