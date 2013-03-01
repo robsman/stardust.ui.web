@@ -193,7 +193,7 @@ public class ConnectionCommandHandler
                getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
-                     getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid),
+                     getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
                      request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY)
                            .has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
