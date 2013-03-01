@@ -113,61 +113,29 @@ define(
 				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
+					var mappings = [];
 					if (this.documentDataList.val() != null
 							&& this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
-						var data = m_model
-								.findData(this.documentDataList.val());
-						var participantFullId = this.page.getElement().parentSymbol.participantFullId;
-						var modelId = null;
-						var participantId = null;
-						var participantAttribute = null;
+						var data = m_model.findData(this.documentDataList.val());
+						mappings = [ {
+							id : data.id,
+							name : data.name,
+							direction : m_constants.OUT_ACCESS_POINT,
+							dataType : "dmsDocument",
+							dataFullId : this.documentDataList.val()
+						} ];
+					}
 
-						if (participantFullId) {
-							modelId = m_model.stripModelId(participantFullId);
-							participantId = m_model
-									.stripElementId(participantFullId);
-
-							if (modelId == this.scopeModel.id) {
-								participantAttribute = participantId;
-							} else {
-								participantAttribute = "{" + modelId + "}"
-										+ participantId;
+					this.submitChanges({
+						modelElement : {
+							participantFullId : this.page.getElement().parentSymbol.participantFullId,
+							parameterMappings : mappings,
+							implementation : this.getImplementation(),
+							attributes : {
+								"carnot:engine:integration::overlay" : this.id
 							}
 						}
-
-						this
-								.submitChanges({
-									modelElement : {
-										parameterMappings : [ {
-											id : data.id,
-											name : data.name,
-											direction : m_constants.OUT_ACCESS_POINT,
-											dataType : "dmsDocument",
-											dataFullId : this.documentDataList
-													.val()
-										} ],
-										implementation : this
-												.getImplementation(),
-										attributes : {
-											"carnot:engine:integration::overlay" : this.id,
-											"carnot:engine:participant" : participantAttribute
-										}
-									}
-								});
-					} else {
-						this
-								.submitChanges({
-									modelElement : {
-										parameterMappings : [],
-										implementation : this
-												.getImplementation(),
-										attributes : {
-											"carnot:engine:integration::overlay" : this.id,
-											"carnot:engine:participant" : participantAttribute
-										}
-									}
-								});
-					}
+					});
 				};
 
 				/**
