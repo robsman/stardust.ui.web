@@ -56,10 +56,14 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.parameters"));
-					jQuery("label[for='fileOrDirectoryNameInput']")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.fileEvent.fileOrDirectoryName"));
+					jQuery("label[for='directoryNameInput']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.fileEvent.directoryName"));
+			        jQuery("label[for='fileNameInput']")
+			        		.text(
+			        				m_i18nUtils
+			        						.getProperty("modeler.element.properties.fileEvent.fileName"));
 					jQuery("label[for='recursiveInput']")
 							.text(
 									m_i18nUtils
@@ -77,8 +81,8 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.alwaysConsume"));
 
-					this.fileOrDirectoryNameInput = this
-							.mapInputId("fileOrDirectoryNameInput");
+					this.directoryNameInput = this.mapInputId("directoryNameInput");
+					this.fileNameInput = this.mapInputId("fileNameInput");
 					this.recursiveInput = this.mapInputId("recursiveInput");
 					this.initialIntervalInput = this
 							.mapInputId("initialIntervalInput");
@@ -101,7 +105,8 @@ define(
 					this.alwaysConsumeInput = this
 							.mapInputId("alwaysConsumeInput");
 
-					this.registerForRouteChanges(this.fileOrDirectoryNameInput);
+					this.registerForRouteChanges(this.directoryNameInput);
+					this.registerForRouteChanges(this.fileNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
 					this.registerForRouteChanges(this.initialIntervalInput);
 					this
@@ -118,14 +123,18 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.getEndpointUri = function() {
 					var uri = "file://";
-					// if(this.fileOrDirectoryNameInput!=null &&
-					// this.fileOrDirectoryNameInput.val()!="Please specify
-					// ..."){
-					uri += this.fileOrDirectoryNameInput.val();
-					// }
-
+					//if(this.fileOrDirectoryNameInput!=null && this.fileOrDirectoryNameInput.val()!="Please specify ..."){
+						uri += this.directoryNameInput.val();
+					//}
+					
 					var separator = "?";
-
+					
+					if(this.fileNameInput != null && this.fileNameInput.val().length != 0){
+						uri += separator + "fileName="+this.fileNameInput.val();
+						separator = "&";
+						
+					}
+					
 					if (this.recursiveInput.is(":checked") == true) {
 						uri += separator + "recursive="
 								+ this.recursiveInput.is(":checked");
@@ -189,7 +198,7 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.activate = function() {
-					this.fileOrDirectoryNameInput.val(m_i18nUtils
+					this.directoryNameInput.val(m_i18nUtils
 							.getProperty("modeler.general.toBeDefined"));
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
@@ -255,7 +264,7 @@ define(
 
 					if (uri[1] != null) {
 						uri = uri[1].split("?");
-						this.fileOrDirectoryNameInput.val(uri[0]);
+						this.directoryNameInput.val(uri[0]);
 
 						if (uri[1] != null) {
 							var options = uri[1].split("&");
@@ -269,7 +278,9 @@ define(
 									var name = option[0];
 									var value = option[1];
 
-									if (name == "recursive") {
+									if (name == "fileName") {
+										this.fileNameInput.val(value);
+									}else if (name == "recursive") {
 										this.recursiveInput.prop("checked",
 												value);
 									} else if (name == "initialDelay") {
@@ -322,13 +333,13 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.validate = function() {
-					this.fileOrDirectoryNameInput.removeClass("error");
+					this.directoryNameInput.removeClass("error");
 
-					if (this.fileOrDirectoryNameInput.val() == null
-							|| this.fileOrDirectoryNameInput.val() == "") {
+					if (this.directoryNameInput.val() == null
+							|| this.directoryNameInput.val() == "") {
 						this.page.propertiesPanel.errorMessages
-								.push("File or directory name must not be empty.");
-						this.fileOrDirectoryNameInput.addClass("error");
+								.push("Directory name must not be empty.");
+						this.directoryNameInput.addClass("error");
 
 						this.page.propertiesPanel.showErrorMessages();
 
