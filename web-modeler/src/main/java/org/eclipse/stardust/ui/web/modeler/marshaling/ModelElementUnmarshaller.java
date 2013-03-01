@@ -24,13 +24,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
@@ -56,8 +50,6 @@ import org.eclipse.xsd.impl.XSDSchemaImpl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
