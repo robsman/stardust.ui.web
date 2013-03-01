@@ -57,6 +57,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -1689,7 +1691,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          System.out.println("===> Implementation: " + trigger.getType());
       }
 
-      storeAttributes(trigger, triggerJson);
+      if (isManualTrigger(trigger))
+      {
+         storeAttributes(trigger, triggerJson);
+      }
+      else // remove participant if set
+      {
+         AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, null);
+         storeAttributes(trigger, triggerJson, PredefinedConstants.PARTICIPANT_ATT);
+      }
       storeDescription(trigger, triggerJson);
 
       // A few BPMN properties
@@ -1722,20 +1732,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (triggerJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
       {
-         String participantFullId = extractString(triggerJson,
-               ModelerConstants.PARTICIPANT_FULL_ID);
+         String participantFullId = extractString(triggerJson, ModelerConstants.PARTICIPANT_FULL_ID);
 
-         if (participantFullId != null)
+         if (participantFullId != null && isManualTrigger(trigger))
          {
-            IModelParticipant performer = getModelBuilderFacade().findParticipant(
-                  participantFullId);
-
-            getModelBuilderFacade().setAttribute(trigger,
-                  PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, performer.getId());
-            AttributeType attribute = AttributeUtil.getAttribute(trigger,
-                  PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT);
-            ModelUtils.setReference(attribute, ModelUtils.findContainingModel(trigger),
-                  "role+organization");
+            IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
+            AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
          }
       }
 
@@ -1813,6 +1815,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
          }
       }
+   }
+
+   private boolean isManualTrigger(TriggerType trigger)
+   {
+      return trigger.getType() == null
+            || PredefinedConstants.MANUAL_TRIGGER.equals(trigger.getType().getId())
+            || PredefinedConstants.SCAN_TRIGGER.equals(trigger.getType().getId());
    }
 
    /**
@@ -2736,7 +2745,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param element
     * @throws JSONException
     */
-   private void storeAttributes(EObject element, JsonObject json)
+   private void storeAttributes(EObject element, JsonObject json, String... excludedKeys)
    {
       // Extract JSON elements which are stored in Extended Attributes
 
@@ -2760,9 +2769,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (attributes != null)
       {
+         List<String> excluded = Arrays.asList(excludedKeys);
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
             String key = entry.getKey();
+            if (excluded.contains(key))
+            {
+               continue;
+            }
 
             if (attributes.get(key).isJsonNull())
             {
