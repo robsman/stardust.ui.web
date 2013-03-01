@@ -17,6 +17,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 
@@ -59,7 +60,13 @@ public class MyProcessesModel
 
    public String getTotalCount()
    {
-      return Long.toString(ProcessWorklistCacheManager.getInstance().getWorklistCount(processDefinition));
+      Long totalCount = ProcessWorklistCacheManager.getInstance().getWorklistCount(processDefinition);
+      Long totalCountThreshold = ProcessWorklistCacheManager.getInstance().getWorklistCountThreshold(processDefinition);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
    }
 
    public String getName()

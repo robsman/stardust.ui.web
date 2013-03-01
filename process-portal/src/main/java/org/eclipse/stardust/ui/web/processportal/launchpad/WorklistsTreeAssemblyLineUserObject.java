@@ -88,8 +88,8 @@ public class WorklistsTreeAssemblyLineUserObject extends WorklistsTreeUserObject
       return worklistsBean.isAssemblyLineMode();
    }
    
-   public long getActivityCount()
+   public String getActivityCount()
    {
-      return activityCount;
+      return Long.valueOf(activityCount).toString();
    }
 }

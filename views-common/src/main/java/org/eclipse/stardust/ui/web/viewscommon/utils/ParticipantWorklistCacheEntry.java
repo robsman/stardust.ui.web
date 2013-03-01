@@ -22,6 +22,7 @@ public class ParticipantWorklistCacheEntry implements Serializable
 {
    private static final long serialVersionUID = 7571234851632442390L;
    private long count;
+   private long totalCountThreshold;
    private WorklistQuery worklistQuery;
 
    /**
@@ -33,6 +34,16 @@ public class ParticipantWorklistCacheEntry implements Serializable
       this.count = count;
       this.worklistQuery = worklistQuery;
    }
+   
+   /**
+    * @param count
+    * @param worklistQuery
+    */
+   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, long totalCountThreshold)
+   {
+      this(count,worklistQuery);
+      this.totalCountThreshold = totalCountThreshold;
+   }
 
    public long getCount()
    {
@@ -42,6 +53,16 @@ public class ParticipantWorklistCacheEntry implements Serializable
    public void setCount(long count)
    {
       this.count = count;
+   }
+
+   public long getTotalCountThreshold()
+   {
+      return totalCountThreshold;
+   }
+
+   public void setTotalCountThreshold(long totalCountThreshold)
+   {
+      this.totalCountThreshold = totalCountThreshold;
    }
 
    public WorklistQuery getWorklistQuery()

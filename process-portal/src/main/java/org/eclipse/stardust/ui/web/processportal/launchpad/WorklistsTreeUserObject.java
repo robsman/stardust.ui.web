@@ -22,6 +22,7 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 
@@ -101,9 +102,17 @@ public class WorklistsTreeUserObject extends IceUserObject
       return style;
    }
 
-   public long getActivityCount()
+   public String getActivityCount()
    {
-      return ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo);
+      Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo);
+      Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
+            participantInfo);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
+
    }
 
    public boolean isDisabled()

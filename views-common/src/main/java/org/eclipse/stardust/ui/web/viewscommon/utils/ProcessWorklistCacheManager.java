@@ -83,9 +83,9 @@ public class ProcessWorklistCacheManager implements InitializingBean
       for (ProcessDefinition processDefinition : processDefs)
       {
          ais = WorklistUtils.getActivityInstances_anyActivatableByProcess(processDefinition);
-
+         
          processDefinitions.put(processDefinition.getQualifiedId(), processDefinition);
-         processWorklists.put(processDefinition, new ProcessWorklistCacheEntry(ais.getTotalCount(), ais.getQuery()));
+         processWorklists.put(processDefinition, new ProcessWorklistCacheEntry(ais.getTotalCount(), ais.getQuery(), ais.getTotalCountThreshold()));
       }
 
       // printCache("reset()");
@@ -107,6 +107,24 @@ public class ProcessWorklistCacheManager implements InitializingBean
       }
 
       return 0;
+   }
+   
+   /**
+    * @param processDefinition
+    * @return
+    */
+   public long getWorklistCountThreshold(ProcessDefinition processDefinition)
+   {
+      // Get the Process Definition object from the first Map (using id) since
+      // ProcessDefinition does not implement equals()
+      ProcessDefinition processDefinitionKey = processDefinitions.get(processDefinition.getQualifiedId());
+      ProcessWorklistCacheEntry processWorklistCacheEntry = processWorklists.get(processDefinitionKey);
+      if (null != processWorklistCacheEntry)
+      {
+         return processWorklistCacheEntry.getTotalCountThreshold();
+      }
+
+      return Long.MAX_VALUE;
    }
 
    /**

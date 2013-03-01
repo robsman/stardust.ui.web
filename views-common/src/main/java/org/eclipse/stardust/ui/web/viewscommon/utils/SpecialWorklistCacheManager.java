@@ -73,11 +73,13 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
    {
       worklists = new LinkedHashMap<String, ProcessWorklistCacheEntry>();
       ActivityInstances result = WorklistUtils.getAllAssignedActivities();
-      worklists.put(ALL_ACTVITIES, new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery()));
+      worklists.put(ALL_ACTVITIES,
+            new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery(), result.getTotalCountThreshold()));
       definedHighCriticality = CriticalityConfigurationHelper.getInstance().getCriticality(
             CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX);
       result = WorklistUtils.getCriticalActivities(definedHighCriticality);
-      worklists.put(CRITICAL_ACTVITIES, new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery()));
+      worklists.put(CRITICAL_ACTVITIES,
+            new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery(), result.getTotalCountThreshold()));
       initialized = true;
    }
 
@@ -88,6 +90,15 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
    public long getWorklistCount(String worklistName)
    {
       return worklists.get(worklistName).getCount();
+   }
+   
+   /**
+    * @param worklistName
+    * @return
+    */
+   public long getWorklistCountThreshold(String worklistName)
+   {
+      return worklists.get(worklistName).getTotalCountThreshold();
    }
 
    /**
