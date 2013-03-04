@@ -128,8 +128,10 @@ import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -2062,7 +2064,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             // TODO adjust cross references
 
             // adjust underlying DOM
-            schema.updateElement(true);
+            schema.updateElement(true);            
+            
+            TypeDeclarationsType container = (TypeDeclarationsType) typeDeclaration.eContainer();            
+            for(TypeDeclarationType decl : container.getTypeDeclaration())
+            {
+               if(!decl.equals(typeDeclaration))
+               {
+                  XpdlTypeType type = decl.getDataType();
+                  if(TypeDeclarationUtils.fixImport(decl, typeDeclaration.getId(), oldId) && type instanceof SchemaTypeType)
+                  {
+                     TypeDeclarationUtils.updateTypeDefinition(decl, typeDeclaration.getId(), oldId);            
+                  }
+               }
+            }      
          }
 
          // TODO
