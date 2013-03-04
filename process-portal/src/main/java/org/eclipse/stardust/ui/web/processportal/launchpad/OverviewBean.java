@@ -242,7 +242,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    {
       Long totalCount = SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.ALL_ACTVITIES);
       Long totalCountThreshold = SpecialWorklistCacheManager.getInstance().getWorklistCountThreshold(SpecialWorklistCacheManager.ALL_ACTVITIES);
-      if(totalCount < Long.MAX_VALUE && totalCount > -1)
+      if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
          return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
@@ -253,7 +253,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    {
       Long totalCount =  SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
       Long totalCountThreshold = SpecialWorklistCacheManager.getInstance().getWorklistCountThreshold(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
-      if(totalCount < Long.MAX_VALUE && totalCount > -1)
+      if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
          return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
@@ -306,7 +306,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
             SessionContext.findSessionContext().getUser());
       Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
             SessionContext.findSessionContext().getUser());
-      if(totalCount < Long.MAX_VALUE && totalCount > -1)
+      if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
          return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",

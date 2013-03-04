@@ -107,7 +107,7 @@ public class WorklistsTreeUserObject extends IceUserObject
       Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo);
       Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
             participantInfo);
-      if (totalCount < Long.MAX_VALUE && totalCount > -1)
+      if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
          return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",

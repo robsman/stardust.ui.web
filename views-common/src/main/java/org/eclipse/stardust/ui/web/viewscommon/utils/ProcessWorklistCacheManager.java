@@ -124,7 +124,7 @@ public class ProcessWorklistCacheManager implements InitializingBean
          return processWorklistCacheEntry.getTotalCountThreshold();
       }
 
-      return Long.MAX_VALUE;
+      return 0;
    }
 
    /**

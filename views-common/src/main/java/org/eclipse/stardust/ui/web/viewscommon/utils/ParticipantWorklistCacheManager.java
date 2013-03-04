@@ -111,8 +111,8 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          return cacheEntry.getTotalCountThreshold();
       }
-      
-      return Long.MAX_VALUE;
+
+      return 0;
    }
 
    /**

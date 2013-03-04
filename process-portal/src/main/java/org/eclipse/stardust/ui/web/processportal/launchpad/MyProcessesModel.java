@@ -62,7 +62,7 @@ public class MyProcessesModel
    {
       Long totalCount = ProcessWorklistCacheManager.getInstance().getWorklistCount(processDefinition);
       Long totalCountThreshold = ProcessWorklistCacheManager.getInstance().getWorklistCountThreshold(processDefinition);
-      if (totalCount < Long.MAX_VALUE && totalCount > -1)
+      if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
          return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
