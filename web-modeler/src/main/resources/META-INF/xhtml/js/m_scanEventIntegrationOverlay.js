@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -31,7 +31,7 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function ScanEventIntegrationOverlay() {
 				var eventIntegrationOverlay = m_eventIntegrationOverlay
@@ -42,7 +42,7 @@ define(
 						eventIntegrationOverlay);
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
@@ -62,14 +62,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.getImplementation = function() {
 					return "scan";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.setDocumentData = function() {
 					this.metadataStructureLabel.empty();
@@ -81,21 +81,32 @@ define(
 						this.documentDataList
 								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
 
-						var data = m_model
-								.findData(this.documentDataList.val());
-						if (data.structuredDataTypeFullId) {
-							var structuredDataType = m_model
-									.findTypeDeclaration(data.structuredDataTypeFullId);
-							var model = m_model.findModel(m_model
-									.stripModelId(structuredDataType
-											.getFullId()));
+						m_utils.debug("Compare: " + this.page.getModelElement().parameterMappings[0].dataFullId + " with " +
+								m_model
+								.getFullId(this.scopeModel,
+										"PROCESS_ATTACHMENTS"));
 
-							if (model.id == this.scopeModel.id) {
-								this.metadataStructureLabel
-										.append(structuredDataType.name);
-							} else {
-								this.metadataStructureLabel.append(model.name
-										+ "/" + structuredDataType.name);
+						if (this.page.getModelElement().parameterMappings[0].dataFullId != m_model
+								.getFullId(this.scopeModel,
+										"PROCESS_ATTACHMENTS")) {							
+							var data = m_model.findData(this.documentDataList
+									.val());
+
+							if (data.structuredDataTypeFullId) {
+								var structuredDataType = m_model
+										.findTypeDeclaration(data.structuredDataTypeFullId);
+								var model = m_model.findModel(m_model
+										.stripModelId(structuredDataType
+												.getFullId()));
+
+								if (model.id == this.scopeModel.id) {
+									this.metadataStructureLabel
+											.append(structuredDataType.name);
+								} else {
+									this.metadataStructureLabel
+											.append(model.name + "/"
+													+ structuredDataType.name);
+								}
 							}
 						} else {
 							this.metadataStructureLabel
@@ -110,36 +121,51 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
 					var mappings = [];
 					if (this.documentDataList.val() != null
 							&& this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
-						var data = m_model.findData(this.documentDataList.val());
-						mappings = [ {
-							id : data.id,
-							name : data.name,
-							direction : m_constants.OUT_ACCESS_POINT,
-							dataType : "dmsDocument",
-							dataFullId : this.documentDataList.val()
-						} ];
+						if (this.documentDataList.val() == m_model.getFullId(
+								this.scopeModel.id, "PROCESS_ATTACHMENTS")) {
+							mappings = [ {
+								id : "PROCESS_ATTACHMENTS",
+								name : "Process Attachments",
+								direction : m_constants.OUT_ACCESS_POINT,
+								dataType : "dmsDocumentList",
+								dataFullId : m_model.getFullId(
+										this.scopeModel.id,
+										"PROCESS_ATTACHMENTS")
+							} ];
+						} else {
+							var data = m_model.findData(this.documentDataList
+									.val());
+							mappings = [ {
+								id : data.id,
+								name : data.name,
+								direction : m_constants.OUT_ACCESS_POINT,
+								dataType : "dmsDocument",
+								dataFullId : this.documentDataList.val()
+							} ];
+						}
 					}
 
-					this.submitChanges({
-						modelElement : {
-							participantFullId : this.page.getElement().parentSymbol.participantFullId,
-							parameterMappings : mappings,
-							implementation : this.getImplementation(),
-							attributes : {
-								"carnot:engine:integration::overlay" : this.id
-							}
-						}
-					});
+					this
+							.submitChanges({
+								modelElement : {
+									participantFullId : this.page.getElement().parentSymbol.participantFullId,
+									parameterMappings : mappings,
+									implementation : this.getImplementation(),
+									attributes : {
+										"carnot:engine:integration::overlay" : this.id
+									}
+								}
+							});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.populateDataItemsList = function() {
 					this.documentDataList.empty();
@@ -157,6 +183,12 @@ define(
 										+ m_i18nUtils
 												.getProperty("modeler.element.properties.commonProperties.thisModel")
 										+ "\">");
+
+						this.documentDataList.append("<option value='"
+								+ m_model.getFullId(this.scopeModel,
+										"PROCESS_ATTACHMENTS") + "'>"
+								+ m_i18nUtils.getProperty("modeler.element.properties.scanEvent.processAttachmentsOption.label")
+								+ "</option>");
 
 						for ( var i in this.scopeModel.dataItems) {
 							var dataItem = this.scopeModel.dataItems[i];
@@ -196,14 +228,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.activate = function() {
 					this.submitOverlayChanges();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.update = function() {
 					m_utils.debug("Scan Trigger");
@@ -217,7 +249,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				ScanEventIntegrationOverlay.prototype.validate = function() {
 					return true;
