@@ -23,9 +23,14 @@
       <conf name="ipp-administration-perspective-provided" description="Administration Portal - Provided Scope" />
       
       <conf name="ipp-administration-perspective-sources" description="Administration Portal - Sources" />      
-      <conf name="compile" extends="ipp-administration-perspective-compile" visibility="private" description="Administration Portal" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-administration-perspective-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-administration-perspective-compile" />
+      <conf name="runtime" visibility="private" extends="ipp-administration-perspective-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
       
       <conf name="pom" description="Administration Portal POMs" />
    </configurations>
@@ -60,13 +65,9 @@
       <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
-
-<!--
-      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
-      <override org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
-      <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
-      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
--->
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
    </dependencies>
 </ivy-module>

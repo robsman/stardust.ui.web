@@ -161,7 +161,7 @@
       <copy file="${web.modeler.jar}" todir="${stardust.dir}/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
    </target>
 
-   <target name="deploy" depends="build" />
+   <target name="deploy" depends="build,dependencies:report" />
 
    <target name="install" if="maven.localRepository" depends="initBuild"
       description="installs the artifacts into a local Maven repository">
@@ -191,4 +191,10 @@
          </fileset>
       </copy>
    </target>
+
+   <target name="dependencies:report" depends="init,initIvy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
 </project>

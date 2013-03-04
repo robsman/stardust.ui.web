@@ -24,9 +24,13 @@
       
       <conf name="ipp-persistence-jpa-sources" description="Portal Persistence JPA - Sources" />
    
-      <conf name="compile" extends="ipp-persistence-jpa-compile, ipp-persistence-jpa-provided" visibility="private" description="Portal Persistence JPA" />
-      
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-persistence-jpa-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-persistence-jpa-compile" />
+      <conf name="runtime" visibility="private" extends="ipp-persistence-jpa-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
       
       <conf name="pom" description="Portal Persistence JPA POMs" />
    </configurations>
@@ -52,7 +56,10 @@
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-persistence-jpa-provided->jta-api-module-compile"/>
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
    </dependencies>
    
 </ivy-module>
