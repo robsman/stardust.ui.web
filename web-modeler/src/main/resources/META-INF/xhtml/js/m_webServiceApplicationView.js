@@ -605,6 +605,8 @@ define(
 							.val()].ports[this.portSelect.val()].operations[operationName];
 					this.useOutput.empty();
 					this.useOutput.append(operation.use);
+					this.protocolOutput.empty();
+					this.protocolOutput.append(operation["carnot:engine:wsSoapProtocol"]);
 
 					if (!initializing
 							&& (this.serviceSelect.val() != this.application.attributes["carnot:engine:wsServiceName"]
