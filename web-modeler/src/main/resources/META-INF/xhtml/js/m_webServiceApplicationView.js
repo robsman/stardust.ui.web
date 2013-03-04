@@ -215,7 +215,7 @@ define(
 									},
 									function(event) {
 										event.data.view
-												.setService(event.data.view.serviceSelect
+												.setWebService(event.data.view.serviceSelect
 														.val());
 									});
 					this.portSelect.change({
