@@ -124,7 +124,7 @@ public class ProcessWorklistCacheManager implements InitializingBean
          return processWorklistCacheEntry.getTotalCountThreshold();
       }
 
-      return 0;
+      return Long.MAX_VALUE;
    }
 
    /**
@@ -181,14 +181,15 @@ public class ProcessWorklistCacheManager implements InitializingBean
          if (ActivityEvent.ACTIVATED.equals(event.getType()))
          {
             // oldAi can be null if it's the first AI of PI is Activated
-            if (null == oldAi)
+            if (null == oldAi && entry.getCount() < Long.MAX_VALUE)
             {
                entry.setCount(entry.getCount() + 1);
             }
          }
          else if (ActivityEvent.ABORTED.equals(event.getType()) || ActivityEvent.COMPLETED.equals(event.getType()))
          {
-            entry.setCount(entry.getCount() - 1);
+            if (entry.getCount() < entry.getTotalCountThreshold())
+               entry.setCount(entry.getCount() - 1);
          }
       }
 

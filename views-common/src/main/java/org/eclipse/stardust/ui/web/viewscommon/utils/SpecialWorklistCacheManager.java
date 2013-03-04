@@ -134,9 +134,11 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
          // oldAi can be null if it's the first AI of PI is Activated
          if (null == oldAi)
          {
-            allActivities.setCount(allActivities.getCount() + 1);
-
-            if (isActivityCritical(event.getActivityInstance()))
+            if (allActivities.getCount() < Long.MAX_VALUE)
+            {
+               allActivities.setCount(allActivities.getCount() + 1);
+            }
+            if (isActivityCritical(event.getActivityInstance()) && criticialActivities.getCount() < Long.MAX_VALUE)
             {
                criticialActivities.setCount(criticialActivities.getCount() + 1);
             }
@@ -144,9 +146,11 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
       }
       else if (ActivityEvent.ABORTED.equals(event.getType()) || ActivityEvent.COMPLETED.equals(event.getType()))
       {
-         allActivities.setCount(allActivities.getCount() - 1);
-
-         if (isActivityCritical(oldAi))
+         if (allActivities.getCount() < Long.MAX_VALUE)
+         {
+            allActivities.setCount(allActivities.getCount() - 1);
+         }
+         if (isActivityCritical(oldAi) && criticialActivities.getCount() < Long.MAX_VALUE)
          {
             criticialActivities.setCount(criticialActivities.getCount() - 1);
          }

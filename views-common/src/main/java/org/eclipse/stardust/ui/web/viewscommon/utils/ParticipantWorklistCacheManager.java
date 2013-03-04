@@ -112,7 +112,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
          return cacheEntry.getTotalCountThreshold();
       }
 
-      return 0;
+      return Long.MAX_VALUE;
    }
 
    /**
@@ -166,7 +166,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
                .getCurrentPerformer()));
-         if (null != oldEntry)
+         if (null != oldEntry && oldEntry.getCount() < oldEntry.getTotalCountThreshold())
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
          }
@@ -178,7 +178,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          ParticipantWorklistCacheEntry newEntry = participantWorklists.get(new ParticipantInfoWrapper(newAi
                .getCurrentPerformer()));
-         if (null != newEntry)
+         if (null != newEntry && newEntry.getCount() < Long.MAX_VALUE)
          {
             newEntry.setCount(newEntry.getCount() + 1);
          }
