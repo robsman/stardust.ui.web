@@ -111,7 +111,7 @@ define(
 					this.registerForRouteChanges(this.initialIntervalInput);
 					this
 							.registerForRouteChanges(this.initialIntervalUnitSelect);
-					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
+					this.registerForRouteChanges(this.repeatIntervalInput);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.lockBehaviorSelect);
 					this.registerForRouteChanges(this.postProcessingSelect);
