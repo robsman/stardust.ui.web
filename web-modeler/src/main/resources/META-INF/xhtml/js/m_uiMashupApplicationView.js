@@ -10,7 +10,7 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
@@ -18,7 +18,7 @@ define(
 				"bpm-modeler/js/m_codeEditorAce",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_markupGenerator" ],
-		function(m_utils, m_constants, m_urlUtils, m_command,
+		function(m_utils, m_constants, m_urlUtils, m_session, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_dataTypeSelector, m_parameterDefinitionsPanel, m_codeEditorAce, m_i18nUtils,
 				m_markupGenerator) {
@@ -160,12 +160,6 @@ define(
 				parameterDefinitionDirectionSelect
 						.append("<option value=\"OUT\">" + selectdata
 								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.direction.inOut");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"INOUT\">" + selectdata
-								+ "</option>");
 			}
 			/**
 			 * 
@@ -191,7 +185,6 @@ define(
 					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
 					this.markupTextarea = jQuery("#markupTextareaDiv");
 					this.urlInput = jQuery("#urlInput");
-					this.applicationFrame = jQuery("#applicationFrame");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -200,7 +193,11 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,								
+								tableWidth : "500px",
+								directionColumnWidth : "50px",
+								nameColumnWidth : "250px",
+								typeColumnWidth : "200px"
 							});
 
 					var self = this;
@@ -237,6 +234,13 @@ define(
 						}
 						event.data.view.submitEmbeddedModeChanges();
 					});*/
+					
+					this.generateTable = jQuery("#generateTable");
+					
+					if (!m_session.getInstance().technologyPreview) {
+						m_dialog.makeInvisible(this.generateTable);
+					}
+
 					this.generateMarkupForJQueryLink.click({
 						view : this
 					}, function(event) {
@@ -297,163 +301,6 @@ define(
 														}
 													});
 										}
-									});
-
-					jQuery("#runButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTable = jQuery("#outputDataTable");
-
-										outputDataTable.empty();
-
-										// Send input data
-
-										jQuery
-												.ajax(
-														{
-															type : "POST",
-															url : m_urlUtils
-																	.getModelerEndpointUrl()
-																	+ "/interactions/4711/inData",
-															contentType : "application/json",
-															data : inputDataTextarea
-																			.val()
-														})
-												.done(
-														function() {
-															// Refresh external
-															// UI
-
-															if (view
-																	.isEmbeddedConfiguration()) {
-																var url = m_urlUtils
-																		.getModelerEndpointUrl()
-																		+ "/models/"
-																		+ view
-																				.getModel().id
-																		+ "/embeddedWebApplication/"
-																		+ view
-																				.getApplication().id
-																		+ "?ippPortalBaseUri="
-																		+ m_urlUtils
-																				.getModelerEndpointUrl() + "/interactions/4711";
-																m_utils
-																		.debug("===> URL for Embedded");
-																m_utils
-																		.debug(url);
-
-																view.applicationFrame
-																		.attr(
-																				"src",
-																				url);
-															} else {
-																view.applicationFrame
-																		.attr(
-																				"src",
-																				view.urlInput
-																						.val()
-																						+ "?ippPortalBaseUri="
-																						+ m_urlUtils
-																								.getModelerEndpointUrl() + "/interactions/4711");
-															}
-														})
-												.fail(
-														function() {
-															view.applicationFrame
-																	.attr(
-																			"src",
-																			"");
-														});
-									});
-					jQuery("#resetButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTextarea = jQuery("#outputDataTextarea");
-
-										inputDataTextarea.empty();
-										outputDataTextarea.empty();
-
-										var inputData = "{";
-
-										for ( var n = 0; n < view
-												.getApplication().contexts["externalWebApp"].accessPoints.length; ++n) {
-											var parameterDefinition = view
-													.getApplication().contexts["externalWebApp"].accessPoints[n];
-
-											m_utils
-													.debug("Parameter Definition");
-											m_utils.debug(parameterDefinition);
-
-											if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT) {
-												continue;
-											}
-
-											if (n > 0) {
-												inputData += ","
-											}
-
-											if (parameterDefinition.dataType == "struct") {
-												var typeDeclaration = m_model
-														.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-
-												m_utils
-														.debug("Type Declaration");
-												m_utils.debug(typeDeclaration);
-
-												inputData += parameterDefinition.id;
-												inputData += ": ";
-												inputData += JSON
-														.stringify(
-																typeDeclaration
-																		.createInstance(),
-																null, 3);
-											} else {
-												// Deal with primitives and
-												// other types
-											}
-										}
-
-										inputData += "}";
-
-										inputDataTextarea.append(inputData);
-									});
-					jQuery("#retrieveButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										var outputDataTextarea = jQuery("#outputDataTextarea");
-
-										jQuery
-												.ajax(
-														{
-															type : "GET",
-															url : m_urlUtils
-																	.getModelerEndpointUrl()
-																	+ "/interactions/4711/outData",
-															contentType : "application/json"
-														})
-												.done(
-														function(data) {
-															outputDataTextarea
-																	.val(JSON
-																			.stringify(data));
-														}).fail(function() {
-												});
 									});
 
 					this.initializeModelElementView(application);
@@ -615,10 +462,13 @@ define(
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
+					// Context is regenerated on the server - hence, all data need to be provided
+					
 					this.submitChanges({
 						contexts : {
 							"externalWebApp" : {
-								accessPoints : parameterDefinitionsChanges
+								accessPoints : parameterDefinitionsChanges,
+								attributes: this.getContext().attributes
 							}
 						}
 					});
@@ -628,9 +478,6 @@ define(
 				 * 
 				 */
 				UiMashupApplicationView.prototype.generateMarkupForJQuery = function() {
-					m_utils.debug("Generating");
-					m_utils.debug(this.getContext());
-
 					return m_markupGenerator
 							.generateMarkup(this.getContext().accessPoints);
 				}

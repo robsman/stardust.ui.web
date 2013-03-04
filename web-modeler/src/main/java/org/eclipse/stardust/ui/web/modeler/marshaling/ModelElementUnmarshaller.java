@@ -1924,15 +1924,33 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                         accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
                               context, id, name, structuredDataFullId, direction);
+                        
                         TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
-                        if(typeDeclaration != null)
+                      
+                        if (typeDeclaration != null)
                         {
                            StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
                         }
                      }
                      else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                      {
-                        // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+                        accessPoint = getModelBuilderFacade().createDocumentAccessPoint(context, id, name, direction);
+                        
+                        String structuredDataFullId = null;
+
+                        if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        {
+                           structuredDataFullId = accessPointJson.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString();
+
+                           TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
+                           
+                           if (typeDeclaration != null)
+                           {
+                              StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
+                           }
+                        }
                      }
                   }
 

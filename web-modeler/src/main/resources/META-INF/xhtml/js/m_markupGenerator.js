@@ -115,16 +115,16 @@ define(
 					m_utils.debug(parameterDefinition);
 
 					var readonly = (parameterDefinition.direction == m_constants.IN_ACCESS_POINT);
-					
+
 					m_utils.debug("readonly = " + readonly);
 
 					if (parameterDefinition.dataType == "primitive") {
 						generateRowForPrimitive(
 								parameterDefinition.primitiveDataType,
 								parameterDefinition.id,
-								parameterDefinition.name,
-								readonly);
-					} else if (parameterDefinition.dataType == "struct") {
+								parameterDefinition.name, readonly);
+					} else if (parameterDefinition.dataType == "struct"
+							|| parameterDefinition.dataType == "dmsDocument") {
 						writeTag("<tr>");
 						indentUp();
 						writeTag("<td>");
@@ -133,8 +133,7 @@ define(
 						indentDown();
 						writeTag("</tr>");
 					} else {
-						// Deal
-						// other types
+						// Deal with primitives
 					}
 				}
 
@@ -174,18 +173,21 @@ define(
 				m_utils.debug(type);
 
 				var disabled = readonly ? "disabled" : "";
-				
+
 				if (type === "xsd:boolean") {
 					writeTag("<input id='" + path
-							+ "Input' type='checkbox' class='input' " + disabled + ">");
+							+ "Input' type='checkbox' class='input' "
+							+ disabled + ">");
 				} else if (type === "xsd:int" || type === "xsd:integer") {
 					writeTag("<input id='"
 							+ path
-							+ "Input' type='text' class='input integerInputField' " + disabled + ">");
+							+ "Input' type='text' class='input integerInputField' "
+							+ disabled + ">");
 				} else {
 					writeTag("<input id='"
 							+ path
-							+ "Input' type='text' class='input stringInputField' " + disabled + ">");
+							+ "Input' type='text' class='input stringInputField' "
+							+ disabled + ">");
 				}
 			}
 
@@ -234,7 +236,8 @@ define(
 							writeTag("</tr>");
 						} else {
 							generatorRowForEnumeration(childTypeDeclaration,
-									path + "-" + element.name, element.name, readonly);
+									path + "-" + element.name, element.name,
+									readonly);
 						}
 					} else {
 						generateRowForPrimitive(element.type, path + "-"
@@ -258,7 +261,7 @@ define(
 				indentUp();
 
 				var disabled = readonly ? "disabled" : "";
-				
+
 				writeTag("<select id='" + path + "Input' " + disabled + ">");
 				indentUp();
 
