@@ -11,10 +11,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditor", "bpm-modeler/js/m_i18nUtils"],
+				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
-				m_modelElementView, m_codeEditor, m_i18nUtils) {
+				m_modelElementView, m_codeEditorAce, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new MessageTransformationApplicationView();
@@ -90,7 +90,7 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.toolTip.highlighted"));
-				
+
 				// Configuration - Target
 				jQuery("#targetmessage")
 						.text(
@@ -209,7 +209,7 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
-				
+
 				// Index Configuration pop-up dialog
 				jQuery("#idx-sourcemessage")
 						.text(
@@ -287,7 +287,6 @@ define(
 					this.targetFilterInput = jQuery("#targetFilterInput");
 					this.outputTable = jQuery("#targetTable");
 					this.outputTableBody = jQuery("table#targetTable tbody");
-					this.expressionTextArea = jQuery("#expressionTextArea");
 					this.filterFieldsWithMappingInput = jQuery("#filterFieldsWithMappingInput");
 					this.filterFieldsWithNoMappingInput = jQuery("#filterFieldsWithNoMappingInput");
 					this.filterHighlightedSourceFieldsInput = jQuery("#filterHighlightedSourceFieldsInput");
@@ -321,11 +320,11 @@ define(
 					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
 					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
 
-					this.expressionEditor = m_codeEditor.getCodeEditor(jQuery("#expressionTextArea")[0]);
+					this.expressionEditor = m_codeEditorAce.getJSCodeEditor("expressionTextDiv");
 					this.expressionEditor.disable();
 
 					this.bindEventHandlers();
-					
+
 					this.initializeModelElementView(application);
 				}
 
@@ -334,7 +333,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.setModelElement = function(
 						application) {
-					// Store the tree nodes that are expanded as 
+					// Store the tree nodes that are expanded as
 					// this information will be lost after the trees are refreshed
 
 					// TODO - needs review
@@ -352,7 +351,7 @@ define(
 					// Store the table rows that are selected
 					var selectedInputRowId = jQuery("table#sourceTable tr.selected").first().attr('id');
 					var selectedOutputRowId = jQuery("table#targetTable tr.selected").first().attr('id');
-					
+
 					this.initializeModelElement(application);
 					this.application = application;
 
@@ -393,7 +392,7 @@ define(
 
 					this.inputTable.tableScroll("undo");
 					this.outputTable.tableScroll("undo");
-					
+
 					this.populateTableRows(this.inputTableBody,
 							this.inputTableRows, true);
 					this.populateTableRows(this.outputTableBody,
@@ -423,7 +422,7 @@ define(
 
 					this.selectedOutputTableRow = jQuery("#targetTable tr.selected").data("tableRow");
 
-					// Initialize the state of the code editor 
+					// Initialize the state of the code editor
 					if (this.selectedOutputTableRow != null) {
 						jQuery("#elementIndicatorText").append(this.selectedOutputTableRow.path + " = ");
 						this.expressionEditor.setValue(this.selectedOutputTableRow.mappingExpression);
@@ -435,12 +434,12 @@ define(
 					this.inputDataTypeSelector.populatePrimitivesSelectInput();
 					this.inputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
 					this.inputDataTypeSelector.setPrimitiveDataType();
-					
+
 					this.outputDataTypeSelector.setScopeModel(this.getModel());
 					this.outputDataTypeSelector.populatePrimitivesSelectInput();
 					this.outputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
 					this.outputDataTypeSelector.setPrimitiveDataType();
-					
+
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
 					var typeDeclaration;
@@ -464,16 +463,16 @@ define(
 						}
 					}
 
-					this.expressionEditor.setGlobalVariables(globalVariables);
+					//this.expressionEditor.setGlobalVariables(globalVariables);
 
 					// Perform mapping expression validation
-					var source, errors;
-					for (var n = 0; n < this.outputTableRows.length; ++n) {
-						if (this.outputTableRows[n].mappingExpression === "") continue;
-						source = this.outputTableRows[n].path + " = " + this.outputTableRows[n].mappingExpression;
-						errors = this.expressionEditor.getErrors(source, globalVariables);
-						this.showMappingError(this.outputTableRows[n].path, errors);
-					}
+//					var source, errors;
+//					for (var n = 0; n < this.outputTableRows.length; ++n) {
+//						if (this.outputTableRows[n].mappingExpression === "") continue;
+//						source = this.outputTableRows[n].path + " = " + this.outputTableRows[n].mappingExpression;
+//						errors = this.expressionEditor.getErrors(source, globalVariables);
+//						this.showMappingError(this.outputTableRows[n].path, errors);
+//					}
 
 					this.resume();
 
@@ -518,7 +517,7 @@ define(
 										var view = jQuery(this).data("view");
 
 										var self = this;
-										
+
 										// Using setTimeout so that blur event of code editor (if applicable) is called first
 										setTimeout(function() {
 											jQuery("table#targetTable tr.selected").removeClass(
@@ -537,10 +536,10 @@ define(
 											view.expressionEditor.enable();
 											view.expressionEditor
 													.setValue(view.selectedOutputTableRow.mappingExpression);
-											view.expressionEditor.save();
+											//view.expressionEditor.save();
 
 											// Register showMappingError as a callback function after JS validation occurs
-											view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
+											//view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
 										}, 0);
 									});
 
@@ -733,7 +732,7 @@ define(
 					tableRow.typeName = parentPath == null ?
 							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
 							: element.type;
-							
+
 					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 							: this.mappingExpressions[path];
 					tableRow.problems = "";
@@ -854,7 +853,7 @@ define(
 							content += "</tr>";
 
 							tableBody.append(content);
-							
+
 							this.populateMappingCell(tableRows[tableRow]);
 
 							// Add click event handler for "clearMapping" action
@@ -914,12 +913,12 @@ define(
 											else {
 												outputTableRow.mappingExpression = inputTableRow.path;
 												view.populateMappingCell(outputTableRow);
-	
+
 												// Update expression text area if needed
 												if (view.selectedOutputTableRow == outputTableRow) {
 													view.expressionEditor
 															.setValue(outputTableRow.mappingExpression);
-													view.expressionEditor.save();
+													//view.expressionEditor.save();
 												}
 											}
 
@@ -1146,14 +1145,14 @@ define(
 
 					var rowId = outputTableRow.path.replace(/\./g, "-");
 					var mappingCell = jQuery("#targetTable tr#" + rowId + " .mappingCell");
-					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ? 
+					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ?
 											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
 											outputTableRow.mappingExpression;
 
 					mappingCell.empty();
 					mappingCell.append(trimmedString);
 				}
-				
+
 				/**
 				 *
 				 */
@@ -1203,7 +1202,7 @@ define(
 					this.initializeIndexConfigurationDialog();
 					jQuery("#indexConfigurationDialog").dialog("open");
 
-					// Note: tableScroll must be added after the dialog is visible for correct behavior 
+					// Note: tableScroll must be added after the dialog is visible for correct behavior
 					var indexConfigSourceTable = jQuery("#idx-sourceTable");
 					var indexConfigTargetTable = jQuery("#idx-targetTable");
 
@@ -1220,7 +1219,7 @@ define(
 					indexConfigTargetTable.treeTable({
 						indent: 14
 					});
-					
+
 					var dragSource = jQuery("#idx-sourceTable tbody tr#n-New1-one");
 					var dropTarget = jQuery("#idx-targetTable tbody tr#n2-New2-three");
 
@@ -1231,20 +1230,20 @@ define(
 					// Make the affected nodes highlighted
 					jQuery(dropTarget).find(".data-element").addClass("highlighted");
 					jQuery(ancestorsOf(jQuery(dropTarget))).find(".data-element").addClass("highlighted");
-					
+
 					// Make all rows invisible
 					jQuery("#idx-sourceTable tbody tr").addClass("invisible");
 					// Make the affected nodes visible
 					jQuery(dragSource).removeClass("invisible");
 					jQuery(ancestorsOf(jQuery(dragSource))).removeClass("invisible");
-					
+
 					// Make all rows invisible
 					jQuery("#idx-targetTable tbody tr").addClass("invisible");
 					// Make the affected nodes visible
 					jQuery(dropTarget).removeClass("invisible");
 					jQuery(ancestorsOf(jQuery(dropTarget))).removeClass("invisible");
 				}
-				
+
 				/**
 				 *
 				 */
@@ -1254,10 +1253,10 @@ define(
 
 					indexConfigSourceTable.tableScroll("undo");
 					indexConfigTargetTable.tableScroll("undo");
-					
+
 					this.populateIndexConfigurationTableRows(jQuery("#idx-sourceTable tbody"), this.inputTableRows);
 					this.populateIndexConfigurationTableRows(jQuery("#idx-targetTable tbody"), this.outputTableRows);
-					
+
 					jQuery("#idx-sourceTable tbody tr").mousedown(
 							function() {
 								jQuery("#idx-sourceTable tr.selected").removeClass("selected");
@@ -1281,7 +1280,7 @@ define(
 									// Make the affected node visible
 									jQuery(dragSource).removeClass("invisible");
 									jQuery(ancestorsOf(jQuery(dragSource))).removeClass("invisible");
-									
+
 									// Make all rows invisible
 									jQuery("#idx-targetTable tbody tr").addClass("invisible");
 									// Make the affected nodes visible
@@ -1361,8 +1360,8 @@ define(
 				MessageTransformationApplicationView.prototype.determineTransformationChanges = function() {
 					var transformationProperty = '<?xml version="1.0" encoding="ASCII"?>\r\n';
 					transformationProperty += '<mapping:TransformationProperty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-						'xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" ' + 
-						'xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model ' + 
+						'xmlns:mapping="java://org.eclipse.stardust.engine.extensions.transformation.model" ' +
+						'xsi:schemaLocation="java://org.eclipse.stardust.engine.extensions.transformation.model ' +
 						'java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage">\r\n';
 
 					for ( var n = 0; n < this.outputTableRows.length; ++n) {
@@ -1430,28 +1429,27 @@ define(
 									});
 
 					// Code Editor
-					this.expressionTextArea.change({
-						"view" : this
-					}, function(event) {
-						if (event.data.view.selectedOutputTableRow != null) {
-							var mappingExpression = event.data.view.expressionTextArea.val();
+					var view = this;
+					this.expressionEditor.getEditor().on('blur', function(event){
+						if (view.selectedOutputTableRow != null) {
+							var mappingExpression = view.expressionEditor.getValue();
 
 							// Update "mappingExpression" for selectedOutputTableRow and corresponding row in outputTableRows[] array
-							for (var n = 0; n < event.data.view.outputTableRows.length; ++n) {
-								if (event.data.view.selectedOutputTableRow === event.data.view.outputTableRows[n]) {
-									event.data.view.selectedOutputTableRow.mappingExpression = mappingExpression;
-									event.data.view.outputTableRows[n].mappingExpression = mappingExpression;
+							for (var n = 0; n < view.outputTableRows.length; ++n) {
+								if (view.selectedOutputTableRow === view.outputTableRows[n]) {
+									view.selectedOutputTableRow.mappingExpression = mappingExpression;
+									view.outputTableRows[n].mappingExpression = mappingExpression;
 									break;
 								}
 							}
 
-							event.data.view.populateMappingCell(event.data.view.selectedOutputTableRow);
+							view.populateMappingCell(view.selectedOutputTableRow);
 
-							event.data.view.submitChanges(event.data.view.determineTransformationChanges());
+							view.submitChanges(view.determineTransformationChanges());
 						}
 					});
 
-					jQuery(this.expressionEditor.getWrapper())
+					jQuery("#expressionTextDiv")
 							.droppable({
 								accept : ".data-element",
 								drop : function(e, ui) {
@@ -1481,7 +1479,7 @@ define(
 										}
 
 										view.expressionEditor.setValue(view.selectedOutputTableRow.mappingExpression);
-										view.expressionEditor.save();
+										//view.expressionEditor.save();
 
 										view.populateMappingCell(view.selectedOutputTableRow);
 
@@ -1566,7 +1564,7 @@ define(
 						event.data.view.filterFieldsWithMappingInvalid(!enabled);
 					});
 
-					// Add Input Message dialog 
+					// Add Input Message dialog
 					jQuery("#inputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
@@ -1575,10 +1573,10 @@ define(
 						title : m_i18nUtils
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
 									});
-					
+
 					jQuery("#inputDataDialog").bind("dialogclose", {view : this},function(event, ui) {
 						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#inputDataDialog #nameTextInput"); 
+						var nameInput = jQuery("#inputDataDialog #nameTextInput");
 						nameInput.val('');
 						nameInput.removeClass("error");
 						event.data.view.clearErrorMessages();
@@ -1592,7 +1590,7 @@ define(
 									function(event) {
 										jQuery("#inputDataDialog").dialog(
 												"open");
-										
+
 //										event.data.view.openIndexConfigurationDialog();
 									});
 
@@ -1612,7 +1610,7 @@ define(
 											event.data.view.showErrorMessages();
 											return;
 										}
-										
+
 										// Validate message name
 										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
 										var isValidName = event.data.view.validateMessageName(nameTextInput);
@@ -1627,7 +1625,7 @@ define(
 						jQuery("#inputDataDialog").dialog("close");
 					});
 
-					// Add Output Message dialog 
+					// Add Output Message dialog
 					jQuery("#outputDataDialog").dialog({
 						autoOpen : false,
 						draggable : true,
@@ -1639,7 +1637,7 @@ define(
 
 					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
 						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#outputDataDialog #nameTextInput"); 
+						var nameInput = jQuery("#outputDataDialog #nameTextInput");
 						nameInput.val('');
 						nameInput.removeClass("error");
 						event.data.view.clearErrorMessages();
@@ -1677,7 +1675,7 @@ define(
 						jQuery("#outputDataDialog").dialog("close");
 					});
 
-					// Index Configuration Dialog 
+					// Index Configuration Dialog
 					jQuery("#indexConfigurationDialog").dialog({
 						autoOpen : false,
 						draggable : true,
@@ -1686,7 +1684,7 @@ define(
 									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.idxConfig.title"),
 						width : 'auto'
 									});
-					
+
 					jQuery("#idx-okButton")
 							.click(
 									{
@@ -1702,7 +1700,7 @@ define(
 						jQuery("#indexConfigurationDialog").dialog("close");
 					});
 
-					// Test 
+					// Test
 					jQuery("#runButton")
 							.click(
 									{
@@ -1793,9 +1791,9 @@ define(
 
 										inputDataTextarea.append(inputData);
 									});
-					
+
 				}
-				
+
 				/**
 				 *
 				 */
@@ -1840,13 +1838,13 @@ define(
 							this.errorMessages
 								.push(m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidName"));
 						}
-						
+
 						// Check for duplicate message names
 						for (var key in this.application.contexts) {
 							var context = this.application.contexts[key];
 							for ( var m = 0; m < context.accessPoints.length; ++m) {
 								var accessPoint = context.accessPoints[m];
-								
+
 								if (name === accessPoint.id) {
 									var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.duplicateName")
 															.replace("{0}", name);
@@ -1882,7 +1880,7 @@ define(
 					if (tableRow.accessPoint.dataType != m_constants.STRUCTURED_DATA_TYPE) return false;
 
 					var element = tableRow.element;
-					
+
 					// Embedded structure
 					if (element == null) {
 						return false;
