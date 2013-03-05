@@ -60,7 +60,7 @@ define(
 										.getProperty("modeler.model.propertyView.webService.wsdlURL"));
 
 				jQuery("#browseButton")
-						.text(
+						.val(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.load"));
 				jQuery("#service")
@@ -133,11 +133,6 @@ define(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.submit"));
-				jQuery("#browseButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.browse"));
 				jQuery("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
