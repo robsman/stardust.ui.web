@@ -822,25 +822,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       String newId = null;
 
       if(element instanceof ActivityType)
-      {      
+      {
          isGateway = ((IIdentifiableElement) element).getId().toLowerCase().startsWith("gateway");
       }
-      
+
       if (elementJson.has(ModelerConstants.ID_PROPERTY))
       {
          // provided ID has precedence over generated ID
          newId = extractString(elementJson, ModelerConstants.ID_PROPERTY);
-      }      
-      
+      }
+
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);         
+         String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
          String base = null;
          if(isGateway && !newName.toLowerCase().startsWith("gateway"))
          {
             base = "gateway_" + newName;
          }
-                  
+
          if ( !element.eIsSet(eFtrName) || !element.eGet(eFtrName).equals(newName))
          {
             wasModified = true;
@@ -1478,8 +1478,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // If no implementation is set, the event symbol does not have a Trigger
-      
-      if (!startEventJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY) || startEventJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).isJsonNull())
+
+      if (startEventJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY)
+            && startEventJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString().equals("none"))
       {
          startEventSymbol.setTrigger(null);
       }
@@ -1490,7 +1491,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (trigger != null)
          {
             updateTrigger(trigger, startEventJson);
-         }         
+         }
       }
    }
 
@@ -1703,7 +1704,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, null);
          storeAttributes(trigger, triggerJson, PredefinedConstants.PARTICIPANT_ATT);
       }
-      
+
       storeDescription(trigger, triggerJson);
 
       // A few BPMN properties
@@ -1822,7 +1823,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param trigger
     * @return
     */
@@ -1941,9 +1942,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                         accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
                               context, id, name, structuredDataFullId, direction);
-                        
+
                         TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
-                      
+
                         if (typeDeclaration != null)
                         {
                            StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
@@ -1952,7 +1953,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                      {
                         accessPoint = getModelBuilderFacade().createDocumentAccessPoint(context, id, name, direction);
-                        
+
                         String structuredDataFullId = null;
 
                         if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
@@ -1962,7 +1963,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                                  .getAsString();
 
                            TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(structuredDataFullId);
-                           
+
                            if (typeDeclaration != null)
                            {
                               StructuredTypeUtils.setStructuredAccessPointAttributes(accessPoint, typeDeclaration);
@@ -2079,9 +2080,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             // TODO adjust cross references
 
             // adjust underlying DOM
-            schema.updateElement(true);            
-            
-            TypeDeclarationsType container = (TypeDeclarationsType) typeDeclaration.eContainer();            
+            schema.updateElement(true);
+
+            TypeDeclarationsType container = (TypeDeclarationsType) typeDeclaration.eContainer();
             for(TypeDeclarationType decl : container.getTypeDeclaration())
             {
                if(!decl.equals(typeDeclaration))
@@ -2089,10 +2090,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   XpdlTypeType type = decl.getDataType();
                   if(TypeDeclarationUtils.fixImport(decl, typeDeclaration.getId(), oldId) && type instanceof SchemaTypeType)
                   {
-                     TypeDeclarationUtils.updateTypeDefinition(decl, typeDeclaration.getId(), oldId);            
+                     TypeDeclarationUtils.updateTypeDefinition(decl, typeDeclaration.getId(), oldId);
                   }
                }
-            }      
+            }
          }
 
          // TODO

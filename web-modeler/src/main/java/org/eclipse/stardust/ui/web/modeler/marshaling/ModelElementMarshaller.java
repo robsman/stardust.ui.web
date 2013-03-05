@@ -1193,6 +1193,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          eventJson = new JsonObject();
 
          eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
+         eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, "none");
          eventJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, new JsonObject());
       }
 
