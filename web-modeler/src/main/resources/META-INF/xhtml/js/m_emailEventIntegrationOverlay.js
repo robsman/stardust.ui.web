@@ -88,10 +88,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.delete"));
-					jQuery("label[for='copyToInput']")
+					/*	jQuery("label[for='copyToInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.emailEvent.copyTo"));
+											.getProperty("modeler.element.properties.emailEvent.copyTo")); */
 
 					this.configurationSpan = this.mapInputId("configuration");
 
@@ -123,9 +123,9 @@ define(
 							.mapInputId("pollingDelayUnitSelect"); */
 					this.unseenInput = this.mapInputId("unseenInput");
 					this.deleteInput = this.mapInputId("deleteInput");
-					this.copyToInput = this.mapInputId("copyToInput");
+				/*	this.copyToInput = this.mapInputId("copyToInput");
 					this.copyToFolderInput = this
-							.mapInputId("copyToFolderInput");
+							.mapInputId("copyToFolderInput"); */
 
 					this
 							.initializeIntervalUnitSelect(this.connectionTimeoutUnitSelect);
@@ -148,8 +148,8 @@ define(
 					this.registerForRouteChanges(this.pollingDelayUnitSelect); */
 					this.registerForRouteChanges(this.unseenInput);
 					this.registerForRouteChanges(this.deleteInput);
-					this.registerForRouteChanges(this.copyToInput);
-					this.registerForRouteChanges(this.copyToFolderInput);
+				/*	this.registerForRouteChanges(this.copyToInput);
+					this.registerForRouteChanges(this.copyToFolderInput); */
 
 				};
 
@@ -207,10 +207,10 @@ define(
 					uri += "&delete=";
 					uri += this.deleteInput.prop("checked");
 
-					if (this.copyToInput.prop("checked")) {
+				/*	if (this.copyToInput.prop("checked")) {
 						uri += "&copyTo=";
 						uri += this.copyToFolderInput.val();
-					}
+					} */
 					uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
@@ -357,11 +357,11 @@ define(
 							this.unseenInput.prop("checked", value == "true");
 						} else if (name == "delete") {
 							this.deleteInput.prop("checked", value == "true");
-						} else if (name == "copyTo") {
+						}/* else if (name == "copyTo") {
 							this.copyToInput.prop("checked", true);
 							this.copyToFolderInput.val(value);
 						} else if (name == "fetchSize") {
-						}
+						}*/
 					}
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
@@ -375,6 +375,7 @@ define(
 				EmailEventIntegrationOverlay.prototype.validate = function() {
 					this.mailServerInput.removeClass("error");
 					this.accountInput.removeClass("error");
+					
 
 					if (this.mailServerInput.val() == null
 							|| this.mailServerInput.val() == "") {
@@ -396,7 +397,7 @@ define(
 						this.page.propertiesPanel.showErrorMessages();
 
 						return false;
-					}
+					}			
 
 					return true;
 				};
