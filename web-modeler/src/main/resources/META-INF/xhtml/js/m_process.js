@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -30,9 +30,9 @@ define(
 								name : name,
 								defaultPoolName : defaultPoolName,
 								defaultLaneName : defaultLaneName
-							});					
+							});
 					var synchronization = ChangeSynchronization.create(command);
-					
+
 					m_commandsController
 							.submitCommand(command);
 
@@ -44,21 +44,21 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function Process() {
 				m_utils.inheritMethods(Process.prototype, m_modelElement
 						.create());
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.toString = function() {
 					return "Lightdust.Process";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.initializeFromJson = function(model) {
 					this.type = m_constants.PROCESS_DEFINITION;
@@ -68,7 +68,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getPath = function(withId) {
 					var path = "/models/" + this.model.id + "/processes";
@@ -81,7 +81,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.rename = function(id, name) {
 					delete this.model.processes[this.id];
@@ -92,7 +92,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getNewEventIndex = function() {
 					var index = 0;
@@ -107,7 +107,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getNewActivityIndex = function() {
 					var index = 0;
@@ -122,7 +122,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getNewGatewayIndex = function() {
 					var index = 0;
@@ -137,7 +137,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getDataFlowIndex = function() {
 					var index = 0;
@@ -152,7 +152,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Process.prototype.getControlFlowIndex = function() {
 					var index = 0;
@@ -164,6 +164,19 @@ define(
 					++index;
 
 					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.hasProcessAttachmentsDataPathes = function() {
+					for ( var n in this.dataPathes) {
+						if (this.dataPathes[n].id == "PROCESS_ATTACHMENTS") {
+							return true;
+						}
+					}
+
+					return false;
 				};
 			}
 		});

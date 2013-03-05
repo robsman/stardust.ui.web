@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -31,7 +31,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function ScanEventIntegrationOverlay() {
 				var eventIntegrationOverlay = m_eventIntegrationOverlay
@@ -42,7 +42,7 @@ define(
 						eventIntegrationOverlay);
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
@@ -62,14 +62,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.getImplementation = function() {
 					return "scan";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.setDocumentData = function() {
 					this.metadataStructureLabel.empty();
@@ -116,7 +116,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.submitOverlayChanges = function() {
 					var mappings = [];
@@ -147,7 +147,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.populateDataItemsList = function() {
 					this.documentDataList.empty();
@@ -165,7 +165,19 @@ define(
 												.getProperty("modeler.element.properties.commonProperties.thisModel")
 										+ "\">");
 
-						if (this.scopeModel.dataItems["PROCESS_ATTACHMENTS"]) {
+						var processSupportsAttachments = false;
+						if (this.page.getModelElement()
+								&& this.page.getModelElement().getProcess
+								&& this.page.getModelElement().getProcess()) {
+							if (this.page.getModelElement().getProcess()
+									&& this.page.getModelElement().getProcess()
+											.hasProcessAttachmentsDataPathes()) {
+								processSupportsAttachments = true;
+							}
+						}
+
+						if (this.scopeModel.dataItems["PROCESS_ATTACHMENTS"]
+								&& processSupportsAttachments) {
 							this.documentDataList
 									.append("<option value='"
 											+ m_model.getFullId(
@@ -215,14 +227,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.activate = function() {
 					this.submitOverlayChanges();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.update = function() {
 					m_utils.debug("Scan Trigger");
@@ -236,7 +248,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ScanEventIntegrationOverlay.prototype.validate = function() {
 					return true;

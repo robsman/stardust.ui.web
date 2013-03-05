@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_i18nUtils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model" ],
+		function(m_utils, m_constants, m_i18nUtils, m_model) {
 
 			return {
 				createStartEvent : function(process) {
@@ -113,6 +113,25 @@ define(
 				 */
 				Event.prototype.isBoundaryEvent = function() {
 					return this.bindingActivityUuid != null;
+				};
+
+				/**
+				 *
+				 */
+				Event.prototype.getProcess = function() {
+					var model = m_model.findModelByUuid(this.modelUUID);
+					var process;
+					for ( var i in model.processes) {
+						var events = model.processes[i].events;
+						for ( var j in events) {
+							if (events[j].name === this.name
+									&& events[j].id === this.id) {
+								return model.processes[i];
+							}
+						}
+					}
+
+					return undefined;
 				};
 			}
 
