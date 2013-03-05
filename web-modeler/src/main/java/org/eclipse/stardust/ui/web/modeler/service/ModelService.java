@@ -128,6 +128,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -1936,7 +1937,10 @@ public class ModelService
       System.out.println("Validating model " + modelId);
 
       ModelType model = refreshAndFindModel(modelId);
-
+      VariableContextHelper instance = VariableContextHelper.getInstance();
+      instance.clear();
+      instance.storeVariables(model, false);
+      
       ValidatorRegistry.setFilters(new HashMap<String, String>());
       ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
       ValidationService validationService = ValidationService.getInstance();
