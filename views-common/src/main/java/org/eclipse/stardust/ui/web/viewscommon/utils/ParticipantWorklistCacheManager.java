@@ -166,7 +166,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
                .getCurrentPerformer()));
-         if (null != oldEntry && oldEntry.getCount() < oldEntry.getTotalCountThreshold())
+         if (null != oldEntry && (oldEntry.getCount() > 0 && oldEntry.getCount() < oldEntry.getTotalCountThreshold()))
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
          }

@@ -146,11 +146,12 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
       }
       else if (ActivityEvent.ABORTED.equals(event.getType()) || ActivityEvent.COMPLETED.equals(event.getType()))
       {
-         if (allActivities.getCount() < Long.MAX_VALUE)
+         if (allActivities.getCount() > 0 && allActivities.getCount() < allActivities.getTotalCountThreshold())
          {
             allActivities.setCount(allActivities.getCount() - 1);
          }
-         if (isActivityCritical(oldAi) && criticialActivities.getCount() < Long.MAX_VALUE)
+         if (isActivityCritical(oldAi)
+               && (criticialActivities.getCount() > 0 && criticialActivities.getCount() < criticialActivities.getTotalCountThreshold()))
          {
             criticialActivities.setCount(criticialActivities.getCount() - 1);
          }

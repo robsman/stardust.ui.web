@@ -188,8 +188,10 @@ public class ProcessWorklistCacheManager implements InitializingBean
          }
          else if (ActivityEvent.ABORTED.equals(event.getType()) || ActivityEvent.COMPLETED.equals(event.getType()))
          {
-            if (entry.getCount() < entry.getTotalCountThreshold())
+            if (entry.getCount() > 0 && entry.getCount() < entry.getTotalCountThreshold())
+            {
                entry.setCount(entry.getCount() - 1);
+            }
          }
       }
 
