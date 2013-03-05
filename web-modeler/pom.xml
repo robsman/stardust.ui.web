@@ -25,39 +25,11 @@
 -->
 
    <properties>
-		<ipp.version>7.1.1-NIGHTLY-SNAPSHOT</ipp.version>
+      <ipp.version>0.7.1-NIGHTLY-SNAPSHOT</ipp.version>
    </properties>
 
    <dependencyManagement>
       <dependencies>
-         <!-- <dependency>
-            <groupId>com.infinity.bpm</groupId>
-            <artifactId>carnot-common</artifactId> 
-				<version>${ipp.version}</version>
-            <type>pom</type> <scope>import</scope> 
-         </dependency>
-         <dependency>
-            <groupId>com.infinity.bpm.rtenv</groupId>
-            <artifactId>rtenv-common</artifactId>
-				<version>${ipp.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-				<version>1.10</version>
-         </dependency>
-         <dependency>
-            <groupId>com.sun.jersey</groupId> 
-            <artifactId>jersey-server</artifactId>
-            <version>1.10</version>
-         </dependency> 
-         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
-            <version>1.10</version>
-         </dependency> -->
       </dependencies>
    </dependencyManagement>
 
@@ -119,11 +91,11 @@
          <version>${gson.version}</version>
       </dependency>
 
-		<!-->dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
+      <!-->dependency>
+         <groupId>org.apache.httpcomponents</groupId>
+         <artifactId>httpclient</artifactId>
          <version>${commons-httpclient.version}</version>
-		</dependency-->
+      </dependency-->
 
       <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency>
@@ -186,14 +158,14 @@
                <groupId>org.slf4j</groupId>
                <artifactId>slf4j-api</artifactId>
             </exclusion>
-				<!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId>
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId>
-					</exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId>
-					</exclusion> -->
+            <!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
+               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
+               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
+               </exclusion> -->
          </exclusions>
       </dependency>
-		<!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId>
-			<version>1.7.4</version> </dependency> -->
+      <!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
+         <version>1.7.4</version> </dependency> -->
 
    </dependencies>
 
@@ -265,12 +237,12 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-compiler-plugin</artifactId>
                   <configuration>
-                     <excludes>
-                        <exclude>**/web/modeler/edit/twophase/**</exclude>
-                     </excludes>
-                     <testExcludes>
-                        <testExclude>**/web/modeler/edit/twophase/**</testExclude>
-                     </testExcludes>
+                  <excludes>
+                     <exclude>**/web/modeler/edit/twophase/**</exclude>
+                  </excludes>
+                  <testExcludes>
+                     <testExclude>**/web/modeler/edit/twophase/**</testExclude>
+                  </testExcludes>
                   </configuration>
                </plugin>
             </plugins>
