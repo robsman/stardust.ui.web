@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -1481,13 +1482,22 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      String participantFullID = getModelBuilderFacade().createFullId(
-            model,
-            getModelBuilderFacade().findParticipant(
-                  model,
-                  getModelBuilderFacade().getAttributeValue(
-                        getModelBuilderFacade().getAttribute(event,
-                              PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+      String participantFullID = null;
+      try
+      {
+         participantFullID = getModelBuilderFacade().createFullId(
+               model,
+               getModelBuilderFacade().findParticipant(
+                     model,
+                     getModelBuilderFacade().getAttributeValue(
+                           getModelBuilderFacade().getAttribute(event,
+                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+
+      }
+      catch (ObjectNotFoundException ex)
+      {
+         //No participant found - FULL ID stays null
+      }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
 
