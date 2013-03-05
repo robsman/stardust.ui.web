@@ -1477,11 +1477,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          return;
       }
 
-      TriggerType trigger = startEventSymbol.getTrigger();
-
-      if (trigger != null)
+      // If no implementation is set, the event symbol does not have a Trigger
+      
+      if (!startEventJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY) || startEventJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).isJsonNull())
       {
-         updateTrigger(trigger, startEventJson);
+         startEventSymbol.setTrigger(null);
+      }
+      else
+      {
+         TriggerType trigger = startEventSymbol.getTrigger();
+
+         if (trigger != null)
+         {
+            updateTrigger(trigger, startEventJson);
+         }         
       }
    }
 
@@ -1685,7 +1694,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          System.out.println("===> Implementation: " + trigger.getType());
       }
 
-      if (isManualTrigger(trigger))
+      if (isUserTrigger(trigger))
       {
          storeAttributes(trigger, triggerJson);
       }
@@ -1694,6 +1703,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, null);
          storeAttributes(trigger, triggerJson, PredefinedConstants.PARTICIPANT_ATT);
       }
+      
       storeDescription(trigger, triggerJson);
 
       // A few BPMN properties
@@ -1728,7 +1738,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          String participantFullId = extractString(triggerJson, ModelerConstants.PARTICIPANT_FULL_ID);
 
-         if (participantFullId != null && isManualTrigger(trigger))
+         if (participantFullId != null && isUserTrigger(trigger))
          {
             IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
             AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
@@ -1811,7 +1821,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
-   private boolean isManualTrigger(TriggerType trigger)
+   /**
+    * 
+    * @param trigger
+    * @return
+    */
+   private boolean isUserTrigger(TriggerType trigger)
    {
       return trigger.getType() == null
             || PredefinedConstants.MANUAL_TRIGGER.equals(trigger.getType().getId())
