@@ -375,6 +375,9 @@ define(
 				EmailEventIntegrationOverlay.prototype.validate = function() {
 					this.mailServerInput.removeClass("error");
 					this.accountInput.removeClass("error");
+					this.portInput.removeClass("error");
+					this.connectionTimeoutInput.removeClass("error");
+					this.initialDelayInput.removeClass("error");
 					
 
 					if (this.mailServerInput.val() == null
@@ -397,7 +400,40 @@ define(
 						this.page.propertiesPanel.showErrorMessages();
 
 						return false;
-					}			
+					}		
+					
+					if (this.portInput.val() == null
+							|| this.portInput.val() == "" || isNaN(this.portInput.val())) {
+						this.page.propertiesPanel.errorMessages
+								.push("Port must be a Number.");
+						this.portInput.addClass("error");
+
+						this.page.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
+					
+					if (this.connectionTimeoutInput.val() == null
+							|| this.connectionTimeoutInput.val() == "" || isNaN(this.connectionTimeoutInput.val())) {
+						this.page.propertiesPanel.errorMessages
+								.push("ConnectionTimeout must be a Number.");
+						this.portInput.addClass("error");
+
+						this.page.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
+					
+					if (this.initialDelayInput.val() == null
+							|| this.initialDelayInput.val() == "" || isNaN(this.initialDelayInput.val())) {
+						this.page.propertiesPanel.errorMessages
+								.push("InitialDelay must be a Number.");
+						this.portInput.addClass("error");
+
+						this.page.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
 
 					return true;
 				};
