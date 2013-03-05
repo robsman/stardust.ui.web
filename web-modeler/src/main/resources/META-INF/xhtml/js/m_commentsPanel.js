@@ -43,7 +43,7 @@ define(
 					this.contentTextArea = jQuery(this.scope
 							+ " #contentTextArea");
 					this.submitButton = jQuery(this.scope
-							+ " #submitButton");
+							+ " #submitButton");					
 					this.deleteButton = jQuery(this.scope
 							+ " #deleteButton");
 					this.deleteButton
@@ -197,6 +197,8 @@ define(
 				 *
 				 */
 				CommentsPanel.prototype.submitChanges = function() {
+					m_utils.debug("Submit comments changes");
+					
 					if (this.options.submitHandler) {
 						this.options.submitHandler
 								.submitCommentsChanges(this.comments);

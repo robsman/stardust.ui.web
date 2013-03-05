@@ -65,7 +65,10 @@ define(
 				/**
 				 * 
 				 */
-				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {					
+				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {
+					m_utils.debug("Submit Comment");
+					m_utils.debug(this.assembleChangedObjectFromProperty("comments", comments));
+					
 					this.submitChanges(this.assembleChangedObjectFromProperty("comments", comments));
 				};
 			}

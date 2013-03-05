@@ -81,14 +81,9 @@ define(
 						this.documentDataList
 								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
 
-						m_utils.debug("Compare: " + this.page.getModelElement().parameterMappings[0].dataFullId + " with " +
-								m_model
-								.getFullId(this.scopeModel,
-										"PROCESS_ATTACHMENTS"));
-
 						if (this.page.getModelElement().parameterMappings[0].dataFullId != m_model
 								.getFullId(this.scopeModel,
-										"PROCESS_ATTACHMENTS")) {							
+										"PROCESS_ATTACHMENTS")) {
 							var data = m_model.findData(this.documentDataList
 									.val());
 
@@ -127,28 +122,15 @@ define(
 					var mappings = [];
 					if (this.documentDataList.val() != null
 							&& this.documentDataList.val() != m_constants.TO_BE_DEFINED) {
-						if (this.documentDataList.val() == m_model.getFullId(
-								this.scopeModel.id, "PROCESS_ATTACHMENTS")) {
-							mappings = [ {
-								id : "PROCESS_ATTACHMENTS",
-								name : "Process Attachments",
-								direction : m_constants.OUT_ACCESS_POINT,
-								dataType : "dmsDocumentList",
-								dataFullId : m_model.getFullId(
-										this.scopeModel.id,
-										"PROCESS_ATTACHMENTS")
-							} ];
-						} else {
-							var data = m_model.findData(this.documentDataList
-									.val());
-							mappings = [ {
-								id : data.id,
-								name : data.name,
-								direction : m_constants.OUT_ACCESS_POINT,
-								dataType : "dmsDocument",
-								dataFullId : this.documentDataList.val()
-							} ];
-						}
+						var data = m_model
+								.findData(this.documentDataList.val());
+						mappings = [ {
+							id : data.id,
+							name : data.name,
+							direction : m_constants.OUT_ACCESS_POINT,
+							dataType : "dmsDocument",
+							dataFullId : this.documentDataList.val()
+						} ];
 					}
 
 					this
@@ -169,7 +151,6 @@ define(
 				 */
 				ScanEventIntegrationOverlay.prototype.populateDataItemsList = function() {
 					this.documentDataList.empty();
-
 					this.documentDataList.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
 							+ "'>"
@@ -184,11 +165,17 @@ define(
 												.getProperty("modeler.element.properties.commonProperties.thisModel")
 										+ "\">");
 
-						this.documentDataList.append("<option value='"
-								+ m_model.getFullId(this.scopeModel,
-										"PROCESS_ATTACHMENTS") + "'>"
-								+ m_i18nUtils.getProperty("modeler.element.properties.scanEvent.processAttachmentsOption.label")
-								+ "</option>");
+						if (this.scopeModel.dataItems["PROCESS_ATTACHMENTS"]) {
+							this.documentDataList
+									.append("<option value='"
+											+ m_model.getFullId(
+													this.scopeModel,
+													"PROCESS_ATTACHMENTS")
+											+ "'>"
+											+ m_i18nUtils
+													.getProperty("modeler.element.properties.scanEvent.processAttachmentsOption.label")
+											+ "</option>");
+						}
 
 						for ( var i in this.scopeModel.dataItems) {
 							var dataItem = this.scopeModel.dataItems[i];

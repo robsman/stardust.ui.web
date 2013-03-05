@@ -22,7 +22,8 @@ define(
 			var indentLevel = 0;
 
 			return {
-				generateMarkup : generateMarkup
+				generateMarkup : generateMarkup,
+				generateMarkupForAngular : generateMarkupForAngular
 			};
 
 			/**
@@ -44,11 +45,39 @@ define(
 			/**
 			 * 
 			 */
+			function generateMarkupForAngular(parameterDefinitions) {
+				markup = "";
+
+				writeTag("<html>");
+				indentUp();
+				generateHeaderForAngular(parameterDefinitions);
+				generateBodyForAngular(parameterDefinitions);
+				indentDown();
+				writeTag("</html>");
+
+				return markup;
+			}
+
+			/**
+			 * 
+			 */
 			function generateHeader(parameterDefinitions) {
 				writeTag("<head>");
 				indentUp();
 				generateCss();
 				generateJavaScript(parameterDefinitions);
+				indentDown();
+				writeTag("</head>");
+			}
+
+			/**
+			 * 
+			 */
+			function generateHeaderForAngular(parameterDefinitions) {
+				writeTag("<head>");
+				indentUp();
+				generateCss();
+				generateJavaScriptForAngular(parameterDefinitions);
 				indentDown();
 				writeTag("</head>");
 			}
@@ -94,6 +123,53 @@ define(
 				indentDown();
 				writeTag("});");
 				indentDown();
+				writeTag("});");
+				indentDown();
+				writeTag("</script>");
+			}
+
+			/**
+			 * 
+			 */
+			function generateJavaScriptForAngular(parameterDefinitions) {
+				writeTag("<script src='http://localhost:8080/pepper-test/plugins/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
+				writeTag("<script>");
+				indentUp();
+				writeTag("require.config({");
+				writeTag("baseUrl: '../../',");
+				writeTag("paths : {");
+				writeTag("'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],");
+				writeTag("'jquery.url': ['bpm-modeler/js/libs/jquery/plugins/jquery.url', 'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url'],");
+				writeTag("'angularjs' : ['bpm-modeler/js/libs/angular/angular-1.0.2', '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min'],");
+				writeTag("},");
+				writeTag("shim: {");
+				writeTag("'jquery.url': ['jquery'],");
+				writeTag("'angularjs': {");
+				writeTag("require: 'jquery',");
+				writeTag("exports: 'angular'");
+				writeTag("}");
+				writeTag("}");
+				writeTag("});");
+				writeTag("require(['require',");
+				writeTag("'jquery',");
+				writeTag("'jquery.url',");
+				writeTag("'angularjs',");
+				writeTag("'bpm-modeler/angular/app',");
+				writeTag("'ui-mashup/public/UiMashupInteraction''], function(require, jquery, jqueryUrl, angularjs, angularApp, UiMashupInteraction) {");
+				writeTag("jQuery(document).ready(function() {");
+				writeTag("angularApp.init();");
+				writeTag("var interaction = UiMashupInteraction.create();");
+				writeTag("interaction.bind().done(function() {");
+				writeTag("var controller = LoanRequestControllerAngular.create(angular.element(document.body).scope());");
+				writeTag("controller.initializeFromCustomerId(interaction.input.New_0.customerId).done(function(){");
+				writeTag("controller.$apply();");
+				writeTag("controller.submitListeners.push(function(){");
+				writeTag("interaction.output.loanPlan = controller.loanPlan;");
+				writeTag("interaction.complete();");
+				writeTag("});");
+				writeTag("}).fail();");
+				writeTag("}).fail();");
+				writeTag("});");
 				writeTag("});");
 				indentDown();
 				writeTag("</script>");
@@ -148,17 +224,85 @@ define(
 			/**
 			 * 
 			 */
+			function generateBodyForAngular(parameterDefinitions) {
+				writeTag("<body>");
+				indentUp();
+				writeTag("<table>");
+				indentUp();
+
+				for ( var n = 0; n < parameterDefinitions.length; ++n) {
+					var parameterDefinition = parameterDefinitions[n];
+
+					m_utils.debug("Parameter Definition");
+					m_utils.debug(parameterDefinition);
+
+					var readonly = (parameterDefinition.direction == m_constants.IN_ACCESS_POINT);
+
+					m_utils.debug("readonly = " + readonly);
+
+					if (parameterDefinition.dataType == "primitive") {
+						generateRowForPrimitiveForAngular(
+								parameterDefinition.primitiveDataType,
+								parameterDefinition.id,
+								parameterDefinition.name, readonly);
+					} else if (parameterDefinition.dataType == "struct"
+							|| parameterDefinition.dataType == "dmsDocument") {
+						writeTag("<tr>");
+						indentUp();
+						writeTag("<td>");
+						generateStructurePanelForAngular(parameterDefinition,
+								readonly);
+						writeTag("</td>");
+						indentDown();
+						writeTag("</tr>");
+					} else {
+						// Deal with primitives
+					}
+				}
+
+				indentDown();
+				writeTag("</table>");
+				indentDown();
+				writeTag("</body>");
+
+				return markup;
+			}
+
+			/**
+			 * 
+			 */
 			function generateRowForPrimitive(type, path, name, readonly) {
 				writeTag("<tr>");
 				indentUp();
 				writeTag("<td>");
 				indentUp();
-				writeTag("<label for='" + path + "Input'>" + name + "</label>");
+				writeTag("<label for='" + path + "Input'>" + generateLabel(name) + "</label>");
 				indentDown();
 				writeTag("</td>");
 				writeTag("<td>");
 				indentUp();
 				generateInputForPrimitive(type, path, readonly);
+				indentDown();
+				writeTag("</td>");
+				indentDown();
+				writeTag("</tr>");
+			}
+
+			/**
+			 * 
+			 */
+			function generateRowForPrimitiveForAngular(type, path, name,
+					readonly) {
+				writeTag("<tr>");
+				indentUp();
+				writeTag("<td>");
+				indentUp();
+				writeTag("<label for='" + path + "Input'>" + generateLabel(name) + "</label>");
+				indentDown();
+				writeTag("</td>");
+				writeTag("<td>");
+				indentUp();
+				generateInputForPrimitiveForAngular(type, path, readonly);
 				indentDown();
 				writeTag("</td>");
 				indentDown();
@@ -194,6 +338,27 @@ define(
 			/**
 			 * 
 			 */
+			function generateInputForPrimitiveForAngular(type, path, readonly) {
+				m_utils.debug("Element " + path);
+				m_utils.debug(type);
+
+				var disabled = readonly ? "disabled" : "";
+
+				if (type === "xsd:boolean") {
+					writeTag("<input type='checkbox' class='input' " + disabled
+							+ " ng-model='" + path + "'>");
+				} else if (type === "xsd:int" || type === "xsd:integer") {
+					writeTag("<input type='text' class='input integerInputField' "
+							+ disabled + " ng-model='" + path + "'>");
+				} else {
+					writeTag("<input type='text' class='input stringInputField'"
+							+ disabled + " ng-model='" + path + "'>");
+				}
+			}
+
+			/**
+			 * 
+			 */
 			function generateStructurePanel(parameterDefinition, readonly) {
 				var typeDeclaration = m_model
 						.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
@@ -201,13 +366,16 @@ define(
 				m_utils.debug("Type Declaration");
 				m_utils.debug(typeDeclaration);
 
-				writeTag("<h1>" + parameterDefinition.name + "</h1>");
+				writeTag("<h1>" + generateLabel(parameterDefinition.name) + "</h1>");
 				writeTag("<table>");
 				generateStructurePanelRecursively(typeDeclaration.model,
 						typeDeclaration, parameterDefinition.id, readonly);
 				writeTag("</table>");
 			}
 
+			/**
+			 * 
+			 */
 			function generateStructurePanelRecursively(model, typeDeclaration,
 					path, readonly) {
 				jQuery.each(typeDeclaration.getBody().elements, function(i,
@@ -226,7 +394,7 @@ define(
 						if (childTypeDeclaration.isSequence()) {
 							writeTag("<tr>");
 							writeTag("<td colspan='2'>");
-							writeTag("<h1>" + element.name + "</h1>");
+							writeTag("<h1>" + generateLabel(element.name) + "</h1>");
 							writeTag("<table>");
 							generateStructurePanelRecursively(model,
 									childTypeDeclaration, path + "-"
@@ -249,12 +417,69 @@ define(
 			/**
 			 * 
 			 */
+			function generateStructurePanelForAngular(parameterDefinition,
+					readonly) {
+				var typeDeclaration = m_model
+						.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+
+				m_utils.debug("Type Declaration");
+				m_utils.debug(typeDeclaration);
+
+				writeTag("<h1>" + generateLabel(parameterDefinition.name) + "</h1>");
+				writeTag("<table>");
+				generateStructurePanelRecursivelyForAngular(
+						typeDeclaration.model, typeDeclaration,
+						parameterDefinition.id, readonly);
+				writeTag("</table>");
+			}
+
+			function generateStructurePanelRecursivelyForAngular(model,
+					typeDeclaration, path, readonly) {
+				jQuery.each(typeDeclaration.getBody().elements, function(i,
+						element) {
+					var type = element.type;
+
+					// Strip prefix
+					if (element.type.indexOf(':') !== -1) {
+						type = element.type.split(":")[1];
+					}
+
+					var childTypeDeclaration = model
+							.findTypeDeclarationBySchemaName(type);
+
+					if (childTypeDeclaration != null) {
+						if (childTypeDeclaration.isSequence()) {
+							writeTag("<tr>");
+							writeTag("<td colspan='2'>");
+							writeTag("<h1>" + generateLabel(element.name) + "</h1>");
+							writeTag("<table>");
+							generateStructurePanelRecursivelyForAngular(model,
+									childTypeDeclaration, path + "."
+											+ element.name, readonly);
+							writeTag("</table>");
+							writeTag("</td>");
+							writeTag("</tr>");
+						} else {
+							generatorRowForEnumeration(childTypeDeclaration,
+									path + "-" + element.name, element.name,
+									readonly);
+						}
+					} else {
+						generateRowForPrimitiveForAngular(element.type, path
+								+ "." + element.name, element.name, readonly);
+					}
+				});
+			}
+
+			/**
+			 * 
+			 */
 			function generatorRowForEnumeration(type, path, name, readonly) {
 				writeTag("<tr>");
 				indentUp();
 				writeTag("<td>");
 				indentUp();
-				writeTag("<label for='" + path + "Input'>" + name + "</label>");
+				writeTag("<label for='" + path + "Input'>" + generateLabel(name) + "</label>");
 				indentDown();
 				writeTag("</td>");
 				writeTag("<td>");
@@ -318,5 +543,49 @@ define(
 			 */
 			function indentDown() {
 				indentLevel--;
+			}
+
+			/**
+			 * 
+			 */
+			function generateLabel(identifier) {
+				var previousCharacter = identifier.charAt(0);
+				var label = previousCharacter.toUpperCase();
+
+				identifier = identifier.slice(1);
+
+				for ( var n = 0; n < identifier.length; ++n) {
+					if (isLowerCase(previousCharacter)
+							&& isUpperCase(identifier.charAt(n))) {
+						label += " ";
+					}
+
+					label += identifier.charAt(n);
+					previousCharacter = identifier.charAt(n);
+				}
+				
+				return label;
+			}
+
+			/**
+			 * 
+			 */
+			function isLowerCase(c) {
+				if (c >= 'a' && c <= 'z') {
+					return true;
+				}
+
+				return false;
+			}
+
+			/**
+			 * 
+			 */
+			function isUpperCase(c) {
+				if (c >= 'A' && c <= 'Z') {
+					return true;
+				}
+
+				return false;
 			}
 		});

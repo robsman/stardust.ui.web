@@ -182,6 +182,7 @@ define(
 					this.embeddedInput = jQuery("#embeddedInput");
 					this.viaUriRow = jQuery("#viaUriRow");
 					this.embeddedRow = jQuery("#embeddedRow");
+					this.generateMarkupForAngularLink = jQuery("#generateMarkupForAngularLink");
 					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
 					this.markupTextarea = jQuery("#markupTextareaDiv");
 					this.urlInput = jQuery("#urlInput");
@@ -241,12 +242,16 @@ define(
 						m_dialog.makeInvisible(this.generateTable);
 					}
 
+					this.generateMarkupForAngularLink.click({
+						view : this
+					}, function(event) {
+						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForAngular());
+
+						event.data.view.submitEmbeddedModeChanges();
+					});
 					this.generateMarkupForJQueryLink.click({
 						view : this
 					}, function(event) {
-//						event.data.view.markupTextarea.val("");
-//						event.data.view.markupTextarea.val(event.data.view
-//								.generateMarkupForJQuery());
 						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForJQuery());
 
 						event.data.view.submitEmbeddedModeChanges();
@@ -477,9 +482,17 @@ define(
 				/**
 				 * 
 				 */
+				UiMashupApplicationView.prototype.generateMarkupForAngular = function() {
+					return m_markupGenerator
+							.generateMarkupForAngular(this.getContext().accessPoints);
+				};
+
+				/**
+				 * 
+				 */
 				UiMashupApplicationView.prototype.generateMarkupForJQuery = function() {
 					return m_markupGenerator
 							.generateMarkup(this.getContext().accessPoints);
-				}
+				};
 			}
 		});
