@@ -1171,7 +1171,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             + laneOffsetY);
 
       //set default height and width if not defined
+      
       int width = startEventSymbol.getWidth();
+    
       if ( -1 == width)
       {
          width = ModelerConstants.EVENT_ICON_WIDTH;
