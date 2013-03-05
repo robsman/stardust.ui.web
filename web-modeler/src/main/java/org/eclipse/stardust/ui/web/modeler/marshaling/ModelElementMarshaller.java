@@ -1171,9 +1171,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             + laneOffsetY);
 
       //set default height and width if not defined
-      
+
       int width = startEventSymbol.getWidth();
-    
+
       if ( -1 == width)
       {
          width = ModelerConstants.EVENT_ICON_WIDTH;
@@ -1479,6 +1479,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "scanEvent");
          }
       }
+
+      String participantFullID = getModelBuilderFacade().createFullId(
+            model,
+            getModelBuilderFacade().findParticipant(
+                  model,
+                  getModelBuilderFacade().getAttributeValue(
+                        getModelBuilderFacade().getAttribute(event,
+                              PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+
+      eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
 
       // Load starting Participant
       // TODO The code below is wrong as full references are not loaded
