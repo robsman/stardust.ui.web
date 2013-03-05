@@ -356,9 +356,8 @@ div.toolBar {
 
 /* */
 .code {
-	font-family: "Courier New", Courier, monospace !important;
-	font-size: 11px;
-	font-weight: bold;
+	font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace !important;
+	font-size: 12px;
 	color: #397d9f;
 }
 
