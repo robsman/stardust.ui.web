@@ -2221,7 +2221,7 @@ public class ModelService
     *           the Message
     * @return the computed list of parts
     */
-   private String getPartsOrder(Message message)
+   public static String getPartsOrder(Message message)
    {
       if (message == null)
       {
