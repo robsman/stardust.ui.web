@@ -171,6 +171,43 @@
 
    </dependencies>
 
+   <profiles>
+      <profile>
+         <id>with-bpmn2-xpdl-transformation</id>
+         <dependencies>
+            <dependency>
+            	<groupId>org.eclipse.stardust.modeling.model</groupId>
+            	<artifactId>org.eclipse.stardust.model.bpmn2.transform</artifactId>
+            	<version>0.0.1-SNAPSHOT</version>
+            </dependency>
+         </dependencies>
+      </profile>
+
+      <profile>
+         <id>not-with-bpmn2-xpdl-transformation</id>
+         <activation>
+            <activeByDefault>true</activeByDefault>
+         </activation>
+
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <configuration>
+                     <excludes>
+                        <exclude>**/web/modeler/bpmn2/export/**</exclude>
+                     </excludes>
+                     <testExcludes>
+                        <testExclude>**/web/modeler/bpmn2/export/**</testExclude>
+                     </testExcludes>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
+
    <build>
       <plugins>
          <plugin>

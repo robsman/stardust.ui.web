@@ -17,6 +17,8 @@ public interface ModelPersistenceHandler<T extends EObject>
 
    void saveModel(T model, OutputStream modelContent) throws IOException;
 
+   void saveDeployableModel(T model, OutputStream modelContent) throws IOException;
+
    static class ModelDescriptor<T extends EObject>
    {
       public final String id;
