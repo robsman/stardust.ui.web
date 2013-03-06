@@ -35,15 +35,6 @@ require.config({
 
 		'jslint': ['bpm-modeler/js/libs/jslint/jslint', 'https://raw.github.com/douglascrockford/JSLint/996246308b755df665bd6c4f3ae59d655ae0a97e/jslint'],
 
-		'codemirror': ['bpm-modeler/js/libs/codemirror/codemirror-2.34', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/codemirror'],
-		'codemirror.mode.javascript': ['bpm-modeler/js/libs/codemirror/mode/javascript/javascript', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/mode/javascript/javascript'],
-		'codemirror.util.dialog': ['bpm-modeler/js/libs/codemirror/util/dialog', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/dialog'],
-		'codemirror.util.javascript-hint': ['bpm-modeler/js/libs/codemirror/util/javascript-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/javascript-hint'],
-		'codemirror.util.match-highlighter': ['bpm-modeler/js/libs/codemirror/util/match-highlighter', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/match-highlighter'],
-		'codemirror.util.search': ['bpm-modeler/js/libs/codemirror/util/search', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/search'],
-		'codemirror.util.searchcursor': ['bpm-modeler/js/libs/codemirror/util/searchcursor', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/searchcursor'],
-		'codemirror.util.simple-hint': ['bpm-modeler/js/libs/codemirror/util/simple-hint', 'https://raw.github.com/marijnh/CodeMirror/fc17d2d418d50fba292bae4fdcdb8a5bf1102867/lib/util/simple-hint'],
-
 		'modeler-plugins': '../services/rest/bpm-modeler/config/ui/plugins/modeler-plugins',
 		'i18n' : 'common/InfinityBPMI18N',
 		'ace': ['bpm-modeler/js/libs/ace/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace']
@@ -71,14 +62,6 @@ require.config({
 		'jquery.treeTable': ['jquery'],
 		'jquery.url': ['jquery'],
 		'jquery.jqprint': ['jquery'],
-
-		'codemirror.mode.javascript': ['codemirror'],
-		'codemirror.util.dialog': ['codemirror'],
-		'codemirror.util.searchcursor': ['codemirror'],
-		'codemirror.util.search': ['codemirror.util.searchcursor', 'codemirror.util.dialog'],
-		'codemirror.util.match-highlighter': ['codemirror.util.searchcursor'],
-		'codemirror.util.simple-hint': ['codemirror'],
-		'codemirror.util.javascript-hint': ['codemirror']
 	}
 });
 
@@ -99,15 +82,6 @@ require(["require",
 	 "jquery.jqprint",
 
 	 "jslint",
-
-	 "codemirror",
-	 "codemirror.mode.javascript",
-	 "codemirror.util.dialog",
-	 "codemirror.util.searchcursor",
-	 "codemirror.util.search",
-	 "codemirror.util.match-highlighter",
-	 "codemirror.util.simple-hint",
-	 "codemirror.util.javascript-hint",
 
 	 "modeler-plugins",
 	 "bpm-modeler/js/extensions_jquery",

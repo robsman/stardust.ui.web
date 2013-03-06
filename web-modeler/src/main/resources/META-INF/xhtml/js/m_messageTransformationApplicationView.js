@@ -463,8 +463,10 @@ define(
 						}
 					}
 
-					//this.expressionEditor.setGlobalVariables(globalVariables);
+					// TODO - these things below were possible with CodeMirror editor out of box
+					// But not in case of Ace editor hence temporarily commented out
 
+					//this.expressionEditor.setGlobalVariables(globalVariables);
 					// Perform mapping expression validation
 //					var source, errors;
 //					for (var n = 0; n < this.outputTableRows.length; ++n) {
@@ -536,7 +538,9 @@ define(
 											view.expressionEditor.enable();
 											view.expressionEditor
 													.setValue(view.selectedOutputTableRow.mappingExpression);
-											//view.expressionEditor.save();
+
+											// TODO - these things below were possible with CodeMirror editor out of box
+											// But not in case of Ace editor hence temporarily commented out
 
 											// Register showMappingError as a callback function after JS validation occurs
 											//view.expressionEditor.setJavaScriptValidationOptions(view.showMappingError, view.selectedOutputTableRow.path);
@@ -918,7 +922,6 @@ define(
 												if (view.selectedOutputTableRow == outputTableRow) {
 													view.expressionEditor
 															.setValue(outputTableRow.mappingExpression);
-													//view.expressionEditor.save();
 												}
 											}
 
@@ -1479,7 +1482,6 @@ define(
 										}
 
 										view.expressionEditor.setValue(view.selectedOutputTableRow.mappingExpression);
-										//view.expressionEditor.save();
 
 										view.populateMappingCell(view.selectedOutputTableRow);
 
