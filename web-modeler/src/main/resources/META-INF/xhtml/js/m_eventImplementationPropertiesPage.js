@@ -156,9 +156,12 @@ define(
 				 *
 				 */
 				EventImplementationPropertiesPage.prototype.submitNoneImplementation = function() {
+					// Event class change needs to be submitted as well
+					
 					this.submitChanges({
 						modelElement : {
 							participantFullId : null,
+							eventClass: this.getModelElement().eventClass,
 							implementation : "none"
 						}
 					});
