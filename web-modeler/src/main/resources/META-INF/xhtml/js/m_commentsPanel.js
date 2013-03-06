@@ -15,9 +15,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_user",
-				"bpm-modeler/js/m_session", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_session", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_user, m_session,
-				m_dialog, m_i18nUtils) {
+				m_dialog, m_i18nUtils, m_modelerUtils) {
 			return {
 				create : function(options) {
 					var panel = new CommentsPanel();
@@ -43,7 +43,7 @@ define(
 					this.contentTextArea = jQuery(this.scope
 							+ " #contentTextArea");
 					this.submitButton = jQuery(this.scope
-							+ " #submitButton");					
+							+ " #submitButton");
 					this.deleteButton = jQuery(this.scope
 							+ " #deleteButton");
 					this.deleteButton
@@ -77,7 +77,7 @@ define(
 					}
 
 					this.populateCommentsTable();
-					this.disableDelete();
+					m_modelerUtils.disableToolbarControl(this.deleteButton);
 				};
 
 				/**
@@ -154,7 +154,7 @@ define(
 					var selectedRows = jQuery(this.scope + " table#commentsTable tr.selected");
 
 					if (selectedRows.length == 0) {
-						this.disableDelete();
+						m_modelerUtils.disableToolbarControl(this.deleteButton);
 
 						return;
 					}
@@ -164,13 +164,13 @@ define(
 								.attr("id")];
 
 						if (comment.userAccount != m_user.getCurrentUser().account) {
-							this.disableDelete();
+							m_modelerUtils.disableToolbarControl(this.deleteButton);
 
 							return;
 						}
 					}
 
-					this.enableDelete();
+					m_modelerUtils.enableToolbarControl(this.deleteButton);
 				};
 
 				/**
@@ -198,37 +198,11 @@ define(
 				 */
 				CommentsPanel.prototype.submitChanges = function() {
 					m_utils.debug("Submit comments changes");
-					
+
 					if (this.options.submitHandler) {
 						this.options.submitHandler
 								.submitCommentsChanges(this.comments);
 					}
-				};
-
-
-				/**
-				 *
-				 */
-				CommentsPanel.prototype.disableDelete = function() {
-					this.deleteButton.attr("disabled", true);
-					this.deleteButton.fadeTo(0, 0.5);
-					this.deleteButton.removeClass("toolbarButton");
-					this.deleteButton.css("cursor", "default");
-					this.deleteButton.css("background", "none");
-					this.deleteButton.css("border", "none");
-				};
-
-
-				/**
-				 *
-				 */
-				CommentsPanel.prototype.enableDelete = function() {
-					this.deleteButton.removeAttr("disabled");
-					this.deleteButton.css("background", "");
-					this.deleteButton.css("border", "");
-					this.deleteButton.fadeTo(0, 1);
-					this.deleteButton.css("cursor", "pointer");
-					this.deleteButton.addClass("toolbarButton");
 				};
 			}
 		});

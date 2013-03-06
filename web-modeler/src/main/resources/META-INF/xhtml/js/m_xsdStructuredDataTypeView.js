@@ -16,11 +16,11 @@ define(
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesTree", "bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_structuredTypeBrowser",
 				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_modelElementUtils",
-				"bpm-modeler/js/m_angularContextUtils" ],
+				"bpm-modeler/js/m_angularContextUtils", "bpm-modeler/js/m_modelerUtils" ],
 		function(jQuery, m_utils, m_constants, m_communicationController, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_propertiesTree, m_typeDeclaration, m_structuredTypeBrowser, m_i18nUtils, m_elementConfiguration, m_jsfViewManager, m_modelElementUtils,
-				m_angularContextUtils) {
+				m_angularContextUtils, m_modelerUtils) {
 			return {
 				initialize : function(fullId) {
 					var view = new XsdStructuredDataTypeView();
@@ -156,26 +156,37 @@ define(
 						}
 					});
 
-					jQuery(this.addButton).click(
-						function(event) {
-							jQuery("tr.selected", view.tableBody).removeClass("selected")
-							view.addElement();
-							rowAdded = true;
-						});
-					jQuery(this.deleteButton).click(
-						function(event) {
-							view.removeElement(jQuery("tr.selected", view.tableBody));
-						});
-					jQuery(this.upButton).click(
-							function(event) {
-								view.moveElementUp(jQuery("tr.selected", view.tableBody));
-								rowMoved = true;
-							});
-					jQuery(this.downButton).click(
-							function(event) {
-								view.moveElementDown(jQuery("tr.selected", view.tableBody));
-								rowMoved = true;
-							});
+					if (typeDeclaration.getType() === "importedStructuredDataType") {
+						m_modelerUtils.disableToolbarControl(this.addButton);
+						m_modelerUtils.disableToolbarControl(this.deleteButton);
+						m_modelerUtils.disableToolbarControl(this.upButton);
+						m_modelerUtils.disableToolbarControl(this.downButton);
+					} else {
+						jQuery(this.addButton).click(
+								function(event) {
+									jQuery("tr.selected", view.tableBody)
+											.removeClass("selected")
+									view.addElement();
+									rowAdded = true;
+								});
+						jQuery(this.deleteButton).click(
+								function(event) {
+									view.removeElement(jQuery("tr.selected",
+											view.tableBody));
+								});
+						jQuery(this.upButton).click(
+								function(event) {
+									view.moveElementUp(jQuery("tr.selected",
+											view.tableBody));
+									rowMoved = true;
+								});
+						jQuery(this.downButton).click(
+								function(event) {
+									view.moveElementDown(jQuery("tr.selected",
+											view.tableBody));
+									rowMoved = true;
+								});
+					}
 
 					this.initializeModelElementView(typeDeclaration);
 				};
