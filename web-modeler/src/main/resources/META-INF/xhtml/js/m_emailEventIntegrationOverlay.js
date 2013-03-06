@@ -378,6 +378,7 @@ define(
 					this.portInput.removeClass("error");
 					this.connectionTimeoutInput.removeClass("error");
 					this.initialDelayInput.removeClass("error");
+					this.passwordInput.removeClass("error");
 					
 
 					if (this.mailServerInput.val() == null
@@ -400,7 +401,19 @@ define(
 						this.page.propertiesPanel.showErrorMessages();
 
 						return false;
-					}		
+					}
+					
+
+					if (this.passwordInput.val() == null
+							|| this.passwordInput.val() == "") {
+						this.page.propertiesPanel.errorMessages
+								.push("Password must not be empty.");
+						this.portInput.addClass("error");
+
+						this.page.propertiesPanel.showErrorMessages();
+
+						return false;
+					}
 					
 					if (this.portInput.val() == null
 							|| this.portInput.val() == "" || isNaN(this.portInput.val())) {
