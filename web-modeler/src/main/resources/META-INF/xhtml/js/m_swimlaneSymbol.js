@@ -679,6 +679,7 @@ define(
 				};
 
 				SwimlaneSymbol.prototype.click = function(x, y, event) {
+					this.diagram.disEngageConnection();
 					this.select();
 				};
 

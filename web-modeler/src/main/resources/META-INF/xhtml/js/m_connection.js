@@ -1702,6 +1702,9 @@ define(
 									+ this.diagram.Y_OFFSET);
 							this.diagram.setAnchorPoint(anchorPoint);
 						}
+ 						else {
+							this.diagram.disEngageConnection();
+						}
 					} else {
 						this.select();
 					}

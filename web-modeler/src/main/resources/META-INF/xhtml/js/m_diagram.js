@@ -68,7 +68,7 @@ define(
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
-				
+
 				var canvasPos = $("#canvas").position();
 				X_OFFSET = canvasPos.left; // Set fpr #panningSensor
 				Y_OFFSET = canvasPos.top; // Set for #toolbar +
@@ -1601,8 +1601,14 @@ define(
 							this.currentConnection.deselect();
 							this.currentConnection = null;
 						}
-					} else if (this.mode == this.CONNECTION_MODE
-							&& this.currentConnection != null) {
+					} else {
+						this.disEngageConnection();
+					}
+				};
+
+				Diagram.prototype.disEngageConnection = function() {
+					if (this.mode == this.CONNECTION_MODE
+							&& this.currentConnection != null && !this.currentConnection.oid) {
 						this.currentConnection.remove();
 						this.currentConnection = null;
 						m_messageDisplay.clear();
