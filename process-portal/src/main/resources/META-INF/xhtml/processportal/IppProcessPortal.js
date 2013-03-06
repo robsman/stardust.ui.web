@@ -586,7 +586,6 @@ InfinityBpm.ProcessPortal = new function() {
         debug('Displaying content frame: ' + contentId);
         contentFrame.style.display = 'inline';
       });
-      resizePortalIFrames();
     }
 
     /**
