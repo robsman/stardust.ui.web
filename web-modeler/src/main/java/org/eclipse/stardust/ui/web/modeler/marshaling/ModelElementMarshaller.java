@@ -1057,37 +1057,37 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       ActivityType activity = activitySymbol.getActivity();
 
-      // set default height and width if not defined
-      int width = activitySymbol.getWidth();
-      int height = activitySymbol.getHeight();
-      if ( -1 == width)
-      {
-         if (activity.getId().toLowerCase().startsWith("gateway"))
-         {
-            width = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
-         }
-         else
-         {
-            width = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
-         }
-      }
-      if ( -1 == height)
-      {
-         if (activity.getId().toLowerCase().startsWith("gateway"))
-         {
-            height = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
-         }
-         else
-         {
-            height = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_HEIGHT;
-         }
-      }
-
-      activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
-      activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, height);
-
       if (null != activity)
       {
+         // set default height and width if not defined
+         int width = activitySymbol.getWidth();
+         int height = activitySymbol.getHeight();
+         if ( -1 == width)
+         {
+            if (activity.getId().toLowerCase().startsWith("gateway"))
+            {
+               width = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_WIDTH;
+            }
+            else
+            {
+               width = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_WIDTH;
+            }
+         }
+         if ( -1 == height)
+         {
+            if (activity.getId().toLowerCase().startsWith("gateway"))
+            {
+               height = ModelerConstants.GATEWAY_SYMBOL_DEFAULT_HEIGHT;
+            }
+            else
+            {
+               height = ModelerConstants.ACTIVITY_SYMBOL_DEFAULT_HEIGHT;
+            }
+         }
+
+         activitySymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, width);
+         activitySymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, height);
+
          activitySymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY,
                toActivityJson(activity));
          if (activity.getId().toLowerCase().startsWith("gateway"))
