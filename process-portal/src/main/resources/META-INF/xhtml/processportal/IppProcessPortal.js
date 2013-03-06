@@ -591,7 +591,7 @@ InfinityBpm.ProcessPortal = new function() {
     /**
      *	resize Portal iframes in main window resize
      */
-    function resizePortalIFrames(beforeResize) {
+    function resizePortalIFrames() {
     	doWithContentFrame(null, function(contentFrame){
     		 if (contentFrame && 'true' == contentFrame.getAttribute('autoResize')
     				 && 'inline' == contentFrame.style.display) {
@@ -888,9 +888,9 @@ InfinityBpm.ProcessPortal = new function() {
             }
         },
 
-        resizePortalIFrames : function(beforeResize){
+        resizePortalIFrames : function(){
             try {
-            	resizePortalIFrames(beforeResize);
+            	resizePortalIFrames();
             } catch (e) {
             	alert(getMessage("portal.common.js.contentFrame.resize.failed", 'Failed during content frame resize: ') + e.message);
             }
