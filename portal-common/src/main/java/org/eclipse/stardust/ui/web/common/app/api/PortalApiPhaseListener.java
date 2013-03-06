@@ -257,7 +257,7 @@ public class PortalApiPhaseListener implements PhaseListener
             viewUrl.append("?").append(viewParams);
          }
 
-         View view = portalApp.getPortalUiController().findView(viewUrl.toString());
+         View view = portalApp.getPortalUiController().findView(View.createURL(viewDef, null));
          if (null == view)
          {
             view = portalApp.openView(viewDef, viewUrl.toString(), null, false);
