@@ -397,27 +397,31 @@ define(
 					this.operationSelect
 							.val(this.application.attributes["carnot:engine:wsOperationName"]);
 
-					// Update style output for selected service and port
-					this.styleOutput
-							.append(this.application.attributes["carnot:engine:wsPortName"]);
-					var port = this.webServiceStructure
-										.services[this.application.attributes["carnot:engine:wsServiceName"]]
-											.ports[this.application.attributes["carnot:engine:wsPortName"]];
-					this.styleOutput.empty();
-					this.styleOutput.append(port.style);
-
-					// Update use output for selected service and port and operation
-					var operation = this.webServiceStructure
+					if (this.application.attributes["carnot:engine:wsServiceName"]
+							&& this.application.attributes["carnot:engine:wsPortName"]
+							&& this.application.attributes["carnot:engine:wsOperationName"]) {
+						// Update style output for selected service and port
+						this.styleOutput
+								.append(this.application.attributes["carnot:engine:wsPortName"]);
+						var port = this.webServiceStructure
 											.services[this.application.attributes["carnot:engine:wsServiceName"]]
-												.ports[this.application.attributes["carnot:engine:wsPortName"]]
-													.operations[this.application.attributes["carnot:engine:wsOperationName"]];
-					this.useOutput.empty();
-					this.useOutput.append(operation.use);
+												.ports[this.application.attributes["carnot:engine:wsPortName"]];
+						this.styleOutput.empty();
+						this.styleOutput.append(port.style);
 
-					// Update protocol output for selected service and port and operation
-					this.protocolOutput.empty();
-					this.protocolOutput
-							.append(operation["carnot:engine:wsSoapProtocol"]);
+						// Update use output for selected service and port and operation
+						var operation = this.webServiceStructure
+												.services[this.application.attributes["carnot:engine:wsServiceName"]]
+													.ports[this.application.attributes["carnot:engine:wsPortName"]]
+														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
+						this.useOutput.empty();
+						this.useOutput.append(operation.use);
+
+						// Update protocol output for selected service and port and operation
+						this.protocolOutput.empty();
+						this.protocolOutput
+								.append(operation["carnot:engine:wsSoapProtocol"]);
+					}
 
 					if (this.application.attributes["carnot:engine:wsImplementation"]) {
 						this
