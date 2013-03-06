@@ -27,8 +27,8 @@ if ( !InfinityBpm.Core) {
     var mainIppFrame = getIppWindow();
     var pageUnloadHandlerRegistered = false;
     var iceHandlerRegistered = false;
-    var logoutUri = ""; 
-    
+    var logoutUri = "";
+
     // define module private functions
 
     function debug(msg) {
@@ -53,7 +53,7 @@ if ( !InfinityBpm.Core) {
         }
       }
     }
-    
+
     function registerPageUnloadHandler() {
       if ( !pageUnloadHandlerRegistered) {
         debug("Registering onUnload handler: " + window.location);
@@ -71,14 +71,14 @@ if ( !InfinityBpm.Core) {
           } catch (e) {
         	  alert(getMessage("portal.common.js.beforeUnloadEvent.handling.failed", "Failed handling before unload event: ") + e.message);
           }
-          
+
           if (currentBeforeUnload) {
             var message = currentBeforeUnload(event);
             if (message) {
               messages.push(message);
             }
           }
-          
+
           if (0 < messages.length) {
             if (event) {
               event.returnValue = messages.join('\n');
@@ -95,26 +95,26 @@ if ( !InfinityBpm.Core) {
           } catch (e) {
         	  alert(getMessage("portal.common.js.afterUnloadEvent.handling.failed", "Failed handling after unload event: ") + e.message);
           }
-          
+
           if (currentUnload) {
             currentUnload(event);
           }
         }
-        
+
         pageUnloadHandlerRegistered = true;
       }
     }
-    
+
     function onPageUnload(window, event, phaseId) {
       debug("Handling unload event (" + phaseId + ").");
-      
+
       var openContentFrames = new Array();
       doWithContentFrame(null, function(contentFrame) {
      	 if ('true' != contentFrame.getAttribute('noUnloadWarning')) {
     		 openContentFrames.push(contentFrame.getAttribute('name'));
     	 }
       });
-      
+
       debug("Open content frames at page unload (" + phaseId + "): " + openContentFrames);
 
       var messages = new Array();
@@ -127,7 +127,7 @@ if ( !InfinityBpm.Core) {
         	alert(getMessage("portal.common.js.unsavedContent.lost.prefix", 'Unsaved content of ') + openContentFrames.length + getMessage("portal.common.js.unsavedContent.lost.postfix", ' content frame(s) will be lost.'));
         }
       }
-      
+
       if (0 < messages.length) {
         debug('Leaving was not permitted.');
         return messages.join('\n');
@@ -137,7 +137,7 @@ if ( !InfinityBpm.Core) {
     function registerIceHandlers() {
     	if (!iceHandlerRegistered) {
 	        debug("Registering Ice handlers");
-	
+
 	        Ice.onSessionExpired('document:body', function() {
 	        	handleServerDisconnect("SessionExpired");
 	        });
@@ -147,10 +147,10 @@ if ( !InfinityBpm.Core) {
 	        debug("Registered Ice handlers");
     	}
     }
-    
+
     function handleServerDisconnect(type) {
     	debug("Handling Server Disconnect for " + type);
-    	
+
     	//Close All iFrames
     	if (closeIframes(2)) {
         	if (logoutUri != null) {
@@ -169,10 +169,10 @@ if ( !InfinityBpm.Core) {
         	}
     	}
     }
-    
+
     function closeIframes(tryCount) {
     	tryCount--;
-    	
+
     	var iFrames = new Array();
     	doWithContentFrame(null, function(contentFrame) {
     		iFrames.push(contentFrame);
@@ -187,7 +187,7 @@ if ( !InfinityBpm.Core) {
     			errors.push(e);
 			}
     	}
-    	
+
     	if (0 < errors.length) {
     		var msg = getMessage("portal.common.js.iframe.close.failed", "Could not Close below iFrames. Redirect will not properly work");
     		for (var i = 0; i < errors.length; i++) {
@@ -196,7 +196,7 @@ if ( !InfinityBpm.Core) {
     		alert(msg);
     		return false;
     	}
-    	
+
     	// Confirm iFrames Count
     	iFrames = new Array();
     	doWithContentFrame(null, function(contentFrame) {
@@ -211,7 +211,7 @@ if ( !InfinityBpm.Core) {
         		return false;
         	}
     	}
-    	
+
     	return true;
     }
 
@@ -223,27 +223,27 @@ if ( !InfinityBpm.Core) {
         debug("portalMain size is (" + portalMainBody.offsetWidth + ", " + portalMainBody.offsetHeight + ")");
 
         var mainBody = mainIppFrame.document.getElementsByTagName("body")[0];
-        
+
         var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
         if (portalMainContainer) {
           //portalMainContainer.style.width = portalMainBody.offsetWidth + "px";
           if (mainBody.offsetHeight > portalMainBody.offsetHeight) {
-            portalMainContainer.style.height = "100%"; 
+            portalMainContainer.style.height = "100%";
           } else if (mainBody.offsetHeight < portalMainBody.offsetHeight) {
-         	// Add some margin height, so that there is no possibility of 
+         	// Add some margin height, so that there is no possibility of
         	// vertical scroll bar getting added to iFrame
             portalMainContainer.style.maxHeight = (portalMainBody.offsetHeight + 30) + "px";
           }
         }
       }
     }
-    
+
     function onPortalMainLoaded(event) {
 
       registerPageUnloadHandler();
-      
+
       registerIceHandlers();
-      
+
       var baseLocation = String(mainIppFrame.document.location);
       if (-1 == baseLocation.indexOf("main.iface")) {
     	  alert(getMessage("portal.common.js.incorrectMainPage.redirect.wontWork", "Unexpected main page, should be .../plugins/common/main.iface. Redirects will not properly work."));
@@ -253,9 +253,9 @@ if ( !InfinityBpm.Core) {
       // determine original URI of portalMain.iface
       var portalMainUri = baseLocation.substr(0, baseLocation.indexOf("main.iface")) + "portalMain.iface";
       debug("main.iface location:\n  " + baseLocation + "\nexpected portalMain.iface location:\n  " + portalMainUri);
-      
+
       var portalMainWnd = mainIppFrame["ippPortalMain"];
-      
+
       var onPortalMain = false;
       var innerLocation;
       try {
@@ -270,7 +270,7 @@ if ( !InfinityBpm.Core) {
           // if the load is just a refresh of the portalMain page, do nothing
           if (innerLocation.length >= portalMainUri.length) {
             var prefix = innerLocation.slice(0, portalMainUri.length);
-            
+
             onPortalMain = (prefix == portalMainUri);
             debug("On portalMain page: " + onPortalMain + "\n" + prefix + "\n" + portalMainUri);
           }
@@ -286,7 +286,7 @@ if ( !InfinityBpm.Core) {
     	}
         portalMainWnd.onresize = onPortalMainResized;
         portalMainWnd.document.body.onresize = onPortalMainResized;
-        
+
         onPortalMainResized();
       } else {
         if ( !innerLocation) {
@@ -294,7 +294,7 @@ if ( !InfinityBpm.Core) {
           var baseUri = portalMainUri.slice(0, 1 - "portalMain.iframe".length);
           innerLocation = baseUri + "main.iface";
         }
-        
+
         debug("Navigating to inner frame target: " + innerLocation);
         mainIppFrame.location = innerLocation;
       }
@@ -315,7 +315,7 @@ if ( !InfinityBpm.Core) {
       // determine original URI of portalMain.iface
       var logoutUri = baseLocation.substr(0, baseLocation.indexOf("/plugins/common/main.iface")) + "/ipp/common/ippPortalLogout.jsp";
       debug("main.iface location:\n  " + baseLocation + "\nexpected ippPortalLogout.jsp location:\n  " + logoutUri);
-      
+
       debug("Navigating to logout URL: " + logoutUri);
       mainIppFrame.location = logoutUri;
     }
@@ -334,7 +334,7 @@ if ( !InfinityBpm.Core) {
 
     			var widthAdjustment = 2;
     			var heightAdjustment = -18;
-    			
+
         		toolbar.style.left = (posToolbarAnchor.x - toolbarWidth + widthAdjustment) + 'px';
         		toolbar.style.top = (posToolbarAnchor.y + heightAdjustment) + 'px';
         		toolbar.style.visibility = "visible";
@@ -348,7 +348,7 @@ if ( !InfinityBpm.Core) {
     	    curleft += node.offsetLeft;
     	    curtop += node.offsetTop;
     	  } while (node = node.offsetParent);
-    	  
+
     	  var pos = new Object();
     	  pos.x = curleft;
     	  pos.y = curtop;
@@ -357,12 +357,12 @@ if ( !InfinityBpm.Core) {
 
     function isThisIppWindow(win) {
         var baseLocation = String(win.document.location);
-        
+
         // Remove Query Params
         if (-1 != baseLocation.indexOf("?")) {
         	baseLocation = baseLocation.substr(0, baseLocation.indexOf("?"));
         }
-        
+
         // Check url, it should either read main.iface or login.iface
         if (-1 != baseLocation.indexOf("main.iface") || -1 != baseLocation.indexOf("login.iface")) {
         	return true;
@@ -385,7 +385,7 @@ if ( !InfinityBpm.Core) {
     	}
         else{
         	return win;
-        }	
+        }
     }
 
     function findIppWindowBottomUp(win){
@@ -396,7 +396,7 @@ if ( !InfinityBpm.Core) {
     	}
         else{
         	return win;
-        }	
+        }
     }
 
     function getIppWindow() {
@@ -416,21 +416,21 @@ if ( !InfinityBpm.Core) {
 	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
 	  portalMainContainer.style.width = '98%'; // This is required so that all sizes gets recalculated to fit the content
     }
-    
+
     function resizePortalMainWindow() {
   	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
 
 	  //Set portalMainContainer width
-	  var widthEndDivOffsetLeft = getOffsetleft(mainIppFrame["ippPortalMain"].document.getElementById("ippPortalContentWidthEnd"));
+	  var widthEndDivOffsetLeft = getOffsetLeft(mainIppFrame["ippPortalMain"].document.getElementById("ippPortalContentWidthEnd"));
 	  var windowSize = getBrowserDimensions();
 	  var width = (widthEndDivOffsetLeft > windowSize.width) ? widthEndDivOffsetLeft : windowSize.width;
 	  if (isIE()) {
 		  width -= 25;
 	  }
 	  portalMainContainer.style.width = (width+ 'px');
-	  
 
-	  //Set portalMainContainer height	  
+
+	  //Set portalMainContainer height
 	  var endDivContent = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndContent");
 	  var endDivLP = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndLP");
 	  var height = getOffsetTop(endDivContent);
@@ -438,21 +438,30 @@ if ( !InfinityBpm.Core) {
 		  var endDivLPOffsetTop = getOffsetTop(endDivLP);
 		  height = endDivLPOffsetTop > height ? endDivLPOffsetTop : height;
 	  }
-	  
+
 	  if (isIE7()) {
 		  var heightOffset = (30 * height / screen.height);
 		  height = height + heightOffset;
 	  }
-	  
+
 	  var minHeight = screen.height * 80 / 100;
-	  height = (height < minHeight) ? minHeight : height;		  
+	  height = (height < minHeight) ? minHeight : height;
 
 	  portalMainContainer.style.height = (height + 'px');
 
 	  // Reposition View Specific Toolbar
 	  repositionViewToolbar();
+
+	  //resize portal Iframes
+	  var portalMainWnd = mainIppFrame["ippPortalMain"];
+	  if (portalMainWnd.InfinityBpm.ProcessPortal) {
+		  portalMainWnd.InfinityBpm.ProcessPortal.resizePortalIFrames();
+	  } else {
+		  alert(getMessage(	"portal.common.js.processPortal.api.notAvailable",
+					"The Process Portal API is not available."));
+	  }
     }
-    
+
     function getWindowScrollPosition(targetWin) {
     	var scrollX = 0;
     	var scrollY = 0;
@@ -463,14 +472,14 @@ if ( !InfinityBpm.Core) {
 			scrollX = targetWin.document.body.scrollLeft;
 			scrollY = targetWin.document.body.scrollTop;
 		}
-		
+
 		return {'x' : scrollX, 'y' : scrollY};
     }
-    
+
     function setWindowScrollPosition(targetWin, scrollPos) {
     	targetWin.scrollTo(scrollPos.x, scrollPos.y);
     }
-    
+
     function getBrowserDimensions() {
     	var winW = screen.availWidth ? screen.availWidth : screen.width;
 	  	var winH = screen.availWidth ? screen.availHeight : screen.height;
@@ -488,10 +497,10 @@ if ( !InfinityBpm.Core) {
 	  		winW = mainWin.innerWidth;
 	  		winH = mainWin.innerHeight;
 	    }
-	    	
+
 	  	return {'width' : winW, 'height' : winH};
     }
-    
+
     function positionMessageDialog(divId, doc) {
     	var windowSize = getBrowserDimensions();
     	var scrollPos = getWindowScrollPosition(mainIppFrame);
@@ -511,7 +520,7 @@ if ( !InfinityBpm.Core) {
     		}
     	}
     }
-    
+
     function getElementsWithIDLike(tagName, elementId, doc) {
     	var allElems;
     	if (doc) {
@@ -519,31 +528,31 @@ if ( !InfinityBpm.Core) {
     	} else {
     		allElems = document.getElementsByTagName(tagName);
     	}
-    	var selectedElems = [];    	
+    	var selectedElems = [];
     	if (allElems) {
     		for (var i = 0; i < allElems.length; i++) {
     			if (allElems[i].id && (allElems[i].id.indexOf(elementId) >= 0)) {
     				selectedElems.push(allElems[i]);
     			}
-    		}    			
+    		}
     	}
 
     	return selectedElems;
     }
-    
+
     function isIE7() {
     	if (navigator.appVersion && (-1 != navigator.appVersion.indexOf("MSIE 7.0"))) {
     		return true;
     	}
-    	
+
     	return false;
     }
-    
+
     function isIE() {
     	if (navigator.appVersion && (-1 != navigator.appVersion.indexOf("MSIE"))) {
     		return true;
     	}
-    	
+
     	return false;
     }
 
@@ -551,29 +560,29 @@ if ( !InfinityBpm.Core) {
     	if (navigator.userAgent && (-1 != navigator.userAgent.indexOf("Firefox"))) {
     		return true;
     	}
-    	
+
     	return false;
     }
-    
-    function getOffsetleft(element)
+
+    function getOffsetLeft(element)
     {
     	var offsetLeft = 0;
     	while (element.tagName != 'BODY') {
     		offsetLeft += element.offsetLeft;
-    		element = element.parentNode;
+    		element = element.offsetParent;
     	}
-    	
+
     	return offsetLeft;
     }
-    
+
     function getOffsetTop(element)
     {
     	var offsetTop = 0;
     	while (element.tagName != 'BODY') {
     		offsetTop += element.offsetTop;
-    		element = element.parentNode;
+    		element = element.offsetParent;
     	}
-    	
+
     	return offsetTop;
     }
 
@@ -593,15 +602,15 @@ if ( !InfinityBpm.Core) {
     // // interface
 
     return {
-      
+
       onPortalMainLoaded : function(event) {
         onPortalMainLoaded(event);
       },
-      
+
       onPortalMainResized : function() {
         onPortalMainResized();
       },
-      
+
       closeSession : function() {
     	  window.setTimeout(function() {
     		  closeSession();
@@ -611,31 +620,31 @@ if ( !InfinityBpm.Core) {
       repositionViewToolbar : function() {
     	  repositionViewToolbar();
       },
-      
+
       getIppWindow : function() {
     	  return getIppWindow();
       },
-      
+
       resizePortalMainWindow : function(rdm) {
     	  resizePortalMainWindow(rdm);
       },
-      
+
       resetWindowWidth : function() {
     	  resetWindowWidth();
       },
-      
+
       registerIceHandlers : function() {
     	  registerIceHandlers();
       },
-      
+
       setLogoutUri : function(uri) {
     	  setLogoutUri(uri);
       },
-      
+
       positionMessageDialog : function(divId, doc) {
     	  positionMessageDialog(divId, doc);
       },
-      
+
       isFF : function() {
     	  return isFF();
       }
@@ -650,13 +659,13 @@ if ( !InfinityBpm.ProcessPortal) {
   InfinityBpm.ProcessPortal = new function() {
 
 	var mainIppFrame = InfinityBpm.Core.getIppWindow();
-	  
+
     return {
-  
+
       isFullApi : function() {
         return false;
       },
-      
+
       completeActivity: function() {
         // alert("Delegating complete() to portal frame.");
         var portalMainWnd = mainIppFrame["ippPortalMain"];
@@ -666,7 +675,7 @@ if ( !InfinityBpm.ProcessPortal) {
         	alert(getMessage("portal.common.js.processPortal.api.notAvailable", "The Process Portal API is not available."));
         }
       },
-  
+
       qaPassActivity: function() {
           // alert("Delegating qaPassActivity() to portal frame.");
           var portalMainWnd = mainIppFrame["ippPortalMain"];
@@ -676,7 +685,7 @@ if ( !InfinityBpm.ProcessPortal) {
           	alert(getMessage("portal.common.js.processPortal.api.notAvailable", "The Process Portal API is not available."));
           }
       },
-        
+
 	  qaFailActivity: function() {
 	      // alert("Delegating qaFailActivity() to portal frame.");
 	      var portalMainWnd = mainIppFrame["ippPortalMain"];
@@ -686,7 +695,7 @@ if ( !InfinityBpm.ProcessPortal) {
 	      	alert(getMessage("portal.common.js.processPortal.api.notAvailable", "The Process Portal API is not available."));
 	      }
 	   },
-  
+
       suspendActivity: function(saveOutParams) {
         // alert("Delegating suspend() to portal frame.");
         var portalMainWnd = mainIppFrame["ippPortalMain"];
@@ -696,7 +705,7 @@ if ( !InfinityBpm.ProcessPortal) {
         	alert(getMessage("portal.common.js.processPortal.api.notAvailable", "The Process Portal API is not available."));
         }
       },
-  
+
       abortActivity: function() {
         // alert("Delegating abort() to portal frame.");
         var portalMainWnd = mainIppFrame["ippPortalMain"];
