@@ -79,7 +79,6 @@
       <dependency org="javax.servlet" name="jsp-api" rev="${jsp-api.version}" conf="ipp-views-common-provided->default" />
       
       <!-- compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
       <dependency org="org.eclipse.xsd" name="xsd-runtime" rev="${xsd-runtime.version}" transitive="false" conf="compile->default">
          <artifact name="org.eclipse.xsd" type="jar"/>
       </dependency>

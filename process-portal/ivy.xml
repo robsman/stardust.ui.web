@@ -24,7 +24,7 @@
       
       <conf name="ipp-workflow-perspective-sources" description="Process Portal - Sources" />
       
-      <conf name="compile" extends="ipp-workflow-perspective-compile" visibility="private" description="Process Portal" />
+      <conf name="compile" extends="ipp-workflow-perspective-compile,ipp-workflow-perspective-provided" visibility="private" description="Process Portal" />
 
       <conf name="test" visibility="private" description="Test dependencies" />
       
@@ -60,11 +60,8 @@
    
       <!-- ipp-workflow-perspective-provided -->
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-workflow-perspective-provided->jsf-api-module-compile" />
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-workflow-perspective-provided, compile->default" />
-      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-workflow-perspective-provided, compile->default" />
-   
-      <!-- compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-workflow-perspective-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-workflow-perspective-provided->default" />
    
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />

@@ -23,7 +23,7 @@
       <conf name="ipp-administration-perspective-provided" description="Administration Portal - Provided Scope" />
       
       <conf name="ipp-administration-perspective-sources" description="Administration Portal - Sources" />      
-      <conf name="compile" extends="ipp-administration-perspective-compile" visibility="private" description="Administration Portal" />
+      <conf name="compile" extends="ipp-administration-perspective-compile, ipp-administration-perspective-provided" visibility="private" description="Administration Portal" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
       
@@ -53,11 +53,8 @@
 
       <!-- ipp-administration-perspective-provided -->
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-administration-perspective-provided->jsf-api-module-compile" />
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-administration-perspective-provided, compile->default" />
-      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-administration-perspective-provided, compile->default" />
-
-      <!-- compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-administration-perspective-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-administration-perspective-provided->default" />
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />

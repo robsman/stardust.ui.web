@@ -24,7 +24,7 @@
       
       <conf name="ipp-business-control-center-sources" description="Business Control Center - Sources" />
 
-      <conf name="compile" extends="ipp-business-control-center-compile" visibility="private" description="Business Control Center" />
+      <conf name="compile" extends="ipp-business-control-center-compile,ipp-business-control-center-provided" visibility="private" description="Business Control Center" />
             
       <conf name="test" visibility="private" description="Test dependencies" />
 
@@ -53,11 +53,8 @@
 
       <!-- ipp-business-control-center-provided -->
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-business-control-center-provided, compile->default" />
-      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-business-control-center-provided, compile->default" />
-
-      <!-- compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-business-control-center-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-business-control-center-provided->default" />
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />

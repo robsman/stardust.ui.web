@@ -229,7 +229,6 @@
       <ipp:mvn-install file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
       <ipp:mvn-install pomFile="${build.lib}/jsf-api-module.pom" />
       <ipp:mvn-install pomFile="${build.lib}/jsf-myfaces-module.pom" />
-      <ipp:mvn-install pomFile="${build.lib}/jsf-mojarra-module.pom" />
    </target>
    
    <target name="publish" depends="initBuild"
@@ -240,7 +239,6 @@
    	<ipp:mvn-deploy file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
    	<ipp:mvn-deploy pomFile="${build.lib}/jsf-api-module.pom" />
    	<ipp:mvn-deploy pomFile="${build.lib}/jsf-myfaces-module.pom" />
-   	<ipp:mvn-deploy pomFile="${build.lib}/jsf-mojarra-module.pom" />
    </target>
 	
    <!-- target is invoked by stardust-ui-web-nls project -->
