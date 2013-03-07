@@ -1754,7 +1754,7 @@ define(
 												"icon" : {
 													"image" : m_urlUtils
 															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/structured-type-comp.png"
+															+ "bpm-modeler/images/icons/bricks.png"
 												}
 											},
 											"enumStructuredDataType" : {
@@ -1775,7 +1775,7 @@ define(
 												"icon" : {
 													"image" : m_urlUtils
 															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/applications.png"
+															+ "bpm-modeler/images/icons/applications-blue.png"
 												}
 											},
 											"interactive" : {

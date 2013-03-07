@@ -48,11 +48,11 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"webservice" : "/plugins/bpm-modeler/images/icons/application-web-service.png",
 			"messageTransformationBean" : "/plugins/bpm-modeler/images/icons/application-message-trans.png",
 			"camelBean" : "/plugins/bpm-modeler/images/icons/application-camel.png",
-			"interactive" : "/plugins/bpm-modeler/images/icons/applications.png",
+			"interactive" : "/plugins/bpm-modeler/images/icons/applications-blue.png",
 			"dmsOperation" : "/plugins/bpm-modeler/images/icons/application-dms.png",
 			"messageParsingBean" : "/plugins/bpm-modeler/images/icons/application-message-p.png",
 			"messageSerializationBean" : "/plugins/bpm-modeler/images/icons/application-message-s.png",
-			"springBean" : "/plugins/bpm-modeler/images/icons/applications.png",
+			"springBean" : "/plugins/bpm-modeler/images/icons/applications-blue.png",
 			"mailBean" : "/plugins/bpm-modeler/images/icons/application-mail.png",
 			"jms" : "/plugins/bpm-modeler/images/icons/application-jms.png",
 			"plainJava" : "/plugins/bpm-modeler/images/icons/application-plain-java.png",
@@ -65,7 +65,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"organizationParticipant" : "/plugins/bpm-modeler/images/icons/organization.png",
 			"conditionalPerformerParticipant" : "/plugins/bpm-modeler/images/icons/conditional.png",
 			"structuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type.png",
-			"compositeStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-comp.png",
+			"compositeStructuredDataType" : "/plugins/bpm-modeler/images/icons/bricks.png",
 			"enumStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-enum.png",
 			"importedStructuredDataType" : "/plugins/bpm-modeler/images/icons/structured-type-import.png"
 	};

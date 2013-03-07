@@ -40,7 +40,7 @@ define(
 						.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, commentsText,
-						"../../images/icons/comments-properties-page.png");
+						"../../images/icons/comments.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(UiMashupTestPropertiesPage.prototype,

@@ -47,7 +47,7 @@ define([], function() {
 			viewId : "genericApplicationView",
 			label : "Unsupported Application ${viewParams.applicationName}[20]",
 			viewHtmlUrl : "bpm-modeler/views/modeler/genericApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/applications.png"
+			iconUrl : "bpm-modeler/images/icons/applications-blue.png"
 		},
 		{
 			viewId : "webServiceApplicationView",

@@ -25,7 +25,7 @@ define(
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processingPropertiesPage",
-						"Processing",  "../../images/icons/activity-processing-properties-page.png");
+						"Processing",  "../../images/icons/arrow-circle.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

@@ -24,7 +24,7 @@ define(
 							visibility : "preview",
 							pageName : m_i18nUtils
 									.getProperty("modeler.model.propertyView.uiMashup.test.title"),
-							pageIconUrl : "../../images/icons/test-properties-page.png"
+							pageIconUrl : "../../images/icons/arrow_refresh.png"
 						},
 						{
 							panelId : "uiMashupApplicationView",
@@ -34,7 +34,7 @@ define(
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.element.properties.commonProperties.comments"),
-							pageIconUrl : "../../images/icons/comments-properties-page.png"
+							pageIconUrl : "../../images/icons/comments.png"
 						} ]
 			};
 		});

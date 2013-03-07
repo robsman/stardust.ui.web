@@ -35,7 +35,7 @@ define(
 			function ConfigurationVariablesPropertiesPage(propertiesPanel, id) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, "Configuration Variables",
-						"../../images/icons/basic-properties-page.png");
+						"../../images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

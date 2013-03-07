@@ -520,7 +520,7 @@ div#propertiesPageList {
 	padding-bottom: 2px;
 	min-width: 180px;
 	height: 20px;
-	background-image: url("../images/icons/generic-properties-page.png");
+	background-image: url("../images/icons/page_white.png");
 	background-repeat: no-repeat;
 }
 
@@ -590,7 +590,7 @@ td.keyDescriptorDataPathListItem {
 }
 
 #selectModeButton {
-	background: url("../images/icons/select.png") no-repeat center center;
+	background: url("../images/icons/cursor.png") no-repeat center center;
 }
 
 td.infoSeverityIssueItem {

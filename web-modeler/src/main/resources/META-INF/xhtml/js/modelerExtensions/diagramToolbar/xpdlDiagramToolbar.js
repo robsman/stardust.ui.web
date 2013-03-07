@@ -52,7 +52,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "selectModeButton",
 			paletteId : "drawingPalette",
 			title :  m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.selectMode.title"),
-			iconUrl : "../../images/icons/select.png",
+			iconUrl : "../../images/icons/cursor.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSelectMode",
 			visibility : "always"
@@ -68,7 +68,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "zoomInButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomIn.title"),
-			iconUrl : "../../images/icons/zoom-in.png",
+			iconUrl : "../../images/icons/zoom_in.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomIn",
 			visibility : "always"
@@ -76,7 +76,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "zoomOutButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomOut.title"),
-			iconUrl : "../../images/icons/zoom-out.png",
+			iconUrl : "../../images/icons/zoom_out.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomOut",
 			visibility : "always"

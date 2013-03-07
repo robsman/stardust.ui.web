@@ -24,7 +24,7 @@ define(
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.element.properties.commonProperties.comments"),
-							pageIconUrl : "../../images/icons/comments-properties-page.png"
+							pageIconUrl : "../../images/icons/comments.png"
 						},
 						{
 							panelId : "modelView",
@@ -34,7 +34,7 @@ define(
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
-							pageIconUrl : "../../images/icons/basic-properties-page.png"
+							pageIconUrl : "../../images/icons/table.png"
 						} ]
 			};
 		});

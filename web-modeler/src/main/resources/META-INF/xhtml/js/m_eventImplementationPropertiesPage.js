@@ -39,7 +39,7 @@ define(
 						.createPropertiesPage(propertiesPanel,
 								"implementationPropertiesPage",
 								"Implementation", // TODO I18N
-								"../../images/icons/event-implementation-properties-page.png");
+								"../../images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

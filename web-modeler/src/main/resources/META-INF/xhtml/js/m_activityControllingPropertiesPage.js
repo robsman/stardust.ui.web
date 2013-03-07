@@ -120,7 +120,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "controllingPropertiesPage",
 						controlling,
-						"../../images/icons/controlling-properties-page.png");
+						"../../images/icons/chart-up.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
