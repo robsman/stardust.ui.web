@@ -1485,14 +1485,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       String participantFullID = null;
       try
       {
-         participantFullID = getModelBuilderFacade().createFullId(
-               model,
-               getModelBuilderFacade().findParticipant(
-                     model,
-                     getModelBuilderFacade().getAttributeValue(
-                           getModelBuilderFacade().getAttribute(event,
-                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
-
+         if (model != null)
+         {
+            participantFullID = getModelBuilderFacade().createFullId(
+                  model,
+                  getModelBuilderFacade().findParticipant(
+                        model,
+                        getModelBuilderFacade().getAttributeValue(
+                              getModelBuilderFacade().getAttribute(event,
+                                    PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
+         }
       }
       catch (ObjectNotFoundException ex)
       {
