@@ -169,6 +169,14 @@ define(
 									},
 									function(event) {
 										if (event.data.panel.currentParameterDefinition != null) {
+											// Blank names are not allowed.
+											if (jQuery.trim(event.data.panel.parameterDefinitionNameInput
+													.val()) == "") {
+												event.data.panel.parameterDefinitionNameInput
+														.val(event.data.panel.currentParameterDefinition.name);
+												return;
+											}
+
 											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
 													.val();
 											event.data.panel.currentFocusInput = this.parameterDefinitionDirectionSelect;
