@@ -200,7 +200,7 @@ define(
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToGatewayClosure
 					} ], [ {
-						imageUrl : "../../images/icons/remove.png",
+						imageUrl : "../../images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_removeClosure
