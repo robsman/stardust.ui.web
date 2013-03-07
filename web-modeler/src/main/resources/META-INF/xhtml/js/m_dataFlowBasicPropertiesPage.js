@@ -47,6 +47,8 @@ define(
 					this.inputInput = this.mapInputId("inputInput");
 					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
+					this.descriptionInput.hide();
+					$("label[for='descriptionInput']").hide();
 					this.inputDataPathInput = this
 							.mapInputId("inputDataPathInput");
 					this.outputDataPathInput = this
