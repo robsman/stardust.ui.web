@@ -110,7 +110,7 @@ define(
 				SessionLogPanel.prototype.processCommand = function(command) {
 					var user = m_user.getCurrentUser();
 					var row = jQuery("<tr class=\"sessionLogTableRow\"><td valign=\"top\"><table cellspacing='0' cellpadding='0' width='100%'>");
-					var imageUrl = "../images/" + "anonymous-user.gif"; // m_session.current().participants[command.account].imageUrl;
+					var imageUrl = "../images/" + "user-default.png"; // m_session.current().participants[command.account].imageUrl;
 
 					var view = {
 						image : imageUrl,
@@ -382,7 +382,7 @@ define(
 						participant.color = "dddddd";
 					}
 
-					participant.imageUrl = "../images/" + "anonymous-user.gif"; // m_session.current().participants[command.account].imageUrl;
+					participant.imageUrl = "../images/" + "user-default.png"; // m_session.current().participants[command.account].imageUrl;
 
 					row
 							.append("<td><table><tr><td><img src='"
