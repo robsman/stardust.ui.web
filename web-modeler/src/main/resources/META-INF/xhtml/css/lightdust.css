@@ -40,7 +40,6 @@ select {
 	color: #4d4d4d;
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
-	/*background-image: url(../images/select-arrow.png) no-repeat right -webkit-linear-gradient(top, #ffffff, #f4f4f4);*/
 	background-image: -webkit-linear-gradient(top, #ffffff, #f4f4f4);
 	background-image: -moz-linear-gradient(top, #ffffff, #f4f4f4);
 	background-image: -ms-linear-gradient(top, #ffffff, #f4f4f4);
@@ -362,7 +361,7 @@ div.toolBar {
 }
 
 .selected-tool {
-	background: url(../../images/toolbarIconSelectHover.png) center repeat-x
+	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
 }
@@ -379,7 +378,7 @@ input.toolbarButton .disabled {
 }
 
 input.toolbarButton:hover {
-	background: url(../../images/toolbarIconSelectHover.png) center repeat-x
+	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700;
 	cursor: pointer;
 }
