@@ -19,7 +19,7 @@ define(
 
 			/**
 			 * Represents a structured type.
-			 *
+			 * 
 			 * @constructor
 			 */
 			function TypeDeclaration() {
@@ -27,7 +27,7 @@ define(
 						m_modelElement.create());
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.toString = function() {
 					return "Lightdust.TypeDeclaration";
@@ -35,8 +35,9 @@ define(
 
 				/**
 				 * Initializes a the type declaration from JSON.
-				 *
-				 * @param {string} name the type's name
+				 * 
+				 * @param {string}
+				 *            name the type's name
 				 */
 				TypeDeclaration.prototype.initialize = function(name, type) {
 					this.name = name;
@@ -53,7 +54,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.initializeFromJson = function(model) {
 					this.model = model;
@@ -61,7 +62,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.rename = function(id, name) {
 					delete this.model.typeDeclarations[this.id];
@@ -73,9 +74,10 @@ define(
 				};
 
 				TypeDeclaration.prototype.getTypeDeclaration = function() {
-					return findType(this.typeDeclaration.schema, ("ExternalReference" === this.typeDeclaration.type.classifier)
-                                ? this.typeDeclaration.type.xref
-							    : this.id);
+					return findType(
+							this.typeDeclaration.schema,
+							("ExternalReference" === this.typeDeclaration.type.classifier) ? this.typeDeclaration.type.xref
+									: this.id);
 				};
 
 				TypeDeclaration.prototype.isReadOnly = function() {
@@ -84,7 +86,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
 					return (null != this.getBody())
@@ -92,17 +94,16 @@ define(
 				};
 
 				TypeDeclaration.prototype.asSchemaType = function() {
-					return this.resolveSchemaType(
-							("ExternalReference" === this.typeDeclaration.type.classifier
-									&& this.typeDeclaration.type.xref)
-                            		? this.typeDeclaration.type.xref
-                            		: this.id);
+					return this
+							.resolveSchemaType(("ExternalReference" === this.typeDeclaration.type.classifier && this.typeDeclaration.type.xref) ? this.typeDeclaration.type.xref
+									: this.id);
 				};
 
 				TypeDeclaration.prototype.getType = function() {
 					if ("ExternalReference" === this.typeDeclaration.type.classifier) {
 						return "importedStructuredDataType";
-					} if (this.isSequence()) {
+					}
+					if (this.isSequence()) {
 						return "compositeStructuredDataType";
 					} else {
 						return "enumStructuredDataType";
@@ -110,35 +111,34 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getBody = function() {
 					return this.getTypeDeclaration().body;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
 					return this.getTypeDeclaration().facets;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
 					return this.id;
 
-					/*var element = this.getElement(this.id);
-					if (element) {
-						return element.type;
-					}
-					return null;*/
+					/*
+					 * var element = this.getElement(this.id); if (element) {
+					 * return element.type; } return null;
+					 */
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
@@ -151,7 +151,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.createInstance = function() {
 					if (this.isSequence()) {
@@ -168,13 +168,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
 
 					var obj = this;
-					jQuery.each(typeDeclaration.getBody().elements, function (i, element) {
+					jQuery.each(typeDeclaration.getBody().elements, function(i,
+							element) {
 						var type = element.type;
 
 						// Strip prefix
@@ -190,7 +191,8 @@ define(
 								instance[element.name] = {};
 
 								obj.populateSequenceInstanceRecursively(
-										childTypeDeclaration, instance[element.name]);
+										childTypeDeclaration,
+										instance[element.name]);
 							} else {
 								for ( var enumerator in childTypeDeclaration
 										.getFacets()) {
@@ -207,7 +209,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
 					if (!this.isSequence()) {
@@ -226,7 +228,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function() {
 					if (this.isSequence()) {
@@ -286,10 +288,10 @@ define(
 						if ((0 <= newIdx) && (newIdx < elements.length)) {
 							// remove at old position
 							elements.splice(oldIdx, 1);
-//							if (oldIdx <= newIdx) {
-//								// adjust new position accordingly
-//								--newIdx;
-//							}
+							// if (oldIdx <= newIdx) {
+							// // adjust new position accordingly
+							// --newIdx;
+							// }
 							// insert at new position
 							elements.splice(newIdx, 0, element);
 						}
@@ -346,17 +348,21 @@ define(
 				TypeDeclaration.prototype.resolveSchemaType = function(name) {
 					var typeQName = parseQName(name);
 					if (typeQName.namespace) {
-						return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.model);
+						return resolveSchemaTypeFromModel("{"
+								+ typeQName.namespace + "}" + typeQName.name,
+								this.model);
 					} else {
 						// no ns prefix, resolve to containing schema
 						var schema = this.typeDeclaration.schema;
 						var schemaNsUri = schema.targetNamespace;
 
 						var type = findType(schema, typeQName.name);
-						return new SchemaType(typeQName.name, schemaNsUri, type, schema, this.model);
+						return new SchemaType(typeQName.name, schemaNsUri,
+								type, schema, this.model);
 					}
 				};
-			};
+			}
+			;
 
 			/**
 			 * @constructor
@@ -368,7 +374,8 @@ define(
 				this.schema = schema;
 				// scope is effectively the model with its type declarations
 				this.scope = scope;
-			};
+			}
+			;
 
 			SchemaType.prototype.toString = function() {
 				return "Lightdust.SchemaType";
@@ -424,19 +431,25 @@ define(
 				if (element && element.type) {
 
 					var typeQName = parseQName(element.type);
-					if ( !typeQName.prefix) {
+					if (!typeQName.prefix) {
 						// no ns prefix, resolve to containing schema
 						var type = findType(this.schema, typeQName.name);
 
-						return new SchemaType(typeQName.name, this.schema.targetNamespace, type, this.schema, this.scope);
+						return new SchemaType(typeQName.name,
+								this.schema.targetNamespace, type, this.schema,
+								this.scope);
 					} else {
-						if ( !typeQName.namespace && typeQName.prefix) {
+						if (!typeQName.namespace && typeQName.prefix) {
 							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
 						}
 						if (this.scope) {
-							return resolveSchemaTypeFromModel("{" + typeQName.namespace + "}" + typeQName.name, this.scope);
+							return resolveSchemaTypeFromModel("{"
+									+ typeQName.namespace + "}"
+									+ typeQName.name, this.scope);
 						} else if (this.schema) {
-							return resolveSchemaTypeFromSchema("{" + typeQName.namespace + "}" + typeQName.name, this.schema);
+							return resolveSchemaTypeFromSchema("{"
+									+ typeQName.namespace + "}"
+									+ typeQName.name, this.schema);
 						}
 					}
 				} else {
@@ -450,39 +463,49 @@ define(
 				if (parsedName.namespace) {
 					// resolve ns prefix to schema
 					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
-						return new SchemaType("xsd:" + parsedName.name, parsedName.namespace);
+						return new SchemaType("xsd:" + parsedName.name,
+								parsedName.namespace);
 					} else if (model) {
-						jQuery.each(model.typeDeclarations, function(i, declaration) {
-							if ((null != declaration.typeDeclaration)
-									&& (null != declaration.typeDeclaration.schema)
-									&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
-								schema = declaration.typeDeclaration.schema;
-								return false;
-							}
-						});
+						jQuery
+								.each(
+										model.typeDeclarations,
+										function(i, declaration) {
+											if ((null != declaration.typeDeclaration)
+													&& (null != declaration.typeDeclaration.schema)
+													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+												schema = declaration.typeDeclaration.schema;
+												return false;
+											}
+										});
 
-//						 Disabled as Kernal still doesn't support external schema
-//						 TODO - review
-//						 Looping over all models as there can be external references.
-//						var allModels = model.getAllModels();
-//						for (var i in allModels) {
-//							var mod = window.top.models[i];
-//							if (schema) {
-//								break;
-//							}
-//							jQuery.each(mod.typeDeclarations, function(i, declaration) {
-//								if ((null != declaration.typeDeclaration)
-//										&& (null != declaration.typeDeclaration.schema)
-//										&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
-//									schema = declaration.typeDeclaration.schema;
-//									return false;
-//								}
-//							});
-//						}
+						// Disabled as Kernal still doesn't support external
+						// schema
+						// TODO - review
+						// Looping over all models as there can be external
+						// references.
+						// var allModels = model.getAllModels();
+						// for (var i in allModels) {
+						// var mod = window.top.models[i];
+						// if (schema) {
+						// break;
+						// }
+						// jQuery.each(mod.typeDeclarations, function(i,
+						// declaration) {
+						// if ((null != declaration.typeDeclaration)
+						// && (null != declaration.typeDeclaration.schema)
+						// &&
+						// (declaration.typeDeclaration.schema.targetNamespace
+						// === parsedName.namespace)) {
+						// schema = declaration.typeDeclaration.schema;
+						// return false;
+						// }
+						// });
+						// }
 
 						if (schema) {
 							var type = findType(schema, parsedName.name);
-							return new SchemaType(parsedName.name, parsedName.namespace, type, schema, model);
+							return new SchemaType(parsedName.name,
+									parsedName.namespace, type, schema, model);
 						}
 					}
 				}
@@ -493,17 +516,17 @@ define(
 			function parseQName(name) {
 				if (name && ("{" === name.charAt(0))) {
 					return {
-						namespace: name.substr(1, name.length).split("}")[0],
-						name: name.substr(1, name.length).split("}")[1]
+						namespace : name.substr(1, name.length).split("}")[0],
+						name : name.substr(1, name.length).split("}")[1]
 					};
 				} else if (name && (0 <= name.indexOf(":"))) {
 					return {
-						prefix: name.split(":")[0],
-						name: name.split(":")[1]
+						prefix : name.split(":")[0],
+						name : name.split(":")[1]
 					};
 				} else {
 					return {
-						name: name
+						name : name
 					};
 				}
 			}
@@ -513,7 +536,8 @@ define(
 				var element;
 
 				// (fh) spec says we should search for elements
-				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
+				if (!parsedName.namespace
+						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
 					if (schema.elements) {
 						jQuery.each(schema.elements, function() {
 							if (this.name === parsedName.name) {
@@ -540,7 +564,8 @@ define(
 				}
 
 				// (fh) now search the type
-				if ( !parsedName.namespace || (schema && (parsedName.namespace === schema.targetNamespace))) {
+				if (!parsedName.namespace
+						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
 					if (schema.types) {
 						jQuery.each(schema.types, function() {
 							if (this.name === parsedName.name) {
@@ -557,7 +582,8 @@ define(
 			function resolveSchemaTypeFromSchema(typeName, schema) {
 				var type = findType(schema, typeName);
 				if (type) {
-					return new SchemaType(typeName, schema.targetNamespace, type, schema);
+					return new SchemaType(typeName, schema.targetNamespace,
+							type, schema);
 				}
 			}
 
@@ -566,7 +592,8 @@ define(
 			 *          equivalent to the list of Java primitive types)
 			 */
 			function getXsdCoreTypes() {
-				return [ "string", "boolean", "long", "int", "time", "short", "byte", "double", "float", "decimal", "dateTime"];
+				return [ "string", "boolean", "long", "int", "time", "short",
+						"byte", "double", "float", "decimal", "dateTime" ];
 			}
 
 			/**
@@ -582,12 +609,16 @@ define(
 						"language", "Name", "NCName", "NMTOKEN", "NMTOKENS",
 						"normalizedString", "QName", "token");
 				// numeric types
-				miscTypes.push("integer", "negativeInteger", "nonNegativeInteger", "nonPositiveInteger",
-						"positiveInteger", "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte");
+				miscTypes.push("integer", "negativeInteger",
+						"nonNegativeInteger", "nonPositiveInteger",
+						"positiveInteger", "unsignedLong", "unsignedInt",
+						"unsignedShort", "unsignedByte");
 				// data/time types
-				miscTypes.push("date","duration","gDay","gMonth","gMonthDay","gYear","gYearMonth");
+				miscTypes.push("date", "duration", "gDay", "gMonth",
+						"gMonthDay", "gYear", "gYearMonth");
 				// other
-				miscTypes.push("anyURI","base64Binary","hexBinary","NOTATION");
+				miscTypes.push("anyURI", "base64Binary", "hexBinary",
+						"NOTATION");
 
 				miscTypes.sort();
 
@@ -595,16 +626,87 @@ define(
 			}
 
 			/**
+			 * 
+			 */
+			function generateJsonRepresentation(typeDeclarations) {
+				var json = {};
+
+				for ( var n = 0; n < typeDeclarations.length; ++n) {
+					generateJsonRepresentationRecursively(json,
+							typeDeclarations[n]);
+				}
+
+				return json;
+			}
+
+			/**
+			 * 
+			 */
+			function generateJsonRepresentationRecursively(
+					typeDeclarationsJson, typeDeclaration) {
+				if (typeDeclarationsJson[typeDeclaration.id]) {
+					return;
+				}
+
+				var typeDeclarationJson = {};
+
+				typeDeclarationsJson[typeDeclaration.id] = typeDeclarationJson;
+
+				jQuery
+						.each(
+								typeDeclaration.getBody().elements,
+								function(i, element) {
+									var type = element.type;
+
+									// Strip prefix
+
+									if (element.type.indexOf(':') !== -1) {
+										type = element.type.split(":")[1];
+									}
+
+									var childTypeDeclaration = typeDeclaration.model
+											.findTypeDeclarationBySchemaName(type);
+
+									if (childTypeDeclaration != null) {
+										if (childTypeDeclaration.isSequence()) {
+											typeDeclarationJson[element.name] = childTypeDeclaration.id;
+
+											generateJsonRepresentationRecursively(
+													typeDeclarationsJson,
+													childTypeDeclaration);
+										} else {
+											if (element.cardinality == "many") {
+												typeDeclarationJson[element.name] = [];
+												typeDeclarationJson[element.name]
+														.push(element.type);
+											} else {
+												typeDeclarationJson[element.name] = element.type;
+											}
+										}
+									} else {
+										if (element.cardinality == "many") {
+											typeDeclarationJson[element.name] = [];
+											typeDeclarationJson[element.name]
+													.push(element.type);
+										} else {
+											typeDeclarationJson[element.name] = element.type;
+										}
+									}
+								});
+			}
+
+			/**
 			 * XSD based structured type declarations.
-			 *
+			 * 
 			 * @exports bpmModeler/js/m_typeDeclaration
 			 */
 			var moduleApi = {
 
 				/**
 				 * Creates a new TypeDeclaration instance.
-				 *
-				 * @param name the type's name
+				 * 
+				 * @param name
+				 *            the type's name
 				 * @returns {TypeDeclaration}
 				 */
 				createTypeDeclaration : function(name) {
@@ -624,40 +726,40 @@ define(
 				},
 
 				/**
-				 *
-				 * @param {string} sqName The schema qualified name of the type to resolve.
-				 * @param model The model providing context for type resolution.
+				 * 
+				 * @param {string}
+				 *            sqName The schema qualified name of the type to
+				 *            resolve.
+				 * @param model
+				 *            The model providing context for type resolution.
 				 * @returns {SchemaType} The resolved schema type.
 				 */
-				resolveSchemaTypeFromModel: function(sqName, model) {
+				resolveSchemaTypeFromModel : function(sqName, model) {
 					return resolveSchemaTypeFromModel(sqName, model);
 				},
-				resolveSchemaTypeFromSchema: function(typeName, schema) {
+				resolveSchemaTypeFromSchema : function(typeName, schema) {
 					return resolveSchemaTypeFromSchema(typeName, schema);
 				},
 
-				getXsdCoreTypes: function() {
+				getXsdCoreTypes : function() {
 					return getXsdCoreTypes();
 				},
-				getXsdExtraTypes: function() {
+				getXsdExtraTypes : function() {
 					return getXsdExtraTypes();
 				},
 
-				parseQName: function(qName) {
+				parseQName : function(qName) {
 					return parseQName(qName);
 				},
 
 				getPrimitiveTypeLabel : function(type) {
 					if (type == null) {
 						return "None"; // I18N
-					}
-					else if (type === "int") {
+					} else if (type === "int") {
 						return "Integer"; // I18N
-					}
-					else if (type === "string") {
+					} else if (type === "string") {
 						return "String"; // I18N
-					}
-					else if (type === "boolean") {
+					} else if (type === "boolean") {
 						return "Boolean"; // I18N
 					}
 
@@ -667,6 +769,8 @@ define(
 				deleteTypeDeclaration : function(id, model) {
 					delete model.typeDeclarations[id];
 				},
+
+				generateJsonRepresentation : generateJsonRepresentation,
 
 				STRUCTURE_TYPE : STRUCTURE_TYPE,
 				ENUMERATION_TYPE : ENUMERATION_TYPE
