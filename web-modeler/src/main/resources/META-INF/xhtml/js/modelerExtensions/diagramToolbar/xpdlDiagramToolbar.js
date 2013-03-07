@@ -164,7 +164,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "annotationButton",
 			paletteId : "annotationPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createAnnotation.title"),
-			iconUrl : "../../images/icons/annotation.png",
+			iconUrl : "../../images/icons/edit.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createAnnotation",
 			visibility : "always"
