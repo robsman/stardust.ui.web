@@ -109,11 +109,14 @@ public class DataCommandHandler
       DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol, dataOID);
       synchronized (model)
       {
-         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-               dataSymbol.getDataMappings().iterator());
-         data.getDataSymbols().remove(dataSymbol);
-         processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
-         parentLaneSymbol.getDataSymbol().remove(dataSymbol);
+         if(dataSymbol != null)
+         {
+            ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
+                  dataSymbol.getDataMappings().iterator());
+            data.getDataSymbols().remove(dataSymbol);
+            processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
+            parentLaneSymbol.getDataSymbol().remove(dataSymbol);
+         }
       }
    }
 
