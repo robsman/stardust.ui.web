@@ -282,8 +282,9 @@ define(
 										"carnot:engine:integration::overlay" : this.id,
 										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
 										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
-										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
-												.getAdditionalBeanSpecifications()
+										"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications(),
+										"carnot:engine:camel::username" : "${camelTriggerUsername}",
+										"carnot:engine:camel::password" : "${camelTriggerPassword}"
 									}
 								}
 							});
