@@ -92,7 +92,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "printButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.print.title"),
-			iconUrl : "../../images/icons/print.gif",
+			iconUrl : "../../images/icons/printer.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "print",
 			visibility : "always"
