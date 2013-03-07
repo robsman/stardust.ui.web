@@ -39,11 +39,12 @@
 					<td>
 						<table>
 							<tr>
-								<td><img src="../../images/icons/wand.png" /></td>
-								<td><label id="introLabel"></label></td>
+								<td><img src="../../images/icons/wand.png" />
+								</td>
+								<td><label id="introLabel"></label>
+								</td>
 							</tr>
-						</table>
-					</td>
+						</table></td>
 				</tr>
 				<tr>
 					<td>
@@ -52,79 +53,111 @@
 								<td valign="top">
 									<table>
 										<tr>
-											<td><label for="modelInput">Model</label></td>
+											<td><label for="modelInput">Model</label>
+											</td>
 											<td colspan="2"><select id="modelInput"
 												style="min-width: 200px;">
-											</select></td>
+											</select>
+											</td>
 										</tr>
 										<tr>
 											<td><label for="processDefinitionNameInput">Process
-													Definition Name</label></td>
+													Definition Name</label>
+											</td>
 											<td colspan="2"><input id="processDefinitionNameInput"
-												type="text" style="min-width: 200px;"></input></td>
+												type="text" style="min-width: 200px;"></input>
+											</td>
 										</tr>
 										<tr>
 											<td><label for="requestDataNameInput">Request
-													Data Name</label></td>
-											<td><select id="requestDataTypeInput"></select></td>
+													Data Name</label>
+											</td>
+											<td><select id="requestDataTypeInput"></select>
+											</td>
 											<td><input id="requestDataNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+												style="min-width: 200px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="preprocessingRulesApplicationSelect">Preprocessing
+													Rules Application</label>
+											</td>
+											<td colspan="2"><select
+												id="preprocessingRulesApplicationSelect"></select>
+											</td>
 										</tr>
 										<tr>
 											<td><label for="serviceInvocationActivityNameInput">Service
-													Invocation Activity Name</label></td>
+													Invocation Activity Name</label>
+											</td>
 											<td colspan="2"><input
 												id="serviceInvocationActivityNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+												style="min-width: 200px;"></input>
+											</td>
 										</tr>
 										<tr>
 											<td><label for="responseDataNameInput">Response
-													Data Name</label></td>
-											<td><select id="responseDataTypeInput"></select></td>
+													Data Name</label>
+											</td>
+											<td><select id="responseDataTypeInput"></select>
+											</td>
 											<td><input id="responseDataNameInput" type="text"
-												style="min-width: 200px;"></input></td>
+												style="min-width: 200px;"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="postprocessingRulesApplicationSelect">Postprocessing
+													Rules Application</label>
+											</td>
+											<td colspan="2"><select
+												id="postprocessingRulesApplicationSelect"></select>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td valign="top"><table>
+										<tr>
+											<td><label for="createWebServiceInput">Expose
+													Web Service</label>
+											</td>
+											<td><input id="createWebServiceInput" type="checkbox"></input>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="createRestServiceInput">Expose
+													REST Service</label>
+											</td>
+											<td><input id="createRestServiceInput" type="checkbox"></input>
+											</td>
 										</tr>
 									</table></td>
 							</tr>
 							<tr>
 								<td valign="top"><table>
 										<tr>
-											<td><label for="createWebServiceInput">Expose
-													Web Service</label></td>
-											<td><input id="createWebServiceInput" type="checkbox"></input>
+											<td><label for="transientInput">Transient</label>
+											</td>
+											<td><input id="transientInput" type="checkbox"></input>
 											</td>
 										</tr>
-										<tr>
-											<td><label for="createRestServiceInput">Expose
-													REST Service</label></td>
-											<td><input id="createRestServiceInput" type="checkbox"></input>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td valign="top"><table>
-										<tr>
-											<td><label for="transientInput">Transient</label></td>
-											<td><input id="transientInput"
-												type="checkbox"></input></td>
-										</tr>
-									</table>
-								</td>
+									</table></td>
 							</tr>
 							<tr>
 								<td valign="top"><table>
 										<tr>
 											<td><label for="createTestWrapperProcessInput">Create
-													Test Wrapper Process</label></td>
+													Test Wrapper Process</label>
+											</td>
 											<td><input id="createTestWrapperProcessInput"
-												type="checkbox"></input></td>
+												type="checkbox"></input>
+											</td>
 										</tr>
-									</table>
-								</td>
+									</table></td>
 							</tr>
-						</table></td>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</div>

@@ -64,6 +64,9 @@ require
 				'i18n' : 'common/InfinityBPMI18N'
 			},
 			shim : {
+				'i18n': {
+					exports: "InfinityBPMI18N"
+				},
 				'jquery.tablescroll' : [ 'jquery' ],
 				'jquery.treeTable' : [ 'jquery' ],
 				'jquery.url' : [ 'jquery' ]
@@ -71,6 +74,6 @@ require
 		});
 
 require([ "require", "jquery", "jquery.tablescroll", "jquery.treeTable",
-		"jquery.url", "bpm-modeler/js/m_processInterfaceTestWrapperWizard"], function(require) {
+		"jquery.url", "bpm-modeler/js/m_processInterfaceTestWrapperWizard", "i18n"], function(require) {
 	require("bpm-modeler/js/m_processInterfaceTestWrapperWizard").initialize();
 });

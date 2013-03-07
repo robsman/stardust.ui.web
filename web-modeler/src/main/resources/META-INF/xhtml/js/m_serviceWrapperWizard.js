@@ -10,25 +10,25 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-			"bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_urlUtils",
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/ChangeSynchronization",
 				"bpm-modeler/js/EventSynchronization",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process",
-				"bpm-modeler/js/m_accessPoint",
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementUtils",
+				"bpm-modeler/js/m_process", "bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_activitySymbol" ],
-		function(m_utils, m_constants, m_urlUtils, m_command, m_commandsController,
-				ChangeSynchronization, EventSynchronization, m_model,
-				m_process, m_accessPoint, m_dataTraversal, m_dialog,
-				m_activitySymbol) {
+		function(m_utils, m_constants, m_i18nUtils, m_urlUtils, m_command,
+				m_commandsController, ChangeSynchronization,
+				EventSynchronization, m_model, m_modelElementUtils, m_process,
+				m_accessPoint, m_dataTraversal, m_dialog, m_activitySymbol) {
 			return {
 				initialize : function() {
 					var wizard = new ServiceWrapperWizard();
 
-					wizard.initialize(payloadObj.callerWindow, payloadObj.application,
-							payloadObj.viewManager);
+					wizard.initialize(payloadObj.callerWindow,
+							payloadObj.application, payloadObj.viewManager);
 				}
 			};
 
@@ -44,6 +44,8 @@ define(
 				this.responseDataTypeInput = jQuery("#responseDataTypeInput");
 				this.responseDataNameInput = jQuery("#responseDataNameInput");
 				this.serviceInvocationActivityNameInput = jQuery("#serviceInvocationActivityNameInput");
+				this.preprocessingRulesApplicationSelect = jQuery("#preprocessingRulesApplicationSelect");
+				this.postprocessingRulesApplicationSelect = jQuery("#postprocessingRulesApplicationSelect");
 				this.createWebServiceInput = jQuery("#createWebServiceInput");
 				this.createRestServiceInput = jQuery("#createRestServiceInput");
 				this.transientInput = jQuery("#transientInput");
@@ -52,11 +54,11 @@ define(
 				this.cancelButton = jQuery("#cancelButton");
 
 				var self = this;
-				
+
 				this.createButton.click({
 					"wizard" : this
 				}, function(event) {
-					//event.data.wizard.create();
+					// event.data.wizard.create();
 					event.data.wizard.createViaCallback();
 					closePopup();
 				});
@@ -70,14 +72,33 @@ define(
 				/**
 				 * 
 				 */
-				ServiceWrapperWizard.prototype.initialize = function(callerWindow,
-						application, viewManager) {
+				ServiceWrapperWizard.prototype.getModel = function() {
+					return this.application.model;
+				};
+
+				/**
+				 * 
+				 */
+				ServiceWrapperWizard.prototype.checkCompatibility = function(
+						application) {
+					return application.applicationType == "camelSpringProducerApplication"
+							&& application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == "rulesIntegrationOverlay";
+				};
+
+				/**
+				 * 
+				 */
+				ServiceWrapperWizard.prototype.initialize = function(
+						callerWindow, application, viewManager) {
 					this.callerWindow = callerWindow;
 					this.application = application;
 					this.viewManager = viewManager;
 
 					this.introLabel.empty();
-					this.introLabel.append("Create a Wrapper Process Definition for the Application <b>" + this.application.name + "</b> with the following data:");
+					this.introLabel
+							.append("Create a Wrapper Process Definition for the Application <b>"
+									+ this.application.name
+									+ "</b> with the following data:");
 
 					this.modelInput.empty();
 
@@ -117,6 +138,80 @@ define(
 							.val(this.application.name);
 					this.responseDataNameInput.val(this.application.name
 							+ " Response Data");
+
+					this
+							.populateRulesApplicationSelect(this.preprocessingRulesApplicationSelect);
+					this
+							.populateRulesApplicationSelect(this.postprocessingRulesApplicationSelect);
+				};
+
+				/**
+				 * 
+				 */
+				ServiceWrapperWizard.prototype.populateRulesApplicationSelect = function(
+						select) {
+					select.empty();
+					select.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>"
+							+ m_i18nUtils
+									.getProperty("modeler.general.toBeDefined")
+							+ "</option>");
+
+					select.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.thisModel")
+							+ "'>");
+
+					for ( var i in this.getModel().applications) {
+						if (!this
+								.checkCompatibility(this.getModel().applications[i])) {
+							continue;
+						}
+
+						m_utils.debug(this.getModel().applications[i]);
+
+						select.append("<option value='"
+								+ this.getModel().applications[i].getFullId()
+								+ "'>" + this.getModel().applications[i].name
+								+ "</option>");
+					}
+
+					select.append("</optgroup>");
+					select.append("<optgroup label='"
+							+ m_i18nUtils
+									.getProperty("modeler.general.otherModels")
+							+ "'>");
+
+					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModel()) {
+							continue;
+						}
+
+						for ( var m in m_model.getModels()[n].applications) {
+							if (!m_modelElementUtils
+									.hasPublicVisibility(m_model.getModels()[n].applications[m])) {
+								continue;
+							}
+
+							if (!this
+									.checkCompatibility(m_model.getModels()[n].applications[m])) {
+								continue;
+							}
+
+							select
+									.append("<option value='"
+											+ m_model.getModels()[n].applications[m]
+													.getFullId()
+											+ "'>"
+											+ m_model.getModels()[n].name
+											+ "/"
+											+ m_model.getModels()[n].applications[m].name
+											+ "</option>");
+						}
+					}
+
+					select.append("</optgroup>");
 				};
 
 				/**
@@ -124,32 +219,32 @@ define(
 				 */
 				ServiceWrapperWizard.prototype.createViaCallback = function() {
 					var parameters = {
-								processDefinitionName : this.processDefinitionNameInput
-										.val(),
-								requestDataTypeFullId : this.requestDataTypeInput
-										.val(),
-								requestDataName : this.requestDataNameInput
-										.val(),
-								responseDataTypeFullId : this.responseDataTypeInput
-										.val(),
-								responseDataName : this.responseDataNameInput
-										.val(),
-								serviceInvocationActivityName : this.serviceInvocationActivityNameInput
-										.val(),
-								applicationFullId : this.application.getFullId(),
-								createWebService: this.createWebServiceInput.prop("checked"),
-								createRestService: this.createRestServiceInput.prop("checked"),
-								transientProcess: this.transientInput.prop("checked"),
-								generateTestWrapper: this.createTestWrapperProcessInput.prop("checked")
-							};
-				
-					m_commandsController
-					.submitCommand(m_command
+						processDefinitionName : this.processDefinitionNameInput
+								.val(),
+						requestDataTypeFullId : this.requestDataTypeInput.val(),
+						preprocessingRulesApplicationFullId : this.preprocessingRulesApplicationSelect.val() == m_constants.TO_BE_DEFINED ? null : this.preprocessingRulesApplicationSelect.val(),
+						requestDataName : this.requestDataNameInput.val(),
+						responseDataTypeFullId : this.responseDataTypeInput
+								.val(),
+						responseDataName : this.responseDataNameInput.val(),
+						serviceInvocationActivityName : this.serviceInvocationActivityNameInput
+								.val(),
+						applicationFullId : this.application.getFullId(),
+						postprocessingRulesApplicationFullId : this.postprocessingRulesApplicationSelect.val() == m_constants.TO_BE_DEFINED ? null : this.postprocessingRulesApplicationSelect.val(),
+						createWebService : this.createWebServiceInput
+								.prop("checked"),
+						createRestService : this.createRestServiceInput
+								.prop("checked"),
+						transientProcess : this.transientInput.prop("checked"),
+						generateTestWrapper : this.createTestWrapperProcessInput
+								.prop("checked")
+					};
+
+					m_commandsController.submitCommand(m_command
 							.createCreateNodeCommand(
 									"serviceWrapperProcess.create",
 									this.application.model.id,
-									this.application.model.id,
-									parameters));
+									this.application.model.id, parameters));
 				};
 
 				/**
@@ -198,26 +293,30 @@ define(
 														}, self.callerWindow)
 												.done(
 														function() {
-															try
-															{
-																self.callerWindow.alert("Diagram loaded");
+															try {
+																self.callerWindow
+																		.alert("Diagram loaded");
 
-															process.diagram.clearCurrentToolSelection();
-															process.diagram.mode = process.diagram.CREATE_MODE;
-															
-															var symbol = m_activitySymbol
-															.createActivitySymbolFromApplication(
-																	process.diagram,
-																	self.application);
-															
-															self.callerWindow.alert("Symbol created " + symbol);
-															process.diagram.newSymbol = symbol;
-															//process.diagram.placeNewSymbol(100, 100, true);
-															self.callerWindow.alert("Activity symbol created");
-															}
-															catch (x)
-															{
-																self.callerWindow.alert(x);																															
+																process.diagram
+																		.clearCurrentToolSelection();
+																process.diagram.mode = process.diagram.CREATE_MODE;
+
+																var symbol = m_activitySymbol
+																		.createActivitySymbolFromApplication(
+																				process.diagram,
+																				self.application);
+
+																self.callerWindow
+																		.alert("Symbol created "
+																				+ symbol);
+																process.diagram.newSymbol = symbol;
+																// process.diagram.placeNewSymbol(100,
+																// 100, true);
+																self.callerWindow
+																		.alert("Activity symbol created");
+															} catch (x) {
+																self.callerWindow
+																		.alert(x);
 															}
 														}).fail();
 									}).fail();
