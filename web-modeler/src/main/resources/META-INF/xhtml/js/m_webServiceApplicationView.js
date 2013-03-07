@@ -372,8 +372,8 @@ define(
 						}
 
 						if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
-							services[this.application.attributes["carnot:engine:wsServiceName"]] = {
-								name : this.application.attributes["carnot:engine:wsServiceName"],
+							services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
+								name : this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
 								ports : ports
 							};
 						}
@@ -391,7 +391,7 @@ define(
 					this.wsdlUrlInput
 							.val(this.application.attributes["carnot:engine:wsdlUrl"]);
 					this.serviceSelect
-							.val(this.application.attributes["carnot:engine:wsServiceName"]);
+							.val(this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
 					this.portSelect
 							.val(this.application.attributes["carnot:engine:wsPortName"]);
 					this.operationSelect
@@ -404,14 +404,14 @@ define(
 						this.styleOutput
 								.append(this.application.attributes["carnot:engine:wsPortName"]);
 						var port = this.webServiceStructure
-											.services[this.application.attributes["carnot:engine:wsServiceName"]]
+											.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
 												.ports[this.application.attributes["carnot:engine:wsPortName"]];
 						this.styleOutput.empty();
 						this.styleOutput.append(port.style);
 
 						// Update use output for selected service and port and operation
 						var operation = this.webServiceStructure
-												.services[this.application.attributes["carnot:engine:wsServiceName"]]
+												.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
 													.ports[this.application.attributes["carnot:engine:wsPortName"]]
 														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
 						this.useOutput.empty();
@@ -441,6 +441,20 @@ define(
 						this.setAuthentication(false);
 					}
 					initializing = false;
+				};
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.getServiceDisplayName = function(fullyQualifiedName) {
+					if (fullyQualifiedName
+							&& fullyQualifiedName.indexOf("{") == 0
+							&& fullyQualifiedName.indexOf("}") > -1
+							&& fullyQualifiedName.indexOf("}") < (fullyQualifiedName.length - 1)) {
+						return fullyQualifiedName.substring((fullyQualifiedName.indexOf("}") + 1));
+					};
+
+					return fullyQualifiedName;
 				};
 
 				/**
@@ -631,7 +645,7 @@ define(
 					this.protocolOutput.append(operation["carnot:engine:wsSoapProtocol"]);
 
 					if (!initializing
-							&& (this.serviceSelect.val() != this.application.attributes["carnot:engine:wsServiceName"]
+							&& (this.serviceSelect.val() != this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])
 								|| this.portSelect.val() != this.application.attributes["carnot:engine:wsPortName"]
 								|| this.operationSelect.val() != this.application.attributes["carnot:engine:wsOperationName"])) {
 						this
