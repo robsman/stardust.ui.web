@@ -164,7 +164,6 @@ define(
 					this.browseButton = jQuery("#browseButton");
 					this.serviceSelect = jQuery("#serviceSelect");
 					this.implementselect = jQuery("#implementationSelect");
-					this.mechanismselect = jQuery("#mechanismSelect");
 					this.portSelect = jQuery("#portSelect");
 					this.operationSelect = jQuery("#operationSelect");
 					this.styleOutput = jQuery("#styleOutput");
@@ -190,11 +189,11 @@ define(
 					// values for mechanism select
 					selectdata = m_i18nUtils
 							.getProperty("modeler.model.propertyView.webService.mechanismSelect.option.httpBasicAuthorization");
-					this.mechanismselect.append("<option value=\"basic\">"
+					this.mechanismSelect.append("<option value=\"basic\">"
 							+ selectdata + "</option>");
 					selectdata = m_i18nUtils
 							.getProperty("modeler.model.propertyView.webService.mechanismSelect.option.wsSecurity");
-					this.mechanismselect
+					this.mechanismSelect
 							.append("<option value=\"ws-security\">"
 									+ selectdata + "</option>");
 
@@ -259,35 +258,7 @@ define(
 										view : this
 									},
 									function(event) {
-										event.data.view.variantSelect.empty();
-
-										if (event.data.view.mechanismSelect
-												.val() == "basic") {
-
-											selectdata = m_i18nUtils.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
-											event.data.view.variantSelect
-											.append("<option value=\"passwordText\">"+selectdata+"</option>");
-
-										} else {
-											selectdata = m_i18nUtils
-													.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
-											event.data.view.variantSelect
-													.append("<option value=\"passwordText\">"
-															+ selectdata
-															+ "</option>");
-											selectdata = m_i18nUtils
-													.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwdDigest");
-											event.data.view.variantSelect
-													.append("<option value=\"passwordDigest\">"
-															+ selectdata
-															+ "</option>");
-											selectdata = m_i18nUtils
-													.getProperty("modeler.model.propertyView.webService.variant.option.xwssConfiguration");
-											event.data.view.variantSelect
-													.append("<option value=\"xwssConfiguration\">"
-															+ selectdata
-															+ "</option>");
-										}
+										event.data.view.setMechanism(event.data.view.mechanismSelect.val());
 									});
 					this.publicVisibilityCheckbox
 							.change(
@@ -431,14 +402,15 @@ define(
 					} else {
 						this.setAddressing(false);
 					}
+
 					if (this.application.attributes["carnot:engine:wsAuthentication"]) {
-						this
-								.setAuthentication(
-										true,
-										this.application.attributes["carnot:engine:wsAuthentication"],
+						this.authenticationInput.attr("checked", true);
+						this.initializeAuthentication(this.application.attributes["carnot:engine:wsAuthentication"],
 										this.application.attributes["carnot:engine:wsAuthenticationVariant"]);
 					} else {
-						this.setAuthentication(false);
+						this.authenticationInput.attr("checked", false);
+						this.mechanismSelect.attr("disabled", true);
+						this.variantSelect.attr("disabled", true);
 					}
 					initializing = false;
 				};
@@ -705,73 +677,92 @@ define(
 				};
 
 				/**
-				 *
+				 * initialize Authentication
 				 */
-				WebServiceApplicationView.prototype.setAuthentication = function(
-						authentication, mechanism, variant) {
-					if (authentication) {
-						this.authenticationInput.attr("checked", true);
-
-						if (mechanism == null) {
-							mechanism = "basic";
-						}
-
-						this.setMechanism(mechanism, variant);
-					} else {
-						this.authenticationInput.attr("checked", false);
-						this.mechanismSelect.attr("disabled", true);
-						this.mechanismSelect.val(null);
-						this.variantSelect.attr("disabled", true);
-						this.variantSelect.val(null);
-					}
-				};
-
-				/**
-				 *
-				 */
-				WebServiceApplicationView.prototype.setMechanism = function(
+				WebServiceApplicationView.prototype.initializeAuthentication = function(
 						mechanism, variant) {
+
 					this.mechanismSelect.removeAttr("disabled");
+					this.variantSelect.removeAttr("disabled");
+
+					if (mechanism == null) {
+						mechanism = "basic";
+					}
 					this.mechanismSelect.val(mechanism);
 					this.variantSelect.empty();
 
-					if (variant == null) {
-						variant = "passwordText";
-					}
-
-					var userNamePassStr = m_i18nUtils.getProperty("modeler.model.propertyView.webService.implementationProperties.credentials");
-
 					if (mechanism == "basic") {
+						selectdata = m_i18nUtils
+								.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
 						this.variantSelect
-								.append("<option value=\"passwordText\">" + userNamePassStr + "</option>");
-						this.setVariant(variant);
+								.append("<option value=\"passwordText\">"
+										+ selectdata + "</option>");
+
 					} else {
+						selectdata = m_i18nUtils
+								.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwd");
 						this.variantSelect
-								.append("<option value=\"passwordText\">" + userNamePassStr + "</option><option value=\"passwordDigest\">User Name/Password Digest</option><option value=\"xwssConfiguration\">XWSS Configuration</option>");
-						this.setVariant(variant);
+								.append("<option value=\"passwordText\">"
+										+ selectdata + "</option>");
+						selectdata = m_i18nUtils
+								.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwdDigest");
+						this.variantSelect
+								.append("<option value=\"passwordDigest\">"
+										+ selectdata + "</option>");
+						selectdata = m_i18nUtils
+								.getProperty("modeler.model.propertyView.webService.variant.option.xwssConfiguration");
+						this.variantSelect
+								.append("<option value=\"xwssConfiguration\">"
+										+ selectdata + "</option>");
+					}
+					if (variant) {
+						this.variantSelect.val(variant);
 					}
 				};
 
 				/**
-				 *
+				 *	set/reset Authentication checkbox and update server
 				 */
-				WebServiceApplicationView.prototype.setVariant = function(
-						variant) {
-					this.variantSelect.removeAttr("disabled");
-					this.variantSelect.val(variant);
-
-					if (this.mechanismSelect.val() != this.application.attributes["carnot:engine:wsAuthentication"]
-							&& this.variantSelect.val() != this.application.attributes["carnot:engine:wsAuthenticationVariant"]) {
-						this
-								.submitChanges({
-									attributes : {
-										"carnot:engine:wsAuthentication" : this.mechanismSelect
-												.val(),
-										"carnot:engine:wsAuthenticationVariant" : this.variantSelect
-												.val()
-									}
-								});
+				WebServiceApplicationView.prototype.setAuthentication = function(authentication) {
+					if (authentication) {
+						this.authenticationInput.attr("checked", true);
+						this.initializeAuthentication(null, null);
+						this.updateAuthentication(this.mechanismSelect.val(), this.variantSelect.val());
+					} else {
+						this.authenticationInput.attr("checked", false);
+						this.mechanismSelect.attr("disabled", true);
+						this.variantSelect.attr("disabled", true);
+						this.updateAuthentication("","");
 					}
+				};
+
+				/**
+				 *	sets Mechanism and reset Variant and then update server
+				 */
+				WebServiceApplicationView.prototype.setMechanism = function(mechanism) {
+					this.initializeAuthentication(mechanism, null);
+					this.updateAuthentication(this.mechanismSelect.val(), this.variantSelect.val());
+				};
+
+				/**
+				 *	set Variant and update server
+				 */
+				WebServiceApplicationView.prototype.setVariant = function(variant) {
+					this.variantSelect.val(variant);
+					this.updateAuthentication(this.mechanismSelect.val(), this.variantSelect.val());
+				};
+
+				/**
+				 *	Update server
+				 */
+				WebServiceApplicationView.prototype.updateAuthentication = function(
+						mechanism, variant) {
+					this.submitChanges({
+						attributes : {
+							"carnot:engine:wsAuthentication" : mechanism,
+							"carnot:engine:wsAuthenticationVariant" : variant
+						}
+					});
 				};
 			}
 		});
