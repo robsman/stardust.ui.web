@@ -311,6 +311,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             IModelParticipant performer = getModelBuilderFacade().findParticipant(
                   participantFullId);
+            
             activity.setPerformer(performer);
          }
 
