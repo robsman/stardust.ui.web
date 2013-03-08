@@ -395,12 +395,9 @@ define(
 					}
 
 					if (this.application.attributes["carnot:engine:wsImplementation"]) {
-						this
-								.setAddressing(
-										true,
-										this.application.attributes["carnot:engine:wsImplementation"]);
+						this.initializeWSAddressing(true, this.application.attributes["carnot:engine:wsImplementation"]);
 					} else {
-						this.setAddressing(false);
+						this.initializeWSAddressing(false, this.application.attributes["carnot:engine:wsImplementation"]);
 					}
 
 					if (this.application.attributes["carnot:engine:wsAuthentication"]) {
@@ -637,24 +634,33 @@ define(
 				};
 
 				/**
-				 *
+				 *  Initialize WS-addressing
 				 */
-				WebServiceApplicationView.prototype.setAddressing = function(
-						wsAdressing, implementation) {
-
+				WebServiceApplicationView.prototype.initializeWSAddressing = function(wsAdressing,
+						implementation) {
 					if (wsAdressing) {
 						this.addressingInput.attr("checked", true);
 						this.implementationSelect.removeAttr("disabled");
-
 						if (implementation == null) {
 							implementation = "generic";
 						}
-
 						this.implementationSelect.val(implementation);
 					} else {
 						this.addressingInput.attr("checked", false);
 						this.implementationSelect.attr("disabled", true);
-						this.implementationSelect.val(null);
+					}
+				};
+
+				/**
+				 * Set WS-addressing
+				 */
+				WebServiceApplicationView.prototype.setAddressing = function(wsAdressing) {
+					if (wsAdressing) {
+						this.initializeWSAddressing(wsAdressing, null);
+						this.updateWSAddressing(this.implementationSelect.val());
+					} else {
+						this.initializeWSAddressing(wsAdressing, null);
+						this.updateWSAddressing(null);
 					}
 				};
 
@@ -664,16 +670,18 @@ define(
 				WebServiceApplicationView.prototype.setImplementation = function(
 						implementation) {
 					this.implementationSelect.val(implementation);
+					this.updateWSAddressing(implementation);
+				};
 
-					if (this.implementationSelect.val() != this.application.attributes["carnot:engine:wsImplementation"]) {
-						this
-								.submitChanges({
-									attributes : {
-										"carnot:engine:wsImplementation" : this.implementationSelect
-												.val()
-									}
-								});
-					}
+				/**
+				 * update WS-Addressing
+				 */
+				WebServiceApplicationView.prototype.updateWSAddressing = function(
+						implementation) {
+					this.submitChanges({attributes :
+								{"carnot:engine:wsImplementation" : implementation
+							}
+					});
 				};
 
 				/**
