@@ -732,7 +732,7 @@ define(
 						this.authenticationInput.attr("checked", false);
 						this.mechanismSelect.attr("disabled", true);
 						this.variantSelect.attr("disabled", true);
-						this.updateAuthentication("","");
+						this.updateAuthentication(null, null);
 					}
 				};
 

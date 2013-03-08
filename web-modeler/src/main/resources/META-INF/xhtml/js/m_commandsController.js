@@ -247,7 +247,7 @@ define(
 										// Added to remove any cyclic reference
 										JSON.stringify(command, function(key,
 												val) {
-											if (typeof val == "object") {
+											if ((typeof val == "object") && null != val) {
 												if (obj.indexOf(val) >= 0) {
 													return undefined;
 												}
