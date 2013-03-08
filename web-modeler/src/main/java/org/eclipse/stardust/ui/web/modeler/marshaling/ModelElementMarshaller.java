@@ -2828,29 +2828,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       structJson.add("typeDeclaration", typeDeclarationJson);
 
-      // TODO: external references
       XpdlTypeType type = structType.getDataType();
-
       if (null != type)
       {
          typeDeclarationJson.add("type", toXpdlTypeJson(type));
       }
 
       XSDSchema schema = structType.getSchema();
-      if ((null == schema) && (type instanceof ExternalReferenceType))
-      {
-         // TODO try resolving schema against classpath
-      }
-
       if (null != schema)
       {
          JsonObject schemaJson = new JsonObject();
          ModelService.loadSchemaInfo(schemaJson, schema);
          typeDeclarationJson.add("schema", schemaJson);
-      }
-      else if (type instanceof ExternalReferenceType)
-      {
-         // TODO pass info that schema could not be loaded
       }
 
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
