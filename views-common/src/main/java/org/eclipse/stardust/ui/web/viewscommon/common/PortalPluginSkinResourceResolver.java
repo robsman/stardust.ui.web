@@ -21,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.faces.context.FacesContext;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.utils.io.CloseableUtil;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.web.jsf.FacesContextUtils;
 
 /**
  * 
@@ -39,7 +42,6 @@ public class PortalPluginSkinResourceResolver
    public static final Logger trace = LogManager.getLogger(PortalPluginSkinResourceResolver.class);
    public static final String IE_USER_AGENT = "_ie";
    public static final String SAFARI_USER_AGENT = "_safari";
-   private static ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
    /**
     * 
@@ -58,8 +60,23 @@ public class PortalPluginSkinResourceResolver
       });
       try
       {
-         Resource[] resources = resolver.getResources("classpath*:/META-INF/*.portal-plugin");
-         for (Resource resource : resources)
+         Resource[] resources = null;
+         ApplicationContext context = null;
+         try
+         {
+            context = FacesContextUtils.getWebApplicationContext(FacesContext.getCurrentInstance());
+            resources = context.getResources("classpath*:META-INF/*.portal-plugin");
+         }
+         catch (Exception e)
+         {
+            // JBoss is unable to find META-INF some times, workaround for the scenario
+            resources = context.getResources("classpath*:/**/*.portal-plugin");
+         }
+         if(CollectionUtils.isEmpty(resources))
+         {
+            return allExtensions;
+         }
+         for (Resource resource :resources)
          {
             String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
             String webUriPrefix = pluginId + "/";
@@ -78,7 +95,7 @@ public class PortalPluginSkinResourceResolver
                List<Resource> extensionResources;
                try
                {
-                  extensionResources = discoverSkinExtensions(resolver, webContentBaseUri, pluginFolder, fileName);
+                  extensionResources = discoverSkinExtensions(context, webContentBaseUri, pluginFolder, fileName);
                }
                // JBoss is throwing an IOException instead of FileNotFoundException if a
                // file cannot be found
