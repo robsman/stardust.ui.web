@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/GenericEndpointOverlay", ,
+		[ "bpm-modeler/js/GenericEndpointOverlay",
 				"bpm-modeler/js/m_manualTriggerIntegrationOverlay",
 				"bpm-modeler/js/m_timerEventIntegrationOverlay",
 				"bpm-modeler/js/m_fileEventIntegrationOverlay",

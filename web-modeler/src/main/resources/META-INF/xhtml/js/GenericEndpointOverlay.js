@@ -37,74 +37,100 @@ define(
 					this.responseDataInput = jQuery("#genericEndpointOverlay #responseDataInput");
 					this.directionInput = jQuery("#genericEndpointOverlay #directionInput");
 
-					// this.registerInputForModelElementAttributeChangeSubmission(
-					// this.camelContextInput,
-					// "carnot:engine:camel::camelContextId");
-					// this.registerInputForModelElementAttributeChangeSubmission(
-					// this.routeTextarea,
-					// "carnot:engine:camel::routeEntries");
-					// this
-					// .registerInputForModelElementAttributeChangeSubmission(
-					// this.additionalBeanSpecificationTextarea,
-					// "carnot:engine:camel::additionalSpringBeanDefinitions");
-
 					this.directionInput
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
+							.append("<option value=\"requestOnly\">"
+									+ m_i18nUtils
+											.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestOnly")
+									+ "</option>");
+					this.directionInput
+							.append("<option value=\"requestResponse\">"
+									+ m_i18nUtils
+											.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestResponse")
+									+ "</option>");
 
-										if (view.directionInput.val() == "requestResponse") {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-														},
-														contexts : {
-															application : {
-																accessPoints : [
-																		{
-																			id : "oParam1",
-																			name : "Input",
-																			direction : "IN",
-																			dataType : "primitive",
-																			primitiveDataType : "string"
-																		},
-																		{
-																			id : "returnValue",
-																			name : "Output",
-																			direction : "OUT",
-																			dataType : "primitive",
-																			primitiveDataType : "string",
-																			attributes : {
-																				"carnot:engine:flavor" : "RETURN_VALUE"
-																			}
-																		} ]
-															}
-														}
-													});
-										} else {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:camel::producerMethodName" : ""
-														},
-														contexts : {
-															application : {
-																accessPoints : [ {
+					var self = this;
+
+					this.camelContextInput.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+
+						self.view.submitModelElementAttributeChange(
+								"carnot:engine:camel::camelContextId",
+								self.camelContextInput.val());
+					});
+					this.routeTextarea.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+
+						self.view.submitModelElementAttributeChange(
+								"carnot:engine:camel::routeEntries",
+								self.routeTextarea.val());
+					});
+					this.additionalBeanSpecificationTextarea
+							.change(function() {
+								if (!self.view.validate()) {
+									return;
+								}
+
+								self.view
+										.submitModelElementAttributeChange(
+												"carnot:engine:camel::additionalSpringBeanDefinitions",
+												self.additionalBeanSpecificationTextarea
+														.val());
+							});
+					this.directionInput
+							.change(function() {
+								if (self.directionInput.val() == "requestResponse") {
+									self.view
+											.submitChanges({
+												attributes : {
+													"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
+												},
+												contexts : {
+													application : {
+														accessPoints : [
+																{
 																	id : "oParam1",
 																	name : "Input",
 																	direction : "IN",
 																	dataType : "primitive",
 																	primitiveDataType : "string"
+																},
+																{
+																	id : "returnValue",
+																	name : "Output",
+																	direction : "OUT",
+																	dataType : "primitive",
+																	primitiveDataType : "string",
+																	attributes : {
+																		"carnot:engine:flavor" : "RETURN_VALUE"
+																	}
 																} ]
-															}
-														}
-													});
-										}
-									});
+													}
+												}
+											});
+								} else {
+									self.view
+											.submitChanges({
+												attributes : {
+													"carnot:engine:camel::producerMethodName" : ""
+												},
+												contexts : {
+													application : {
+														accessPoints : [ {
+															id : "oParam1",
+															name : "Input",
+															direction : "IN",
+															dataType : "primitive",
+															primitiveDataType : "string"
+														} ]
+													}
+												}
+											});
+								}
+							});
 				};
 
 				/**
@@ -169,20 +195,37 @@ define(
 				 */
 				GenericEndpointOverlay.prototype.update = function() {
 					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
+							.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
+							.val(this.getApplication().attributes["carnot:engine:camel::routeEntries"]);
 					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
-					
+							.val(this.getApplication().attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
 
-					if (this.application.attributes["carnot:engine:camel::producerMethodName"]
-							&& this.application.attributes["carnot:engine:camel::producerMethodName"]
+					if (this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
+							&& this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
 									.indexOf("sendBodyInOut") == 0) {
 						this.directionInput.val("requestResponse");
 					} else {
 						this.directionInput.val("requestOnly");
 					}
+				};
+
+				/**
+				 * 
+				 */
+				GenericEndpointOverlay.prototype.validate = function() {
+					this.camelContextInput.removeClass("error");
+
+					if (this.camelContextInput.val() == null
+							|| this.camelContextInput.val() == "") {
+						this.view.errorMessages
+								.push("Camel Context must not be empty."); // TODO I18N
+						this.camelContextInput.addClass("error");
+
+						return false;
+					}
+
+					return true;
 				};
 			}
 		});

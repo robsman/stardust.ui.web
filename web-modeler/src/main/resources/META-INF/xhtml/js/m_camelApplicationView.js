@@ -70,25 +70,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-
-				var directioninput = jQuery("#directionInput");
-
-				var selectdata = m_i18nUtils
-						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestOnly");
-				directioninput.append("<option value=\"requestOnly\">"
-						+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.direction.requestResponse");
-				directioninput.append("<option value=\"requestResponse\">"
-						+ selectdata + "</option>");
-
-				var selectendpoint = jQuery("#endpointTypeSelectInput");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.endPoint.generic");
-				selectendpoint.append("<option value=\"genericEndpoint\">"
-						+ selectdata + "</option>");
 			}
 			/**
 			 * 
@@ -160,10 +141,10 @@ define(
 					var propertiesTabsList = jQuery("#propertiesTabsList");
 					var lastListItem = propertiesTabsList.children().last();
 
-//					propertiesTabsList.append("<li><a href='#" + id
-//							+ "Tab'><img src='" + icon
-//							+ "'></img><span class='tabLabel' id='" + id + "'>"
-//							+ name + "</span> </a></li>");
+					// propertiesTabsList.append("<li><a href='#" + id
+					// + "Tab'><img src='" + icon
+					// + "'></img><span class='tabLabel' id='" + id + "'>"
+					// + name + "</span> </a></li>");
 
 					lastListItem.before("<li><a href='#" + id
 							+ "Tab'><img src='" + icon
@@ -252,7 +233,6 @@ define(
 					this.clearErrorMessages();
 
 					this.nameInput.removeClass("error");
-					this.camelContextInput.removeClass("error");
 
 					if (this.nameInput.val() == null
 							|| this.nameInput.val() == "") {
@@ -261,11 +241,8 @@ define(
 						this.nameInput.addClass("error");
 					}
 
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
-						this.errorMessages
-								.push("Camel Context must not be empty.");
-						this.nameInput.addClass("error");
+					if (this.overlayController) {
+						this.overlayController.validate();
 					}
 
 					if (this.errorMessages.length > 0) {
