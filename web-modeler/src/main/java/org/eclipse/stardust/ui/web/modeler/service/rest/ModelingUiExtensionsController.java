@@ -97,6 +97,9 @@ public class ModelingUiExtensionsController
       buffer.append("    // Views\n");
       listExtensionDependencies(buffer, registry.getViewExtensions());
 
+      buffer.append("    // Integration Overlays\n");
+      listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
@@ -104,6 +107,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerOutlineExtensions", registry.getOutlineExtensions());
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerViewExtensions", registry.getViewExtensions());
+      listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
 
       buffer.append("\n")
             .append("    return {};\n")

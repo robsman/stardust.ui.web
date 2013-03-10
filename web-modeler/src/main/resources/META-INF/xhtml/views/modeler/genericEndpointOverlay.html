@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Generic Endpoint</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+		<div id="genericEndpointOverlay">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+							<tr>
+								<td><label for="camelContextInput" id="camelContext">Camel
+										Context</label></td>
+								<td><input id="camelContextInput" type="text"></input></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="routeTextarea" cols="50" rows="5"
+							class="code">
+																</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="additionalBeanSpecificationTextarea"
+						id="addBeanSpec">Additional Bean Specification</label>
+					</td>
+				</tr>
+				<tr>
+					<td><textarea id="additionalBeanSpecificationTextarea"
+							cols="50" rows="5" class="code">
+								</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td><label for="directionInput" id="direction">Direction</label>
+								</td>
+								<td><select id="directionInput">
+								</select></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+</body>
+</html>

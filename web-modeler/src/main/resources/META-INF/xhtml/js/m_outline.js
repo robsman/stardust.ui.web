@@ -1280,7 +1280,7 @@ define(
 												return options;
 											} else if ('applications' == node
 													.attr('rel')) {
-												return {
+												var options = {
 													"ccp" : false,
 													"create" : false,
 													"rename" : false,
@@ -1306,14 +1306,6 @@ define(
 																	.attr("modelUUID"));
 														}
 													},
-													"createCamelApplication" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.applications.contextMenu.createCamelRoute"),
-														"action" : function(obj) {
-															createCamelApplication(obj
-																	.attr("modelUUID"));
-														}
-													},
 													"createUiMashupApplication" : {
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
@@ -1323,6 +1315,10 @@ define(
 														}
 													}
 												};
+
+												addCamelOverlayMenuOptions(options);
+
+												return options;
 											} else if ('data' == node
 													.attr('rel')) {
 												return {
@@ -1986,10 +1982,10 @@ define(
 
 					m_utils.debug("Menu Options");
 					m_utils.debug(menuOptionExtensions);
-					
+
 					for ( var m = 0; m < menuOptionExtensions.length; ++m) {
 						var menuOptionExtension = menuOptionExtensions[m];
-						
+
 						if (!m_session.initialize().technologyPreview
 								&& menuOptionExtension.visibility == "preview") {
 							continue;
@@ -2003,6 +1999,65 @@ define(
 							}
 						};
 					}
+				}
+
+				/**
+				 * 
+				 */
+				function addCamelOverlayMenuOptions(options, nodeType) {
+					var applicationIntegrationOverlayExtensions = m_extensionManager
+							.findExtensions("applicationIntegrationOverlay");
+
+					for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
+						var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
+
+						// if (!m_session.initialize().technologyPreview
+						// && menuOptionExtension.visibility == "preview") {
+						// continue;
+						// }
+
+						options[applicationIntegrationOverlayExtension.id] = {
+							label : "Create "
+									+ applicationIntegrationOverlayExtension.name, // I18N
+
+							// This code requires the following patch in
+							// jquery.jstree
+							// if($.isFunction($.vakata.context.func[i])) {
+							// // Patched to add the function name as a
+							// parameter
+							// $.vakata.context.func[i].call($.vakata.context.data,
+							// $.vakata.context.par, i);
+							// return true;
+							// }
+
+							action : function(node, id) {
+								m_utils.debug("===> Test");
+								m_utils.debug(id);
+
+								var applicationIntegrationOverlayExtensions = m_extensionManager
+										.findExtensions(
+												"applicationIntegrationOverlay",
+												"id", id);
+
+								createCamelApplication(
+										node.attr("modelUUID"),
+										applicationIntegrationOverlayExtensions[0].name,
+										{
+											"carnot:engine:camel::applicationIntegrationOverlay" : id
+										});
+							}
+						};
+					}
+				}
+
+				function Callback(id, name) {
+					this.id = id;
+					this.name = name;
+					this.action = function(node) {
+						m_utils.debug("Invoke holder with " + this.id + " "
+								+ this.name);
+					}
+
 				}
 
 				/**
@@ -2385,15 +2440,20 @@ define(
 				/**
 				 * 
 				 */
-				function createCamelApplication(modelUUId) {
+				function createCamelApplication(modelUUId, name, attributes) {
 					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newCamelroute.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+
+					if (!name) {
+						name = getUniqueNameForElement(
+								model.id,
+								m_i18nUtils
+										.getProperty("modeler.outline.newCamelroute.namePrefix"));
+					}
 
 					m_commandsController.submitCommand(m_command
 							.createCreateCamelAppCommand(model.id, model.id, {
-								"name" : name
+								name : name,
+								attributes : attributes
 							}));
 					isElementCreatedViaOutline = true;
 				}

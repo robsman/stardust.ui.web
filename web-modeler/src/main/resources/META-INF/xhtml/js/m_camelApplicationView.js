@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -31,7 +31,6 @@ define(
 			};
 
 			function i18camelrouteproperties() {
-
 				$("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -54,10 +53,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.tab"));
-				jQuery("#endPointType")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.endpointType"));
 				jQuery("#camelContext")
 						.text(
 								m_i18nUtils
@@ -74,7 +69,7 @@ define(
 				jQuery("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
-									.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
+										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
 
 				var directioninput = jQuery("#directionInput");
 
@@ -96,7 +91,7 @@ define(
 						+ selectdata + "</option>");
 			}
 			/**
-			 *
+			 * 
 			 */
 			function CamelApplicationView() {
 				var modelElementView = m_modelElementView.create();
@@ -106,102 +101,16 @@ define(
 						modelElementView);
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.initialize = function(
 						application) {
 					this.id = "camelApplicationView";
+					this.application = application;
 
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.overlayTableCell = jQuery("#overlayTableCell");
-					this.genericEndpointOverlay = jQuery("#overlayTableCell #genericEndpoint");
-					this.camelContextInput = jQuery("#camelContextInput");
-					this.routeTextarea = jQuery("#routeTextarea");
-					this.endpointTypeSelectInput = jQuery("#endpointTypeSelectInput");
-					this.additionalBeanSpecificationTextarea = jQuery("#additionalBeanSpecificationTextarea");
-					this.requestDataInput = jQuery("#requestDataInput");
-					this.responseDataInput = jQuery("#responseDataInput");
-					this.directionInput = jQuery("#directionInput");
+					this.overlayAnchor = jQuery("#overlayAnchor");
 
-					this.overlays = {};
-					this.overlayControllers = {};
-
-					this.overlays["genericEndpoint"] = this.genericEndpointOverlay;
-					this.overlayControllers["genericEndpoint"] = this;
-
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.camelContextInput,
-							"carnot:engine:camel::camelContextId");
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.routeTextarea,
-							"carnot:engine:camel::routeEntries");
-					this
-							.registerInputForModelElementAttributeChangeSubmission(
-									this.additionalBeanSpecificationTextarea,
-									"carnot:engine:camel::additionalSpringBeanDefinitions");
-
-					var integrationApplicationOverlays = m_extensionManager
-							.findExtensions("applicationIntegrationOverlay");
-
-					var extensions = {};
-
-					for ( var n = 0; n < integrationApplicationOverlays.length; n++) {
-						var extension = integrationApplicationOverlays[n];
-
-						extensions[extension.id] = extension;
-
-						if (!m_session.initialize().technologyPreview
-								&& extension.visibility == "preview") {
-							continue;
-						}
-
-						this.endpointTypeSelectInput.append("<option value='"
-								+ extension.id + "'>" + extension.name
-								+ "</option>");
-
-						var pageDiv = jQuery("<div id=\"" + extension.id
-								+ "\"></div>");
-
-						this.overlays[extension.id] = pageDiv;
-
-						this.overlayTableCell.append(pageDiv);
-
-						// TODO this variable may be overwritten in the
-						// loop, find mechanism to pass data to load
-						// callback
-
-						var view = this;
-
-						pageDiv
-								.load(
-										extension.pageHtmlUrl,
-										function(response, status, xhr) {
-											if (status == "error") {
-												var msg = "Properties Page Load Error: "
-														+ xhr.status
-														+ " "
-														+ xhr.statusText;
-
-												jQuery(this).append(msg);
-											} else {
-												var extension = extensions[jQuery(
-														this).attr("id")];
-												view.overlayControllers[jQuery(
-														this).attr("id")] = extension.provider
-														.create(view);
-											}
-										});
-					}
-
-					this.endpointTypeSelectInput.change({
-						view : this
-					}, function(event) {
-						var view = event.data.view;
-
-						view.overlayControllers[view.endpointTypeSelectInput
-								.val()].activate();
-						view.setOverlay(view.endpointTypeSelectInput.val());
-					});
 					this.publicVisibilityCheckbox
 							.change(
 									{
@@ -231,129 +140,84 @@ define(
 													});
 										}
 									});
-					this.directionInput
-							.change(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
 
-										if (view.directionInput.val() == "requestResponse") {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-														},
-														contexts : {
-															application : {
-																accessPoints : [
-																		{
-																			id : "oParam1",
-																			name : "Input",
-																			direction : "IN",
-																			dataType : "primitive",
-																			primitiveDataType : "string"
-																		},
-																		{
-																			id : "returnValue",
-																			name : "Output",
-																			direction : "OUT",
-																			dataType : "primitive",
-																			primitiveDataType : "string",
-																			attributes: {
-																				"carnot:engine:flavor": "RETURN_VALUE"
-																			}
-																		} ]
-															}
-														}
-													});
-										} else {
-											view
-													.submitChanges({
-														attributes : {
-															"carnot:engine:camel::producerMethodName" : ""
-														},
-														contexts : {
-															application : {
-																accessPoints : [ {
-																	id : "oParam1",
-																	name : "Input",
-																	direction : "IN",
-																	dataType : "primitive",
-																	primitiveDataType : "string"
-																} ]
-															}
-														}
-													});
-										}
-									});
+					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
+						this.setOverlay("genericEndpoint");
+					} else {
+						this
+								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
+					}
 
 					this.initializeModelElementView(application);
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				CamelApplicationView.prototype.insertPropertiesTab = function(
+						scope, id, name, icon) {
+					var propertiesTabs = jQuery("#propertiesTabs");
+					var propertiesTabsList = jQuery("#propertiesTabsList");
+					var lastListItem = propertiesTabsList.children().last();
+
+//					propertiesTabsList.append("<li><a href='#" + id
+//							+ "Tab'><img src='" + icon
+//							+ "'></img><span class='tabLabel' id='" + id + "'>"
+//							+ name + "</span> </a></li>");
+
+					lastListItem.before("<li><a href='#" + id
+							+ "Tab'><img src='" + icon
+							+ "'></img><span class='tabLabel' id='" + id + "'>"
+							+ name + "</span> </a></li>");
+
+					var html = jQuery("#" + scope + " #" + id + "Tab").html();
+
+					jQuery("#" + scope + " #" + id + "Tab").empty();
+					propertiesTabs.append("<div id='" + id + "Tab'>" + html
+							+ "</div>");
+				};
+
+				/**
+				 * 
 				 */
 				CamelApplicationView.prototype.setOverlay = function(overlay) {
-					this.endpointTypeSelectInput.val(overlay);
+					var extension = m_extensionManager.findExtensions(
+							"applicationIntegrationOverlay", "id", overlay)[0];
 
-					for ( var id in this.overlays) {
-						m_dialog.makeInvisible(this.overlays[id]);
-					}
+					this.overlayAnchor.empty();
 
-					m_dialog.makeVisible(this.overlays[overlay]);
-					this.overlayControllers[overlay].update();
+					var view = this;
+
+					this.overlayAnchor.load(extension.pageHtmlUrl, function(
+							response, status, xhr) {
+						if (status == "error") {
+							var msg = "Properties Page Load Error: "
+									+ xhr.status + " " + xhr.statusText;
+
+							jQuery(this).append(msg);
+						} else {
+							view.overlayController = extension.provider
+									.create(view);
+						}
+					});
 				};
 
 				/**
-				 * Overlay protocol
+				 * 
 				 */
-				CamelApplicationView.prototype.activate = function() {
-					this
-							.submitChanges({
-								attributes : {
-									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpoint",
-									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-								},
-								contexts : {
-									application : {
-										accessPoints : [ {
-											id : "oParam1",
-											name : "Input",
-											direction : "IN",
-											dataType : "primitive",
-											primitiveDataType : "string"
-										}, {
-											id : "returnValue",
-											name : "Output",
-											direction : "OUT",
-											dataType : "primitive",
-											primitiveDataType : "string",
-											attributes: {
-												"carnot:engine:flavor": "RETURN_VALUE"
-											}
-										} ]
-									}
-								}
-							});
+				CamelApplicationView.prototype.getModelElement = function() {
+					return this.application;
 				};
 
 				/**
-				 * Overlay protocol
+				 * 
 				 */
-				CamelApplicationView.prototype.update = function() {
-					this.camelContextInput
-							.val(this.application.attributes["carnot:engine:camel::camelContextId"]);
-					this.routeTextarea
-							.val(this.application.attributes["carnot:engine:camel::routeEntries"]);
-					this.additionalBeanSpecificationTextarea
-							.val(this.application.attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+				CamelApplicationView.prototype.getApplication = function() {
+					return this.application;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.setModelElement = function(
 						application) {
@@ -371,33 +235,18 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
-					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
-						// Do some initialization against the server
-						this.activate();
-						this.setOverlay("genericEndpoint");
-					} else {
-						this
-								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
-					}
-
-					if (this.application.attributes["carnot:engine:camel::producerMethodName"]
-							&& this.application.attributes["carnot:engine:camel::producerMethodName"]
-									.indexOf("sendBodyInOut") == 0) {
-						this.directionInput.val("requestResponse");
-					} else {
-						this.directionInput.val("requestOnly");
-					}
+					this.overlayController.update();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.toString = function() {
 					return "Lightdust.CamelApplicationView";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();

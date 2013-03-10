@@ -1885,8 +1885,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-                  String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
-                        .getAsString();
+                  String id = NameIdUtils.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                        .getAsString()); // ID provided from client is ignored
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
                   String direction = accessPointJson.get(
