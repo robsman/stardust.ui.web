@@ -304,8 +304,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
          }
 
-         if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID)
-               && !activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID).isJsonNull())
+         if (hasNotJsonNull(activityJson, ModelerConstants.PARTICIPANT_FULL_ID))
          {
             String participantFullId = extractString(activityJson,
                   ModelerConstants.PARTICIPANT_FULL_ID);
@@ -316,9 +315,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             activity.setPerformer(performer);
          }
 
-         if (activityJson.has(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
-               && !activityJson.get(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(activityJson, ModelerConstants.APPLICATION_FULL_ID_PROPERTY))
          {
             String applicationFullId = extractString(activityJson,
                   ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
@@ -332,8 +329,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
             activity.setPerformer(null);
 
-            if (activityJson.has(ModelerConstants.SUBPROCESS_ID)
-                  && !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
+            if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_ID))
             {
                String subprocessFullId = extractString(activityJson,
                      ModelerConstants.SUBPROCESS_ID);
@@ -503,9 +499,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // have to be created for both
 
          // Create input mapping
-         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-               && !dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -516,9 +510,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          // Create output mapping
-         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-               && !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -578,9 +570,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       dataMapping.setDirection(direction);
 
-      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-                  .isJsonNull())
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
       {
          dataMapping.setApplicationAccessPoint(dataMappingJson.get(
                ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
@@ -618,8 +608,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
       {
          dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                .getAsString());
@@ -879,9 +868,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             DataType data = null;
             String dataFullID = null;
 
-            if (formalParameterJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                  && !formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                        .isJsonNull())
+            if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                dataFullID = formalParameterJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
@@ -1012,9 +999,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             dataPath.setId(NameIdUtils.createIdFromName(dataPathJson.get(
                   ModelerConstants.NAME_PROPERTY).getAsString()));
 
-            if (dataPathJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                  && !dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                        .isJsonNull())
+            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                String dataFullId = dataPathJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
@@ -1023,8 +1008,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                dataPath.setData(data);
             }
 
-            if (dataPathJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-                  && !dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_PATH_PROPERTY))
             {
                dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                      .getAsString());
@@ -1779,9 +1763,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String dataPath = null;
                String dataFullID = parameterMappingJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-                     && !parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-                           .isJsonNull())
+               if (hasNotJsonNull(parameterMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
                {
                   dataPath = parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                         .getAsString();
