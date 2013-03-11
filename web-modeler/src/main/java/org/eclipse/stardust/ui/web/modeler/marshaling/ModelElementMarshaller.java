@@ -7,6 +7,7 @@ import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContain
 import static org.eclipse.stardust.ui.web.modeler.marshaling.ActivityMarshallingUtils.resolveSymbolAssociatedWithActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.util.Comparator;
 import java.util.List;
@@ -711,7 +712,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          for (DataMappingConnectionType dataMappingConnection : poolSymbol.getDataMappingConnection())
          {
             JsonObject connectionJson = toDataMappingConnectionType(dataMappingConnection);
-            if (connectionJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
+            if (hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
             {
                // ModelElement Id for dataFlow is DataId, which duplicates in case of
                // IN-OUT mapping for data, using DATA MAPPING OID
@@ -727,7 +728,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          for (TransitionConnectionType transitionConnection : poolSymbol.getTransitionConnection())
          {
             JsonObject connectionJson = toTransitionConnectionJson(transitionConnection);
-            if (connectionJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
+            if (hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
             {
                connectionsJson.add(
                      extractString(
@@ -1309,7 +1310,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eventJson = config;
          }
 
-         if (eventJson.has(EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
+         if (hasNotJsonNull(eventJson, EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
          {
             // marshal properties from defining event handler, if possible
             eventHandler = ModelUtils.findIdentifiableElement(
@@ -2091,7 +2092,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       JsonObject applicationContextJson = null;
       JsonArray accessPointsJson = null;
 
-      if (contextsJson.has(ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
+      if (hasNotJsonNull(contextsJson, ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
       {
          applicationContextJson = contextsJson.get(
                ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY).getAsJsonObject();
@@ -2236,7 +2237,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             if (dataMapping.getData().getId().equals(data.getId()))
             {
-               if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
+               if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
                {
                   if ( !dataFlowJson.get(ModelerConstants.ID_PROPERTY)
                         .getAsString()
@@ -2277,7 +2278,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (dataFlowJson != null)
          {
-            if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+            if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getActivitySymbol().getElementOid());
@@ -2289,7 +2290,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      ModelerConstants.DATA);
             }
 
-            if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+            if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getDataSymbol().getElementOid());
@@ -2934,7 +2935,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject attributes;
 
-      if ( !json.has(ModelerConstants.ATTRIBUTES_PROPERTY))
+      if (!hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
       {
          json.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes = new JsonObject());
       }
@@ -3007,7 +3008,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      if ( !json.has(ModelerConstants.COMMENTS_PROPERTY))
+      if (!hasNotJsonNull(json, ModelerConstants.COMMENTS_PROPERTY))
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
@@ -3169,7 +3170,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          JsonObject changes = description.changes;
 
-         if (changes.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+         if (hasNotJsonNull(changes, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
          {
             JsonArray formalParametersJson = changes.get(
                   ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
