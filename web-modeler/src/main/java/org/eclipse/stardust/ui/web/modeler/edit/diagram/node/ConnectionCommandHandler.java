@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.util.List;
 
@@ -130,8 +131,8 @@ public class ConnectionCommandHandler
                      processDefinition,
                      fromActivitySymbol,
                      getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid),
-                     request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY)
-                           .has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL, "left", "right");
             }
@@ -194,8 +195,8 @@ public class ConnectionCommandHandler
                      processDefinition,
                      getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
                      getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
-                     request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY)
-                           .has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL, "left", "right");
 
