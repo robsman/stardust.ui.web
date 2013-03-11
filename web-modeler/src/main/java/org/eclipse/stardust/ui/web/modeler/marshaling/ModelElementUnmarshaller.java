@@ -22,6 +22,7 @@ import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContain
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
