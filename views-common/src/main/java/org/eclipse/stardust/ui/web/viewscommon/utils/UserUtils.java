@@ -29,7 +29,9 @@ import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Role;
+import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -125,6 +127,78 @@ public class UserUtils
    }
    
    /**
+    * 
+    * @param account
+    * @return
+    */
+   public static User getUser(String account)
+   {
+      // When call is made to display only user label, we use 'Core' details Level
+      return getUser(account, null, UserDetailsLevel.Core);
+   }
+
+   /**
+    * 
+    * @param account
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(String account, UserDetailsLevel userDetailsLevel)
+   {
+      return getUser(account, null, userDetailsLevel);
+   }
+
+   /**
+    * 
+    * @param account
+    * @return
+    */
+   public static User getUser(Long oid)
+   {
+      // When call is made to display only user label, we use 'Core' details Level
+      return getUser(null, oid, UserDetailsLevel.Core);
+   }
+
+   /**
+    * 
+    * @param oid
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(Long oid, UserDetailsLevel userDetailsLevel)
+   {
+      return getUser(null, oid, userDetailsLevel);
+   }
+
+   /**
+    * 
+    * @param account
+    * @param oid
+    * @param userDetailsLevel
+    * @return
+    */
+   public static User getUser(String account, Long oid, UserDetailsLevel userDetailsLevel)
+   {
+      UserQuery userQuery = UserQuery.findAll();
+
+      String[] prefModules = {UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON};
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(userDetailsLevel);
+      userPolicy.setPreferenceModules(prefModules);
+      userQuery.setPolicy(userPolicy);
+
+      FilterAndTerm filter = userQuery.getFilter().addAndTerm();
+      if (null != account)
+         filter.and(UserQuery.ACCOUNT.like(account));
+      if (null != oid)
+         filter.and(UserQuery.OID.isEqual(oid));
+      userQuery.where(filter);
+
+      Users users = SessionContext.findSessionContext().getServiceFactory().getQueryService().getAllUsers(userQuery);
+
+      return users.isEmpty() ? null : users.get(0);
+   }
+   
+   /**
     * @param users
     * @return
     */
@@ -141,6 +215,26 @@ public class UserUtils
       }
 
       return null;
+   }
+   
+   /**
+    * @param users
+    * @return
+    */
+   public static void loadDisplayPreferenceForUser(User user)
+   {
+      Serializable displayNameFormat = null;
+      QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
+      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user.getRealm()
+            .getId(), user.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCES_ID));
+      for (Preferences userPref : prefs)
+      {
+         displayNameFormat = userPref.getPreferences().get(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID);
+      }
+      if (displayNameFormat != null)
+      {
+         user.setProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, displayNameFormat);
+      }
    }
    
    /**

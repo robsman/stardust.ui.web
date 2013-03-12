@@ -28,6 +28,7 @@ import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.RawQueryResult;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -327,6 +328,9 @@ public class UserManagerDetailBean extends UIComponentBean
       if (userItem != null && !UserDetailsLevel.Full.equals(userItem.getUser().getDetailsLevel()))
       {
          UserQuery query = UserQuery.findAll();
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         query.setPolicy(userPolicy);
          query.getFilter().add(UserQuery.OID.isEqual(userItem.getUser().getOID()));
          try
          {

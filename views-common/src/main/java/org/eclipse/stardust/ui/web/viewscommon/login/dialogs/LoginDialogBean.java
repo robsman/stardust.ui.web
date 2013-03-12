@@ -13,7 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.login.dialogs;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Map;
 
@@ -32,23 +32,24 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
-import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
-import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 
 public class LoginDialogBean implements Serializable, InitializingBean
 {
    private static final long serialVersionUID = -2703702864230398366L;
-
+   
    protected static final Logger trace = LogManager.getLogger(LoginDialogBean.class);
 
+   private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
    public static final String DEFAULT_LOGIN_SKIN_CSS_NAME = "login.css";
    public static final String LOGIN_SKIN_CSS_PARAM = "Carnot.Login.Skin.StyleSheet";
 
@@ -130,38 +131,46 @@ public class LoginDialogBean implements Serializable, InitializingBean
    {
       try
       {
+         // Login with technical user and read the skin preference from partition
          SessionContext sessionCtx = TechnicalUserUtils.login(getLoginProperties());
          UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_PORTAL,
                PreferenceScope.PARTITION);
          String skinPreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_PORTAL_CONFIG,
                UserPreferencesEntries.F_SKIN);
+         trace.info("Read login skin preference from partition -" + skinPreference);
          TechnicalUserUtils.logout(sessionCtx);
-         Map<String, List<String>> pluginAvailableSkins = null;
-         if (skinPreference.contains(Constants.SKIN_FOLDER))
-         {
-            // if skinPreference =<plugin-id>/public/skins/<skinId>, directly retrieve the
-            // skin
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER,
-                  loginStyleSheetName);
-         }
-         else
-         {
-            // If skinPreference =<skinId> (i.e loaded from
-            // static Configuration Provider), search skin folder
-            pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
-         }
+         // If no preference is set, check if default is provided by spring configuration
+         skinPreference = StringUtils.isNotEmpty(skinPreference) ? skinPreference : DefaultPreferenceProviderUtils
+               .getDefaultSkinPreference();
 
-         for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
+         // If no preference is set, neither spring config available for default skin,
+         // skip setting pluginLoginStyleSheetPath
+         if (StringUtils.isNotEmpty(skinPreference))
          {
-            if (entry.getKey().endsWith(skinPreference))
+            Map<String, List<String>> pluginAvailableSkins = null;
+            if (skinPreference.contains(Constants.SKIN_FOLDER))
+            {
+               // if skinPreference =<plugin-id>/public/skins/<skinId>, directly retrieve
+               // the
+               // skin
+               pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(skinPreference,
+                     loginStyleSheetName);
+            }
+            else
+            {
+               // If skinPreference =<skinId> (i.e loaded from
+               // static Configuration Provider), create skin folder path as
+               // <public/skins/<skinId>
+               String skinFolder = Constants.SKIN_FOLDER + "/" + skinPreference;
+               pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(skinFolder, loginStyleSheetName);
+            }
+
+            for (Map.Entry<String, List<String>> entry : pluginAvailableSkins.entrySet())
             {
                for (String filePath : entry.getValue())
                {
                   String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-                  if (fileName.equals(loginStyleSheetName))
-                  {
-                     pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
-                  }
+                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
                }
             }
          }
@@ -283,6 +292,8 @@ public class LoginDialogBean implements Serializable, InitializingBean
             else
             {
                sessionCtx.initInternalSession();
+               // User display name preference are not fetched with UserService.getUser()
+               UserUtils.loadDisplayPreferenceForUser(sessionCtx.getUser());
             }
          }
 
@@ -309,7 +320,14 @@ public class LoginDialogBean implements Serializable, InitializingBean
       String returnUrl = FacesUtils.getQueryParameterValue(InfinityStartup.RETURN_URL_PARAM);
 
       if (!StringUtils.isEmpty(returnUrl))
-      {
+      { 
+         // When returnUrl contains login.iface, clear current session and redirect to
+         // login Page
+         if (returnUrl.contains(DEFAULT_LOGIN_PAGE))
+         {
+            SessionContext.findSessionContext().logout();
+            return "ippPortalLogout";
+         }
          FacesUtils.sendRedirect(returnUrl);
          return null;
       }

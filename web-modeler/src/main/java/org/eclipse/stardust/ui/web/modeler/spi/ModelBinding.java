@@ -1,5 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.spi;
 
+import java.io.OutputStream;
+import java.util.Map;
+
 import org.eclipse.emf.ecore.EObject;
 
 import com.google.gson.JsonObject;
@@ -41,6 +44,12 @@ public abstract class ModelBinding<M extends EObject>
       return navigator;
    }
 
+   public ModelPersistenceHandler<M> getPersistenceHandler(M model)
+   {
+      return getModelingSession().modelPersistenceService().findPersistenceHandler(
+            (Class<M>) model.getClass());
+   }
+
    public void updateModelElement(EObject modelElement, JsonObject jto)
    {
       unmarshaller.populateFromJson(modelElement, jto);
@@ -51,4 +60,10 @@ public abstract class ModelBinding<M extends EObject>
       return marshaller;
    }
 
+
+   public void serializeModel(M model, OutputStream oStream,
+         Map<String, String> options)
+   {
+      getModelingSession().modelPersistenceService().saveMode(model, oStream);
+   }
 }

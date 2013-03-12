@@ -343,7 +343,9 @@ public class RoleManagerDetailBean extends UIComponentBean
       {
          UserQuery query = UserQuery.findAll();
          query.getFilter().add(ParticipantAssociationFilter.forParticipant(roleItem.getRole(), false));
-         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         query.setPolicy(userPolicy);
          assignedUserList = facade.getAllUsersAsUserItems(query);
          return filterUserList(assignedUserList, onlyLoggedInUserVisibleOnAssigned);
       }
@@ -378,7 +380,10 @@ public class RoleManagerDetailBean extends UIComponentBean
                filter.add(UserQuery.OID.notEqual(userItem.getUser().getOID()));
             }
          }
-         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         query.setPolicy(userPolicy);
+                 
          return filterUserList(facade.getAllUsersAsUserItems(query), onlyLoggedInUserVisibleOnAssignable);
       }
       catch (InvalidServiceException e)

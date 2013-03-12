@@ -10,7 +10,7 @@
 
 /**
  * Helper functions for object inspection and object initialization.
- *
+ * 
  * @author Marc.Gille
  */
 define(
@@ -66,8 +66,26 @@ define(
 
 				contentWrap : contentWrap,
 
-				isArray : isArray
+				isArray : isArray,
+
+				isEmptyString : isEmptyString,
+
+				isNumber : isNumber
 			};
+
+			/**
+			 * 
+			 */
+			function isEmptyString(str) {
+				return str == null || jQuery.trim(str).length == 0;
+			}
+
+			/**
+			 * 
+			 */
+			function isNumber(n) {
+				return !isNaN(parseFloat(n)) && isFinite(n);
+			}
 
 			function getLastIndexOf(str, searchStr) {
 				var index = -1;
@@ -81,8 +99,9 @@ define(
 
 				return index;
 			}
+
 			/**
-			 *
+			 * 
 			 * @param from
 			 * @param to
 			 * @returns
@@ -94,7 +113,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
@@ -113,7 +132,7 @@ define(
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
-			 *
+			 * 
 			 * @param t :
 			 *            textNode element for Symbol
 			 * @param width :
@@ -149,7 +168,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param array
 			 * @param item
 			 */
@@ -164,7 +183,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function convertToSortedArray(obj, field, ascending) {
 				var sortedObjects = [];
@@ -195,7 +214,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function lexicalSort(left, right) {
 				left = left.toLowerCase();
@@ -212,13 +231,17 @@ define(
 			}
 
 			function debug(obj) {
-				if (typeof console == "object") {
-					console.log(obj);
+				if (console && typeof console == "object") {
+					if (obj) {
+						console.log(obj);
+					} else {
+						console.log("null");
+					}
 				}
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function typeObject(proto, untypedObject) {
 				var typedObject = Object.create(proto);
@@ -234,18 +257,18 @@ define(
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
-			 *
+			 * 
 			 * Arrays however will be overwritten.
-			 *
+			 * 
 			 * TODO - review behaviour for attributes: Attributes also will be
 			 * over written, like arrays, as in some cases attributes don't
 			 * switch between different values (like true and false), but they
 			 * either exist or they don't. In such cases it is necessary to
 			 * remove the attributes from child if they don't exist in the
 			 * parent.
-			 *
+			 * 
 			 * The function will not check for cyclic dependencies.
-			 *
+			 * 
 			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
@@ -268,7 +291,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function isAttribute(member) {
 				if (member == "attributes") {
@@ -298,7 +321,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
@@ -328,38 +351,91 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function prettyDateTime(date) {
 				if (date == null) {
 					return "-";
 				}
 
-				var time_formats = [ [ 60, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.lessThanAMinute") ],
-						[ 90, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneMinute") ], // 60*1.5
-						[ 3600, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.minutes"), 60 ], // 60*60, 60
-						[ 5400, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneHour") ], // 60*60*1.5
-						[ 86400, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.hours"), 3600 ], // 60*60*24, 60*60
-						[ 129600, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneDay") ], // 60*60*24*1.5
-						[ 604800, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.days"), 86400 ], // 60*60*24*7, 60*60*24
-						[ 907200, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneWeek") ], // 60*60*24*7*1.5
-						[ 2628000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.weeks"), 604800 ], // 60*60*24*(365/12),
+				var time_formats = [
+						[
+								60,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.lessThanAMinute") ],
+						[
+								90,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneMinute") ], // 60*1.5
+						[
+								3600,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.minutes"),
+								60 ], // 60*60, 60
+						[
+								5400,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneHour") ], // 60*60*1.5
+						[
+								86400,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.hours"),
+								3600 ], // 60*60*24, 60*60
+						[
+								129600,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneDay") ], // 60*60*24*1.5
+						[
+								604800,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.days"),
+								86400 ], // 60*60*24*7, 60*60*24
+						[
+								907200,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneWeek") ], // 60*60*24*7*1.5
+						[
+								2628000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.weeks"),
+								604800 ], // 60*60*24*(365/12),
 						// 60*60*24*7
-						[ 3942000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneMonth") ], // 60*60*24*(365/12)*1.5
-						[ 31536000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.months"), 2628000 ], // 60*60*24*365,
+						[
+								3942000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneMonth") ], // 60*60*24*(365/12)*1.5
+						[
+								31536000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.months"),
+								2628000 ], // 60*60*24*365,
 						// 60*60*24*(365/12)
-						[ 47304000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneYear") ], // 60*60*24*365*1.5
-						[ 3153600000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.years"), 31536000 ], // 60*60*24*365*100,
+						[
+								47304000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneYear") ], // 60*60*24*365*1.5
+						[
+								3153600000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.years"),
+								31536000 ], // 60*60*24*365*100,
 						// 60*60*24*365
-						[ 4730400000, m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.oneCentury") ], // 60*60*24*365*100*1.5
+						[
+								4730400000,
+								m_i18nUtils
+										.getProperty("modeler.dateTimeFormatter.values.oneCentury") ], // 60*60*24*365*100*1.5
 				];
 
 				var seconds = (new Date().getTime() - date.getTime()) / 1000;
-				var suffix = " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.ago");
+				var suffix = " "
+						+ m_i18nUtils
+								.getProperty("modeler.dateTimeFormatter.values.ago");
 
 				if (seconds < 0) {
 					seconds = Math.abs(seconds);
-					suffix = " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.fromNow");
+					suffix = " "
+							+ m_i18nUtils
+									.getProperty("modeler.dateTimeFormatter.values.fromNow");
 				}
 
 				var n = 0;
@@ -379,9 +455,14 @@ define(
 				}
 
 				if (seconds > 4730400000)
-					return Math.round(seconds / 4730400000) + " " + m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.centuries") + token;
+					return Math.round(seconds / 4730400000)
+							+ " "
+							+ m_i18nUtils
+									.getProperty("modeler.dateTimeFormatter.values.centuries")
+							+ token;
 
-				return m_i18nUtils.getProperty("modeler.dateTimeFormatter.values.unknown");
+				return m_i18nUtils
+						.getProperty("modeler.dateTimeFormatter.values.unknown");
 			}
 
 			// TODO I18N
@@ -393,7 +474,7 @@ define(
 					'Friday', 'Saturday', 'Sunday' ];
 
 			/**
-			 *
+			 * 
 			 */
 			function formatDate(date, s, utc) {
 				s = s.split('');
@@ -652,7 +733,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getDaySuffix(date, utc) {
 				var n = utc ? date.getUTCDate() : date.getDate();
@@ -683,7 +764,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getISOWeek(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
@@ -731,7 +812,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -743,7 +824,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -755,7 +836,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			function getTimezoneOffset(date) {
 				return date.getTimezoneOffset() * -1;
@@ -791,14 +872,14 @@ define(
 
 			/**
 			 * wraps String
-			 *
+			 * 
 			 * @param content :
 			 *            string to be wrapped
 			 * @param maxLength :
 			 *            max number of characters in one line
 			 * @param brk :
 			 *            The character(s) to be inserted at every break
-			 *
+			 * 
 			 */
 			function contentWrap(content, maxLength, brk) {
 				if (!content) {

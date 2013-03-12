@@ -5,6 +5,8 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
@@ -13,12 +15,14 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.emf.ecore.EObject;
@@ -34,6 +38,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
@@ -44,6 +49,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
@@ -123,6 +129,75 @@ public class ModelerSessionRestController
    public JsonObject toJson(ChangeJto changeJto)
    {
       return jsonIo().gson().toJsonTree(changeJto).getAsJsonObject();
+   }
+
+   @GET
+   @Path("/modelState/{modelId}/current")
+   @Produces(MediaType.APPLICATION_XML)
+   public StreamingOutput getCurrentModelState(@PathParam("modelId") String modelId)
+   {
+      return getCurrentModelState(modelId, ModelFormat.Native);
+   }
+
+   @GET
+   @Path("/modelState/{modelId}/deployable")
+   @Produces(MediaType.APPLICATION_XML)
+   public StreamingOutput getCurrentDeployableModelState(@PathParam("modelId") String modelId)
+   {
+      return getCurrentModelState(modelId, ModelFormat.Xpdl);
+   }
+
+   public enum ModelFormat
+   {
+      Native,
+      Xpdl,
+   }
+
+   public StreamingOutput getCurrentModelState(String modelId, final ModelFormat modelFormat)
+   {
+      ModelRepository modelRepository = modelService().currentSession().modelRepository();
+
+      final EObject model = modelRepository.findModel(modelId);
+      if (null != model)
+      {
+         final ModelPersistenceHandler<EObject> persistenceHandler = modelRepository.getModelBinding(
+               model)
+               .getPersistenceHandler(model);
+         if (null != persistenceHandler)
+         {
+            return new StreamingOutput()
+            {
+               @Override
+               public void write(OutputStream output) throws IOException, WebApplicationException
+               {
+                  switch (modelFormat)
+                  {
+                  case Native:
+                     persistenceHandler.saveModel(model, output);
+                     break;
+
+                  case Xpdl:
+                     persistenceHandler.saveDeployableModel(model, output);
+                     break;
+
+                  default:
+                     throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+                  }
+                  output.flush();
+               }
+            };
+         }
+         else
+         {
+            // no suitable persistence handler
+            throw new WebApplicationException(Status.BAD_REQUEST);
+         }
+      }
+      else
+      {
+         // invalid model ID
+         throw new WebApplicationException(Status.NOT_FOUND);
+      }
    }
 
    @GET

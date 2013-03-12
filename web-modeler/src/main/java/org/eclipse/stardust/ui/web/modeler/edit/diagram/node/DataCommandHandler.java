@@ -72,7 +72,7 @@ public class DataCommandHandler
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
 
-         DataType data;
+         DataType data = null;
 
          try
          {
@@ -86,14 +86,6 @@ public class DataCommandHandler
          }
          catch (ObjectNotFoundException x)
          {
-            // TODO - Remove this (Earlier exception was thrown when no data exist , now
-            // null returned from MBFacade),analyse and remove if exception is never thrown
-            if (true)
-            {
-               data = getModelBuilderFacade().createPrimitiveData(model, dataID,
-                     dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
-               mapper.map(data);
-            }
          }
 
          DataSymbolType dataSymbol = getModelBuilderFacade().createDataSymbol(model, data, processDefinition,
@@ -117,13 +109,15 @@ public class DataCommandHandler
       DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol, dataOID);
       synchronized (model)
       {
-         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-               dataSymbol.getDataMappings().iterator());
-         data.getDataSymbols().remove(dataSymbol);
-         processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
-         parentLaneSymbol.getDataSymbol().remove(dataSymbol);
+         if(dataSymbol != null)
+         {
+            ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
+                  dataSymbol.getDataMappings().iterator());
+            data.getDataSymbols().remove(dataSymbol);
+            processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
+            parentLaneSymbol.getDataSymbol().remove(dataSymbol);
+         }
       }
-
    }
 
    private ModelService modelService()

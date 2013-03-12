@@ -18,7 +18,9 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 public class ProcessWorklistCacheEntry
 {
    private long count;
+   private long totalCountThreshold;
    private ActivityInstanceQuery activityInstanceQuery;
+   
 
    /**
     * @param count
@@ -28,6 +30,16 @@ public class ProcessWorklistCacheEntry
    {
       this.count = count;
       this.activityInstanceQuery = activityInstanceQuery;
+   }
+   
+   /**
+    * @param count
+    * @param activityInstanceQuery
+    */
+   public ProcessWorklistCacheEntry(long count, ActivityInstanceQuery activityInstanceQuery,long totalCountThreshold)
+   {
+      this(count, activityInstanceQuery);
+      this.totalCountThreshold = totalCountThreshold;
    }
 
    /**
@@ -44,6 +56,16 @@ public class ProcessWorklistCacheEntry
    public void setCount(long count)
    {
       this.count = count;
+   }
+
+   public long getTotalCountThreshold()
+   {
+      return totalCountThreshold;
+   }
+
+   public void setTotalCountThreshold(long totalCountThreshold)
+   {
+      this.totalCountThreshold = totalCountThreshold;
    }
 
    /**

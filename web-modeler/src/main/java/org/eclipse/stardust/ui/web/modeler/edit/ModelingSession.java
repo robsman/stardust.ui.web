@@ -21,6 +21,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
@@ -47,6 +48,9 @@ public class ModelingSession
 
    @Resource(name="webModelerModelManagementStrategy")
    private ModelManagementStrategy modelManagementStrategy;
+
+   @Resource
+   private ModelPersistenceService modelPersistenceService;
 
    private ModelRepository modelRepository;
 
@@ -107,6 +111,11 @@ public class ModelingSession
    public void setModelManagementStrategy(ModelManagementStrategy strategy)
    {
       this.modelManagementStrategy = strategy;
+   }
+
+   public ModelPersistenceService modelPersistenceService()
+   {
+      return modelPersistenceService;
    }
 
    public ModelRepository modelRepository()

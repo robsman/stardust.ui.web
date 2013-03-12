@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.security.InvalidPasswordException;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -75,6 +76,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
 {
    private static final long serialVersionUID = 1L;
    private static final String BEAN_NAME = "userProfileBean";
+   private static final String PREFERENCE_ID = "preference";
    private static enum OperationType {
       MODIFY_PROFILE_CONFIGURATION, CREATE_USER, MODIFY_USER, COPY_USER
    }
@@ -326,11 +328,10 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       }
       else if ((isModifyMode() || isModifyProfileConfiguration()) && null != user)
       {
-         UserService userService = ServiceFactoryUtils.getUserService();
          Long userOid = user.getOID();
-         if ((userOid != null) && (userService != null))
+         if (userOid != null)
          {
-            user = userService.getUser(userOid.longValue());
+            user = UserUtils.getUser(userOid.longValue(), UserDetailsLevel.Full);
          }
          headerTitle = propsBean.getString("views.modifyUser.title");
          changePassword = false;
@@ -343,6 +344,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          validTo = user.getValidTo();
          description = user.getDescription();
          qaOverride = user.getQualityAssuranceProbability();
+         
          if (isModifyProfileConfiguration())
          {
             myPicturePreference = new MyPicturePreferenceBean(user);
@@ -351,7 +353,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       
       initDisplayFormats();
    }
-
+   
    /**
     * sets Default realm id
     */
@@ -834,7 +836,6 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
     */
    private void updateUserDisplayFormatProperty(User userToModify)
    {
-      final String PREFERENCE_ID = "preference";
       QueryService qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
       List<Preferences> prefs = qService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(userToModify
             .getRealm().getId(), userToModify.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCE_ID));

@@ -36,11 +36,8 @@
       <conf name="jsf-myfaces-module-compile" description="JSF API and Implementation Classes - MyFaces - Compile Scope" />
       <conf name="jsf-myfaces-module-runtime" description="JSF API and Implementation Classes - MyFaces - Runtime Scope" />
       
-      <conf name="jsf-mojarra-module-compile" description="JSF API and Implementation Classes - Mojarra - Compile Scope" />
-      <conf name="jsf-mojarra-module-runtime" description="JSF API and Implementation Classes - Mojarra - Runtime Scope" />
+      <conf name="compile" extends="ipp-portal-common-compile, ipp-portal-common-provided" visibility="private" description="IPP Portal Common" />
    
-      <conf name="compile" extends="ipp-portal-common-compile" visibility="private" description="IPP Portal Common" />
-      
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
@@ -63,7 +60,6 @@
       
       <artifact name="jsf-api-module" type="pom" conf="module-pom" ext="pom" />
       <artifact name="jsf-myfaces-module" type="pom" conf="module-pom" ext="pom" />
-      <artifact name="jsf-mojarra-module" type="pom" conf="module-pom" ext="pom" />
    </publications>
 
    <dependencies>      
@@ -93,8 +89,8 @@
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-common-runtime->default"/>
 
       <!-- ipp-portal-common-provided -->
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-common-provided, compile->default" />
-      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-portal-common-provided, compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-common-provided->default" />
+      <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-portal-common-provided->default" />
       
       <!-- ipp-portal-common-provided, jsf-api-module-compile, jsf-myfaces-module-compile -->
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}" conf="ipp-portal-common-provided, jsf-api-module-compile, jsf-myfaces-module-compile->default">
@@ -114,9 +110,6 @@
       <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       <dependency org="javax.servlet" name="jstl" rev="${jstl.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       
-      <!-- compile, jsf-mojarra-module-compile -->
-      <dependency org="javax.faces" name="jsf-api" rev="${jsf-api.version}" conf="compile, jsf-mojarra-module-compile->default" />
-      
       <!-- jsf-myfaces-module-runtime -->
       <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="${myfaces-impl.version}" conf="jsf-myfaces-module-runtime->default">
          <exclude org="commons-collections" module="commons-collections"/>
@@ -132,9 +125,6 @@
          
       <dependency org="com.sun.el" name="el-ri" rev="${el-ri.version}" conf="jsf-myfaces-module-runtime->default" />
       
-      <!-- jsf-mojarra-module-runtime -->
-      <dependency org="javax.faces" name="jsf-impl" rev="${jsf-impl.version}" conf="jsf-mojarra-module-runtime->default" />
-
       <!-- ipp-portal-base-lib-module-runtime: any modification results in a change of the WEB-INF/lib folder and therefore configure must be adjusted -->      
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.servlet" module="jstl"/>
@@ -175,10 +165,8 @@
          <exclude org="org.springframework" module="spring-tx"/>
       </dependency>
 
+
       <dependency org="com.sun.el" name="el-ri" rev="${el-ri.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="net.sourceforge.jexcelapi" name="jxl" rev="${jxl.version}" conf="ipp-portal-base-lib-module-runtime->default">
-         <exclude org="log4j" module="log4j"/>
-      </dependency>
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.springframework" name="spring-web" transitive="false" rev="${spring-web.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="${geronimo-ejb_2.1_spec.version}" conf="ipp-portal-base-lib-module-runtime->default"/>

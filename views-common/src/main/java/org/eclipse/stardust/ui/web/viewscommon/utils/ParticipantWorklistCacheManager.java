@@ -74,7 +74,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
             worklistOwner = worklist.getOwner();
 
             participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
-                  worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner)));
+                  worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),worklist.getTotalCountThreshold()));
          }
 
       }
@@ -96,7 +96,23 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          return cacheEntry.getCount();
       }
+      
       return 0;
+   }
+   
+   /**
+    * @param participantInfo
+    * @return
+    */
+   public long getWorklistCountThreshold(ParticipantInfo participantInfo)
+   {
+      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      if (null != cacheEntry)
+      {
+         return cacheEntry.getTotalCountThreshold();
+      }
+
+      return Long.MAX_VALUE;
    }
 
    /**
@@ -150,7 +166,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
                .getCurrentPerformer()));
-         if (null != oldEntry)
+         if (null != oldEntry && (oldEntry.getCount() > 0 && oldEntry.getCount() < oldEntry.getTotalCountThreshold()))
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
          }
@@ -162,7 +178,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          ParticipantWorklistCacheEntry newEntry = participantWorklists.get(new ParticipantInfoWrapper(newAi
                .getCurrentPerformer()));
-         if (null != newEntry)
+         if (null != newEntry && newEntry.getCount() < Long.MAX_VALUE)
          {
             newEntry.setCount(newEntry.getCount() + 1);
          }

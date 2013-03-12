@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 public class Participant implements Comparable<Participant>
 {
@@ -80,7 +81,7 @@ public class Participant implements Comparable<Participant>
    {
       principal = new DmsPrincipal(userInfo, realmId);
       id = principal.getName();
-      User user = ServiceFactoryUtils.getUserService().getUser(userInfo.getId());
+      User user = UserUtils.getUser(userInfo.getId());
       name = I18nUtils.getUserLabel(user);
    }
 

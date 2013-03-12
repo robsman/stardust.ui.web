@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -27,12 +27,12 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function DecorationPalette() {
 				this.dialogContent = {};
 				/**
-				 * 
+				 *
 				 */
 				DecorationPalette.prototype.initialize = function(diagram) {
 					var dialog = jQuery("#decorationConfigurationDialog")
@@ -121,9 +121,9 @@ define(
 																				url : m_communicationController
 																						.getEndpointUrl()
 																						+ "/models/"
-																						+ diagram.modelId
+																						+ encodeURIComponent(diagram.modelId)
 																						+ "/processes/"
-																						+ diagram.processId
+																						+ encodeURIComponent(diagram.processId)
 																						+ "/decorations/"
 																						+ decorationId
 																			},
@@ -160,9 +160,9 @@ define(
 									url : m_communicationController
 											.getEndpointUrl()
 											+ "/models/"
-											+ diagram.modelId
+											+ encodeURIComponent(diagram.modelId)
 											+ "/processes/"
-											+ diagram.processId
+											+ encodeURIComponent(diagram.processId)
 											+ "/decorations/"
 											+ decorationList.val()
 								}, {}, {

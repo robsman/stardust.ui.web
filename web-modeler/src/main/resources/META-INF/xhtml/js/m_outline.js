@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -56,7 +56,9 @@ define(
 								function(index, model) {
 
 									jQuery(displayScope + "#outline").jstree(
-											"create", displayScope + "#outline", "first", {
+											"create",
+											displayScope + "#outline", "first",
+											{
 												"attr" : {
 													"id" : model.uuid,
 													"rel" : "model",
@@ -106,19 +108,21 @@ define(
 																				+ process.id);
 													});
 
-									jQuery(displayScope + "#outline").jstree(
-											"create",
-											"#" + model.uuid,
-											"first",
-											{
-												"attr" : {
-													"id" : "participants_"
-															+ model.uuid,
-													"rel" : "participants",
-													"modelUUID" : model.uuid
-												},
-												"data" : m_i18nUtils.getProperty("modeler.outline.participants.name")
-											}, null, true);
+									jQuery(displayScope + "#outline")
+											.jstree(
+													"create",
+													"#" + model.uuid,
+													"first",
+													{
+														"attr" : {
+															"id" : "participants_"
+																	+ model.uuid,
+															"rel" : "participants",
+															"modelUUID" : model.uuid
+														},
+														"data" : m_i18nUtils
+																.getProperty("modeler.outline.participants.name")
+													}, null, true);
 
 									jQuery
 											.each(
@@ -171,20 +175,22 @@ define(
 
 									// Applications
 
-									jQuery(displayScope + "#outline").jstree(
-											"create",
-											"#" + model.uuid,
-											"first",
-											{
-												"attr" : {
-													"modelId" : model.id,
-													"modelUUID" : model.uuid,
-													"id" : "applications_"
-															+ model.uuid,
-													"rel" : "applications"
-												},
-												"data" : m_i18nUtils.getProperty("modeler.outline.applications.name")
-											}, null, true);
+									jQuery(displayScope + "#outline")
+											.jstree(
+													"create",
+													"#" + model.uuid,
+													"first",
+													{
+														"attr" : {
+															"modelId" : model.id,
+															"modelUUID" : model.uuid,
+															"id" : "applications_"
+																	+ model.uuid,
+															"rel" : "applications"
+														},
+														"data" : m_i18nUtils
+																.getProperty("modeler.outline.applications.name")
+													}, null, true);
 
 									// Create application nodes
 
@@ -244,7 +250,8 @@ define(
 															"rel" : "data",
 															"modelUUID" : model.uuid
 														},
-														"data" : m_i18nUtils.getProperty("modeler.outline.data.name")
+														"data" : m_i18nUtils
+																.getProperty("modeler.outline.data.name")
 													}, null, true);
 
 									// Create Data nodes
@@ -287,20 +294,22 @@ define(
 
 									// Structured Data Types
 
-									jQuery(displayScope + "#outline").jstree(
-											"create",
-											"#" + model.uuid,
-											"first",
-											{
-												"attr" : {
-													"id" : "structuredTypes_"
-															+ model.uuid,
-													"rel" : "structuredTypes",
-													"modelId" : model.id,
-													"modelUUID" : model.uuid
-												},
-												"data" : m_i18nUtils.getProperty("modeler.outline.structuredTypes.name")
-											}, null, true);
+									jQuery(displayScope + "#outline")
+											.jstree(
+													"create",
+													"#" + model.uuid,
+													"first",
+													{
+														"attr" : {
+															"id" : "structuredTypes_"
+																	+ model.uuid,
+															"rel" : "structuredTypes",
+															"modelId" : model.id,
+															"modelUUID" : model.uuid
+														},
+														"data" : m_i18nUtils
+																.getProperty("modeler.outline.structuredTypes.name")
+													}, null, true);
 
 									// Create structured data type nodes
 
@@ -323,7 +332,8 @@ define(
 																				"fullId" : typeDeclaration
 																						.getFullId(),
 																				"elementId" : typeDeclaration.id,
-																				"rel" : typeDeclaration.getType(),
+																				"rel" : typeDeclaration
+																						.getType(),
 																				"modelId" : model.id,
 																				"modelUUID" : model.uuid,
 																				"draggable" : true
@@ -399,7 +409,9 @@ define(
 
 				window.location = require("bpm-modeler/js/m_urlUtils")
 						.getModelerEndpointUrl()
-						+ "/models/" + model.id + "/download";
+						+ "/models/"
+						+ encodeURIComponent(model.id)
+						+ "/download";
 			}
 
 			var openModelReport = function(modelUUID) {
@@ -520,9 +532,9 @@ define(
 					renameView("genericApplicationView", uuid,
 							"applicationName", name)
 				} else if (type == "structuredDataType"
-							|| type == "compositeStructuredDataType"
-							|| type == "enumStructuredDataType"
-							|| type == "importedStructuredDataType") {
+						|| type == "compositeStructuredDataType"
+						|| type == "enumStructuredDataType"
+						|| type == "importedStructuredDataType") {
 					renameView("xsdStructuredDataTypeView", uuid,
 							"structuredDataTypeName", name)
 				} else if (type == "conditionalPerformerParticipant") {
@@ -548,10 +560,14 @@ define(
 											+ "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
 								},
 								payload : {
-									title : "Confirm",
-									message : "All models will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>",
-									acceptButtonText : "Yes",
-									cancelButtonText : "No",
+									title : m_i18nUtils
+											.getProperty("modeler.messages.confirm"),
+									message : m_i18nUtils
+											.getProperty("modeler.messages.confirm.modelReload"),
+									acceptButtonText : m_i18nUtils
+											.getProperty("modeler.messages.confirm.yes"),
+									cancelButtonText : m_i18nUtils
+											.getProperty("modeler.messages.confirm.no"),
 									acceptFunction : reloadOutlineTree
 								}
 							});
@@ -584,9 +600,12 @@ define(
 												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
-										title : "Warning",
-										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
-										acceptButtonText : "Close",
+										title : m_i18nUtils
+												.getProperty("modeler.messages.warning"),
+										message : m_i18nUtils
+												.getProperty("modeler.messages.info.modelNotSaved"),
+										acceptButtonText : m_i18nUtils
+												.getProperty("modeler.messages.confirm.close"),
 										acceptFunction : function() {
 											// Do nothing
 										}
@@ -744,12 +763,16 @@ define(
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
 
-										viewManager.openView("modelView",
-												"modelId=" + encodeURIComponent(model.id)
-														+ "&modelName="
-														+ encodeURIComponent(model.name) + "&uuid="
-														+ model.uuid,
-												model.uuid);
+										viewManager
+												.openView(
+														"modelView",
+														"modelId="
+																+ encodeURIComponent(model.id)
+																+ "&modelName="
+																+ encodeURIComponent(model.name)
+																+ "&uuid="
+																+ model.uuid,
+														model.uuid);
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
 											|| data.rslt.obj.attr('rel') == "teamLeader") {
 										var model = m_model
@@ -760,16 +783,22 @@ define(
 														.attr("id"));
 
 										viewManager
-												.openView("roleView", "roleId="
-														+ encodeURIComponent(role.id) + "&modelId="
-														+ encodeURIComponent(model.id)
-														+ "&roleName="
-														+ encodeURIComponent(role.name)
-														+ "&fullId="
-														+ encodeURIComponent(role.getFullId())
-														+ "&uuid=" + encodeURIComponent(role.uuid)
-														+ "&modelUUID="
-														+ model.uuid, role.uuid);
+												.openView(
+														"roleView",
+														"roleId="
+																+ encodeURIComponent(role.id)
+																+ "&modelId="
+																+ encodeURIComponent(model.id)
+																+ "&roleName="
+																+ encodeURIComponent(role.name)
+																+ "&fullId="
+																+ encodeURIComponent(role
+																		.getFullId())
+																+ "&uuid="
+																+ encodeURIComponent(role.uuid)
+																+ "&modelUUID="
+																+ model.uuid,
+														role.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'organizationParticipant') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -778,22 +807,23 @@ define(
 												.findModelElementByUuid(data.rslt.obj
 														.attr("id"));
 
-										viewManager.openView(
-												"organizationView",
-												"organizationId="
-														+ encodeURIComponent(organization.id)
-														+ "&modelId="
-														+ encodeURIComponent(model.id)
-														+ "&organizationName="
-														+ encodeURIComponent(organization.name)
-														+ "&fullId="
-														+ encodeURIComponent(organization
-																.getFullId())
-														+ "&uuid="
-														+ organization.uuid
-														+ "&modelUUID="
-														+ model.uuid,
-												organization.uuid);
+										viewManager
+												.openView(
+														"organizationView",
+														"organizationId="
+																+ encodeURIComponent(organization.id)
+																+ "&modelId="
+																+ encodeURIComponent(model.id)
+																+ "&organizationName="
+																+ encodeURIComponent(organization.name)
+																+ "&fullId="
+																+ encodeURIComponent(organization
+																		.getFullId())
+																+ "&uuid="
+																+ organization.uuid
+																+ "&modelUUID="
+																+ model.uuid,
+														organization.uuid);
 									} else if (m_elementConfiguration
 											.isValidDataType(data.rslt.obj
 													.attr('rel'))) {
@@ -807,16 +837,22 @@ define(
 														.attr("id"));
 
 										viewManager
-												.openView("dataView", "dataId="
-														+ encodeURIComponent(data.id) + "&modelId="
-														+ encodeURIComponent(model.id)
-														+ "&dataName="
-														+ encodeURIComponent(data.name)
-														+ "&fullId="
-														+ encodeURIComponent(data.getFullId())
-														+ "&uuid=" + data.uuid
-														+ "&modelUUID="
-														+ model.uuid, data.uuid);
+												.openView(
+														"dataView",
+														"dataId="
+																+ encodeURIComponent(data.id)
+																+ "&modelId="
+																+ encodeURIComponent(model.id)
+																+ "&dataName="
+																+ encodeURIComponent(data.name)
+																+ "&fullId="
+																+ encodeURIComponent(data
+																		.getFullId())
+																+ "&uuid="
+																+ data.uuid
+																+ "&modelUUID="
+																+ model.uuid,
+														data.uuid);
 									} else if (data.rslt.obj.attr('rel') == 'process') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -825,20 +861,23 @@ define(
 												.findModelElementByUuid(data.rslt.obj
 														.attr("id"));
 
-										viewManager.openView(
-												"processDefinitionView",
-												"processId=" + encodeURIComponent(process.id)
-														+ "&modelId="
-														+ encodeURIComponent(model.id)
-														+ "&processName="
-														+ encodeURIComponent(process.name)
-														+ "&fullId="
-														+ encodeURIComponent(process.getFullId())
-														+ "&uuid="
-														+ process.uuid
-														+ "&modelUUID="
-														+ model.uuid,
-												process.uuid);
+										viewManager
+												.openView(
+														"processDefinitionView",
+														"processId="
+																+ encodeURIComponent(process.id)
+																+ "&modelId="
+																+ encodeURIComponent(model.id)
+																+ "&processName="
+																+ encodeURIComponent(process.name)
+																+ "&fullId="
+																+ encodeURIComponent(process
+																		.getFullId())
+																+ "&uuid="
+																+ process.uuid
+																+ "&modelUUID="
+																+ model.uuid,
+														process.uuid);
 									} else if (data.rslt.obj.attr('rel') == "webservice") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
@@ -963,9 +1002,9 @@ define(
 														+ model.uuid,
 												application.uuid);
 									} else if (data.rslt.obj.attr('rel') == "structuredDataType"
-												|| data.rslt.obj.attr('rel') == "compositeStructuredDataType"
-												|| data.rslt.obj.attr('rel') == "enumStructuredDataType"
-												|| data.rslt.obj.attr('rel') == "importedStructuredDataType") {
+											|| data.rslt.obj.attr('rel') == "compositeStructuredDataType"
+											|| data.rslt.obj.attr('rel') == "enumStructuredDataType"
+											|| data.rslt.obj.attr('rel') == "importedStructuredDataType") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -1055,8 +1094,20 @@ define(
 
 															// parent.iDnD.drawIframeAt(e,
 															// window.name);
-															var model = m_model.findModelByUuid(jQuery(insElem).parent().parent().attr("modelUUID"));
-															var element = model.findModelElementByUuid(jQuery(insElem).parent().parent().attr("id"));
+															var model = m_model
+																	.findModelByUuid(jQuery(
+																			insElem)
+																			.parent()
+																			.parent()
+																			.attr(
+																					"modelUUID"));
+															var element = model
+																	.findModelElementByUuid(jQuery(
+																			insElem)
+																			.parent()
+																			.parent()
+																			.attr(
+																					"id"));
 															parent.iDnD
 																	.setDrag();
 															parent.iDnD.dragMode = true;
@@ -1170,19 +1221,26 @@ define(
 															downloadModel(obj
 																	.attr("id"));
 														}
-													},
-													"openModelReport" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.model.contextMenu.openModelReport"),
-														"action" : function(obj) {
-															openModelReport(obj
-																	.attr("id"));
-														}
 													}
+
+												// openModelReport options is
+												// Commented out as,
+												// this will not be supported in
+												// 7.1.1
+												// Uncomment when needed.
+												// ,
+												// "openModelReport" : {
+												// "label" : m_i18nUtils
+												// .getProperty("modeler.outline.model.contextMenu.openModelReport"),
+												// "action" : function(obj) {
+												// openModelReport(obj
+												// .attr("id"));
+												// }
+												// }
 												};
 											} else if ('process' == node
 													.attr('rel')) {
-												return {
+												var options = {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1216,12 +1274,22 @@ define(
 													}
 												};
 
+												addMenuOptions(options,
+														"process");
+
+												return options;
 											} else if ('applications' == node
 													.attr('rel')) {
 												return {
 													"ccp" : false,
 													"create" : false,
 													"rename" : false,
+													// Options to create
+													// webservice and UI mashup
+													// applications to be
+													// disabled
+													// as they are not fully
+													// supported in 7.1.1
 													"createWebServiceApplication" : {
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.applications.contextMenu.createWebService"),
@@ -1356,7 +1424,7 @@ define(
 											} else if (m_elementConfiguration
 													.isValidAppType(node
 															.attr("rel"))) {
-												return {
+												var options = {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1373,23 +1441,6 @@ define(
 																							.attr("id"));
 														}
 													},
-													// "createWrapperProcess" :
-													// {
-													// "label" : "Create Wrapper
-													// Process",
-													// "action" : function(obj)
-													// {
-													// var application = m_model
-													// .findApplication(obj
-													// .attr("fullId"));
-													// m_utils
-													// .debug("Application");
-													// m_utils
-													// .debug(application);
-													//
-													// createWrapperProcess(application);
-													// }
-													// },
 													"deleteApplication" : {
 														"label" : m_i18nUtils
 																.getProperty("modeler.element.properties.commonProperties.delete"),
@@ -1406,6 +1457,11 @@ define(
 														}
 													}
 												};
+
+												addMenuOptions(options,
+														"application");
+
+												return options;
 											} else if ('structuredTypes' == node
 													.attr('rel')) {
 												return {
@@ -1432,10 +1488,14 @@ define(
 														}
 													}
 												};
-											} else if ("structuredDataType" == node.attr('rel')
-														|| "compositeStructuredDataType" == node.attr('rel')
-														|| "enumStructuredDataType" == node.attr('rel')
-														|| "importedStructuredDataType" == node.attr('rel')) {
+											} else if ("structuredDataType" == node
+													.attr('rel')
+													|| "compositeStructuredDataType" == node
+															.attr('rel')
+													|| "enumStructuredDataType" == node
+															.attr('rel')
+													|| "importedStructuredDataType" == node
+															.attr('rel')) {
 												return {
 													"ccp" : false,
 													"create" : false,
@@ -1692,24 +1752,30 @@ define(
 											},
 											"compositeStructuredDataType" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-comp.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/bricks.png"
 												}
 											},
 											"enumStructuredDataType" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-enum.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/structured-type-enum.png"
 												}
 											},
 											"importedStructuredDataType" : {
 												"icon" : {
-													"image" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/images/icons/structured-type-import.png"
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/structured-type-import.png"
 												}
 											},
 											"applications" : {
 												"icon" : {
 													"image" : m_urlUtils
 															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/applications.png"
+															+ "bpm-modeler/images/icons/applications-blue.png"
 												}
 											},
 											"interactive" : {
@@ -1890,8 +1956,8 @@ define(
 										}
 									},
 									"themes" : {
-										"theme" : "classic",
-										"url" : "../css/thirdparty/jstree/classic/style.css"
+										"theme" : "custom",
+										"url" : "../css/jsTreeCustom/style.css"
 									}
 								});
 
@@ -1912,7 +1978,35 @@ define(
 				};
 
 				/**
-				 *
+				 * 
+				 */
+				function addMenuOptions(options, nodeType) {
+					var menuOptionExtensions = m_extensionManager
+							.findExtensions("menuOption", "nodeType", nodeType);
+
+					m_utils.debug("Menu Options");
+					m_utils.debug(menuOptionExtensions);
+					
+					for ( var m = 0; m < menuOptionExtensions.length; ++m) {
+						var menuOptionExtension = menuOptionExtensions[m];
+						
+						if (!m_session.initialize().technologyPreview
+								&& menuOptionExtension.visibility == "preview") {
+							continue;
+						}
+
+						options[menuOptionExtension.id] = {
+							label : menuOptionExtension.label,
+							action : function(node) {
+								menuOptionExtension.provider[menuOptionExtension.handlerMethod]
+										(node);
+							}
+						};
+					}
+				}
+
+				/**
+				 * 
 				 */
 				function prepareInfoDialogPoupupData(msg, okText) {
 					return {
@@ -1931,7 +2025,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function prepareErrorDialogPoupupData(msg, okText) {
 					return {
@@ -1942,7 +2036,8 @@ define(
 									+ "bpm-modeler/popups/errorDialog.html"
 						},
 						payload : {
-							title : "Error",
+							title : m_i18nUtils
+									.getProperty("modeler.messages.error"),
 							message : msg,
 							okButtonText : okText
 						}
@@ -1950,7 +2045,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createModel() {
 					var modelName = m_i18nUtils
@@ -1981,7 +2076,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
@@ -1990,7 +2085,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function getUniqueNameForElement(modelId, namePrefix) {
 					var suffix = 0;
@@ -2006,7 +2101,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createProcess(modelId) {
 					var procNamePrefix = m_i18nUtils
@@ -2033,7 +2128,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteProcess(processId, modelUUID) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2055,7 +2150,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteParticipant(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2067,7 +2162,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteApplication(modelUUID, appId) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2079,7 +2174,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function deleteData(modelUUID, id) {
 					var model = m_model.findModelByUuid(modelUUID);
@@ -2098,12 +2193,15 @@ define(
 									+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
-							title : "Confirm",
-							message : "Are you sure you want to delete "
-									+ name
-									+ "?<BR>This change cannot be undone.<BR><BR>Continue?",
-							acceptButtonText : "Yes",
-							cancelButtonText : "Cancel",
+							title : m_i18nUtils
+									.getProperty("modeler.messages.confirm"),
+							message : m_i18nUtils.getProperty(
+									"modeler.messages.confirm.deleteElement")
+									.replace("{0}", name),
+							acceptButtonText : m_i18nUtils
+									.getProperty("modeler.messages.confirm.yes"),
+							cancelButtonText : m_i18nUtils
+									.getProperty("modeler.messages.confirm.cancel"),
 							acceptFunction : callback
 						}
 					};
@@ -2121,7 +2219,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createPrimitiveData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2142,7 +2240,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createDocumentData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2159,7 +2257,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createStructuredData(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2176,7 +2274,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createRole(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2195,7 +2293,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createConditionalPerformer(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2215,7 +2313,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function setAsManager(modelUUId, orgUUID, roleUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2231,7 +2329,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createOrganization(modelUUId, targetUUID) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2251,7 +2349,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createWebServiceApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2268,7 +2366,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createMessageTransformationApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2285,7 +2383,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createCamelApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2301,7 +2399,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				function createUiMashupApplication(modelUUId) {
 					var model = m_model.findModelByUuid(modelUUId);
@@ -2318,7 +2416,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @returns
 				 */
@@ -2337,12 +2435,15 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
 				 */
 				function createWrapperProcess(application) {
+					m_utils.debug("Application to wrap");
+					m_utils.debug(application);
+
 					var popupData = {
 						attributes : {
 							width : "700px",
@@ -2351,15 +2452,21 @@ define(
 									+ "bpm-modeler/views/modeler/serviceWrapperWizard.html"
 						},
 						payload : {
+							callerWindow : window,
 							application : application,
+							viewManager : viewManager,
 							createCallback : function(parameter) {
-								m_commandsController
-										.submitCommand(m_command
-												.createCreateCommand(
-														"/models/"
-																+ application.model.id
-																+ "/processes/createWrapperProcess",
-														parameter));
+								jQuery
+										.ajax({
+											type : "POST",
+											url : m_urlUtils
+													.getModelerEndpointUrl()
+													+ "/models/"
+													+ encodeURIComponent(application.model.id)
+													+ "/processes/createWrapperProcess",
+											contentType : "application/json",
+											data : JSON.stringify(parameter)
+										});
 							}
 						}
 					};
@@ -2368,7 +2475,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 * @param modelId
 				 * @param id
 				 * @returns
@@ -2470,18 +2577,18 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function Outline() {
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.toString = function() {
 					return "Lightdust.Outline";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.initialize = function() {
 					m_session.initialize();
@@ -2491,7 +2598,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
@@ -2514,14 +2621,14 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.fireCloseViewCommand = function(uuid) {
 					viewManager.closeViewsForElement(uuid);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
@@ -2672,22 +2779,33 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "created";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.created");
 							element = this
 									.getChangedElementsText(command.changes.added);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "deleted";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.deleted");
 							element = this
 									.getChangedElementsText(command.changes.removed);
 						} else {
-							action = "modified";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.modified");
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#undoChange").attr("title",
-								"Undo: " + element + " " + action);
+						jQuery("#undoChange")
+								.attr(
+										"title",
+										m_i18nUtils
+												.getProperty("modeler.outline.toolbar.tooltip.undo")
+												+ ": " + element + " " + action);
 					} else {
-						jQuery("#undoChange").attr("title", "Undo");
+						jQuery("#undoChange")
+								.attr(
+										"title",
+										m_i18nUtils
+												.getProperty("modeler.outline.toolbar.tooltip.undo"));
 					}
 				}
 
@@ -2699,22 +2817,33 @@ define(
 						var action;
 						var element;
 						if (-1 != command.commandId.indexOf(".create")) {
-							action = "create";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.create");
 							element = this
 									.getChangedElementsText(command.changes.removed);
 						} else if (-1 != command.commandId.indexOf(".delete")) {
-							action = "delete";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.delete");
 							element = this
 									.getChangedElementsText(command.changes.added);
 						} else {
-							action = "modify";
+							action = m_i18nUtils
+									.getProperty("modeler.outline.toolbar.tooltip.modify");
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#redoChange").attr("title",
-								"Redo: " + element + " " + action);
+						jQuery("#redoChange")
+								.attr(
+										"title",
+										m_i18nUtils
+												.getProperty("modeler.outline.toolbar.tooltip.redo")
+												+ ": " + element + " " + action);
 					} else {
-						jQuery("#redoChange").attr("title", "Redo");
+						jQuery("#redoChange")
+								.attr(
+										"title",
+										m_i18nUtils
+												.getProperty("modeler.outline.toolbar.tooltip.redo"));
 					}
 				}
 
@@ -2755,7 +2884,7 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createModel = function(data) {
 					var outlineObj = this;
@@ -2775,49 +2904,70 @@ define(
 					jQuery(displayScope + "#outline").jstree("set_type",
 							"model", "#" + data.uuid);
 
-					jQuery(displayScope + "#outline").jstree("create",
-							"#" + data.uuid, "last", {
-								"attr" : {
-									"id" : "structuredTypes_" + data.uuid,
-									"rel" : "structuredTypes",
-									"modelId" : data.id,
-									"modelUUID" : data.uuid
-								},
-								"data" : m_i18nUtils.getProperty("modeler.outline.structuredTypes.name")
-							}, null, true);
-					jQuery(displayScope + "#outline").jstree("create",
-							"#" + data.uuid, "last", {
-								"attr" : {
-									"id" : "data_" + data.uuid,
-									"rel" : "data",
-									"modelUUID" : data.uuid
-								},
-								"data" : m_i18nUtils.getProperty("modeler.outline.data.name")
-							}, null, true);
+					jQuery(displayScope + "#outline")
+							.jstree(
+									"create",
+									"#" + data.uuid,
+									"last",
+									{
+										"attr" : {
+											"id" : "structuredTypes_"
+													+ data.uuid,
+											"rel" : "structuredTypes",
+											"modelId" : data.id,
+											"modelUUID" : data.uuid
+										},
+										"data" : m_i18nUtils
+												.getProperty("modeler.outline.structuredTypes.name")
+									}, null, true);
+					jQuery(displayScope + "#outline")
+							.jstree(
+									"create",
+									"#" + data.uuid,
+									"last",
+									{
+										"attr" : {
+											"id" : "data_" + data.uuid,
+											"rel" : "data",
+											"modelUUID" : data.uuid
+										},
+										"data" : m_i18nUtils
+												.getProperty("modeler.outline.data.name")
+									}, null, true);
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
 					});
 					jQuery(displayScope + "#outline").jstree("close_node",
 							"#" + "data_" + data.uuid);
-					jQuery(displayScope + "#outline").jstree("create",
-							"#" + data.uuid, "last", {
-								"attr" : {
-									"modelId" : data.id,
-									"id" : "applications_" + data.uuid,
-									"rel" : "applications",
-									"modelUUID" : data.uuid
-								},
-								"data" : m_i18nUtils.getProperty("modeler.outline.applications.name")
-							}, null, true);
-					jQuery(displayScope + "#outline").jstree("create",
-							"#" + data.uuid, "last", {
-								"attr" : {
-									"id" : "participants_" + data.uuid,
-									"rel" : "participants",
-									"modelUUID" : data.uuid
-								},
-								"data" : m_i18nUtils.getProperty("modeler.outline.participants.name")
-							}, null, true);
+					jQuery(displayScope + "#outline")
+							.jstree(
+									"create",
+									"#" + data.uuid,
+									"last",
+									{
+										"attr" : {
+											"modelId" : data.id,
+											"id" : "applications_" + data.uuid,
+											"rel" : "applications",
+											"modelUUID" : data.uuid
+										},
+										"data" : m_i18nUtils
+												.getProperty("modeler.outline.applications.name")
+									}, null, true);
+					jQuery(displayScope + "#outline")
+							.jstree(
+									"create",
+									"#" + data.uuid,
+									"last",
+									{
+										"attr" : {
+											"id" : "participants_" + data.uuid,
+											"rel" : "participants",
+											"modelUUID" : data.uuid
+										},
+										"data" : m_i18nUtils
+												.getProperty("modeler.outline.participants.name")
+									}, null, true);
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
@@ -2828,42 +2978,50 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_application.deleteApplication(transferObject.id, model);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_participant.deleteParticipantRole(transferObject.id,
@@ -2871,30 +3029,35 @@ define(
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
-					m_typeDeclaration.deleteTypeDeclaration(transferObject.id, model);
+					m_typeDeclaration.deleteTypeDeclaration(transferObject.id,
+							model);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
+					jQuery(displayScope + "#outline").jstree("deselect_node",
+							"#" + transferObject.uuid);
 					jQuery(displayScope + "#outline").jstree("remove",
-							"#" + transferObject.uuid)
+							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_data.deleteData(transferObject.id, model);
 				}
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createProcess = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2921,7 +3084,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createApplication = function(transferObject) {
 					var model = m_model.findModel(transferObject.modelId);
@@ -2947,7 +3110,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createData = function(transferObject) {
 					var model = m_model
@@ -2975,7 +3138,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createStructuredDataType = function(
 						transferObject) {
@@ -2987,7 +3150,7 @@ define(
 					jQuery(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
-									"rel" : "compositeStructuredDataType",
+									"rel" : dataStructure.getType(),
 									"modelId" : model.id,
 									"modelUUID" : model.uuid,
 									"id" : dataStructure.uuid,
@@ -3002,7 +3165,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				Outline.prototype.createParticipant = function(transferObject) {
 					var model = m_model

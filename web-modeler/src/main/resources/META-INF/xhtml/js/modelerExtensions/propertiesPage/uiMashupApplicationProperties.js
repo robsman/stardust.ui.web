@@ -10,18 +10,31 @@
 
 define(
 		[ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
+				'bpm-modeler/js/UiMashupTestPropertiesPage',
 				"bpm-modeler/js/m_i18nUtils" ],
-		function(m_modelElementCommentsPropertiesPage, m_i18nUtils) {
+		function(m_modelElementCommentsPropertiesPage,
+				UiMashupTestPropertiesPage, m_i18nUtils) {
 			return {
-				propertiesPage : [ {
-					panelId : "uiMashupApplicationView",
-					id : "uiMashupApplicationCommentsPropertiesPage",
-					pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
-					provider : m_modelElementCommentsPropertiesPage,
-					visibility : "always",
-					pageName : m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.comments"),
-					pageIconUrl : "../../images/icons/comments-properties-page.png"
-				} ]
+				propertiesPage : [
+						{
+							panelId : "uiMashupApplicationView",
+							id : "uiMashupTestPropertiesPage",
+							pageHtmlUrl : "uiMashupTestPropertiesPage.html",
+							provider : UiMashupTestPropertiesPage,
+							visibility : "preview",
+							pageName : m_i18nUtils
+									.getProperty("modeler.model.propertyView.uiMashup.test.title"),
+							pageIconUrl : "../../images/icons/arrow_refresh.png"
+						},
+						{
+							panelId : "uiMashupApplicationView",
+							id : "uiMashupApplicationCommentsPropertiesPage",
+							pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+							provider : m_modelElementCommentsPropertiesPage,
+							visibility : "always",
+							pageName : m_i18nUtils
+									.getProperty("modeler.element.properties.commonProperties.comments"),
+							pageIconUrl : "../../images/icons/comments.png"
+						} ]
 			};
 		});

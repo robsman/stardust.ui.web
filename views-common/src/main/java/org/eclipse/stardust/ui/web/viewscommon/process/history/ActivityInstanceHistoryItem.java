@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
 
@@ -179,7 +180,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          if (activityInstance.isAssignedToUser())
          {
             UserInfo userInfo = (UserInfo) activityInstance.getCurrentPerformer();
-            User user = ServiceFactoryUtils.getUserService().getUser(userInfo.getId());
+            User user = UserUtils.getUser(userInfo.getId());
             performer = I18nUtils.getUserLabel(user);
          }
          else if (activityInstance.isAssignedToModelParticipant() && activityInstance.getCurrentPerformer()!=null)
@@ -200,7 +201,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
             UserInfo userInfo = activityInstance.getPerformedBy();
             if (null != userInfo)
             {
-               User user = ServiceFactoryUtils.getUserService().getUser(userInfo.getId());
+               User user = UserUtils.getUser(userInfo.getId());
                performer= I18nUtils.getUserLabel(user);
             }
             else

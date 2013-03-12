@@ -16,6 +16,7 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementS
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlBinding;
 
 public class ModelRepository
@@ -116,6 +117,20 @@ public class ModelRepository
          if (binding.isCompatible(model))
          {
             return (ModelBinding<M>) binding;
+         }
+      }
+
+      throw new IllegalArgumentException("Unsupported model: " + model);
+   }
+
+   @SuppressWarnings("unchecked")
+   public <M extends EObject> ModelPersistenceHandler<M> getModelPersistenceHandler(M model)
+   {
+      for (ModelBinding<? extends EObject> binding : modelBindings)
+      {
+         if (binding.isCompatible(model))
+         {
+            return ((ModelBinding<M>) binding).getPersistenceHandler(model);
          }
       }
 

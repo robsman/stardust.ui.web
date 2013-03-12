@@ -1003,6 +1003,9 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
       {
          permissionObject.setSelected(true);
          permissionObject.setExpanded(true);
+         // For delete scenario, leaf flag will be set 'true' while checking grants in
+         // next step
+         permissionObject.setLeaf(false);
       }
 
       // check permission node is modified

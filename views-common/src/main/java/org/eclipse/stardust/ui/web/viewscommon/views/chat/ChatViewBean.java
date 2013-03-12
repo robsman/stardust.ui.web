@@ -18,6 +18,8 @@ import javax.faces.event.ActionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogConte
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
@@ -113,6 +116,10 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
       searchResult = new ArrayList<User>();
       userSearchKey = userSearchKey.toLowerCase();
       UserQuery userQuery = UserQuery.findActive();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
+      userQuery.setPolicy(userPolicy);
+      
       List<User> allUserList = ContextPortalServices.getQueryService().getAllUsers(userQuery);
 
       for (User user : allUserList)

@@ -182,6 +182,7 @@ define(
 
 					this.andPath.hide();
 					this.addToPrimitives(this.andPath);
+					this.addToEditableTextPrimitives(this.andPath);
 
 					this.xorPath = m_canvasManager
 							.drawPath(
@@ -193,6 +194,7 @@ define(
 
 					this.xorPath.hide();
 					this.addToPrimitives(this.xorPath);
+					this.addToEditableTextPrimitives(this.xorPath);
 
 					if (this.modelElement.gatewayType == "and") {
 						this.andPath.show();
@@ -214,6 +216,7 @@ define(
 
 					this.orCircle.hide();
 					this.addToPrimitives(this.orCircle);
+					this.addToEditableTextPrimitives(this.orCircle);
 
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
@@ -529,7 +532,7 @@ define(
 											} ],
 									[
 											{
-												imageUrl : "../../images/icons/remove.png",
+												imageUrl : "../../images/icons/delete.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_removeClosure
@@ -614,6 +617,7 @@ define(
 				};
 
 				GatewaySymbol.prototype.showEditable = function() {
+					this.performClientSideAdj();
 					this.text.hide();
 					var editableText = this.diagram.editableText;
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();

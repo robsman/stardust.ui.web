@@ -65,11 +65,11 @@ public class TechnicalUserUtils
          pwd = TECH_USER_PASSWORD;
          realm = TECH_USER_REALM;
 
-         trace.info("The default user credentials were used to initiate the 'Reset Password' request. Please configure a new technical user.");
+         trace.info("The default user credentials were used to initiate the 'Technical User login' request. Please configure a new technical user.");
       }
       else
       {
-         trace.debug("Technical User is found to be configured. Using the same to Reset Password");
+         trace.debug("Technical User is found to be configured. Using the same to login");
       }
 
       // Set the partition of Tech User same as the current user

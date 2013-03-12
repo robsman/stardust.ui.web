@@ -80,8 +80,8 @@ define(
 				this.toAnchorPointOrientation = 3;
 				this.toModelElementOid = null;
 				this.toModelElementType = null;
-				this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-				this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+				this.conditionExpressionTextXOffset;
+				this.conditionExpressionTextYOffset;
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -161,18 +161,8 @@ define(
 						this.propertiesPanel = m_controlFlowPropertiesPanel
 								.getInstance();
 
-						if (this.modelElement.attributes != null) {
-							this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
-							this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
+						this.adjustConditionExpressionText();
 
-							if (!this.conditionExpressionTextXOffset) {
-								this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							}
-
-							if (!this.conditionExpressionTextYOffset) {
-								this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
-							}
-						}
 					}
 
 					this.completeNoTransfer();
@@ -581,9 +571,9 @@ define(
 
 					if (this.isControlFlow()) {
 						// TODO Can we store in graphical element?
-						if (null != this.conditionExpressionTextXOffset)
+						if (!this.conditionExpressionTextXOffset)
 							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"] = this.conditionExpressionTextXOffset;
-						if (null != this.conditionExpressionTextYOffset)
+						if (!this.conditionExpressionTextYOffset)
 							transferObject.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"] = this.conditionExpressionTextYOffset;
 						// TODO Add later
 						transferObject.segments = null;
@@ -783,7 +773,7 @@ define(
 					});
 
 					this.addToPrimitives(this.path);
-					this.addToEditableTextPrimitives(this.path);
+					//this.addToEditableTextPrimitives(this.path);
 
 					this.path.auxiliaryProperties = {
 						callbackScope : this
@@ -791,10 +781,8 @@ define(
 
 					this.conditionExpressionText = m_canvasManager
 							.drawTextNode(
-									this.fromAnchorPoint.x
-											+ this.conditionExpressionTextXOffset,
-									this.fromAnchorPoint.y
-											+ this.conditionExpressionTextYOffset,
+									this.fromAnchorPoint.x,
+									this.fromAnchorPoint.y,
 									"").attr({
 								"text-anchor" : "start",
 								"fill" : m_constants.CONTROL_FLOW_COLOR,
@@ -802,8 +790,12 @@ define(
 							});
 
 					this.addToPrimitives(this.conditionExpressionText);
-					this.addToEditableTextPrimitives(this.conditionExpressionText);
 
+					this.conditionExpressionText.auxiliaryProperties = {
+						callbackScope : this
+					};
+
+					//this.addToEditableTextPrimitives(this.conditionExpressionText);
 					this.conditionExpressionText.hide();
 
 					this.defaultIndicatorPath = m_canvasManager.drawPath("", {
@@ -880,22 +872,26 @@ define(
 											.trim() != ""
 									&& this.modelElement.conditionExpression
 											.trim() != "true") {
+								if (!this.conditionExpressionTextXOffset
+										|| !this.conditionExpressionTextYOffset) {
+									this.adjustConditionExpressionText();
+								}
 								this.conditionExpressionText.attr("text",
 										this.modelElement.conditionExpression);
-								this.conditionExpressionText
-										.attr({
-											x : this.fromAnchorPoint.x
-													+ this.conditionExpressionTextXOffset,
-											y : this.fromAnchorPoint.y
-													+ this.conditionExpressionTextYOffset
-										});
+
+								this.conditionExpressionText.attr({
+									x : this.toAnchorPoint.x
+											+ this.conditionExpressionTextXOffset,
+									y : this.toAnchorPoint.y
+											+ this.conditionExpressionTextYOffset
+								});
 
 								this.conditionExpressionText.show();
-							} else if (this.modelElement.name) {
+							} /*else if (this.modelElement.name) {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.name);
 								this.conditionExpressionText.show();
-							} else {
+							} */else {
 								this.conditionExpressionText.hide();
 							}
 						}
@@ -960,6 +956,33 @@ define(
 						}
 					}
 				};
+
+				/**
+				 *
+				 */
+				Connection.prototype.adjustConditionExpressionText = function() {
+					if (this.modelElement.attributes) {
+						this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
+						this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
+					}
+					if (!this.conditionExpressionTextXOffset
+							|| !this.conditionExpressionTextYOffset) {
+						if (this.toAnchorPoint.orientation == m_constants.NORTH) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -2;
+						} else if (this.toAnchorPoint.orientation == m_constants.EAST) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 2;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
+						} else if (this.toAnchorPoint.orientation == m_constants.SOUTH) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * 2;
+						} else if (this.toAnchorPoint.orientation == m_constants.WEST) {
+							this.conditionExpressionTextXOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -4;
+							this.conditionExpressionTextYOffset = m_constants.CONNECTION_EXPRESSION_OFFSET * -1;
+						}
+					}
+				};
+
 
 				/**
 				 *
@@ -1199,9 +1222,9 @@ define(
 						}
 
 						this.conditionExpressionText.attr({
-							x : this.fromAnchorPoint.x
+							x : this.toAnchorPoint.x
 									+ this.conditionExpressionTextXOffset,
-							y : this.fromAnchorPoint.y
+							y : this.toAnchorPoint.y
 									+ this.conditionExpressionTextYOffset
 						});
 					}
@@ -1581,6 +1604,11 @@ define(
 							.attr({
 								"stroke-width" : m_constants.CONNECTION_SELECT_STROKE_WIDTH
 							});
+
+					if (this.diagram.currentConnection) {
+						this.diagram.currentConnection.deselect();
+					}
+
 					this.diagram.currentConnection = this;
 					this.fromAnchorPoint.show();
 					this.toAnchorPoint.show();
@@ -1674,6 +1702,9 @@ define(
 									+ this.diagram.Y_OFFSET);
 							this.diagram.setAnchorPoint(anchorPoint);
 						}
+ 						else {
+							this.diagram.disEngageConnection();
+						}
 					} else {
 						this.select();
 					}
@@ -1697,6 +1728,7 @@ define(
 				 */
 				Connection.prototype.dragStartConditionExpressionText = function(
 						x, y, event) {
+					this.diagram.mode = this.diagram.SYMBOL_MOVE_MODE;
 				};
 
 				/**
@@ -1706,16 +1738,14 @@ define(
 						dY, x, y, event) {
 					this.conditionExpressionTextXOffset = x
 							* this.diagram.zoomFactor - this.diagram.X_OFFSET
-							- this.fromAnchorPoint.x;
+							- this.toAnchorPoint.x + this.diagram.scrollPane.scrollLeft() ;
 					this.conditionExpressionTextYOffset = y
 							* this.diagram.zoomFactor - this.diagram.Y_OFFSET
-							- this.fromAnchorPoint.y;
+							- this.toAnchorPoint.y + this.diagram.scrollPane.scrollTop();
 
 					this.conditionExpressionText.attr({
-						"x" : x * this.diagram.zoomFactor
-								- this.diagram.X_OFFSET,
-						"y" : y * this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET
+						"x" : this.conditionExpressionTextXOffset + this.toAnchorPoint.x,
+						"y" : this.conditionExpressionTextYOffset + this.toAnchorPoint.y
 					});
 				};
 
@@ -1735,6 +1765,7 @@ define(
 					};
 
 					this.createUpdateCommand(changes);
+					this.diagram.mode = this.diagram.NORMAL_MODE;
 				};
 
 				/**
@@ -1785,7 +1816,7 @@ define(
 				 */
 				Connection.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [], [ {
-						imageUrl : "../../images/icons/remove.png",
+						imageUrl : "../../images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : Connection_removeClosure
@@ -1982,6 +2013,7 @@ define(
 				 */
 				Connection.prototype.hide = function() {
 					this.path.hide();
+					this.conditionExpressionText.hide();
 					this.visible = false;
 					this.hideFlyOutMenu();
 				}
@@ -1991,6 +2023,7 @@ define(
 				 */
 				Connection.prototype.show = function() {
 					this.path.show();
+					this.conditionExpressionText.show();
 					this.visible = true;
 				}
 
@@ -2125,10 +2158,19 @@ define(
 									.showErrorMessage("A connection must connect two different symbols.");
 							return false;
 						}
+
+						//to be removed in future
+						if (m_constants.ANNOTATION_SYMBOL == toAnchorPoint.symbol.type
+								|| m_constants.ANNOTATION_SYMBOL == fromAnchorPoint.symbol.type) {
+							m_messageDisplay
+							.showErrorMessage("Connection from/to Annotation is not supported.");
+							return false;
+						}
+
 					}
 
 					return true;
-				}
+				};
 
 				/**
 				 *

@@ -15,10 +15,18 @@
 		<div id="configurationTab">
 			<table>
 				<tr>
-					<td><label for="fileOrDirectoryNameInput">File or
+					<td><label for="directoryNameInput">
 							Directory Name</label></td>
-					<td><input id="fileOrDirectoryNameInput" type="text"
-						style="width: 200px;" />
+					<td><input id="directoryNameInput" type="text"
+						style="width: 200px;" onfocus="if(this.value == 'Please specify ...') {this.value=''}"/>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label for="fileNameInput">
+							File Name</label></td>
+					<td><input id="fileNameInput" type="text"
+						style="width: 100px;" />
 					</td>
 					<td></td>
 				</tr>
@@ -50,27 +58,28 @@
 			</table>
 			<table style="margin-top: 10px;">
 				<tr>
-					<td><label for="lockBehaviorSelect">Lock Behavior</label></td>
+					<td><label for="lockBehaviorSelect">Read Lock Behavior</label></td>
 					<td><select id="lockBehaviorSelect">
-							<option value="exclusiveLock">Exclusive Lock</option>
-							<option value="exclusiveReadLock">Exclusive Read Lock</option>
+							<option value="none">Please specify ...</option>
+							<option value="markerFile">Marker File</option><!--  Camel creates a marker file and then holds a lock on it-->
+							<option value="changed">Changed</option><!-- changed is using file length/modification timestamp to detect whether the file is currently being copied or not-->
 					</select></td>
 					<td></td>
 				</tr>
 				<tr>
 					<td><label for="postProcessingSelect">Post-Processing</label></td>
 					<td><select id="postProcessingSelect">
+							<option selected value="move">Move</option>
 							<option value="noop">Leave</option>
 							<option value="delete">Delete</option>
-							<option value="move">Move</option>
 					</select></td>
 					<td></td>
 				</tr>
-				<tr>
+				<!--<tr>
 					<td><label for="alwaysConsumeInput">Always consume</label></td>
 					<td><input id="alwaysConsumeInput" type="checkbox" /></td>
 					<td></td>
-				</tr>
+				</tr>-->
 			</table>
 		</div>
 		<div id="parametersTab">

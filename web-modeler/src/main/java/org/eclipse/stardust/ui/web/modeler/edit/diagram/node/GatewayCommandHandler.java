@@ -55,8 +55,6 @@ public class GatewayCommandHandler
 
       synchronized (model)
       {
-         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
          // encode Gateway as Route Activity (default configuration)
          String name = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
          if(StringUtils.isEmpty(name))
@@ -67,7 +65,6 @@ public class GatewayCommandHandler
          ActivityType gateway = newRouteActivity(processDefinition) //
                .withIdAndName(null, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
-         gateway.setElementOid(++maxOid);
          gateway.setName(""); //$NON-NLS-1$
          
          // add gateway to model
@@ -79,7 +76,6 @@ public class GatewayCommandHandler
 
          // create node symbol
          ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-         gatewaySymbol.setElementOid(++maxOid);
 
          // connect symbol with model element
          gatewaySymbol.setActivity(gateway);

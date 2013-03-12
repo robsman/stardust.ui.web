@@ -38,7 +38,7 @@ define(
 				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
 						"overflow", "hidden");
 
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
+				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
 				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
@@ -105,7 +105,7 @@ define(
 				$("label[for='defaultPriorityInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.processDefinition.propertyPages.general.defaultProperty"));
+										.getProperty("modeler.processDefinition.propertyPages.general.defaultPriority"));
 
 				$(
 						"#dataPathPropertiesPage label[for='parameterDefinitionNameInput']")
@@ -199,12 +199,6 @@ define(
 				$("#datatableid")
 						.find(
 								"#primitiveDefaultTextInputRow label[for='primitiveDefaultTextInput']")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.propertyView.dataTypeProperties.defaultValue"));
-				$("#datatableid")
-						.find(
-								"#primitiveDefaultCheckboxInputRow label[for='primitiveDefaultCheckboxInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.dataTypeProperties.defaultValue"));
@@ -335,6 +329,9 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
 				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
 
+				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
+				directionSelect.append("<option value=\"INOUT\">" + selectdata + "</option>");
+
 				directionSelect = $("#directionlistTable").find("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
@@ -360,7 +357,7 @@ define(
 							(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px");
 				}
 
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 10));
+				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
 				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
@@ -386,10 +383,10 @@ define(
 					var diagWidth = innerWidth - $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET;
 
 					if (diagWidth < getToolbarWidth()) {
-						diagWidth = getToolbarWidth() + 10;
+						diagWidth = getToolbarWidth() + 2;
 					}
 
-					setDrawingPaneDivWidths((diagWidth - 10));
+					setDrawingPaneDivWidths((diagWidth - 2));
 
 					$("#modelerDiagramPanelWrapper").css("width", (diagWidth) + "px").css("overflow", "auto");
 				}

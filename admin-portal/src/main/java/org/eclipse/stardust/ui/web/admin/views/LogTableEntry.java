@@ -18,6 +18,7 @@ import org.eclipse.stardust.engine.api.runtime.LogType;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 /**
@@ -89,8 +90,16 @@ public class LogTableEntry extends DefaultRowModel
       {
          linkDisabled = true;
       }
-
-      accountName = UserUtils.getUserDisplayLabel(user);
+      User loggedInUser = SessionContext.findSessionContext().getUser();
+      if (!user.getAccount().equals(loggedInUser.getAccount()))
+      {
+         UserUtils.loadDisplayPreferenceForUser(user);
+         accountName = UserUtils.getUserDisplayLabel(user);
+      }
+      else
+      {
+         accountName = UserUtils.getUserDisplayLabel(loggedInUser);
+      }
 
       if (!linkDisabled && StringUtils.isNotEmpty(accountName))
       {

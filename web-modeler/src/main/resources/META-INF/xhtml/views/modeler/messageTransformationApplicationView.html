@@ -49,6 +49,31 @@
 	color: #dddddd;
 }
 
+#inputElementColumn, #outputElementColumn, .elementCell {
+	width: 200px !important;
+}
+
+#inputTypeColumn, #outputTypeColumn, .typeCell {
+	width: 100px !important;
+}
+
+#inputActionsColumn, .inputActionsCell {
+	width: 225px !important;
+}
+
+#mappingColumn, .mappingCell {
+	width: 200px !important;
+}
+
+#problemsColumn, .problemsCell {
+	width: 25px !important;
+}
+
+#outputActionsColumn, .outputActionsCell {
+	width: 50px !important;
+}
+
+
 .keySpan {
 	color: green;
 	font-weight: bold;
@@ -70,7 +95,7 @@
 }
 
 .mappingError {
-	background-image: url(../../images/error.gif);
+	background-image: url(../../images/icons/exclamation.png);
 }
 
 .deleteAction {
@@ -95,7 +120,7 @@
 </style>
 </head>
 <body>
-	<div class="panel">
+	<div id="messageTransformationApplicationView" class="panel">
 		<table cellpadding="0" cellspacing="0" class="layoutTable">
 			<tr>
 				<td>
@@ -149,11 +174,11 @@
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
-							<li><a href="#configurationTab" id="configuration"><img
-									src="../../images/icons/basic-properties-page.png"></img><span
-									class="tabLabel">Configuration</span> </a></li>
+							<li><a href="#configurationTab"><img
+									src="../../images/icons/table.png"></img><span
+									class="tabLabel" id="configuration">Configuration</span> </a></li>
 							<li><a href="#testTab"><img
-									src="../../images/icons/basic-properties-page.png"></img><span
+									src="../../images/icons/table.png"></img><span
 									class="tabLabel" id="testdata">Test</span> </a></li>
 						</ul>
 						<div id="configurationTab">
@@ -183,11 +208,11 @@
 																					type="button" value="Add Input ..." /></td>
 																				<td><input
 																					id="filterHighlightedSourceFieldsInput"
-																					type="image" src="../../images/bulb-on.gif"
+																					type="image" src="../../images/icons/lightbulb.png"
 																					title="Display only highlighted fields" />
 																				</td>
 																				<td><input id="showAllSourceFieldsInput"
-																					type="image" src="../../images/bulb-off.gif"
+																					type="image" src="../../images/icons/lightbulb_off.png"
 																					title="Display highlighted and non-highlighted fields" />
 																				</td>
 																				<td><input id="sourceFilterInput" type="text"
@@ -201,12 +226,12 @@
 																	<div class="dataTable">
 																		<table id="sourceTable" cellpadding="0"
 																			cellspacing="0" class="treeTable"
-																			style="width: 500px;">
+																			style="width: 525px; table-layout: fixed;">
 																			<thead>
 																				<tr>
-																					<th style="width: 400px;" id="element">Element</th>
-																					<th style="width: 100px;" id="type">Type</th>
-																					<th style="width: 50px;"></th>
+																					<th id="inputElementColumn">Element</th>
+																					<th id="inputTypeColumn">Type</th>
+																					<th id="inputActionsColumn"></th>
 																				</tr>
 																			</thead>
 																			<tbody />
@@ -231,24 +256,24 @@
 																						type="button" value="Add Output ..." />
 																					</td>
 																					<td><input id="filterFieldsWithMappingInput"
-																						type="image" src="../../images/mapping.gif"
+																						type="image" src="../../images/icons/mapping.gif"
 																						title="Display only fields with mapping expressions" />
 																					</td>
 																					<td><input id="filterFieldsWithNoMappingInput"
-																						type="image" src="../../images/no-mapping.gif"
+																						type="image" src="../../images/icons/no-mapping.gif"
 																						title="Display only fields with no mapping expression" />
 																					</td>
 																					<td><input
 																						id="filterHighlightedTargetFieldsInput"
-																						type="image" src="../../images/bulb-on.gif"
+																						type="image" src="../../images/icons/lightbulb.png"
 																						title="Display only highlighted fields" />
 																					</td>
 																					<td><input id="showAllTargetFieldsInput"
-																						type="image" src="../../images/bulb-off.gif"
+																						type="image" src="../../images/icons/lightbulb_off.png"
 																						title="Display highlighted and non-highlighted fields" />
 																					</td>
-																					<td><input id="filterFieldsWithMappingInvalid"
-																						type="image" src="../../images/error.gif"
+																					<td><input id="filterFieldsWithMappingInvalidInput"
+																						type="image" src="../../images/icons/exclamation.png"
 																						title="Display only fields whose mapping expression is invalid" />
 																					</td>
 																					<td><input id="targetFilterInput" type="text"
@@ -262,14 +287,14 @@
 																		<div class="dataTable">
 																			<table id="targetTable" cellpadding="0"
 																				cellspacing="0" class="treeTable"
-																				style="width: 900px;">
+																				style="width: 575px; table-layout: fixed;">
 																				<thead>
 																					<tr>
-																						<th style="width: 400px;" id="element1">Element</th>
-																						<th style="width: 100px;" id="type1">Type</th>
-																						<th style="width: 200px;" id="mapping">Mapping</th>
-																						<th style="width: 200px;" id="problem">Problem</th>
-																						<th style="width: 50px;"></th>
+																						<th id="outputElementColumn">Element</th>
+																						<th id="outputTypeColumn">Type</th>
+																						<th id="mappingColumn">Mapping</th>
+																						<th id="problemsColumn">Problem</th>
+																						<th id="outputActionsColumn"></th>
 																					</tr>
 																				</thead>
 																				<tbody />
@@ -289,8 +314,9 @@
 												</td>
 											</tr>
 											<tr>
-												<td colspan="2"><textarea id="expressionTextArea"
-														cols="80" rows="5"></textarea>
+												<td colspan="2"><div id="expressionTextDiv"
+														class="editorDivDefault">
+														</textarea>
 												</td>
 											</tr>
 										</table></td>
@@ -308,7 +334,7 @@
 													title="Run Message Transformation" />
 												</td>
 												<td><input id="resetButton" type="image"
-													src="../../images/icons/clear.png"
+													src="../../images/icons/arrow_refresh.png"
 													title="Clear input data fields" /></td>
 											</tr>
 										</table></td>
@@ -425,6 +451,115 @@
 							</td>
 						</tr>
 					</table></td>
+			</tr>
+		</table>
+	</div>
+	<div id="indexConfigurationDialog" title="Index Configuration"
+		style="min-width: 600px; min-height: 200px;">
+		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr valign="top">
+							<td>
+								<div class="heading" id="idx-sourcemessage" style="margin-bottom: 5px;">Source Message</div>
+							</td>
+							<td>
+								<div class="heading" id="idx-targetmessage"
+									style="margin-bottom: 5px; margin-left: 10px;">Target Message</div>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<div class="panelBorder">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td>
+												<div class="dataTable">
+													<table id="idx-sourceTable" cellpadding="0"
+														cellspacing="0" class="treeTable"
+														style="width: 300px;">
+														<thead>
+															<tr>
+																<th style="width: 150px;" id="idx-sourceTable-name">Name</th>
+																<th style="width: 100px;" id="idx-sourceTable-index">Index</th>
+															</tr>
+														</thead>
+														<tbody />
+													</table>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td>
+								<div style="margin-left: 10px;">
+									<div class="panelBorder">
+										<table cellpadding="0" cellspacing="0" class="layoutTable">
+											<tr>
+												<td>
+													<div class="dataTable">
+														<table id="idx-targetTable" cellpadding="0"
+															cellspacing="0" class="treeTable"
+															style="width: 300px;">
+															<thead>
+																<tr>
+																	<th style="width: 150px;" id="idx-targetTable-name">Name</th>
+																	<th style="width: 100px;" id="idx-targetTable-index">Index</th>
+																</tr>
+															</thead>
+															<tbody />
+														</table>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table  cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><input id="idx-showAffectedTreePaths" type="checkbox" checked /></td>
+							<td><label for="idx-showAffectedTreePaths">Show affected tree paths only</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div id="idx-mappingStrategy" class="heading">Mapping Strategy (1 to N of same type)</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><input id="idx-mappingStrategy-append" type="radio" disabled="disabled" /></td>
+							<td><label for="idx-mappingStrategy-append">Append element</label></td>
+						</tr>
+						<tr>
+							<td><input id="idx-mappingStrategy-overwrite" type="radio" checked="checked" disabled="disabled" /></td>
+							<td><label for="idx-mappingStrategy-overwrite">Overwrite existing element</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><input id="idx-okButton" type="button" value="OK" /></td>
+							<td><input id="idx-cancelButton" type="button" value="Cancel" /></td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 	</div>

@@ -52,7 +52,6 @@
       <property name="build.lib" value="${build.dir}/lib" />
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.deploy" value="${build.dir}/deploy" />
-      <property name="build.config" value="${build.dir}/etc" />
       <property name="build.temp" value="${build.dir}/temp" />
 
       <property name="portal.common.jarfile" value="${artifactId}.jar" />
@@ -73,7 +72,6 @@
       <mkdir dir="${build.lib}" />
       <mkdir dir="${build.src}" />
       <mkdir dir="${build.deploy}" />
-      <mkdir dir="${build.config}"/>
       <mkdir dir="${build.temp}"/>
    </target>
 
@@ -138,12 +136,6 @@
             <include name="**/*.*" />
          </fileset>
       </copy>
-      <copy todir="${build.config}">
-	      <fileset dir="${project.etc}">
-	         <include name="properties.xml"/>
-	      </fileset>
-	   </copy>
-      
       
       <!-- Copy NL property file for locale "en" to NL property with no locale. -->
       <copy todir="${build.classes}" overwrite="true">
@@ -237,7 +229,6 @@
       <ipp:mvn-install file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
       <ipp:mvn-install pomFile="${build.lib}/jsf-api-module.pom" />
       <ipp:mvn-install pomFile="${build.lib}/jsf-myfaces-module.pom" />
-      <ipp:mvn-install pomFile="${build.lib}/jsf-mojarra-module.pom" />
    </target>
    
    <target name="publish" depends="initBuild"
@@ -248,7 +239,6 @@
    	<ipp:mvn-deploy file="${ipp-portal.war}" pomFile="${ipp-portal.pom}" />
    	<ipp:mvn-deploy pomFile="${build.lib}/jsf-api-module.pom" />
    	<ipp:mvn-deploy pomFile="${build.lib}/jsf-myfaces-module.pom" />
-   	<ipp:mvn-deploy pomFile="${build.lib}/jsf-mojarra-module.pom" />
    </target>
 	
    <!-- target is invoked by stardust-ui-web-nls project -->

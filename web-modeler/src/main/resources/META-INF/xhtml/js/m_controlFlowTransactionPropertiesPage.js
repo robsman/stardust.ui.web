@@ -31,7 +31,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "transactionPropertiesPage",
 						"Transactional Behavior",
-						"../../images/icons/control-flow-transaction-properties-page.png");
+						"../../images/icons/arrow-circle.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

@@ -443,6 +443,14 @@ public class TrafficLightViewConfigurationBean extends UIComponentBean implement
                               tempProcessDefinitions.add(processDefinition);
                            }
                         }
+                        
+                        // TODO - check if a better way exist to save all selected PD
+                        // config values
+                        // Selected ProcessId is already saved, so skiping the same
+                        if (!processDefinition.getQualifiedId().equals(processId))
+                        {
+                           tempPropertyEntry.save();
+                        }
                      }
                   }
                }

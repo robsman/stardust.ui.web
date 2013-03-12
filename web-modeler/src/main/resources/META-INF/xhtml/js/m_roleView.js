@@ -67,7 +67,7 @@ define(
 				$("label[for='workingWeeksPerYearInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.role.controlling.workingWeeksPerYear"));
+										.getProperty("modeler.model.propertyView.role.controlling.workingWeeksPerYear"));
 				$("label[for='targetWorktimePerDayInput']")
 						.text(
 								m_i18nUtils

@@ -79,7 +79,7 @@ public class ModelPersistenceService
       return false;
    }
 
-   protected <T extends EObject> ModelPersistenceHandler<T> findPersistenceHandler(Class<T> modelType)
+   public <T extends EObject> ModelPersistenceHandler<T> findPersistenceHandler(Class<T> modelType)
    {
       for (ModelPersistenceHandler<?> handler : persistenceHandlers)
       {

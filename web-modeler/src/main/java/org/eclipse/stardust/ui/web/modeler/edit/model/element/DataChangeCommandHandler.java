@@ -88,9 +88,6 @@ public class DataChangeCommandHandler
       String primitiveType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
       DataType data = getModelBuilderFacade().createPrimitiveData(model, null, name, primitiveType);
 
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      data.setElementOid(++maxOid);
-
       //Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
@@ -258,9 +255,6 @@ public class DataChangeCommandHandler
       DataType data = getModelBuilderFacade().createStructuredData(model, null, name,
             dataFullID);
 
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      data.setElementOid(++maxOid);
-
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
@@ -276,9 +270,6 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       DataType data = getModelBuilderFacade().createDocumentData(model, null, name, null);
-
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      data.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();

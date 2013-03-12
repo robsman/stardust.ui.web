@@ -61,9 +61,7 @@ public class ParticipantChangeCommandHandler
       {
          role = getModelBuilderFacade().createRole(model, null, roleName);
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      role.setElementOid(++maxOid);
-
+ 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(role);
@@ -82,8 +80,6 @@ public class ParticipantChangeCommandHandler
       {
          org = getModelBuilderFacade().createOrganization(model, null, orgName);
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      org.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -105,8 +101,6 @@ public class ParticipantChangeCommandHandler
          conditionalPerformer = getModelBuilderFacade().createConditionalPerformer(model,
                null, conditionalPerformerName);
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      conditionalPerformer.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -128,8 +122,6 @@ public class ParticipantChangeCommandHandler
          role = getModelBuilderFacade().createRole(model, roleID, roleName);
          getModelBuilderFacade().addOrganizationParticipant(org, role);
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      role.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -151,8 +143,6 @@ public class ParticipantChangeCommandHandler
          newOrg = getModelBuilderFacade().createOrganization(model, orgID, orgName);
          getModelBuilderFacade().addOrganizationParticipant(org, newOrg);
       }
-      long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-      newOrg.setElementOid(++maxOid);
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();

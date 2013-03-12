@@ -562,6 +562,10 @@ public class WorkflowFacade implements Resetable
    private void setFullUserDetails(List<UserItem> userItems)
    {
       UserQuery query = UserQuery.findAll();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+      
       Iterator uIter = userItems.iterator();
       FilterOrTerm filter = query.getFilter().addOrTerm();
       Map lookupMap = new HashMap();

@@ -108,7 +108,7 @@ public class WorklistTableEntry extends DefaultRowModel
     * @param activityInstance
     */
    public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList,
-         boolean activatable, String lastPerformer, String priority, int processPriority, Date startDate,
+         boolean activatable, String lastPerformer, int processPriority, Date startDate,
          Date lastModificationTime, long oid, String duration, int notesCount, Map<String, Object> descriptorValues,
          long processInstanceOid, ActivityInstance activityInstance, long currentPerformerOID)
    {
@@ -118,8 +118,8 @@ public class WorklistTableEntry extends DefaultRowModel
       this.processDescriptorsList = processDescriptorsList;
       this.activatable = activatable;
       this.lastPerformer = lastPerformer;
-      this.priority = priority;
-      this.priorityIcon = ProcessInstanceUtils.getPriorityIcon(priority.toLowerCase());
+      this.priority = ProcessInstanceUtils.getPriorityLabel(processPriority);
+      this.priorityIcon = ProcessInstanceUtils.getPriorityIcon(ProcessInstanceUtils.getPriorityValue(processPriority));
       this.processPriority = processPriority;
       this.startDate = startDate;
       this.duration = duration;

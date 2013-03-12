@@ -180,6 +180,16 @@ define(
 				};
 
 				/**
+				 * Overrides function in Drawable to to remove assigned participant if
+				 * participant is deleted.
+				 */
+				SwimlaneSymbol.prototype.applySymbolSpecific = function(changedObject) {
+					if (!changedObject.participantFullId) {
+						this.participantFullId = null;
+					}
+				};
+
+				/**
 				 * Overridden as we do now want the create REST call to be made at this point but
 				 * after the swimlane is repositioned.
 				 */
@@ -353,25 +363,25 @@ define(
 									.attr(
 											{
 												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-														: "R270"
+														: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.minimizeLane")
 											});
 
 					this.addToPrimitives(this.minimizeIcon);
 
 					this.maximizeIcon = m_canvasManager
-							.drawImageAt(
-									"../../images/icons/max.png",
-									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
-											+ this.width - 20)
-											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
-											this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
-											: (this.y + .35 * this.height), 16,
-									16)
-									.attr(
-											{
-												"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
-														: "R270"
-											});
+					.drawImageAt(
+							"../../images/icons/max.png",
+							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
+									+ this.width - 20)
+									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
+									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.y + 1.2 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+									: (this.y + .35 * this.height), 16,
+							16)
+							.attr(
+									{
+										"transform" : this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? "R0"
+												: "R270", "title" : m_i18nUtils.getProperty("modeler.diagram.maximizeLane")
+									});
 
 					this.maximizeIcon.hide();
 					this.addToPrimitives(this.maximizeIcon);
@@ -413,7 +423,6 @@ define(
 							"y" : this.y + 0.12
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
-
 					} else {
 						this.topRectangle.attr({
 							"x" : this.x,
@@ -441,7 +450,6 @@ define(
 							"y" : this.y + 0.5
 									* m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
 						});
-
 					}
 				};
 
@@ -608,8 +616,8 @@ define(
 					var n = 0;
 					while (n < this.rightFlyOutMenuItems.length) {
 						this.rightFlyOutMenuItems[n].attr({
-							x : x + 15,
-							y : y +5
+							x : x + 10 + (n * 25),
+							y : y + 5
 						});
 						n++;
 					}
@@ -619,13 +627,17 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenu = function() {
-					this.addFlyOutMenuItems(
-							[],[{
-								imageUrl : "../../images/icons/remove.png",
-								imageWidth : 16,
-								imageHeight : 16,
-								clickHandler : SwimlaneSymbol_removeClosure
-							}],[]);
+					this.addFlyOutMenuItems([], [ {
+						imageUrl : "../../images/icons/shrink-to-fit.png",
+						imageWidth : 16,
+						imageHeight : 16,
+						clickHandler : SwimlaneSymbol_shrinkToFitClickClosure
+					}, {
+						imageUrl : "../../images/icons/delete.png",
+						imageWidth : 16,
+						imageHeight : 16,
+						clickHandler : SwimlaneSymbol_removeClosure
+					} ], []);
 				};
 
 
@@ -667,6 +679,7 @@ define(
 				};
 
 				SwimlaneSymbol.prototype.click = function(x, y, event) {
+					this.diagram.disEngageConnection();
 					this.select();
 				};
 
@@ -899,7 +912,10 @@ define(
 						for (var i = 0; i < this.parentSymbol.laneSymbols.length; i++) {
 							var childrenBindingRect = this.parentSymbol.laneSymbols[i].getChildSymbolsBindingRect();
 							if (parseInt(this.y) > parseInt(childrenBindingRect.top)
-									|| parseInt(this.y + this.height) < parseInt(childrenBindingRect.bottom)) {
+									|| parseInt(this.y
+											+ this.height
+											+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+											+ m_constants.POOL_SWIMLANE_MARGIN) < parseInt(childrenBindingRect.bottom)) {
 								isStretchWithinLimitForOtherLanes = false;
 							}
 						}
@@ -907,8 +923,7 @@ define(
 						if (isStretchWithinLimitForOtherLanes == false
 								|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)
 								|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)
-								|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
-								|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)) {
+								|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)) {
 
 							//Reset the lane to pre-drag position
 							this.x = this.preDragState.x;
@@ -942,7 +957,10 @@ define(
 							var childrenBindingRect = this.parentSymbol.laneSymbols[i].getChildSymbolsBindingRect();
 
 							if (parseInt(this.x) > parseInt(childrenBindingRect.left)
-									|| parseInt(this.x + this.width) < parseInt(childrenBindingRect.right)) {
+									|| parseInt(this.x
+											+ this.width
+											+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+											+ m_constants.POOL_SWIMLANE_MARGIN) < parseInt(childrenBindingRect.right)) {
 								isStretchWithinLimitForOtherLanes = false;
 							}
 						}
@@ -950,8 +968,7 @@ define(
 						if (isStretchWithinLimitForOtherLanes == false
 								|| parseInt(this.y) > parseInt(this.preDragState.containedSymbolsTop)
 								|| parseInt(this.y + this.height) < parseInt(this.preDragState.containedSymbolsBottom)
-								|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)
-								|| parseInt(this.x + this.width) < parseInt(this.preDragState.containedSymbolsRight)) {
+								|| parseInt(this.x) > parseInt(this.preDragState.containedSymbolsLeft)) {
 
 							//Reset the lane to pre-drag position
 							this.x = this.preDragState.x;
@@ -1033,23 +1050,27 @@ define(
 					};
 				}
 
-				SwimlaneSymbol.prototype.getChildSymbolsBindingRect = function () {
-					var left = this.x + this.width;
-					var right = this.x;
-					var top = this.y + this.height;
-					var bottom = this.y;
+				/**
+				 *
+				 */
+				SwimlaneSymbol.prototype.getChildSymbolsBindingRect = function() {
+					var left = this.x + this.symbolXOffset + this.width;
+					var right = this.x + this.symbolXOffset;
+					var top = this.y + this.symbolYOffset + this.height;
+					var bottom = this.y + this.symbolYOffset;
 
+					var compSymbolBindingRect;
 					for ( var n in this.containedSymbols) {
-						left = Math.min(this.containedSymbols[n].x
-								- m_constants.POOL_SWIMLANE_MARGIN, left);
-						right = Math.max(this.containedSymbols[n].x
-								+ this.containedSymbols[n].width
-								+ m_constants.POOL_SWIMLANE_MARGIN, right);
-						top = Math.min(this.containedSymbols[n].y
-								- m_constants.POOL_SWIMLANE_MARGIN, top);
-						bottom = Math.max(this.containedSymbols[n].y
-								+ this.containedSymbols[n].height
-								+ m_constants.POOL_SWIMLANE_MARGIN, bottom);
+						compSymbolBindingRect = this.containedSymbols[n]
+								.getCompSymbolBindingRect();
+						left = Math.min(compSymbolBindingRect.left
+								- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
+						right = Math.max(compSymbolBindingRect.right
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
+						top = Math.min(compSymbolBindingRect.top
+								- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
+						bottom = Math.max(compSymbolBindingRect.bottom
+								+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
 					}
 
 					return {
@@ -1058,7 +1079,7 @@ define(
 						top : top,
 						bottom : bottom
 					};
-				}
+				};
 
 				/**
 				 *
@@ -1076,138 +1097,109 @@ define(
 					return false;
 				};
 
+				/**
+				 * internal method to evaludate change in lane width
+				 */
+				SwimlaneSymbol.prototype.recalculateBoundingBox_ = function() {
+					var newHeight = this.height;
+					var newWidth = this.width;
 
-				SwimlaneSymbol.prototype.recalculateBoundingBox = function() {
+					var childSymbolsBindingRect = this
+							.getChildSymbolsBindingRect();
 
-					for ( var c in this.containedSymbols) {
-						containedSymbol = this.containedSymbols[c];
+					var sX2 = childSymbolsBindingRect.right
+							+ m_constants.SWIMLANE_SYMBOL_MARGIN;
 
-						var sX2 = containedSymbol.x + containedSymbol.width
-								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+					var lX2 = this.x + newWidth;
 
-						var lX2 = this.x + this.width;
-						if (sX2 > lX2) {
-							this.width += (sX2 - lX2);
-						}
-
-						var sY2 = containedSymbol.y + containedSymbol.height
-								+ m_constants.SWIMLANE_SYMBOL_MARGIN;
-
-						var lY2 = this.y + this.height;
-						if (sY2 > lY2) {
-							this.height += (sY2 - lY2);
-						}
+					if (sX2 > lX2) {
+						newWidth += (sX2 - lX2);
 					}
+
+					var sY2 = childSymbolsBindingRect.bottom
+							+ m_constants.SWIMLANE_SYMBOL_MARGIN;
+					var lY2 = this.y + newHeight;
+					if (sY2 > lY2) {
+						newHeight += (sY2 - lY2);
+					}
+
+					return {
+						width : newWidth,
+						height : newHeight
+					};
 				};
 
 				/**
-				 *
+				 * @author Yogesh.Manware
 				 */
-				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function(x,
-						y) {
+				SwimlaneSymbol.prototype.adjustToSymbolBoundaries = function() {
 
-					var left;
-					var right;
-					var top;
-					var bottom;
-					var moveX=0;
-					var moveY=0;
-					var preAdjustmentPos;
+					var moveX = 0;
+					var moveY = 0;
+					var preAdjustmentPos = {
+						width : this.width,
+						height : this.height
+					};
+
+					var dimensions = this.recalculateBoundingBox_();
+					this.height = dimensions.height;
+					this.width = dimensions.width;
+
+					var childSymbolsBindingRect = this
+							.getChildSymbolsBindingRect();
+
+
 
 					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
-						left = this.x + this.symbolXOffset;
-						right = this.x + this.width + this.symbolXOffset;
-						top = this.y;
-						bottom = this.y + this.height;
-						moveX=0;
-						moveY=0;
-						preAdjustmentPos = {
-							x : this.x + this.symbolXOffset,
-							y : this.y,
-							width : this.width,
-							height : this.height
+						// If Symbol is moved beyond the starting Y margin and
+						// Height has increased, calculate the height change to
+						// move Symbol
+						if ((this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT) > childSymbolsBindingRect.top) {
+							moveY = Math
+									.abs(childSymbolsBindingRect.top
+											- (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
+							this.height = this.height + moveY;
 						}
 
-						for ( var n in this.containedSymbols) {
-							left = Math.min(this.containedSymbols[n].x + this.symbolXOffset
-									- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
-							right = Math.max(this.containedSymbols[n].x + this.symbolXOffset
-									+ this.containedSymbols[n].width
-									+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
-							top = Math.min(this.containedSymbols[n].y
-									- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
-							bottom = Math.max(this.containedSymbols[n].y
-									+ this.containedSymbols[n].height
-									+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
+						// If Symbol is moved beyond the starting X margin and
+						// width has increased, calculate the width change to
+						// move Symbol
+						if (this.x > childSymbolsBindingRect.left) {
+							moveX = Math.abs(childSymbolsBindingRect.left
+									- this.x);
+							this.width = this.width + moveX;
 						}
-					}else{
-						left = this.x;
-						right = this.x + this.width;
-						top = this.y + this.symbolYOffset;
-						bottom = this.y + this.height + this.symbolYOffset;
-						moveX=0;
-						moveY=0;
-						preAdjustmentPos = {
-							x : this.x,
-							y : this.y + this.symbolYOffset,
-							width : this.width,
-							height : this.height
-						};
+					} else {
+						// If Symbol is moved beyond the starting Y margin and
+						// Height has increased, calculate the height change to
+						// move Symbol
+						if ((this.x + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT) > childSymbolsBindingRect.left) {
+							moveX = Math
+									.abs(childSymbolsBindingRect.left
+											- (this.x + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT));
+							this.width = this.width + moveX;
+						}
 
-						for ( var n in this.containedSymbols) {
-							top = Math.min(this.containedSymbols[n].y + this.symbolYOffset
-									- m_constants.SWIMLANE_SYMBOL_MARGIN, top);
-							bottom = Math.max(this.containedSymbols[n].y + this.symbolYOffset
-									+ this.containedSymbols[n].height
-									+ m_constants.SWIMLANE_SYMBOL_MARGIN, bottom);
-							left = Math.min(this.containedSymbols[n].x
-									- m_constants.SWIMLANE_SYMBOL_MARGIN, left);
-							right = Math.max(this.containedSymbols[n].x
-									+ this.containedSymbols[n].width
-									+ m_constants.SWIMLANE_SYMBOL_MARGIN, right);
-						}
-					}
-					this.x = left;
-					this.width = right - left;
-					this.y = top;
-					this.height = bottom - top;
-
-					// If Symbol is moved beyond the starting Y margin and
-					// Height has increased, calculate the height change to move
-					// Symbol
-					if (this.height > preAdjustmentPos.height) {
-						if ((parseInt(preAdjustmentPos.y) > parseInt(y))
-								|| this.y < preAdjustmentPos.y) {
-							moveY = this.height
-									- parseInt(preAdjustmentPos.height);
-						}
-						if (this.height > preAdjustmentPos.height) {
-							this.y = preAdjustmentPos.y;
-						}
-					}
-
-					// If Symbol is moved beyond the starting X margin and
-					// width has increased, calculate the width change to move
-					// Symbol
-					if (this.width > preAdjustmentPos.width) {
-						if ((preAdjustmentPos.x > parseInt(x))
-								|| (this.x < preAdjustmentPos.x)) {
-							moveX = this.width
-									- parseInt(preAdjustmentPos.width);
-						}
-						if (this.x < preAdjustmentPos.x) {
-							this.x = preAdjustmentPos.x;
+						// If Symbol is moved beyond the starting X margin and
+						// width has increased, calculate the width change to
+						// move Symbol
+						if (this.y > childSymbolsBindingRect.top) {
+							moveY = Math.abs(childSymbolsBindingRect.top
+									- this.y);
+							this.height = this.height + moveY;
 						}
 					}
 
 					if (moveX > 0 || moveY > 0) {
 						for ( var n in this.containedSymbols) {
-								this.containedSymbols[n].moveBy(moveX, moveY);
+							this.containedSymbols[n].moveBy(moveX, moveY);
 						}
 					}
 
 					if (preAdjustmentPos.width != this.width
 							|| preAdjustmentPos.height != this.height) {
+
+						// Update server
 						var changes = {
 							x : this.x,
 							y : this.y,
@@ -1217,13 +1209,13 @@ define(
 							yOffset : moveY
 						};
 
-						this.parentSymbol.adjustGeometry();
 						var command = m_command
 								.createUpdateModelElementCommand(
 										this.diagram.modelId, this.oid, changes);
 						command.sync = true;
 						m_commandsController.submitCommand(command);
 					}
+
 					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.x -= this.symbolXOffset;
 					} else {
@@ -1232,6 +1224,152 @@ define(
 
 					this.parentSymbol.recalculateBoundingBox();
 					this.parentSymbol.adjustGeometry();
+				};
+
+
+				/**
+				 *
+				 * @author Yogesh.Manware
+				 */
+				SwimlaneSymbol.prototype.shrinkToFit = function() {
+					if (this.containedSymbols.length < 1) {
+						return;
+					}
+
+					var moveX = 0;
+					var moveY = 0;
+					var childSymbolsBindingRect, otherChildSymbolsBindingRect;
+					// evaluate binding rectangle for current lane
+					childSymbolsBindingRect = this.getChildSymbolsBindingRect();
+
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+
+						// evaluate binding rectangle for other lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							otherChildSymbolsBindingRect = this.parentSymbol.laneSymbols[n]
+									.getChildSymbolsBindingRect();
+							// determine the minimum top margin that can be
+							// reduced by
+							if (childSymbolsBindingRect.top > otherChildSymbolsBindingRect.top) {
+								childSymbolsBindingRect.top = otherChildSymbolsBindingRect.top;
+							}
+							// determine the minimum bottom margin that can be
+							// reduced by
+							if (childSymbolsBindingRect.bottom < otherChildSymbolsBindingRect.bottom) {
+								childSymbolsBindingRect.bottom = otherChildSymbolsBindingRect.bottom;
+							}
+						}
+						// move symbols towards swimlane header
+						moveY = this.y + this.symbolYOffset
+								+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT
+								- childSymbolsBindingRect.top;
+						// move symbols towards swimlane's left border
+						moveX = this.x + this.symbolXOffset
+								- childSymbolsBindingRect.left;
+
+						if (moveX != 0 || moveY != 0) {
+							// move current lane's symbols towards left border
+							// and towards header
+							for ( var n in this.containedSymbols) {
+								this.containedSymbols[n].moveBy(moveX, moveY);
+							}
+							// move current lane's symbols towards header
+							for ( var n in this.parentSymbol.laneSymbols) {
+								for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+									if (this.parentSymbol.laneSymbols[n].oid != this.oid) {
+										this.parentSymbol.laneSymbols[n].containedSymbols[c]
+												.moveBy(0, moveY);
+									}
+								}
+							}
+						}
+
+						// force set height of all lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							this.parentSymbol.laneSymbols[n].height = childSymbolsBindingRect.bottom
+									- childSymbolsBindingRect.top
+									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT;
+						}
+
+						this.parentSymbol.adjustGeometry();
+						// Adjust current lane width
+						this.width = childSymbolsBindingRect.right
+								- childSymbolsBindingRect.left;
+					} else {
+						// evaluate binding rectangle for other lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							otherChildSymbolsBindingRect = this.parentSymbol.laneSymbols[n]
+									.getChildSymbolsBindingRect();
+							// determine the minimum left margin that can be
+							// reduced by
+							if (childSymbolsBindingRect.left > otherChildSymbolsBindingRect.left) {
+								childSymbolsBindingRect.left = otherChildSymbolsBindingRect.left;
+							}
+							// determine the minimum right margin that can be
+							// reduced by
+							if (childSymbolsBindingRect.right < otherChildSymbolsBindingRect.right) {
+								childSymbolsBindingRect.right = otherChildSymbolsBindingRect.right;
+							}
+						}
+						// move symbols towards swimlane header
+						moveX = (this.x + this.symbolXOffset + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT)
+								- childSymbolsBindingRect.left;
+						// move symbols towards swimlane's top border
+						moveY = this.y + this.symbolYOffset
+								- childSymbolsBindingRect.top;
+
+						if (moveX != 0 || moveY != 0) {
+							// move current lane's symbols towards left and
+							// towards header
+							for ( var n in this.containedSymbols) {
+								this.containedSymbols[n].moveBy(moveX, moveY);
+							}
+							// move current lane's symbols towards header
+							for ( var n in this.parentSymbol.laneSymbols) {
+								for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+									if (this.parentSymbol.laneSymbols[n].oid != this.oid) {
+										this.parentSymbol.laneSymbols[n].containedSymbols[c]
+												.moveBy(moveX, 0);
+									}
+								}
+							}
+						}
+
+						// force set width of all lanes
+						for ( var n in this.parentSymbol.laneSymbols) {
+							this.parentSymbol.laneSymbols[n].width = childSymbolsBindingRect.right
+									- childSymbolsBindingRect.left
+									+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT;
+						}
+
+						this.parentSymbol.adjustGeometry();
+						// Adjust current lane height
+						this.height = childSymbolsBindingRect.bottom
+								- childSymbolsBindingRect.top;
+					}
+
+					this.parentSymbol.recalculateBoundingBox();
+					this.parentSymbol.adjustGeometry();
+
+					var changes = {
+						x : this.x,
+						y : this.y,
+						width : this.width,
+						height : this.height,
+						xOffset : moveX,
+						yOffset : moveY
+					};
+
+					var command = m_command.createUpdateModelElementCommand(
+							this.diagram.modelId, this.oid, changes);
+					command.sync = true;
+					m_commandsController.submitCommand(command);
+
+					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+						this.x -= this.symbolXOffset;
+					} else {
+						this.y -= this.symbolYOffset;
+					}
 				};
 
 				/**
@@ -1308,11 +1446,10 @@ define(
 							src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
-							title : "Confirm",
+							title : m_i18nUtils.getProperty("modeler.messages.confirm"),
 							message : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.confirmMsg.delete").replace("{0}", cbObj.auxiliaryProperties.callbackScope.text.attr("text")),
-							acceptButtonText : "Yes",
-							cancelButtonText : "Cancel",
-
+							acceptButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.yes"),
+							cancelButtonText : m_i18nUtils.getProperty("modeler.messages.confirm.cancel"),
 							acceptFunction : function() {
 								var thisLane = cbObj.auxiliaryProperties.callbackScope;
 								thisLane.createAndSubmitDeleteCommand();
@@ -1336,6 +1473,12 @@ define(
 			 */
 			function SwimlaneSymbol_maximizeClickClosure() {
 				this.auxiliaryProperties.callbackScope.onMaximizeIconClick();
+			}
+			/**
+			 *
+			 */
+			function SwimlaneSymbol_shrinkToFitClickClosure() {
+				this.auxiliaryProperties.callbackScope.shrinkToFit();
 			}
 
 		});

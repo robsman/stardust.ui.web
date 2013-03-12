@@ -12,8 +12,11 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_commandsController",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_dialog, m_model, m_i18nUtils) {
 
@@ -33,12 +36,12 @@ define(
 						+ this.id);
 
 				if (imageUrl == null) {
-					this.imageUrl = "../../images/icons/generic-properties-page.png";
+					this.imageUrl = "../../images/icons/page_white.png";
 				} else {
 					this.imageUrl = imageUrl;
 				}
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.propertiesPanel.id + " #"
@@ -46,34 +49,34 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.getElement = function() {
 					return this.propertiesPanel.element;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.setElement = function() {
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.validate = function() {
 					return true;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.show = function() {
 					m_dialog.makeVisible(this.page);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.hide = function() {
 					m_dialog.makeInvisible(this.page);
@@ -90,23 +93,26 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromProperty = function(
 						property, value) {
-					return this.propertiesPanel.assembleChangedObjectFromProperty(property, value);
+					return this.propertiesPanel
+							.assembleChangedObjectFromProperty(property, value);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.assembleChangedObjectFromAttribute = function(
 						attribute, value) {
-					return this.propertiesPanel.assembleChangedObjectFromAttribute(attribute, value);
+					return this.propertiesPanel
+							.assembleChangedObjectFromAttribute(attribute,
+									value);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.registerInputForElementChangeSubmission = function(
 						input, property) {
@@ -133,7 +139,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.registerInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -144,9 +150,10 @@ define(
 						var page = event.data.page;
 						var input = event.data.input;
 
-						m_utils.debug("Changed " + property + ": " + input.val());
+						m_utils.debug("Changed " + property + ": "
+								+ input.val());
 
-						if (!page.validate()) {
+						if (!page.validate(input, property)) {
 							return;
 						}
 
@@ -159,7 +166,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -189,7 +196,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.registerCheckboxInputForModelElementChangeSubmission = function(
 						input, property) {
@@ -214,7 +221,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.registerCheckboxInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
@@ -245,28 +252,27 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.getModel = function() {
 					return this.propertiesPanel.getModel();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPage.prototype.submitChanges = function(changes) {
-					this.propertiesPanel.submitChanges(changes);
+					if (this.validate(changes)) {
+						this.propertiesPanel.submitChanges(changes);
+					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				PropertiesPage.prototype.validateCircularModelReference = function(input) {
-					this.propertiesPanel.clearErrorMessages();
-					input.removeClass("error");
-
-					var otherModelId = m_model
-							.stripModelId(input.val());
+				PropertiesPage.prototype.validateCircularModelReference = function(
+						input) {
+					var otherModelId = m_model.stripModelId(input.val());
 					if (this.getModel().id != otherModelId
 							&& m_model.isModelReferencedIn(this.getModel().id,
 									otherModelId)) {

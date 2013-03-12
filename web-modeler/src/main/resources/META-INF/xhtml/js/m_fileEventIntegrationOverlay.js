@@ -40,7 +40,7 @@ define(
 				m_utils.inheritFields(this, eventIntegrationOverlay);
 				m_utils.inheritMethods(FileEventIntegrationOverlay.prototype,
 						eventIntegrationOverlay);
-
+ 
 				/**
 				 * 
 				 */
@@ -56,10 +56,14 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.parameters"));
-					jQuery("label[for='fileOrDirectoryNameInput']")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.fileEvent.fileOrDirectoryName"));
+					jQuery("label[for='directoryNameInput']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.fileEvent.directoryName"));
+			        jQuery("label[for='fileNameInput']")
+			        		.text(
+			        				m_i18nUtils
+			        						.getProperty("modeler.element.properties.fileEvent.fileName"));
 					jQuery("label[for='recursiveInput']")
 							.text(
 									m_i18nUtils
@@ -77,14 +81,15 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.alwaysConsume"));
 
-					this.fileOrDirectoryNameInput = this
-							.mapInputId("fileOrDirectoryNameInput");
+					this.directoryNameInput = this.mapInputId("directoryNameInput");
+					this.fileNameInput = this.mapInputId("fileNameInput");
 					this.recursiveInput = this.mapInputId("recursiveInput");
 					this.initialIntervalInput = this
 							.mapInputId("initialIntervalInput");
 					this.initialIntervalUnitSelect = this
 							.mapInputId("initialIntervalUnitSelect");
-					this.repeatIntervalInput = this.mapInputId("repeatIntervalInput");
+					this.repeatIntervalInput = this
+							.mapInputId("repeatIntervalInput");
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
 
@@ -100,11 +105,13 @@ define(
 					this.alwaysConsumeInput = this
 							.mapInputId("alwaysConsumeInput");
 
-					this.registerForRouteChanges(this.fileOrDirectoryNameInput);
+					this.registerForRouteChanges(this.directoryNameInput);
+					this.registerForRouteChanges(this.fileNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
 					this.registerForRouteChanges(this.initialIntervalInput);
-					this.registerForRouteChanges(this.initialIntervalUnitSelect);
-					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
+					this
+							.registerForRouteChanges(this.initialIntervalUnitSelect);
+					this.registerForRouteChanges(this.repeatIntervalInput);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.lockBehaviorSelect);
 					this.registerForRouteChanges(this.postProcessingSelect);
@@ -116,29 +123,73 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.getEndpointUri = function() {
 					var uri = "file://";
+					//if(this.fileOrDirectoryNameInput!=null && this.fileOrDirectoryNameInput.val()!="Please specify ..."){
+						uri += this.directoryNameInput.val();
+					//}
+					
+					var separator = "?";
+					
+					if(this.fileNameInput != null && this.fileNameInput.val().length != 0){
+						uri += separator + "fileName="+this.fileNameInput.val();
+						separator = "&";
+						
+					}
+					
+					if (this.recursiveInput.is(":checked") == true) {
+						uri += separator + "recursive="
+								+ this.recursiveInput.is(":checked");
+						separator = "&";
 
-					uri += this.fileOrDirectoryNameInput.val();
+					}
 
-					uri += "?consumer.recursive="
-							+ this.recursiveInput.is(":checked");
-					uri += "&consumer.initialInterval=";
-					uri += this.getIntervalInMilliseconds(
+					if (this.getIntervalInMilliseconds(
 							this.initialIntervalInput.val(),
-							this.initialIntervalUnitSelect.val());
-					uri += "&consumer.repeatInterval=";
-					uri += this.getIntervalInMilliseconds(
-							this.repeatIntervalInput.val(),
-							this.repeatIntervalUnitSelect.val());
-					uri += "&consumer.alwaysConsume="
-							+ this.alwaysConsumeInput.is(":checked");
+							this.initialIntervalUnitSelect.val()) != null) {
+						uri += separator
+								+ "initialDelay="
+								+ this.getIntervalInMilliseconds(
+										this.initialIntervalInput.val(),
+										this.initialIntervalUnitSelect.val());
+						separator = "&";
+					}
+
+					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
+							.val(), this.repeatIntervalUnitSelect.val()) != null) {
+						uri += separator
+								+ "delay="
+								+ this.getIntervalInMilliseconds(
+										this.repeatIntervalInput.val(),
+										this.repeatIntervalUnitSelect.val());
+						separator = "&";
+					}
+					if (this.lockBehaviorSelect.val() == "none") {
+						// nothing to do
+					} else {
+						if (this.lockBehaviorSelect.val() == "markerFile") {
+							uri += separator + "readLock=markerFile";
+							separator = "&";
+						} else {
+							if (this.lockBehaviorSelect.val() == "changed") {
+								uri += separator + "readLock=changed";
+								separator = "&";
+							}
+						}
+					}
+
+					/*
+					 * uri += "&consumer.alwaysConsume=" +
+					 * this.alwaysConsumeInput.prop("checked");
+					 */
 
 					if (this.postProcessingSelect.val() == "noop") {
-						uri += "&consumer.noop=true";
-						uri += "&consumer.delete=false";
+						uri += "&noop=true";
+						uri += "&delete=false";
 					} else if (this.postProcessingSelect.val() == "delete") {
-						uri += "&consumer.noop=false";
-						uri += "&consumer.delete=true";
+						uri += "&noop=false";
+						uri += "&delete=true";
 					}
+
+					uri = uri.replace(/&/g, "&amp;")
 
 					return uri;
 				};
@@ -147,7 +198,7 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.activate = function() {
-					this.fileOrDirectoryNameInput.val(m_i18nUtils
+					this.directoryNameInput.val(m_i18nUtils
 							.getProperty("modeler.general.toBeDefined"));
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
@@ -182,7 +233,14 @@ define(
 
 					this.submitOverlayChanges(parameterMappings);
 				};
+				FileEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
+					return "<to uri=\"ipp:direct\"/>";
+				};
 
+				FileEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
+					return "<from uri=\"" + this.getEndpointUri() + "\"/>"
+							+ this.getAdditionalRouteDefinitions();
+				};
 				/**
 				 * 
 				 */
@@ -194,10 +252,11 @@ define(
 					}
 
 					// TODO Need better URL encoding
-					
-					route = route.replace(/&/g, "&amp;");
 
-					var xmlDoc = jQuery.parseXML(route);
+					// route = route.replace(/&/g,"&amp;");
+
+					var xmlDoc = jQuery
+							.parseXML("<route>" + route + "</route>");
 					var xmlObject = jQuery(xmlDoc);
 					var from = jQuery(xmlObject).find("from");
 					var uri = from.attr("uri");
@@ -205,7 +264,7 @@ define(
 
 					if (uri[1] != null) {
 						uri = uri[1].split("?");
-						this.fileOrDirectoryNameInput.val(uri[0]);
+						this.directoryNameInput.val(uri[0]);
 
 						if (uri[1] != null) {
 							var options = uri[1].split("&");
@@ -219,10 +278,12 @@ define(
 									var name = option[0];
 									var value = option[1];
 
-									if (name == "consumer.recursive") {
+									if (name == "fileName") {
+										this.fileNameInput.val(value);
+									}else if (name == "recursive") {
 										this.recursiveInput.prop("checked",
 												value);
-									} else if (name == "consumer.initialInterval") {
+									} else if (name == "initialDelay") {
 										var intervalWithUnit = this
 												.getIntervalWithUnit(value);
 
@@ -230,7 +291,7 @@ define(
 												.val(intervalWithUnit.value);
 										this.initialIntervalUnitSelect
 												.val(intervalWithUnit.unit);
-									} else if (name == "consumer.repeatInterval") {
+									} else if (name == "delay") {
 										var intervalWithUnit = this
 												.getIntervalWithUnit(value);
 
@@ -238,19 +299,24 @@ define(
 												.val(intervalWithUnit.value);
 										this.repeatIntervalUnitSelect
 												.val(intervalWithUnit.unit);
-									} else if (name == "consumer.alwaysConsume") {
-										this.alwaysConsumeInput.prop("checked",
-												value);
-									} else if (name == "consumer.noop") {
+										/*
+										 * } else if (name ==
+										 * "consumer.alwaysConsume") {
+										 * this.alwaysConsumeInput.prop("checked",
+										 * value == "true");
+										 */
+									} else if (name == "noop") {
 										if (value == "true") {
 											this.postProcessingSelect
 													.val("noop");
 										}
-									} else if (name == "consumer.delete") {
+									} else if (name == "delete") {
 										if (value == "true") {
 											this.postProcessingSelect
 													.val("delete");
 										}
+									} else if (name == "readLock") {
+										this.lockBehaviorSelect.val(value)
 									}
 								}
 							}
@@ -267,13 +333,13 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.validate = function() {
-					this.fileOrDirectoryNameInput.removeClass("error");
+					this.directoryNameInput.removeClass("error");
 
-					if (this.fileOrDirectoryNameInput.val() == null
-							|| this.fileOrDirectoryNameInput.val() == "") {
+					if (this.directoryNameInput.val() == null
+							|| this.directoryNameInput.val() == "") {
 						this.page.propertiesPanel.errorMessages
-								.push("File or directory name must not be empty.");
-						this.fileOrDirectoryNameInput.addClass("error");
+								.push("Directory name must not be empty.");
+						this.directoryNameInput.addClass("error");
 
 						this.page.propertiesPanel.showErrorMessages();
 

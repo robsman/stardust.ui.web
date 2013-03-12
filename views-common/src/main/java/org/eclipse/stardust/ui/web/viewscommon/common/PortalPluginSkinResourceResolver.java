@@ -21,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.faces.context.FacesContext;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.utils.io.CloseableUtil;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.web.jsf.FacesContextUtils;
 
 /**
  * 
@@ -37,7 +40,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 public class PortalPluginSkinResourceResolver
 {
    public static final Logger trace = LogManager.getLogger(PortalPluginSkinResourceResolver.class);
-   private static ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+   public static final String IE_USER_AGENT = "_ie";
+   public static final String SAFARI_USER_AGENT = "_safari";
 
    /**
     * 
@@ -56,8 +60,23 @@ public class PortalPluginSkinResourceResolver
       });
       try
       {
-         Resource[] resources = resolver.getResources("classpath*:/META-INF/*.portal-plugin");
-         for (Resource resource : resources)
+         Resource[] resources = null;
+         ApplicationContext context = null;
+         try
+         {
+            context = FacesContextUtils.getWebApplicationContext(FacesContext.getCurrentInstance());
+            resources = context.getResources("classpath*:META-INF/*.portal-plugin");
+         }
+         catch (Exception e)
+         {
+            // JBoss is unable to find META-INF some times, workaround for the scenario
+            resources = context.getResources("classpath*:/**/*.portal-plugin");
+         }
+         if(CollectionUtils.isEmpty(resources))
+         {
+            return allExtensions;
+         }
+         for (Resource resource :resources)
          {
             String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
             String webUriPrefix = pluginId + "/";
@@ -76,7 +95,7 @@ public class PortalPluginSkinResourceResolver
                List<Resource> extensionResources;
                try
                {
-                  extensionResources = discoverModelerExtensions(resolver, webContentBaseUri, pluginFolder, fileName);
+                  extensionResources = discoverSkinExtensions(context, webContentBaseUri, pluginFolder, fileName);
                }
                // JBoss is throwing an IOException instead of FileNotFoundException if a
                // file cannot be found
@@ -90,14 +109,49 @@ public class PortalPluginSkinResourceResolver
                {
                   // File URI
                   String extensionResUri = extensionResource.getURI().toString();
+                  // Skip adding browser version specific .css fileNames.
+                  if (extensionResUri.contains(IE_USER_AGENT) || extensionResUri.contains(SAFARI_USER_AGENT))
+                  {
+                     continue;
+                  }
                   // Create webURi something like <plugin-id> + public/skins + folder
                   // containing file ex: <views-common/public/skins/skin1/images>
                   String extensionWebUri = webUriPrefix + extensionResUri.substring(webContentBaseUri.length());
                   // Split the above path to create 2 paths ex: a) <views-common> b)
                   // skin1/images
                   String[] splitArr = extensionWebUri.split(pluginFolder + "/");
-                  String extensionWebUriKey = webUriPrefix.substring(0, webUriPrefix.lastIndexOf("/")) + pluginFolder
-                        + "/" + splitArr[1].substring(0, splitArr[1].indexOf("/"));
+                  String extensionWebUriKey = (pluginFolder.startsWith(Constants.SKIN_FOLDER, 0) ? webUriPrefix
+                        .substring(0, webUriPrefix.lastIndexOf("/")) : "") // if
+                                                                           // plugin-folder
+                                                                           // is
+                                                                           // plugin-id>/public/skins>
+                                                                           // skip this
+                                                                           // String
+                                                                           // manipulation
+                                                                           // which
+                                                                           // returns the
+                                                                           // <plugin-id>
+                        + pluginFolder
+                        + "/"
+                        + (splitArr[1].contains("/") ? splitArr[1].substring(0, splitArr[1].indexOf("/")) : ""); // if
+                                                                                                                 // splitArr[1]
+                                                                                                                 // contains
+                                                                                                                 // the
+                                                                                                                 // fileName
+                                                                                                                 // only
+                                                                                                                 // i.e
+                                                                                                                 // Red.css
+                                                                                                                 // skip
+                                                                                                                 // this
+                                                                                                                 // manipulation
+                                                                                                                 // which
+                                                                                                                 // returns
+                                                                                                                 // the
+                                                                                                                 // parent
+                                                                                                                 // folder
+                                                                                                                 // for
+                                                                                                                 // skinFile(i.e
+                                                                                                                 // skin1/images)
 
                   List<String> resourceFile = allExtensions.get(extensionWebUriKey);
                   if (null == resourceFile)
@@ -106,7 +160,7 @@ public class PortalPluginSkinResourceResolver
                      allExtensions.put(extensionWebUriKey, resourceFile);
                   }
                   resourceFile.add(extensionResUri);
-                  trace.info("Discovered '" + pluginFolder + "' modeler extensions descriptor at " + extensionWebUri);
+                  trace.info("Discovered '" + pluginFolder + "' plugin resource at " + extensionWebUri);
                }
             }
             finally
@@ -125,22 +179,22 @@ public class PortalPluginSkinResourceResolver
    /**
     * 
     * @param resolver
-    * @param modelerExtensionsBaseUri
+    * @param extensionBaseUri
     * @param category
     * @param fileName
     * @return
     * @throws IOException
     */
-   private static List<Resource> discoverModelerExtensions(ResourcePatternResolver resolver,
-         String modelerExtensionsBaseUri, String category, String fileName) throws IOException
+   private static List<Resource> discoverSkinExtensions(ResourcePatternResolver resolver,
+         String extensionBaseUri, String category, String fileName) throws IOException
    {
       List<Resource> extensions = CollectionUtils.newArrayList();
       Resource[] jsModules = null;
       if (null == fileName)
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
                + "/*/*.*");
       else
-         jsModules = resolver.getResources(modelerExtensionsBaseUri + category.substring(category.indexOf("/") + 1)
+         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
                + "/**/" + fileName);
       for (Resource jsModule : jsModules)
       {

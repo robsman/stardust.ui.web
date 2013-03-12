@@ -69,7 +69,9 @@ define(function() {
 			return getContextName()
 					+ "/services/rest/bpm-modeler/modeler/"
 					+ new Date().getTime();
-		}
+		},
+
+		validate : validate
 	};
 
 	/**
@@ -78,5 +80,12 @@ define(function() {
 	function getContextName() {
 		return location.pathname
 				.substring(0, location.pathname.indexOf('/', 1));
+	}
+
+	/**
+	 * Regex from - http://stackoverflow.com/questions/8667070/javascript-regular-expression-to-validate-url
+	 */
+	function validate(url) {
+		return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(url);
 	}
 });

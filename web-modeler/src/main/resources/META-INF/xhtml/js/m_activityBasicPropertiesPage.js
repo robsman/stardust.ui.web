@@ -185,7 +185,7 @@ define(
 					}, function(event) {
 						if (event.data.page.taskInput.is(":checked")) {
 							event.data.page.setTaskType();
-							event.data.page.submitTaskTypeChanges();
+							event.data.page.submitTaskTypeChanges(true);
 						}
 					});
 					this.taskTypeList
@@ -307,7 +307,9 @@ define(
 
 					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
 							|| this.getModelElement().taskType == m_constants.MANUAL_TASK_TYPE) {
-						if (this.getModelElement().participantFullId) {
+						if (this.getModelElement().participantFullId
+								&& m_model.findParticipant(this
+										.getModelElement().participantFullId)) {
 							var participant = m_model.findParticipant(this
 									.getModelElement().participantFullId);
 
@@ -353,8 +355,8 @@ define(
 				/**
 				 *
 				 */
-				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function() {
-					if (this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
+				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function(force) {
+					if (force || this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
 							.val()) {
 						this.submitChanges({
 							modelElement : {

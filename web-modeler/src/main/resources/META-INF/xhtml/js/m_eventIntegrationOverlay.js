@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -27,11 +27,11 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function EventIntegrationOverlay() {
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.initializeEventIntegrationOverlay = function(
 						page, id) {
@@ -64,7 +64,8 @@ define(
 															supportsDataMappings : true,
 															supportsDescriptors : false,
 															supportsDataTypeSelection : true,
-															readOnlyParameterList : true
+															readOnlyParameterList : true,
+															hideDirectionSelection : true
 														});
 											}
 										});
@@ -78,14 +79,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.mapInputId = function(inputId) {
 					return jQuery("#" + this.id + " #" + inputId);
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.registerForRouteChanges = function(
 						input) {
@@ -99,14 +100,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.getEvent = function() {
 					this.page.getEvent();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.createPrimitiveParameterMapping = function(
 						name, id, primitiveDataType) {
@@ -120,10 +121,24 @@ define(
 				};
 
 				/**
-				 * 
+				 *
+				 */
+				EventIntegrationOverlay.prototype.getPropertiesPanel = function() {
+					return this.page.propertiesPanel;
+				};
+
+				/**
+				 *
 				 */
 				EventIntegrationOverlay.prototype.getImplementation = function() {
 					return "camel";
+				};
+
+				/**
+				 *
+				 */
+				EventIntegrationOverlay.prototype.getCamelContext = function() {
+					return "defaultCamelContext";
 				};
 
 				/**
@@ -141,7 +156,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.initializeIntervalUnitSelect = function(
 						select) {
@@ -173,7 +188,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.getIntervalInMilliseconds = function(
 						value, unitFactor) {
@@ -181,7 +196,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.getIntervalWithUnit = function(
 						value) {
@@ -218,7 +233,15 @@ define(
 				};
 
 				/**
-				 * 
+				 *
+				 */
+				EventIntegrationOverlay.prototype.getRouteContent = function()
+				{
+					return this.getRouteDefinitions();
+				};
+
+				/**
+				 *
 				 */
 				EventIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
@@ -242,20 +265,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
 					if (parameterMappings == null) {
 						parameterMappings = [];
 					}
-
-					var route = "<route>";
-
-					route += "<from uri=\"";
-					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions()
-							+ "</route>";
 
 					this
 							.submitChanges({
@@ -264,32 +280,26 @@ define(
 									implementation : this.getImplementation(),
 									attributes : {
 										"carnot:engine:integration::overlay" : this.id,
-										"carnot:engine:camel::camelRouteExt" : route,
-										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
-												.getAdditionalBeanSpecifications()
+										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
+										"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications(),
+										"carnot:engine:camel::username" : "${camelTriggerUsername}",
+										"carnot:engine:camel::password" : "${camelTriggerPassword}"
 									}
 								}
 							});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventIntegrationOverlay.prototype.submitRouteChanges = function() {
-					var route = "<route>";
-
-					route += "<from uri=\"";
-					route += this.getEndpointUri();
-					route += "\"/>" + this.getAdditionalRouteDefinitions()
-							+ "</route>";
-
-					m_utils.debug("Route: " + route);
-					
 					this
 							.submitChanges({
 								modelElement : {
 									attributes : {
-										"carnot:engine:camel::camelRouteExt" : route,
+										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
 										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 												.getAdditionalBeanSpecifications()
 									}
@@ -297,4 +307,11 @@ define(
 							});
 				};
 			}
+
+			/**
+			 *
+			 */
+			EventIntegrationOverlay.prototype.validate = function() {
+				return true;
+			};
 		});

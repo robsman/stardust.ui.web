@@ -16,7 +16,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
@@ -66,7 +65,7 @@ public class ReportViewer implements IDocumentViewer
          JCRDocument jcrDocument = (JCRDocument) documentContentInfo;
          try
          {
-            reportUri = getJCRReportUri(jcrDocument.getDocument().getPath());
+            reportUri = getJCRReportUri(jcrDocument.getDocument().getId());
          }
          catch (Exception e)
          {
@@ -80,9 +79,8 @@ public class ReportViewer implements IDocumentViewer
       this.documentContentInfo = documentContentInfo;
       setFavoriteStatus(documentContentInfo.getId());
       String queryString = getQueryString();
-      sourceURI = getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString
-            + "&realmId=" + UserUtils.getRealmId() + "&workflowUserSessionId="
-            + ServiceFactoryUtils.getWorkflowUserSessionId();
+      sourceURI = getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString + "&realmId="
+            + UserUtils.getRealmId() + "&workflowUserSessionId=" + ServiceFactoryUtils.getWorkflowUserSessionId();
    }
    
    /**
@@ -126,6 +124,8 @@ public class ReportViewer implements IDocumentViewer
       }
    }
 
+   /**
+    */
    private String getQueryString()
    {
       if (CollectionUtils.isNotEmpty(view.getViewParams()))
@@ -156,10 +156,10 @@ public class ReportViewer implements IDocumentViewer
     * @return
     * @throws ResourceNotFoundException
     */
-   private String getJCRReportUri(String documentPath) throws ResourceNotFoundException
+   private String getJCRReportUri(String documentOID) throws ResourceNotFoundException
    {
-      return FacesUtils.getServerBaseURL() + "/jackrabbit/repository/default/ipp-repository/partitions/"
-            + UserUtils.getPartitionID() + documentPath;
+      return FacesUtils.getServerBaseURL() + "/dms-content/"
+            + DocumentMgmtUtility.getDocumentManagementService().requestDocumentContentDownload(documentOID);
    }
 
    /**

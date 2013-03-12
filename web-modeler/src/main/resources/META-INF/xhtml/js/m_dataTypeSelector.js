@@ -34,6 +34,16 @@ define(
 			 *
 			 */
 			function DataTypeSelector() {
+			
+			DataTypeSelector.prototype.startsWith = function(str, prefix) {
+						return str.indexOf(prefix) === 0;
+				}
+			DataTypeSelector.prototype.checkElementId = function(id, prefix) {
+						if(this.startsWith(id,"#"))
+							return id;
+					return "#"+id;
+				}
+				
 				/**
 				 * Options are
 				 *
@@ -46,25 +56,17 @@ define(
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
 					this.restrictToCurrentModel = options.restrictToCurrentModel;
 					this.hideEnumerations = options.hideEnumerations;
-
-					this.dataTypeSelect = jQuery("#" + this.scope
-							+ " #dataTypeSelect");
-					this.primitiveDataTypeRow = jQuery("#" + this.scope
-							+ " #primitiveDataTypeRow");
-					this.primitiveDataTypeSelect = jQuery("#" + this.scope
-							+ " #primitiveDataTypeSelect");
-					this.structuredDataTypeRow = jQuery("#" + this.scope
-							+ " #structuredDataTypeRow");
-					this.structuredDataTypeSelect = jQuery("#" + this.scope
-							+ " #structuredDataTypeSelect");
-					this.documentTypeSelect = jQuery("#" + this.scope
-							+ " #documentTypeSelect");
-					this.documentTypeRow = jQuery("#" + this.scope
-							+ " #documentTypeRow");
-					this.otherTypeRow = jQuery("#" + this.scope
-							+ " #otherTypeRow");
-					this.otherTypeName = jQuery("#" + this.scope
-							+ " #otherTypeName");
+					
+					
+					this.dataTypeSelect = jQuery(this.checkElementId(this.scope) + " #dataTypeSelect");
+					this.primitiveDataTypeRow = jQuery(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
+					this.primitiveDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #primitiveDataTypeSelect");
+					this.structuredDataTypeRow = jQuery(this.checkElementId(this.scope)	+ " #structuredDataTypeRow");
+					this.structuredDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #structuredDataTypeSelect");
+					this.documentTypeSelect = jQuery(this.checkElementId(this.scope)+ " #documentTypeSelect");
+					this.documentTypeRow = jQuery(this.checkElementId(this.scope)+ " #documentTypeRow");
+					this.otherTypeRow = jQuery(this.checkElementId(this.scope)+ " #otherTypeRow");
+					this.otherTypeName = jQuery(this.checkElementId(this.scope)	+ " #otherTypeName");
 
 					this.initializeDataTypeOptions();
 
@@ -198,7 +200,7 @@ define(
 				DataTypeSelector.prototype.setScopeModel = function(scopeModel) {
 					this.scopeModel = scopeModel;
 
-					// this.populatePrimitivesSelectInput(); // TODO: Review
+					this.populatePrimitivesSelectInput();
 					this.populateDataStructuresSelectInput();
 					this.populateDocumentTypesSelectInput();
 				};
@@ -213,39 +215,44 @@ define(
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"String\">" + dataType
+							.append("<option value=\"String\" title=\"String\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"boolean\">" + dataType
+							.append("<option value=\"boolean\" title=\"boolean\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"int\">" + dataType
+							.append("<option value=\"int\" title=\"int\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"long\">" + dataType
+							.append("<option value=\"long\" title=\"long\">" + dataType
 									+ "</option>");
 					dataType = m_i18nUtils
 							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
 					this.primitiveDataTypeSelect
-							.append("<option value=\"double\">" + dataType
+							.append("<option value=\"double\" title=\"double\">" + dataType
 									+ "</option>");
-					// Commented as we don't support Money values yet.
+					dataType = m_i18nUtils
+							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp");
+					this.primitiveDataTypeSelect
+							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
+									+ "</option>");
+					// Commented as we don't support Money and Calendar values yet.
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
 //					this.primitiveDataTypeSelect
-//							.append("<option value=\"Decimal\">" + dataType
+//							.append("<option value=\"Decimal\" title=\"Decimal\">" + dataType
 //									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Calendar\">" + dataType
-									+ "</option>");
+//					dataType = m_i18nUtils
+//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+//					this.primitiveDataTypeSelect
+//							.append("<option value=\"Calendar\" title=\"Calendar\">" + dataType
+//									+ "</option>");
 				}
 
 				/**
@@ -432,11 +439,23 @@ define(
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
 						primitiveDataType) {
+					// Reinitialize the primitive type options to get rid of "Other" option
+					this.populatePrimitivesSelectInput();
+
 					if (primitiveDataType == null) {
 						primitiveDataType = "String";
 					}
 
-					this.primitiveDataTypeSelect.val(primitiveDataType);
+					if (this.isSupportedPrimitiveDataType(primitiveDataType)) {
+						this.primitiveDataTypeSelect.val(primitiveDataType);
+					} else {
+						this.primitiveDataTypeSelect
+								.append("<option value=\"other\">"
+										+ m_i18nUtils
+												.getProperty("modeler.element.properties.commonProperties.other")
+										+ "</option>");
+						this.primitiveDataTypeSelect.val("other");
+					}
 
 					m_dialog.makeVisible(this.primitiveDataTypeRow);
 					m_dialog.makeInvisible(this.structuredDataTypeRow);
@@ -445,6 +464,20 @@ define(
 					if (this.otherTypeRow != null) {
 						m_dialog.makeInvisible(this.otherTypeRow);
 					}
+				};
+
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
+						primitiveDataType) {
+					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp" ];
+					if (primitiveDataType
+							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
+						return true;
+					}
+
+					return false;
 				};
 
 				/**
@@ -499,9 +532,12 @@ define(
 
 					if (extension) {
 						this.otherTypeName
-						.append("<b>"
-								+ extension.readableName
-								+ "</b> not yet supported for the Browser Modeler.");
+								.append(m_i18nUtils
+										.getProperty(
+												"modeler.propertyPages.commonProperties.infoMessage.elementNotSupported")
+										.replace(
+												"{0}",
+												"<b>" + extension.readableName + "</b>"));
 					}
 				};
 

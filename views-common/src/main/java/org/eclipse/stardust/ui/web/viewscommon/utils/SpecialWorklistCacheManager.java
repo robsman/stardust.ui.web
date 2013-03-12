@@ -73,11 +73,13 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
    {
       worklists = new LinkedHashMap<String, ProcessWorklistCacheEntry>();
       ActivityInstances result = WorklistUtils.getAllAssignedActivities();
-      worklists.put(ALL_ACTVITIES, new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery()));
+      worklists.put(ALL_ACTVITIES,
+            new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery(), result.getTotalCountThreshold()));
       definedHighCriticality = CriticalityConfigurationHelper.getInstance().getCriticality(
             CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX);
       result = WorklistUtils.getCriticalActivities(definedHighCriticality);
-      worklists.put(CRITICAL_ACTVITIES, new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery()));
+      worklists.put(CRITICAL_ACTVITIES,
+            new ProcessWorklistCacheEntry(result.getTotalCount(), result.getQuery(), result.getTotalCountThreshold()));
       initialized = true;
    }
 
@@ -88,6 +90,15 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
    public long getWorklistCount(String worklistName)
    {
       return worklists.get(worklistName).getCount();
+   }
+   
+   /**
+    * @param worklistName
+    * @return
+    */
+   public long getWorklistCountThreshold(String worklistName)
+   {
+      return worklists.get(worklistName).getTotalCountThreshold();
    }
 
    /**
@@ -123,9 +134,11 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
          // oldAi can be null if it's the first AI of PI is Activated
          if (null == oldAi)
          {
-            allActivities.setCount(allActivities.getCount() + 1);
-
-            if (isActivityCritical(event.getActivityInstance()))
+            if (allActivities.getCount() < Long.MAX_VALUE)
+            {
+               allActivities.setCount(allActivities.getCount() + 1);
+            }
+            if (isActivityCritical(event.getActivityInstance()) && criticialActivities.getCount() < Long.MAX_VALUE)
             {
                criticialActivities.setCount(criticialActivities.getCount() + 1);
             }
@@ -133,9 +146,12 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
       }
       else if (ActivityEvent.ABORTED.equals(event.getType()) || ActivityEvent.COMPLETED.equals(event.getType()))
       {
-         allActivities.setCount(allActivities.getCount() - 1);
-
-         if (isActivityCritical(oldAi))
+         if (allActivities.getCount() > 0 && allActivities.getCount() < allActivities.getTotalCountThreshold())
+         {
+            allActivities.setCount(allActivities.getCount() - 1);
+         }
+         if (isActivityCritical(oldAi)
+               && (criticialActivities.getCount() > 0 && criticialActivities.getCount() < criticialActivities.getTotalCountThreshold()))
          {
             criticialActivities.setCount(criticialActivities.getCount() - 1);
          }

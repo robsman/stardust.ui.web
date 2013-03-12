@@ -48,9 +48,8 @@ define(
 				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
 				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
 
-			var canvasPos = $("#canvas").position();
-			var X_OFFSET = canvasPos.left; // Set fpr #panningSensor
-			var Y_OFFSET = canvasPos.top; // Set for #toolbar +
+			var X_OFFSET; // Set fpr #panningSensor
+			var Y_OFFSET; // Set for #toolbar +
 			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
 
@@ -69,6 +68,11 @@ define(
 			 */
 			function Diagram(newDivId) {
 				currentDiagram = this;
+
+				var canvasPos = $("#canvas").position();
+				X_OFFSET = canvasPos.left; // Set fpr #panningSensor
+				Y_OFFSET = canvasPos.top; // Set for #toolbar +
+
 				// Constants
 
 				var SNAP_LINE_THRESHOLD = 15;
@@ -80,6 +84,7 @@ define(
 				this.CONNECTION_MODE = "CONNECTION_MODE";
 				this.SYMBOL_MOVE_MODE = "SYMBOL_MOVE_MODE";
 				this.SEPARATOR_MODE = "SEPARATOR_MODE";
+				this.CREATE_MODE = "CREATE_MODE";
 				this.X_OFFSET = X_OFFSET;
 				this.Y_OFFSET = Y_OFFSET;
 				this.width = m_canvasManager.getCanvasWidth();
@@ -513,6 +518,7 @@ define(
 					}
 
 					this.process = this.model.processes[this.processId];
+					this.process.diagram = this;
 
 					// Initialize Properties Panels
 
@@ -735,9 +741,12 @@ define(
 										command.modelId);
 							}
 							if (null == symbol) {
-								symbol = this.findConnectionByGuid(
-										obj.changes.removed[i].oid,
-										command.modelId);
+								if (obj.changes.removed[i].type
+										&& obj.changes.removed[i].type != m_constants.CONTROL_FLOW) {
+									symbol = this.findConnectionByGuid(
+											obj.changes.removed[i].oid,
+											command.modelId);
+								}
 							}
 							if (null != symbol) {
 								symbol.remove();
@@ -1177,7 +1186,6 @@ define(
 							//new symbol needs to be added to currentSelection,
 							//m_symbol#moveBy method is common for drag n drop and new symbol drag function
 							this.clearCurrentSelection();
-							this.addToCurrentSelection(this.newSymbol);
 							this.newSymbol.move(x * this.zoomFactor, y
 									* this.zoomFactor);
 							// When creating symbol from flyoutMenu,
@@ -1584,12 +1592,23 @@ define(
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
 									* this.zoomFactor);
+							$(".selected-tool").removeClass("selected-tool");
 						}
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
 						m_messageDisplay.clear();
-					} else if (this.mode == this.CONNECTION_MODE
-							&& this.currentConnection != null) {
+						if (this.currentConnection) {
+							this.currentConnection.deselect();
+							this.currentConnection = null;
+						}
+					} else {
+						this.disEngageConnection();
+					}
+				};
+
+				Diagram.prototype.disEngageConnection = function() {
+					if (this.mode == this.CONNECTION_MODE
+							&& this.currentConnection != null && !this.currentConnection.oid) {
 						this.currentConnection.remove();
 						this.currentConnection = null;
 						m_messageDisplay.clear();
@@ -1611,6 +1630,8 @@ define(
 						this.newSymbol = null;
 						return false;
 					}
+
+					this.mode = this.NORMAL_MODE;
 
 					this.snapSymbol(this.newSymbol);
 
@@ -1726,7 +1747,9 @@ define(
 				 */
 				Diagram.prototype.addAndConnectSymbol = function(startSymbol,
 						targetSymbol) {
+
 					this.newSymbol = targetSymbol;
+					this.mode = this.CREATE_MODE;
 
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
 						this.newSymbol.prepare(startSymbol.x,
@@ -1747,10 +1770,10 @@ define(
 							// validation fails
 							if (this.currentConnection) {
 								this.currentConnection.remove();
-								this.currentConnection
 							}
 							this.newSymbol.remove();
 							this.newSymbol = null;
+							this.mode = this.NORMAL_MODE;
 						}
 					} else {
 						this.newSymbol.prepare(startSymbol.x + 200,
@@ -1763,7 +1786,7 @@ define(
 					}
 
 					// TODO Is this needed
-					this.mode = this.NORMAL_MODE;
+					// this.mode = this.NORMAL_MODE;
 				};
 
 				/**
@@ -1864,8 +1887,9 @@ define(
 				Diagram.prototype.clearCurrentToolSelection = function() {
 					this.clearCurrentSelection();
 					if (this.currentConnection != null) {
-						this.currentConnection.remove();
-
+						if(!this.currentConnection.oid){
+							this.currentConnection.remove();
+						}
 						this.currentConnection = null;
 					}
 					if (this.newSymbol != null) {
@@ -1975,23 +1999,24 @@ define(
 					if (content == '') {
 						this.cancelEditable();
 					} else {
-						this.editableText.css("visibility", "hidden").hide()
-								.trigger("blur");
-						this.currentTextPrimitive.attr("text", content);
-						m_utils.debug("text set");
-						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+					this.editableText.css("visibility", "hidden").hide()
+							.trigger("blur");
+					this.currentTextPrimitive.attr("text", content);
+					m_utils.debug("text set");
+					var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
 
-						m_commandsController
-								.submitCommand(m_command
-										.createUpdateModelElementCommand(
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
-												changes));
-						this.currentTextPrimitive.show();
-						this.currentTextPrimitive.auxiliaryProperties.callbackScope
-								.adjustPrimitivesOnShrink();
-						this.symbolEditMode = false;
-						m_utils.debug("text primitive shown");
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+											changes));
+					this.currentTextPrimitive.show();
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope
+							.adjustPrimitivesOnShrink();
+					this.symbolEditMode = false;
+					m_utils.debug("text primitive shown");
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}
 				};
 
@@ -1999,23 +2024,24 @@ define(
 					if (content == '') {
 						this.cancelEditableArea();
 					} else {
-						this.editableTextArea.css("visibility", "hidden")
-								.hide().trigger("blur");
-						this.currentTextPrimitive.attr("text", content);
-						m_utils.debug("textarea set");
-						var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+					this.editableTextArea.css("visibility", "hidden")
+							.hide().trigger("blur");
+					this.currentTextPrimitive.attr("text", content);
+					m_utils.debug("textarea set");
+					var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
 
-						m_commandsController
-								.submitCommand(m_command
-										.createUpdateModelElementCommand(
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-												this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
-												changes));
-						this.currentTextPrimitive.show();
-						this.currentTextPrimitive.auxiliaryProperties.callbackScope
-								.adjustPrimitives();
-						this.symbolEditMode = false;
-						m_utils.debug("textarea primitive shown");
+					m_commandsController
+							.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
+											this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
+											changes));
+					this.currentTextPrimitive.show();
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope
+							.adjustPrimitives();
+					this.symbolEditMode = false;
+					m_utils.debug("textarea primitive shown");
+					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}
 				};
 
@@ -2167,7 +2193,7 @@ define(
 						"width" : width,
 						"height" : height
 					});
-					m_canvasManager.setCanvasSize(width, height);
+					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};
 
 				/**

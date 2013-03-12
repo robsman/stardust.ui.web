@@ -16,14 +16,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -31,7 +28,6 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,7 +42,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -56,15 +51,11 @@ import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.core.compatibility.el.SyntaxError;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
-import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.portal.ViewUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
@@ -541,6 +532,26 @@ public class ModelerResource
       }
    }
 
+   @GET
+   @Produces(MediaType.TEXT_HTML)
+   @Path("models/{modelId}/embeddedWebApplication/{applicationId}")
+   public Response getProblems(@PathParam("modelId") String modelId,
+         @PathParam("applicationId") String applicationId)
+   {
+      try
+      {
+         return Response.ok(
+               getModelService().retrieveEmbeddedExternalWebApplicationMarkup(modelId,
+                     applicationId), MediaType.TEXT_HTML_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -549,9 +560,29 @@ public class ModelerResource
    {
       try
       {
-         String result = getModelService().createWrapperProcess(modelId,
+         getModelService().createWrapperProcess(modelId,
                jsonIo.readJsonObject(postedData));
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+         return Response.ok("", APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{id}/processes/createProcessInterfaceTestWrapperProcess")
+   public Response createProcessInterfaceTestWrapperProcess(@PathParam("id") String modelId, String postedData)
+   {
+      try
+      {
+         getModelService().createProcessInterfaceTestWrapperProcess(modelId,
+               jsonIo.readJsonObject(postedData));
+         return Response.ok("", APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -611,6 +642,33 @@ public class ModelerResource
                getModelService().updateConfigurationVariable(modelId,
                      jsonIo.readJsonObject(postedData)).toString(), APPLICATION_JSON_TYPE)
                .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("models/{modelId}/configurationVariables/{variableName}")
+   public Response deleteConfigurationVariable(@PathParam("modelId") String modelId,
+         @PathParam("variableName") String variableName, String postedData)
+   {
+      try
+      {
+         System.out.println("Delete parameter: " + postedData);
+
+         variableName = URLDecoder.decode(variableName);
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         getModelService().deleteConfigurationVariable(modelId, variableName, json);
+
+         return Response.ok(
+               getModelService().getConfigurationVariables(modelId).toString(),
+               APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -836,10 +894,55 @@ public class ModelerResource
       return interactionDataObject;
    }
 
+   // Callbacks for Interaction REST API
+
+   // @Path("interactions/{interactionId}/definition")
+   // @GET
+   // @Produces(MediaType.APPLICATION_XML)
+   // public InteractionDefinition getDefinition()
+   // {
+   // }
+
+   // @Path("interactions/{interactionId}/inData/{parameterId}")
+   // @GET
+   // @Produces( {
+   // MediaType.TEXT_PLAIN, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   // public Response getInDataValueRepresentation(
+   // @PathParam("interactionId") String interactionId,
+   // @PathParam("parameterId") String parameterId)
+   // {
+   // try
+   // {
+   // System.out.println("Retrieving interaction input parameter " + parameterId);
+   //
+   // if (getInteractionDataObject().get("input").getAsJsonObject().has(parameterId))
+   // {
+   // System.out.println(getInteractionDataObject().get("input").getAsJsonObject().get(parameterId));
+   //
+   // return
+   // Response.ok(getInteractionDataObject().get("input").getAsJsonObject().get(parameterId).toString(),
+   // APPLICATION_JSON_TYPE)
+   // .build();
+   // }
+   // else
+   // {
+   // return Response.ok(null, APPLICATION_JSON_TYPE)
+   // .build();
+   // }
+   // }
+   // catch (Exception e)
+   // {
+   // e.printStackTrace();
+   //
+   // throw new RuntimeException(e);
+   // }
+   // }
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("interaction")
-   public Response getInteractionInputData()
+   @Path("interactions/{interactionId}/inData")
+   public Response getInteractionInputData(
+         @PathParam("interactionId") String interactionId)
    {
       try
       {
@@ -860,8 +963,13 @@ public class ModelerResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("interaction")
-   public Response setInteractionInputData(String postedData)
+   @Path("interactions/{interactionId}/inData")
+   /**
+    * This method is not part of the Interaction Protocol, but used to prepare the server-side state to test
+    * the protocol.
+    */
+   public Response setInteractionInputData(
+         @PathParam("interactionId") String interactionId, String postedData)
    {
       try
       {
@@ -870,18 +978,63 @@ public class ModelerResource
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
          System.out.println(postedObject);
 
-         if (postedObject.has("input"))
-         {
-            getInteractionDataObject().add("input", postedObject.get("input"));
-         }
-
-         if (postedObject.has("output"))
-         {
-            getInteractionDataObject().add("output", postedObject.get("output"));
-         }
+         getInteractionDataObject().add("input", postedObject);
 
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("interactions/{interactionId}/outData")
+   public Response setInteractionOutputData(
+         @PathParam("interactionId") String interactionId, String postedData)
+   {
+      try
+      {
+         System.out.println("Set interaction input:");
+         System.out.println(postedData);
+         JsonObject postedObject = jsonIo.readJsonObject(postedData);
+         System.out.println(postedObject);
+
+         getInteractionDataObject().add("output", postedObject);
+
+         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("interactions/{interactionId}/outData")
+   /**
+    * This method is not part of the Interaction Protocol, but used to retrieve output data submitted via the protocol from the 
+    * server-side state to display those.
+    */
+   public Response getInteractionOutputData(
+         @PathParam("interactionId") String interactionId)
+   {
+      try
+      {
+         System.out.println("Retrieving interaction output:");
+         System.out.println(getInteractionDataObject());
+
+         return Response.ok(getInteractionDataObject().get("output").toString(),
+               APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {

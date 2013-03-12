@@ -28,7 +28,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
 						generalProperties,
-						"../../images/icons/basic-properties-page.png");
+						"../../images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(BasicPropertiesPage.prototype,

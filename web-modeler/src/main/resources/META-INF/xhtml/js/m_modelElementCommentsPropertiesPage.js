@@ -33,7 +33,7 @@ define(
 				var commentsText = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, commentsText,
-						"../../images/icons/comments-properties-page.png");
+						"../../images/icons/comments.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(CommentsPropertiesPage.prototype,
@@ -65,7 +65,10 @@ define(
 				/**
 				 * 
 				 */
-				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {					
+				CommentsPropertiesPage.prototype.submitCommentsChanges = function(comments) {
+					m_utils.debug("Submit Comment");
+					m_utils.debug(this.assembleChangedObjectFromProperty("comments", comments));
+					
 					this.submitChanges(this.assembleChangedObjectFromProperty("comments", comments));
 				};
 			}

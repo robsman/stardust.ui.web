@@ -47,8 +47,10 @@ define(
 
 					if (this.options.scope == null) {
 						this.options.scope = "";
+						this.dataTypeSelectorScope = "parameterDefinitionTypeSelector";
 					} else {
 						this.options.scope = "#" + this.options.scope + " ";
+						this.dataTypeSelectorScope = this.options.scope;
 					}
 
 					// TODO: Change width via CSS and classes here
@@ -100,7 +102,7 @@ define(
 
 					if (this.options.supportsDataTypeSelection) {
 						this.dataTypeSelector = m_dataTypeSelector.create({
-							scope : "parameterDefinitionTypeSelector",
+							scope : this.dataTypeSelectorScope,
 							submitHandler : this,
 							supportsOtherData : false,
 							supportsDocumentTypes : true,
@@ -167,6 +169,14 @@ define(
 									},
 									function(event) {
 										if (event.data.panel.currentParameterDefinition != null) {
+											// Blank names are not allowed.
+											if (jQuery.trim(event.data.panel.parameterDefinitionNameInput
+													.val()) == "") {
+												event.data.panel.parameterDefinitionNameInput
+														.val(event.data.panel.currentParameterDefinition.name);
+												return;
+											}
+
 											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
 													.val();
 											event.data.panel.currentFocusInput = this.parameterDefinitionDirectionSelect;
@@ -287,6 +297,13 @@ define(
 						m_dialog
 								.makeInvisible(this.addParameterDefinitionButton);
 					}
+
+					if (this.options.hideDirectionSelection) {
+						m_dialog
+								.makeInvisible(jQuery(this.options.scope + "label[for='parameterDefinitionDirectionSelect']"));
+						m_dialog
+								.makeInvisible(this.parameterDefinitionDirectionSelect);
+					}
 				};
 
 				/**
@@ -383,7 +400,7 @@ define(
 					this.parameterDefinitionDataSelect.empty();
 
 					this.parameterDefinitionDataSelect
-							.append("<option value=\"TO_BE_DEFINED\">(To be defined))</option>");
+							.append("<option value=\"TO_BE_DEFINED\">" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 					if (this.scopeModel) {
 						var modelname = m_i18nUtils
@@ -396,7 +413,7 @@ define(
 							var dataItem = this.scopeModel.dataItems[i];
 							// Show only data items from this model and not
 							// external references.
-							if (!dataItem.externalReference
+							if ((!dataItem.externalReference || this.options.showExternalDataReferences)
 									&& this.isDataOfSelectedType(dataItem)) {
 								this.parameterDefinitionDataSelect
 										.append("<option value='"

@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_codeEditor" ],
-		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, m_codeEditor) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_codeEditorAce" ],
+		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, m_codeEditorAce) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -41,11 +41,14 @@ define(
 				 */
 				ControlFlowBasicPropertiesPage.prototype.show = function() {
 					propertiesPage.show();
-					this.conditionExpressionInputEditor.refresh();
 
+					// TODO - ace code editor doesn't have refresh at present
+					//this.conditionExpressionInputEditor.refresh();
+
+					// TODO - ace code editor doesn't have code complete at present
 					// Global variables for Code Editor auto-complete / validation
-					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
+					//var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
+					//this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**
@@ -54,20 +57,32 @@ define(
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
-					this.conditionExpressionInput = this
-							.mapInputId("conditionExpressionInput");
+					this.conditionExpressionDiv = jQuery("#"
+							+ this.propertiesPanel.id
+							+ " #conditionExpressionDiv");
+
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
-					this.conditionExpressionInputEditor = m_codeEditor.getCodeEditor(this.conditionExpressionInput[0]);
+					var page = this;
+					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor("conditionExpressionDiv");
+					this.conditionExpressionInputEditor.getEditor().on('blur', function(e){
+						var property = "conditionExpression";
+						if (!page.validate()) {
+							return;
+						}
+
+						if (page.getModelElement()[property] != page.conditionExpressionInputEditor.getValue()) {
+							page.submitChanges(page
+									.assembleChangedObjectFromProperty(
+											property, page.conditionExpressionInputEditor.getValue()));
+						}
+					});
 
 					this.registerInputForModelElementChangeSubmission(
 							this.descriptionInput, "description");
 					this.registerCheckboxInputForModelElementChangeSubmission(
 							this.otherwiseInput, "otherwise");
-					this.registerInputForModelElementChangeSubmission(
-							this.conditionExpressionInput,
-							"conditionExpression");
 				};
 
 				/**
@@ -83,9 +98,9 @@ define(
 								.attr(
 										"checked",
 										this.propertiesPanel.element.modelElement.otherwise);
-						this.conditionExpressionInput
-								.val(this.propertiesPanel.element.modelElement.conditionExpression);
-						this.conditionExpressionInputEditor.setValue(this.conditionExpressionInput.val());
+						this.conditionExpressionInputEditor
+								.setValue(this.propertiesPanel.element.modelElement.conditionExpression);
+						this.conditionExpressionInputEditor.gotoLine(1);
 
 						if (this.propertiesPanel.element.modelElement.otherwise) {
 							this.conditionExpressionInputEditor.disable();

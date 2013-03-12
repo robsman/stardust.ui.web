@@ -76,5 +76,12 @@ define(
 				 */
 				ManualTriggerIntegrationOverlay.prototype.update = function() {
 				};
+				
+				/**
+				 * 
+				 */
+				ManualTriggerIntegrationOverlay.prototype.validate = function() {
+					return true;
+				};
 			}
 		});

@@ -40,9 +40,12 @@ define(
 				submitCommand : function(command) {
 					getInstance().submitCommand(command);
 				},
-				registerCommandHandler : function(commandHandler) {
+				registerCommandHandler : function(commandHandler, manualUnload) {
 					getInstance().registerCommandHandler(commandHandler);
-					unregisterCommandhandlerOnWindowUnload(commandHandler);
+
+					if (!manualUnload) {
+						unregisterCommandhandlerOnWindowUnload(commandHandler);
+					}
 				},
 				unregisterCommandHandler : function(commandHandler) {
 					getInstance().unregisterCommandHandler(commandHandler);
@@ -90,7 +93,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function CommandsController(newCommunicationController) {
 				// Initialize members
@@ -100,7 +103,7 @@ define(
 				this.commandHandlers = [];
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.toString = function() {
 					return "Lightdust.CommandController";
@@ -187,7 +190,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.submitCommand = function(command) {
 					var url = m_communicationController.getEndpointUrl()
@@ -236,22 +239,22 @@ define(
 											// submit
 											: false
 										},
-										// TODO Needs to be reviewed: it is a guard but any unwanted reference should have been removed before as we 
-										// intend to control what is passed to the server
+										// TODO Needs to be reviewed: it is a
+										// guard but any unwanted reference
+										// should have been removed before as we
+										// intend to control what is passed to
+										// the server
 										// Added to remove any cyclic reference
-										JSON
-												.stringify(
-														command,
-														function(key, val) {
-															if (typeof val == "object") {
-																if (obj
-																		.indexOf(val) >= 0) {
-																	return undefined;
-																}
-																obj.push(val);
-															}
-															return val;
-														}),
+										JSON.stringify(command, function(key,
+												val) {
+											if ((typeof val == "object") && null != val) {
+												if (obj.indexOf(val) >= 0) {
+													return undefined;
+												}
+												obj.push(val);
+											}
+											return val;
+										}),
 										new function() {
 											return {
 												"success" : function(command) {
@@ -271,7 +274,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.registerCommandHandler = function(
 						commandHandler) {
@@ -279,7 +282,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.unregisterCommandHandler = function(
 						commandHandler) {
@@ -288,7 +291,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommand = function(
 						command) {
@@ -296,8 +299,8 @@ define(
 					m_utils.debug(command);
 
 					for ( var n = 0; n < this.commandHandlers.length; ++n) {
-						m_utils.debug("Process command on "
-								+ this.commandHandlers[n]);
+						m_utils.debug("Process command on");
+						m_utils.debug(this.commandHandlers[n]);
 						try {
 							if (this.commandHandlers[n]) {
 								this.commandHandlers[n].processCommand(command);
@@ -311,7 +314,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				CommandsController.prototype.broadcastCommandUndo = function(
 						command) {

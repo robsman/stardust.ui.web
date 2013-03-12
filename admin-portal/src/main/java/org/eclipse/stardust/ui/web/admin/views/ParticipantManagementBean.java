@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
@@ -36,7 +37,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantTree;
 import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
 
@@ -226,7 +227,7 @@ public class ParticipantManagementBean extends PopupUIComponentBean implements V
             UserDetailsTableEntry userTabEntry = (UserDetailsTableEntry) getParameter("selectedUser");
             if (userTabEntry.isSelectedRow())
             {
-               recentlySelectedUser = ServiceFactoryUtils.getUserService().getUser(userTabEntry.getUser().getOID());
+               recentlySelectedUser = UserUtils.getUser(userTabEntry.getUser().getOID(),UserDetailsLevel.Full);
                selecteUsers.add(recentlySelectedUser);
             }
          }

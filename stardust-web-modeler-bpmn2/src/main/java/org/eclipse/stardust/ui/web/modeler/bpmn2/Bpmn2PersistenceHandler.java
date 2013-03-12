@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.eclipse.stardust.common.config.CurrentVersion;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.compatibility.AdonisImporter;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.spi.ModelExporter;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.DirectStreamsURIHandler;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 
@@ -161,6 +163,25 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
       catch (IOException ioe)
       {
          trace.warn("Failed saving BPMN2 model.", ioe);
+      }
+   }
+
+   @Override
+   public void saveDeployableModel(Definitions model, OutputStream modelContent)
+         throws IOException
+   {
+      try
+      {
+         // TODO transform BPMN2 into XPDL
+         ModelExporter xpdlExporter = (ModelExporter) Reflect.createInstance("org.eclipse.stardust.ui.web.modeler.bpmn2.export.XpdlModelExporter");
+         if (null != xpdlExporter)
+         {
+            xpdlExporter.exportModel(model, modelContent);
+         }
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException("Failed transforming BPMN2 model.", e);
       }
    }
 

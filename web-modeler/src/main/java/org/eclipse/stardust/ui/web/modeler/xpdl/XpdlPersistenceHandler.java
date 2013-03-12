@@ -66,4 +66,11 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
    {
       modelContent.write(XpdlModelIoUtils.saveModel(model));
    }
+
+   @Override
+   public void saveDeployableModel(ModelType model, OutputStream modelContent)
+         throws IOException
+   {
+      saveModel(model, modelContent);
+   }
 }

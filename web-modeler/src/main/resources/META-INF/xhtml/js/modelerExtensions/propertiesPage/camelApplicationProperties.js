@@ -21,7 +21,7 @@ define(
 					visibility : "always",
 					pageName : m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.comments"),
-					pageIconUrl : "../../images/icons/comments-properties-page.png"
+					pageIconUrl : "../../images/icons/comments.png"
 				} ]
 			};
 		});

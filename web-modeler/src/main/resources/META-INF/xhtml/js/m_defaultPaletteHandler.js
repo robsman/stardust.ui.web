@@ -44,6 +44,7 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		createActivity : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("activityButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_activitySymbol.createActivitySymbol(diagram,
 					m_constants.TASK_ACTIVITY_TYPE);
 		},
@@ -54,27 +55,32 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		createStartEvent : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("startEventButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_eventSymbol.createStartEventSymbol(diagram);
 		},
 		createIntermediateEvent : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("intermediateEventButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_eventSymbol
 					.createIntermediateEventSymbol(diagram);
 		},
 		createEndEvent : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("endEventButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_eventSymbol.createStopEventSymbol(diagram);
 		},
 		createData : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("dataButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_dataSymbol.createDataSymbol(diagram);
 		},
 		createGateway : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("gatewayButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_gatewaySymbol.createGatewaySymbol(diagram);
 		},
 		createConnector : function(diagram) {
@@ -88,6 +94,7 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		createAnnotation : function(diagram) {
 			diagram.clearCurrentToolSelection();
 			selectTool("annotationButton");
+			diagram.mode = diagram.CREATE_MODE;
 			diagram.newSymbol = m_annotationSymbol.create(diagram);
 		},
 		zoomIn : function(diagram) {

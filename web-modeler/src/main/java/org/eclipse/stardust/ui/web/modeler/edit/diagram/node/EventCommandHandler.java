@@ -67,13 +67,10 @@ public class EventCommandHandler
 
       synchronized (model)
       {
-         long maxOid = XpdlModelUtils.getMaxUsedOid(model);
-
          if (START_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
             StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
-            startEventSymbol.setElementOid(++maxOid);
             // TODO - Pass correct x,y co-ordinates rather than adjustment at server
             startEventSymbol.setXPos(extractInt(request, X_PROPERTY)
                   - parentLaneSymbol.getXPos());
@@ -95,14 +92,12 @@ public class EventCommandHandler
                   .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
                   .build();
             manualTrigger.setName("");
-            manualTrigger.setElementOid(++maxOid);
             startEventSymbol.setTrigger(manualTrigger);
          }
          else if (ModelerConstants.INTERMEDIATE_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
             IntermediateEventSymbol eventSymbol = AbstractElementBuilder.F_CWM.createIntermediateEventSymbol();
-            eventSymbol.setElementOid(++maxOid);
             // TODO - Pass correct x,y co-ordinates rather than adjustment at server
             eventSymbol.setXPos(extractInt(request, X_PROPERTY)
                   - parentLaneSymbol.getXPos());
@@ -121,7 +116,6 @@ public class EventCommandHandler
             ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
                   .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
                   .build();
-            hostActivity.setElementOid(++maxOid);
             EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
 
             processDefinition.getActivity().add(hostActivity);
@@ -134,7 +128,6 @@ public class EventCommandHandler
          else
          {
             EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
-            endEventSymbol.setElementOid(++maxOid);
 
             endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
                   - parentLaneSymbol.getXPos());
@@ -150,11 +143,15 @@ public class EventCommandHandler
 
             parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
 
+            String eventName = request.getAsJsonObject(
+                  ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
+                  ModelerConstants.NAME_PROPERTY)
+                  ? extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+                        ModelerConstants.NAME_PROPERTY) : "End Event";
             // add a host activity
             ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
-                  .withIdAndName("event_" + UUID.randomUUID(), "End Event")
+                  .withIdAndName("event_" + UUID.randomUUID(), eventName)
                   .build();
-            hostActivity.setElementOid(++maxOid);
             EventMarshallingUtils.tagAsEndEventHost(hostActivity);
 
             processDefinition.getActivity().add(hostActivity);

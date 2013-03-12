@@ -8,142 +8,175 @@
  * documentation
  ******************************************************************************/
 
-define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_modelElement" ], function(m_utils,
-		m_constants, m_modelElement) {
-	return {
-		createProcessFromJson : function(model, json) {
-			// TODO Ugly, use prototype
-			m_utils.typeObject(json, new Process());
+define(
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/ChangeSynchronization",
+				"bpm-modeler/js/m_modelElement"],
+		function(m_utils, m_constants, m_command, m_commandsController, ChangeSynchronization, m_modelElement) {
+			return {
+				createProcessFromJson : function(model, json) {
+					// TODO Ugly, use prototype
+					m_utils.typeObject(json, new Process());
 
-			json.initializeFromJson(model);
+					json.initializeFromJson(model);
 
-			return json;
-		},
-		deleteProcess : function(id, model) {
-			delete model.processes[id];
-		}
-	};
+					return json;
+				},
+				createSynchronized : function(model, name, defaultPoolName, defaultLaneName) {
+					var command = m_command
+					.createCreateProcessCommand(
+							model.id,
+							model.id,
+							{
+								name : name,
+								defaultPoolName : defaultPoolName,
+								defaultLaneName : defaultLaneName
+							});
+					var synchronization = ChangeSynchronization.create(command);
 
-	/**
-	 *
-	 */
-	function Process() {
-		m_utils.inheritMethods(Process.prototype, m_modelElement.create());
+					m_commandsController
+							.submitCommand(command);
 
-		/**
-		 *
-		 */
-		Process.prototype.toString = function() {
-			return "Lightdust.Process";
-		};
+					return synchronization;
+				},
+				deleteProcess : function(id, model) {
+					delete model.processes[id];
+				}
+			};
 
-		/**
-		 *
-		 */
-		Process.prototype.initializeFromJson = function(model) {
-			this.type = m_constants.PROCESS_DEFINITION;
-			this.model = model;
+			/**
+			 *
+			 */
+			function Process() {
+				m_utils.inheritMethods(Process.prototype, m_modelElement
+						.create());
 
-			this.model.processes[this.id] = this;
-		};
+				/**
+				 *
+				 */
+				Process.prototype.toString = function() {
+					return "Lightdust.Process";
+				};
 
-		/**
-		 *
-		 */
-		Process.prototype.getPath = function(withId) {
-			var path = "/models/" + this.model.id + "/processes";
+				/**
+				 *
+				 */
+				Process.prototype.initializeFromJson = function(model) {
+					this.type = m_constants.PROCESS_DEFINITION;
+					this.model = model;
 
-			if (withId) {
-				path += "/" + this.id;
+					this.model.processes[this.id] = this;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getPath = function(withId) {
+					var path = "/models/" + this.model.id + "/processes";
+
+					if (withId) {
+						path += "/" + this.id;
+					}
+
+					return path;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.rename = function(id, name) {
+					delete this.model.processes[this.id];
+
+					this.id = id;
+					this.name = name;
+					this.model.processes[this.id] = this;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getNewEventIndex = function() {
+					var index = 0;
+
+					for ( var n in this.events) {
+						++index;
+					}
+
+					++index;
+
+					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getNewActivityIndex = function() {
+					var index = 0;
+
+					for ( var n in this.activities) {
+						++index;
+					}
+
+					++index;
+
+					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getNewGatewayIndex = function() {
+					var index = 0;
+
+					for ( var n in this.gateways) {
+						++index;
+					}
+
+					++index;
+
+					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getDataFlowIndex = function() {
+					var index = 0;
+
+					for ( var n in this.dataFlows) {
+						++index;
+					}
+
+					++index;
+
+					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.getControlFlowIndex = function() {
+					var index = 0;
+
+					for ( var n in this.controlFlows) {
+						++index;
+					}
+
+					++index;
+
+					return index;
+				};
+
+				/**
+				 *
+				 */
+				Process.prototype.hasProcessAttachmentsDataPathes = function() {
+					for ( var n in this.dataPathes) {
+						if (this.dataPathes[n].id == "PROCESS_ATTACHMENTS") {
+							return true;
+						}
+					}
+
+					return false;
+				};
 			}
-
-			return path;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.rename = function(id, name) {
-			delete this.model.processes[this.id];
-
-			this.id = id;
-			this.name = name;
-			this.model.processes[this.id] = this;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.getNewEventIndex = function() {
-			var index = 0;
-
-			for ( var n in this.events) {
-				++index;
-			}
-
-			++index;
-
-			return index;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.getNewActivityIndex = function() {
-			var index = 0;
-
-			for ( var n in this.activities) {
-				++index;
-			}
-
-			++index;
-
-			return index;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.getNewGatewayIndex = function() {
-			var index = 0;
-
-			for ( var n in this.gateways) {
-				++index;
-			}
-
-			++index;
-
-			return index;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.getDataFlowIndex = function() {
-			var index = 0;
-
-			for ( var n in this.dataFlows) {
-				++index;
-			}
-
-			++index;
-
-			return index;
-		};
-
-		/**
-		 *
-		 */
-		Process.prototype.getControlFlowIndex = function() {
-			var index = 0;
-
-			for ( var n in this.controlFlows) {
-				++index;
-			}
-
-			++index;
-
-			return index;
-		};
-	}
-});
+		});

@@ -17,9 +17,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
+import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
@@ -200,6 +202,9 @@ public class UserItem implements Serializable
       {
          WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
          UserQuery query = UserQuery.findAll();
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+         query.setPolicy(userPolicy);
          query.getFilter().add(UserQuery.OID.isEqual(user.getOID()));
          Iterator iter = facade.getAllUsers(query).iterator();
          if(iter.hasNext())

@@ -348,7 +348,7 @@ define(
 							this.restInterfaceCheckboxInput.prop("checked", true);
 							this.webServiceInterfaceCheckboxInput.prop("checked",
 									false);
-						} else if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "both") {
+						} else if (this.getModelElement().attributes["carnot:engine:externalInvocationType"] == "BOTH") {
 							this.restInterfaceCheckboxInput.prop("checked", true);
 							this.webServiceInterfaceCheckboxInput.prop("checked",
 									true);
@@ -376,7 +376,7 @@ define(
 
 					if (this.webServiceInterfaceCheckboxInput.is(":checked")) {
 						if (this.restInterfaceCheckboxInput.is(":checked")) {
-							attributes["carnot:engine:externalInvocationType"] = "both";
+							attributes["carnot:engine:externalInvocationType"] = "BOTH";
 						} else {
 							attributes["carnot:engine:externalInvocationType"] = "SOAP";
 						}

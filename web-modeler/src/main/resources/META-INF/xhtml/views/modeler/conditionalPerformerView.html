@@ -16,7 +16,7 @@
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<div class="panel">
+	<div id="conditionalPerformerView" class="panel">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -74,7 +74,7 @@
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/basic-properties-page.png"></img><span
+									src="../../images/icons/table.png"></img><span
 									class="tabLabel">Configuration</span> </a>
 							</li>
 						</ul>
@@ -107,6 +107,23 @@
 														Data Path</label>
 												</td>
 												<td><input id="bindingDataPathInput" type="text"
+													style="width: 300px;"></input>
+												</td>
+											</tr>
+											<tr class="userRealmOnly">
+												<td colspan="2"><label> --------------------------- </label> <label id="userRealmSecionTitle">User realm</label> <label> --------------------------- </label></td>
+											</tr>
+											<tr class="userRealmOnly">
+												<td><label for="userRealmBindingDataSelect">Binding Data</label>
+												</td>
+												<td><select id="userRealmBindingDataSelect"></select>
+												</td>
+											</tr>
+											<tr class="userRealmOnly">
+												<td><label for="userRealmBindingDataPathInput">Binding
+														Data Path</label>
+												</td>
+												<td><input id="userRealmBindingDataPathInput" type="text"
 													style="width: 300px;"></input>
 												</td>
 											</tr>

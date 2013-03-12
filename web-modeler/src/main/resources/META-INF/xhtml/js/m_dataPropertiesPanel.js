@@ -91,8 +91,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 			// dataFullId doesn't get updated on rename, using
 			// modelElement.getFullId() to find data
 			if (this.element.modelElement != null) {
-				this.data = m_model.findData(this.element.modelElement
-						.getFullId());
+				this.data = m_model.findElementByUuid(this.element.modelElement.uuid);
 			} else {
 				this.data = m_model.findData(this.element.dataFullId);
 			}
@@ -107,14 +106,14 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.getModelElement = function() {
 			return this.data;
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.assembleChangedObjectFromProperty = function(
 				property, value) {
@@ -126,7 +125,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		DataPropertiesPanel.prototype.assembleChangedObjectFromAttribute = function(
 				attribute, value) {
@@ -137,6 +136,19 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 			element.attributes[attribute] = value;
 
 			return element;
+		};
+
+		/**
+		 *
+		 */
+		DataPropertiesPanel.prototype.submitChanges = function(changes) {
+			m_utils.debug("Changes to be submitted for UUID "
+					+ this.getElementUuid() + ":");
+			m_utils.debug(changes);
+			m_commandsController.submitCommand(m_command
+					.createUpdateModelElementWithUUIDCommand(this
+							.getModel().id, this.getElementUuid(),
+							changes));
 		};
 	}
 });

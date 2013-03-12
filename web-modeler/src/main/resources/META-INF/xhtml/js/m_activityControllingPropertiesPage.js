@@ -12,61 +12,63 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_i18nUtils" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage, m_i18nUtils) {
-	
+
 			return {
 				create : function(propertiesPanel) {
 					return new ActivityControllingPropertiesPage(
 							propertiesPanel);
 				}
 			};
-						
 
-	    	function i18nactivity() {
-
+			function i18nactivity() {
+				$("label[for='measureInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.measure"));
+				$("label[for='targetMeasureQuantityInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetMeasureQuantity"));
+				$("label[for='difficultyInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.difficulty"));
 				$("label[for='targetProcessingTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetProcessingTime")); 
-																														
-																														
+										.getProperty("modeler.activity.propertyPages.controlling.targetProcessingTime"));
 				$("label[for='targetExecutionTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetExecutionTimeInput")); 																									// Execution
-																															
+										.getProperty("modeler.activity.propertyPages.controlling.targetExecutionTimeInput")); // Execution
 				$("label[for='targetIdleTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetIdleTimeInput")); 
-																														
-																														
+										.getProperty("modeler.activity.propertyPages.controlling.targetIdleTimeInput"));
 				$("label[for='targetWaitingTimeInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetWaitingTimeInput")); 
-																														
-																														
+										.getProperty("modeler.activity.propertyPages.controlling.targetWaitingTimeInput"));
 				$("label[for='targetQueueDepthInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetQueueDepthInput")); 
-																														
-																														
+										.getProperty("modeler.activity.propertyPages.controlling.targetQueueDepthInput"));
 				$("label[for='targetCostPerExecutionInput']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerExecutionInput")); 
-																																
-																																
-																																
+										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerExecutionInput"));
+				$("label[for='targetCostPerSecondInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerSecondInput"));
 				$("label[for='resourcePerformanceCalculationSelect']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect")); 
-																																		
-																																		
+										.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect"));
 				jQuery("#activityhours")
 						.text(
 								m_i18nUtils
@@ -91,9 +93,9 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.header"));
-				
+
 				this.resourcePerformanceCalculationSelect = jQuery("#resourcePerformanceCalculationSelect");
-				
+
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.included");
 				resourcePerformanceCalculationSelect
@@ -104,23 +106,22 @@ define(
 				resourcePerformanceCalculationSelect
 						.append("<option value=\"notIncluded\">" + selectdata
 								+ "</option>");
-
 			}
 
 			/**
 			 * 
 			 */
 			function ActivityControllingPropertiesPage(propertiesPanel) {
-				var controlling = m_i18nUtils.getProperty("modeler.activity.propertyPages.controlling.heading");
+				var controlling = m_i18nUtils
+						.getProperty("modeler.activity.propertyPages.controlling.heading");
 				i18nactivity();
 				// Inheritance
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "controllingPropertiesPage",
 						controlling,
-						"../../images/icons/controlling-properties-page.png");
+						"../../images/icons/chart-up.png");
 
-				
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
 						ActivityControllingPropertiesPage.prototype,
@@ -128,20 +129,43 @@ define(
 
 				// Field initialization
 
-				this.targetCostPerExecutionInput = this.mapInputId("targetCostPerExecutionInput");
-				this.targetProcessingTimeInput = this.mapInputId("targetProcessingTimeInput");
-				this.targetExecutionTimeInput = this.mapInputId("targetExecutionTimeInput");
-				this.targetIdleTimeInput = this.mapInputId("targetIdleTimeInput");
-				this.targetWaitingTimeInput = this.mapInputId("targetWaitingTimeInput");
-				this.targetQueueDepthInput = this.mapInputId("targetQueueDepthInput");
-				this.targetCostPerExecutionInput = this.mapInputId("targetCostPerExecutionInput");
-				this.resourcePerformanceCalculationSelect = this.mapInputId("resourcePerformanceCalculationSelect");
+				this.measureInput = this.mapInputId("measureInput");
+				this.targetMeasureQuantityInput = this
+						.mapInputId("targetMeasureQuantityInput");
+				this.difficultyInput = this.mapInputId("difficultyInput");
+				this.targetCostPerExecutionInput = this
+						.mapInputId("targetCostPerExecutionInput");
+				this.targetProcessingTimeInput = this
+						.mapInputId("targetProcessingTimeInput");
+				this.targetExecutionTimeInput = this
+						.mapInputId("targetExecutionTimeInput");
+				this.targetIdleTimeInput = this
+						.mapInputId("targetIdleTimeInput");
+				this.targetWaitingTimeInput = this
+						.mapInputId("targetWaitingTimeInput");
+				this.targetQueueDepthInput = this
+						.mapInputId("targetQueueDepthInput");
+				this.targetCostPerExecutionInput = this
+						.mapInputId("targetCostPerExecutionInput");
+				this.targetCostPerSecondInput = this
+						.mapInputId("targetCostPerSecondInput");
+				this.resourcePerformanceCalculationSelect = this
+						.mapInputId("resourcePerformanceCalculationSelect");
 
-				m_dialog.registerForNumericFormatValidation(targetCostPerExecutionInput);
-				m_dialog.registerForNumericFormatValidation(targetQueueDepthInput);
-				
+				m_dialog
+						.registerForNumericFormatValidation(targetCostPerExecutionInput);
+				m_dialog
+						.registerForNumericFormatValidation(targetQueueDepthInput);
+
 				// Change handling
 
+				this.registerInputForModelElementAttributeChangeSubmission(
+						this.measureInput, "carnot:pwh:measure");
+				this.registerInputForModelElementAttributeChangeSubmission(
+						this.targetMeasureQuantityInput,
+						"carnot:pwh:targetMeasureQuantity");
+				this.registerInputForModelElementAttributeChangeSubmission(
+						this.difficultyInput, "carnot:pwh:difficulty");
 				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetProcessingTimeInput,
 						"carnot:pwh:targetProcessingTime");
@@ -159,6 +183,9 @@ define(
 				this.registerInputForModelElementAttributeChangeSubmission(
 						this.targetCostPerExecutionInput,
 						"carnot:pwh:targetCostPerExecution");
+				this.registerInputForModelElementAttributeChangeSubmission(
+						this.targetCostPerSecondInput,
+						"carnot:pwh:targetCostPerSecond");
 
 				/**
 				 * 
@@ -167,6 +194,12 @@ define(
 					m_utils.debug("activity ===>");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 
+					this.measureInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:measure"]);
+					this.targetMeasureQuantityInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetMeasureQuantity"]);
+					this.difficultyInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:difficulty"]);
 					this.targetProcessingTimeInput
 							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetProcessingTime"]);
 					this.targetExecutionTimeInput
@@ -179,7 +212,8 @@ define(
 							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetQueueDepth"]);
 					this.targetCostPerExecutionInput
 							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerExecution"]);
-					
+					this.targetCostPerSecondInput
+							.val(this.propertiesPanel.element.modelElement.attributes["carnot:pwh:targetCostPerSecond"]);
 				};
 			}
 		});

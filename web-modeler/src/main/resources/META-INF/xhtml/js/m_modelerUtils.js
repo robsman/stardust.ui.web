@@ -24,7 +24,11 @@ define(
 					return getScrollpaneScrollPosition();
 				},
 
-				closeAllModelerViews : closeAllModelerViews
+				closeAllModelerViews : closeAllModelerViews,
+
+				disableToolbarControl : disableToolbarControl,
+
+				enableToolbarControl : enableToolbarControl
 			};
 
 			function getScrollpaneScrollPosition() {
@@ -47,5 +51,23 @@ define(
 				for (var i in models) {
 					viewManager.closeViewsForElement(models[i].uuid);
 				}
+			}
+
+			function disableToolbarControl(input) {
+				input.attr("disabled", true);
+				input.fadeTo(0, 0.5);
+				input.removeClass("toolbarButton");
+				input.css("cursor", "default");
+				input.css("background", "none");
+				input.css("border", "none");
+			}
+
+			function enableToolbarControl(input) {
+				input.removeAttr("disabled");
+				input.css("background", "");
+				input.css("border", "");
+				input.fadeTo(0, 1);
+				input.css("cursor", "pointer");
+				input.addClass("toolbarButton");
 			}
 		});

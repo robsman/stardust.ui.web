@@ -15,15 +15,24 @@
 		<div id="configurationTab">
 			<table>
 				<tr>
-					<td><select id="typeSelect">
-							<option value="queue">Queue</option>
-							<option value="topic">Topic</option>
-					</select>
+					<td><label for="jmsComponentIdInput">Jms Component ID</label>
 					</td>
-					<td><input id="nameInput" type="text" style="width: 200px;" />
+					<td><input id="jmsComponentIdInput" type="text" style="width: 200px;"/>
 					</td>
 				</tr>
 			</table>
+			<table>
+				<tr>
+					<td><select id="typeSelect">
+							<option value="queue">Queue</option>
+							<!--option value="topic">Topic</option-->
+					</select>
+					</td>
+					<td><input id="nameInput" type="text" style="width: 200px;" onfocus="if(this.value == 'Please specify ...') {this.value=''}"/>
+					</td>
+				</tr>
+			</table>
+			
 			<table style="margin-top: 10px;">
 				<tr>
 					<td><label for="clientIdInput">Client ID</label>

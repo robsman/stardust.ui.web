@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -15,10 +15,10 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_event", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model"],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
 				m_commandsController, m_command, m_event, m_dialog,
-				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils) {
+				m_basicPropertiesPage, m_dataTraversal, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new EventBasicPropertiesPage(propertiesPanel);
@@ -38,7 +38,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
@@ -63,9 +63,9 @@ define(
 										"page" : this
 									},
 									function(event) {
-										var page = 
+										var page =
 											event.data.page;
-						
+
 										page
 												.setInterrupting(page.interruptingInput
 														.prop("checked"));
@@ -75,9 +75,9 @@ define(
 					this.throwingInput.change({
 						"page" : this
 					}, function(event) {
-						var page = 
+						var page =
 							event.data.page;
-						
+
 						page
 								.setThrowing(page.throwingInput
 										.prop("checked"));
@@ -87,9 +87,9 @@ define(
 					this.catchingInput.change({
 						"page" : this
 					}, function(event) {
-						var page = 
+						var page =
 							event.data.page;
-						
+
 						page
 								.setCatching(page.catchingInput
 										.prop("checked"));
@@ -99,9 +99,9 @@ define(
 					this.eventClassSelect.change({
 						"page" : this
 					}, function(event) {
-						var page = 
+						var page =
 							event.data.page;
-						
+
 						page
 								.getModelElement().eventClass = page.eventClassSelect.val();
 						page.submitChanges({modelElement: page.getModelElement()});
@@ -109,7 +109,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.setEventClass = function(
 						eventClass) {
@@ -117,7 +117,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.setInterrupting = function(
 						interrupting) {
@@ -125,7 +125,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.setCatching = function(
 						catching) {
@@ -134,7 +134,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.setThrowing = function(
 						throwing) {
@@ -143,25 +143,25 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.populateEventClassSelect = function() {
 					this.eventClassSelect.empty();
 
-					var eventClasses = m_event.getPossibleEventClasses(this.getModelElement().eventType, this.getModelElement().interrupting, 
-							this.getModelElement().throwing, 
+					var eventClasses = m_event.getPossibleEventClasses(this.getModelElement().eventType, this.getModelElement().interrupting,
+							this.getModelElement().throwing,
 							this.getModelElement().isBoundaryEvent(), false/* subProcess */);
-							
+
 					for (var n = 0; n < eventClasses.length; ++n)
 						{
 						this.eventClassSelect
 						.append("<option value='" + eventClasses[n] + "'>" + m_i18nUtils
-								.getProperty("modeler.eventPropertiesPanel.basicPropertiesPage.eventClass." + eventClasses[n]) + "</option>");						
+								.getProperty("modeler.eventPropertiesPanel.basicPropertiesPage.eventClass." + eventClasses[n]) + "</option>");
 						}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
@@ -173,17 +173,25 @@ define(
 
 					if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE
 							|| this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
-						this.catchingInput.prop("disabled", true);
-						this.throwingInput.prop("disabled", true);
+						this.catchingInput.hide();
+						this.throwingInput.hide();
+						$("label[for='catchingInput']").hide();
+						$("label[for='throwingInput']").hide();
 					} else {
-						this.catchingInput.prop("disabled", false);
-						this.throwingInput.prop("disabled", false);
+						this.catchingInput.show();
+						this.throwingInput.show();
+						$("label[for='catchingInput']").show();
+						$("label[for='throwingInput']").show();
 					}
 
 					if (this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
-						this.interruptingInput.prop("disabled", true);
+						this.interruptingInput.hide();
+						this.participantOutput.hide();
+						$("label[for='interruptingInput']").hide();
 					} else {
-						this.interruptingInput.prop("disabled", false);
+						this.interruptingInput.show();
+						this.participantOutput.show();
+						$("label[for='interruptingInput']").show();
 					}
 
 					this.setInterrupting(this.getModelElement().interrupting);
@@ -221,9 +229,9 @@ define(
 
 					this
 							.setEventClass(this.propertiesPanel.element.modelElement.eventClass);
-					
+
 					// TODO I18N
-					
+
 					this.participantOutput.empty();
 
 					if (this.propertiesPanel.participant != null &&
@@ -247,18 +255,37 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventBasicPropertiesPage.prototype.getEvent = function() {
 					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
-				EventBasicPropertiesPage.prototype.validate = function() {
-					// We allow empty names
-					
+				EventBasicPropertiesPage.prototype.validate = function(changes) {
+					m_utils.debug("===> Validate EventBasicPropertiesPage");
+					this.propertiesPanel.clearErrorMessages();
+					if (changes && changes.modelElement && !this.validateEventClass(changes.modelElement.eventClass)){
+							return false;
+					}
+					return true;
+				};
+
+				EventBasicPropertiesPage.prototype.validateEventClass = function(eventClass){
+					if (m_constants.NONE_EVENT_CLASS == eventClass
+							&& this.getElement().parentSymbol.participantFullId) {
+						var participant = m_model.findParticipant(this.getElement().parentSymbol.participantFullId);
+
+						if (m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == participant.type) {
+							this.propertiesPanel.errorMessages
+									.push(m_i18nUtils
+											.getProperty("modeler.swimlane.properties.conditionalParticipant.manualTrigger.error"));
+							this.propertiesPanel.showErrorMessages();
+							return false;
+						}
+					}
 					return true;
 				};
 			}

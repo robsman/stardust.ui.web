@@ -67,7 +67,7 @@
 				<div id="propertiesPanelDisplayControlDiv" style="height: 100%;">
 					<img id="propertiesPanelShowControl"
 						src="../../images/icons/collapse.png"
-						class="propertyPageVisibilityControl" title="Show Property Panel" />
+						class="propertyPageVisibilityControl invisible" title="Show Property Panel" />
 				</div></td>
 			<td
 				style="height: 100%; vertical-align: top; text-align: left; margin-left: 10px;">
@@ -80,7 +80,7 @@
 									<tr>
 										<td><img id="propertiesPanelHideControl"
 											src="../../images/icons/expand.png"
-											class="propertyPageVisibilityControl"
+											class="propertyPageVisibilityControl invisible"
 											title="Hide Property Panel"
 											style="padding-left: 5px; margin-top: 0;" />
 										</td>
@@ -101,7 +101,7 @@
 									class="layoutTable">
 									<tr>
 										<td>
-											<div id="processPropertiesPanel" class="propertiesPanel">
+											<div id="processPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
@@ -194,7 +194,7 @@
 																										<td><input
 																											id="moveParameterDefinitionUpButton"
 																											type="image"
-																											src="../../images/icons/arrow-up.png"
+																											src="../../images/icons/arrow_up.png"
 																											title="Move Up" alt="Move Up"
 																											class="toolbarButton" />
 																										</td>
@@ -204,7 +204,7 @@
 																										<td><input
 																											id="moveParameterDefinitionDownButton"
 																											type="image"
-																											src="../../images/icons/arrow-down.png"
+																											src="../../images/icons/arrow_down.png"
 																											title="Move Down" alt="Move Down"
 																											class="toolbarButton" />
 																										</td>
@@ -485,8 +485,8 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="activityPropertiesPanel" class="propertiesPanel">
-												<table id="activityPropertiesPanelTable">
+											<div id="activityPropertiesPanel" class="propertiesPanel invisible">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
 															<div class="propertiesPanelTitle" id="activityheading">Activity</div>
@@ -738,7 +738,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="eventPropertiesPanel" class="propertiesPanel">
+											<div id="eventPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
@@ -859,7 +859,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="gatewayPropertiesPanel" class="propertiesPanel">
+											<div id="gatewayPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
@@ -934,7 +934,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="dataPropertiesPanel" class="propertiesPanel">
+											<div id="dataPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" id="dataopendataview" cellspacing="0"
 													class="layoutTable">
 													<tr>
@@ -1040,17 +1040,56 @@
 																	<tr id="otherTypeRow">
 																		<td colspan="2"><div id="otherTypeName"></div></td>
 																	</tr>
-																	<tr id="primitiveDefaultTextInputRow">
+																	<tr id="primitiveDefaultTextInputRow" ng-show="dataType != null">
 																		<td><label for="primitiveDefaultTextInput">Default
 																				Value</label></td>
-																		<td><input id="primitiveDefaultTextInput"
-																			type="text" /></td>
-																	</tr>
-																	<tr id="primitiveDefaultCheckboxInputRow">
-																		<td><label for="primitiveDefaultCheckboxInput">Default
-																				Value</label></td>
-																		<td><input id="primitiveDefaultCheckboxInput"
-																			type="checkbox" /></td>
+																		<td>
+																			<form name="form">
+																				<!-- Limitations / TODOs to make it more elegant/compact -->
+																				<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap,
+																									and then jQuery does not find elements, hence using multiple ng-show -->
+																				<!-- For name or id - Angular Expression cannot be used -->
+																				<!-- For ng-pattern - Angular Expression is somehow not working -->
+																				<div ng-show="dataType == 'boolean'">
+																					<input type="checkbox" id="booleanInputText" name="booleanInputText"
+																							ng-model="defaultValue" />
+																				</div>
+																				<div ng-show="dataType == 'double'">
+																					<input id="doubleInputText" name="doubleInputText" class="rightAligned"
+																							type="text" ng-model="defaultValue" maxlength="620"
+																							ng-model-onblur ng-pattern="/^[-+]?[0-9]\d{0,308}(\.\d{1,309})?%?$/" />
+																					<div id="doubleInputTextError"
+																						ng-show="form.doubleInputText.$error.pattern" style="color:red">Not a valid number</div>
+																				</div>
+																				<div ng-show="dataType == 'int'">
+																					<input id="intInputText" name="intInputText" class="rightAligned"
+																							type="text" ng-model="defaultValue" maxlength="10"
+																							ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/" />
+																					<div id="intInputTextError"
+																						ng-show="form.intInputText.$error.pattern" style="color:red">Not a valid number</div>
+																				</div>
+																				<div ng-show="dataType == 'long'">
+																					<input id="longInputText" name="longInputText" class="rightAligned"
+																							type="text" ng-model="defaultValue" maxlength="19"
+																							ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,18})$/" />
+																					<div id="longInputTextError"
+																						ng-show="form.longInputText.$error.pattern" style="color:red">Not a valid number</div>
+																				</div>
+																				<div ng-show="dataType == 'Timestamp'">
+																					<input id="TimestampInputText" name="TimestampInputText" type="text" />
+																					<div id="TimestampInputTextError"
+																						ng-show="timestampInputTextError" style="color:red">Not a valid date</div>
+																				</div>
+																				<div ng-show="dataType == 'String'">
+																					<input id="StringInputText" name="StringInputText"
+																						type="text" ng-model="defaultValue" ng-model-onblur />
+																				</div>
+																				<div ng-show="dataType == 'other'">
+																					<input id="otherInputText" name="otherInputText"
+																						type="text" ng-model="defaultValue" ng-model-onblur />
+																				</div>
+																			</form>
+																		</td>
 																	</tr>
 																</table>
 															</div></td>
@@ -1061,7 +1100,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="annotationPropertiesPanel" class="propertiesPanel">
+											<div id="annotationPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
@@ -1084,7 +1123,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="dataFlowPropertiesPanel" class="propertiesPanel">
+											<div id="dataFlowPropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>
@@ -1210,7 +1249,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="controlFlowPropertiesPanel" class="propertiesPanel">
+											<div id="controlFlowPropertiesPanel" class="propertiesPanel invisible">
 												<table id="controlFlowPropertiesPanelTable" cellpadding="0"
 													cellspacing="0" class="layoutTable">
 													<tr>
@@ -1271,8 +1310,9 @@
 																			</td>
 																		</tr>
 																		<tr>
-																			<td><textarea id="conditionExpressionInput"
-																					cols="40" rows="3"></textarea></td>
+																			<td><div id="conditionExpressionDiv"
+																					class="editorDivDefault"></div>
+																			</td>
 																		</tr>
 																	</table>
 																</div>
@@ -1284,7 +1324,7 @@
 									</tr>
 									<tr>
 										<td>
-											<div id="swimlanePropertiesPanel" class="propertiesPanel">
+											<div id="swimlanePropertiesPanel" class="propertiesPanel invisible">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td>

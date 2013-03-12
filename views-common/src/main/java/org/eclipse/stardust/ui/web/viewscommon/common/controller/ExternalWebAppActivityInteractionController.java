@@ -162,15 +162,6 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       ApplicationContext context = ai.getActivity().getApplicationContext(
             EXT_WEB_APP_CONTEXT_ID);
 
-      String uri = (String) context.getAttribute("carnot:engine:ui:externalWebApp:uri");
-
-      if ((null != webAppBaseUris) && webAppBaseUris.containsKey(uri))
-      {
-         uri = webAppBaseUris.get(uri);
-
-         trace.info("Overriding external Web App URI to " + uri);
-      }
-
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
       HttpServletResponse resp = (HttpServletResponse) fc.getExternalContext().getResponse();
@@ -198,6 +189,25 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       portalBaseUri = portalBaseUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
       portalBaseUri = portalBaseUri.replace("/${request.contextPath}", req.getContextPath());
 
+      String uri = "";
+      Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+      if (null != embedded && embedded)
+      {
+         uri = "${serviceBaseUrl}rest/engine/interactions/${interactionId}/embeddedMarkup";
+         uri = uri.replace("${serviceBaseUrl}", servicesBaseUri);
+         uri = uri.replace("${interactionId}", getInteractionId(ai));
+      }
+      else
+      {
+         uri = (String) context.getAttribute("carnot:engine:ui:externalWebApp:uri");
+         if ((null != webAppBaseUris) && webAppBaseUris.containsKey(uri))
+         {
+            uri = webAppBaseUris.get(uri);
+
+            trace.info("Overriding external Web App URI to " + uri);
+         }
+      }
+      
       StringBuilder uriBuilder = new StringBuilder();
 
       uriBuilder.append(uri) //

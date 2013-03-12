@@ -52,7 +52,7 @@ define([], function() {
 			viewId: "genericApplicationView"
 		}, {
 			id : "mailBean",
-			readableName: "Business Rules Application",
+			readableName: "Mail Application",
 			iconPath: "../images/icons/application-plain-java.png",
 			viewId: "genericApplicationView"
 		}, {

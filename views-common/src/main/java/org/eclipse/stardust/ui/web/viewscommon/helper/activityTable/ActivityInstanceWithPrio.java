@@ -32,10 +32,10 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
 
@@ -204,7 +204,7 @@ public class ActivityInstanceWithPrio implements Serializable
       UserInfo userInfo = activityInstance.getPerformedBy();
       if (null != userInfo)
       {
-         User user = ServiceFactoryUtils.getUserService().getUser(userInfo.getId());
+         User user = UserUtils.getUser(userInfo.getId());
          return I18nUtils.getUserLabel(user);
       }
       else

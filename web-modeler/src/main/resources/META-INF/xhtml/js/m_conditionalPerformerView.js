@@ -48,6 +48,19 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataSelect"));
+				$("label#userRealmSecionTitle")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.userRealmSectionTitle"));
+				$("label[for='userRealmBindingDataPathInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataPath"));
+				$("label[for='userRealmBindingDataSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataSelect"));
+
 				$("label[for='performerTypeSelect']")
 						.text(
 								m_i18nUtils
@@ -118,6 +131,8 @@ define(
 					this.performerTypeSelect = jQuery("#performerTypeSelect");
 					this.bindingDataSelect = jQuery("#bindingDataSelect");
 					this.bindingDataPathInput = jQuery("#bindingDataPathInput");
+					this.userRealmBindingDataSelect = jQuery("#userRealmBindingDataSelect");
+					this.userRealmBindingDataPathInput = jQuery("#userRealmBindingDataPathInput");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -156,6 +171,12 @@ define(
 							"dataFullId");
 					this.registerInputForModelElementChangeSubmission(this.bindingDataPathInput,
 							"dataPath");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.userRealmBindingDataSelect,
+							"carnot:engine:conditionalPerformer:realmData");
+					this.registerInputForModelElementAttributeChangeSubmission(
+							this.userRealmBindingDataPathInput,
+							"carnot:engine:conditionalPerformer:realmDataPath");
 					this.initializeModelElementView(conditionalPerformer);
 				};
 
@@ -171,7 +192,17 @@ define(
 					m_utils.debug("===> Conditional Performer");
 					m_utils.debug(conditionalPerformer);
 
-					this.populateBindingDataSelect();
+					if (this.conditionalPerformer.dataFullId) {
+						this.populateBindingDataSelect();
+					} else {
+						this.populateBindingDataSelect(true);
+					}
+
+					if (this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:realmData"]) {
+						this.populateUserRealmBindingDataSelect();
+					} else {
+						this.populateUserRealmBindingDataSelect(true);
+					}
 
 					if (!this.conditionalPerformer.attributes["carnot:engine:visibility"]
 							|| "Public" == this.conditionalPerformer.attributes["carnot:engine:visibility"]) {
@@ -191,23 +222,47 @@ define(
 							.val(this.conditionalPerformer.dataFullId);
 					this.bindingDataPathInput
 							.val(this.conditionalPerformer.dataPath);
+					if (this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:realmData"]) {
+						this.userRealmBindingDataSelect
+								.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:realmData"]);
+					}
+					if (this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:realmDataPath"]) {
+						this.userRealmBindingDataPathInput
+								.val(this.conditionalPerformer.attributes["carnot:engine:conditionalPerformer:realmDataPath"]);
+					}
+
+					if ("user" === this.performerTypeSelect.val()) {
+						jQuery("tr.userRealmOnly").removeClass("invisible");
+					} else {
+						jQuery("tr.userRealmOnly").addClass("invisible");
+					}
 				};
 
 				/**
 				 *
 				 */
-				ConditionalPerformerView.prototype.populateBindingDataSelect = function() {
+				ConditionalPerformerView.prototype.populateBindingDataSelect = function(includeToBeDefined) {
 					this.bindingDataSelect.empty();
 					var modellabel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
+					if (includeToBeDefined) {
+						this.bindingDataSelect
+								.append("<option value='"
+										+ m_constants.TO_BE_DEFINED
+										+ "'>"
+										+ m_i18nUtils
+												.getProperty("modeler.general.toBeDefined")
+										+ "</option>");
+					}
 					this.bindingDataSelect
 							.append("<optgroup label=\""+modellabel+"\">");
 
 					for ( var i in this.getModelElement().model.dataItems) {
 						var dataItem = this.getModelElement().model.dataItems[i];
-
-						this.bindingDataSelect.append("<option value='"
-								+ dataItem.getFullId() + "'>" + dataItem.name
-								+ "</option>");
+						if (!this.getModelElement().model.dataItems[i].externalReference) {
+							this.bindingDataSelect.append("<option value='"
+									+ dataItem.getFullId() + "'>"
+									+ dataItem.name + "</option>");
+						}
 					}
 					modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
 					this.bindingDataSelect
@@ -229,6 +284,53 @@ define(
 					}
 
 					this.bindingDataSelect.append("</optgroup>");
+				};
+
+				/**
+				 *
+				 */
+				ConditionalPerformerView.prototype.populateUserRealmBindingDataSelect = function(includeToBeDefined) {
+					this.userRealmBindingDataSelect.empty();
+					var modellabel = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.thisModel");
+					if (includeToBeDefined) {
+						this.userRealmBindingDataSelect
+								.append("<option value='"
+										+ m_constants.TO_BE_DEFINED
+										+ "'>"
+										+ m_i18nUtils
+												.getProperty("modeler.general.toBeDefined")
+										+ "</option>");
+					}
+					this.userRealmBindingDataSelect
+							.append("<optgroup label=\""+modellabel+"\">");
+
+					for ( var i in this.getModelElement().model.dataItems) {
+						var dataItem = this.getModelElement().model.dataItems[i];
+
+						this.userRealmBindingDataSelect.append("<option value='"
+								+ dataItem.getFullId() + "'>" + dataItem.name
+								+ "</option>");
+					}
+					modellabel =  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel");
+					this.userRealmBindingDataSelect
+							.append("</optgroup><optgroup label=\""+modellabel+"\">");
+
+					for ( var n in m_model.getModels()) {
+						if (m_model.getModels()[n] == this.getModelElement().model) {
+							continue;
+						}
+
+						for ( var m in m_model.getModels()[n].dataItems) {
+							var dataItem = m_model.getModels()[n].dataItems[m];
+
+							this.userRealmBindingDataSelect.append("<option value='"
+									+ dataItem.getFullId() + "'>"
+									+ m_model.getModels()[n].name + "/"
+									+ dataItem.name + "</option>");
+						}
+					}
+
+					this.userRealmBindingDataSelect.append("</optgroup>");
 				};
 
 				/**

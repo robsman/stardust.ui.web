@@ -16,6 +16,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
@@ -24,13 +25,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
@@ -38,103 +33,33 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.eclipse.xsd.XSDComplexTypeContent;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDCompositor;
-import org.eclipse.xsd.XSDConstrainingFacet;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDFactory;
-import org.eclipse.xsd.XSDImport;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDParticle;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-import org.eclipse.xsd.XSDTerm;
-import org.eclipse.xsd.XSDTypeDefinition;
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
+import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
+import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
+import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.xsd.*;
 import org.eclipse.xsd.impl.XSDSchemaImpl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
-import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtils;
-import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
-import org.eclipse.stardust.model.xpdl.carnot.TextType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
-import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
-import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
-import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
  *
@@ -314,12 +239,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (isGateway)
       {
-         if ( !activity.getId().toLowerCase().startsWith("gateway"))
-         {
-            // fix accidental ID change
-            activity.setId("gateway_" + activity.getId());
-         }
-
          if (activityJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
          {
             if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
@@ -392,6 +311,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             IModelParticipant performer = getModelBuilderFacade().findParticipant(
                   participantFullId);
+            
             activity.setPerformer(performer);
          }
 
@@ -409,6 +329,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.ACTIVITY_TYPE)))
          {
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
+            activity.setPerformer(null);
 
             if (activityJson.has(ModelerConstants.SUBPROCESS_ID)
                   && !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
@@ -581,8 +502,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // have to be created for both
 
          // Create input mapping
-
-         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+               && !dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                     .isJsonNull())
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -593,8 +515,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          // Create output mapping
-
-         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+               && !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
+                     .isJsonNull())
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -602,6 +525,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataFlowJson,
                   DirectionType.OUT_LITERAL,
                   dataFlowJson.getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY));
+         }
+      }
+
+      // Following condition is added to handle the scenario where only name property is
+      // modified
+      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol().getActivity().getDataMapping())
+         {
+            if (dataMapping.getData().getId().equals(dataFlowConnection.getDataSymbol().getData().getId()))
+            {
+               dataMapping.setName(extractAsString(dataFlowJson, ModelerConstants.NAME_PROPERTY));
+            }
          }
       }
    }
@@ -619,10 +555,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
-
-      long maxOid = XpdlModelUtils.getMaxUsedOid(ModelUtils.findContainingModel(activity));
-
-      dataMapping.setElementOid(++maxOid);
 
       if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
       {
@@ -656,10 +588,33 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         // TODO Review
+         // update context and data access point
+         if (activity.getImplementation().getLiteral().equals("Application"))
+         {
+            dataMapping.setContext(PredefinedConstants.APPLICATION_CONTEXT);
+            String dataId = null;
+            if (activity.getApplication() != null
+                  && activity.getApplication().getAccessPoint() != null)
+            {
+               for (AccessPointType accPoints : activity.getApplication()
+                     .getAccessPoint())
+               {
+                  if (accPoints.getDirection().getValue() == DirectionType.OUT)
+                  {
+                     if (accPoints.getType().equals(data.getType()))
+                     {
+                        dataId = accPoints.getId();
+                        break;
+                     }
+                  }
+               }
+            }
 
-         dataMapping.setApplicationAccessPoint(null);
-         dataMapping.setContext(ModelerConstants.DEFAULT_LITERAL);
+            if (null != dataId)
+            {
+               dataMapping.setApplicationAccessPoint(dataId);
+            }
+         }
       }
 
       if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
@@ -693,10 +648,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL.equals(orientation))
          {
             swimlaneSymbol.setOrientation(OrientationType.HORIZONTAL_LITERAL);
+            setDiagramOrientationType(swimlaneSymbol, OrientationType.HORIZONTAL_LITERAL);
          }
          else
          {
             swimlaneSymbol.setOrientation(OrientationType.VERTICAL_LITERAL);
+            setDiagramOrientationType(swimlaneSymbol, OrientationType.VERTICAL_LITERAL);
          }
       }
 
@@ -710,41 +667,49 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantFullId = swimlaneSymbolJson.get(
                ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
 
-         ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
-         String participantModelID = getModelBuilderFacade().getModelId(participantFullId);
-         ModelType participantModel = getModelBuilderFacade().findModel(
-               participantModelID);
-         String participantId = getModelBuilderFacade().stripFullId(participantFullId);
-
-         IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
-               participantModel, participantId);
-
-         if ( !participantModelID.equals(model.getId()))
+         if (ModelerConstants.NONE_LITERAL.equals(participantFullId))
          {
-            String fileConnectionId = WebModelerConnectionManager.createFileConnection(
-                  model, participantModel);
-
-            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
-            URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
-
-            ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
-                  .loadModel(participantModelID + ".xpdl");
-            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
-                  loadModel, participantId);
-            if (participantCopy == null)
-            {
-               ElementCopier copier = new ElementCopier(loadModel, null);
-               participantCopy = (IModelParticipant) copier.copy(findParticipant);
-            }
-
-            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
-                  uri, participantCopy, bundleId, null, true);
-            PepperIconFactory iconFactory = new PepperIconFactory();
-            descriptor.importElements(iconFactory, model, true);
-            findParticipant = getModelBuilderFacade().findParticipant(model,
-                  participantId);
+            LaneParticipantUtil.setParticipant(swimlaneSymbol, null);
          }
-         LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
+         else
+         {
+            ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
+            String participantModelID = getModelBuilderFacade().getModelId(
+                  participantFullId);
+            ModelType participantModel = getModelBuilderFacade().findModel(
+                  participantModelID);
+            String participantId = getModelBuilderFacade().stripFullId(participantFullId);
+
+            IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
+                  participantModel, participantId);
+
+            if ( !participantModelID.equals(model.getId()))
+            {
+               String fileConnectionId = WebModelerConnectionManager.createFileConnection(
+                     model, participantModel);
+
+               String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
+               URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
+
+               ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
+                     .loadModel(participantModelID + ".xpdl");
+               IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
+                     loadModel, participantId);
+               if (participantCopy == null)
+               {
+                  ElementCopier copier = new ElementCopier(loadModel, null);
+                  participantCopy = (IModelParticipant) copier.copy(findParticipant);
+               }
+
+               ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
+                     uri, participantCopy, bundleId, null, true);
+               PepperIconFactory iconFactory = new PepperIconFactory();
+               descriptor.importElements(iconFactory, model, true);
+               findParticipant = getModelBuilderFacade().findParticipant(model,
+                     participantId);
+            }
+            LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
+         }
       }
 
       storeAttributes(swimlaneSymbol, swimlaneSymbolJson);
@@ -793,7 +758,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          EStructuralFeature eFtrName, JsonObject elementJson)
    {
       boolean wasModified = false;
+      boolean isGateway = false;
       String newId = null;
+
+      if (element instanceof ActivityType)
+      {
+         isGateway = ((IIdentifiableElement) element).getId()
+               .toLowerCase()
+               .startsWith("gateway");
+      }
 
       if (elementJson.has(ModelerConstants.ID_PROPERTY))
       {
@@ -804,6 +777,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (elementJson.has(ModelerConstants.NAME_PROPERTY))
       {
          String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
+         String base = null;
+         if (isGateway && !newName.toLowerCase().startsWith("gateway"))
+         {
+            base = "gateway_" + newName;
+         }
+
          if ( !element.eIsSet(eFtrName) || !element.eGet(eFtrName).equals(newName))
          {
             wasModified = true;
@@ -814,7 +793,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                if (element instanceof IIdentifiableElement)
                {
                   newId = NameIdUtils.createIdFromName(null,
-                        (IIdentifiableElement) element);
+                        (IIdentifiableElement) element, base);
+               }
+               else if (element instanceof TypeDeclarationType)
+               {
+                  newId = NameIdUtils.createIdFromName(null,
+                        (TypeDeclarationType) element);
                }
                else
                {
@@ -880,9 +864,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                mode = ModeType.IN;
             }
-            else
+            else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
+                  .getAsString()
+                  .equals(DirectionType.OUT_LITERAL.getLiteral()))
             {
                mode = ModeType.OUT;
+            }
+            else
+            {
+               mode = ModeType.INOUT;
             }
 
             DataType data = null;
@@ -902,16 +892,24 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString()
                   .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
+               String primitiveDataType = null;
+               JsonElement jsonElementType = formalParameterJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+               if (jsonElementType != null)
+               {
+                  primitiveDataType = jsonElementType.getAsString();
+               }
+               else
+               {
+                  primitiveDataType = "String"; //$NON-NLS-1$
+               }
+
                getModelBuilderFacade().createPrimitiveParameter(
                      processDefinition,
                      data,
                      NameIdUtils.createIdFromName(formalParameterJson.get(
                            ModelerConstants.NAME_PROPERTY).getAsString()),
                      formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
-                           .getAsString(),
-                     formalParameterJson.get(
-                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString(),
-                     mode);
+                           .getAsString(), primitiveDataType, mode);
             }
             else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                   .getAsString()
@@ -973,7 +971,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
          {
-            if (!processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+            if ( !processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
             {
                if (processDefinition.getFormalParameters() == null)
                {
@@ -1021,8 +1019,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
 
                DataType data = getModelBuilderFacade().importData(model, dataFullId);
-               long maxOID = XpdlModelUtils.getMaxUsedOid(model);
-               dataPath.setElementOid(++maxOID);
                dataPath.setData(data);
             }
 
@@ -1209,7 +1205,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   }
                }
             }
-            //Update pool dimensions
+            // Update pool dimensions
             poolSymbol.setWidth(poolSymbol.getWidth() + widthOffset);
             poolSymbol.setHeight(poolSymbol.getHeight() + heightOffset);
          }
@@ -1236,6 +1232,32 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                updateParentSymbolForSymbol(nodeSymbol, newParentSymbol, symbolType);
             }
+         }
+      }
+   }
+
+   /**
+    * assist updating diagram - orientation
+    *
+    * @param nodeSymbol
+    * @param orientation
+    */
+   private void setDiagramOrientationType(INodeSymbol nodeSymbol,
+         OrientationType orientation)
+   {
+      ISwimlaneSymbol container = (nodeSymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) nodeSymbol.eContainer()
+            : null;
+
+      if (null != container)
+      {
+         DiagramType diagram = (container.eContainer() instanceof DiagramType)
+               ? (DiagramType) container.eContainer()
+               : null;
+
+         if (null != diagram)
+         {
+            diagram.setOrientation(orientation);
          }
       }
    }
@@ -1329,7 +1351,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
       {
-         StartEventSymbol startSymbol = getModelBuilderFacade().findStartEventSymbol(
+         StartEventSymbol startSymbol = ModelBuilderFacade.findStartEventSymbol(
                parentLane, nodeSymbol.getElementOid());
          if (null != startSymbol)
          {
@@ -1397,10 +1419,41 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          return;
       }
 
-      TriggerType trigger = startEventSymbol.getTrigger();
+      // If no implementation is set for a None Event, the event symbol does not have a
+      // Trigger
 
-      if (trigger != null)
+      if (startEventJson.has(ModelerConstants.EVENT_CLASS_PROPERTY)
+            && startEventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.NONE_EVENT_CLASS_KEY)
+            && startEventJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY)
+            && startEventJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY)
+                  .getAsString()
+                  .equals("none"))
       {
+         startEventSymbol.setTrigger(null);
+      }
+      else
+      {
+         TriggerType trigger = startEventSymbol.getTrigger();
+
+         if (trigger == null)
+         {
+            // Trigger type does not really matter as it will be changed in the
+            // updateTrigger method
+
+            trigger = newManualTrigger(ModelUtils.findContainingProcess(startEventSymbol)) //
+            .accessibleTo(
+                  LaneParticipantUtil.getParticipant((LaneSymbol) startEventSymbol.eContainer()))
+                  .build();
+
+            // We do not have an indication for a name - generate from Type/Implementation?
+
+            trigger.setName("");
+
+            startEventSymbol.setTrigger(trigger);
+         }
+
          updateTrigger(trigger, startEventJson);
       }
    }
@@ -1418,7 +1471,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
-      JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(hostActivity, eventSymbol, jsonIo);
+      JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(
+            hostActivity, eventSymbol, jsonIo);
       if (null == hostingConfig)
       {
          hostingConfig = new JsonObject();
@@ -1442,7 +1496,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             if (hostActivity != newHostActivity)
             {
-               EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, null);
+               EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
+                     null);
                if (EventMarshallingUtils.isIntermediateEventHost(hostActivity)
                      && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                {
@@ -1452,7 +1507,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   containingProcess.getActivity().remove(hostActivity);
                }
 
-               EventMarshallingUtils.updateEventHostingConfig(newHostActivity, eventSymbol, hostingConfig);
+               EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
+                     eventSymbol, hostingConfig);
                hostActivity = newHostActivity;
             }
          }
@@ -1471,7 +1527,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         eventJson, ModelerConstants.EVENT_CLASS_PROPERTY).equals(
                         currentEventClass)))
             {
-               // dispose current handler if it is out of sync, but carry over crucial attributes
+               // dispose current handler if it is out of sync, but carry over crucial
+               // attributes
                mergeUndefinedProperty(eventHandler.getName(), eventJson,
                      ModelerConstants.NAME_PROPERTY);
                mergeUndefinedProperty(
@@ -1480,7 +1537,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                // TODO attributes
 
                hostingConfig.remove(EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
-               findContainingActivity(eventHandler).getEventHandler().remove(eventHandler);
+               findContainingActivity(eventHandler).getEventHandler()
+                     .remove(eventHandler);
                eventHandler = null;
             }
          }
@@ -1499,7 +1557,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
                hostActivity.getEventHandler().add(eventHandler);
 
-               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
+               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID,
+                     eventHandler.getId());
             }
          }
 
@@ -1509,7 +1568,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             storeDescription(eventHandler, eventJson);
             storeAttributes(eventHandler, eventJson);
 
-            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
+            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID,
+                  eventHandler.getId());
 
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
@@ -1521,10 +1581,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             mergeProperty(eventJson, hostingConfig, ModelerConstants.DESCRIPTION_PROPERTY);
             mergeProperty(eventJson, hostingConfig, ModelerConstants.EVENT_CLASS_PROPERTY);
             mergeProperty(eventJson, hostingConfig, ModelerConstants.THROWING_PROPERTY);
-            mergeProperty(eventJson, hostingConfig, ModelerConstants.INTERRUPTING_PROPERTY);
+            mergeProperty(eventJson, hostingConfig,
+                  ModelerConstants.INTERRUPTING_PROPERTY);
          }
 
-         EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
+         EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
+               hostingConfig);
       }
    }
 
@@ -1588,10 +1650,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (triggerJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY))
       {
-         trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
+         System.out.println("===> Implementation: "
+               + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
+         trigger.setType(ModelBuilderFacade.findTriggerType(
+               ModelUtils.findContainingModel(trigger),
+               triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
+         System.out.println("===> Implementation: " + trigger.getType());
       }
 
-      storeAttributes(trigger, triggerJson);
+      if (isUserTrigger(trigger))
+      {
+         storeAttributes(trigger, triggerJson);
+      }
+      else
+      // remove participant if set
+      {
+         AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, null);
+         storeAttributes(trigger, triggerJson, PredefinedConstants.PARTICIPANT_ATT);
+      }
+
       storeDescription(trigger, triggerJson);
 
       // A few BPMN properties
@@ -1600,10 +1677,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          getModelBuilderFacade().setAttribute(trigger, "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
-         
-         if (triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString().equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
+
+         if (triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
          {
-            trigger.setType(ModelBuilderFacade.findTriggerType(ModelUtils.findContainingModel(trigger), "manual"));
+            trigger.setType(ModelBuilderFacade.findTriggerType(
+                  ModelUtils.findContainingModel(trigger), "manual"));
          }
       }
 
@@ -1624,17 +1704,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String participantFullId = extractString(triggerJson,
                ModelerConstants.PARTICIPANT_FULL_ID);
 
-         if (participantFullId != null)
+         if (participantFullId != null && isUserTrigger(trigger))
          {
-            IModelParticipant performer = getModelBuilderFacade().findParticipant(
-                  participantFullId);
-
-            getModelBuilderFacade().setAttribute(trigger,
-                  PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT, performer.getId());
-            AttributeType attribute = AttributeUtil.getAttribute(trigger,
-                  PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT);
-            ModelUtils.setReference(attribute, ModelUtils.findContainingModel(trigger),
-                  "role+organization");
+            IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
+            ModelType model = ModelUtils.findContainingModel(trigger);
+            if (model != ModelUtils.findContainingModel(performer))
+            {
+               List<? extends IModelParticipant> localParticipants = performer instanceof OrganizationType ? model.getOrganization() : model.getRole();
+               performer = ModelUtils.findIdentifiableElement(localParticipants, performer.getId());
+            }
+            AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
          }
       }
 
@@ -1685,7 +1764,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {
-                  // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
+                  accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
+                        trigger, id, name, direction);
                }
             }
 
@@ -1698,18 +1778,31 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                String dataPath = null;
                String dataFullID = parameterMappingJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY) &&
-                     !parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
+                     && !parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+                           .isJsonNull())
                {
                   dataPath = parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                         .getAsString();
                }
-               
-               getModelBuilderFacade().createParameterMapping(trigger, accessPoint.getId(), dataFullID,
-                     dataPath);
+
+               getModelBuilderFacade().createParameterMapping(trigger,
+                     accessPoint.getId(), dataFullID, dataPath);
             }
          }
       }
+   }
+
+   /**
+    *
+    * @param trigger
+    * @return
+    */
+   private boolean isUserTrigger(TriggerType trigger)
+   {
+      return trigger.getType() == null
+            || PredefinedConstants.MANUAL_TRIGGER.equals(trigger.getType().getId())
+            || PredefinedConstants.SCAN_TRIGGER.equals(trigger.getType().getId());
    }
 
    /**
@@ -1748,11 +1841,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       mapDeclaredProperties(application, applicationJson,
             propertiesMap.get(ApplicationType.class));
+
+      // (fh) must update before changing the attributes so we can compare with old values.
+      if (WebServiceApplicationUtils.isWebServiceApplication(application))
+      {
+         WebServiceApplicationUtils.updateWebServiceApplication(application, applicationJson);
+      }
+
       storeAttributes(application, applicationJson);
       storeDescription(application, applicationJson);
 
       if (applicationJson.has(ModelerConstants.CONTEXTS_PROPERTY))
       {
+         // TODO This is too invasive as client may ship incomplete context(s)
+
          application.getContext().clear();
          application.getAccessPoint().clear();
 
@@ -1772,55 +1874,90 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             JsonObject contextJson = contextsJson.get(contextId).getAsJsonObject();
-            JsonArray accessPointsJson = contextJson.get(
-                  ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
 
-            for (int n = 0; n < accessPointsJson.size(); ++n)
+            storeAttributes(context, contextJson);
+
+            if (contextJson.has(ModelerConstants.ACCESS_POINTS_PROPERTY))
             {
-               JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-               String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
-                     .getAsString();
-               String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
-                     .getAsString();
-               String direction = accessPointJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                     .getAsString();
+               JsonArray accessPointsJson = contextJson.get(
+                     ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
 
-               AccessPointType accessPoint = null;
-
-               if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+               for (int n = 0; n < accessPointsJson.size(); ++n)
                {
-                  String dataType = accessPointJson.get(
-                        ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+                  JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
+                  String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
+                        .getAsString();
+                  String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                        .getAsString();
+                  String direction = accessPointJson.get(
+                        ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-                  if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-                  {
-                     String primitiveDataType = accessPointJson.get(
-                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
-                     accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
-                           context, id, name, primitiveDataType, direction);
-                  }
-                  else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
-                  {
-                     String structuredDataFullId = null;
+                  AccessPointType accessPoint = null;
 
-                     if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                  if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+                  {
+                     String dataType = accessPointJson.get(
+                           ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+
+                     if (dataType.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                      {
-                        structuredDataFullId = accessPointJson.get(
-                              ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                        String primitiveDataType = accessPointJson.get(
+                              ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                               .getAsString();
+                        accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
+                              context, id, name, primitiveDataType, direction);
                      }
+                     else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+                     {
+                        String structuredDataFullId = null;
 
-                     accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                           context, id, name, structuredDataFullId, direction);
+                        if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        {
+                           structuredDataFullId = accessPointJson.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString();
+                        }
+
+                        accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
+                              context, id, name, structuredDataFullId, direction);
+
+                        TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                              structuredDataFullId);
+
+                        if (typeDeclaration != null)
+                        {
+                           StructuredTypeUtils.setStructuredAccessPointAttributes(
+                                 accessPoint, typeDeclaration);
+                        }
+                     }
+                     else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+                     {
+                        accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
+                              context, id, name, direction);
+
+                        String structuredDataFullId = null;
+
+                        if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        {
+                           structuredDataFullId = accessPointJson.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString();
+
+                           TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                                 structuredDataFullId);
+
+                           if (typeDeclaration != null)
+                           {
+                              StructuredTypeUtils.setStructuredAccessPointAttributes(
+                                    accessPoint, typeDeclaration);
+                           }
+                        }
+                     }
                   }
-                  else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-                  {
-                     // accessPoint.setType(getModelBuilderFacade().findDataType(accessPointJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID).getAsString()));
-                  }
+
+                  storeAttributes(accessPoint, accessPointJson);
+                  storeDescription(accessPoint, accessPointJson);
                }
-
-               storeAttributes(accessPoint, accessPointJson);
-               storeDescription(accessPoint, accessPointJson);
             }
          }
       }
@@ -1927,6 +2064,46 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             // adjust underlying DOM
             schema.updateElement(true);
+
+            TypeDeclarationsType container = (TypeDeclarationsType) typeDeclaration.eContainer();
+            for (TypeDeclarationType decl : container.getTypeDeclaration())
+            {
+               if ( !decl.equals(typeDeclaration))
+               {
+                  XpdlTypeType type = decl.getDataType();
+                  if (TypeDeclarationUtils.fixImport(decl, typeDeclaration.getId(), oldId)
+                        && type instanceof SchemaTypeType)
+                  {
+                     TypeDeclarationUtils.updateTypeDefinition(decl,
+                           typeDeclaration.getId(), oldId);
+                  }
+               }
+            }
+         }
+
+         // TODO
+         // move this into a new ChangePostprocessor and send notification to the client
+         if ( !typeDeclaration.getId().equals(oldId))
+         {
+            ModelType model = ModelUtils.findContainingModel(typeDeclaration);
+            for (ProcessDefinitionType process : model.getProcessDefinition())
+            {
+               FormalParametersType parametersType = process.getFormalParameters();
+               if (parametersType != null)
+               {
+                  for (FormalParameterType type : parametersType.getFormalParameter())
+                  {
+                     DataTypeType dataType = type.getDataType();
+                     DeclaredTypeType declaredType = dataType.getDeclaredType();
+                     String declaredTypeId = declaredType.getId();
+                     if ( !StringUtils.isEmpty(declaredTypeId)
+                           && declaredTypeId.equals(oldId))
+                     {
+                        declaredType.setId(typeDeclaration.getId());
+                     }
+                  }
+               }
+            }
          }
       }
 
@@ -2370,7 +2547,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(conditionalPerformer, conditionalPerformerJson,
             propertiesMap.get(ConditionalPerformerType.class));
 
-      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY))
+      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY)
+            && !(conditionalPerformerJson.get(
+                  ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY).getAsString().equals(ModelerConstants.TO_BE_DEFINED)))
       {
          ModelType model = ModelUtils.findContainingModel(conditionalPerformer);
          DataType data = getModelBuilderFacade().importData(
@@ -2592,7 +2771,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param element
     * @throws JSONException
     */
-   private void storeAttributes(EObject element, JsonObject json)
+   private void storeAttributes(EObject element, JsonObject json, String ... excludedKeys)
    {
       // Extract JSON elements which are stored in Extended Attributes
 
@@ -2616,9 +2795,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (attributes != null)
       {
+         List<String> excluded = Arrays.asList(excludedKeys);
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
             String key = entry.getKey();
+            if (excluded.contains(key))
+            {
+               continue;
+            }
 
             if (attributes.get(key).isJsonNull())
             {
@@ -2639,6 +2823,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   getModelBuilderFacade().setAttribute(element, key,
                         createModelElementDocumentation(json));
+               }
+               else if (key.equals(PredefinedConstants.VALID_FROM_ATT))
+               {
+                  String stringValue = attributes.get(key).getAsString();
+                  getModelBuilderFacade().setTimestampAttribute(
+                        (IExtensibleElement) element, key, stringValue);
                }
                else
                {
@@ -2733,7 +2923,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private ModelBuilderFacade getModelBuilderFacade()
    {
-      return new ModelBuilderFacade(modelManagementStrategy());
+      if (modelBuilderFacade == null)
+      {
+         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
+      }
+
+      return modelBuilderFacade;
    }
 
    /**

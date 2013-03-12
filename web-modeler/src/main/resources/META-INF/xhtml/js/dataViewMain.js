@@ -36,6 +36,10 @@ require.config({
 		'i18n' : 'common/InfinityBPMI18N'
 	},
 	shim: {
+		'angularjs': {
+			require: "jquery",
+			exports: "angular"
+		},
 		'i18n': {
 			exports: "InfinityBPMI18N"
 		},
@@ -54,9 +58,12 @@ require(["require",
 		 "jquery.url",
 		 "common-plugins",
 		 "i18n",
-		 "bpm-modeler/js/m_dataView"
+		 "bpm-modeler/js/m_dataView",
+		 "bpm-modeler/angular/app"
 		 ], function(require) {
-	require("bpm-modeler/js/m_dataView").initialize(
-			jQuery.url(window.location.search).param("fullId"));
 
+		require("bpm-modeler/angular/app").init();
+
+		require("bpm-modeler/js/m_dataView").initialize(
+			jQuery.url(window.location.search).param("fullId"));
 });

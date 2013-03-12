@@ -48,7 +48,6 @@ public class ModelHelper
    public static ParticipantLabel getParticipantLabel(ParticipantInfo participantInfo)
    {
       ParticipantLabel participantlabel = new ParticipantLabel();
-
       if (participantInfo instanceof ModelParticipantInfo)
       {
          ModelParticipantInfo modelParticipantInfo = (ModelParticipantInfo) participantInfo;

@@ -11,10 +11,11 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
-				"bpm-modeler/js/m_dataTypeSelector" ],
+				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_angularContextUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_basicPropertiesPage,
-				m_dataTypeSelector) {
+				m_dataTypeSelector, m_model, m_i18nUtils, m_angularContextUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataBasicPropertiesPage(propertiesPanel);
@@ -50,14 +51,6 @@ define(
 					});
 					this.publicVisibilityCheckbox = this
 							.mapInputId("publicVisibilityCheckbox");
-					this.primitiveDefaultTextInputRow = this
-							.mapInputId("primitiveDefaultTextInputRow");
-					this.primitiveDefaultTextInput = this
-							.mapInputId("primitiveDefaultTextInput");
-					this.primitiveDefaultCheckboxInputRow = this
-							.mapInputId("primitiveDefaultCheckboxInputRow ");
-					this.primitiveDefaultCheckboxInput = this
-							.mapInputId("primitiveDefaultCheckboxInput");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -92,36 +85,45 @@ define(
 										}
 									});
 
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.primitiveDefaultTextInput,
-							"carnot:engine:defaultValue");
+					// Timestamp handling
+					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
+					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
-					// carnot:engine:defaultValue, in spite of being a checkbox
-					// is a string attribute
-					// Hence not using the usual change listener for checkboxes
-					this.primitiveDefaultCheckboxInput.click({
-						"page" : this,
-						"input" : this.primitiveDefaultCheckboxInput
-					}, function(event) {
-						var page = event.data.page;
-						var input = event.data.input;
+					// I18N
+					jQuery("#doubleInputTextError").text(
+							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+					jQuery("#intInputTextError").text(
+							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+					jQuery("#longInputTextError").text(
+							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+					jQuery("#TimestampInputTextError").text(
+							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
+				};
 
-						if (!page.validate()) {
-							return;
-						}
+				/**
+				 *
+				 */
+				DataBasicPropertiesPage.prototype.getModelElement = function() {
+					if (this.propertiesPanel.element.modelElement
+							&& this.propertiesPanel.element.modelElement.externalReference) {
+						return m_model.findData(this.propertiesPanel.element.modelElement.dataFullId);
+					}
 
-						if (input.is(":checked")) {
-							page.submitChanges(page
-									.assembleChangedObjectFromAttribute(
-											"carnot:engine:defaultValue",
-											"true"));
-						} else {
-							page.submitChanges(page
-									.assembleChangedObjectFromAttribute(
-											"carnot:engine:defaultValue",
-											"false"));
-						}
-					});
+					return this.propertiesPanel.element.modelElement;
+				};
+
+
+				/**
+				 *
+				 */
+				DataBasicPropertiesPage.prototype.getModel = function() {
+					if (this.propertiesPanel.element.modelElement
+							&& this.propertiesPanel.element.modelElement.externalReference) {
+						return m_model.findModel(m_model.stripModelId(this.propertiesPanel.element.modelElement.dataFullId));
+					}
+
+					return this.propertiesPanel.getModel();
 				};
 
 				/**
@@ -142,7 +144,8 @@ define(
 									this.getModelElement(),
 									this.getModelElement().attributes["carnot:engine:defaultValue"]);
 
-					if ("Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
+					if (!this.getModelElement().attributes["carnot:engine:visibility"]
+							|| "Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
@@ -177,31 +180,88 @@ define(
 				DataBasicPropertiesPage.prototype.initializeDataType = function(
 						data, defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						if (data.primitiveDataType == m_constants.BOOLEAN_PRIMITIVE_DATA_TYPE) {
-							m_dialog
-									.makeInvisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeVisible(this.primitiveDefaultCheckboxInputRow);
-							this.primitiveDefaultCheckboxInput.attr("checked",
-									(defaultValue == "true"));
-						} else {
-							m_dialog
-									.makeVisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						var primitiveDataTypeSelect = this.dataTypeSelector.primitiveDataTypeSelect;
 
-							if (defaultValue != null) {
-								this.primitiveDefaultTextInput
-										.val(defaultValue);
+						var self = this;
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							$scope.dataType = primitiveDataTypeSelect.val();
+
+							if (primitiveDataTypeSelect.val() == 'Timestamp') {
+								var dateValue = defaultValue;
+								if (defaultValue.indexOf(" ") > -1) {
+									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));
+								}
+
+								try {
+									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
+									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
+									self.timestampInputText.val(dateFormat);
+									$scope.timestampInputTextError = false;
+								} catch(e){
+									// Date parsing error.
+									$scope.timestampInputTextError = true;
+									self.timestampInputText.val(dateValue);
+								}
 							} else {
-								this.primitiveDefaultTextInput.val(null);
+								$scope.defaultValue = defaultValue;
+								if ($scope.dataType == 'boolean') {
+									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
+								}
+
+								$scope.inputId = $scope.dataType + 'InputText';
+
+								// Somehow initializeDataType() gets called again and again! hence the check
+								if (!$scope.watchRegistered) {
+									$scope.$watch('defaultValue', function(newValue, oldValue) {
+										// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
+										if (newValue !== oldValue && $scope.form[$scope.inputId].$valid) {
+											if ($scope.dataType == 'boolean') {
+												newValue = newValue ? "true" : "false";
+											}
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);
+										}
+									});
+									$scope.watchRegistered = true;
+								}
 							}
-						}
+						});
 					} else {
-						m_dialog
-								.makeInvisible(this.primitiveDefaultTextInputRow);
-						m_dialog
-								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							$scope.dataType = null;
+						});
+					}
+				};
+
+				/*
+				 * Handler function only applies when Data type is Timestamp
+				 */
+				function timestampChangeHandler(event) {
+					var view = event.data.view;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						try {
+							var dateValue = view.timestampInputText.val();
+							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
+							$scope.timestampInputTextError = false;
+						} catch(e){
+							// Parse Error
+							$scope.timestampInputTextError = true;
+						}
+					});
+				};
+
+				/*
+				 *
+				 */
+				DataBasicPropertiesPage.prototype.submitModelElementAttributeChange = function(attribute, value) {
+					console.log('Can Submit' + value);
+					if (this.getModelElement().attributes[attribute] != value) {
+						var modelElement = {
+							attributes : {}
+						};
+						modelElement.attributes[attribute] = value;
+						this.submitChanges(modelElement);
 					}
 				};
 

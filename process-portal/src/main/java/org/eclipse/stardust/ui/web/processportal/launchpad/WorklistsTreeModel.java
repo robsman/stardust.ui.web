@@ -145,7 +145,7 @@ public class WorklistsTreeModel extends DefaultTreeModel
 
       if(assemblyLineUserObject.isAssemblyLineMode())
       {
-         if (showEmptyWorklist || assemblyLineUserObject.getActivityCount() > 0)
+         if (showEmptyWorklist || Long.valueOf(assemblyLineUserObject.getActivityCount()) > 0)
          {
             child.setUserObject(assemblyLineUserObject);
             root.add(child);

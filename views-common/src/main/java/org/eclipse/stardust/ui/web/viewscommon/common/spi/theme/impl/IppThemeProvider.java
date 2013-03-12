@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 
 /**
  * @author Subodh.Godbole
@@ -71,7 +72,7 @@ public class IppThemeProvider implements ThemeProvider
     */
    public void loadTheme(String themeId)
    {
-      this.themeId = themeId;
+      this.themeId = StringUtils.isNotEmpty(themeId) ? themeId : DefaultPreferenceProviderUtils.getDefaultSkinPreference();
       availableThemes = new ArrayList<Theme>();
       themeStyleSheets = new ArrayList<String>();
       availableThemes.add(new IppTheme("", MessagePropertiesBean.getInstance().getString(
@@ -116,6 +117,7 @@ public class IppThemeProvider implements ThemeProvider
     */
    private Set<Theme> bootstrapPluginThemes()
    {
+      trace.info("Inside Loading plugin skin folders");
       Set<Theme> availablePluginThemes = new HashSet<Theme>();
 
       pluginAvailableSkins = PortalPluginSkinResourceResolver.findPluginSkins(Constants.SKIN_FOLDER, null);
@@ -129,7 +131,13 @@ public class IppThemeProvider implements ThemeProvider
          {
             this.themeId = key;
          }
+         if(trace.isDebugEnabled())
+         {
+            trace.debug("Selected Skin Id is " + this.themeId);
+            trace.debug("Added " + fileName + " as plugin skin folders");   
+         }
       }
+      
      return availablePluginThemes;
    }
 
@@ -203,8 +211,8 @@ public class IppThemeProvider implements ThemeProvider
                      if (fileName.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
                      {
                         // path : a string concat of plugin-root (/plugin) + folderId +
-                        // skinFile(say camino.css) ex:
-                        // "/plugin/views-common/public/skins/red/camino.css"
+                        // skinFile(say skin1.css) ex:
+                        // "/plugin/views-common/public/skins/red/red.css"
                         String path = Constants.PLUGIN_ROOT_FOLDER_PATH + skinFolder + "/" + fileName;
                         pluginStyleSheets.add(path);
                      }

@@ -17,10 +17,13 @@ define(
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_jsfViewManager",
-				"bpm-modeler/js/m_elementConfiguration" ],
+				"bpm-modeler/js/m_elementConfiguration",
+				"bpm-modeler/js/m_angularContextUtils" ],
+
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration) {
+				m_dataTypeSelector, m_i18nUtils, m_jsfViewManager, m_elementConfiguration,
+				m_angularContextUtils) {
 			var view;
 
 			return {
@@ -69,14 +72,6 @@ define(
 				jQuery("#dataType")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.dataType "));
-				jQuery("#dataType1")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.dataType"));
-				jQuery("#dataType")
-						.text(
-								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
 				jQuery("#primitiveType")
 						.text(
@@ -103,6 +98,15 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
 
+
+				jQuery("#doubleInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#intInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#longInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
+				jQuery("#TimestampInputTextError").text(
+						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 			}
 
 			/**
@@ -121,49 +125,6 @@ define(
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.primitiveDefaultTextInputRow = jQuery("#primitiveDefaultTextInputRow");
-					this.primitiveDefaultTextInput = jQuery("#primitiveDefaultTextInput");
-					this.primitiveDefaultCheckboxInputRow = jQuery("#primitiveDefaultCheckboxInputRow ");
-					this.primitiveDefaultCheckboxInput = jQuery("#primitiveDefaultCheckboxInput");
-					this.primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
-					var selectdata = null;
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"String\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"boolean\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"int\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"long\">" + selectdata
-									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"double\">" + selectdata
-									+ "</option>");
-					// Commented as we don't support Money values yet.
-//					selectdata = m_i18nUtils
-//							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
-//					this.primitiveDataTypeSelect
-//							.append("<option value=\"Decimal\">" + selectdata
-//									+ "</option>");
-					selectdata = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Calendar\">" + selectdata
-									+ "</option>");
-
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
@@ -201,36 +162,11 @@ define(
 													});
 										}
 									});
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.primitiveDefaultTextInput,
-							"carnot:engine:defaultValue");
 
-					// carnot:engine:defaultValue, in spite of being a checkbox (for boolean type)
-					// is a string attribute
-					// Hence not using the usual change listener for checkboxes
-					this.primitiveDefaultCheckboxInput.change({
-						"view" : this
-					}, function(event) {
-						var view = event.data.view;
-
-						if (!view.validate()) {
-							return;
-						}
-
-						if (view.primitiveDefaultCheckboxInput.is(":checked")) {
-							view.submitChanges({
-								attributes : {
-									"carnot:engine:defaultValue" : "true"
-								}
-							});
-						} else {
-							view.submitChanges({
-								attributes : {
-									"carnot:engine:defaultValue" : "false"
-								}
-							});
-						}
-					});
+					// Timestamp handling
+					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
+					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
 					this.initializeModelElementView(data);
 				};
@@ -306,33 +242,76 @@ define(
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						if (data.primitiveDataType == m_constants.BOOLEAN_PRIMITIVE_DATA_TYPE) {
-							m_dialog
-									.makeInvisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeVisible(this.primitiveDefaultCheckboxInputRow);
-							this.primitiveDefaultCheckboxInput.attr("checked",
-									(defaultValue == "true"));
-						} else {
-							m_dialog
-									.makeVisible(this.primitiveDefaultTextInputRow);
-							m_dialog
-									.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
 
-							if (defaultValue != null) {
-								this.primitiveDefaultTextInput
-										.val(defaultValue);
+						var self = this;
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							$scope.dataType = primitiveDataTypeSelect.val();
+
+							if (primitiveDataTypeSelect.val() == 'Timestamp') {
+								var dateValue = defaultValue;
+								if (defaultValue.indexOf(" ") > -1) {
+									dateValue = defaultValue.substring(0, defaultValue.indexOf(" "));
+								}
+
+								try {
+									var dateObj = jQuery.datepicker.parseDate("yy/mm/dd", dateValue);
+									var dateFormat = jQuery.datepicker.formatDate('dd.mm.yy', dateObj);
+									self.timestampInputText.val(dateFormat);
+									$scope.timestampInputTextError = false;
+								} catch(e){
+									// Date parsing error.
+									$scope.timestampInputTextError = true;
+									self.timestampInputText.val(dateValue);
+								}
 							} else {
-								this.primitiveDefaultTextInput.val(null);
+								$scope.defaultValue = defaultValue;
+								if ($scope.dataType == 'boolean') {
+									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
+								}
+
+								$scope.inputId = $scope.dataType + 'InputText';
+
+								// Somehow initializeDataType() gets called again and again! hence the check
+								if (!$scope.watchRegistered) {
+									$scope.$watch('defaultValue', function(newValue, oldValue) {
+										// Seems that due to issue in Angular this condition is required - $scope.form.<id>.$valid
+										if (newValue !== oldValue && $scope.form[$scope.inputId].$valid) {
+											if ($scope.dataType == 'boolean') {
+												newValue = newValue ? "true" : "false";
+											}
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", newValue);
+										}
+									});
+									$scope.watchRegistered = true;
+								}
 							}
-						}
+						});
 					} else {
-						m_dialog
-								.makeInvisible(this.primitiveDefaultTextInputRow);
-						m_dialog
-								.makeInvisible(this.primitiveDefaultCheckboxInputRow);
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							$scope.dataType = null;
+						});
 					}
 				};
+
+				/*
+				 * Handler function only applies when Data type is Timestamp
+				 */
+				function timestampChangeHandler(event) {
+					var view = event.data.view;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						try {
+							var dateValue = view.timestampInputText.val();
+							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
+							$scope.timestampInputTextError = false;
+						} catch(e){
+							// Parse Error
+							$scope.timestampInputTextError = true;
+						}
+					});
+				}
 
 				/**
 				 *
@@ -340,6 +319,16 @@ define(
 				DataView.prototype.submitDataChanges = function(dataChanges) {
 					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
+				};
+
+				/**
+				 * Overrides the postProcessCommand to update the structured
+				 * type list, in case it's changed.
+				 */
+				DataView.prototype.postProcessCommand = function(
+						command) {
+					this.dataTypeSelector.setScopeModel(this.data.model);
+					this.dataTypeSelector.setDataTypeSelectVal(this.data);
 				};
 			}
 		});

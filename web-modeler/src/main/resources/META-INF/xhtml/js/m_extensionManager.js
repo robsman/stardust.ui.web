@@ -25,7 +25,11 @@ define(
 						viewManager : extensionsConfig.viewManager
 					});
 				},
-
+				registerOutlineExtensions : function(extensionsConfig) {
+					loadExtensions({
+						menuOption : extensionsConfig.menuOption
+					});
+				},
 				registerToolbarExtensions : function(extensionsConfig) {
 					loadExtensions({
 						diagramToolbarPalette : extensionsConfig.diagramToolbarPalette

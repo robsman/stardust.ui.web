@@ -85,6 +85,11 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.name"));
+				$("label[for='validFromDate']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.validFrom"));
+				$("#validFromDate").datepicker();
 
 			}
 			/**
@@ -109,6 +114,7 @@ define(
 					this.refreshValidationButton = jQuery("#refreshValidationButton");
 					this.creationDateOutput = jQuery("#creationDateOutput");
 					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
+					this.validFromDate = $("#validFromDate");
 
 					jQuery("#modelTabs").tabs();
 
@@ -121,6 +127,43 @@ define(
 					}, function(event) {
 						event.data.view.refreshValidation();
 					});
+
+					this.validFromDate
+							.change(
+									{
+										"view" : this
+									},
+									function(event) {
+										var view = event.data.view;
+										var attribute = "carnot:engine:validFrom";
+										if ($(this).val()
+												&& "" != $(this).val()) {
+											var dt = $(this).datepicker(
+													"getDate");
+											var validFrom = dt.getFullYear()
+													+ "/" + (dt.getMonth() + 1)
+													+ "/" + dt.getDate()
+													+ " 00:00:00:000";
+											if (view.getModelElement().attributes[attribute] != validFrom) {
+												var modelElement = {
+													attributes : {}
+												};
+												modelElement.attributes[attribute] = validFrom;
+
+												view
+														.submitChanges(modelElement);
+											}
+										} else if (view.getModelElement().attributes
+												&& view.getModelElement().attributes[attribute]
+												&& "" != view.getModelElement().attributes[attribute]) {
+											var modelElement = {
+												attributes : {}
+											};
+											modelElement.attributes[attribute] = "";
+
+											view.submitChanges(modelElement);
+										}
+									});
 
 					this.initializeModelElementView(model);
 				};
@@ -149,6 +192,12 @@ define(
 						this.lastModificationDateOutput.append(m_i18nUtils
 								.getProperty("modeler.common.value.unknown"));
 					}
+
+					if (this.model.attributes
+							&& this.model.attributes["carnot:engine:validFrom"]) {
+						this.setValidFromDate(this.model.attributes["carnot:engine:validFrom"]);
+					}
+
 					// TODO: Needed?
 
 					if (this.model.attributes == null) {
@@ -158,6 +207,24 @@ define(
 					// TODO Commented out because it is slow
 
 					//this.refreshValidation();
+				};
+
+				/**
+				 *
+				 */
+				ModelView.prototype.setValidFromDate = function(dateString) {
+					var parts = dateString.split(" ")[0].split("/");
+					var validFromDate = new Date(parseInt(parts[0]),
+							(parseInt(parts[1]) - 1), parseInt(parts[2]), 0, 0,
+							0, 0);
+					this.validFromDate.val((validFromDate.getMonth() < 9 ? "0"
+							: "")
+							+ (validFromDate.getMonth() + 1)
+							+ "/"
+							+ (validFromDate.getDate() < 10 ? "0" : "")
+							+ validFromDate.getDate()
+							+ "/"
+							+ validFromDate.getFullYear());
 				};
 
 				/**
@@ -232,7 +299,7 @@ define(
 										url : m_communicationController
 												.getEndpointUrl()
 												+ "/models/"
-												+ this.getModel().id
+												+ encodeURIComponent(this.getModel().id)
 												+ "/problems"
 									},
 									{

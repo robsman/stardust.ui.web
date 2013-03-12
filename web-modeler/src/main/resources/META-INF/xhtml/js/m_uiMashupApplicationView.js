@@ -10,15 +10,18 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_urlUtils, m_command,
+				"bpm-modeler/js/m_codeEditorAce",
+				"bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_markupGenerator" ],
+		function(m_utils, m_constants, m_urlUtils, m_session, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_codeEditorAce, m_i18nUtils,
+				m_markupGenerator) {
 			return {
 				initialize : function(fullId) {
 					var view = new UiMashupApplicationView();
@@ -38,7 +41,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
-
 				$("label[for='idOutput']")
 						.text(
 								m_i18nUtils
@@ -57,15 +59,22 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
+				$("label[for='viaUriInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.viaUri"));
+				$("label[for='embeddedInput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded"));
+				$("label[for='markupTexarea']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.markup"));
 				jQuery("#url")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.url"));
-				jQuery("#browseButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.element.properties.commonProperties.browse"));
 				jQuery("#paramDef")
 						.text(
 								m_i18nUtils
@@ -151,12 +160,6 @@ define(
 				parameterDefinitionDirectionSelect
 						.append("<option value=\"OUT\">" + selectdata
 								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.direction.inOut");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"INOUT\">" + selectdata
-								+ "</option>");
 			}
 			/**
 			 * 
@@ -174,8 +177,15 @@ define(
 						application) {
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
+
+					this.viaUriInput = jQuery("#viaUriInput");
+					this.embeddedInput = jQuery("#embeddedInput");
+					this.viaUriRow = jQuery("#viaUriRow");
+					this.embeddedRow = jQuery("#embeddedRow");
+					this.generateMarkupForAngularLink = jQuery("#generateMarkupForAngularLink");
+					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
+					this.markupTextarea = jQuery("#markupTextareaDiv");
 					this.urlInput = jQuery("#urlInput");
-					this.applicationFrame = jQuery("#applicationFrame");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -184,12 +194,90 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,								
+								tableWidth : "500px",
+								directionColumnWidth : "50px",
+								nameColumnWidth : "250px",
+								typeColumnWidth : "200px"
 							});
 
-					this.registerInputForModelElementAttributeChangeSubmission(
-							this.urlInput,
-							"carnot:engine:ui:externalWebApp:uri");
+					var self = this;
+					this.embeddedHTMLEditor = m_codeEditorAce.getCodeEditor("markupTextareaDiv");
+					this.embeddedHTMLEditor.getEditor().on('blur', function(e){
+						if (!self.validate()) {
+							return;
+						}
+						m_utils.debug("Code editor blur.");
+						self.submitEmbeddedModeChanges();
+					});
+
+					this.urlInput
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										if (!event.data.view.validate()) {
+											return;
+										}
+										event.data.view
+												.submitExternalWebAppContextAttributesChange({
+													"carnot:engine:ui:externalWebApp:embedded" : false,
+													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
+															.val()
+												});
+									});
+					/*this.markupTextarea.change({
+						view : this
+					}, function(event) {
+						if (!event.data.view.validate()) {
+							return;
+						}
+						event.data.view.submitEmbeddedModeChanges();
+					});*/
+					
+					this.generateTable = jQuery("#generateTable");
+					
+					if (!m_session.getInstance().technologyPreview) {
+						m_dialog.makeInvisible(this.generateTable);
+					}
+
+					this.generateMarkupForAngularLink.click({
+						view : this
+					}, function(event) {
+						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForAngular());
+
+						event.data.view.submitEmbeddedModeChanges();
+					});
+					this.generateMarkupForJQueryLink.click({
+						view : this
+					}, function(event) {
+						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForJQuery());
+
+						event.data.view.submitEmbeddedModeChanges();
+					});
+					this.viaUriInput
+							.click(
+									{
+										view : this
+									},
+									function(event) {
+										event.data.view.setViaUri();
+										event.data.view
+												.submitExternalWebAppContextAttributesChange({
+													"carnot:engine:ui:externalWebApp:embedded" : false,
+													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
+															.val(),
+													"carnot:engine:ui:externalWebApp:markup" : null
+												});
+									});
+					this.embeddedInput.click({
+						view : this
+					}, function(event) {
+						event.data.view.setEmbedded();
+						event.data.view.submitEmbeddedModeChanges();
+					});
+
 					this.publicVisibilityCheckbox
 							.change(
 									{
@@ -220,145 +308,67 @@ define(
 										}
 									});
 
-					jQuery("#runButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTable = jQuery("#outputDataTable");
-
-										outputDataTable.empty();
-
-										// Send input data
-
-										m_utils.debug("Location:");
-										m_utils.debug(location);
-
-										jQuery
-												.ajax(
-														{
-															type : "POST",
-															url : m_urlUtils
-																	.getModelerEndpointUrl()
-																	+ "/interaction",
-															contentType : "application/json",
-															data : "{input: "
-																	+ inputDataTextarea
-																			.val()
-																	+ "}"
-														})
-												.done(
-														function() {
-															// Refresh external
-															// UI
-
-															view.applicationFrame
-																	.attr(
-																			"src",
-																			view.urlInput
-																					.val()
-																					+ "?ippPortalBaseUri="
-																					+ m_urlUtils
-																							.getModelerEndpointUrl());
-														})
-												.fail(
-														function() {
-															view.applicationFrame
-																	.attr(
-																			"src",
-																			"");
-														});
-									});
-					jQuery("#resetButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										var view = event.data.view;
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTextarea = jQuery("#outputDataTextarea");
-
-										inputDataTextarea.empty();
-										outputDataTextarea.empty();
-
-										var inputData = "{";
-
-										for ( var n = 0; n < view
-												.getApplication().contexts["externalWebApp"].accessPoints.length; ++n) {
-											var parameterDefinition = view
-													.getApplication().contexts["externalWebApp"].accessPoints[n];
-
-											m_utils
-													.debug("Parameter Definition");
-											m_utils.debug(parameterDefinition);
-
-											if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT) {
-												continue;
-											}
-
-											if (n > 0) {
-												inputData += ","
-											}
-
-											if (parameterDefinition.dataType == "struct") {
-												var typeDeclaration = m_model
-														.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-
-												m_utils
-														.debug("Type Declaration");
-												m_utils.debug(typeDeclaration);
-
-												inputData += parameterDefinition.id;
-												inputData += ": ";
-												inputData += JSON
-														.stringify(
-																typeDeclaration
-																		.createInstance(),
-																null, 3);
-											} else {
-												// Deal with primitives and
-												// other types
-											}
-										}
-
-										inputData += "}";
-
-										inputDataTextarea.append(inputData);
-									});
-					jQuery("#retrieveButton")
-					.click(
-							{
-								view : this
-							},
-							function(event) {
-								var view = event.data.view;
-
-								var outputDataTextarea = jQuery("#outputDataTextarea");
-
-								jQuery
-										.ajax(
-												{
-													type : "GET",
-													url : m_urlUtils
-															.getModelerEndpointUrl()
-															+ "/interaction",
-													contentType : "application/json"
-												})
-										.done(
-												function(data) {
-													outputDataTextarea.val(JSON.stringify(data.output));
-												})
-										.fail(
-												function() {
-												});
-							});
-
 					this.initializeModelElementView(application);
+				};
+
+				UiMashupApplicationView.prototype.submitEmbeddedModeChanges = function() {
+					this
+							.submitExternalWebAppContextAttributesChange({
+								"carnot:engine:ui:externalWebApp:embedded" : true,
+								"carnot:engine:ui:externalWebApp:uri" : null,
+								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor.getValue()
+							});
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.isEmbeddedConfiguration = function() {
+					m_utils
+							.debug("==> embedded: "
+									+ this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"] == true);
+					m_utils
+							.debug("==> embedded: "
+									+ this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"] == "true");
+
+					return this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"];
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.submitExternalWebAppContextAttributesChange = function(
+						attributes) {
+					this.submitChanges({
+						contexts : {
+							externalWebApp : {
+								attributes : attributes,
+								accessPoints : this.getContext().accessPoints
+							}
+						}
+					});
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.setViaUri = function(uri) {
+					this.viaUriInput.prop("checked", true);
+					this.embeddedInput.prop("checked", false);
+
+					m_dialog.makeVisible(this.viaUriRow);
+					m_dialog.makeInvisible(this.embeddedRow);
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.setEmbedded = function() {
+					this.viaUriInput.prop("checked", false);
+					this.embeddedInput.prop("checked", true);
+
+					m_dialog.makeInvisible(this.viaUriRow);
+					m_dialog.makeVisible(this.embeddedRow);
 				};
 
 				/**
@@ -371,12 +381,21 @@ define(
 				/**
 				 * 
 				 */
+				UiMashupApplicationView.prototype.getContext = function() {
+					return this.application.contexts["externalWebApp"];
+				};
+
+				/**
+				 * 
+				 */
 				UiMashupApplicationView.prototype.setModelElement = function(
 						application) {
 					this.application = application;
 
 					m_utils.debug("===> Application");
 					m_utils.debug(this.application);
+					m_utils.debug("===> Context");
+					m_utils.debug(this.getContext());
 
 					if (!this.application.attributes["carnot:engine:visibility"]
 							|| "Public" == this.application.attributes["carnot:engine:visibility"]) {
@@ -387,20 +406,30 @@ define(
 
 					// TODO Guard needed?
 
-					if (this.application.contexts["externalWebApp"] == null) {
-						this.application.contexts["externalWebApp"] = {
-							accessPoints : []
+					if (this.getContext() == null) {
+						this.application.contexts = {
+							externalWebApp : {
+								accessPoints : [],
+								attributes : {}
+							}
 						};
+					}
+
+					if (this.isEmbeddedConfiguration()) {
+						this.setEmbedded();
+//						this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						this.embeddedHTMLEditor.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+					} else {
+						this.setViaUri();
+						this.urlInput.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
 					}
 
 					this.initializeModelElement(application);
 
-					this.urlInput
-							.val(this.application.attributes["carnot:engine:ui:externalWebApp:uri"]);
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
-					this.parameterDefinitionsPanel
-							.setParameterDefinitions(this.application.contexts["externalWebApp"].accessPoints);
+					this.parameterDefinitionsPanel.setParameterDefinitions(this
+							.getContext().accessPoints);
 				};
 
 				/**
@@ -438,13 +467,32 @@ define(
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
+					// Context is regenerated on the server - hence, all data need to be provided
+					
 					this.submitChanges({
 						contexts : {
 							"externalWebApp" : {
-								accessPoints : parameterDefinitionsChanges
+								accessPoints : parameterDefinitionsChanges,
+								attributes: this.getContext().attributes
 							}
 						}
 					});
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.generateMarkupForAngular = function() {
+					return m_markupGenerator
+							.generateMarkupForAngular(this.getContext().accessPoints);
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.generateMarkupForJQuery = function() {
+					return m_markupGenerator
+							.generateMarkup(this.getContext().accessPoints);
 				};
 			}
 		});

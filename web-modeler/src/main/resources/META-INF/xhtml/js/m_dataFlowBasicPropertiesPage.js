@@ -15,8 +15,8 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_basicPropertiesPage" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage) {
+				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -47,6 +47,8 @@ define(
 					this.inputInput = this.mapInputId("inputInput");
 					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
+					this.descriptionInput.hide();
+					$("label[for='descriptionInput']").hide();
 					this.inputDataPathInput = this
 							.mapInputId("inputDataPathInput");
 					this.outputDataPathInput = this
@@ -243,10 +245,12 @@ define(
 
 										page
 												.submitChanges({
-													// TODO Usually, we are not
-													// submitting the object
-													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
 												});
 									});
 					this.outputAccessPointSelectInput
@@ -271,10 +275,12 @@ define(
 
 										page
 												.submitChanges({
-													// TODO Usually, we are not
-													// submitting the object
-													// itself
-													modelElement : page.propertiesPanel.element.modelElement
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
 												});
 									});
 				};
@@ -322,7 +328,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>"); // I18N
 					} else {
 						this.inputAccessPointSelectInput
-								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 					}
 
 					m_utils.debug("Contexts");
@@ -341,7 +347,8 @@ define(
 							m_utils.debug("m = " + m);
 							m_utils.debug(accessPoint);
 
-							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT
+									|| accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT) {
 								count++;
 							}
 						}
@@ -399,7 +406,7 @@ define(
 								.append("<option value='DEFAULT'>Default</option>");
 					} else {
 						this.outputAccessPointSelectInput
-								.append("<option value='DEFAULT'>(To be defined)</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 					}
 
 					for ( var i in dataFlow.activity.getContexts()) {
@@ -409,7 +416,8 @@ define(
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
 
-							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
+									|| accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT) {
 								count++;
 							}
 						}

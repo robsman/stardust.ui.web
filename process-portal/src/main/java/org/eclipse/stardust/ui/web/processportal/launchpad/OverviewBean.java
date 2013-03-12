@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
@@ -237,14 +238,26 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       SpecialWorklistCacheManager.getInstance().reset();
    }
    
-   public long getAllAssignedActivitiesCount()
+   public String getAllAssignedActivitiesCount()
    {
-      return SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.ALL_ACTVITIES);
+      Long totalCount = SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.ALL_ACTVITIES);
+      Long totalCountThreshold = SpecialWorklistCacheManager.getInstance().getWorklistCountThreshold(SpecialWorklistCacheManager.ALL_ACTVITIES);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
    }      
   
-   public long getCriticalActivitiesCount()
+   public String getCriticalActivitiesCount()
    {
-      return SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
+      Long totalCount =  SpecialWorklistCacheManager.getInstance().getWorklistCount(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
+      Long totalCountThreshold = SpecialWorklistCacheManager.getInstance().getWorklistCountThreshold(SpecialWorklistCacheManager.CRITICAL_ACTVITIES);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
    }
    
    private void openWorklist(String id, Object activityInstanceQuery)
@@ -287,10 +300,17 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       PPUtils.selectWorklist(null);
    }
 
-   public long getDirectUserWorkCount()
+   public String getDirectUserWorkCount()
    {
-      return ParticipantWorklistCacheManager.getInstance().getWorklistCount(
+      Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(
             SessionContext.findSessionContext().getUser());
+      Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
+            SessionContext.findSessionContext().getUser());
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return MessagesViewsCommonBean.getInstance().getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
    }
 
    public long getPriorityActivityInstancesCount()

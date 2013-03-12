@@ -24,7 +24,7 @@ define(
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.element.properties.commonProperties.comments"),
-							pageIconUrl : "../../images/icons/comments-properties-page.png"
+							pageIconUrl : "../../images/icons/comments.png"
 						},
 						{
 							panelId : "modelView",
@@ -32,8 +32,9 @@ define(
 							pageHtmlUrl : "modelConfigurationVariablesPropertiesPage.html",
 							provider : m_modelConfigurationVariablesPropertiesPage,
 							visibility : "always",
-							pageName : "Configuration Variables", // TODO I18N
-							pageIconUrl : "../../images/icons/basic-properties-page.png"
+							pageName : m_i18nUtils
+									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
+							pageIconUrl : "../../images/icons/table.png"
 						} ]
 			};
 		});

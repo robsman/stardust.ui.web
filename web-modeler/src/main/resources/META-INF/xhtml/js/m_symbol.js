@@ -118,7 +118,7 @@ define(
 					transferObject.propertiesPanel = null;
 					transferObject.commentCountIcon = null;
 					transferObject.commentCountText = null;
-
+					transferObject.glow = null;
 					return transferObject;
 				}
 
@@ -134,6 +134,43 @@ define(
 				 */
 				Symbol.prototype.getYCenter = function() {
 					return this.y + 0.5 * this.height;
+				};
+
+				/**
+				 * @author Yogesh.Manware
+				 * Get comprehensive dimensions of this
+				 *         symbol, consider all primitives
+				 */
+				Symbol.prototype.getCompSymbolBindingRect = function() {
+					var left = this.x + this.parentSymbol.symbolXOffset;
+					var right = this.x + this.parentSymbol.symbolXOffset
+							+ this.width;
+					var top = this.y + this.parentSymbol.symbolYOffset;
+					var bottom = this.y + this.parentSymbol.symbolYOffset
+							+ this.height;
+
+					for ( var n in this.editableTextPrimitives) {
+						if (this.editableTextPrimitives[n].type == "text") {
+							bBox = this.editableTextPrimitives[n].getBBox();
+							if (bBox.width > 0) {
+								left = Math.min(bBox.x + this.parentSymbol.symbolXOffset, left);
+								right = Math.max(bBox.x
+										+ this.parentSymbol.symbolXOffset
+										+ bBox.width, right);
+								top = Math.min(bBox.y
+										+ this.parentSymbol.symbolYOffset, top);
+								bottom = Math.max(bBox.y
+										+ this.parentSymbol.symbolYOffset
+										+ bBox.height, bottom);
+							}
+						}
+					}
+					return {
+						left : left,
+						right : right,
+						top : top,
+						bottom : bottom,
+					};
 				};
 
 				/**
@@ -361,7 +398,7 @@ define(
 					this.addToPrimitives(this.commentCountText);
 
 					this.commentCountIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/comments-count.png",
+							"../../images/icons/comments.png",
 							this.x + this.width - 40, this.y - 12, 16, 16)
 							.hide();
 
@@ -1082,9 +1119,11 @@ define(
 					 * the scroll bar position changes.
 					 */
 					if (adjust) {
-						var displ = this.getEffectiveDisplacement(x, y);
-						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
-								displ.deltaY);
+						if (this.diagram.mode != this.diagram.NORMAL_MODE) {
+							var displ = this.getEffectiveDisplacement(x, y);
+							this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+									displ.deltaY);
+						}
 					} else {
 						this.moveTo(x, y);
 					}
@@ -1094,7 +1133,7 @@ define(
 				 * Low level graphics operation to move all primitives. Should not be invoked directly.
 				 */
 				Symbol.prototype.moveTo = function(x, y) {
-					this.diagram.moveSelectedSymbolsBy(x - this.x, y - this.y);
+					this.moveBy(x - this.x, y - this.y);
 				};
 
 				/**
@@ -1302,6 +1341,7 @@ define(
 							this.diagram.selectedSymbolsDragStop();
 						}
 						this.diagram.dragEnabled = false;
+						this.deselect();
 					}
 				};
 
@@ -1983,10 +2023,17 @@ define(
 					// Do nothing
 				};
 
+				/**
+				 *
+				 */
+				Symbol.prototype.performClientSideAdj = function() {
+					// Do nothing
+				};
 				/*
 				 *
 				 */
 				Symbol.prototype.flipFlowOrientation = function(flowOrientation) {
+					this.performClientSideAdj();
 					var temp = this.x;
 					this.x = this.y;
 					this.y = temp;
@@ -2003,11 +2050,12 @@ define(
 						// diagramHeaderMargin;
 						this.y = this.y + (this.width / 2 - this.height / 2);
 					}
+
 					this.moveBy(0, 0);
 
 					var changesSymbol = {
 						parentSymbolId : this.parentSymbol.id,
-						x : this.x,
+						x : this.x - this.clientSideAdjX,
 						y : this.y
 					};
 					var changeDesc = {

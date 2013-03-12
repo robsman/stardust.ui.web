@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.service.ClasspathUriConverter;
+import org.eclipse.stardust.ui.web.modeler.service.WebModelerUriConverter;
 
 @Component
 @Scope("singleton")
@@ -28,7 +28,7 @@ public class ExternalXmlSchemaManager
 {
    private static final Logger trace = LogManager.getLogger(ExternalXmlSchemaManager.class);
 
-   private static final ClasspathUriConverter CLASSPATH_URI_CONVERTER = new ClasspathUriConverter();
+   private static final WebModelerUriConverter CLASSPATH_URI_CONVERTER = new WebModelerUriConverter();
 
    private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
 
@@ -65,7 +65,7 @@ public class ExternalXmlSchemaManager
          {
             schemaUri = schemaUri.substring(1);
          }
-         uri = URI.createURI(ClasspathUriConverter.CLASSPATH_SCHEME + ":/" + schemaUri);
+         uri = URI.createURI(WebModelerUriConverter.CLASSPATH_SCHEME + ":/" + schemaUri);
       }
       Resource xsdResource = XSD_RESOURCE_FACTORY.createResource(uri);
 
