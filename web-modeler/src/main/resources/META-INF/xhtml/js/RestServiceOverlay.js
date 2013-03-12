@@ -153,7 +153,7 @@ define(
 																	.val(),
 															data : view
 																	.getRequestData(),
-															crossDomain : false
+															crossDomain : true
 														})
 												.done(
 														function(data) {
