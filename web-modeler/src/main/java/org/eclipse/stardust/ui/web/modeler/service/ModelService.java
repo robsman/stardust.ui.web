@@ -1275,7 +1275,7 @@ public class ModelService
 
       // TODO Deal with full Ids
 
-      if (laneSymbolJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
+      if (hasNotJsonNull(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID))
       {
          System.out.println("Participant Full ID"
                + extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));

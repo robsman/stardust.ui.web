@@ -93,7 +93,7 @@ public class ConnectionCommandHandler
                      fromActivitySymbol,
                      getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid), extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
                      extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY), extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY),
-                     controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+                     hasNotJsonNull(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY), "", mapAnchorOrientation(extractInt(request,
                            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)), mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -382,7 +382,7 @@ public class ConnectionCommandHandler
                extractString(connectionJson, ModelerConstants.ID_PROPERTY),
                extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
                extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               connectionJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
       }
@@ -423,7 +423,7 @@ public class ConnectionCommandHandler
                extractString(connectionJson, ModelerConstants.ID_PROPERTY),
                extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
                extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               connectionJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
       }
