@@ -2011,10 +2011,10 @@ define(
 					for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
 						var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
 
-						// if (!m_session.initialize().technologyPreview
-						// && menuOptionExtension.visibility == "preview") {
-						// continue;
-						// }
+						if (!m_session.initialize().technologyPreview
+								&& applicationIntegrationOverlayExtension.visibility == "preview") {
+							continue;
+						}
 
 						options[applicationIntegrationOverlayExtension.id] = {
 							label : "Create "
@@ -2031,9 +2031,6 @@ define(
 							// }
 
 							action : function(node, id) {
-								m_utils.debug("===> Test");
-								m_utils.debug(id);
-
 								var applicationIntegrationOverlayExtensions = m_extensionManager
 										.findExtensions(
 												"applicationIntegrationOverlay",

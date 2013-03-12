@@ -10,6 +10,8 @@
 
 define(
 		[ "bpm-modeler/js/GenericEndpointOverlay",
+				"bpm-modeler/js/RestServiceOverlay",
+				"bpm-modeler/js/RulesIntegrationOverlay",
 				"bpm-modeler/js/m_manualTriggerIntegrationOverlay",
 				"bpm-modeler/js/m_timerEventIntegrationOverlay",
 				"bpm-modeler/js/m_fileEventIntegrationOverlay",
@@ -17,7 +19,7 @@ define(
 				"bpm-modeler/js/m_messageEventIntegrationOverlay",
 				"bpm-modeler/js/m_scanEventIntegrationOverlay",
 				"bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
-		function(GenericEndpointOverlay, m_manualTriggerIntegrationOverlay,
+		function(GenericEndpointOverlay, RestServiceOverlay, RulesIntegrationOverlay, m_manualTriggerIntegrationOverlay,
 				m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay,
 				m_emailEventIntegrationOverlay,
 				m_messageEventIntegrationOverlay,
@@ -29,7 +31,20 @@ define(
 					name : "Generic Camel Endpoint",
 					pageHtmlUrl : "genericEndpointOverlay.html",
 					provider : GenericEndpointOverlay
-				} ],
+				}, {
+					id : "restServiceOverlay",
+					name : "REST Service",
+					pageHtmlUrl : "restServiceOverlay.html",
+					provider : RestServiceOverlay,
+					visibility : "preview"
+				},
+				{
+					id : "rulesIntegrationOverlay",
+					name : "Rules Set Invocation",
+					pageHtmlUrl: "rulesIntegrationOverlay.html",
+					provider : RulesIntegrationOverlay,
+					visibility : "preview"
+				}],
 				eventIntegrationOverlay : [
 						{
 							id : "manualTrigger",

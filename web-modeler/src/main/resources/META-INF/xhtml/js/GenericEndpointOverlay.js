@@ -30,12 +30,28 @@ define(
 				GenericEndpointOverlay.prototype.initialize = function(view) {
 					this.view = view;
 
+					this.view.insertPropertiesTab("genericEndpointOverlay",
+							"parameters", "Parameters",
+							"../../images/icons/table.png");
+
 					this.camelContextInput = jQuery("#genericEndpointOverlay #camelContextInput");
 					this.routeTextarea = jQuery("#genericEndpointOverlay #routeTextarea");
 					this.additionalBeanSpecificationTextarea = jQuery("#genericEndpointOverlay #additionalBeanSpecificationTextarea");
 					this.requestDataInput = jQuery("#genericEndpointOverlay #requestDataInput");
 					this.responseDataInput = jQuery("#genericEndpointOverlay #responseDataInput");
 					this.directionInput = jQuery("#genericEndpointOverlay #directionInput");
+					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+							.create({
+								scope : "parametersTab",
+								submitHandler : this,
+								supportsOrdering : false,
+								supportsDataMappings : false,
+								supportsDescriptors : false,
+								supportsDataTypeSelection : true
+							});
 
 					this.directionInput
 							.append("<option value=\"requestOnly\">"
@@ -79,6 +95,44 @@ define(
 												"carnot:engine:camel::additionalSpringBeanDefinitions",
 												self.additionalBeanSpecificationTextarea
 														.val());
+							});
+					this.inputBodyAccessPointInput
+							.change(function() {
+								if (!self.view.validate()) {
+									return;
+								}
+
+								if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+									self.view
+											.submitModelElementAttributeChange(
+													"carnot:engine:camel::inputBodyAccessPoint",
+													null);
+								} else {
+									self.view
+											.submitModelElementAttributeChange(
+													"carnot:engine:camel::inputBodyAccessPoint",
+													self.inputBodyAccessPointInput
+															.val());
+								}
+							});
+					this.outputBodyAccessPointInput
+							.change(function() {
+								if (!self.view.validate()) {
+									return;
+								}
+
+								if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+									self.view
+											.submitModelElementAttributeChange(
+													"carnot:engine:camel::outputBodyAccessPoint",
+													null);
+								} else {
+									self.view
+											.submitModelElementAttributeChange(
+													"carnot:engine:camel::outputBodyAccessPoint",
+													self.outputBodyAccessPointInput
+															.val());
+								}
 							});
 					this.directionInput
 							.change(function() {
@@ -157,43 +211,52 @@ define(
 				/**
 				 * Overlay protocol
 				 */
-				GenericEndpointOverlay.prototype.activate = function() {
-					this
-							.submitChanges({
-								attributes : {
-									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpoint",
-									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-								},
-								contexts : {
-									application : {
-										accessPoints : [
-												{
-													id : "oParam1",
-													name : "Input",
-													direction : "IN",
-													dataType : "primitive",
-													primitiveDataType : "string"
-												},
-												{
-													id : "returnValue",
-													name : "Output",
-													direction : "OUT",
-													dataType : "primitive",
-													primitiveDataType : "string",
-													attributes : {
-														"carnot:engine:flavor" : "RETURN_VALUE"
-													}
-												} ]
-									}
-								}
-							});
-				};
-
-				/**
-				 * Overlay protocol
-				 */
 				GenericEndpointOverlay.prototype.update = function() {
+					this.parameterDefinitionsPanel.setScopeModel(this
+							.getScopeModel());
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+
+					this.inputBodyAccessPointInput.empty();
+					this.inputBodyAccessPointInput
+							.append("<option value='" + m_constants.TO_BE_DEFINED + "'>"
+									+ m_i18nUtils.getProperty("???None???")
+									+ "</option>");
+
+					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+
+						if (accessPoint.direction != m_constants.IN_ACCESS_POINT) {
+							continue;
+						}
+
+						this.inputBodyAccessPointInput.append("<option value='"
+								+ accessPoint.id + "'>" + accessPoint.name
+								+ "</option>");
+					}
+
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput
+							.append("<option value='" + m_constants.TO_BE_DEFINED + "' selected>"
+									+ m_i18nUtils.getProperty("???None???")
+									+ "</option>");
+
+					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+
+						if (accessPoint.direction != m_constants.OUT_ACCESS_POINT) {
+							continue;
+						}
+
+						this.outputBodyAccessPointInput.append("<option value='"
+								+ accessPoint.id + "'>" + accessPoint.name
+								+ "</option>");
+					}
+
+					this.inputBodyAccessPointInput
+							.val(this.getApplication().attributes["carnot:engine:camel::inputBodyAccessPoint"]);
+					this.outputBodyAccessPointInput
+							.val(this.getApplication().attributes["carnot:engine:camel::outputBodyAccessPoint"]);
 					this.camelContextInput
 							.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.routeTextarea
@@ -219,7 +282,8 @@ define(
 					if (this.camelContextInput.val() == null
 							|| this.camelContextInput.val() == "") {
 						this.view.errorMessages
-								.push("Camel Context must not be empty."); // TODO I18N
+								.push("Camel Context must not be empty."); // TODO
+						// I18N
 						this.camelContextInput.addClass("error");
 
 						return false;
@@ -227,5 +291,24 @@ define(
 
 					return true;
 				};
+
+				/**
+				 * 
+				 */
+				GenericEndpointOverlay.prototype.submitParameterDefinitionsChanges = function(
+						parameterDefinitionsChanges) {
+					this.view
+							.submitChanges({
+								contexts : {
+									application : {
+										accessPoints : parameterDefinitionsChanges
+									}
+								},
+								attributes : {
+									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpointOverlay"
+								}
+							});
+				};
+
 			}
 		});

@@ -90,6 +90,12 @@ public class ApplicationTypeChangeCommandHandler
                "carnot:engine:camel::applicationIntegrationOverlay",
                attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
                      .getAsString());
+         
+         // Flag for new implementation
+         
+         getModelBuilderFacade().setBooleanAttribute(
+               applicationType,
+               "carnot:engine:camel::supportsMultipleAccessPoints", true);
       }
    }
 
