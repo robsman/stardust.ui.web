@@ -42,8 +42,8 @@
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
       <conf name="all-provided" visibility="private" extends="ipp-portal-common-provided" />
-      <conf name="all-compile" visibility="private" extends="all-provided,ipp-portal-common-compile,jsf-api-module-compile,jsf-myfaces-module-compile,jsf-mojarra-module-compile" />
-      <conf name="all-runtime" visibility="private" extends="ipp-portal-common-runtime,ipp-portal-base-lib-module-runtime,jsf-myfaces-module-runtime,jsf-mojarra-module-runtime" />
+      <conf name="all-compile" visibility="private" extends="all-provided,ipp-portal-common-compile,jsf-api-module-compile,jsf-myfaces-module-compile" />
+      <conf name="all-runtime" visibility="private" extends="ipp-portal-common-runtime,ipp-portal-base-lib-module-runtime,jsf-myfaces-module-runtime" />
       <conf name="all" visibility="private" extends="all-provided, all-compile, all-runtime, test" />
       
       <conf name="pom" description="IPP Portal Common POMs" />
