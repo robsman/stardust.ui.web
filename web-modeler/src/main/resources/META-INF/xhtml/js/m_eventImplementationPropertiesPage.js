@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -32,14 +32,13 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function EventImplementationPropertiesPage(propertiesPanel) {
-				var propertiesPage = m_propertiesPage
-						.createPropertiesPage(propertiesPanel,
-								"implementationPropertiesPage",
-								"Implementation", // TODO I18N
-								"../../images/icons/wrench.png");
+				var propertiesPage = m_propertiesPage.createPropertiesPage(
+						propertiesPanel, "implementationPropertiesPage",
+						"Implementation", // TODO I18N
+						"../../images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -47,7 +46,7 @@ define(
 						propertiesPage);
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.initialize = function() {
 					this.noImplementationPanel = this
@@ -133,7 +132,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.populateSupportedOverlays = function() {
 					this.supportedOverlays = {};
@@ -153,22 +152,22 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.submitNoneImplementation = function() {
 					// Event class change needs to be submitted as well
-					
+
 					this.submitChanges({
 						modelElement : {
 							participantFullId : null,
-							eventClass: this.getModelElement().eventClass,
+							eventClass : this.getModelElement().eventClass,
 							implementation : "none"
 						}
 					});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.populateOverlaySelect = function() {
 					this.eventIntegrationOverlaySelect.empty();
@@ -195,7 +194,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.setOverlay = function(
 						overlay) {
@@ -223,11 +222,14 @@ define(
 					this.eventIntegrationOverlaySelect.val(overlay);
 
 					m_dialog.makeVisible(this.overlays[overlay]);
-					this.overlayControllers[overlay].update();
+
+					if (this.overlayControllers[overlay]) {
+						this.overlayControllers[overlay].update();
+					}
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.setElement = function() {
 					m_utils.debug("Event ");
@@ -236,7 +238,8 @@ define(
 					this.populateSupportedOverlays();
 					this.populateOverlaySelect();
 
-					if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE && this.getModelElement().eventType != m_constants.STOP_EVENT_TYPE) {
+					if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE
+							&& this.getModelElement().eventType != m_constants.STOP_EVENT_TYPE) {
 						m_dialog.makeInvisible(this.noImplementationPanel);
 						m_dialog.makeVisible(this.implementationPanel);
 
@@ -253,6 +256,11 @@ define(
 								overlay = "genericCamelRouteEvent";
 							}
 						}
+
+						m_utils.debug("Overlay check");
+						m_utils.debug(overlay);
+						m_utils.debug(this.supportedOverlays[overlay]);
+						m_utils.debug(this.overlayControllers);
 
 						if (this.supportedOverlays[overlay]) {
 							this.setOverlay(overlay);
@@ -280,14 +288,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.getEvent = function() {
 					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventImplementationPropertiesPage.prototype.validate = function(
 						changes) {

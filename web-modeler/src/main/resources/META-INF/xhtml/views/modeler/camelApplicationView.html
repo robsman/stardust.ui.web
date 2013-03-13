@@ -24,26 +24,33 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label></td>
-							<td><div id="guidOutput" class="output"></div></td>
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label></td>
-							<td><div id="idOutput" class="output"></div></td>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr>
-							<td><label for="nameInput" id="applicationName">Application Name</label></td>
-							<td><input id="nameInput" type="text"></input></td>
+							<td><label for="nameInput" id="applicationName">Application
+									Name</label>
+							</td>
+							<td><input id="nameInput" type="text"></input>
+							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td><label for="descriptionTextarea" id="description">Description</label>
@@ -55,99 +62,33 @@
 			</tr>
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
-						style="margin-bottom: 10px;">
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 						<tr>
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
-							<td><label for="publicVisibilityCheckbox" id="publicVisibility">Public
-									Visibility</label></td>
+							<td><label for="publicVisibilityCheckbox"
+								id="publicVisibility">Public Visibility</label>
+							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span
-									class="tabLabel" id="camelConfiguration">Camel Configuration</span> </a>
-							</li>
+									src="../../images/icons/table.png"></img><span class="tabLabel"
+									id="camelConfiguration">Configuration</span> </a></li>
 						</ul>
 						<div id="configurationTab">
 							<table cellpadding="0" cellspacing="0" class="layoutTable">
 								<tr>
 									<td>
-										<table cellpadding="0" cellspacing="0" class="fieldSetTable" style="margin-bottom: 10px;">
-											<tr>
-												<td><label for="endpointTypeSelectInput" id="endPointType">Endpoint
-														Type</label></td>
-												<td><select id="endpointTypeSelectInput">
-													<!-- 	<option value="genericEndpoint">Generic</option>  -->
-												</select></td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-								<tr>
-									<td id="overlayTableCell">
-										<div id="genericEndpoint">
-											<table cellpadding="0" cellspacing="0" class="layoutTable">
-												<tr>
-													<td>
-														<table cellpadding="0" cellspacing="0"
-															class="fieldSetTable">
-															<tr>
-																<td><label for="camelContextInput" id="camelContext">Camel Context</label>
-																</td>
-																<td><input id="camelContextInput" type="text"></input>
-																</td>
-															</tr>
-														</table></td>
-												</tr>
-												<tr>
-													<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
-													</td>
-												</tr>
-												<tr>
-													<td><textarea id="routeTextarea" cols="50" rows="5"
-															class="code">
-																</textarea></td>
-												</tr>
-												<tr>
-													<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
-													</td>
-												</tr>
-												<tr>
-													<td><label for="additionalBeanSpecificationTextarea" id="addBeanSpec">Additional
-															Bean Specification</label></td>
-												</tr>
-												<tr>
-													<td><textarea id="additionalBeanSpecificationTextarea"
-															cols="50" rows="5" class="code">
-								</textarea></td>
-												</tr>
-												<tr>
-													<td>
-														<table>
-															<tr>
-																<td><label for="directionInput" id="direction">Direction</label>
-																</td>
-																<td><select id="directionInput">
-																</select>
-																</td>
-															</tr>
-														</table></td>
-												</tr>
-											</table>
-										</div>
-									</td>
+										<div id="overlayAnchor"></div></td>
 								</tr>
 							</table>
 						</div>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 		</table>
 	</div>

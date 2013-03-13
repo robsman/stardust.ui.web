@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public class GsonUtils
@@ -83,5 +84,18 @@ public class GsonUtils
       return (null != member) && member.isJsonPrimitive()
             ? member.getAsString()
             : (String) null;
+   }
+
+   /**
+    * checks existence of non null attribute
+    *
+    * @param json
+    * @param memberName
+    * @return
+    */
+   public static boolean hasNotJsonNull(JsonObject json, String memberName)
+   {
+      JsonElement member = json.get(memberName);
+      return (null != member && !member.isJsonNull()) ? true : false;
    }
 }

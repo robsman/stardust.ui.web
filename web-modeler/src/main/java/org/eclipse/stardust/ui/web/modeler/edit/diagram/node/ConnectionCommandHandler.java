@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.util.List;
 
@@ -92,7 +93,7 @@ public class ConnectionCommandHandler
                      fromActivitySymbol,
                      getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid), extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
                      extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY), extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY),
-                     controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+                     hasNotJsonNull(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY), "", mapAnchorOrientation(extractInt(request,
                            ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)), mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -130,8 +131,8 @@ public class ConnectionCommandHandler
                      processDefinition,
                      fromActivitySymbol,
                      getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid),
-                     request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY)
-                           .has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL, "left", "right");
             }
@@ -194,8 +195,8 @@ public class ConnectionCommandHandler
                      processDefinition,
                      getModelBuilderFacade().findActivitySymbol(diagram, toSymbolOid),
                      getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
-                     request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY)
-                           .has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL, "left", "right");
 
@@ -381,7 +382,7 @@ public class ConnectionCommandHandler
                extractString(connectionJson, ModelerConstants.ID_PROPERTY),
                extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
                extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               connectionJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
       }
@@ -422,7 +423,7 @@ public class ConnectionCommandHandler
                extractString(connectionJson, ModelerConstants.ID_PROPERTY),
                extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
                extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               connectionJson.has(ModelerConstants.OTHERWISE_PROPERTY)
+               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
       }

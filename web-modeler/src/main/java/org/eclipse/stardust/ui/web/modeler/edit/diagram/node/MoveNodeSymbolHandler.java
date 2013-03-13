@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
@@ -61,18 +62,18 @@ public class MoveNodeSymbolHandler
       nodeSymbol.setXPos(extractInt(request, X_PROPERTY) - laneOffsetX);
       nodeSymbol.setYPos(extractInt(request, Y_PROPERTY) - laneOffsetY);
 
-      if (request.has(WIDTH_PROPERTY))
+      if (hasNotJsonNull(request, WIDTH_PROPERTY))
       {
          nodeSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
       }
-      if (request.has(HEIGHT_PROPERTY))
+      if (hasNotJsonNull(request, HEIGHT_PROPERTY))
       {
          nodeSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
       }
 
       // Type property is used to identify the symbol type, used while changing
       // parentSymbol on move from one lane to another.
-      if (request.has(ModelerConstants.TYPE_PROPERTY))
+      if (hasNotJsonNull(request, ModelerConstants.TYPE_PROPERTY))
       {
          String symbolType = request.get(ModelerConstants.TYPE_PROPERTY).getAsString();
          if (null != symbolType)

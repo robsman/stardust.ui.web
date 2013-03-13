@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.util.Iterator;
 
@@ -131,10 +132,13 @@ public class DataChangeCommandHandler
          // import schema type by reference
          ExternalReferenceType reference = XpdlFactory.eINSTANCE.createExternalReferenceType();
          reference.setLocation(extractString(type, "location"));
+
+         // TODO: hasNotJsonNull required here?
          if (type.has("namespace"))
          {
             reference.setNamespace(extractString(type, "namespace"));
          }
+         // TODO: hasNotJsonNull required here?
          if (type.has("xref"))
          {
             reference.setXref(extractString(type, "xref"));
@@ -242,7 +246,7 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       String dataFullID = null;
-      if (request.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+      if (hasNotJsonNull(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
       {
          dataFullID = extractString(request,
                ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);

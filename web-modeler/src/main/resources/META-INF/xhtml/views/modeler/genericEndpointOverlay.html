@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Generic Endpoint</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="genericEndpointOverlay">
+		<table cellpadding="0" cellspacing="0" class="layoutTable">
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><label for="camelContextInput" id="camelContext">Camel
+									Context</label></td>
+							<td><input id="camelContextInput" type="text"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="routeTextarea" cols="50" rows="5"
+						class="code">
+																</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="additionalBeanSpecificationTextarea"
+					id="addBeanSpec">Additional Bean Specification</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="additionalBeanSpecificationTextarea"
+						cols="50" rows="5" class="code">
+								</textarea>
+				</td>
+			</tr>
+		</table>
+		<div id="parametersTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<div class="heading" id="paramDef">Parameter Definitions</div></td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td><label for="inputBodyAccessPointInput" id="direction">Body
+										Input Access Point</label></td>
+								<td><select id="inputBodyAccessPointInput">
+								</select></td>
+							</tr>
+							<tr>
+								<td><label for="outputBodyAccessPointInput" id="direction">Body
+										Output Access Point</label></td>
+								<td><select id="outputBodyAccessPointInput">
+								</select></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="panelBorder" style="width: 400px; margin-top: 10px;">
+							<table cellpadding="0" cellspacing="0" width="100%"
+								class="layoutTable">
+								<tr>
+									<td><div class="toolBar">
+											<table>
+												<tr>
+													<td><input id="deleteParameterDefinitionButton"
+														type="image" src="../../images/icons/delete.png"
+														title="Delete" alt="Delete" class="toolbarButton" /></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="dataTable">
+											<table id="parameterDefinitionsTable" cellpadding="0"
+												cellspacing="0">
+												<tbody />
+											</table>
+										</div></td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table id="parameterDefinitionTypeSelector" class="fieldSetTable"
+							style="margin-top: 10px;">
+							<tr>
+								<td><input id="addParameterDefinitionButton" type="image"
+									src="../../images/icons/add.png" title="Add" alt="Add"
+									class="toolbarButton" /></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionNameInput" id="name">Name</label>
+								</td>
+								<td><input id="parameterDefinitionNameInput" type="text" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionDirectionSelect"
+									id="direction">Direction</label></td>
+								<td><select id="parameterDefinitionDirectionSelect">
+										<option value="IN">In</option>
+										<option value="OUT">Out</option>
+								</select></td>
+							</tr>
+							<tr>
+								<td><label for="dataTypeSelect" id="dataType">Data
+										Type</label>
+								</td>
+								<td><select id="dataTypeSelect" size="1">
+								</select></td>
+							</tr>
+							<tr id="primitiveDataTypeRow">
+								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
+										Type</label>
+								</td>
+								<td><select id="primitiveDataTypeSelect" size="1">
+								</select>
+								</td>
+							</tr>
+							<tr id="structuredDataTypeRow">
+								<td><label for="structuredDataTypeSelect">Data
+										Structure</label></td>
+								<td><select id="structuredDataTypeSelect" size="1">
+								</select></td>
+							</tr>
+							<tr id="documentTypeRow">
+								<td><label for="documentTypeSelect">Document Type</label></td>
+								<td><select id="documentTypeSelect" size="1">
+								</select></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

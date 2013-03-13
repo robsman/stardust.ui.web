@@ -143,6 +143,7 @@ public class EventCommandHandler
 
             parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
 
+            //TODO: hasNotJsonNull required here?
             String eventName = request.getAsJsonObject(
                   ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
                   ModelerConstants.NAME_PROPERTY)

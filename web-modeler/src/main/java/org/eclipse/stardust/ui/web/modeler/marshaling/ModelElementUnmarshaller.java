@@ -22,6 +22,7 @@ import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContain
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -239,7 +240,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (isGateway)
       {
-         if (activityJson.has(ModelerConstants.GATEWAY_TYPE_PROPERTY))
+         if (hasNotJsonNull(activityJson, ModelerConstants.GATEWAY_TYPE_PROPERTY))
          {
             if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
                   .getAsString()
@@ -268,19 +269,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         if (activityJson.has(ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER))
+         if (hasNotJsonNull(activityJson, ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER))
          {
             activity.setAllowsAbortByPerformer(activityJson.get(
                   ModelerConstants.ACTIVITY_IS_ABORTABLE_BY_PERFORMER).getAsBoolean());
          }
 
-         if (activityJson.has(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION))
+         if (hasNotJsonNull(activityJson, ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION))
          {
             activity.setHibernateOnCreation(activityJson.get(
                   ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION).getAsBoolean());
          }
 
-         if (activityJson.has(ModelerConstants.TASK_TYPE))
+         if (hasNotJsonNull(activityJson, ModelerConstants.TASK_TYPE))
          {
             getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
                   activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
@@ -303,21 +304,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
          }
 
-         if (activityJson.has(ModelerConstants.PARTICIPANT_FULL_ID)
-               && !activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID).isJsonNull())
+         if (hasNotJsonNull(activityJson, ModelerConstants.PARTICIPANT_FULL_ID))
          {
             String participantFullId = extractString(activityJson,
                   ModelerConstants.PARTICIPANT_FULL_ID);
 
             IModelParticipant performer = getModelBuilderFacade().findParticipant(
                   participantFullId);
-            
+
             activity.setPerformer(performer);
          }
 
-         if (activityJson.has(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
-               && !activityJson.get(ModelerConstants.APPLICATION_FULL_ID_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(activityJson, ModelerConstants.APPLICATION_FULL_ID_PROPERTY))
          {
             String applicationFullId = extractString(activityJson,
                   ModelerConstants.APPLICATION_FULL_ID_PROPERTY);
@@ -331,15 +329,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
             activity.setPerformer(null);
 
-            if (activityJson.has(ModelerConstants.SUBPROCESS_ID)
-                  && !activityJson.get(ModelerConstants.SUBPROCESS_ID).isJsonNull())
+            if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_ID))
             {
                String subprocessFullId = extractString(activityJson,
                      ModelerConstants.SUBPROCESS_ID);
 
                getModelBuilderFacade().setSubProcess(activity, subprocessFullId);
 
-               if (activityJson.has(ModelerConstants.SUBPROCESS_MODE_PROPERTY))
+               if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_MODE_PROPERTY))
                {
                   if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
                         .getAsString()
@@ -382,13 +379,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeDescription(transition, controlFlowJson);
       storeAttributes(transition, controlFlowJson);
 
-      if (controlFlowJson.has(ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY))
+      if (hasNotJsonNull(controlFlowJson, ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY))
       {
          transition.setForkOnTraversal(controlFlowJson.get(
                ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY).getAsBoolean());
       }
 
-      if (controlFlowJson.has(ModelerConstants.OTHERWISE_PROPERTY))
+      if (hasNotJsonNull(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY))
       {
          if (controlFlowJson.get(ModelerConstants.OTHERWISE_PROPERTY).getAsBoolean())
          {
@@ -410,7 +407,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (controlFlowJson.has(ModelerConstants.CONDITION_EXPRESSION_PROPERTY))
+      if (hasNotJsonNull(controlFlowJson, ModelerConstants.CONDITION_EXPRESSION_PROPERTY))
       {
          transition.setCondition(ModelerConstants.CONDITION_KEY);
 
@@ -428,12 +425,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       // While routing , anchor point orientation changes
-      if (controlFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (hasNotJsonNull(controlFlowJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
                controlFlowJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
-      if (controlFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (hasNotJsonNull(controlFlowJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          controlFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
                controlFlowJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -452,13 +449,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       JsonObject dataFlowJson = dataFlowConnectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-      if (dataFlowJson.has(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (hasNotJsonNull(dataFlowJson, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setSourceAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      if (dataFlowJson.has(ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
+      if (hasNotJsonNull(dataFlowJson, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY))
       {
          dataFlowConnection.setTargetAnchor(mapAnchorOrientation(extractInt(dataFlowJson,
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
@@ -502,9 +499,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // have to be created for both
 
          // Create input mapping
-         if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-               && !dataFlowJson.get(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -515,9 +510,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          // Create output mapping
-         if (dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-               && !dataFlowJson.get(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)
-                     .isJsonNull())
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
          {
             createDataMapping(
                   dataFlowConnection.getActivitySymbol().getActivity(),
@@ -556,7 +549,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
-      if (dataFlowJson.has(ModelerConstants.ID_PROPERTY))
+      if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
       {
          dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
       }
@@ -565,7 +558,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          dataMapping.setId(data.getId());
       }
 
-      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
+      if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
       {
          dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
                .getAsString());
@@ -577,9 +570,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       dataMapping.setDirection(direction);
 
-      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.ACCESS_POINT_ID_PROPERTY)
-                  .isJsonNull())
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
       {
          dataMapping.setApplicationAccessPoint(dataMappingJson.get(
                ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
@@ -617,8 +608,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (dataMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-            && !dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
       {
          dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                .getAsString());
@@ -662,7 +652,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(swimlaneSymbol, swimlaneSymbolJson,
             propertiesMap.get(LaneSymbol.class));
 
-      if (swimlaneSymbolJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
+      if (hasNotJsonNull(swimlaneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID))
       {
          String participantFullId = swimlaneSymbolJson.get(
                ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
@@ -768,13 +758,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .startsWith("gateway");
       }
 
-      if (elementJson.has(ModelerConstants.ID_PROPERTY))
+      if (hasNotJsonNull(elementJson, ModelerConstants.ID_PROPERTY))
       {
          // provided ID has precedence over generated ID
          newId = extractString(elementJson, ModelerConstants.ID_PROPERTY);
       }
 
-      if (elementJson.has(ModelerConstants.NAME_PROPERTY))
+      if (hasNotJsonNull(elementJson, ModelerConstants.NAME_PROPERTY))
       {
          String newName = extractString(elementJson, ModelerConstants.NAME_PROPERTY);
          String base = null;
@@ -832,7 +822,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
-      if (processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
       {
          // Make sure that formal parameters are never empty
          // TODO Code should be at a central place for Process Definitions
@@ -878,9 +868,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             DataType data = null;
             String dataFullID = null;
 
-            if (formalParameterJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                  && !formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                        .isJsonNull())
+            if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                dataFullID = formalParameterJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
@@ -917,7 +905,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                String structuredDataTypeFullId = null;
 
-               if (formalParameterJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+               if (hasNotJsonNull(formalParameterJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                {
                   structuredDataTypeFullId = formalParameterJson.get(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -938,7 +926,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                String structuredDataTypeFullId = null;
 
-               if (formalParameterJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+               if (hasNotJsonNull(formalParameterJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                {
                   structuredDataTypeFullId = formalParameterJson.get(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -956,7 +944,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (processDefinitionJson.has(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY))
       {
          if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
                .getAsString()
@@ -971,7 +959,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
          {
-            if ( !processDefinitionJson.has(ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+            //TODO: hasNotJsonNull required here?
+            if ( !hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
             {
                if (processDefinition.getFormalParameters() == null)
                {
@@ -993,7 +982,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (processDefinitionJson.has(ModelerConstants.DATA_PATHES_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.DATA_PATHES_PROPERTY))
       {
          processDefinition.getDataPath().clear();
 
@@ -1011,9 +1000,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             dataPath.setId(NameIdUtils.createIdFromName(dataPathJson.get(
                   ModelerConstants.NAME_PROPERTY).getAsString()));
 
-            if (dataPathJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                  && !dataPathJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
-                        .isJsonNull())
+            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                String dataFullId = dataPathJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
@@ -1022,8 +1009,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                dataPath.setData(data);
             }
 
-            if (dataPathJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-                  && !dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY).isJsonNull())
+            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_PATH_PROPERTY))
             {
                dataPath.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                      .getAsString());
@@ -1049,7 +1035,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (processDefinitionJson.has(ModelerConstants.DEFAULT_PRIORITY_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.DEFAULT_PRIORITY_PROPERTY))
       {
          processDefinition.setDefaultPriority(processDefinitionJson.get(
                ModelerConstants.DEFAULT_PRIORITY_PROPERTY).getAsInt());
@@ -1102,8 +1088,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateNodeSymbol(INodeSymbol nodeSymbol, JsonObject nodeSymbolJto)
    {
-      if (nodeSymbolJto.has(ModelerConstants.X_PROPERTY)
-            && nodeSymbolJto.has(ModelerConstants.Y_PROPERTY))
+      if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.X_PROPERTY)
+            && hasNotJsonNull(nodeSymbolJto, ModelerConstants.Y_PROPERTY))
       {
          LaneSymbol newParentSymbol = null;
          int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
@@ -1133,7 +1119,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          nodeSymbol.setYPos(y - laneOffsetY);
 
          if (nodeSymbol instanceof LaneSymbol
-               && (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY) || nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY)))
+               && (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY) || hasNotJsonNull(
+                     nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY)))
          {
             int xOffset = 0, yOffset = 0;
             int height = 0;
@@ -1146,7 +1133,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             nodeSymbol.setWidth(width);
 
             // Update the height of current Lane.
-            if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
+            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
             {
                height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
                heightOffset = height - nodeSymbol.getHeight();
@@ -1154,9 +1141,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             // Update the child symbol co-ordinates wrt parent(lane)
-            if (nodeSymbolJto.has(ModelerConstants.X_OFFSET))
+            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.X_OFFSET))
                xOffset = nodeSymbolJto.get(ModelerConstants.X_OFFSET).getAsInt();
-            if (nodeSymbolJto.has(ModelerConstants.Y_OFFSET))
+            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.Y_OFFSET))
                yOffset = nodeSymbolJto.get(ModelerConstants.Y_OFFSET).getAsInt();
 
             if (xOffset != 0)
@@ -1211,12 +1198,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
          else
          {
-            if (nodeSymbolJto.has(ModelerConstants.WIDTH_PROPERTY))
+            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY))
             {
                int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
                nodeSymbol.setWidth(width);
             }
-            if (nodeSymbolJto.has(ModelerConstants.HEIGHT_PROPERTY))
+            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
             {
                int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
                nodeSymbol.setHeight(height);
@@ -1224,7 +1211,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
          // Type property is used to identify the symbol type, used while changing
          // parentSymbol on move from one lane to another.
-         if (nodeSymbolJto.has(ModelerConstants.TYPE_PROPERTY))
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.TYPE_PROPERTY))
          {
             String symbolType = nodeSymbolJto.get(ModelerConstants.TYPE_PROPERTY)
                   .getAsString();
@@ -1422,11 +1409,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       // If no implementation is set for a None Event, the event symbol does not have a
       // Trigger
 
-      if (startEventJson.has(ModelerConstants.EVENT_CLASS_PROPERTY)
+      if (hasNotJsonNull(startEventJson, ModelerConstants.EVENT_CLASS_PROPERTY)
             && startEventJson.get(ModelerConstants.EVENT_CLASS_PROPERTY)
                   .getAsString()
                   .equals(ModelerConstants.NONE_EVENT_CLASS_KEY)
-            && startEventJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY)
+            && hasNotJsonNull(startEventJson, ModelerConstants.IMPLEMENTATION_PROPERTY)
             && startEventJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY)
                   .getAsString()
                   .equals("none"))
@@ -1479,13 +1466,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       EventHandlerType eventHandler = null;
-      if (hostingConfig.has(EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
+      //TODO: hasNotJsonNull required here?
+      if (hasNotJsonNull(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
       {
          eventHandler = findIdentifiableElement(hostActivity.getEventHandler(),
                extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID));
       }
-
-      if (eventJson.has(ModelerConstants.BINDING_ACTIVITY_UUID))
+      //TODO: hasNotJsonNull required here?
+      if (hasNotJsonNull(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID))
       {
          // potentially detach from old host
          ProcessDefinitionType containingProcess = ModelUtils.findContainingProcess(eventSymbol);
@@ -1523,7 +1511,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             // verify handler still matches the given event class
             String currentEventClass = EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType());
             if ((findContainingActivity(eventHandler) != hostActivity)
-                  || (eventJson.has(ModelerConstants.EVENT_CLASS_PROPERTY) && !extractAsString(
+                  || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !extractAsString(
                         eventJson, ModelerConstants.EVENT_CLASS_PROPERTY).equals(
                         currentEventClass)))
             {
@@ -1643,12 +1631,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateTrigger(TriggerType trigger, JsonObject triggerJson)
    {
-      if (triggerJson.has(ModelerConstants.NAME_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.NAME_PROPERTY))
       {
          trigger.setName(triggerJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
-      if (triggerJson.has(ModelerConstants.IMPLEMENTATION_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.IMPLEMENTATION_PROPERTY))
       {
          System.out.println("===> Implementation: "
                + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
@@ -1673,7 +1661,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       // A few BPMN properties
 
-      if (triggerJson.has(ModelerConstants.EVENT_CLASS_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.EVENT_CLASS_PROPERTY))
       {
          getModelBuilderFacade().setAttribute(trigger, "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
@@ -1687,13 +1675,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (triggerJson.has(ModelerConstants.THROWING_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.THROWING_PROPERTY))
       {
          getModelBuilderFacade().setBooleanAttribute(trigger, "throwing",
                triggerJson.get(ModelerConstants.THROWING_PROPERTY).getAsBoolean());
       }
 
-      if (triggerJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.INTERRUPTING_PROPERTY))
       {
          getModelBuilderFacade().setBooleanAttribute(trigger, "interrupting",
                triggerJson.get(ModelerConstants.INTERRUPTING_PROPERTY).getAsBoolean());
@@ -1717,7 +1705,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (triggerJson.has(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY))
+      if (hasNotJsonNull(triggerJson, ModelerConstants.PARAMETER_MAPPINGS_PROPERTY))
       {
          JsonArray parameterMappings = triggerJson.get(
                ModelerConstants.PARAMETER_MAPPINGS_PROPERTY).getAsJsonArray();
@@ -1737,7 +1725,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             AccessPointType accessPoint = null;
 
-            if (parameterMappingJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+            if (hasNotJsonNull(parameterMappingJson, ModelerConstants.DATA_TYPE_PROPERTY))
             {
                String dataType = parameterMappingJson.get(
                      ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
@@ -1752,7 +1740,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   String structuredDataFullId = null;
 
-                  if (parameterMappingJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                  if (hasNotJsonNull(parameterMappingJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                   {
                      structuredDataFullId = parameterMappingJson.get(
                            ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -1773,14 +1761,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             storeDescription(accessPoint, parameterMappingJson);
 
-            if (parameterMappingJson.has(ModelerConstants.DATA_FULL_ID_PROPERTY))
+            if (hasNotJsonNull(parameterMappingJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                String dataPath = null;
                String dataFullID = parameterMappingJson.get(
                      ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-               if (parameterMappingJson.has(ModelerConstants.DATA_PATH_PROPERTY)
-                     && !parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-                           .isJsonNull())
+               if (hasNotJsonNull(parameterMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
                {
                   dataPath = parameterMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
                         .getAsString();
@@ -1851,7 +1837,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(application, applicationJson);
       storeDescription(application, applicationJson);
 
-      if (applicationJson.has(ModelerConstants.CONTEXTS_PROPERTY))
+      if (hasNotJsonNull(applicationJson, ModelerConstants.CONTEXTS_PROPERTY))
       {
          // TODO This is too invasive as client may ship incomplete context(s)
 
@@ -1877,7 +1863,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             storeAttributes(context, contextJson);
 
-            if (contextJson.has(ModelerConstants.ACCESS_POINTS_PROPERTY))
+            if (hasNotJsonNull(contextJson, ModelerConstants.ACCESS_POINTS_PROPERTY))
             {
                JsonArray accessPointsJson = contextJson.get(
                      ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
@@ -1885,8 +1871,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-                  String id = accessPointJson.get(ModelerConstants.ID_PROPERTY)
-                        .getAsString();
+                  String id = NameIdUtils.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                        .getAsString()); // ID provided from client is ignored
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
                   String direction = accessPointJson.get(
@@ -1894,7 +1880,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                   AccessPointType accessPoint = null;
 
-                  if (accessPointJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+                  if (hasNotJsonNull(accessPointJson, ModelerConstants.DATA_TYPE_PROPERTY))
                   {
                      String dataType = accessPointJson.get(
                            ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
@@ -1911,7 +1897,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      {
                         String structuredDataFullId = null;
 
-                        if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        if (hasNotJsonNull(accessPointJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                         {
                            structuredDataFullId = accessPointJson.get(
                                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -1937,7 +1923,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                         String structuredDataFullId = null;
 
-                        if (accessPointJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        if (hasNotJsonNull(accessPointJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                         {
                            structuredDataFullId = accessPointJson.get(
                                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -2126,18 +2112,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       XSDSchema schema = schemaType.getSchema();
 
-      if (schemaJson.has("targetNamespace"))
+      if (hasNotJsonNull(schemaJson, "targetNamespace"))
       {
          schema.setTargetNamespace(schemaJson.getAsJsonPrimitive("targetNamespace")
                .getAsString());
       }
 
-      if (schemaJson.has("types"))
+      if (hasNotJsonNull(schemaJson, "types"))
       {
          updateXSDTypeDefinitions(schema, schemaJson.getAsJsonArray("types"));
       }
 
-      if (schemaJson.has("elements"))
+      if (hasNotJsonNull(schemaJson, "elements"))
       {
          updateElementDeclarations(schema, schemaJson.getAsJsonArray("elements"));
       }
@@ -2164,6 +2150,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String typeName = extractAsString((JsonObject) entry,
                ModelerConstants.NAME_PROPERTY);
          XSDTypeDefinition def = typesIndex.get(typeName);
+
+         // TODO HASISNULL
          boolean isComplexType = defJson.has("body");
 
          int contentsIdx = schema.getContents().size();
@@ -2267,7 +2255,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          facets.add(maxLengthFacet);
       }
 
-      if (simpleTypeJson.has("facets"))
+      if (hasNotJsonNull(simpleTypeJson, "facets"))
       {
          JsonArray facetsJson = simpleTypeJson.getAsJsonArray("facets");
          for (JsonElement entry : facetsJson)
@@ -2345,7 +2333,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             List<XSDParticle> particles = group.getContents();
             particles.clear();
 
-            if (bodyJson.has("elements"))
+            if (hasNotJsonNull(bodyJson, "elements"))
             {
                JsonArray elements = bodyJson.getAsJsonArray("elements");
                for (JsonElement entry : elements)
@@ -2504,7 +2492,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private void updateRole(RoleType role, JsonObject roleJson)
    {
 
-      if (roleJson.has(ModelerConstants.CARDINALITY))
+      if (hasNotJsonNull(roleJson, ModelerConstants.CARDINALITY))
       {
          int cardinality = 0;
          try
@@ -2547,7 +2535,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(conditionalPerformer, conditionalPerformerJson,
             propertiesMap.get(ConditionalPerformerType.class));
 
-      if (conditionalPerformerJson.has(ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY)
+      if (hasNotJsonNull(conditionalPerformerJson, ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY)
             && !(conditionalPerformerJson.get(
                   ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY).getAsString().equals(ModelerConstants.TO_BE_DEFINED)))
       {
@@ -2577,7 +2565,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(organization, organizationJson);
       storeDescription(organization, organizationJson);
 
-      if (organizationJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
+      if (hasNotJsonNull(organizationJson, ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
       {
          getModelBuilderFacade().updateTeamLead(
                organization,
@@ -2598,7 +2586,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(data, dataJson);
       storeDescription(data, dataJson);
 
-      if (dataJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+      if (hasNotJsonNull(dataJson, ModelerConstants.DATA_TYPE_PROPERTY))
       {
          if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()
@@ -2725,7 +2713,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             if (String.class.isAssignableFrom(getter.getReturnType()))
             {
-               if (request.get(property) != null)
+               if (hasNotJsonNull(request, property))
                {
                   System.out.println("Invoking " + setter.getName()
                         + " with property value " + request.get(property).getAsString());

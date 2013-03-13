@@ -6,6 +6,10 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
@@ -37,9 +41,8 @@ public class ApplicationTypeChangeCommandHandler
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            null, applicationName,
-            ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);      
-      
+            null, applicationName, ModelerConstants.WEB_SERVICE_APPLICATION_TYPE_ID);
+
       // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
@@ -66,12 +69,34 @@ public class ApplicationTypeChangeCommandHandler
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            null, applicationName,
-            ModelerConstants.CAMEL_APPLICATION_TYPE_ID);
+            null, applicationName, ModelerConstants.CAMEL_APPLICATION_TYPE_ID);
 
       // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
+
+      // Store attributes for type
+      // TODO Make general mechanism 
+      
+      JsonObject attributes = request.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+
+      if (attributes != null
+            && attributes.has("carnot:engine:camel::applicationIntegrationOverlay")
+            && !attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
+                  .isJsonNull())
+      {
+         getModelBuilderFacade().setAttribute(
+               applicationType,
+               "carnot:engine:camel::applicationIntegrationOverlay",
+               attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
+                     .getAsString());
+         
+         // Flag for new implementation
+         
+         getModelBuilderFacade().setBooleanAttribute(
+               applicationType,
+               "carnot:engine:camel::supportsMultipleAccessPoints", true);
+      }
    }
 
    @OnCommand(commandId = "uiMashupApplication.create")
@@ -82,7 +107,7 @@ public class ApplicationTypeChangeCommandHandler
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
             null, name, ModelerConstants.EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY);
 
-      //Map newly created application to a UUID
+      // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(applicationType);
 

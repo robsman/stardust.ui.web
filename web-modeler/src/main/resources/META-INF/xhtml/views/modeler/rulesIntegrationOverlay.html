@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Rules Integration Overlay</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/jquery-ui-1.8.20.custom.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+.parametersTable {
+	width: 600px;
+}
+
+.elementColumn {
+	width: 350px;
+}
+
+.entityMappingColumn {
+	width: 250px;
+}
+
+#ruleSetEditorDiv {
+	position: relative;
+	height: 250px;
+}
+</style>
+</head>
+<body>
+	<div id="rulesIntegrationOverlay">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 100%">
+			<tr>
+				<td>
+					<div class="heading">Type Declarations</div></td>
+			</tr>
+			<tr>
+				<td><textarea id="typeDeclarationsTextarea" cols="80" rows="5"
+						class="code"></textarea></td>
+			</tr>
+			<tr>
+				<td>
+					<div class="heading">Rules Definitions</div></td>
+			</tr>
+			<tr>
+				<td><div id="ruleSetEditorDiv" /></td>
+			</tr>
+		</table>
+		<div id="parametersTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<div class="heading" id="paramDef">Parameter Definitions</div></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="panelBorder" style="width: 400px;">
+							<table cellpadding="0" cellspacing="0" width="100%"
+								class="layoutTable">
+								<tr>
+									<td><div class="toolBar">
+											<table>
+												<tr>
+													<td><input id="deleteParameterDefinitionButton"
+														type="image" src="../../images/icons/delete.png"
+														title="Delete" alt="Delete" class="toolbarButton" />
+													</td>
+												</tr>
+											</table>
+										</div></td>
+								</tr>
+								<tr>
+									<td>
+										<div class="dataTable">
+											<table id="parameterDefinitionsTable" cellpadding="0"
+												cellspacing="0">
+												<tbody />
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div></td>
+				</tr>
+				<tr>
+					<td>
+						<table id="parameterDefinitionTypeSelector" class="fieldSetTable"
+							style="margin-top: 10px;">
+							<tr>
+								<td><input id="addParameterDefinitionButton" type="image"
+									src="../../images/icons/add.png" title="Add" alt="Add"
+									class="toolbarButton" />
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionNameInput" id="name">Name</label>
+								</td>
+								<td><input id="parameterDefinitionNameInput" type="text" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionDirectionSelect"
+									id="direction">Direction</label>
+								</td>
+								<td><select id="parameterDefinitionDirectionSelect">
+										<option value="IN">In</option>
+										<option value="OUT">Out</option>
+								</select>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="dataTypeSelect" id="dataType">Data
+										Type</label></td>
+								<td><select id="dataTypeSelect" size="1">
+								</select>
+								</td>
+							</tr>
+							<tr id="primitiveDataTypeRow">
+								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
+									Type</label></td>
+								<td><select id="primitiveDataTypeSelect" size="1">
+								</select></td>
+							</tr>
+							<tr id="structuredDataTypeRow">
+								<td><label for="structuredDataTypeSelect">Data
+										Structure</label>
+								</td>
+								<td><select id="structuredDataTypeSelect" size="1">
+								</select>
+								</td>
+							</tr>
+							<tr id="documentTypeRow">
+								<td><label for="documentTypeSelect">Document Type</label>
+								</td>
+								<td><select id="documentTypeSelect" size="1">
+								</select>
+								</td>
+							</tr>
+						</table></td>
+				</tr>
+			</table>
+		</div>
+		<div id="drlTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable"
+				style="width: 100%">
+				<tr>
+					<td>
+						<div class="heading">DRL Code</div></td>
+				</tr>
+				<tr>
+					<td><textarea id="drlTextarea" cols="80" rows="15"
+							class="code"></textarea></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
