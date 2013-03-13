@@ -534,6 +534,7 @@ define(
 			function findType(schema, typeName) {
 				var parsedName = parseQName(typeName);
 				var element;
+				var type;
 
 				// (fh) spec says we should search for elements
 				if (!parsedName.namespace

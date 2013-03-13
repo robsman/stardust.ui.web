@@ -416,7 +416,7 @@ public final class WebServiceApplicationUtils
          qname = part.getTypeName();
       }
       
-      if (qname != null)
+      if (qname != null && !XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI()))
       {
          ModelType model = ModelUtils.findContainingModel(application);
          TypeDeclarationType typeDeclaration = findMatchingTypeDeclaration(model, qname);
