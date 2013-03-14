@@ -102,13 +102,15 @@ define(
 											.append(model.name + "/"
 													+ structuredDataType.name);
 								}
+							} else {
+								this.metadataStructureLabel
+										.append(m_i18nUtils
+												.getProperty("modeler.general.defaultLiteral"));
 							}
 						} else {
 							this.metadataStructureLabel
-									.append("<span style='color: grey;'><i>"
-											+ m_i18nUtils
-													.getProperty("modeler.general.defaultLiteral")
-											+ "</i></span>");
+									.append(m_i18nUtils
+											.getProperty("modeler.general.defaultLiteral"));
 						}
 					} else {
 						this.documentDataList.val(m_constants.TO_BE_DEFINED);
