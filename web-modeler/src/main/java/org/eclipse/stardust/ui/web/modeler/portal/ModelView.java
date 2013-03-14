@@ -25,7 +25,7 @@ public class ModelView extends AbstractAdapterView {
     */
 	public ModelView()
    {
-      super("/plugins/bpm-modeler/views/modeler/modelView.html", "modelFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/modelView.html", "modelFrameAnchor", "modelName");
    }
 
    @Override

@@ -9,7 +9,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 public class UiMashupApplicationView extends AbstractAdapterView {
    public UiMashupApplicationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html", "uiMashupApplicationFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html", "uiMashupApplicationFrameAnchor",
+            "applicationName");
    }
 
    @Override

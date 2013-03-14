@@ -749,6 +749,15 @@ InfinityBpm.ProcessPortal = new function() {
         contentFrame.setAttribute('style', 'display: none; z-index:100; position: relative; top: 450px; left: 100px; width: 400px; height: 300px;');
         if (advanceArgs != undefined) {
         	contentFrame.setAttribute('noUnloadWarning', advanceArgs.noUnloadWarning);
+        	
+        	// Loop through custom attributes and add those as well
+        	for(var attr in advanceArgs) {
+        		if (attr && attr.indexOf("frmAttr") == 0) {
+        			var frmAttr = attr.substring("frmAttr".length);
+        			frmAttr = frmAttr.charAt(0).toLowerCase() + frmAttr.substring(1);
+        			contentFrame.setAttribute(frmAttr, advanceArgs[attr]);
+        		}
+        	}
         }
 
         contentFrame.setAttribute('src', contentUrl);

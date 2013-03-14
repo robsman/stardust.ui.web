@@ -9,7 +9,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 public class WebServiceApplicationView extends AbstractAdapterView {
    public WebServiceApplicationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html", "webServiceApplicationFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html", "webServiceApplicationFrameAnchor",
+            "applicationName");
    }
 
    @Override

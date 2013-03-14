@@ -11,7 +11,8 @@ public class ProcessDefinitionView extends AbstractAdapterView {
     */
    public ProcessDefinitionView()
    {
-      super("/plugins/bpm-modeler/views/modeler/processDefinitionView.html", "processDefinitionFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/processDefinitionView.html", "processDefinitionFrameAnchor",
+            "processName");
    }
 
    @Override

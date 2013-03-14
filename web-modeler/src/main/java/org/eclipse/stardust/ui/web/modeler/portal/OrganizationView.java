@@ -25,7 +25,7 @@ public class OrganizationView extends AbstractAdapterView {
     */
 	public OrganizationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/organizationView.html", "organizationFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/organizationView.html", "organizationFrameAnchor", "organizationName");
    }
 
    @Override

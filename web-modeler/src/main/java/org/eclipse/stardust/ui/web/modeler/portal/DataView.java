@@ -26,7 +26,7 @@ public class DataView extends AbstractAdapterView
     */
    public DataView()
    {
-      super("/plugins/bpm-modeler/views/modeler/dataView.html", "dataFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/dataView.html", "dataFrameAnchor", "dataName");
    }
 
    @Override
