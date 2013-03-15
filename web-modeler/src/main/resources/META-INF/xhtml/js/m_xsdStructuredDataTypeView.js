@@ -572,7 +572,7 @@ define(
 					jQuery.each(m_typeDeclaration.getXsdCoreTypes(), function() {
 						var typeQName = "xsd:" + this;
 						select += "<option value='" + typeQName + "' ";
-						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
+						if (schemaType && schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
 							selected = true;
 						}
@@ -591,7 +591,7 @@ define(
 							var tdType = typeDeclaration.asSchemaType();
 							if (tdType) {
 								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-								if ( !schemaType.isBuiltinType()) {
+								if ( schemaType && !schemaType.isBuiltinType()) {
 									select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
 									selected = true;
 								}
@@ -634,7 +634,7 @@ define(
 					jQuery.each(m_typeDeclaration.getXsdExtraTypes(), function() {
 						var typeQName = "xsd:" + this;
 						select += "<option value='" + typeQName + "' ";
-						if (schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
+						if (schemaType && schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
 							selected = true;
 						}
