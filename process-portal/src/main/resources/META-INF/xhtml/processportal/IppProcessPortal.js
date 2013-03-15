@@ -751,12 +751,13 @@ InfinityBpm.ProcessPortal = new function() {
         	contentFrame.setAttribute('noUnloadWarning', advanceArgs.noUnloadWarning);
         	
         	// Loop through custom attributes and add those as well
-        	for(var attr in advanceArgs) {
-        		if (attr && attr.indexOf("frmAttr") == 0) {
-        			var frmAttr = attr.substring("frmAttr".length);
-        			frmAttr = frmAttr.charAt(0).toLowerCase() + frmAttr.substring(1);
-        			contentFrame.setAttribute(frmAttr, advanceArgs[attr]);
-        		}
+        	if (advanceArgs.frmAttrs) {
+        		var frmAttrs = advanceArgs.frmAttrs;
+	        	for(var attr in frmAttrs) {
+	        		if (attr) {
+	        			contentFrame.setAttribute(attr, frmAttrs[attr]);
+	        		}
+	        	}
         	}
         }
 
