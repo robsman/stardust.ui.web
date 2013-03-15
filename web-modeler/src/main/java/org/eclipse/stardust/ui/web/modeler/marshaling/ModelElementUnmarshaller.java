@@ -35,6 +35,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -683,8 +684,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
                      .loadModel(participantModelID + ".xpdl");
-               IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
-                     loadModel, participantId);
+               
+               IModelParticipant participantCopy = null;
+               
+               try
+               {
+                  participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);
+               }
+               catch (ObjectNotFoundException e)
+               {
+               }               
+               
                if (participantCopy == null)
                {
                   ElementCopier copier = new ElementCopier(loadModel, null);
