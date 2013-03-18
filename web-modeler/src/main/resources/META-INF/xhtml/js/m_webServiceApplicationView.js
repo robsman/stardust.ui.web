@@ -162,7 +162,6 @@ define(
 						application) {
 					initializing = true;
 					this.id = "webServiceApplicationView";
-					this.webServiceStructure = {};
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
@@ -344,39 +343,43 @@ define(
 					}
 
 					if (initializing) {
-						// Build dummy Web Service structure - allows too initialize
-						// selects even without full WSDL information
-						var structure = {};
-						var services = {};
-						var ports = {};
-						var operations = {};
+						if (this.application.webServiceStructure) {
+							this.updateServiceFromAppWebServiceStructure();
+						} else {
+							// Build dummy Web Service structure - allows too initialize
+							// selects even without full WSDL information
+							var structure = {};
+							var services = {};
+							var ports = {};
+							var operations = {};
 
-						if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
-							operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
-								name : this.application.attributes["carnot:engine:wsOperationName"]
+							if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
+								operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
+									name : this.application.attributes["carnot:engine:wsOperationName"]
+								};
+							}
+
+							if (this.application.attributes["carnot:engine:wsPortName"] != null) {
+								ports[this.application.attributes["carnot:engine:wsPortName"]] = {
+									name : this.application.attributes["carnot:engine:wsPortName"],
+									operations : operations
+								};
+							}
+
+							if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
+								services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
+									name : this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
+									ports : ports
+								};
+							}
+
+							structure = {
+								services : services,
+								url : this.application.attributes["carnot:engine:wsdlUrl"]
 							};
+
+							this.loadWebServiceStructure(structure);
 						}
-
-						if (this.application.attributes["carnot:engine:wsPortName"] != null) {
-							ports[this.application.attributes["carnot:engine:wsPortName"]] = {
-								name : this.application.attributes["carnot:engine:wsPortName"],
-								operations : operations
-							};
-						}
-
-						if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
-							services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
-								name : this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
-								ports : ports
-							};
-						}
-
-						structure = {
-							services : services,
-							url : this.application.attributes["carnot:engine:wsdlUrl"]
-						};
-
-						this.loadWebServiceStructure(structure);
 					}
 
 					// Populate inputs from application
@@ -412,14 +415,14 @@ define(
 						// Update style output for selected service and port
 						this.styleOutput
 								.append(this.application.attributes["carnot:engine:wsPortName"]);
-						var port = this.webServiceStructure
+						var port = this.application.webServiceStructure
 											.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
 												.ports[this.application.attributes["carnot:engine:wsPortName"]];
 						this.styleOutput.empty();
 						this.styleOutput.append(port.style);
 
 						// Update use output for selected service and port and operation
-						var operation = this.webServiceStructure
+						var operation = this.application.webServiceStructure
 												.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
 													.ports[this.application.attributes["carnot:engine:wsPortName"]]
 														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
@@ -501,54 +504,57 @@ define(
 				 */
 				WebServiceApplicationView.prototype.loadWebServiceStructure = function(
 						structure) {
-					var successCallback = {
-						callbackScope : this,
-						callbackMethod : "setWebServiceStructure"
-					};
-
-					jQuery("body").css("cursor", "progress");
-					this.clearErrorMessages();
-					this.wsdlUrlInput.removeClass("error");
-
-					var view = this;
-
 					var wsdlURL = (structure && structure.url) ? structure.url : this.wsdlUrlInput.val();
-					m_communicationController
-							.syncPostData(
-									{
-										url : m_communicationController
-												.getEndpointUrl()
-												+ "/webServices/structure"
-									},
-									JSON.stringify({
-										wsdlUrl : wsdlURL
-									}),
-									{
-										"success" : function(serverData) {
-											successCallback.callbackScope[successCallback.callbackMethod]
-													(serverData);
-											jQuery("body")
-													.css("cursor", "auto");
-										},
-										"error" : function() {
-											jQuery("body")
-													.css("cursor", "auto");
-											if (structure == null) {
-												var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")
-												view.errorMessages
-														.push(errormessage);
-												view.showErrorMessages();
-												view.wsdlUrlInput
-														.addClass("error");
-												view.serviceSelect.empty();
-												view.portSelect.empty();
-												view.operationSelect.empty();
-											} else {
-												successCallback.callbackScope[successCallback.callbackMethod]
-														(structure);
-											}
-										}
-									});
+
+					if (wsdlURL.trim() != "") {
+						var successCallback = {
+								callbackScope : this,
+								callbackMethod : "setWebServiceStructure"
+							};
+
+							jQuery("body").css("cursor", "progress");
+							this.clearErrorMessages();
+							this.wsdlUrlInput.removeClass("error");
+
+							var view = this;
+
+							m_communicationController
+									.syncPostData(
+											{
+												url : m_communicationController
+														.getEndpointUrl()
+														+ "/webServices/structure"
+											},
+											JSON.stringify({
+												wsdlUrl : wsdlURL
+											}),
+											{
+												"success" : function(serverData) {
+													successCallback.callbackScope[successCallback.callbackMethod]
+															(serverData);
+													jQuery("body")
+															.css("cursor", "auto");
+												},
+												"error" : function() {
+													jQuery("body")
+															.css("cursor", "auto");
+													if (structure == null) {
+														var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")
+														view.errorMessages
+																.push(errormessage);
+														view.showErrorMessages();
+														view.wsdlUrlInput
+																.addClass("error");
+														view.serviceSelect.empty();
+														view.portSelect.empty();
+														view.operationSelect.empty();
+													} else {
+														successCallback.callbackScope[successCallback.callbackMethod]
+																(structure);
+													}
+												}
+											});
+					}
 				};
 
 				/**
@@ -560,15 +566,29 @@ define(
 					m_utils.debug("===> Web Service Structure");
 					m_utils.debug(webServiceStructure);
 
-					this.webServiceStructure = webServiceStructure;
+					this.setApplicationWebServiceStructure(webServiceStructure);
 
+					this.updateServiceFromAppWebServiceStructure();
+				};
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.setApplicationWebServiceStructure = function(
+						webServiceStructure) {
+					this.application.webServiceStructure = webServiceStructure;
+				}
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.updateServiceFromAppWebServiceStructure = function() {
 					this.serviceSelect.empty();
 
 					var start = true;
 
-
-					for ( var m in webServiceStructure.services) {
-						var service = webServiceStructure.services[m];
+					for ( var m in this.application.webServiceStructure.services) {
+						var service = this.application.webServiceStructure.services[m];
 
 						this.serviceSelect.append("<option value=\""
 								+ service.name + "\">" + service.name
@@ -580,7 +600,7 @@ define(
 							start = false;
 						}
 					}
-				};
+				}
 
 				/**
 				 *
@@ -593,8 +613,8 @@ define(
 
 					var start = true;
 
-					for ( var m in this.webServiceStructure.services[service].ports) {
-						var port = this.webServiceStructure.services[service].ports[m];
+					for ( var m in this.application.webServiceStructure.services[service].ports) {
+						var port = this.application.webServiceStructure.services[service].ports[m];
 
 						this.portSelect.append("<option value=\"" + port.name
 								+ "\">" + port.name + "</option>");
@@ -613,7 +633,7 @@ define(
 				WebServiceApplicationView.prototype.setPort = function(portName) {
 					this.portSelect.val(portName);
 
-					var port = this.webServiceStructure.services[this.serviceSelect
+					var port = this.application.webServiceStructure.services[this.serviceSelect
 							.val()].ports[portName];
 
 					this.styleOutput.empty();
@@ -644,7 +664,7 @@ define(
 						operationName) {
 					this.operationSelect.val(operationName);
 
-					var operation = this.webServiceStructure.services[this.serviceSelect
+					var operation = this.application.webServiceStructure.services[this.serviceSelect
 							.val()].ports[this.portSelect.val()].operations[operationName];
 					this.useOutput.empty();
 					this.useOutput.append(operation.use);
