@@ -390,6 +390,9 @@ define(function() {
 		BUSINESS_ANALYST_ROLE : "BusinessAnalyst",
 		INTEGRATOR_ROLE : "Integrator",
 
+		// Web-service
+		DYNAMICALLY_BOUND_SERVICE : "Dynamically bound Service",
+
 		//General
 		NEW_LINE : 	"\n",
 		EXTERNAL_REFERENCE_PROPERTY : "externalReference",

@@ -88,6 +88,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.use"));
+				jQuery("#endpointLabel")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.endpoint"));
 
 				jQuery("#implementation")
 						.text(
@@ -169,6 +173,8 @@ define(
 					this.styleOutput = jQuery("#styleOutput");
 					this.protocolOutput = jQuery("#protocolOutput");
 					this.useOutput = jQuery("#useOutput");
+					this.endpointLabel = jQuery("#endpointLabel");
+					this.endpoint = jQuery("#endpointInput");
 					this.addressingInput = jQuery("#addressingInput");
 					this.implementationSelect = jQuery("#implementationSelect");
 					this.authenticationInput = jQuery("#authenticationInput");
@@ -232,6 +238,22 @@ define(
 								.setAddressing(event.data.view.addressingInput
 										.is(":checked"));
 					});
+
+					this.endpoint.change({
+						view : this
+					}, function(event) {
+						var endpointVal = null;
+						if (event.data.view.endpoint.val()
+								&& event.data.view.endpoint.val().trim() !== "") {
+							endpointVal = event.data.view.endpoint.val();
+						}
+						event.data.view.submitChanges({
+							attributes : {
+								"carnot:engine:wsUddiAccessPoint" : endpointVal
+							}
+						});
+					});
+
 					this.implementationSelect
 							.change(
 									{
@@ -367,6 +389,22 @@ define(
 							.val(this.application.attributes["carnot:engine:wsPortName"]);
 					this.operationSelect
 							.val(this.application.attributes["carnot:engine:wsOperationName"]);
+
+					if (this.serviceSelect.val()
+							&& this.serviceSelect.val().indexOf(
+									m_constants.DYNAMICALLY_BOUND_SERVICE) > -1) {
+						this.endpointLabel.removeClass("invisible");
+						this.endpoint.removeClass("invisible");
+					} else {
+						this.endpointLabel.addClass("invisible");
+						this.endpoint.addClass("invisible");
+					}
+					if (this.application.attributes["carnot:engine:wsUddiAccessPoint"]) {
+						this.endpoint
+								.val(this.application.attributes["carnot:engine:wsUddiAccessPoint"]);
+					} else {
+						this.endpoint.val("");
+					}
 
 					if (this.application.attributes["carnot:engine:wsServiceName"]
 							&& this.application.attributes["carnot:engine:wsPortName"]
