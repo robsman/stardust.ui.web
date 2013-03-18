@@ -5,6 +5,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import javax.annotation.Resource;
 
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -24,6 +25,25 @@ public class VariableCommandsHandler
 {
    @Resource
    private JsonMarshaller jsonIo;
+
+   @OnCommand(commandId = "primitiveData.create")
+   public void createPrimitiveData(Definitions model, JsonObject request)
+   {
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+      String id = request.has(ModelerConstants.ID_PROPERTY) //
+            ? extractString(request, ModelerConstants.ID_PROPERTY)
+            : Bpmn2Utils.createInternalId();
+
+      DataJto jto = new DataJto();
+      jto.id = id;
+      jto.name = name;
+      jto.dataType = ModelerConstants.PRIMITIVE_DATA_TYPE_KEY;
+      jto.primitiveDataType = extractString(request, ModelerConstants.PRIMITIVE_TYPE);
+
+      Bpmn2VariableBuilder variableBuilder = new Bpmn2VariableBuilder();
+      DataStore globalVariable = variableBuilder.createGlobalPrimitiveVariable(model, jto);
+      variableBuilder.attachVariable(model, globalVariable);
+   }
 
    @OnCommand(commandId = "structuredData.create")
    public void createStructuredData(Definitions model, JsonObject request)

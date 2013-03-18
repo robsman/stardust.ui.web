@@ -18,6 +18,7 @@ public class LaneSymbolJto extends ShapeJto
    public List<ActivitySymbolJto> activitySymbols = newArrayList();
    public List<GatewaySymbolJto> gatewaySymbols = newArrayList();
    public List<EventSymbolJto> eventSymbols = newArrayList();
+   public List<DataSymbolJto> dataSymbols = newArrayList();
 
    public LaneSymbolJto()
    {

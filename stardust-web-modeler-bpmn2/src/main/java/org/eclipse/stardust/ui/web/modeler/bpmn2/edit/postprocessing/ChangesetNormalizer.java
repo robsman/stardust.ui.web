@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2.edit.postprocessing;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.ExtensionDefinition;
@@ -106,7 +107,7 @@ public class ChangesetNormalizer implements ChangePostprocessor
    public Pair<InspectionQualifier, EObject> inspectModification(EObject element)
    {
       // element whitelist
-      if ((element instanceof Process) || (element instanceof FlowElement))
+      if ((element instanceof DataStore) || (element instanceof Process) || (element instanceof FlowElement))
       {
          return ACCEPT;
       }
@@ -163,6 +164,7 @@ public class ChangesetNormalizer implements ChangePostprocessor
    {
       return (changedObject instanceof Definitions)
             || (changedObject instanceof Interface)
+            || (changedObject instanceof DataStore)
             || (changedObject instanceof Process)
             || (changedObject instanceof FlowElement)
             || (changedObject instanceof Diagram)

@@ -26,6 +26,26 @@ public class Bpmn2VariableBuilder
       model.getRootElements().add(variable);
    }
 
+   public DataStore createGlobalPrimitiveVariable(Definitions model, DataJto jto)
+   {
+      DataStore variable = bpmn2Factory().createDataStore();
+
+      // TODO split into one method per concrete data type
+      if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(jto.dataType))
+      {
+         // TODO store type ID
+      }
+      else
+      {
+         throw new IllegalArgumentException("Unsupported data type: " + jto.dataType);
+      }
+
+      variable.setName(jto.name);
+      variable.setId( !isEmpty(jto.id) ? jto.id : Bpmn2Utils.createInternalId());
+
+      return variable;
+   }
+
    public DataObject createXsdVariable(Definitions model, DataJto jto)
    {
       DataObject variable = bpmn2Factory().createDataObject();

@@ -8,6 +8,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.EndEvent;
@@ -75,6 +76,10 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       else if (modelElement instanceof Event)
       {
          updateEvent((Event) modelElement, json);
+      }
+      else if (modelElement instanceof DataStore)
+      {
+         updateDataStore((DataStore) modelElement, json);
       }
       else if (modelElement instanceof DataObject)
       {
@@ -482,6 +487,17 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
     * @param dataObject
     * @param dataJson
     */
+   private void updateDataStore(DataStore dataObject, JsonObject dataJson)
+   {
+      if (dataJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         dataObject.setName(dataJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      }
+
+      storeDescription(dataObject, dataJson);
+      storeExtensions(dataObject, dataJson);
+   }
+
    private void updateDataObject(DataObject dataObject, JsonObject dataJson)
    {
       if (dataJson.has(ModelerConstants.NAME_PROPERTY))
