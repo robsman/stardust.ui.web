@@ -14,11 +14,16 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.bpmn2.util.Bpmn2ResourceFactoryImpl;
+import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
+import org.eclipse.bpmn2.util.XmlExtendedMetadata;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.config.CurrentVersion;
@@ -27,6 +32,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.compatibility.AdonisImporter;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.serialization.StardustBpmn2XmlResource;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.spi.ModelExporter;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.DirectStreamsURIHandler;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
@@ -56,7 +62,35 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
             ResourceSet context = new ResourceSetImpl();
             context.getResourceFactoryRegistry()
                   .getProtocolToFactoryMap()
-                  .put(resourceStreamUri.scheme(), new Bpmn2ResourceFactoryImpl());
+                  .put(resourceStreamUri.scheme(), new Bpmn2ResourceFactoryImpl()
+                  {
+                     @Override
+                     public Resource createResource(URI uri)
+                     {
+                        StardustBpmn2XmlResource result = new StardustBpmn2XmlResource(uri);
+
+                        ExtendedMetaData extendedMetadata = new XmlExtendedMetadata();
+                        result.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
+                        result.getDefaultLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
+
+                        result.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION,
+                                new OnlyContainmentTypeInfo());
+
+                        result.getDefaultLoadOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE,
+                                Boolean.TRUE);
+                        result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE,
+                                Boolean.TRUE);
+
+                        result.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
+
+                        result.getDefaultSaveOptions().put(XMLResource.OPTION_ELEMENT_HANDLER,
+                                new ElementHandlerImpl(true));
+
+                        result.getDefaultSaveOptions().put(XMLResource.OPTION_ENCODING, "UTF-8");
+
+                        return result;
+                     }
+                  });
 
             Bpmn2Resource bpmnModel = (Bpmn2Resource) context.createResource(resourceStreamUri);
 
