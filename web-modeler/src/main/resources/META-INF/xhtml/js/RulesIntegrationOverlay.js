@@ -91,6 +91,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
@@ -276,6 +277,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
@@ -354,6 +356,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
