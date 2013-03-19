@@ -265,6 +265,7 @@ define(
 									.showErrorMessage("Symbol can only be dropped inside a expanded lane.");
 							this.diagram.hideSnapLines(this);
 							this.remove();
+							this.diagram.mode = this.diagram.NORMAL_MODE
 							return;
 						} else {
 							this.parentSymbol.containedSymbols.push(this);

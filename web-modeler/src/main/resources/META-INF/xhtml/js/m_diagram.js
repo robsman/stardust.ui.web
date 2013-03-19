@@ -2190,8 +2190,8 @@ define(
 					this.width = width;
 					this.height = height;
 					this.background.attr({
-						"width" : width,
-						"height" : height
+						"width" : (width / this.zoomFactor) * 1.25,
+						"height" : (height / this.zoomFactor) * 1.25
 					});
 					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};
