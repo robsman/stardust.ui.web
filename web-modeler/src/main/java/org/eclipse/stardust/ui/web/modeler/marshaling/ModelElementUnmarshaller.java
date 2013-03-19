@@ -609,6 +609,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
+      if (StringUtils.isEmpty(dataMapping.getContext()))
+      {
+         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+      }
+
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
       {
          dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
@@ -684,17 +689,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
                      .loadModel(participantModelID + ".xpdl");
-               
+
                IModelParticipant participantCopy = null;
-               
+
                try
                {
                   participantCopy = getModelBuilderFacade().findParticipant(loadModel, participantId);
                }
                catch (ObjectNotFoundException e)
                {
-               }               
-               
+               }
+
                if (participantCopy == null)
                {
                   ElementCopier copier = new ElementCopier(loadModel, null);
