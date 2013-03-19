@@ -360,15 +360,15 @@ define(
 							}
 
 							if (this.application.attributes["carnot:engine:wsPortName"] != null) {
-								ports[this.application.attributes["carnot:engine:wsPortName"]] = {
-									name : this.application.attributes["carnot:engine:wsPortName"],
+								ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])] = {
+									name : this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]),
 									operations : operations
 								};
 							}
 
 							if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
-								services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
-									name : this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
+								services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
+									name : this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
 									ports : ports
 								};
 							}
@@ -387,9 +387,9 @@ define(
 					this.wsdlUrlInput
 							.val(this.application.attributes["carnot:engine:wsdlUrl"]);
 					this.serviceSelect
-							.val(this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
+							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
 					this.portSelect
-							.val(this.application.attributes["carnot:engine:wsPortName"]);
+							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]));
 					this.operationSelect
 							.val(this.application.attributes["carnot:engine:wsOperationName"]);
 
@@ -416,15 +416,15 @@ define(
 						this.styleOutput
 								.append(this.application.attributes["carnot:engine:wsPortName"]);
 						var port = this.application.webServiceStructure
-											.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
-												.ports[this.application.attributes["carnot:engine:wsPortName"]];
+											.services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
+												.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])];
 						this.styleOutput.empty();
 						this.styleOutput.append(port.style);
 
 						// Update use output for selected service and port and operation
 						var operation = this.application.webServiceStructure
-												.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
-													.ports[this.application.attributes["carnot:engine:wsPortName"]]
+												.services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
+													.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])]
 														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
 						this.useOutput.empty();
 						this.useOutput.append(operation.use);
@@ -456,7 +456,7 @@ define(
 				/**
 				 *
 				 */
-				WebServiceApplicationView.prototype.getServiceDisplayName = function(fullyQualifiedName) {
+				WebServiceApplicationView.prototype.getDisplayName = function(fullyQualifiedName) {
 					if (fullyQualifiedName
 							&& fullyQualifiedName.indexOf("{") == 0
 							&& fullyQualifiedName.indexOf("}") > -1
@@ -672,8 +672,8 @@ define(
 					this.protocolOutput.append(operation["carnot:engine:wsSoapProtocol"]);
 
 					if (!initializing
-							&& (this.serviceSelect.val() != this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])
-								|| this.portSelect.val() != this.application.attributes["carnot:engine:wsPortName"]
+							&& (this.serviceSelect.val() != this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])
+								|| this.portSelect.val() != this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])
 								|| this.operationSelect.val() != this.application.attributes["carnot:engine:wsOperationName"])) {
 						this
 								.submitChanges({
