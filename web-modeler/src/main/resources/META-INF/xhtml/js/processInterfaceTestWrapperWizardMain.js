@@ -25,9 +25,6 @@ require
 						'//cdnjs.cloudflare.com/ajax/libs/raphael/2.0.1/raphael-min' ],
 				'angularjs' : [ 'bpm-modeler/js/libs/angular/angular-1.0.2',
 						'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
-				'mustache' : [
-						'bpm-modeler/js/libs/mustache/mustache',
-						'https://raw.github.com/janl/mustache.js/6d1954cb5c125c40548c9952efe79a4534c6760a/mustache' ],
 
 				'jquery-ui' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.8.19.min',
