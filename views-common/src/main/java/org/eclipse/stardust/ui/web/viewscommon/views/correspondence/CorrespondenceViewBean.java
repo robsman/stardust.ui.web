@@ -67,7 +67,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.printer.PrinterDialogPopup;
 
 import com.icesoft.faces.component.dragdrop.DropEvent;
 import com.icesoft.faces.component.inputfile.FileInfo;
-import com.icesoft.faces.component.inputrichtext.InputRichText;
 import com.icesoft.faces.context.effects.Effect;
 import com.icesoft.faces.context.effects.Pulsate;
 
@@ -93,7 +92,7 @@ public class CorrespondenceViewBean extends UIComponentBean
    private String faxMailAddress;
    private String mailSubject;
    private List<Attachment> attachments;
-   private InputRichText emailRichText;
+   private String emailRichText;
 
    // Enabler flags
    private boolean showCc = false;
@@ -266,8 +265,11 @@ public class CorrespondenceViewBean extends UIComponentBean
 
          if (errorMsg.size() == 0)
          {
+            String mailContent = editor.getContent();
+            // Replace with <br/>, to maintain multiline msg entered on TextArea
+            mailContent = mailContent.replaceAll("(\r\n|\n)", "<br />");
             // Send mail
-            boolean sendMailSuccess = mailService.sendMail(recipientDetails, mailSender, mailSubject, editor.getContent(), attachments);
+            boolean sendMailSuccess = mailService.sendMail(recipientDetails, mailSender, mailSubject, mailContent, attachments);
 
             if (sendMailSuccess)
             {
@@ -866,12 +868,12 @@ public class CorrespondenceViewBean extends UIComponentBean
       return showFax;
    }
 
-   public InputRichText getEmailRichText()
+   public String getEmailRichText()
    {
       return emailRichText;
    }
 
-   public void setEmailRichText(InputRichText emailRichText)
+   public void setEmailRichText(String emailRichText)
    {
       this.emailRichText = emailRichText;
    }
