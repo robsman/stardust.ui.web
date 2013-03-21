@@ -382,11 +382,15 @@ define(
 
 					var route = "";
 
+					route += "<setHeader headerName='CamelHttpUri'>\n";
+					route += "\t<simple>" + uri
+							+ "</simple>\n";
+					route += "</setHeader>\n";
 					route += "<setHeader headerName='CamelHttpMethod'>\n";
 					route += "\t<constant>" + this.commandSelect.val()
 							+ "</constant>\n";
 					route += "</setHeader>\n";
-					route += "<to uri='" + uri + "'/>\n"
+					route += "<to uri='isoverwritten'/>\n";
 
 					return route;
 				};
