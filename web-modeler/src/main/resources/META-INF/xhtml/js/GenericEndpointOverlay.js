@@ -105,12 +105,12 @@ define(
 								if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
 									self.view
 											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inputBodyAccessPoint",
+													"carnot:engine:camel::inBodyAccessPoint",
 													null);
 								} else {
 									self.view
 											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inputBodyAccessPoint",
+													"carnot:engine:camel::inBodyAccessPoint",
 													self.inputBodyAccessPointInput
 															.val());
 								}
@@ -124,12 +124,12 @@ define(
 								if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
 									self.view
 											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outputBodyAccessPoint",
+													"carnot:engine:camel::outBodyAccessPoint",
 													null);
 								} else {
 									self.view
 											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outputBodyAccessPoint",
+													"carnot:engine:camel::outBodyAccessPoint",
 													self.outputBodyAccessPointInput
 															.val());
 								}
@@ -254,9 +254,9 @@ define(
 					}
 
 					this.inputBodyAccessPointInput
-							.val(this.getApplication().attributes["carnot:engine:camel::inputBodyAccessPoint"]);
+							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
 					this.outputBodyAccessPointInput
-							.val(this.getApplication().attributes["carnot:engine:camel::outputBodyAccessPoint"]);
+							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
 					this.camelContextInput
 							.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.routeTextarea
