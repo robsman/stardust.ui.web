@@ -775,11 +775,6 @@ define(
 						this.variantSelect
 								.append("<option value=\"passwordDigest\">"
 										+ selectdata + "</option>");
-						selectdata = m_i18nUtils
-								.getProperty("modeler.model.propertyView.webService.variant.option.xwssConfiguration");
-						this.variantSelect
-								.append("<option value=\"xwssConfiguration\">"
-										+ selectdata + "</option>");
 					}
 					if (variant) {
 						this.variantSelect.val(variant);
