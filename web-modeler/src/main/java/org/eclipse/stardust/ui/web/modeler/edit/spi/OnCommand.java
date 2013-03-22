@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
  * <p>
  * Example:
  * <pre>
- * {@code
  * &#64;CommandHandler
  * public class MoveNodeSymbolHandler
  * {
