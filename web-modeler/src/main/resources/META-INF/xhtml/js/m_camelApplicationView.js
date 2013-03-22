@@ -89,6 +89,10 @@ define(
 					this.id = "camelApplicationView";
 					this.application = application;
 
+					this.view = jQuery("#camelApplicationView");
+					
+					this.view.css("cursor", "wait");
+
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.overlayAnchor = jQuery("#overlayAnchor");
 
@@ -122,14 +126,24 @@ define(
 										}
 									});
 
+					var self = this;
+
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
-						this.setOverlay("genericEndpoint");
+						this.setOverlay("genericEndpointOverlay").done(function() {
+							self.initializeModelElementView(application);
+							self.view.css("visibility", "visible");
+						});
 					} else {
 						this
-								.setOverlay(this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"]);
+								.setOverlay(
+										this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"])
+								.done(
+										function() {
+											self
+													.initializeModelElementView(application);
+											self.view.css("visibility", "visible");
+										});
 					}
-
-					this.initializeModelElementView(application);
 				};
 
 				/**
@@ -162,25 +176,44 @@ define(
 				 * 
 				 */
 				CamelApplicationView.prototype.setOverlay = function(overlay) {
+					var deferred = jQuery.Deferred();					
 					var extension = m_extensionManager.findExtensions(
 							"applicationIntegrationOverlay", "id", overlay)[0];
 
 					this.overlayAnchor.empty();
 
-					var view = this;
+					var self = this;
 
-					this.overlayAnchor.load(extension.pageHtmlUrl, function(
-							response, status, xhr) {
-						if (status == "error") {
-							var msg = "Properties Page Load Error: "
-									+ xhr.status + " " + xhr.statusText;
+					jQuery.ajax({
+						type : 'GET',
+						url : extension.pageHtmlUrl,
+						async : false
+					}).done(
+							function(data) {
+								self.overlayAnchor.append(data);
 
-							jQuery(this).append(msg);
-						} else {
-							view.overlayController = extension.provider
-									.create(view);
-						}
+								self.overlayController = extension.provider
+										.create(self);
+
+								// Make sure that initial information for the
+								// overlay is written to the server
+								// TODO Ideally, this would only be invoked on
+								// creation, but currently, the overlay code is
+								// not bound at creation time, just the overlay
+								// ID
+								// is written. Hence, we are invoking per View
+								// initialization
+
+								self.overlayController.activate();
+
+								deferred.resolve();
+							}).fail(function(data) {
+						self.overlayAnchor.append(data);
+
+						deferred.reject();
 					});
+
+					return deferred.promise();
 				};
 
 				/**

@@ -383,8 +383,7 @@ define(
 					var route = "";
 
 					route += "<setHeader headerName='CamelHttpUri'>\n";
-					route += "\t<simple>" + uri
-							+ "</simple>\n";
+					route += "\t<simple>" + uri + "</simple>\n";
 					route += "</setHeader>\n";
 					route += "<setHeader headerName='CamelHttpMethod'>\n";
 					route += "\t<constant>" + this.commandSelect.val()
@@ -393,6 +392,19 @@ define(
 					route += "<to uri='isoverwritten'/>\n";
 
 					return route;
+				};
+
+				/**
+				 * 
+				 */
+				RestServiceOverlay.prototype.activate = function() {
+					this.view
+							.submitChanges({
+								attributes : {
+									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext"
+								}
+							});
 				};
 
 				/**
@@ -448,6 +460,10 @@ define(
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
 					this.queryStringLabel.append(this.getQueryString());
+					this.requestTypeSelect
+							.val(this.getApplication().attributes["stardust:restServiceOverlay::requestType"]);
+					this.responseTypeSelect
+							.val(this.getApplication().attributes["stardust:restServiceOverlay::responseType"]);
 				};
 
 				/**

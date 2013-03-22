@@ -209,6 +209,20 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				GenericEndpointOverlay.prototype.activate = function() {
+					this.view
+							.submitChanges({
+								attributes : {
+									"carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpointOverlay",
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext"
+								}
+							});
+				};
+
+
+				/**
 				 * Overlay protocol
 				 */
 				GenericEndpointOverlay.prototype.update = function() {
@@ -220,7 +234,7 @@ define(
 					this.inputBodyAccessPointInput.empty();
 					this.inputBodyAccessPointInput
 							.append("<option value='" + m_constants.TO_BE_DEFINED + "'>"
-									+ m_i18nUtils.getProperty("???None???")
+									+ m_i18nUtils.getProperty("None") // TODO I18N
 									+ "</option>");
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
@@ -238,7 +252,7 @@ define(
 					this.outputBodyAccessPointInput.empty();
 					this.outputBodyAccessPointInput
 							.append("<option value='" + m_constants.TO_BE_DEFINED + "' selected>"
-									+ m_i18nUtils.getProperty("???None???")
+									+ m_i18nUtils.getProperty("None") // TODO I18N
 									+ "</option>");
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
