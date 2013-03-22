@@ -597,8 +597,8 @@ define(
 			 *          equivalent to the list of Java primitive types)
 			 */
 			function getXsdCoreTypes() {
-				return [ "string", "boolean", "long", "int", "time", "short",
-						"byte", "double", "float", "decimal", "dateTime" ];
+				return [ "string", "boolean", "long", "int", "short",
+						"byte", "double", "float", "decimal", "date", "dateTime" ];
 			}
 
 			/**
@@ -619,7 +619,7 @@ define(
 						"positiveInteger", "unsignedLong", "unsignedInt",
 						"unsignedShort", "unsignedByte");
 				// data/time types
-				miscTypes.push("date", "duration", "gDay", "gMonth",
+				miscTypes.push("time", "duration", "gDay", "gMonth",
 						"gMonthDay", "gYear", "gYearMonth");
 				// other
 				miscTypes.push("anyURI", "base64Binary", "hexBinary",
