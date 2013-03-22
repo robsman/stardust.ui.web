@@ -291,7 +291,7 @@ define(
 
 					var view = this;
 					jQuery.each(typeDeclarations, function() {
-						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : undefined;
+						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : this.name;
 						m_commandsController.submitCommand(
 								m_command.createCreateTypeDeclarationCommand(
 										view.model.id,
