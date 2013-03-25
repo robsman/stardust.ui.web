@@ -1,0 +1,38 @@
+<!doctype html>
+<html ng-app>
+<head>
+<script
+	src="loanRequestController.js"></script>
+<!-- >script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script-->
+<script type="text/javascript" data-main="loanRequestPanelMain"
+	src="../../bpm-modeler/js/libs/require/2.0.5/require.js"></script>
+</head>
+</head>
+<body>
+	<h2>Loan Request</h2>
+	<div ng-controller="LoanRequestController">
+		<form ng-submit="submitLoanRequest()">
+		<h2>Customer Data</h2>
+			<table>
+				<tr>
+					<td><label for="firstNameInput">First Name</label></td>
+					<td><input id="firstNameInput" type="text" ng-model="customer.firstName" size="30"></td>
+				</tr>
+			</table>
+		<h2>Loan Data</h2>
+			<table>
+				<tr>
+					<td><label for="amountInput">Amount</label></td>
+					<td><input id="amountInput" type="text" ng-model="loanRequest.amount" size="30"
+						placeholder="Please specify ..."></td>
+				</tr>
+				<tr>
+					<td><input class="btn-primary" type="submit" value="Submit"></td>
+					<td></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
