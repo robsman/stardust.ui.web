@@ -115,6 +115,11 @@ public class SpecialWorklistCacheManager implements InitializingBean, Serializab
       worklists.get(id).setCount(totalCount);
    }
    
+   public void setWorklistThresholdCount(String id, long thresholdCount)
+   {
+      worklists.get(id).setTotalCountThreshold(thresholdCount);
+   }
+   
    public static boolean isSpecialWorklist(String worklistId)
    {
       return WORKLIST_IDS.contains(worklistId);

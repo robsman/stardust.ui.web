@@ -367,6 +367,7 @@ public class WorklistTableBean extends UIComponentBean
          if (!filtersAddedToQuery)
          {
             ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, queryResult.getTotalCount());
+            ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, queryResult.getTotalCountThreshold());
          }
       }
       else if (query instanceof ActivityInstanceQuery)
@@ -378,10 +379,12 @@ public class WorklistTableBean extends UIComponentBean
             if (SpecialWorklistCacheManager.isSpecialWorklist(worklistId))
             {
                SpecialWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+               SpecialWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId, queryResult.getTotalCountThreshold());
             }
             else
             {
                ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+               ProcessWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId, queryResult.getTotalCountThreshold());
             }
          }
       }

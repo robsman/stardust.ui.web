@@ -166,6 +166,20 @@ public class ProcessWorklistCacheManager implements InitializingBean
          processWorklistCacheEntry.setCount(count);
       }
    }
+   
+   /**
+    * @param processId
+    * @param count
+    */
+   public void setWorklistThresholdCount(String processId, long count)
+   {
+      ProcessDefinition processDefinitionKey = processDefinitions.get(processId);
+      ProcessWorklistCacheEntry processWorklistCacheEntry = processWorklists.get(processDefinitionKey);
+      if (null != processWorklistCacheEntry)
+      {
+         processWorklistCacheEntry.setTotalCountThreshold(count);
+      }
+   }
 
    /**
     * @param oldAi
