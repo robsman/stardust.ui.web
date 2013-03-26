@@ -77,7 +77,8 @@ define(
 					if (this.page.getModelElement().parameterMappings != null
 							&& this.page.getModelElement().parameterMappings[0]
 							&& this.page.getModelElement().parameterMappings[0].dataFullId
-							&& this.page.getModelElement().parameterMappings[0].dataFullId != m_constants.TO_BE_DEFINED) {
+							&& this.page.getModelElement().parameterMappings[0].dataFullId != m_constants.TO_BE_DEFINED
+							&& m_model.findData(this.page.getModelElement().parameterMappings[0].dataFullId)) {
 						this.documentDataList
 								.val(this.page.getModelElement().parameterMappings[0].dataFullId);
 
@@ -87,7 +88,7 @@ define(
 							var data = m_model.findData(this.documentDataList
 									.val());
 
-							if (data.structuredDataTypeFullId) {
+							if (data.structuredDataTypeFullId && m_model.findTypeDeclaration(data.structuredDataTypeFullId)) {
 								var structuredDataType = m_model
 										.findTypeDeclaration(data.structuredDataTypeFullId);
 								var model = m_model.findModel(m_model
