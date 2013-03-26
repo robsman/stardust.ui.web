@@ -547,7 +547,8 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.mappingColumnWidth + "\">";
 
-							if (parameterDefinition.dataFullId != null) {
+							if (parameterDefinition.dataFullId != null
+									&& m_model.findData(parameterDefinition.dataFullId)) {
 								var data = m_model
 										.findData(parameterDefinition.dataFullId);
 
