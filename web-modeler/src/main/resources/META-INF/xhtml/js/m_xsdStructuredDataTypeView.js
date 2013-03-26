@@ -428,7 +428,7 @@ define(
 						if ( !this.typeDeclaration.isReadOnly()) {
 							typeColumn.append(this.getTypeSelectList(schemaType));
 						} else {
-							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType.name));
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : ""));
 						}
 					}
 
