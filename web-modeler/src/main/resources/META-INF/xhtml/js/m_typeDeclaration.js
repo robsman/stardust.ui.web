@@ -116,14 +116,18 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.getBody = function() {
-					return this.getTypeDeclaration().body;
+					if (this.getTypeDeclaration()) {
+						return this.getTypeDeclaration().body;
+					}
 				};
 
 				/**
 				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
-					return this.getTypeDeclaration().facets;
+					if (this.getTypeDeclaration()) {
+						return this.getTypeDeclaration().facets;
+					}
 				};
 
 				/**
@@ -214,7 +218,8 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
-					if (!this.isSequence()) {
+					if (!this.isSequence()
+							&& this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
 						delete td.type;
 						delete td.facets;
@@ -233,7 +238,8 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function() {
-					if (this.isSequence()) {
+					if (this.isSequence()
+							&& this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
 						delete td.body;
 
