@@ -585,7 +585,7 @@ define(
 				WebServiceApplicationView.prototype.updateServiceFromAppWebServiceStructure = function() {
 					this.serviceSelect.empty();
 
-					var start = true;
+					var serviceSet = false;
 
 					for ( var m in this.application.webServiceStructure.services) {
 						var service = this.application.webServiceStructure.services[m];
@@ -594,11 +594,16 @@ define(
 								+ service.name + "\">" + service.name
 								+ "</option>");
 
-						if (start) {
+						if (!serviceSet
+								&& !this.application.attributes["carnot:engine:wsServiceName"]) {
 							this.setWebService(service.name);
 
-							start = false;
+							serviceSet = true;
 						}
+					}
+
+					if (!serviceSet) {
+						this.setWebService(this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
 					}
 				}
 
@@ -611,7 +616,7 @@ define(
 
 					this.portSelect.empty();
 
-					var start = true;
+					var portSet = false;
 
 					for ( var m in this.application.webServiceStructure.services[service].ports) {
 						var port = this.application.webServiceStructure.services[service].ports[m];
@@ -619,11 +624,16 @@ define(
 						this.portSelect.append("<option value=\"" + port.name
 								+ "\">" + port.name + "</option>");
 
-						if (start) {
+						if (!portSet
+								&& !this.application.attributes["carnot:engine:wsPortName"]) {
 							this.setPort(port.name);
 
-							start = false;
+							portSet = true;
 						}
+					}
+
+					if (!portSet) {
+						this.setPort(this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]));
 					}
 				};
 
@@ -640,7 +650,7 @@ define(
 					this.styleOutput.append(port.style);
 					this.operationSelect.empty();
 
-					var start = true;
+					var operationSet = false;
 
 					for ( var m in port.operations) {
 						var operation = port.operations[m];
@@ -649,11 +659,16 @@ define(
 								+ operation.name + "\">" + operation.name
 								+ "</option>");
 
-						if (start) {
+						if (!operationSet
+								&& !this.application.attributes["carnot:engine:wsOperationName"]) {
 							this.setOperation(operation.name);
 
-							start = false;
+							operationSet = true;
 						}
+					}
+
+					if (!operationSet) {
+						this.setOperation(this.application.attributes["carnot:engine:wsOperationName"]);
 					}
 				};
 
