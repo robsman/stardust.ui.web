@@ -12,10 +12,10 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_basicPropertiesPage",
 				"bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_angularContextUtils"],
+				"bpm-modeler/js/m_angularContextUtils", "bpm-modeler/js/m_messageDisplay"],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_dialog, m_basicPropertiesPage,
-				m_dataTypeSelector, m_model, m_i18nUtils, m_angularContextUtils) {
+				m_dataTypeSelector, m_model, m_i18nUtils, m_angularContextUtils, m_messageDisplay) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataBasicPropertiesPage(propertiesPanel);
@@ -105,9 +105,16 @@ define(
 				 *
 				 */
 				DataBasicPropertiesPage.prototype.getModelElement = function() {
+					m_messageDisplay.clear();
 					if (this.propertiesPanel.element.modelElement
 							&& this.propertiesPanel.element.modelElement.externalReference) {
-						return m_model.findData(this.propertiesPanel.element.modelElement.dataFullId);
+						if (this.propertiesPanel.element.modelElement.dataFullId
+								&& m_model.findData(this.propertiesPanel.element.modelElement.dataFullId)) {
+							return m_model.findData(this.propertiesPanel.element.modelElement.dataFullId);
+						} else {
+							m_messageDisplay.showMessage(m_i18nUtils.getProperty("modeler.propertyPanel.data.elementNotFound"));
+							return;
+						}
 					}
 
 					return this.propertiesPanel.element.modelElement;
