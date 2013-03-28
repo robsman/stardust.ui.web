@@ -105,14 +105,12 @@ define(
 				 *
 				 */
 				DataBasicPropertiesPage.prototype.getModelElement = function() {
-					m_messageDisplay.clear();
 					if (this.propertiesPanel.element.modelElement
 							&& this.propertiesPanel.element.modelElement.externalReference) {
 						if (this.propertiesPanel.element.modelElement.dataFullId
 								&& m_model.findData(this.propertiesPanel.element.modelElement.dataFullId)) {
 							return m_model.findData(this.propertiesPanel.element.modelElement.dataFullId);
 						} else {
-							m_messageDisplay.showMessage(m_i18nUtils.getProperty("modeler.propertyPanel.data.elementNotFound"));
 							return;
 						}
 					}
@@ -137,6 +135,13 @@ define(
 				 *
 				 */
 				DataBasicPropertiesPage.prototype.setElement = function() {
+					m_messageDisplay.clear();
+					if (!this.getModelElement()) {
+						m_messageDisplay
+								.showMessage(m_i18nUtils
+										.getProperty("modeler.propertyPanel.data.elementNotFound"));
+					}
+
 					this.setModelElement();
 
 					m_utils.debug("===> Data");
