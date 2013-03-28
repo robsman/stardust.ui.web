@@ -315,7 +315,7 @@ define(
 
 					//TODO: do we required separate treatment for elements? Elements and Type Declaration processing appears same.
 					jQuery.each(elements, function() {
-						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : undefined;
+						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : this.name;
 						m_commandsController.submitCommand(
 								m_command.createCreateTypeDeclarationCommand(
 										view.model.id,
