@@ -379,7 +379,8 @@ define(
 					this.connectionTimeoutInput.removeClass("error");
 					this.initialDelayInput.removeClass("error");
 					this.passwordInput.removeClass("error");
-					
+					this.page.propertiesPanel.errorMessages=[];
+																
 
 					if (this.mailServerInput.val() == null
 							|| this.mailServerInput.val() == "") {
@@ -387,9 +388,7 @@ define(
 								.push("Mail server name must not be empty.");
 						this.mailServerInput.addClass("error");
 
-						this.page.propertiesPanel.showErrorMessages();
-
-						return false;
+										
 					}
 
 					if (this.accountInput.val() == null
@@ -398,21 +397,17 @@ define(
 								.push("Mail account must not be empty.");
 						this.accountInput.addClass("error");
 
-						this.page.propertiesPanel.showErrorMessages();
-
-						return false;
+					
 					}
 					
 
 					if (this.passwordInput.val() == null
-							|| this.passwordInput.val() == "") {
+							|| this.passwordInput.val() == ""){
 						this.page.propertiesPanel.errorMessages
 								.push("Password must not be empty.");
-						this.portInput.addClass("error");
+						this.passwordInput.addClass("error");
 
-						this.page.propertiesPanel.showErrorMessages();
-
-						return false;
+					
 					}
 					
 					if (this.portInput.val() == null
@@ -421,33 +416,32 @@ define(
 								.push("Port must be a Number.");
 						this.portInput.addClass("error");
 
-						this.page.propertiesPanel.showErrorMessages();
-
-						return false;
+					
 					}
 					
 					if (this.connectionTimeoutInput.val() == null
 							|| this.connectionTimeoutInput.val() == "" || isNaN(this.connectionTimeoutInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("ConnectionTimeout must be a Number.");
-						this.portInput.addClass("error");
+						this.connectionTimeoutInput.addClass("error");
 
-						this.page.propertiesPanel.showErrorMessages();
-
-						return false;
+					
 					}
 					
 					if (this.initialDelayInput.val() == null
 							|| this.initialDelayInput.val() == "" || isNaN(this.initialDelayInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("InitialDelay must be a Number.");
-						this.portInput.addClass("error");
+						this.initialDelayInput.addClass("error");
 
+					
+					}
+					
+					if (this.page.propertiesPanel.errorMessages.length != 0){
 						this.page.propertiesPanel.showErrorMessages();
-
 						return false;
 					}
-
+					
 					return true;
 				};
 			}

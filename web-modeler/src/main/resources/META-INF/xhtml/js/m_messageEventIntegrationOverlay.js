@@ -256,7 +256,11 @@ define(
 				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.validate = function() {
+					
+					this.jmsComponentIdInput.removeClass("error");
 					this.nameInput.removeClass("error");
+					this.page.propertiesPanel.errorMessages=[];
+					
 
 					if (m_utils.isEmptyString(this.jmsComponentIdInput.val()) ||
 							this.jmsComponentIdInput.val() == m_i18nUtils
@@ -265,25 +269,22 @@ define(
 								.push(m_i18nUtils
 										.getProperty("modeler.general.fieldMustNotBeEmpty"));
 						this.jmsComponentIdInput.addClass("error");
-						this.jmsComponentIdInput.focus();
-
-						this.getPropertiesPanel().showErrorMessages();
-
-						return false;
+						//this.jmsComponentIdInput.focus();
+	
 					}
 
 
-					if (m_utils.isEmptyString(this.nameInput.val()) ||
-							this.nameInput.val() == m_i18nUtils
-							.getProperty("modeler.general.toBeDefined")) {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.getPropertiesPanel().errorMessages
 								.push(m_i18nUtils
 										.getProperty("modeler.general.fieldMustNotBeEmpty"));
 						this.nameInput.addClass("error");
-						this.nameInput.focus();
+						//this.nameInput.focus();
 
-						this.getPropertiesPanel().showErrorMessages();
-
+					}
+					
+					if (this.page.propertiesPanel.errorMessages.length != 0){
+						this.page.propertiesPanel.showErrorMessages();
 						return false;
 					}
 
