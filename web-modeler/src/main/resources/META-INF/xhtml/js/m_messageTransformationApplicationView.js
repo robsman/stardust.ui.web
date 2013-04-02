@@ -1010,6 +1010,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.filterSource = function(
 						filter) {
+					filter = filter.trim();
 					if (filter == null || filter == "") {
 						jQuery("table#sourceTable tbody tr").removeClass(
 								"invisible");
@@ -1017,9 +1018,12 @@ define(
 						jQuery("table#sourceTable tbody tr").addClass(
 								"invisible");
 
-						jQuery("table#sourceTable tbody tr:contains('" + filter + "')").each(function() {
-							jQuery(this).removeClass("invisible");
-							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						jQuery("table#sourceTable tbody tr").each(function() {
+							var element = $(this).find(".data-element");
+							if( element && !(element.html().toLowerCase().indexOf(filter.toLowerCase()) === -1)) {
+								jQuery(this).removeClass("invisible");
+								jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						    }
 						});
 					}
 				};
@@ -1029,6 +1033,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.filterTarget = function(
 						filter) {
+					filter = filter.trim();
 					if (filter == null || filter == "") {
 						jQuery("table#targetTable tbody tr").removeClass(
 								"invisible");
@@ -1036,9 +1041,12 @@ define(
 						jQuery("table#targetTable tbody tr").addClass(
 								"invisible");
 
-						jQuery("table#targetTable tbody tr:contains('" + filter + "')").each(function() {
-							jQuery(this).removeClass("invisible");
-							jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						jQuery("table#targetTable tbody tr").each(function() {
+							var element = $(this).find(".data-element");
+							if( element && !(element.html().toLowerCase().indexOf(filter.toLowerCase()) === -1)) {
+								jQuery(this).removeClass("invisible");
+								jQuery(ancestorsOf(jQuery(this))).removeClass("invisible");
+						    }
 						});
 
 					}
@@ -1504,9 +1512,11 @@ define(
 					this.sourceFilterInput.keypress({
 						"view" : this
 					}, function(event) {
-						event.data.view
-								.filterSource(event.data.view.sourceFilterInput
-										.val());
+						var inputV = event.data.view.sourceFilterInput.val();
+						if(event.which != 0 && event.which != 8){
+							inputV = inputV.concat(String.fromCharCode(event.which));
+						}
+						event.data.view.filterSource(inputV);
 					});
 
 					this.filterHighlightedSourceFieldsInput.click({
@@ -1525,9 +1535,11 @@ define(
 					this.targetFilterInput.keypress({
 						"view" : this
 					}, function(event) {
-						event.data.view
-								.filterTarget(event.data.view.targetFilterInput
-										.val());
+						var inputV = event.data.view.targetFilterInput.val();
+						if(event.which != 0 && event.which != 8){
+							inputV = inputV.concat(String.fromCharCode(event.which));
+						}
+						event.data.view.filterTarget(inputV);
 					});
 
 					this.filterHighlightedTargetFieldsInput.click({
