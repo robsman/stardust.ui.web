@@ -56,6 +56,16 @@ public class ProcessWorklistCacheManager implements InitializingBean
       }
       return cacheManager;
    }
+   
+   /**
+    * 
+    * @return
+    */
+   public static boolean isInitialized()
+   {
+      ProcessWorklistCacheManager cacheManager = (ProcessWorklistCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      return cacheManager.initialized;
+   }
 
    /*
     * (non-Javadoc)
