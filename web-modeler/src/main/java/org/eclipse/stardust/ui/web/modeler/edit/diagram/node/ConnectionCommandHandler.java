@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
@@ -134,7 +135,7 @@ public class ConnectionCommandHandler
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
-                           : DirectionType.OUT_LITERAL, "left", "right");
+                           : DirectionType.OUT_LITERAL, "left", "right", PredefinedConstants.DEFAULT_CONTEXT, null);
             }
             else
             {
@@ -198,7 +199,7 @@ public class ConnectionCommandHandler
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
-                           : DirectionType.OUT_LITERAL, "left", "right");
+                           : DirectionType.OUT_LITERAL, "left", "right", PredefinedConstants.DEFAULT_CONTEXT, null);
 
             }
             else
