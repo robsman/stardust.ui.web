@@ -89,9 +89,9 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
- *
+ * 
  * @author Shrikant.Gangal, Marc.Gille
- *
+ * 
  */
 public class ModelService
 {
@@ -319,7 +319,7 @@ public class ModelService
    /**
     * Removes the modeling session from cached list when user session ends. TODO -
     * commented pending review by Robert S
-    *
+    * 
     */
    @PreDestroy
    public void destroyModelingSession()
@@ -331,7 +331,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -346,7 +346,7 @@ public class ModelService
 
    /**
     * Only used for ORION integration
-    *
+    * 
     * @param modelManagementStrategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
@@ -360,7 +360,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param attrs
     * @param attrType
     */
@@ -377,7 +377,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param json
     * @param element
     * @throws JSONException
@@ -412,7 +412,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param model
     * @param processDefinition
     * @return
@@ -423,7 +423,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -477,7 +477,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param account
     * @return
     */
@@ -521,12 +521,12 @@ public class ModelService
 
    /**
     * Invite Mechanism works the following:
-    *
+    * 
     * When the user is logged in any messages can be broadcasted directly to him. The user
     * recives a broadcast about a notification that he was in invited. He can decide now
     * if he really wants to join the session or not. It broadcasts a JsonObject to every
     * user online directly.
-    *
+    * 
     * @param userAccountList
     *           A list of all invited users provided by the icefaces backing bean
     * @param sessionOwnerId
@@ -658,9 +658,9 @@ public class ModelService
     * Uses the ModelingSessionManager to check whether a given user was invited to session
     * while he was offline. Broadcasts a REQUEST_JOIN_JSON Object back to the requester
     * specified through the username.
-    *
+    * 
     * @param username
-    *
+    * 
     */
    public void getOfflineInvites(String username)
    {
@@ -721,7 +721,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    *
+    * 
     * @return
     */
    public String getAllModels(boolean reload)
@@ -758,7 +758,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param httpRequest
     * @param modelId
     * @return
@@ -785,7 +785,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       *
+       * 
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -809,7 +809,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param id
     * @return
     */
@@ -820,7 +820,7 @@ public class ModelService
 
    /**
     * TODO - This should probably be delegated to the model management strategy?
-    *
+    * 
     * @param id
     * @return
     */
@@ -831,7 +831,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param id
     * @param postedData
@@ -866,7 +866,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param activityId
@@ -901,7 +901,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -960,7 +960,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelElementJson
     * @param element
     */
@@ -979,7 +979,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param orientation
     * @return
     */
@@ -1006,9 +1006,9 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * TODO From DynamicConnectionCommand. Refactor?
-    *
+    * 
     * @param activity
     * @return
     */
@@ -1050,7 +1050,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param connectionId
@@ -1126,7 +1126,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1162,7 +1162,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1192,7 +1192,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1385,7 +1385,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @param processId
     * @param postedData
@@ -1477,9 +1477,29 @@ public class ModelService
 
       // Request data
 
-      DataType data = getModelBuilderFacade().createStructuredData(model, null,
-            extractString(json, "requestDataName"),
-            extractString(json, "requestDataTypeFullId"));
+      String dataId = NameIdUtils.createIdFromName(extractString(json, "requestDataName"));
+
+      // TODO Weird programming because Model Builder Facade throws
+      // ObjectNotFoundException
+
+      DataType data = null;
+
+      try
+      {
+         data = getModelBuilderFacade().findData(model, dataId);
+      }
+      catch (Exception x)
+      {
+      }
+      finally
+      {
+         if (data == null)
+         {
+            data = getModelBuilderFacade().createStructuredData(model, dataId,
+                  extractString(json, "requestDataName"),
+                  extractString(json, "requestDataTypeFullId"));
+         }
+      }
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
             NameIdUtils.createIdFromName(extractString(json, "requestDataName")),
@@ -1523,18 +1543,15 @@ public class ModelService
          processDefinition.getDiagram().get(0).getActivitySymbol().add(activitySymbol);
          parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
-         AccessPointType inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-               DirectionType.IN_LITERAL);
-         AccessPointType outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-               DirectionType.OUT_LITERAL);
+         AccessPointType inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+               activity.getApplication(), DirectionType.IN_LITERAL);
+         AccessPointType outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+               activity.getApplication(), DirectionType.OUT_LITERAL);
 
-         System.out.println("In Access Point: " + inAccessPoint);
-         System.out.println("Out Access Point: " + outAccessPoint);
-
-         getModelBuilderFacade().createDataFlowConnection(
-               processDefinition, activitySymbol,
-               dataSymbol, "application", inAccessPoint != null ? inAccessPoint.getId() : null,
-               "application", outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
+         getModelBuilderFacade().createDataFlowConnection(processDefinition,
+               activitySymbol, dataSymbol, PredefinedConstants.APPLICATION_CONTEXT,
+               inAccessPoint != null ? inAccessPoint.getId() : null, PredefinedConstants.APPLICATION_CONTEXT,
+               outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
 
          previousActivitySymbol = activitySymbol;
          yOffset += 100;
@@ -1571,8 +1588,8 @@ public class ModelService
                startEventSymbol, previousActivitySymbol, null, "bottom", "top");
 
          getModelBuilderFacade().createControlFlowConnection(processDefinition,
-               previousActivitySymbol, activitySymbol, "Transition1", "", "", false, "true",
-               "bottom", "top");
+               previousActivitySymbol, activitySymbol, "Transition1", "", "", false,
+               "true", "bottom", "top");
       }
       else
       {
@@ -1580,22 +1597,42 @@ public class ModelService
                startEventSymbol, activitySymbol, null, "bottom", "top");
       }
 
-      AccessPointType inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-            DirectionType.IN_LITERAL);
+      AccessPointType inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+            activity.getApplication(), DirectionType.IN_LITERAL);
 
-      getModelBuilderFacade().createDataFlowConnection(
-            processDefinition, activitySymbol,
-            dataSymbol, "application", inAccessPoint != null ? inAccessPoint.getId() : null,
-            null, null, "left", "right");
+      getModelBuilderFacade().createDataFlowConnection(processDefinition, activitySymbol,
+            dataSymbol, PredefinedConstants.APPLICATION_CONTEXT,
+            inAccessPoint != null ? inAccessPoint.getId() : null, null, null, "left",
+            "right");
 
       previousActivitySymbol = activitySymbol;
       yOffset += 100;
 
       // Create Response Data
 
-      data = getModelBuilderFacade().createStructuredData(model, null,
-            extractString(json, "responseDataName"),
-            extractString(json, "requestDataTypeFullId"));
+      dataId = NameIdUtils.createIdFromName(extractString(json, "responseDataName"));
+
+      // TODO Weird programming because Model Builder Facade throws
+      // ObjectNotFoundException
+
+      data = null;
+      
+      try
+      {
+         data = getModelBuilderFacade().findData(model, dataId);
+      }
+      catch (Exception x)
+      {
+      }
+      finally
+      {
+         if (data == null)
+         {
+            data = getModelBuilderFacade().createStructuredData(model, dataId,
+                  extractString(json, "responseDataName"),
+                  extractString(json, "responseDataTypeFullId"));
+         }
+      }
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
             NameIdUtils.createIdFromName(extractString(json, "responseDataName")),
@@ -1612,13 +1649,12 @@ public class ModelService
 
       parentLaneSymbol.getDataSymbol().add(dataSymbol);
 
-      AccessPointType outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-            DirectionType.OUT_LITERAL);
+      AccessPointType outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+            activity.getApplication(), DirectionType.OUT_LITERAL);
 
-      getModelBuilderFacade().createDataFlowConnection(
-            processDefinition, activitySymbol,
-            dataSymbol, null, null,
-            "application", outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
+      getModelBuilderFacade().createDataFlowConnection(processDefinition, activitySymbol,
+            dataSymbol, null, null, PredefinedConstants.APPLICATION_CONTEXT,
+            outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
 
       yOffset += 100;
 
@@ -1644,18 +1680,18 @@ public class ModelService
          parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
          getModelBuilderFacade().createControlFlowConnection(processDefinition,
-               previousActivitySymbol, activitySymbol, "Transition2", "", "", false, "true",
-               "bottom", "top");
+               previousActivitySymbol, activitySymbol, "Transition2", "", "", false,
+               "true", "bottom", "top");
 
-         inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-               DirectionType.IN_LITERAL);
-         outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(activity.getApplication(),
-               DirectionType.OUT_LITERAL);
+         inAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+               activity.getApplication(), DirectionType.IN_LITERAL);
+         outAccessPoint = getModelBuilderFacade().findFirstApplicationAccessPointForType(
+               activity.getApplication(), DirectionType.OUT_LITERAL);
 
-         getModelBuilderFacade().createDataFlowConnection(
-               processDefinition, activitySymbol,
-               dataSymbol, "application", inAccessPoint != null ? inAccessPoint.getId() : null,
-               "application", outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
+         getModelBuilderFacade().createDataFlowConnection(processDefinition,
+               activitySymbol, dataSymbol, PredefinedConstants.APPLICATION_CONTEXT,
+               inAccessPoint != null ? inAccessPoint.getId() : null, PredefinedConstants.APPLICATION_CONTEXT,
+               outAccessPoint != null ? outAccessPoint.getId() : null, "left", "right");
 
          yOffset += 100;
       }
@@ -1677,9 +1713,6 @@ public class ModelService
 
       getModelBuilderFacade().createTransitionSymbol(processDefinition, activitySymbol,
             endEventSymbol, null, "bottom", "top");
-
-      getModelBuilderFacade().createDataFlowConnection(processDefinition, activitySymbol,
-            dataSymbol, DirectionType.OUT_LITERAL, "left", "right");
 
       if (extractBoolean(json, "generateTestWrapper"))
       {
@@ -1739,7 +1772,8 @@ public class ModelService
       TriggerType manualTrigger = newManualTrigger(processDefinition).accessibleTo(
             getModelBuilderFacade().findParticipant(
                   extractString(json, "participantFullId"))).build();
-      manualTrigger.setName("");
+      manualTrigger.setId("StartTest");
+      manualTrigger.setName("Start Test");
       startEventSymbol.setTrigger(manualTrigger);
 
       // Create Enter Data Activity
@@ -1792,7 +1826,7 @@ public class ModelService
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
       getModelBuilderFacade().createControlFlowConnection(processDefinition,
-            previousActivitySymbol, activitySymbol, "Transition1", "", "", true, "",
+            previousActivitySymbol, activitySymbol, "Transition1", "Transition1", "", true, "",
             "bottom", "top");
 
       // Create Input Data
@@ -1815,9 +1849,28 @@ public class ModelService
                String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
                      model, typeDeclaration);
 
-               DataType data = getModelBuilderFacade().createStructuredData(model,
-                     formalParameter.getId(), formalParameter.getName(),
-                     structuredDataTypeFullId);
+               // TODO Weird programming because Model Builder Facade throws
+               // ObjectNotFoundException
+
+               DataType data = null;
+
+               try
+               {
+                  data = getModelBuilderFacade().findData(model, formalParameter.getId());
+               }
+               catch (Exception x)
+               {
+               }
+               finally
+               {
+                  if (data == null)
+                  {
+                     data = getModelBuilderFacade().createStructuredData(model,
+                           formalParameter.getId(), formalParameter.getName(),
+                           structuredDataTypeFullId);
+                  }
+               }
+
                DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
                dataSymbol.setData(data);
                processDefinition.getDiagram().get(0).getDataSymbol().add(dataSymbol);
@@ -1831,10 +1884,10 @@ public class ModelService
 
                getModelBuilderFacade().createDataFlowConnection(processDefinition,
                      previousActivitySymbol, dataSymbol, DirectionType.OUT_LITERAL,
-                     "left", "right");
+                     "left", "right", PredefinedConstants.DEFAULT_CONTEXT, null);
                getModelBuilderFacade().createDataFlowConnection(processDefinition,
                      activitySymbol, dataSymbol, DirectionType.IN_LITERAL, "right",
-                     "left");
+                     "left", PredefinedConstants.PROCESSINTERFACE_CONTEXT, formalParameter.getId());
             }
          }
       }
@@ -1861,7 +1914,7 @@ public class ModelService
       parentLaneSymbol.getActivitySymbol().add(activitySymbol);
 
       getModelBuilderFacade().createControlFlowConnection(processDefinition,
-            previousActivitySymbol, activitySymbol, "Transition2", "", "", true, "",
+            previousActivitySymbol, activitySymbol, "Transition2", "Transition2", "", true, "",
             "bottom", "top");
 
       // Create Output Data
@@ -1883,9 +1936,29 @@ public class ModelService
                      .getTypeDeclaration(typeDeclarationId);
                String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
                      model, typeDeclaration);
-               DataType data = getModelBuilderFacade().createStructuredData(model,
-                     formalParameter.getId(), formalParameter.getName(),
-                     structuredDataTypeFullId);
+
+               // TODO Weird programming because Model Builder Facade throws
+               // ObjectNotFoundException
+
+               DataType data = null;
+
+               try
+               {
+                  data = getModelBuilderFacade().findData(model, formalParameter.getId());
+               }
+               catch (Exception x)
+               {
+               }
+               finally
+               {
+                  if (data == null)
+                  {
+                     data = getModelBuilderFacade().createStructuredData(model,
+                           formalParameter.getId(), formalParameter.getName(),
+                           structuredDataTypeFullId);
+                  }
+               }
+
                DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 
                dataSymbol.setData(data);
@@ -1900,10 +1973,10 @@ public class ModelService
 
                getModelBuilderFacade().createDataFlowConnection(processDefinition,
                      previousActivitySymbol, dataSymbol, DirectionType.OUT_LITERAL,
-                     "left", "right");
+                     "left", "right", PredefinedConstants.PROCESSINTERFACE_CONTEXT, formalParameter.getId());
                getModelBuilderFacade().createDataFlowConnection(processDefinition,
                      activitySymbol, dataSymbol, DirectionType.IN_LITERAL, "right",
-                     "left");
+                     "left", PredefinedConstants.DEFAULT_CONTEXT, null);
             }
          }
       }
@@ -1926,7 +1999,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    DocumentManagementService getDocumentManagementService()
@@ -1940,7 +2013,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private UserService getUserService()
@@ -1954,7 +2027,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    private QueryService getQueryService()
@@ -1988,7 +2061,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @param modelId
     * @return
     */
@@ -2096,7 +2169,7 @@ public class ModelService
     * </ul>
     * </li>
     * </ul>
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
@@ -2122,7 +2195,7 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    *
+    * 
     * @param webServiceJson
     *           the parent json object.
     * @param services
@@ -2161,7 +2234,7 @@ public class ModelService
 
    /**
     * Adds port or binding definitions to the service json.
-    *
+    * 
     * @param serviceJson
     *           the json object representing the parent service.
     * @param ports
@@ -2214,7 +2287,7 @@ public class ModelService
 
    /**
     * Adds operation definitions to the port json.
-    *
+    * 
     * @param portJson
     *           the json object representing the parent port.
     * @param operations
@@ -2274,7 +2347,7 @@ public class ModelService
    /**
     * Computes a string containing a comma separated list of the parts composing the
     * message.
-    *
+    * 
     * @param message
     *           the Message
     * @return the computed list of parts
@@ -2311,7 +2384,7 @@ public class ModelService
    /**
     * Computes a unique label for the operation by appending the input and output names to
     * the operation name.
-    *
+    * 
     * @param operation
     *           the BindingOperation
     * @return the computed label
@@ -2416,10 +2489,10 @@ public class ModelService
     * <li><code>classifier</code> a string identifying the type of the facet, i.e.
     * <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    *
+    * 
     * Each item described above has a member <code>icon</code> that specifies the
     * corresponding icon.
-    *
+    * 
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name "url"
     *           that specifies the URL from where the XSD should be loaded.
@@ -2527,7 +2600,7 @@ public class ModelService
                {
                   childJs.addProperty("cardinality", cardinality);
                }
-               
+
                XSDTypeDefinition typeDef = null;
                if (child instanceof XSDTypeDefinition)
                {
@@ -2535,7 +2608,8 @@ public class ModelService
                }
                else if (child instanceof XSDElementDeclaration)
                {
-                  typeDef = ((XSDElementDeclaration) child).getResolvedElementDeclaration().getType();
+                  typeDef = ((XSDElementDeclaration) child).getResolvedElementDeclaration()
+                        .getType();
                }
                if (typeDef instanceof XSDSimpleTypeDefinition)
                {
@@ -2544,12 +2618,14 @@ public class ModelService
                   if (null != ((XSDSimpleTypeDefinition) typeDef).getMinLengthFacet())
                   {
                      childJs.addProperty("minLength",
-                           ((XSDSimpleTypeDefinition) typeDef).getMinLengthFacet().getValue());
+                           ((XSDSimpleTypeDefinition) typeDef).getMinLengthFacet()
+                                 .getValue());
                   }
                   if (null != ((XSDSimpleTypeDefinition) typeDef).getMaxLengthFacet())
                   {
                      childJs.addProperty("maxLength",
-                           ((XSDSimpleTypeDefinition) typeDef).getMaxLengthFacet().getValue());
+                           ((XSDSimpleTypeDefinition) typeDef).getMaxLengthFacet()
+                                 .getValue());
                   }
                }
 
@@ -2738,7 +2814,7 @@ public class ModelService
    }
 
    /**
-    *
+    * 
     * @return
     */
    public JsonObject getPreferences()
@@ -2795,11 +2871,11 @@ public class ModelService
     * ); postedData.addProperty("url",
     * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
     * );
-    *
+    * 
     * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
     * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
     * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new java.io.File(
@@ -2807,26 +2883,26 @@ public class ModelService
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
     * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
     * = new EObjectUUIDMapper();
-    *
+    * 
     * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } };
-    *
+    * 
     * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
     * getTypeDeclaration("Pattern1"))));
-    *
+    * 
     * TypeDeclarationType typeDeclaration =
     * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
     * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
     * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
-    *
+    * 
     * modifyComplexType(json); //modifyEnumType(json);
-    *
+    * 
     * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
-    *
+    * 
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
     * json); System.out.println(typeDeclaration); }
@@ -2838,7 +2914,7 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
     * cs.getAsJsonObject("facets");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
     * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
     * d); }
@@ -2850,11 +2926,11 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
     * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
-    *
+    * 
     * es.remove("b");
-    *
+    * 
     * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
-    *
+    * 
     * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
     * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
     * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
@@ -2863,27 +2939,27 @@ public class ModelService
    /*
     * public static void testTD() { DataChangeCommandHandler handler = new
     * DataChangeCommandHandler();
-    *
+    * 
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    *
+    * 
     * String structId = "Composite3", structName = "Composite3";
-    *
+    * 
     * JsonObject structJson = new JsonObject();
     * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
     * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
     * typeDeclarationJson = new JsonObject();
     * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-    *
+    * 
     * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
     * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
     * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
     * schema.add("types", types); JsonObject typesType = new JsonObject();
     * types.add(structId, typesType); typesType.addProperty("name", structId);
-    *
+    * 
     * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
     * facet = new JsonObject(); facet.addProperty("name", "abceee");
     * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
@@ -2899,9 +2975,9 @@ public class ModelService
     * "at least one");
     */
    /*
-    *
+    * 
     * handler.createTypeDeclaration(model, structJson);
-    *
+    * 
     * try { wmm.save(URI.createFileURI(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
     * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block
@@ -2910,7 +2986,7 @@ public class ModelService
 
    /**
     * @return
-    *
+    * 
     */
    public void deleteConfigurationVariable(String modelId, String variableName,
          JsonObject json)

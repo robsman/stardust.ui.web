@@ -91,8 +91,6 @@ define(
 
 					this.view = jQuery("#camelApplicationView");
 					
-					this.view.css("cursor", "wait");
-
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.overlayAnchor = jQuery("#overlayAnchor");
 
