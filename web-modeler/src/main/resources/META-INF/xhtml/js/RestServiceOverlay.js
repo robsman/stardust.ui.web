@@ -36,11 +36,13 @@ define(
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
 							"Test", "../../images/icons/table.png");
 
+					this.camelContextInput = jQuery("#restServiceOverlay #camelContextInput");
 					this.uriInput = jQuery("#restServiceOverlay #uriInput");
 					this.queryStringLabel = jQuery("#restServiceOverlay #queryStringLabel");
 					this.commandSelect = jQuery("#restServiceOverlay #commandSelect");
 					this.requestTypeSelect = jQuery("#restServiceOverlay #requestTypeSelect");
 					this.responseTypeSelect = jQuery("#restServiceOverlay #responseTypeSelect");
+					this.crossDomainInput = jQuery("#restServiceOverlay #crossDomainInput");
 					this.resetButton = jQuery("#testTab #resetButton");
 					this.runButton = jQuery("#testTab #runButton");
 					this.inputDataTextarea = jQuery("#testTab #inputDataTextarea");
@@ -79,6 +81,9 @@ define(
 
 					var self = this;
 
+					this.camelContextInput.change(function() {
+						self.submitChanges();
+					});
 					this.uriInput.change(function() {
 						self.submitChanges();
 					});
@@ -89,6 +94,9 @@ define(
 						self.submitChanges();
 					});
 					this.responseTypeSelect.change(function() {
+						self.submitChanges();
+					});
+					this.crossDomainInput.change(function() {
 						self.submitChanges();
 					});
 					this.inputBodyAccessPointInput
@@ -140,6 +148,15 @@ define(
 
 										jQuery.support.cors = true;
 
+										var dataType = "html";
+
+										if (view.responseTypeSelect.val() === "application/xml") {
+											dataType = "xml";
+										}
+										else if (view.responseTypeSelect.val() === "application/json") {
+											dataType = "json";
+										}
+
 										jQuery
 												.ajax(
 														{
@@ -149,8 +166,7 @@ define(
 																	.getInvocationUri(),
 															contentType : view.requestTypeSelect
 																	.val(),
-															dataType : view.responseTypeSelect
-																	.val(),
+															dataType : dataType,
 															data : view
 																	.getRequestData(),
 															crossDomain : true
@@ -376,7 +392,7 @@ define(
 
 							uri += accessPoint.id;
 							uri += "=";
-							uri += "{header." + accessPoint.id + "}";
+							uri += "$simple{header." + accessPoint.id + "}";
 						}
 					}
 
@@ -389,7 +405,17 @@ define(
 					route += "\t<constant>" + this.commandSelect.val()
 							+ "</constant>\n";
 					route += "</setHeader>\n";
-					route += "<to uri='isoverwritten'/>\n";
+					route += "<setHeader headerName='CamelAcceptContentType'>\n";
+					route += "\t<constant>" + this.responseTypeSelect.val()
+							+ "</constant>\n";
+					route += "</setHeader>\n";
+					route += "<to uri='http://isoverwritten'/>\n";
+
+					if (this.responseTypeSelect.val() === "application/json") {
+						route += "<unmarshal ref='bpm.JsonUnmarshaller' />\n";
+					} else if (this.responseTypeSelect.val() === "application/xml") {
+						route += "<unmarshal ref='bpm.XmlUnmarshaller' />\n";
+					}
 
 					return route;
 				};
@@ -401,8 +427,7 @@ define(
 					this.view
 							.submitChanges({
 								attributes : {
-									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : "defaultCamelContext"
+									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay"
 								}
 							});
 				};
@@ -456,6 +481,8 @@ define(
 							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.camelContextInput
+					.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.uriInput
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
@@ -464,6 +491,10 @@ define(
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::requestType"]);
 					this.responseTypeSelect
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::responseType"]);
+					this.crossDomainInput
+							.prop(
+									"checked",
+									this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
 				};
 
 				/**
@@ -475,7 +506,8 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::camelContextId" : this.camelContextInput
+											.val(),
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -485,7 +517,9 @@ define(
 									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect
 											.val(),
 									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect
-											.val()
+											.val(),
+									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
+											.prop("checked")
 								}
 							});
 				};
@@ -504,7 +538,8 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::camelContextId" : this.camelContextInput
+											.val(),
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -514,7 +549,9 @@ define(
 									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect
 											.val(),
 									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect
-											.val()
+											.val(),
+									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
+											.prop("checked")
 								}
 							});
 				};
@@ -523,6 +560,27 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.validate = function() {
+					this.camelContextInput.removeClass("error");
+
+					if (this.camelContextInput.val() == null
+							|| this.camelContextInput.val() == "") {
+						this.view.errorMessages
+								.push("Camel Context must not be empty."); // TODO
+						// I18N
+						this.camelContextInput.addClass("error");
+
+						return false;
+					}
+
+					if (this.uriInput.val() == null
+							|| this.uriInput.val() == "") {
+						this.view.errorMessages.push("URI must not be empty."); // TODO
+						// I18N
+						this.uriInput.addClass("error");
+
+						return false;
+					}
+
 					return true;
 				};
 			}
