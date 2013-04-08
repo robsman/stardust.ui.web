@@ -1323,12 +1323,13 @@ define(
 				 */
 				Symbol.prototype.drag = function(dX, dY, x, y) {
 					this.diagram.resetEditableText();
+					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
+						var displ = this.getEffectiveDisplacement(x, y);
+						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+								displ.deltaY);
 
-					var displ = this.getEffectiveDisplacement(x, y);
-					this.diagram.moveSelectedSymbolsBy(displ.deltaX,
-							displ.deltaY);
-
-					this.postDrag(displ.deltaX, displ.deltaY, x, y);
+						this.postDrag(displ.deltaX, displ.deltaY, x, y);
+					}
 				};
 
 				/**
@@ -1359,7 +1360,7 @@ define(
 				/**
 				 *
 				 */
-				Symbol.prototype.dragStop_ = function() {
+				Symbol.prototype.dragStop_ = function(multipleSymbols) {
 					this.showProximitySensor();
 					// Only process if symbol has been moved at all
 					var newGeometry = {};
@@ -1374,7 +1375,10 @@ define(
 							return null;
 						}
 
-						this.diagram.snapSymbol(this);
+						if (!multipleSymbols) {
+							this.diagram.snapSymbol(this);
+						}
+
 						this.postDragStop();
 
 						if (newParentSymbol != this.parentSymbol) {
@@ -1403,7 +1407,10 @@ define(
 						newGeometry['parentSymbolId'] = this.parentSymbol.id;
 						newGeometry['type'] = this.type;
 					} else {
-						this.diagram.snapSymbol(this);
+
+						if (!multipleSymbols) {
+							this.diagram.snapSymbol(this);
+						}
 						this.postDragStop();
 
 						// TODO Put in method

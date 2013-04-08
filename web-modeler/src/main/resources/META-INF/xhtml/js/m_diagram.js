@@ -1940,7 +1940,7 @@ define(
 					var changeDescriptionsDiagram = [];
 					var failed = false;
 					for ( var n in this.currentSelection) {
-						var changes = this.currentSelection[n].dragStop_();
+						var changes = this.currentSelection[n].dragStop_(this.currentSelection.length > 1);
 						if (null == changes) {
 							failed = true;
 							this.revertDrag();
