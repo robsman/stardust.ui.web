@@ -487,6 +487,7 @@ define(
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
 					this.queryStringLabel.append(this.getQueryString());
+					this.commandSelect.val(this.getApplication().attributes["stardust:restServiceOverlay::command"]);
 					this.requestTypeSelect
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::requestType"]);
 					this.responseTypeSelect
