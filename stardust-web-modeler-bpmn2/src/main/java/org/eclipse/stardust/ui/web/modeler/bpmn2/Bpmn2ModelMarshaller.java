@@ -7,6 +7,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipatingProcesses;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.EndEvent;
@@ -173,6 +175,13 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          {
             DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
             symbolJto.modelElement = toJto((DataObject) shape.getBpmnElement());
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
+         else if (shape.getBpmnElement() instanceof DataStoreReference)
+         {
+            DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+            symbolJto.modelElement = toJto(((DataStoreReference) shape.getBpmnElement()).getDataStoreRef());
 
             return jsonIo.gson().toJsonTree(symbolJto);
          }
@@ -582,6 +591,18 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                laneJto.dataSymbols.add(symbolJto);
             }
+            else if (((shape.getBpmnElement() instanceof DataStore)
+                  || (shape.getBpmnElement() instanceof DataStoreReference)))
+            {
+               DataStore dataStore = (shape.getBpmnElement() instanceof DataStoreReference)
+                     ? ((DataStoreReference) shape.getBpmnElement()).getDataStoreRef()
+                     : (DataStore) shape.getBpmnElement();
+
+               DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+               symbolJto.dataFullId = getFullId(dataStore);
+
+               laneJto.dataSymbols.add(symbolJto);
+            }
             else
             {
                trace.debug("Unsupported shape: " + shape.getBpmnElement());
@@ -840,8 +861,28 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          // TODO
          jto.dataType = ModelerConstants.STRUCTURED_DATA_TYPE_KEY;
-         jto.structuredDataTypeFullId = Bpmn2Utils.findContainingModel(variable).getId()
-               + ":" + variable.getItemSubjectRef().getId();
+         jto.structuredDataTypeFullId = findContainingModel(variable).getId() + ":"
+               + variable.getItemSubjectRef().getId();
+      }
+      else
+      {
+         JsonObject extJson = Bpmn2ExtensionUtils.getExtensionAsJson(variable, "core");
+         if (extJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+         {
+            jto.dataType = extJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+            if ( !isEmpty(jto.dataType))
+            {
+               if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(jto.dataType))
+               {
+                  jto.primitiveDataType = extractAsString(extJson,
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+               }
+               else if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(jto.dataType))
+               {
+                  jto.structuredDataTypeFullId = "";
+               }
+            }
+         }
       }
       return jto;
    }

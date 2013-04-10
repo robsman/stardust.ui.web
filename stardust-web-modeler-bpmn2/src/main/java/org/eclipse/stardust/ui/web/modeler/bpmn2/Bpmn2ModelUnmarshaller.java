@@ -1,8 +1,13 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.getModelUuid;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionAsJson;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionFromJson;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
@@ -18,11 +23,14 @@ import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
@@ -484,18 +492,20 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
    /**
     * 
-    * @param dataObject
+    * @param dataStore
     * @param dataJson
     */
-   private void updateDataStore(DataStore dataObject, JsonObject dataJson)
+   private void updateDataStore(DataStore dataStore, JsonObject dataJson)
    {
       if (dataJson.has(ModelerConstants.NAME_PROPERTY))
       {
-         dataObject.setName(dataJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+         dataStore.setName(dataJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
 
-      storeDescription(dataObject, dataJson);
-      storeExtensions(dataObject, dataJson);
+      storeDescription(dataStore, dataJson);
+      storeExtensions(dataStore, dataJson);
+
+      updateVariable(dataStore, dataJson);
    }
 
    private void updateDataObject(DataObject dataObject, JsonObject dataJson)
@@ -507,6 +517,55 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 
       storeDescription(dataObject, dataJson);
       storeExtensions(dataObject, dataJson);
+
+      updateVariable(dataObject, dataJson);
+   }
+
+   private void updateVariable(ItemAwareElement variable, JsonObject dataJson)
+   {
+      JsonObject extJson = getExtensionAsJson(variable, "core");
+
+      if (dataJson.has(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY))
+      {
+         extJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+         extJson.add(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+               dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY));
+      }
+      else if (dataJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+      {
+         extJson.remove(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+
+         extJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+
+         ItemDefinition referencedType = null;
+
+         String structuredDataTypeFullId = extractAsString(dataJson,
+               ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+         if ( !isEmpty(structuredDataTypeFullId))
+         {
+            Definitions model = findContainingModel(variable);
+            if ((null != model)
+                  && (structuredDataTypeFullId.startsWith(getModelUuid(model) + ":")))
+            {
+               String structuredDataTypeId = structuredDataTypeFullId.substring(getModelUuid(
+                     model).length() + 1);
+               for (RootElement rootElement : model.getRootElements())
+               {
+                  if ((rootElement instanceof ItemDefinition)
+                        && structuredDataTypeId.equals(((ItemDefinition) rootElement).getId()))
+                  {
+                     referencedType = (ItemDefinition) rootElement;
+                     break;
+                  }
+               }
+            }
+            // TODO handle references to external type IDs
+         }
+
+         variable.setItemSubjectRef(referencedType);
+      }
+
+      setExtensionFromJson(variable, "core", extJson);
    }
 
    /**

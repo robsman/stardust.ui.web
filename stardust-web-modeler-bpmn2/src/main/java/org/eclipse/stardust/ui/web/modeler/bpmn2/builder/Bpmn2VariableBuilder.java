@@ -2,9 +2,12 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2.builder;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionAsJson;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionFromJson;
 
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Process;
@@ -14,9 +17,16 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
 import org.eclipse.stardust.ui.web.modeler.model.DataJto;
 
+import com.google.gson.JsonObject;
+
 public class Bpmn2VariableBuilder
 {
    public void attachVariable(Process process, DataObject variable)
+   {
+      process.getFlowElements().add(variable);
+   }
+
+   public void attachVariable(Process process, DataStoreReference variable)
    {
       process.getFlowElements().add(variable);
    }
@@ -33,7 +43,15 @@ public class Bpmn2VariableBuilder
       // TODO split into one method per concrete data type
       if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(jto.dataType))
       {
-         // TODO store type ID
+         // store type ID
+         JsonObject extJson = getExtensionAsJson(variable, "core");
+
+         extJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+               ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+         extJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+               jto.primitiveDataType);
+
+         setExtensionFromJson(variable, "core", extJson);
       }
       else
       {
@@ -46,22 +64,33 @@ public class Bpmn2VariableBuilder
       return variable;
    }
 
-   public DataObject createXsdVariable(Definitions model, DataJto jto)
+   public DataStore createGlobalXsdVariable(Definitions model, DataJto jto)
    {
-      DataObject variable = bpmn2Factory().createDataObject();
+      DataStore variable = bpmn2Factory().createDataStore();
 
       // TODO split into one method per concrete data type
       if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(jto.dataType))
       {
-         for (RootElement rootElement : model.getRootElements())
+         if ( !isEmpty(jto.structuredDataTypeFullId))
          {
-            if ((rootElement instanceof ItemDefinition)
-                  && jto.structuredDataTypeFullId.equals(((ItemDefinition) rootElement).getId()))
+            for (RootElement rootElement : model.getRootElements())
             {
-               variable.setItemSubjectRef((ItemDefinition) rootElement);
-               break;
+               if ((rootElement instanceof ItemDefinition)
+                     && jto.structuredDataTypeFullId.equals(((ItemDefinition) rootElement).getId()))
+               {
+                  variable.setItemSubjectRef((ItemDefinition) rootElement);
+                  break;
+               }
             }
          }
+
+         // store type ID
+         JsonObject extJson = getExtensionAsJson(variable, "core");
+
+         extJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+               ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+
+         setExtensionFromJson(variable, "core", extJson);
       }
       else
       {
@@ -72,5 +101,14 @@ public class Bpmn2VariableBuilder
       variable.setId( !isEmpty(jto.id) ? jto.id : Bpmn2Utils.createInternalId());
 
       return variable;
+   }
+
+   public DataStoreReference createGlobalVariableReference(Definitions model, DataStore dataStore)
+   {
+      DataStoreReference reference = bpmn2Factory().createDataStoreReference();
+
+      reference.setDataStoreRef(dataStore);
+
+      return reference;
    }
 }
