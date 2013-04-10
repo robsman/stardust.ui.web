@@ -213,6 +213,8 @@ define(
 										view : this
 									},
 									function(event) {
+										event.data.view.application.attributes["carnot:engine:wsPortName"] = null;
+										event.data.view.application.attributes["carnot:engine:wsOperationName"] = null;
 										event.data.view
 												.setWebService(event.data.view.serviceSelect
 														.val());
@@ -220,6 +222,7 @@ define(
 					this.portSelect.change({
 						view : this
 					}, function(event) {
+						event.data.view.application.attributes["carnot:engine:wsOperationName"] = null;
 						event.data.view.setPort(event.data.view.portSelect
 								.val());
 					});
