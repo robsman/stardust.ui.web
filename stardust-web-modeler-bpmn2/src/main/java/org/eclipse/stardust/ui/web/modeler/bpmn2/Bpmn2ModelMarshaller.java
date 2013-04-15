@@ -104,7 +104,7 @@ import org.eclipse.stardust.ui.web.modeler.model.di.LaneSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.PoolSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ShapeJto;
-import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 
 public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
@@ -750,8 +750,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             {
                if (typeId.equals(typeDefinition.getName()))
                {
-                  ModelService.loadSchemaInfo(jto.typeDeclaration.schema, importedSchema);
-
+                  jto.typeDeclaration.schema = XsdSchemaUtils.toSchemaJson(importedSchema);
                   jto.typeDeclaration.type.classifier = "ExternalReference";
                   jto.typeDeclaration.type.location = importSpec.getLocation();
                   jto.typeDeclaration.type.xref = typeDefinition.getQName(importedSchema);
