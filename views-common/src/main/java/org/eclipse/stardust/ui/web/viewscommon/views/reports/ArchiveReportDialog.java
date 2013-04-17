@@ -72,8 +72,7 @@ public class ArchiveReportDialog extends PopupUIComponentBean
 
       HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
             .getRequest();
-      String saveReportUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-            + request.getContextPath() + "/frameset";
+      String saveReportUrl = DocumentMgmtUtility.getReportingBaseURL() + "/frameset";
 
       String userPartition = SessionContext.findSessionContext().getUser().getPartitionId();
       if (!PredefinedConstants.DEFAULT_PARTITION_ID.equalsIgnoreCase(userPartition))

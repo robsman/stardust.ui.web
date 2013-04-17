@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -62,6 +63,7 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
@@ -1074,6 +1076,21 @@ public class DocumentMgmtUtility
    public static String getMyArchivedReportsPath()
    {
       return getMyDocumentsPath() + ARCHIVED_REPORTS; 
+   }
+   
+   /**
+    * @return reporting base url
+    */
+   public static String getReportingBaseURL()
+   {
+      String baseUrl = (String) FacesContext.getCurrentInstance().getExternalContext()
+            .getInitParameter(Constants.CONTEXT_PARAM_REPORTING_URI);
+
+      if (org.eclipse.stardust.common.StringUtils.isEmpty(baseUrl))
+      {
+         baseUrl = FacesUtils.getServerBaseURL();
+      }
+      return baseUrl;
    }
    
    /**
