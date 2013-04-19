@@ -235,6 +235,8 @@ define(["m_toolbarManager", "m_constants", "m_pageController"], function(m_toolb
 	function showStamps(args)
 	{
 		retrieveStamps();
+		// Clear the div before creating new
+		jQuery('#stampGallery').empty();
 		jQuery('#stampGallery').css("padding", "0px").html("<div style='max-height: 480px; overflow:scroll;'>" + generateStampsHTML(stamps) + "</div>");
 		jQuery('#stampGallery img').css("cursor", "pointer");
 		//Stamps selection handling
@@ -296,7 +298,10 @@ define(["m_toolbarManager", "m_constants", "m_pageController"], function(m_toolb
 	{
 		if (undefined == stamps)
 		{
-			require("m_communicationController").syncGetData({url : require("m_urlUtils").getStampsQueryURL()}, new function() {
+					require("m_communicationController").syncGetData({
+						url : require("m_urlUtils").getStampsQueryURL(),
+						cacheData : false
+					}, new function() {
 				return {
 					success : function(data) {
 						stamps = data;
