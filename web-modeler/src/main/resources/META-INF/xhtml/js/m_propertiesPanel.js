@@ -307,6 +307,7 @@ define(
 					if (this.errorMessages.length != 0) {
 						m_dialog.makeVisible(this.errorMessagesRow);
 
+						this.errorMessagesList.empty();
 						for ( var n in this.errorMessages) {
 							this.errorMessagesList.append("<li>"
 									+ this.errorMessages[n] + "</li>");

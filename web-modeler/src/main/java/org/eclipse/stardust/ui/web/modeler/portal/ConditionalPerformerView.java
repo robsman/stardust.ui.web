@@ -25,7 +25,8 @@ public class ConditionalPerformerView extends AbstractAdapterView {
     */
 	public ConditionalPerformerView()
    {
-      super("/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html", "conditionalPerformerFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html", "conditionalPerformerFrameAnchor",
+            "conditionalPerformerName");
    }
 
    @Override

@@ -88,6 +88,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.use"));
+				jQuery("#endpointLabel")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.webService.endpoint"));
 
 				jQuery("#implementation")
 						.text(
@@ -158,7 +162,6 @@ define(
 						application) {
 					initializing = true;
 					this.id = "webServiceApplicationView";
-					this.webServiceStructure = {};
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
@@ -169,6 +172,8 @@ define(
 					this.styleOutput = jQuery("#styleOutput");
 					this.protocolOutput = jQuery("#protocolOutput");
 					this.useOutput = jQuery("#useOutput");
+					this.endpointLabel = jQuery("#endpointLabel");
+					this.endpoint = jQuery("#endpointInput");
 					this.addressingInput = jQuery("#addressingInput");
 					this.implementationSelect = jQuery("#implementationSelect");
 					this.authenticationInput = jQuery("#authenticationInput");
@@ -208,6 +213,8 @@ define(
 										view : this
 									},
 									function(event) {
+										event.data.view.application.attributes["carnot:engine:wsPortName"] = null;
+										event.data.view.application.attributes["carnot:engine:wsOperationName"] = null;
 										event.data.view
 												.setWebService(event.data.view.serviceSelect
 														.val());
@@ -215,6 +222,7 @@ define(
 					this.portSelect.change({
 						view : this
 					}, function(event) {
+						event.data.view.application.attributes["carnot:engine:wsOperationName"] = null;
 						event.data.view.setPort(event.data.view.portSelect
 								.val());
 					});
@@ -232,6 +240,22 @@ define(
 								.setAddressing(event.data.view.addressingInput
 										.is(":checked"));
 					});
+
+					this.endpoint.change({
+						view : this
+					}, function(event) {
+						var endpointVal = null;
+						if (event.data.view.endpoint.val()
+								&& event.data.view.endpoint.val().trim() !== "") {
+							endpointVal = event.data.view.endpoint.val();
+						}
+						event.data.view.submitChanges({
+							attributes : {
+								"carnot:engine:wsUddiAccessPoint" : endpointVal
+							}
+						});
+					});
+
 					this.implementationSelect
 							.change(
 									{
@@ -322,39 +346,43 @@ define(
 					}
 
 					if (initializing) {
-						// Build dummy Web Service structure - allows too initialize
-						// selects even without full WSDL information
-						var structure = {};
-						var services = {};
-						var ports = {};
-						var operations = {};
+						if (this.application.webServiceStructure) {
+							this.updateServiceFromAppWebServiceStructure();
+						} else {
+							// Build dummy Web Service structure - allows too initialize
+							// selects even without full WSDL information
+							var structure = {};
+							var services = {};
+							var ports = {};
+							var operations = {};
 
-						if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
-							operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
-								name : this.application.attributes["carnot:engine:wsOperationName"]
+							if (this.application.attributes["carnot:engine:wsOperationName"] != null) {
+								operations[this.application.attributes["carnot:engine:wsOperationName"]] = {
+									name : this.application.attributes["carnot:engine:wsOperationName"]
+								};
+							}
+
+							if (this.application.attributes["carnot:engine:wsPortName"] != null) {
+								ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])] = {
+									name : this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]),
+									operations : operations
+								};
+							}
+
+							if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
+								services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
+									name : this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
+									ports : ports
+								};
+							}
+
+							structure = {
+								services : services,
+								url : this.application.attributes["carnot:engine:wsdlUrl"]
 							};
+
+							this.loadWebServiceStructure(structure);
 						}
-
-						if (this.application.attributes["carnot:engine:wsPortName"] != null) {
-							ports[this.application.attributes["carnot:engine:wsPortName"]] = {
-								name : this.application.attributes["carnot:engine:wsPortName"],
-								operations : operations
-							};
-						}
-
-						if (this.application.attributes["carnot:engine:wsServiceName"] != null) {
-							services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])] = {
-								name : this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]),
-								ports : ports
-							};
-						}
-
-						structure = {
-							services : services,
-							url : this.application.attributes["carnot:engine:wsdlUrl"]
-						};
-
-						this.loadWebServiceStructure(structure);
 					}
 
 					// Populate inputs from application
@@ -362,11 +390,27 @@ define(
 					this.wsdlUrlInput
 							.val(this.application.attributes["carnot:engine:wsdlUrl"]);
 					this.serviceSelect
-							.val(this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
+							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
 					this.portSelect
-							.val(this.application.attributes["carnot:engine:wsPortName"]);
+							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]));
 					this.operationSelect
 							.val(this.application.attributes["carnot:engine:wsOperationName"]);
+
+					if (this.serviceSelect.val()
+							&& this.serviceSelect.val().indexOf(
+									m_constants.DYNAMICALLY_BOUND_SERVICE) > -1) {
+						this.endpointLabel.removeClass("invisible");
+						this.endpoint.removeClass("invisible");
+					} else {
+						this.endpointLabel.addClass("invisible");
+						this.endpoint.addClass("invisible");
+					}
+					if (this.application.attributes["carnot:engine:wsUddiAccessPoint"]) {
+						this.endpoint
+								.val(this.application.attributes["carnot:engine:wsUddiAccessPoint"]);
+					} else {
+						this.endpoint.val("");
+					}
 
 					if (this.application.attributes["carnot:engine:wsServiceName"]
 							&& this.application.attributes["carnot:engine:wsPortName"]
@@ -374,16 +418,16 @@ define(
 						// Update style output for selected service and port
 						this.styleOutput
 								.append(this.application.attributes["carnot:engine:wsPortName"]);
-						var port = this.webServiceStructure
-											.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
-												.ports[this.application.attributes["carnot:engine:wsPortName"]];
+						var port = this.application.webServiceStructure
+											.services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
+												.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])];
 						this.styleOutput.empty();
 						this.styleOutput.append(port.style);
 
 						// Update use output for selected service and port and operation
-						var operation = this.webServiceStructure
-												.services[this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
-													.ports[this.application.attributes["carnot:engine:wsPortName"]]
+						var operation = this.application.webServiceStructure
+												.services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
+													.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])]
 														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
 						this.useOutput.empty();
 						this.useOutput.append(operation.use);
@@ -415,7 +459,7 @@ define(
 				/**
 				 *
 				 */
-				WebServiceApplicationView.prototype.getServiceDisplayName = function(fullyQualifiedName) {
+				WebServiceApplicationView.prototype.getDisplayName = function(fullyQualifiedName) {
 					if (fullyQualifiedName
 							&& fullyQualifiedName.indexOf("{") == 0
 							&& fullyQualifiedName.indexOf("}") > -1
@@ -463,54 +507,57 @@ define(
 				 */
 				WebServiceApplicationView.prototype.loadWebServiceStructure = function(
 						structure) {
-					var successCallback = {
-						callbackScope : this,
-						callbackMethod : "setWebServiceStructure"
-					};
-
-					jQuery("body").css("cursor", "progress");
-					this.clearErrorMessages();
-					this.wsdlUrlInput.removeClass("error");
-
-					var view = this;
-
 					var wsdlURL = (structure && structure.url) ? structure.url : this.wsdlUrlInput.val();
-					m_communicationController
-							.syncPostData(
-									{
-										url : m_communicationController
-												.getEndpointUrl()
-												+ "/webServices/structure"
-									},
-									JSON.stringify({
-										wsdlUrl : wsdlURL
-									}),
-									{
-										"success" : function(serverData) {
-											successCallback.callbackScope[successCallback.callbackMethod]
-													(serverData);
-											jQuery("body")
-													.css("cursor", "auto");
-										},
-										"error" : function() {
-											jQuery("body")
-													.css("cursor", "auto");
-											if (structure == null) {
-												var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")
-												view.errorMessages
-														.push(errormessage);
-												view.showErrorMessages();
-												view.wsdlUrlInput
-														.addClass("error");
-												view.serviceSelect.empty();
-												view.portSelect.empty();
-												view.operationSelect.empty();
-											} else {
-												successCallback.callbackScope[successCallback.callbackMethod]
-														(structure);
-											}
-										}
-									});
+
+					if (wsdlURL.trim() != "") {
+						var successCallback = {
+								callbackScope : this,
+								callbackMethod : "setWebServiceStructure"
+							};
+
+							jQuery("body").css("cursor", "progress");
+							this.clearErrorMessages();
+							this.wsdlUrlInput.removeClass("error");
+
+							var view = this;
+
+							m_communicationController
+									.syncPostData(
+											{
+												url : m_communicationController
+														.getEndpointUrl()
+														+ "/webServices/structure"
+											},
+											JSON.stringify({
+												wsdlUrl : wsdlURL
+											}),
+											{
+												"success" : function(serverData) {
+													successCallback.callbackScope[successCallback.callbackMethod]
+															(serverData);
+													jQuery("body")
+															.css("cursor", "auto");
+												},
+												"error" : function() {
+													jQuery("body")
+															.css("cursor", "auto");
+													if (structure == null) {
+														var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")
+														view.errorMessages
+																.push(errormessage);
+														view.showErrorMessages();
+														view.wsdlUrlInput
+																.addClass("error");
+														view.serviceSelect.empty();
+														view.portSelect.empty();
+														view.operationSelect.empty();
+													} else {
+														successCallback.callbackScope[successCallback.callbackMethod]
+																(structure);
+													}
+												}
+											});
+					}
 				};
 
 				/**
@@ -522,27 +569,46 @@ define(
 					m_utils.debug("===> Web Service Structure");
 					m_utils.debug(webServiceStructure);
 
-					this.webServiceStructure = webServiceStructure;
+					this.setApplicationWebServiceStructure(webServiceStructure);
 
+					this.updateServiceFromAppWebServiceStructure();
+				};
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.setApplicationWebServiceStructure = function(
+						webServiceStructure) {
+					this.application.webServiceStructure = webServiceStructure;
+				}
+
+				/**
+				 *
+				 */
+				WebServiceApplicationView.prototype.updateServiceFromAppWebServiceStructure = function() {
 					this.serviceSelect.empty();
 
-					var start = true;
+					var serviceSet = false;
 
-
-					for ( var m in webServiceStructure.services) {
-						var service = webServiceStructure.services[m];
+					for ( var m in this.application.webServiceStructure.services) {
+						var service = this.application.webServiceStructure.services[m];
 
 						this.serviceSelect.append("<option value=\""
 								+ service.name + "\">" + service.name
 								+ "</option>");
 
-						if (start) {
+						if (!serviceSet
+								&& !this.application.attributes["carnot:engine:wsServiceName"]) {
 							this.setWebService(service.name);
 
-							start = false;
+							serviceSet = true;
 						}
 					}
-				};
+
+					if (!serviceSet) {
+						this.setWebService(this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
+					}
+				}
 
 				/**
 				 *
@@ -553,19 +619,24 @@ define(
 
 					this.portSelect.empty();
 
-					var start = true;
+					var portSet = false;
 
-					for ( var m in this.webServiceStructure.services[service].ports) {
-						var port = this.webServiceStructure.services[service].ports[m];
+					for ( var m in this.application.webServiceStructure.services[service].ports) {
+						var port = this.application.webServiceStructure.services[service].ports[m];
 
 						this.portSelect.append("<option value=\"" + port.name
 								+ "\">" + port.name + "</option>");
 
-						if (start) {
+						if (!portSet
+								&& !this.application.attributes["carnot:engine:wsPortName"]) {
 							this.setPort(port.name);
 
-							start = false;
+							portSet = true;
 						}
+					}
+
+					if (!portSet) {
+						this.setPort(this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]));
 					}
 				};
 
@@ -575,14 +646,14 @@ define(
 				WebServiceApplicationView.prototype.setPort = function(portName) {
 					this.portSelect.val(portName);
 
-					var port = this.webServiceStructure.services[this.serviceSelect
+					var port = this.application.webServiceStructure.services[this.serviceSelect
 							.val()].ports[portName];
 
 					this.styleOutput.empty();
 					this.styleOutput.append(port.style);
 					this.operationSelect.empty();
 
-					var start = true;
+					var operationSet = false;
 
 					for ( var m in port.operations) {
 						var operation = port.operations[m];
@@ -591,11 +662,16 @@ define(
 								+ operation.name + "\">" + operation.name
 								+ "</option>");
 
-						if (start) {
+						if (!operationSet
+								&& !this.application.attributes["carnot:engine:wsOperationName"]) {
 							this.setOperation(operation.name);
 
-							start = false;
+							operationSet = true;
 						}
+					}
+
+					if (!operationSet) {
+						this.setOperation(this.application.attributes["carnot:engine:wsOperationName"]);
 					}
 				};
 
@@ -606,7 +682,7 @@ define(
 						operationName) {
 					this.operationSelect.val(operationName);
 
-					var operation = this.webServiceStructure.services[this.serviceSelect
+					var operation = this.application.webServiceStructure.services[this.serviceSelect
 							.val()].ports[this.portSelect.val()].operations[operationName];
 					this.useOutput.empty();
 					this.useOutput.append(operation.use);
@@ -614,8 +690,8 @@ define(
 					this.protocolOutput.append(operation["carnot:engine:wsSoapProtocol"]);
 
 					if (!initializing
-							&& (this.serviceSelect.val() != this.getServiceDisplayName(this.application.attributes["carnot:engine:wsServiceName"])
-								|| this.portSelect.val() != this.application.attributes["carnot:engine:wsPortName"]
+							&& (this.serviceSelect.val() != this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])
+								|| this.portSelect.val() != this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])
 								|| this.operationSelect.val() != this.application.attributes["carnot:engine:wsOperationName"])) {
 						this
 								.submitChanges({
@@ -716,11 +792,6 @@ define(
 								.getProperty("modeler.model.propertyView.webService.variant.option.userNamePwdDigest");
 						this.variantSelect
 								.append("<option value=\"passwordDigest\">"
-										+ selectdata + "</option>");
-						selectdata = m_i18nUtils
-								.getProperty("modeler.model.propertyView.webService.variant.option.xwssConfiguration");
-						this.variantSelect
-								.append("<option value=\"xwssConfiguration\">"
 										+ selectdata + "</option>");
 					}
 					if (variant) {

@@ -248,7 +248,17 @@ public final class WebServiceApplicationUtils
          {
             attributes.addProperty(WSConstants.WS_SERVICE_NAME_ATT,
                   WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.toString());
-            binding = definition.getBinding(QName.valueOf(portName));
+            // (fh) client is sending unqualified name
+            QName qname = QName.valueOf(portName);
+            if (XMLConstants.NULL_NS_URI == qname.getNamespaceURI())
+            {
+               String tns = definition.getTargetNamespace();
+               if (tns != null && tns.length() > 0)
+               {
+                  qname = new QName(tns, qname.getLocalPart());
+               }
+            }
+            binding = definition.getBinding(qname);
             if (binding == null)
             {
                trace.warn("No binding '" + portName + "' found.");
@@ -416,7 +426,7 @@ public final class WebServiceApplicationUtils
          qname = part.getTypeName();
       }
       
-      if (qname != null)
+      if (qname != null && !XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI()))
       {
          ModelType model = ModelUtils.findContainingModel(application);
          TypeDeclarationType typeDeclaration = findMatchingTypeDeclaration(model, qname);

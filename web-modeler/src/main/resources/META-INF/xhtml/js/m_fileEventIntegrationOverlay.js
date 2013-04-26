@@ -334,6 +334,7 @@ define(
 				 */
 				FileEventIntegrationOverlay.prototype.validate = function() {
 					this.directoryNameInput.removeClass("error");
+					this.page.propertiesPanel.errorMessages=[];
 
 					if (this.directoryNameInput.val() == null
 							|| this.directoryNameInput.val() == "") {
@@ -341,8 +342,11 @@ define(
 								.push("Directory name must not be empty.");
 						this.directoryNameInput.addClass("error");
 
+						
+					}
+					
+					if (this.page.propertiesPanel.errorMessages.length != 0){
 						this.page.propertiesPanel.showErrorMessages();
-
 						return false;
 					}
 

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Reverse Plugin</title>
+<script src="plugin.js"></script>
+<script>
+	getRootUrl = function() {
+		return location.href.substring(0, location.href.indexOf("/plugins"));
+	};
+
+	window.onload = function() {
+		var headers = {
+			name : "Lightdust Plugin",
+			version : "1.0",
+			description : "Lightdust Process and Rules Modeling Plugin."
+		};
+		var provider = new orion.PluginProvider(headers);
+
+		// Process modeling editor
+
+		provider
+				.registerServiceProvider(
+						"orion.edit.editor",
+						{},
+						{
+							id : "lightdust.editor",
+							name : "Lightdust Process Model and Rules Editor",
+							uriTemplate : getRootUrl() + "/plugins/stardust-portal-shell/public/portalShell.html?modelFile={Location}"
+						});
+
+		// Content types for process models
+
+		provider.registerServiceProvider("orion.core.contenttype", {}, {
+			contentTypes : [ {
+				id : "text/xpdl",
+				name : "XPDL",
+				extension : [ "xpdl" ]
+			}, {
+				id : "text/bpmn",
+				name : "BPMN",
+				extension : [ "bpmn" ]
+			}, {
+				id : "text/drl",
+				name : "DRL",
+				extension : [ "drl" ]
+			} ]
+		});
+
+		// Connect file extensions to content types
+
+		provider.registerServiceProvider("orion.navigate.openWith", {}, {
+			editor : "lightdust.editor",
+			contentType : [ "text/xpdl", "text/bpmn", "text/drl" ]
+		});
+
+		// Navigator entry to create an empty process model
+
+		var xpdlRef = document.createElement('a');
+
+		xpdlRef.href = "empty-model-xpdl.zip";
+
+		provider.registerService("orion.navigate.content", null, {
+			id : "lightdust.content.xpdl",
+			name : "Create XPDL Model",
+			description : "Create an empty XPDL Process Model.",
+			command : "orion.importZipURL",
+			parameters : [ {
+				name : "url",
+				type : "url",
+				label : "Extracted from:",
+				defaultValue : xpdlRef.href
+			}, {
+				name : "unzip",
+				type : "boolean",
+				label : "Unzip:",
+				defaultValue : true
+			} ]
+		});
+
+		// Navigator entry to create an empty process model
+
+		var bpmnRef = document.createElement('a');
+
+		bpmnRef.href = "empty-model-bpmn.zip";
+
+		provider.registerService("orion.navigate.content", null, {
+			id : "lightdust.content.bpmn",
+			name : "Create BPMN Model",
+			description : "Create an empty BPMN Process Model.",
+			command : "orion.importZipURL",
+			parameters : [ {
+				name : "url",
+				type : "url",
+				label : "Extracted from:",
+				defaultValue : bpmnRef.href
+			}, {
+				name : "unzip",
+				type : "boolean",
+				label : "Unzip:",
+				defaultValue : true
+			} ]
+		});
+
+		// Navigator entry to create an empty process model
+
+		var drlRef = document.createElement('a');
+
+		drlRef.href = "empty-rule-set.zip";
+
+		provider.registerService("orion.navigate.content", null, {
+			id : "lightdust.content.drl",
+			name : "Create Rule Set",
+			description : "Create an empty Rule Set.",
+			command : "orion.importZipURL",
+			parameters : [ {
+				name : "url",
+				type : "url",
+				label : "Extracted from:",
+				defaultValue : drlRef.href
+			}, {
+				name : "unzip",
+				type : "boolean",
+				label : "Unzip:",
+				defaultValue : true
+			} ]
+		});
+
+		provider
+				.registerService(
+						"orion.navigate.command",
+						{
+							run : function(items) {
+								window.alert("Bulk operation on: " + locations);
+							}
+						},
+						{
+							image : getRootUrl() + "/plugins/stardust-portal-shell/public/orion/images/gear.png",
+							name : "Upload into Stardust on Demand Solution Release",
+							id : "lightdust.commands.uploadToIOD",
+							tooltip : "Upload all artifacts into an Stardust on Demand Solution Release"
+						});
+
+		provider
+				.registerService(
+						"orion.navigate.command",
+						{
+							run : function(item) {
+								return item.Location;
+							}
+						},
+						{
+							image : getRootUrl() + "/plugins/stardust-portal-shell/public/orion/images/gear.png",
+							name : "Deploy on Stardust on Demand",
+							id : "lightdust.commands.deployXpdlToIod",
+							forceSingleItem : true,
+							href : true,
+							contentType : [ "text/xpdl" ],
+							tooltip : "Deploy the Model on Stardust on Demand"
+						});
+
+		provider
+				.registerService(
+						"orion.navigate.command",
+						{
+							run : function(item) {
+								return item.Location;
+							}
+						},
+						{
+							image : getRootUrl() + "/plugins/stardust-portal-shell/public/orion/images/gear.png",
+							name : "Deploy on Stardust on Demand",
+							id : "lightdust.commands.deployBpmnToIod",
+							forceSingleItem : true,
+							href : true,
+							contentType : [ "text/bpmn" ],
+							tooltip : "Deploy the Model on Stardust on Demand"
+						});
+
+		provider
+				.registerService(
+						"orion.navigate.command",
+						{
+							run : function(item) {
+								return item.Location;
+							}
+						},
+						{
+							image : getRootUrl() + "/plugins/stardust-portal-shell/public/orion/images/gear.png",
+							name : "Deploy on Stardust on Demand",
+							id : "lightdust.commands.deployDrlToIod",
+							forceSingleItem : true,
+							href : true,
+							contentType : [ "text/drl" ],
+							tooltip : "Deploy the Rule Set on Stardust on Demand"
+						});
+
+		provider.connect();
+	};
+</script>
+</head>
+<body></body>
+</html>

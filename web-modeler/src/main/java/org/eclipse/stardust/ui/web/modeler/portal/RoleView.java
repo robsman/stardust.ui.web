@@ -26,7 +26,7 @@ public class RoleView extends AbstractAdapterView
     */
    public RoleView()
    {
-      super("/plugins/bpm-modeler/views/modeler/roleView.html", "roleFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/roleView.html", "roleFrameAnchor", "roleName");
    }
 
    @Override

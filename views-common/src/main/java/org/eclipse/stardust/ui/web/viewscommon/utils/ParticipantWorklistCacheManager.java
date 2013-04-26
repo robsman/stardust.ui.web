@@ -152,6 +152,19 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
          worklistCacheEntry.setCount(count);
       }
    }
+   
+   /**
+    * @param participantInfo
+    * @param count
+    */
+   public void setWorklistThresholdCount(ParticipantInfo participantInfo, long count)
+   {
+      ParticipantWorklistCacheEntry worklistCacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      if (null != worklistCacheEntry)
+      {
+         worklistCacheEntry.setTotalCountThreshold(count);
+      }
+   }
 
    /**
     * @param oldAi

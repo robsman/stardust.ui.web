@@ -4,12 +4,16 @@ import javax.annotation.Resource;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.emf.ecore.EObject;
 
@@ -19,6 +23,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2FlowNodeBuilder;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2VariableBuilder;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
@@ -70,13 +75,42 @@ public class FlowNodeCommandsHandler
          process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
       }
 
-      DataObject variable = null;
-      for (FlowElement flowElement : process.getFlowElements())
+      ItemAwareElement variable = null;
+      for (RootElement rootElement : model.getRootElements())
       {
-         if ((flowElement instanceof DataObject) && dataId.equals(((DataObject) flowElement).getId()))
+         if (dataId.equals(rootElement.getId()))
          {
-            variable = (DataObject) flowElement;
-            break;
+            if (rootElement instanceof DataStore)
+            {
+               // find process local reference, or create one, if it is missing so far
+               for (FlowElement flowElement : process.getFlowElements())
+               {
+                  if ((flowElement instanceof DataStoreReference) && (rootElement == ((DataStoreReference) flowElement).getDataStoreRef()))
+                  {
+                     variable = (DataStoreReference) flowElement;
+                     break;
+                  }
+               }
+
+               if (null == variable)
+               {
+                  Bpmn2VariableBuilder variableBuilder = new Bpmn2VariableBuilder();
+                  variable = variableBuilder.createGlobalVariableReference(model, (DataStore) rootElement);
+                  variableBuilder.attachVariable(process, (DataStoreReference) variable);
+               }
+            }
+         }
+      }
+      if (null == variable)
+      {
+         for (FlowElement flowElement : process.getFlowElements())
+         {
+            if ((flowElement instanceof DataObject)
+                  && dataId.equals(((DataObject) flowElement).getId()))
+            {
+               variable = (DataObject) flowElement;
+               break;
+            }
          }
       }
       if (null == variable)

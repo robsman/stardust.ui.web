@@ -19,7 +19,7 @@ define(
 
 			/**
 			 * Represents a structured type.
-			 * 
+			 *
 			 * @constructor
 			 */
 			function TypeDeclaration() {
@@ -27,7 +27,7 @@ define(
 						m_modelElement.create());
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.toString = function() {
 					return "Lightdust.TypeDeclaration";
@@ -35,7 +35,7 @@ define(
 
 				/**
 				 * Initializes a the type declaration from JSON.
-				 * 
+				 *
 				 * @param {string}
 				 *            name the type's name
 				 */
@@ -54,7 +54,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.initializeFromJson = function(model) {
 					this.model = model;
@@ -62,7 +62,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.rename = function(id, name) {
 					delete this.model.typeDeclarations[this.id];
@@ -86,11 +86,13 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
 					return (null != this.getBody())
-							&& (this.getBody().classifier === 'sequence');
+							&& (this.getBody().classifier === 'sequence'
+								|| this.getBody().classifier === 'all'
+								|| this.getBody().classifier === 'choice');
 				};
 
 				TypeDeclaration.prototype.asSchemaType = function() {
@@ -111,21 +113,25 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getBody = function() {
-					return this.getTypeDeclaration().body;
+					if (this.getTypeDeclaration()) {
+						return this.getTypeDeclaration().body;
+					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
-					return this.getTypeDeclaration().facets;
+					if (this.getTypeDeclaration()) {
+						return this.getTypeDeclaration().facets;
+					}
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getSchemaName = function() {
 					// TODO@Robert Review
@@ -138,7 +144,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.getElementCount = function() {
 					var n = 0;
@@ -151,7 +157,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.createInstance = function() {
 					if (this.isSequence()) {
@@ -168,7 +174,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
 						typeDeclaration, instance) {
@@ -209,10 +215,11 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
-					if (!this.isSequence()) {
+					if (!this.isSequence()
+							&& this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
 						delete td.type;
 						delete td.facets;
@@ -228,10 +235,11 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function() {
-					if (this.isSequence()) {
+					if (this.isSequence()
+							&& this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
 						delete td.body;
 
@@ -394,7 +402,9 @@ define(
 			SchemaType.prototype.isStructure = function() {
 				return (null != this.type)
 						&& (null != this.type.body)
-						&& ((this.type.body.classifier === 'sequence') || (this.type.body.classifier === 'choice'));
+						&& ((this.type.body.classifier === 'sequence')
+								|| (this.type.body.classifier === 'choice')
+								|| (this.type.body.classifier === 'all'));
 			};
 
 			/**
@@ -534,6 +544,7 @@ define(
 			function findType(schema, typeName) {
 				var parsedName = parseQName(typeName);
 				var element;
+				var type;
 
 				// (fh) spec says we should search for elements
 				if (!parsedName.namespace
@@ -592,8 +603,8 @@ define(
 			 *          equivalent to the list of Java primitive types)
 			 */
 			function getXsdCoreTypes() {
-				return [ "string", "boolean", "long", "int", "time", "short",
-						"byte", "double", "float", "decimal", "dateTime" ];
+				return [ "string", "boolean", "long", "int", "short",
+						"byte", "double", "float", "decimal", "date", "dateTime" ];
 			}
 
 			/**
@@ -614,7 +625,7 @@ define(
 						"positiveInteger", "unsignedLong", "unsignedInt",
 						"unsignedShort", "unsignedByte");
 				// data/time types
-				miscTypes.push("date", "duration", "gDay", "gMonth",
+				miscTypes.push("time", "duration", "gDay", "gMonth",
 						"gMonthDay", "gYear", "gYearMonth");
 				// other
 				miscTypes.push("anyURI", "base64Binary", "hexBinary",
@@ -626,7 +637,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function generateJsonRepresentation(typeDeclarations) {
 				var json = {};
@@ -640,7 +651,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function generateJsonRepresentationRecursively(
 					typeDeclarationsJson, typeDeclaration) {
@@ -697,14 +708,14 @@ define(
 
 			/**
 			 * XSD based structured type declarations.
-			 * 
+			 *
 			 * @exports bpmModeler/js/m_typeDeclaration
 			 */
 			var moduleApi = {
 
 				/**
 				 * Creates a new TypeDeclaration instance.
-				 * 
+				 *
 				 * @param name
 				 *            the type's name
 				 * @returns {TypeDeclaration}
@@ -726,7 +737,7 @@ define(
 				},
 
 				/**
-				 * 
+				 *
 				 * @param {string}
 				 *            sqName The schema qualified name of the type to
 				 *            resolve.

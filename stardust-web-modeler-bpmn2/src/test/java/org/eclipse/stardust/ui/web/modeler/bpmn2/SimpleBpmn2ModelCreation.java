@@ -14,7 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.eclipse.bpmn2.Collaboration;
-import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Interface;
@@ -137,8 +137,8 @@ public class SimpleBpmn2ModelCreation
       varJto.structuredDataTypeFullId = tdMt202CovType.getId();
 
       Bpmn2VariableBuilder variableBuilder = new Bpmn2VariableBuilder();
-      DataObject xsdVariable = variableBuilder.createXsdVariable(model, varJto);
-      variableBuilder.attachVariable(testProcess, xsdVariable);
+      DataStore xsdVariable = variableBuilder.createGlobalXsdVariable(model, varJto);
+      variableBuilder.attachVariable(model, xsdVariable);
 
 
       assertThat(xsdVariable, is(notNullValue()));

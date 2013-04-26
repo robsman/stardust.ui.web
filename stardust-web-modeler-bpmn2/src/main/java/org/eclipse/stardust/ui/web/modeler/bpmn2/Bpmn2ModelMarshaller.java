@@ -7,6 +7,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipatingProcesses;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,9 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.EndEvent;
@@ -33,6 +37,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.ManualTask;
@@ -138,6 +143,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          return jsonIo.gson().toJsonTree(toProcessDiagramJto((BPMNDiagram) element));
       }
+      else if (element instanceof DataStore)
+      {
+         return jsonIo.gson().toJsonTree(toJto((DataStore) element));
+      }
       else if (element instanceof DataObject)
       {
          return jsonIo.gson().toJsonTree(toJto((DataObject) element));
@@ -169,6 +178,13 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
             return jsonIo.gson().toJsonTree(symbolJto);
          }
+         else if (shape.getBpmnElement() instanceof DataStoreReference)
+         {
+            DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+            symbolJto.modelElement = toJto(((DataStoreReference) shape.getBpmnElement()).getDataStoreRef());
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
          else if (shape.getBpmnElement() instanceof Event)
          {
             EventSymbolJto symbolJto = newShapeJto(shape, new EventSymbolJto());
@@ -189,6 +205,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             symbolJto.modelElement = toJto((Gateway) shape.getBpmnElement());
 
             return jsonIo.gson().toJsonTree(symbolJto);
+         }
+         else
+         {
+            trace.debug("Unsupported shape: " + shape.getBpmnElement());
          }
       }
       else if (element instanceof BPMNEdge)
@@ -244,9 +264,21 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          {
             modelJto.participants.add(toJto((Participant) root));
          }
+         else if (root instanceof DataStore)
+         {
+            modelJto.dataItems.add(toJto((DataStore) root));
+         }
          else if (root instanceof Process)
          {
             modelJto.processes.add(toJto((Process) root));
+
+            for (FlowElement flowElement : ((Process) root).getFlowElements())
+            {
+               if (flowElement instanceof DataObject)
+               {
+                  modelJto.dataItems.add(toJto((DataObject) flowElement));
+               }
+            }
 
             // expose process properties as global data (see BPMN2 -> WS-BPEL mapping)
             for (Property property : ((Process) root).getProperties())
@@ -376,6 +408,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       LaneSymbolJto defaultLane = null;
       boolean horizontalLanes = false;
       boolean verticalLanes = false;
+      if ((null == processPoolShape) && !otherPoolShapes.isEmpty())
+      {
+         // TODO quick hack to show LEO diagrams
+         processPoolShape = otherPoolShapes.remove(0);
+      }
       if (null != processPoolShape)
       {
          mainPoolJto = newShapeJto(processPoolShape, new PoolSymbolJto());
@@ -412,12 +449,35 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
       else
       {
-         // TODO dynamically determine pool/lane dimensions
          mainPoolJto = new PoolSymbolJto();
-         mainPoolJto.x = 0;
-         mainPoolJto.x = 0;
-         mainPoolJto.width = 1000;
-         mainPoolJto.height = 600;
+         if ( !otherPoolShapes.isEmpty())
+         {
+            float left = otherPoolShapes.get(0).getBounds().getX();
+            float top = otherPoolShapes.get(0).getBounds().getY();
+            float right = left + otherPoolShapes.get(0).getBounds().getWidth();
+            float bottom = top + otherPoolShapes.get(0).getBounds().getHeight();
+
+            for (BPMNShape bpmnShape : otherPoolShapes)
+            {
+               left = Math.min(left, bpmnShape.getBounds().getX());
+               top = Math.min(top, bpmnShape.getBounds().getY());
+               right = Math.max(right, bpmnShape.getBounds().getX() + bpmnShape.getBounds().getWidth());
+               bottom = Math.max(bottom, bpmnShape.getBounds().getX() + bpmnShape.getBounds().getHeight());
+            }
+
+            mainPoolJto.x = Math.round(left);
+            mainPoolJto.y = Math.round(bottom + 1);
+            mainPoolJto.width = Math.round(right - left);
+            mainPoolJto.height = 600;
+         }
+         else
+         {
+            // TODO dynamically determine pool/lane dimensions
+            mainPoolJto.x = 0;
+            mainPoolJto.y = 0;
+            mainPoolJto.width = 1000;
+            mainPoolJto.height = 600;
+         }
       }
 
       // ensure pool shape fully encloses lanes and has proper orientation
@@ -441,10 +501,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (null == defaultLane)
       {
          defaultLane = new LaneSymbolJto();
-         defaultLane.x = 10;
-         defaultLane.y = 10;
-         defaultLane.width = 980;
-         defaultLane.height = 580;
+         defaultLane.x = mainPoolJto.x + 10;
+         defaultLane.y = mainPoolJto.y + 10;
+         defaultLane.width = mainPoolJto.width - 20;
+         defaultLane.height = mainPoolJto.height - 20;
 
          mainPoolJto.laneSymbols.add(defaultLane);
       }
@@ -462,11 +522,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             LaneSymbolJto laneJto = null;
             for (LaneSymbolJto lane : mainPoolJto.laneSymbols)
             {
-               Bounds bounds = ((BPMNShape) symbol).getBounds();
-               if ((lane.x <= bounds.getX())
-                     && ((lane.x + lane.width) >= bounds.getX() + bounds.getWidth())
-                     && (lane.y <= bounds.getY())
-                     && ((lane.y + lane.height) >= bounds.getY() + bounds.getHeight()))
+               if (isWithinBounds(((BPMNShape) symbol).getBounds(), lane))
                {
                   laneJto = lane;
                   break;
@@ -522,6 +578,34 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                      nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                }
+            }
+            else if (((shape.getBpmnElement() instanceof DataObject)
+                  || (shape.getBpmnElement() instanceof DataObjectReference)))
+            {
+               DataObject dataObject = (shape.getBpmnElement() instanceof DataObjectReference)
+                     ? ((DataObjectReference) shape.getBpmnElement()).getDataObjectRef()
+                     : (DataObject) shape.getBpmnElement();
+
+               DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+               symbolJto.dataFullId = getFullId(dataObject);
+
+               laneJto.dataSymbols.add(symbolJto);
+            }
+            else if (((shape.getBpmnElement() instanceof DataStore)
+                  || (shape.getBpmnElement() instanceof DataStoreReference)))
+            {
+               DataStore dataStore = (shape.getBpmnElement() instanceof DataStoreReference)
+                     ? ((DataStoreReference) shape.getBpmnElement()).getDataStoreRef()
+                     : (DataStore) shape.getBpmnElement();
+
+               DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
+               symbolJto.dataFullId = getFullId(dataStore);
+
+               laneJto.dataSymbols.add(symbolJto);
+            }
+            else
+            {
+               trace.debug("Unsupported shape: " + shape.getBpmnElement());
             }
          }
          else if (symbol instanceof BPMNEdge)
@@ -614,6 +698,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
 
       return jto;
+   }
+
+   private static boolean isWithinBounds(Bounds symbolBounds, ShapeJto bounds)
+   {
+      return (bounds.x <= symbolBounds.getX())
+            && ((bounds.x + bounds.width) >= symbolBounds.getX() + symbolBounds.getWidth())
+            && (bounds.y <= symbolBounds.getY())
+            && ((bounds.y + bounds.height) >= symbolBounds.getY() + symbolBounds.getHeight());
    }
 
    public TypeDeclarationJto toJto(ItemDefinition itemDefinition)
@@ -742,10 +834,26 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   public DataJto toJto(DataStore variable)
+   {
+      DataJto jto = newModelElementJto(variable, new DataJto());
+
+      toJto(variable, jto);
+
+      return jto;
+   }
+
    public DataJto toJto(DataObject variable)
    {
       DataJto jto = newModelElementJto(variable, new DataJto());
 
+      toJto(variable, jto);
+
+      return jto;
+   }
+
+   private DataJto toJto(ItemAwareElement variable, DataJto jto)
+   {
       loadDescription(variable, jto);
       loadExtensions(variable, jto);
 
@@ -753,8 +861,28 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          // TODO
          jto.dataType = ModelerConstants.STRUCTURED_DATA_TYPE_KEY;
-         jto.structuredDataTypeFullId = Bpmn2Utils.findContainingModel(variable).getId()
-               + ":" + variable.getItemSubjectRef().getId();
+         jto.structuredDataTypeFullId = findContainingModel(variable).getId() + ":"
+               + variable.getItemSubjectRef().getId();
+      }
+      else
+      {
+         JsonObject extJson = Bpmn2ExtensionUtils.getExtensionAsJson(variable, "core");
+         if (extJson.has(ModelerConstants.DATA_TYPE_PROPERTY))
+         {
+            jto.dataType = extJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString();
+            if ( !isEmpty(jto.dataType))
+            {
+               if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(jto.dataType))
+               {
+                  jto.primitiveDataType = extractAsString(extJson,
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+               }
+               else if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(jto.dataType))
+               {
+                  jto.structuredDataTypeFullId = "";
+               }
+            }
+         }
       }
       return jto;
    }
@@ -918,6 +1046,17 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return jto;
    }
 
+   public String getFullId(BaseElement element)
+   {
+      Definitions model = Bpmn2Utils.findContainingModel(element);
+      if (null != model)
+      {
+         return bpmn2Binding.getModelId(model) + ":" + element.getId();
+      }
+
+      return null;
+   }
+
    /**
     * 
     * @param <T>
@@ -946,6 +1085,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          name = ((Participant) src).getName();
       }
+      else if (src instanceof DataStore)
+      {
+         name = ((DataStore) src).getName();
+      }
       else if (src instanceof Property)
       {
          name = ((Property) src).getName();
@@ -971,7 +1114,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       Definitions model = Bpmn2Utils.findContainingModel(src);
       if (null != model)
       {
-         jto.modelId = model.getId();
+         jto.modelId = bpmn2Binding.getModelId(model);
+         jto.modelUUID = bpmn2Binding.getModelId(model);
       }
 
       return jto;

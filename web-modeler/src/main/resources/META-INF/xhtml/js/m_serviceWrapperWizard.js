@@ -36,6 +36,8 @@ define(
 			 * 
 			 */
 			function ServiceWrapperWizard() {
+				this.unsupportedPanel = jQuery("#unsupportedPanel");
+				this.wizardPanel = jQuery("#wizardPanel");
 				this.introLabel = jQuery("#introLabel");
 				this.modelInput = jQuery("#modelInput");
 				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
@@ -93,6 +95,49 @@ define(
 					this.callerWindow = callerWindow;
 					this.application = application;
 					this.viewManager = viewManager;
+
+					var supported = true;
+					var inAccessPointCount = 0;
+					var outAccessPointCount = 0;
+
+					for ( var n in this.application.contexts.application.accessPoints) {
+						var accessPoint = this.application.contexts.application.accessPoints[n];
+
+						if (!accessPoint.structuredDataTypeFullId) {
+							supported = false;
+
+							break;
+						}
+
+						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
+							++inAccessPointCount;
+
+							if (inAccessPointCount > 1) {
+								supported = false;
+
+								break;
+							}
+						} else {
+							++outAccessPointCount;
+
+							if (outAccessPointCount > 1) {
+								supported = false;
+
+								break;
+							}
+						}
+					}
+
+					if (!supported) {
+						m_dialog.makeVisible(this.unsupportedPanel);
+						m_dialog.makeInvisible(this.createButton);
+						m_dialog.makeInvisible(this.wizardPanel);
+
+						return;
+					}
+
+					m_dialog.makeInvisible(this.unsupportedPanel);
+					m_dialog.makeVisible(this.wizardPanel);
 
 					this.introLabel.empty();
 					this.introLabel
@@ -222,7 +267,10 @@ define(
 						processDefinitionName : this.processDefinitionNameInput
 								.val(),
 						requestDataTypeFullId : this.requestDataTypeInput.val(),
-						preprocessingRulesApplicationFullId : this.preprocessingRulesApplicationSelect.val() == m_constants.TO_BE_DEFINED ? null : this.preprocessingRulesApplicationSelect.val(),
+						preprocessingRulesApplicationFullId : this.preprocessingRulesApplicationSelect
+								.val() == m_constants.TO_BE_DEFINED ? null
+								: this.preprocessingRulesApplicationSelect
+										.val(),
 						requestDataName : this.requestDataNameInput.val(),
 						responseDataTypeFullId : this.responseDataTypeInput
 								.val(),
@@ -230,7 +278,10 @@ define(
 						serviceInvocationActivityName : this.serviceInvocationActivityNameInput
 								.val(),
 						applicationFullId : this.application.getFullId(),
-						postprocessingRulesApplicationFullId : this.postprocessingRulesApplicationSelect.val() == m_constants.TO_BE_DEFINED ? null : this.postprocessingRulesApplicationSelect.val(),
+						postprocessingRulesApplicationFullId : this.postprocessingRulesApplicationSelect
+								.val() == m_constants.TO_BE_DEFINED ? null
+								: this.postprocessingRulesApplicationSelect
+										.val(),
 						createWebService : this.createWebServiceInput
 								.prop("checked"),
 						createRestService : this.createRestServiceInput

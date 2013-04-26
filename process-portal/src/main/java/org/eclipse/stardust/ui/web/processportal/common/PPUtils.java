@@ -676,7 +676,10 @@ public class PPUtils
    public static void sendActivityEvent(ActivityInstance oldAi, ActivityEvent activityEvent)
    {
       ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
-      ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      if (ProcessWorklistCacheManager.isInitialized())
+      {
+         ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      }
       SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
    }

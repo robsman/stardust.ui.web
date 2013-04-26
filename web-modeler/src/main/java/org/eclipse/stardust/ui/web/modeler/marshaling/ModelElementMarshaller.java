@@ -264,6 +264,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY);
 
+         if (processDefinition.getExternalRef() != null)
+         {
+            processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
+                  ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
+         }
+
          JsonArray formalParametersJson = new JsonArray();
 
          processJson.add(ModelerConstants.FORMAL_PARAMETERS_PROPERTY,

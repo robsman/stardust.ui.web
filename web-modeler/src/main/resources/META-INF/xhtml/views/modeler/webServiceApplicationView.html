@@ -137,83 +137,94 @@
 												<td><div id="useOutput" class="output"></div>
 												</td>
 											</tr>
-										</table>
-										<table class="layoutTable">
 											<tr>
-												<td>
-													<div class="heading" id="implementation">Implementation</div>
-													<table style="margin-bottom: 10px;">
+												<td colspan="2">
+													<table class="layoutTable">
 														<tr>
 															<td>
-																<table cellpadding="0" cellspacing="0"
-																	class="fieldSetTable">
+																<div class="heading" id="implementation">Implementation</div>
+																<table style="margin-bottom: 10px;">
 																	<tr>
-																		<td><input id="addressingInput" type="checkbox"></input>
+																		<td>
+																			<table cellpadding="0" cellspacing="0"
+																				class="fieldSetTable">
+																				<tr>
+																					<td><input id="addressingInput" type="checkbox"></input>
+																					</td>
+																					<td><div id="includedAddressing"><label for="addressingInput">Include
+																							WS-Addressing EPR</label></div>
+																					</td>
+																				</tr>
+																			</table>
 																		</td>
-																		<td><div id="includedAddressing"><label for="addressingInput">Include
-																				WS-Addressing EPR</label></div>
-																		</td>
+																	</tr>
+																	<tr>
+																		<td><table class="fieldSetTable">
+																				<tr>
+																					<td><label for="implementationSelect" id="implementation1">Implementation</label>
+																					</td>
+																					<td>
+
+																					<select id="implementationSelect">
+
+																					<!--  <option
+																								value="generic"><span>Generic Resource</span></option>
+																							<option value="carnot">Infinity Specific</option>
+																							-->
+																					</select>
+
+																					</td>
+																				</tr>
+																			</table></td>
 																	</tr>
 																</table>
 															</td>
-														</tr>
-														<tr>
-															<td><table class="fieldSetTable">
+															<td style="padding-left: 10px;">
+																<div class="heading" id="security">Security</div>
+																<table style="margin-bottom: 10px;">
 																	<tr>
-																		<td><label for="implementationSelect" id="implementation1">Implementation</label>
-																		</td>
 																		<td>
-
-																		<select id="implementationSelect">
-
-																		<!--  <option
-																					value="generic"><span>Generic Resource</span></option>
-																				<option value="carnot">Infinity Specific</option>
-																				-->
-																		</select>
-
+																			<table cellpadding="0" cellspacing="0"
+																				class="fieldSetTable">
+																				<tr>
+																					<td><input id="authenticationInput"
+																						type="checkbox"></input></td>
+																					<td><label for="authenticationInput" id=authenticationReq>Authentication
+																							Required</label></td>
+																				</tr>
+																			</table>
 																		</td>
+																	</tr>
+																	<tr>
+																		<td><table class="fieldSetTable">
+																				<tr>
+																					<td><label for="mechanismSelect" id="mechanism">Mechanism</label>
+																					</td>
+																					<td><select id="mechanismSelect">
+
+																					<!-- <option
+																								value="basic">HTTP Basic Authorization</option>
+																							<option value="ws-security">WS-Security</option>
+																							 -->
+																					</select></td>
+																				</tr>
+																				<tr>
+																					<td><label for="variantSelect" id="variant">Variant</label></td>
+																					<td><select id="variantSelect"></select></td>
+																				</tr>
+																			</table></td>
 																	</tr>
 																</table></td>
 														</tr>
 													</table>
 												</td>
-												<td style="padding-left: 10px;">
-													<div class="heading" id="security">Security</div>
-													<table style="margin-bottom: 10px;">
-														<tr>
-															<td>
-																<table cellpadding="0" cellspacing="0"
-																	class="fieldSetTable">
-																	<tr>
-																		<td><input id="authenticationInput"
-																			type="checkbox"></input></td>
-																		<td><label for="authenticationInput" id=authenticationReq>Authentication
-																				Required</label></td>
-																	</tr>
-																</table>
-															</td>
-														</tr>
-														<tr>
-															<td><table class="fieldSetTable">
-																	<tr>
-																		<td><label for="mechanismSelect" id="mechanism">Mechanism</label>
-																		</td>
-																		<td><select id="mechanismSelect">
-
-																		<!-- <option
-																					value="basic">HTTP Basic Authorization</option>
-																				<option value="ws-security">WS-Security</option>
-																				 -->
-																		</select></td>
-																	</tr>
-																	<tr>
-																		<td><label for="variantSelect" id="variant">Variant</label></td>
-																		<td><select id="variantSelect"></select></td>
-																	</tr>
-																</table></td>
-														</tr>
-													</table></td>
+											</tr>
+											<tr>
+												<td><label for="endpoint" id="endpointLabel">Endpoint:</label>
+												</td>
+												<td><input id="endpointInput" type="text"
+																style="width: 300px;"></input>
+												</td>
 											</tr>
 										</table>
 									</td>

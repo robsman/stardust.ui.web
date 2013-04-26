@@ -344,11 +344,6 @@ define(
 					this.taskInput.attr("checked", false);
 					this.setSubprocessMode(executionType, copyData);
 
-					if (m_session.getInstance().technologyPreview) {
-						this.rulesActivityInput.attr("checked", false);
-						this.rulesActivityPackageList.attr("disabled", true);
-					}
-
 					this.participantOutput.empty();
 				};
 

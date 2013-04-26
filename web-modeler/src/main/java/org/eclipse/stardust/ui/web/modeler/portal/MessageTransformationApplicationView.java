@@ -15,7 +15,7 @@ public class MessageTransformationApplicationView extends AbstractAdapterView
    {
       super(
             "/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html",
-            "messageTransformationApplicationFrameAnchor");
+            "messageTransformationApplicationFrameAnchor", "applicationName");
    }
 
    @Override

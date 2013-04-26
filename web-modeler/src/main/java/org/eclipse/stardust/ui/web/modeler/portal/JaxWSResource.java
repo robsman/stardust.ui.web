@@ -12,26 +12,12 @@
 package org.eclipse.stardust.ui.web.modeler.portal;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
-import javax.wsdl.Binding;
-import javax.wsdl.BindingInput;
-import javax.wsdl.BindingOperation;
-import javax.wsdl.BindingOutput;
-import javax.wsdl.Definition;
-import javax.wsdl.Part;
-import javax.wsdl.Port;
-import javax.wsdl.Service;
-import javax.wsdl.WSDLException;
+import javax.wsdl.*;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
@@ -135,7 +121,7 @@ public class JaxWSResource {
 
 	public static Document newDocument(String uri)
 			throws ParserConfigurationException, SAXException, IOException {
-		return newDocument(getInputSourceFromURI(uri, null, null, null));
+		return newDocument(new InputSource(uri));
 	}
 
 	public static Document newDocument(InputSource source)
@@ -148,19 +134,6 @@ public class JaxWSResource {
 			source.getCharacterStream().close();
 		}
 		return doc;
-	}
-
-	public static InputSource getInputSourceFromURI(String uri,
-			String username, String password, Properties customProperties)
-			throws IOException, ProtocolException, UnsupportedEncodingException {
-		URL url = new URL(uri);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("Accept", "application/xml");
-
-		InputStream xml1 = connection.getInputStream();
-
-		return new InputSource(xml1);
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$

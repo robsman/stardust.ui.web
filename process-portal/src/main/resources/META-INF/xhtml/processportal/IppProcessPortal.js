@@ -749,6 +749,16 @@ InfinityBpm.ProcessPortal = new function() {
         contentFrame.setAttribute('style', 'display: none; z-index:100; position: relative; top: 450px; left: 100px; width: 400px; height: 300px;');
         if (advanceArgs != undefined) {
         	contentFrame.setAttribute('noUnloadWarning', advanceArgs.noUnloadWarning);
+        	
+        	// Loop through custom attributes and add those as well
+        	if (advanceArgs.frmAttrs) {
+        		var frmAttrs = advanceArgs.frmAttrs;
+	        	for(var attr in frmAttrs) {
+	        		if (attr) {
+	        			contentFrame.setAttribute(attr, frmAttrs[attr]);
+	        		}
+	        	}
+        	}
         }
 
         contentFrame.setAttribute('src', contentUrl);

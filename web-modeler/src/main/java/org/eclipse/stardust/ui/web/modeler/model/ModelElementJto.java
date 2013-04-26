@@ -14,6 +14,7 @@ public class ModelElementJto
    public String description;
 
    public String modelId;
+   public String modelUUID;
 
    public String type;
 

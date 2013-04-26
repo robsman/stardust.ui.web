@@ -13,7 +13,7 @@ public class XsdStructuredDataTypeView extends AbstractAdapterView
    public XsdStructuredDataTypeView()
    {
       super("/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html",
-            "xsdStructuredDataTypeFrameAnchor");
+            "xsdStructuredDataTypeFrameAnchor", "structuredDataTypeName");
    }
 
    @Override

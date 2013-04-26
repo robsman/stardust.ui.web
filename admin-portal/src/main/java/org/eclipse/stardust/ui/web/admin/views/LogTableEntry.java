@@ -91,7 +91,7 @@ public class LogTableEntry extends DefaultRowModel
          linkDisabled = true;
       }
       User loggedInUser = SessionContext.findSessionContext().getUser();
-      if (!user.getAccount().equals(loggedInUser.getAccount()))
+      if ((null != user) && !user.getAccount().equals(loggedInUser.getAccount()))
       {
          UserUtils.loadDisplayPreferenceForUser(user);
          accountName = UserUtils.getUserDisplayLabel(user);

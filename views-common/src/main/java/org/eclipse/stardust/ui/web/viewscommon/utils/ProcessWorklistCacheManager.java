@@ -56,6 +56,16 @@ public class ProcessWorklistCacheManager implements InitializingBean
       }
       return cacheManager;
    }
+   
+   /**
+    * 
+    * @return
+    */
+   public static boolean isInitialized()
+   {
+      ProcessWorklistCacheManager cacheManager = (ProcessWorklistCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      return cacheManager.initialized;
+   }
 
    /*
     * (non-Javadoc)
@@ -164,6 +174,20 @@ public class ProcessWorklistCacheManager implements InitializingBean
       if (null != processWorklistCacheEntry)
       {
          processWorklistCacheEntry.setCount(count);
+      }
+   }
+   
+   /**
+    * @param processId
+    * @param count
+    */
+   public void setWorklistThresholdCount(String processId, long count)
+   {
+      ProcessDefinition processDefinitionKey = processDefinitions.get(processId);
+      ProcessWorklistCacheEntry processWorklistCacheEntry = processWorklists.get(processDefinitionKey);
+      if (null != processWorklistCacheEntry)
+      {
+         processWorklistCacheEntry.setTotalCountThreshold(count);
       }
    }
 

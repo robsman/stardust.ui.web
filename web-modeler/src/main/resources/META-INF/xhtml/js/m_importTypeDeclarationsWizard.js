@@ -216,11 +216,13 @@ define(
 
 						var path = "element-" + name.replace(/:/g, "-");
 
-						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(element.type, schema);
+						var elementType = element.type ? element.type : element.name;
+
+						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(elementType, schema);
 						var row = m_structuredTypeBrowser.generateChildElementRow("element-", element, schemaType,
 								function(row, element, schemaType) {
 							jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
-							jQuery("<td>" + element.type + "</td>").appendTo(row);
+							jQuery("<td>" + elementType + "</td>").appendTo(row);
 							jQuery("<td></td>").appendTo(row);
 						});
 
@@ -279,19 +281,41 @@ define(
 
 					// collect selected types
 					var typeDeclarations = [];
+					var elements = [];
 					jQuery("tr.selected", this.tableBody).each(function() {
 						var row = jQuery(this);
 						var typeDeclaration = row.data("typeDeclaration");
 						if (typeDeclaration) {
 							typeDeclarations.push(typeDeclaration);
 						} else if (row.data("element")) {
-							var element = row.data("element");
+							elements.push(row.data("element"));
 						}
 					});
 
 					var view = this;
 					jQuery.each(typeDeclarations, function() {
-						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : undefined;
+						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : this.name;
+						m_commandsController.submitCommand(
+								m_command.createCreateTypeDeclarationCommand(
+										view.model.id,
+										view.model.id,
+										{
+										    // must keep the original name as ID as otherwise the type can't be resolved eventually
+											"id": this.name,
+											"name": this.name,
+											"typeDeclaration" : {
+												type: {
+													classifier: "ExternalReference",
+													location: view.urlTextInput.val(),
+													xref: xref
+												}
+											}
+										}));
+					});
+
+					//TODO: do we required separate treatment for elements? Elements and Type Declaration processing appears same.
+					jQuery.each(elements, function() {
+						var xref = view.schema.targetNamespace ? "{" + view.schema.targetNamespace + "}" + this.name : this.name;
 						m_commandsController.submitCommand(
 								m_command.createCreateTypeDeclarationCommand(
 										view.model.id,

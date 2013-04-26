@@ -223,17 +223,20 @@ public class UserUtils
     */
    public static void loadDisplayPreferenceForUser(User user)
    {
-      Serializable displayNameFormat = null;
-      QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
-      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user.getRealm()
-            .getId(), user.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCES_ID));
-      for (Preferences userPref : prefs)
+      if (null != user)
       {
-         displayNameFormat = userPref.getPreferences().get(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID);
-      }
-      if (displayNameFormat != null)
-      {
-         user.setProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, displayNameFormat);
+         Serializable displayNameFormat = null;
+         QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
+         List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user
+               .getRealm().getId(), user.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCES_ID));
+         for (Preferences userPref : prefs)
+         {
+            displayNameFormat = userPref.getPreferences().get(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID);
+         }
+         if (displayNameFormat != null)
+         {
+            user.setProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, displayNameFormat);
+         }
       }
    }
    

@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
@@ -28,18 +29,20 @@ public class AbstractAdapterView implements ViewEventHandler {
 	private ModelService modelService;
 	private String viewPath;
    private String anchorId;
+   private String keyParam;
 
    /**
-    *
     * @param viewPath
     * @param anchorId
+    * @param keyParam
     */
-	public AbstractAdapterView(String viewPath, String anchorId)
+   public AbstractAdapterView(String viewPath, String anchorId, String keyParam)
    {
       super();
 
       this.viewPath = viewPath;
       this.anchorId = anchorId;
+      this.keyParam = keyParam;
    }
 
 	/**
@@ -69,7 +72,11 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
+		    Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
+            PortalApplication.getInstance().addEventScript(
+                  "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
+                        + event.getView().getParams() + "', {anchorId:'" + anchorId
+                        + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
 			break;
 
 		case TO_BE_DEACTIVATED:

@@ -1940,7 +1940,7 @@ define(
 					var changeDescriptionsDiagram = [];
 					var failed = false;
 					for ( var n in this.currentSelection) {
-						var changes = this.currentSelection[n].dragStop_();
+						var changes = this.currentSelection[n].dragStop_(this.currentSelection.length > 1);
 						if (null == changes) {
 							failed = true;
 							this.revertDrag();
@@ -2190,8 +2190,8 @@ define(
 					this.width = width;
 					this.height = height;
 					this.background.attr({
-						"width" : width,
-						"height" : height
+						"width" : (width / this.zoomFactor) * 1.25,
+						"height" : (height / this.zoomFactor) * 1.25
 					});
 					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};

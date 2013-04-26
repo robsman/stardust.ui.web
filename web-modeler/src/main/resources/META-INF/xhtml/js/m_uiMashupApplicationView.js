@@ -178,6 +178,7 @@ define(
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 
+					this.view = jQuery("#uiMashupApplicationView");
 					this.viaUriInput = jQuery("#viaUriInput");
 					this.embeddedInput = jQuery("#embeddedInput");
 					this.viaUriRow = jQuery("#viaUriRow");
@@ -309,6 +310,8 @@ define(
 									});
 
 					this.initializeModelElementView(application);
+					
+					this.view.css("visibility", "visible");
 				};
 
 				UiMashupApplicationView.prototype.submitEmbeddedModeChanges = function() {

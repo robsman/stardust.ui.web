@@ -118,6 +118,8 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.activate = function() {
+					this.routeTextarea.val(m_i18nUtils
+					.getProperty("modeler.general.toBeDefined"));
 					var parameterMappings = [];
 
 					parameterMappings.push(this
@@ -171,6 +173,10 @@ define(
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.validate = function() {
 					
+					this.camelContextInput.removeClass("error");
+					this.routeTextarea.removeClass("error");
+					this.page.propertiesPanel.errorMessages=[];
+					
 					if (m_utils.isEmptyString(this.camelContextInput.val()) ||
 							this.camelContextInput.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
@@ -178,24 +184,21 @@ define(
 								.push(m_i18nUtils
 										.getProperty("modeler.general.fieldMustNotBeEmpty"));
 						this.camelContextInput.addClass("error");
-						this.camelContextInput.focus();
+					//	this.camelContextInput.focus();
 
-						this.getPropertiesPanel().showErrorMessages();
-
-						return false;
 					}
 
-					if (m_utils.isEmptyString(this.routeTextarea.val()) ||
-							this.routeTextarea.val() == m_i18nUtils
-							.getProperty("modeler.general.toBeDefined")) {
+					if (m_utils.isEmptyString(this.routeTextarea.val())) {
 						this.getPropertiesPanel().errorMessages
 								.push(m_i18nUtils
 										.getProperty("modeler.general.fieldMustNotBeEmpty"));
 						this.routeTextarea.addClass("error");
-						this.routeTextarea.focus();
+						//this.routeTextarea.focus();
 
-						this.getPropertiesPanel().showErrorMessages();
-
+					}
+					
+					if (this.page.propertiesPanel.errorMessages.length != 0){
+						this.page.propertiesPanel.showErrorMessages();
 						return false;
 					}
 

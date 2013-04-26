@@ -9,7 +9,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 public class CamelApplicationView extends AbstractAdapterView {
    public CamelApplicationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/camelApplicationView.html", "camelApplicationFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/camelApplicationView.html", "camelApplicationFrameAnchor",
+            "applicationName");
    }
 
    @Override

@@ -115,6 +115,12 @@ public class Bpmn2Utils
       EObject currentElement = element;
       while (null != currentElement)
       {
+         if (containerType.isInstance(currentElement))
+         {
+            return containerType.cast(currentElement);
+         }
+
+         // navigate one level up
          EObject currentContainer = currentElement.eContainer();
          if (currentContainer instanceof ChangeDescriptionImpl)
          {
@@ -122,15 +128,7 @@ public class Bpmn2Utils
             currentContainer = ((ChangeDescriptionImpl) currentContainer).getOldContainer(currentElement);
          }
 
-         if (containerType.isInstance(currentContainer))
-         {
-            return containerType.cast(currentContainer);
-         }
-         else
-         {
-            // navigate one level up
-            currentElement = currentContainer;
-         }
+         currentElement = currentContainer;
       }
 
       return null;

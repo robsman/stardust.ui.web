@@ -20,11 +20,11 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function RulesIntegrationOverlay() {
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.initialize = function(view) {
 					this.view = view;
@@ -35,11 +35,26 @@ define(
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"drl", "DRL", "../../images/icons/bricks.png");
 
-					this.typeDeclarationsTextarea = jQuery("#rulesIntegrationOverlay #typeDeclarationsTextarea")
+					this.typeDeclarationsTextarea = jQuery("#rulesIntegrationOverlay #typeDeclarationsTextarea");
 					this.ruleSetEditor = m_codeEditorAce
 							.getDrlEditor("ruleSetEditorDiv");
 
 					var self = this;
+
+					// TODO
+					// This is a workaround as tab activate event is currently not
+					// supported in jquery ui 1.8.19
+					// Once we move to version 1.9+ we should be able to replace this with
+					// activate event handling.
+					this.configTab = jQuery("a[href='#configurationTab']");
+					this.configTab
+							.click(function() {
+								self.ruleSetEditor
+										.getEditor()
+										.getSession()
+										.setValue(
+												self.getApplication().attributes["stardust:rulesOverlay::ruleSetDrl"]);
+							});
 
 					this.ruleSetEditor.getEditor().on('blur', function(e) {
 						self.submitDrlChanges();
@@ -62,28 +77,28 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.getModelElement = function() {
 					return this.view.getModelElement();
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.getApplication = function() {
 					return this.view.application;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.getScopeModel = function() {
 					return this.view.getModelElement().model;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.activate = function() {
 					this.view
@@ -91,16 +106,13 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"stardust:rulesOverlay::drl" : this
-											.createDrl(),
-									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
-											.getValue()
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>"
 								}
 							});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.createDrl = function() {
 					var drl = "";
@@ -112,7 +124,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationsDrl = function() {
 					var typeDeclarations = {};
@@ -140,7 +152,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationDrl = function(
 						typeDeclarations, typeDeclaration) {
@@ -247,7 +259,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.update = function() {
 					this.parameterDefinitionsPanel.setScopeModel(this
@@ -267,7 +279,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.submitDrlChanges = function(
 						parameterDefinitionsChanges) {
@@ -276,6 +288,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
@@ -285,7 +298,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.createSignatureJson = function(
 						parameterDefinitions) {
@@ -340,7 +353,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
@@ -354,6 +367,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
@@ -368,7 +382,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				RulesIntegrationOverlay.prototype.validate = function() {
 					return true;

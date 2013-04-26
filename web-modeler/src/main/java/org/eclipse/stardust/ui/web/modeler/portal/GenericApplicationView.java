@@ -9,7 +9,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 public class GenericApplicationView extends AbstractAdapterView {
    public GenericApplicationView()
    {
-      super("/plugins/bpm-modeler/views/modeler/genericApplicationView.html", "genericApplicationFrameAnchor");
+      super("/plugins/bpm-modeler/views/modeler/genericApplicationView.html", "genericApplicationFrameAnchor",
+            "applicationName");
    }
 
    @Override

@@ -140,7 +140,7 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
     */
    public String getLocale()
    {
-      String country = bundle.getLocale().getCountry();
+      String country = getLocaleObject().getCountry();
       if(StringUtils.isEmpty(country))
          country = "US";
       
@@ -181,7 +181,13 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
     */
    public Locale getLocaleObject()
    {
-      return bundle.getLocale();
+      Locale locale = bundle.getLocale();
+      if (StringUtils.isEmpty(locale.toString()))
+      {
+         // When server JVM and client locale are not-translated, return default locale
+         return new Locale("en");
+      }
+      return locale;
    }
 
    public void clear()
