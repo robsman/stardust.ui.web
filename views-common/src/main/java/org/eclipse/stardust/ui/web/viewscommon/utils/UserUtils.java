@@ -110,11 +110,14 @@ public class UserUtils
       userQuery.setPolicy(userPolicy);
 
       userQuery.setPolicy(new SubsetPolicy(maxMatches, false));
-
+      String nameFirstLetterCaseChanged = alternateFirstLetter(searchValue);
       FilterOrTerm filter = userQuery.getFilter().addOrTerm();
       filter.or(UserQuery.FIRST_NAME.like(searchValue));
+      filter.or(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
       filter.or(UserQuery.LAST_NAME.like(searchValue));
+      filter.or(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
       filter.or(UserQuery.ACCOUNT.like(searchValue));
+      filter.or(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
       userQuery.where(filter);
 
       userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(
@@ -562,5 +565,25 @@ public class UserUtils
    public static String getRealmId()
    {
       return SessionContext.findSessionContext().getUser().getRealm().getId();
+   }
+
+   /**
+    * Changes the case of the initial letter of the given string.
+    * 
+    * @param field
+    * @return
+    */
+   public static String alternateFirstLetter(String field)
+   {
+      String firstLetter = field.substring(0, 1);
+      if (firstLetter.compareTo(field.substring(0, 1).toLowerCase()) == 0)
+      {
+         firstLetter = firstLetter.toUpperCase();
+      }
+      else
+      {
+         firstLetter = firstLetter.toLowerCase();
+      }
+      return firstLetter + field.substring(1);
    }
 }
