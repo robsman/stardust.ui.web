@@ -103,10 +103,6 @@
                <groupId>javax.servlet</groupId>
                <artifactId>servlet-api</artifactId>
             </exclusion>
-            <exclusion>
-               <groupId>org.atmosphere</groupId>
-               <artifactId>atmosphere-runtime</artifactId>
-            </exclusion>
 
             <exclusion>
                <groupId>org.eclipse.stardust.modeling.model</groupId>

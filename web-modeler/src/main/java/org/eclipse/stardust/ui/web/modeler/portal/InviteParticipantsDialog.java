@@ -110,21 +110,6 @@ public class InviteParticipantsDialog extends PopupUIComponentBean
 
    /**
     *
-    */
-   public void inviteParticipants()
-   {
-      ServletContext context = (ServletContext) FacesContext.getCurrentInstance()
-            .getExternalContext()
-            .getContext();
-      String user = modelService.getLoggedInUser(context);
-      JsonObject userJson = new JsonMarshaller().readJsonObject(user);
-      getModelService().requestInvite(newArrayList(selectedUserAccounts),
-            extractAsString(userJson, "account"));
-      closePopup();
-   }
-
-   /**
-    *
     * @return
     */
    public boolean isNotifyViaEmail()

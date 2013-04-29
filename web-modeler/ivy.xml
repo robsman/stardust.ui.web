@@ -73,9 +73,6 @@
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-compile->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-compile->default"/>
       <!-->dependency org="org.apache.httpcomponents" name="httpclient" rev="${commons-httpclient.version}" conf="stardust-web-modeler-compile->default"/-->
-      <dependency org="org.atmosphere" name="atmosphere-runtime" rev="${atmosphere-runtime.version}" conf="stardust-web-modeler-compile->default">
-         <exclude org="org.slf4j" module="slf4j-api"/>
-      </dependency>
 
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
          <exclude org="org.hamcrest" module="hamcrest-core" />
