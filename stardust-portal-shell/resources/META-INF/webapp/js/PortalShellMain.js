@@ -21,9 +21,6 @@ require
 				'jquery-ui' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.8.19.min',
 						'//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min' ],
-				'jquery.atmosphere' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.atmosphere',
-						'https://raw.github.com/Atmosphere/atmosphere/e6b2a1730d5c94e5d699f7656a76d1439c85889c/modules/jquery/src/main/webapp/jquery/jquery.atmosphere' ],
 				'jquery.download' : [
 						'bpm-modeler/js/libs/jquery/plugins/download.jQuery',
 						'https://raw.github.com/filamentgroup/jQuery-File-Download/master/jQuery.download' ],
