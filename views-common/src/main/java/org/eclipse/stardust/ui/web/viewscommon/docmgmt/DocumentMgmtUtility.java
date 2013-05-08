@@ -1217,27 +1217,17 @@ public class DocumentMgmtUtility
       DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
       documentManagementService.removeDocument(document.getId());
    }
+   
    /**
     * method return processes by document
+    * 
     * @param document
     * @return
     */
    public static ProcessInstances findProcessesHavingDocument(Document document)
    {
-      long processInstanceOID = DmsUtils.getProcessInstanceOID(document.getPath());
-      if (processInstanceOID > 0)
-      {
-         ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOID);
-         if (null != processInstance)
-         {
-            DeployedModel model = ModelUtils.getModel(processInstance.getModelOID());
-            String modelID = model.getId();
-
-            ProcessInstanceQuery processQuery = ProcessInstanceQuery.findHavingDocument(document, modelID);
-            return DocumentSearchProvider.getQueryService().getAllProcessInstances(processQuery);
-
-         }
-      }
-      return null;
+      ProcessInstanceQuery processQuery = ProcessInstanceQuery.findHavingDocument(document);
+      return DocumentSearchProvider.getQueryService().getAllProcessInstances(processQuery);
    }
+   
 }
