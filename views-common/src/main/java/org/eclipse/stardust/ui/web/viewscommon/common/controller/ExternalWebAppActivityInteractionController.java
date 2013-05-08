@@ -164,8 +164,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
-      HttpServletResponse resp = (HttpServletResponse) fc.getExternalContext().getResponse();
-
+      
       // allow base URI override via parameter
       String servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
       if (isEmpty(servicesBaseUri))
@@ -221,8 +220,8 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       uriBuilder.append("&") //
             .append(PARAM_SERVICES_BASE_URI).append("=").append(servicesBaseUri);
-
-      return resp.encodeURL(uriBuilder.toString());
+      
+      return fc.getExternalContext().encodeResourceURL(uriBuilder.toString());
    }
 
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)

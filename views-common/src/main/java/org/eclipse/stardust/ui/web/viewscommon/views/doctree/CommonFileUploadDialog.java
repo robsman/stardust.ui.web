@@ -140,6 +140,8 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
     */
    private void fireCallback(FileUploadEvent eventType, FileInfo fileInfo)
    {
+      closePopup();
+      
       if (callbackHandler != null)
       {
          FileWrapper fileWrapper = new FileWrapper();
@@ -156,10 +158,6 @@ public class CommonFileUploadDialog extends PopupUIComponentBean
 
          callbackHandler.handleEvent(eventType);
       }
-      // After file upload externalWebapp TO_BE_ACTIVATED failed with no context available
-      // while closePopup, if called before callbachHandler handleEvent , kept closePopup
-      // after event handling
-      closePopup();
    }
 
    public int getFileUploadProgress()

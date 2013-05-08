@@ -346,6 +346,8 @@ public class ActivityPanelController extends UIComponentBean
       documentUploadHelper.getFileUploadDialogAttributes().setHeaderMessage(
             propsBean.getParamString("common.uploadIntoFolder",
                   propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
+      // Close the current Process Attachment Iframe.
+      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
       startFileUpload(documentUploadHelper);
       documentUploadHelper.uploadFile();
    }
