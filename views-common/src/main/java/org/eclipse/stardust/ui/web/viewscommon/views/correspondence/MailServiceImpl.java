@@ -49,6 +49,7 @@ public class MailServiceImpl implements MailService
 {
    private static String mailServer = Parameters.instance().getString(EngineProperties.MAIL_HOST);
    private MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+   private static final String SMTP_HOST = "mail.smtp.host";
 
    
    /*
@@ -71,10 +72,16 @@ public class MailServiceImpl implements MailService
       }
       else
       {
-         props.put("mail.smtp.host", mailServer);
+         props.put(SMTP_HOST, mailServer);
 
          // Create some properties and get the default session
          Session session = Session.getDefaultInstance(props, null);
+         // get new session instance if required
+         if (!mailServer.equals(session.getProperties().getProperty(SMTP_HOST)))
+         {
+            session = Session.getInstance(props);
+         }
+
          session.setDebug(false);
 
          // Create a message
