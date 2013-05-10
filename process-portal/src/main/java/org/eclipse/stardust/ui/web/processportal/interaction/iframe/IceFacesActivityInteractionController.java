@@ -75,7 +75,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
                "InfinityBpm.ProcessPortal.closeContentFrame('"
                      + getContentFrameId(activityInstance) + "');");
          break;
-         
+
       case LAUNCH_PANELS_ACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
       case FULL_SCREENED:
@@ -88,11 +88,11 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          break;
       }
    }
-   
+
    public String getEventScript(ActivityInstance activityInstance, ViewEvent event)
    {
       String eventScript = "";
-     
+
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
@@ -111,7 +111,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          eventScript = "InfinityBpm.ProcessPortal.closeContentFrame('"
                + getContentFrameId(activityInstance) + "');";
          break;
-         
+
       case LAUNCH_PANELS_ACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
       case FULL_SCREENED:
@@ -122,10 +122,10 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
                + getContentFrameId(activityInstance) + "');";
          break;
       }
-      
+
       return eventScript;
    }
-   
+
    public String getContextId(ActivityInstance ai)
    {
       return PredefinedConstants.JSF_CONTEXT;
@@ -156,7 +156,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
             trace.warn("Failed determining context root.", e);
          }
       }
-      
+
       return uri;
    }
 
@@ -171,12 +171,13 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          // start new interaction
          ModelCache modelCache = ModelCache.findModelCache();
          SessionContext ippSessionContext = SessionContext.findSessionContext();
-         
+
          Interaction interaction = new Interaction(ippSessionContext.getUser(),
-               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai));
-         
+               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
+               ippSessionContext.getServiceFactory());
+
          interaction.setInDataValues(inData);
-         
+
          registry.registerInteraction(interaction);
 
          Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
@@ -191,15 +192,15 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      
+
       if ((ClosePanelScenario.COMPLETE == scenario)
             || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
-         
+
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
                facesContext, InteractionRegistry.BEAN_ID);
-         
+
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if ((null != interaction)
                && (Interaction.Status.Complete == interaction.getStatus()))
@@ -209,11 +210,11 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          }
 
          Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
-         
+
          sessionMap.put(IframePanelConstants.KEY_COMMAND, scenario.getId());
          sessionMap.put(IframePanelConstants.KEY_INTERACTION_ID,
                Interaction.getInteractionId(ai));
-         
+
          // trigger remote end via JavaScript
 
          if (facesContext instanceof BridgeFacesContext)
@@ -235,7 +236,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          // destroy interaction
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
                facesContext, InteractionRegistry.BEAN_ID);
-         
+
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if (null != interaction)
          {
@@ -250,21 +251,21 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
    public Map getOutDataValues(ActivityInstance ai)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      
+
       Map<String, ? extends Serializable> outData = null;
 
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
             facesContext, InteractionRegistry.BEAN_ID);
-      
+
       Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
       if (null != interaction)
       {
          outData = interaction.getOutDataValues();
-         
+
          // destroy interaction
          registry.unregisterInteraction(interaction.getId());
       }
-      
+
       return outData;
    }
 
@@ -278,7 +279,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          if (activity.isInteractive())
          {
             ApplicationContext jsfAppContext = activity.getApplicationContext(PredefinedConstants.JSF_CONTEXT);
-            
+
             if (null != jsfAppContext)
             {
                String panelUrl = (String) jsfAppContext.getAttribute("jsf:url");

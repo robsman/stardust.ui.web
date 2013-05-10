@@ -238,8 +238,22 @@ if ( !InfinityBpm.Core) {
       }
     }
 
-    function onPortalMainLoaded(event) {
+    /**
+     * change Cursor Style
+     */
+    function changeMouseCursorStyle(style){
+	var portalMainWnd = mainIppFrame["ippPortalMain"];
+        var portalMainBody = portalMainWnd.document.getElementsByTagName("body")[0];
 
+		portalMainBody.style.cursor = style;
+
+		//change cursor style on all iframes
+		doWithContentFrame(null, function(contentFrame) {
+			contentFrame.contentDocument.body.style.cursor =  style;
+	    });
+	}
+
+    function onPortalMainLoaded(event) {
       registerPageUnloadHandler();
 
       registerIceHandlers();
@@ -418,6 +432,18 @@ if ( !InfinityBpm.Core) {
     }
 
     function resizePortalMainWindow() {
+	var gotActiveFrame = false;
+	//resize IFrames
+	  var portalMainWnd = mainIppFrame["ippPortalMain"];
+
+	  if (portalMainWnd.InfinityBpm && portalMainWnd.InfinityBpm.ProcessPortal) {
+		gotActiveFrame = portalMainWnd.InfinityBpm.ProcessPortal.resizeIFrames();
+	  } else {
+		  alert(getMessage(	"portal.common.js.processPortal.api.notAvailable",
+					"The Process Portal API is not available."));
+	  }
+
+
   	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
 
 	  //Set portalMainContainer width
@@ -425,11 +451,15 @@ if ( !InfinityBpm.Core) {
 	  var windowSize = getBrowserDimensions();
 	  var width = (widthEndDivOffsetLeft > windowSize.width) ? widthEndDivOffsetLeft : windowSize.width;
 	  if (isIE()) {
-		  width -= 25;
+		width -= 25;
 	  }
-	  portalMainContainer.style.width = (width+ 'px');
-
-
+	  if(gotActiveFrame){
+		  portalMainContainer.style.width = (windowSize.width - 10 + 'px');
+		  //portalMainContainer.style.width = (width + 'px');
+	  }
+	  else{
+		  portalMainContainer.style.width = (width + 'px');
+	  }
 	  //Set portalMainContainer height
 	  var endDivContent = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndContent");
 	  var endDivLP = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndLP");
@@ -444,22 +474,12 @@ if ( !InfinityBpm.Core) {
 		  height = height + heightOffset;
 	  }
 
-	  var minHeight = screen.height * 80 / 100;
-	  height = (height < minHeight) ? minHeight : height;
+	  height = (height < windowSize.height) ? windowSize.height : height;
 
 	  portalMainContainer.style.height = (height + 'px');
 
 	  // Reposition View Specific Toolbar
 	  repositionViewToolbar();
-
-	  //resize portal Iframes
-	  var portalMainWnd = mainIppFrame["ippPortalMain"];
-	  if (portalMainWnd.InfinityBpm.ProcessPortal) {
-		  portalMainWnd.InfinityBpm.ProcessPortal.resizePortalIFrames();
-	  } else {
-		  alert(getMessage(	"portal.common.js.processPortal.api.notAvailable",
-					"The Process Portal API is not available."));
-	  }
     }
 
     function getWindowScrollPosition(targetWin) {
@@ -647,6 +667,26 @@ if ( !InfinityBpm.Core) {
 
       isFF : function() {
     	  return isFF();
+      },
+
+      getBrowserDimensions : function() {
+	  return getBrowserDimensions();
+      },
+
+      getOffsetTop : function(element) {
+	  return getOffsetTop(element);
+      },
+
+      getOffsetLeft : function(element) {
+	  return getOffsetLeft(element);
+      },
+
+      getElementsWithIDLike : function(tagName, elementId, doc) {
+	  return getElementsWithIDLike(tagName, elementId, doc);
+      },
+
+      changeMouseCursorStyle : function(style) {
+	  return changeMouseCursorStyle(style);
       }
     };
   };

@@ -31,6 +31,12 @@ InfinityBpm.ProcessPortal = new function() {
 
 	// define module private functions
 
+	var PEPPER_FRAMES = ["processDefinitionFrameAnchor", "dataFrameAnchor" , "camelApplicationFrameAnchor", "conditionalPerformerFrameAnchor",
+	                     "genericApplicationFrameAnchor", "messageTransformationApplicationFrameAnchor", "modelFrameAnchor",
+	                     "organizationFrameAnchor", "roleFrameAnchor", "uiMashupApplicationFrameAnchor", "webServiceApplicationFrameAnchor",
+	                     "xsdStructuredDataTypeFrameAnchor"];
+	var PORTAL_FRAMES = ["ippActivityPanelAnchor", "tiffViewerIframe"];
+
 	function debug(msg) {
 		//alert(msg);
 	}
@@ -531,7 +537,6 @@ InfinityBpm.ProcessPortal = new function() {
 	      var anchorYAdjustment = advanceArgs.anchorYAdjustment;
 	      var zIndex = advanceArgs.zIndex;
 	      var border = advanceArgs.border;
-	      var autoResize = advanceArgs.autoResize;
       }
 
       doWithContentFrame(contentId, function(contentFrame) {
@@ -541,7 +546,6 @@ InfinityBpm.ProcessPortal = new function() {
         var anchor = anchorId;
         if(anchor == undefined){
         	anchor = 'ippActivityPanelAnchor';
-        	autoResize = true;
       	}
 
         var contentPanelAnchor = ippPortalDom.getElementById(anchor);
@@ -567,7 +571,6 @@ InfinityBpm.ProcessPortal = new function() {
           contentFrame.style.width = iFrameWith + 'px';
           contentFrame.style.height = iFrameHeight + 'px';
           contentFrame.setAttribute('anchorId', anchor);
-          contentFrame.setAttribute('autoResize', autoResize);
 
           if (border != undefined) {
           	contentFrame.style.border = border;
@@ -589,30 +592,95 @@ InfinityBpm.ProcessPortal = new function() {
     }
 
     /**
-     *	resize Portal iframes in main window resize
+     * resize all iframes if applicable when main window resizes
+     * And ajdust associated div
      */
-    function resizePortalIFrames() {
+    function resizeIFrames(params) {
+	var gotActiveFrame = false;
     	doWithContentFrame(null, function(contentFrame){
-    		 if (contentFrame && 'true' == contentFrame.getAttribute('autoResize')
-    				 && 'inline' == contentFrame.style.display) {
-    			 if ('ippActivityPanelAnchor' == contentFrame.getAttribute('anchorId')) {
-	    				resizeActivityContentIFrame(contentFrame);
- 				 }
+		 if (contentFrame && 'inline' == contentFrame.style.display) {
+			 iFrameAnchor = contentFrame.getAttribute('anchorId');
+			 if ('outlineAnchor' == iFrameAnchor){
+				resizeModelerOutlineIFrame(contentFrame.id);
+			 }else if (PEPPER_FRAMES.indexOf(iFrameAnchor) > -1 || PORTAL_FRAMES.indexOf(iFrameAnchor) > -1){
+				resizeIFrame({"id": contentFrame.id, "iFrameAnchor": iFrameAnchor});
+				gotActiveFrame = true;
+			 }
     		 }
     	});
+	return gotActiveFrame;
 	 }
 
     /**
-     *  resizeActivityContentIFrame
+     * resizes modeler Outline Iframe and adjust associated div
      */
-    function resizeActivityContentIFrame(contentFrame) {
-    	debug("Resizing content frame: " + contentFrame);
-        var ippPortalDom = ippPortalWindow().document;
-        var contentPanelAnchor = ippPortalDom.getElementById('ippActivityPanelAnchor');
-        if (contentPanelAnchor) {
-        	contentFrame.style.width = contentPanelAnchor.offsetWidth + 'px';
+    function resizeModelerOutlineIFrame(contentFrameId){
+	debug('Resizing Modeler Outline IFrame: ' + contentFrameId);
+	 var ippPortalDom = ippPortalWindow().document;
+         var outlineAnchor = ippPortalDom.getElementById('outlineAnchor');
+
+         if(outlineAnchor && (InfinityBpm && InfinityBpm.Core)){
+		//find current position on anchor div
+		var heightDivOffsetTop = InfinityBpm.Core.getOffsetTop(outlineAnchor);
+		//get available browser dimensions
+			var windowSize = InfinityBpm.Core.getBrowserDimensions();
+		// set hieght and width
+			var dimensions = {};
+			dimensions.height = windowSize.height - heightDivOffsetTop - 80;
+			//dimensions.height = outlineAnchor.offsetHeight;
+
+			dimensions.width = 280;
+			dimensions.anchorId = 'outlineAnchor';
+
+			activateContentFrame(contentFrameId, dimensions);
+			outlineAnchor.style.height = (dimensions.height + 5) + 'px';
+			outlineAnchor.style.width = (dimensions.width + 5) + 'px';
         }
-    }
+	 }
+
+    /**
+     * resizes Process Definition Iframe and adjust associated div
+     */
+    function resizeIFrame(contentFrame) {
+
+	var contentFrameId = contentFrame.id;
+	var iFrameAnchor = contentFrame.iFrameAnchor;
+
+	debug('Resizing IFrame: ' + iFrameAnchor);
+
+	var ippPortalDom = ippPortalWindow().document;
+        var iFrameAnchorDiv = ippPortalDom.getElementById(iFrameAnchor);
+
+        if(iFrameAnchorDiv && (InfinityBpm && InfinityBpm.Core)){
+		var divOffsetTop = InfinityBpm.Core.getOffsetTop(iFrameAnchorDiv);
+		var divOffsetLeft = InfinityBpm.Core.getOffsetLeft(iFrameAnchorDiv);
+
+			var windowSize = InfinityBpm.Core.getBrowserDimensions();
+
+			// set height and width
+			var dimensions = {};
+			dimensions.height = windowSize.height - divOffsetTop - 80;
+			dimensions.width = windowSize.width - divOffsetLeft - 45;
+
+//	  	  	if(iFrameAnchorDiv.offsetHeight > dimensions.height){
+//	  	  		dimensions.height = iFrameAnchorDiv.offsetHeight
+//	  	  	}
+//	  	  	if(iFrameAnchorDiv.offsetWidth > dimensions.width){
+//	  	  	dimensions.width = iFrameAnchorDiv.offsetWidth;
+//	  	  	}
+
+			dimensions.anchorId = iFrameAnchor;
+
+			activateContentFrame(contentFrameId, dimensions);
+
+			//public event only in case of Process Definition as contain internal design of divs
+			if('processDefinitionFrameAnchor' == iFrameAnchor){
+				window.parent.EventHub.events.publish('PROCESS_IFRAME_RESIZED', dimensions);
+			}
+			 iFrameAnchorDiv.style.height = (dimensions.height + 5) + "px";
+			 iFrameAnchorDiv.style.width = (dimensions.width + 5) + "px";
+        }
+	 }
 
     function resizeAndRepositionContentFrame(contentId, advanceArgs) {
     	debug("About to resize and reposition content frame with ID " + contentId);
@@ -638,6 +706,9 @@ InfinityBpm.ProcessPortal = new function() {
         contentFrame.style.display = 'none';
         removeIframe(contentId);
       });
+      if (InfinityBpm && InfinityBpm.Core){
+	  InfinityBpm.Core.resizePortalMainWindow();
+      }
     }
 
     function closeContentFrame(contentId) {
@@ -749,7 +820,7 @@ InfinityBpm.ProcessPortal = new function() {
         contentFrame.setAttribute('style', 'display: none; z-index:100; position: relative; top: 450px; left: 100px; width: 400px; height: 300px;');
         if (advanceArgs != undefined) {
         	contentFrame.setAttribute('noUnloadWarning', advanceArgs.noUnloadWarning);
-        	
+
         	// Loop through custom attributes and add those as well
         	if (advanceArgs.frmAttrs) {
         		var frmAttrs = advanceArgs.frmAttrs;
@@ -767,6 +838,7 @@ InfinityBpm.ProcessPortal = new function() {
       }
 
       activateContentFrame(contentId, advanceArgs);
+      resizeIFrames();
     }
 
     function getMessage(messageProp, defaultMsg) {
@@ -898,11 +970,11 @@ InfinityBpm.ProcessPortal = new function() {
             }
         },
 
-        resizePortalIFrames : function(){
+        resizeIFrames : function(params){
             try {
-            	resizePortalIFrames();
+		return resizeIFrames(params);
             } catch (e) {
-            	alert(getMessage("portal.common.js.contentFrame.resize.failed", 'Failed during content frame resize: ') + e.message);
+		alert(getMessage("portal.common.js.contentFrame.resize.failed", 'Failed during frame resize: ') + e.message);
             }
         },
 

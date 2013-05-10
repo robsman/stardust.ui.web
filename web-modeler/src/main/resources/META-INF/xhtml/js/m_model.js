@@ -458,41 +458,6 @@ define(
 			}
 
 			/**
-			 *
-			 */
-			function DefaultModelManager() {
-				/**
-				 *
-				 */
-				DefaultModelManager.prototype.refreshModels = function() {
-					m_communicationController.syncGetData({
-						url : m_communicationController.getEndpointUrl()
-								+ "/models"
-					}, {
-						"success" : function(json) {
-							window.top.models = json;
-
-							bindModels();
-						},
-						"error" : function() {
-							alert('Error occured while fetching models');
-						}
-					});
-				};
-			}
-
-			/**
-			 * Singleton on DOM level.
-			 */
-			function getModelManager() {
-				if (!window.top.modelManager) {
-					window.top.modelManager = new DefaultModelManager();
-				}
-
-				return window.top.modelManager;
-			}
-
-			/**
 			 * Singleton on DOM level.
 			 */
 			function getModels() {
@@ -516,7 +481,7 @@ define(
 					return;
 				}
 
-				getModelManager().refreshModels();
+				refreshModels();
 			}
 
 			/**
@@ -533,23 +498,25 @@ define(
 			}
 
 			/**
-			 *
+			 * As part of CRNT-28015. a regular function has been used instead of the
+			 * singleton object DefaultModelManager / window.top.modelManager
+			 * as it was apparently giving problems (on model loading) in IOD env. when releases were switched.
 			 */
-//			function refreshModels() {
-//				m_communicationController.syncGetData({
-//					url : m_communicationController.getEndpointUrl()
-//							+ "/models"
-//				}, {
-//					"success" : function(json) {
-//						window.top.models = json;
-//
-//						bindModels();
-//					},
-//					"error" : function() {
-//						alert('Error occured while fetching models');
-//					}
-//				});
-//			}
+			function refreshModels() {
+				m_communicationController.syncGetData({
+					url : m_communicationController.getEndpointUrl()
+							+ "/models"
+				}, {
+					"success" : function(json) {
+						window.top.models = json;
+
+						bindModels();
+					},
+					"error" : function() {
+						alert('Error occured while fetching models');
+					}
+				});
+			}
 
 			/**
 			 *

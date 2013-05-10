@@ -14,7 +14,6 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
-import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
@@ -28,16 +27,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -55,9 +50,11 @@ import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.xsd.*;
-import org.eclipse.xsd.impl.XSDSchemaImpl;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -70,8 +67,6 @@ import com.google.gson.JsonObject;
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
-   private static final Logger trace = LogManager.getLogger(ModelElementUnmarshaller.class);
-
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
@@ -1893,6 +1888,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   String direction = accessPointJson.get(
                         ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
+                  System.out.println("Direction: " + direction);
+
                   AccessPointType accessPoint = null;
 
                   if (hasNotJsonNull(accessPointJson, ModelerConstants.DATA_TYPE_PROPERTY))
@@ -2084,7 +2081,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          // TODO
          // move this into a new ChangePostprocessor and send notification to the client
-         if ( !typeDeclaration.getId().equals(oldId))
+         if (!typeDeclaration.getId().equals(oldId))
          {
             ModelType model = ModelUtils.findContainingModel(typeDeclaration);
             for (ProcessDefinitionType process : model.getProcessDefinition())
@@ -2116,388 +2113,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
                   .getAsString()))
       {
-         updateXSDSchemaType(typeDeclaration.getSchemaType(),
+         XsdSchemaUtils.updateXSDSchemaType(typeDeclaration.getSchemaType(),
                declarationJson.getAsJsonObject("schema"));
       }
 
       // ExternalReference ?
-   }
-
-   private void updateXSDSchemaType(SchemaTypeType schemaType, JsonObject schemaJson)
-   {
-      XSDSchema schema = schemaType.getSchema();
-
-      if (hasNotJsonNull(schemaJson, "targetNamespace"))
-      {
-         schema.setTargetNamespace(schemaJson.getAsJsonPrimitive("targetNamespace")
-               .getAsString());
-      }
-
-      if (hasNotJsonNull(schemaJson, "types"))
-      {
-         updateXSDTypeDefinitions(schema, schemaJson.getAsJsonArray("types"));
-      }
-
-      if (hasNotJsonNull(schemaJson, "elements"))
-      {
-         updateElementDeclarations(schema, schemaJson.getAsJsonArray("elements"));
-      }
-   }
-
-   private void updateXSDTypeDefinitions(XSDSchema schema, JsonArray json)
-   {
-      Map<String, XSDTypeDefinition> typesIndex = newHashMap();
-      Set<XSDTypeDefinition> updatedTypes = newHashSet();
-
-      for (XSDTypeDefinition def : schema.getTypeDefinitions())
-      {
-         typesIndex.put(def.getName(), def);
-      }
-
-      for (JsonElement entry : json)
-      {
-         if ( !(entry instanceof JsonObject))
-         {
-            trace.warn("Expected object, but received " + entry);
-            continue;
-         }
-         JsonObject defJson = (JsonObject) entry;
-         String typeName = extractAsString((JsonObject) entry,
-               ModelerConstants.NAME_PROPERTY);
-         XSDTypeDefinition def = typesIndex.get(typeName);
-
-         // TODO HASISNULL
-         boolean isComplexType = defJson.has("body");
-
-         int contentsIdx = schema.getContents().size();
-         int typeIdx = schema.getTypeDefinitions().size();
-         if ((isComplexType && (def instanceof XSDSimpleTypeDefinition))
-               || ( !isComplexType && (def instanceof XSDComplexTypeDefinition)))
-         {
-            // coerce between complex/simple type (insert as same position as before)
-            contentsIdx = schema.getContents().indexOf(def);
-            typeIdx = schema.getTypeDefinitions().indexOf(def);
-            schema.getContents().remove(contentsIdx);
-            typesIndex.remove(typeName);
-            def = null;
-         }
-
-         if (def == null)
-         {
-            def = isComplexType
-                  ? XSDFactory.eINSTANCE.createXSDComplexTypeDefinition()
-                  : XSDFactory.eINSTANCE.createXSDSimpleTypeDefinition();
-            schema.getContents().add(contentsIdx, def);
-            schema.getTypeDefinitions().move(typeIdx, def);
-
-            typesIndex.put(typeName, def);
-         }
-
-         def.setName(defJson.getAsJsonPrimitive("name").getAsString());
-
-         if (isComplexType)
-         {
-            updateXSDComplexTypeDefinition((XSDComplexTypeDefinition) def, defJson);
-         }
-         else
-         {
-            updateXSDSimpleTypeDefinition((XSDSimpleTypeDefinition) def, defJson);
-         }
-
-         updatedTypes.add(def);
-      }
-
-      // remove types not present in JSON anymore
-      for (Iterator<XSDTypeDefinition> i = schema.getTypeDefinitions().iterator(); i.hasNext();)
-      {
-         XSDTypeDefinition typeDefinition = i.next();
-         if ( !updatedTypes.contains(typeDefinition))
-         {
-            i.remove();
-         }
-      }
-   }
-
-   /**
-    *
-    * @param def
-    * @param simpleTypeJson
-    */
-   private void updateXSDSimpleTypeDefinition(XSDSimpleTypeDefinition def,
-         JsonObject simpleTypeJson)
-   {
-      List<XSDConstrainingFacet> facets = def.getFacetContents();
-
-      if (simpleTypeJson.has(ModelerConstants.TYPE_PROPERTY))
-      {
-         String baseTypeName = extractAsString(simpleTypeJson,
-               ModelerConstants.TYPE_PROPERTY);
-
-         String nsPrefix = null;
-         if (0 <= baseTypeName.indexOf(':'))
-         {
-            nsPrefix = baseTypeName.substring(0, baseTypeName.indexOf(':'));
-            baseTypeName = baseTypeName.substring(baseTypeName.indexOf(':') + 1);
-         }
-         String baseTypeNamespace = def.getSchema()
-               .getQNamePrefixToNamespaceMap()
-               .get(nsPrefix);
-
-         XSDSimpleTypeDefinition baseType = def.resolveSimpleTypeDefinition(
-               baseTypeNamespace, baseTypeName);
-         if (null != baseType.eContainer())
-         {
-            def.setBaseTypeDefinition(baseType);
-         }
-      }
-
-      facets.clear();
-
-      JsonElement minLengthJson = simpleTypeJson.get("minLength");
-      if ((null != minLengthJson) && minLengthJson.isJsonPrimitive()
-            && minLengthJson.getAsJsonPrimitive().isNumber())
-      {
-         XSDConstrainingFacet minLengthFacet = SupportedXSDConstrainingFacets.minLength.create();
-         minLengthFacet.setLexicalValue(minLengthJson.getAsJsonPrimitive().getAsString());
-         facets.add(minLengthFacet);
-      }
-      JsonElement maxLengthJson = simpleTypeJson.get("maxLength");
-      if ((null != maxLengthJson) && maxLengthJson.isJsonPrimitive()
-            && maxLengthJson.getAsJsonPrimitive().isNumber())
-      {
-         XSDConstrainingFacet maxLengthFacet = SupportedXSDConstrainingFacets.maxLength.create();
-         maxLengthFacet.setLexicalValue(maxLengthJson.getAsJsonPrimitive().getAsString());
-         facets.add(maxLengthFacet);
-      }
-
-      if (hasNotJsonNull(simpleTypeJson, "facets"))
-      {
-         JsonArray facetsJson = simpleTypeJson.getAsJsonArray("facets");
-         for (JsonElement entry : facetsJson)
-         {
-            if ( !(entry instanceof JsonObject))
-            {
-               trace.warn("Expected object, but received " + entry);
-               continue;
-            }
-            JsonObject facetJson = (JsonObject) entry;
-            String classifier = facetJson.getAsJsonPrimitive("classifier").getAsString();
-            XSDConstrainingFacet facet = SupportedXSDConstrainingFacets.valueOf(
-                  classifier).create();
-            facet.setLexicalValue(facetJson.getAsJsonPrimitive("name").getAsString());
-            facets.add(facet);
-         }
-      }
-   }
-
-   /**
-    *
-    *
-    *
-    */
-   private static enum SupportedXSDConstrainingFacets
-   {
-      // (fh) Only added what is supported by the eclipse modeler. Should be all of them.
-      enumeration, pattern, maxLength, minLength;
-
-      XSDConstrainingFacet create()
-      {
-         switch (this)
-         {
-         case enumeration:
-            return XSDFactory.eINSTANCE.createXSDEnumerationFacet();
-         case pattern:
-            return XSDFactory.eINSTANCE.createXSDPatternFacet();
-         case maxLength:
-            return XSDFactory.eINSTANCE.createXSDMaxLengthFacet();
-         case minLength:
-            return XSDFactory.eINSTANCE.createXSDMinLengthFacet();
-         }
-         return null; // (fh) unreachable
-      }
-   }
-
-   /**
-    *
-    * @param def
-    * @param json
-    */
-   private void updateXSDComplexTypeDefinition(XSDComplexTypeDefinition def,
-         JsonObject json)
-   {
-      JsonObject bodyJson = json.getAsJsonObject("body");
-      XSDComplexTypeContent content = def.getContent();
-
-      if (null == content)
-      {
-         content = XSDFactory.eINSTANCE.createXSDParticle();
-         ((XSDParticle) content).setContent(XSDFactory.eINSTANCE.createXSDModelGroup());
-         def.setContent(content);
-      }
-
-      if (content instanceof XSDParticle)
-      {
-         XSDParticle particle = (XSDParticle) content;
-         XSDTerm term = particle.getTerm();
-
-         if (term instanceof XSDModelGroup)
-         {
-            XSDModelGroup group = (XSDModelGroup) term;
-            String classifier = bodyJson.getAsJsonPrimitive("classifier").getAsString();
-            group.setCompositor(XSDCompositor.get(classifier));
-            List<XSDParticle> particles = group.getContents();
-            particles.clear();
-
-            if (hasNotJsonNull(bodyJson, "elements"))
-            {
-               JsonArray elements = bodyJson.getAsJsonArray("elements");
-               for (JsonElement entry : elements)
-               {
-                  if ( !(entry instanceof JsonObject))
-                  {
-                     trace.warn("Expected object, but received " + entry);
-                     continue;
-                  }
-                  JsonObject elementJson = (JsonObject) entry;
-                  XSDParticle p = XSDFactory.eINSTANCE.createXSDParticle();
-                  ParticleCardinality.get(
-                        elementJson.getAsJsonPrimitive("cardinality").getAsString())
-                        .update(p);
-                  XSDElementDeclaration decl = XSDFactory.eINSTANCE.createXSDElementDeclaration();
-                  p.setContent(decl);
-                  decl.setName(elementJson.getAsJsonPrimitive("name").getAsString());
-                  String type = elementJson.getAsJsonPrimitive("type").getAsString();
-
-                  String namespace = null;
-                  String nsPrefix = null;
-                  if (type.startsWith("{"))
-                  {
-                     // a type QName
-                     QName typeQName = QName.valueOf(type);
-                     type = typeQName.getLocalPart();
-                     namespace = typeQName.getNamespaceURI();
-                     if ( !def.getSchema()
-                           .getQNamePrefixToNamespaceMap()
-                           .containsValue(typeQName.getNamespaceURI()))
-                     {
-                        nsPrefix = typeQName.getPrefix();
-                        if (isEmpty(nsPrefix))
-                        {
-                           nsPrefix = TypeDeclarationUtils.computePrefix(
-                                 typeQName.getLocalPart().toLowerCase(), def.getSchema()
-                                       .getQNamePrefixToNamespaceMap()
-                                       .keySet());
-                        }
-                        def.getSchema()
-                              .getQNamePrefixToNamespaceMap()
-                              .put(nsPrefix, namespace);
-                        // propagate ns-prefix mappings to DOM
-                        def.getSchema().updateElement(true);
-                     }
-
-                     Collection<XSDSchema> targetSchemas = ((XSDSchemaImpl) def.getSchema()).resolveSchema(namespace);
-                     if (targetSchemas.isEmpty())
-                     {
-                        // find target schema
-                        ModelType scopeModel = ModelUtils.findContainingModel(def);
-                        for (TypeDeclarationType typeDeclaration : scopeModel.getTypeDeclarations()
-                              .getTypeDeclaration())
-                        {
-                           if (null != typeDeclaration.getSchema())
-                           {
-                              XSDTypeDefinition targetType = typeDeclaration.getSchema()
-                                    .resolveTypeDefinition(namespace, type);
-                              if ((null != targetType)
-                                    && (null != targetType.eContainer()))
-                              {
-                                 XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
-                                 schemaImport.setNamespace(namespace);
-                                 schemaImport.setSchemaLocation(typeDeclaration.getSchema()
-                                       .getSchemaLocation());
-                                 schemaImport.setResolvedSchema(typeDeclaration.getSchema());
-                                 def.getSchema().getContents().add(0, schemaImport);
-                                 break;
-                              }
-                           }
-                        }
-                     }
-                  }
-                  else
-                  {
-                     int ix = type.indexOf(':');
-                     if (ix > 0)
-                     {
-                        nsPrefix = type.substring(0, ix);
-                        type = type.substring(ix + 1);
-                     }
-                     namespace = def.getSchema()
-                           .getQNamePrefixToNamespaceMap()
-                           .get(nsPrefix);
-                  }
-                  XSDTypeDefinition typeDefinition = def.resolveTypeDefinition(namespace,
-                        type);
-                  if ((null == typeDefinition) || (null == typeDefinition.eContainer()))
-                  {
-                     typeDefinition = def.resolveComplexTypeDefinition(namespace, type);
-                  }
-                  decl.setTypeDefinition(typeDefinition);
-                  particles.add(p);
-               }
-            }
-         }
-         // else unsupported wildcard and element declaration
-      }
-      // else unsupported simple & complex content
-   }
-
-   /**
-    *
-    */
-   private static enum ParticleCardinality
-   {
-      required, optional, many, atLeastOne;
-
-      void update(XSDParticle particle)
-      {
-         switch (this)
-         {
-         case required:
-            particle.unsetMinOccurs();
-            particle.unsetMaxOccurs();
-            break;
-         case optional:
-            particle.setMinOccurs(0);
-            particle.unsetMaxOccurs();
-            break;
-         case many:
-            particle.setMinOccurs(0);
-            particle.setMaxOccurs(XSDParticle.UNBOUNDED);
-            break;
-         case atLeastOne:
-            particle.unsetMinOccurs();
-            particle.setMaxOccurs(XSDParticle.UNBOUNDED);
-            break;
-         }
-      }
-
-      static ParticleCardinality get(String name)
-      {
-         if ("at least one".equals(name))
-         {
-            return atLeastOne;
-         }
-         return valueOf(name);
-      }
-   }
-
-   /**
-    *
-    * @param schema
-    * @param json
-    */
-   private void updateElementDeclarations(XSDSchema schema, JsonArray json)
-   {
-      // TODO Auto-generated method stub
    }
 
    /**

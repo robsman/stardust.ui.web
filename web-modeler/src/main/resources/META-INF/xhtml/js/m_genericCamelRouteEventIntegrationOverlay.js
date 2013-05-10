@@ -129,19 +129,35 @@ define(
 					this.submitOverlayChanges(parameterMappings);
 				};
 
+				function HTMLEncode(str){
+					  var i = str.length,
+					      aRet = [];
+
+					  while (i--) {
+					    var iC = str[i];
+						if(str[i-4]=='&' &&str[i-3]=='a' &&str[i-2]=='m'&&str[i-1]=='p'&&str[i]==';')
+						{
+							i=i-4;
+							aRet[i]='&amp;';
+						}else{
+							if(str[i]=='&'){
+							aRet[i]='&amp;';
+							}else{
+							 aRet[i] = str[i];
+							}
+						}
+					}
+					  return aRet.join('');
+					}
 				/**
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.update = function() {
 					
 					var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
-					
-					// TODO Need better URL encoding
-				//	route = route.replace(/&/g, "&amp;");
-					
 					this.camelContextInput
 							.val(this.page.getEvent().attributes["carnot:engine:camel::camelContextId"]);
-					
+
 					this.routeTextarea.val(route);
 					
 					this.additionalBeanTextarea
@@ -158,7 +174,8 @@ define(
 				 * 
 				 */
 				GenericCamelRouteEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
-					return this.routeTextarea.val().replace(/&/g, "&amp;");
+
+                    return HTMLEncode(this.routeTextarea.val());
 				};
 
 				/**

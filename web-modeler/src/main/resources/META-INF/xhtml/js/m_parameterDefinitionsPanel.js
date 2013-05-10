@@ -14,7 +14,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
@@ -95,19 +96,27 @@ define(
 					this.deleteParameterDefinitionButton = jQuery(this.options.scope
 							+ " #deleteParameterDefinitionButton");
 
-					this.addParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/add.png");
-					this.deleteParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/delete.png");
+					this.addParameterDefinitionButton.attr("src", m_urlUtils
+							.getContextName()
+							+ "/plugins/bpm-modeler/images/icons/add.png");
+					this.deleteParameterDefinitionButton.attr("src", m_urlUtils
+							.getContextName()
+							+ "/plugins/bpm-modeler/images/icons/delete.png");
 
 					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					if (this.options.supportsDataTypeSelection) {
-						this.dataTypeSelector = m_dataTypeSelector.create({
-							scope : this.dataTypeSelectorScope,
-							submitHandler : this,
-							supportsOtherData : false,
-							supportsDocumentTypes : true,
-							restrictToCurrentModel : true
-						});
+						this.dataTypeSelector = m_dataTypeSelector
+								.create({
+									scope : this.dataTypeSelectorScope,
+									submitHandler : this,
+									supportsOtherData : (typeof this.options.supportsOtherData === "undefined") ? false
+											: this.options.supportsOtherData,
+									supportsDocumentTypes : (typeof this.options.supportsDocumentTypes === "undefined") ? true
+											: this.options.supportsDocumentTypes,
+									restrictToCurrentModel : (typeof this.options.restrictToCurrentModel === "undefined") ? true
+											: this.options.restrictToCurrentModel
+								});
 					}
 
 					if (this.options.supportsOrdering) {
@@ -170,8 +179,9 @@ define(
 									function(event) {
 										if (event.data.panel.currentParameterDefinition != null) {
 											// Blank names are not allowed.
-											if (jQuery.trim(event.data.panel.parameterDefinitionNameInput
-													.val()) == "") {
+											if (jQuery
+													.trim(event.data.panel.parameterDefinitionNameInput
+															.val()) == "") {
 												event.data.panel.parameterDefinitionNameInput
 														.val(event.data.panel.currentParameterDefinition.name);
 												return;
@@ -300,7 +310,8 @@ define(
 
 					if (this.options.hideDirectionSelection) {
 						m_dialog
-								.makeInvisible(jQuery(this.options.scope + "label[for='parameterDefinitionDirectionSelect']"));
+								.makeInvisible(jQuery(this.options.scope
+										+ "label[for='parameterDefinitionDirectionSelect']"));
 						m_dialog
 								.makeInvisible(this.parameterDefinitionDirectionSelect);
 					}
@@ -400,7 +411,10 @@ define(
 					this.parameterDefinitionDataSelect.empty();
 
 					this.parameterDefinitionDataSelect
-							.append("<option value=\"TO_BE_DEFINED\">" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+							.append("<option value=\"TO_BE_DEFINED\">"
+									+ m_i18nUtils
+											.getProperty("modeler.general.toBeDefined")
+									+ "</option>");
 
 					if (this.scopeModel) {
 						var modelname = m_i18nUtils
@@ -424,37 +438,38 @@ define(
 					}
 
 					// TODO - Delete this
-					// Other model types are not not needed for formal parameters
-//					var othermodel = m_i18nUtils
-//							.getProperty("modeler.element.properties.commonProperties.otherModel")
-//					this.parameterDefinitionDataSelect
-//							.append("</optgroup><optgroup label=\""
-//									+ othermodel + "\">");
-//
-//					for ( var n in m_model.getModels()) {
-//						if (this.scopeModel
-//								&& m_model.getModels()[n] == this.scopeModel) {
-//							continue;
-//						}
-//
-//						for ( var m in m_model.getModels()[n].dataItems) {
-//							var dataItem = m_model.getModels()[n].dataItems[m];
-//
-//							if (this.isDataOfSelectedType(dataItem)) {
-//								this.parameterDefinitionDataSelect
-//										.append("<option value='"
-//												+ dataItem.getFullId() + "'>"
-//												+ m_model.getModels()[n].name
-//												+ "/" + dataItem.name
-//												+ "</option>");
-//							}
-//						}
-//					}
-//
-//					this.parameterDefinitionDataSelect.append("</optgroup>");
+					// Other model types are not not needed for formal
+					// parameters
+					// var othermodel = m_i18nUtils
+					// .getProperty("modeler.element.properties.commonProperties.otherModel")
+					// this.parameterDefinitionDataSelect
+					// .append("</optgroup><optgroup label=\""
+					// + othermodel + "\">");
+					//
+					// for ( var n in m_model.getModels()) {
+					// if (this.scopeModel
+					// && m_model.getModels()[n] == this.scopeModel) {
+					// continue;
+					// }
+					//
+					// for ( var m in m_model.getModels()[n].dataItems) {
+					// var dataItem = m_model.getModels()[n].dataItems[m];
+					//
+					// if (this.isDataOfSelectedType(dataItem)) {
+					// this.parameterDefinitionDataSelect
+					// .append("<option value='"
+					// + dataItem.getFullId() + "'>"
+					// + m_model.getModels()[n].name
+					// + "/" + dataItem.name
+					// + "</option>");
+					// }
+					// }
+					// }
+					//
+					// this.parameterDefinitionDataSelect.append("</optgroup>");
 
-					if (!this.currentParameterDefinition ||
-							!this.currentParameterDefinition.dataFullId) {
+					if (!this.currentParameterDefinition
+							|| !this.currentParameterDefinition.dataFullId) {
 						this.parameterDefinitionDataSelect
 								.val(m_constants.TO_BE_DEFINED);
 					} else {
@@ -466,21 +481,26 @@ define(
 				/**
 				 *
 				 */
-				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(data) {
+				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(
+						data) {
 					if (this.options.supportsDataTypeSelection == false) {
 						return true;
 					}
 
 					if (this.dataTypeSelector
-							&& data.dataType === this.dataTypeSelector.dataTypeSelect.val()) {
+							&& data.dataType === this.dataTypeSelector.dataTypeSelect
+									.val()) {
 						if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
-								&& data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
+								&& data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect
+										.val()) {
 							return true
 						} else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE
-								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect.val()) {
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect
+										.val()) {
 							return true
 						} else if (data.dataType === m_constants.DOCUMENT_DATA_TYPE
-								&& data.structuredDataTypeFullId === this.dataTypeSelector.documentTypeSelect.val()) {
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.documentTypeSelect
+										.val()) {
 							return true
 						}
 					}
@@ -513,6 +533,8 @@ define(
 							} else {
 								content += "inDataPathListItem";
 							}
+						} else if (parameterDefinition.direction == "INOUT") {
+							content += "inoutDataPathListItem";
 						} else {
 							content += "outDataPathListItem";
 						}
@@ -535,7 +557,8 @@ define(
 								// Convert
 							} else {
 								if (parameterDefinition.structuredDataTypeFullId) {
-									content += m_model.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
+									content += m_model
+											.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
 								}
 								// Format
 							}
@@ -548,7 +571,8 @@ define(
 									+ this.options.mappingColumnWidth + "\">";
 
 							if (parameterDefinition.dataFullId != null
-									&& m_model.findData(parameterDefinition.dataFullId)) {
+									&& m_model
+											.findData(parameterDefinition.dataFullId)) {
 								var data = m_model
 										.findData(parameterDefinition.dataFullId);
 
@@ -618,7 +642,8 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
-					if (this.currentParameterDefinition == null) {
+					if (!this.currentParameterDefinition
+							|| (this.currentParameterDefinition.attributes && this.currentParameterDefinition.attributes["stardust:predefined"])) {
 						this.parameterDefinitionNameInput
 								.attr("disabled", true);
 						this.parameterDefinitionDirectionSelect.attr(
@@ -641,6 +666,9 @@ define(
 										"disabled", true);
 							}
 						}
+
+						this.deleteParameterDefinitionButton.attr("disabled",
+								true);
 					} else {
 						if (this.options.readOnlyParameterList) {
 							this.parameterDefinitionNameInput.attr("disabled",
@@ -751,6 +779,8 @@ define(
 								}
 							}
 						}
+
+						this.deleteParameterDefinitionButton.removeAttr("disabled");
 
 						if (this.currentFocusInput) {
 							// Set focus and select

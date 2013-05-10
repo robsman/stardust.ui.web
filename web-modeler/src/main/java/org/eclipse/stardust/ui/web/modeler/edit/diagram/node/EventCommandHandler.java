@@ -35,7 +35,6 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
@@ -205,7 +204,11 @@ public class EventCommandHandler
                      .get(0)
                      .getEndEventSymbols()
                      .remove(endEventSymbol);
+
+               ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(endEventSymbol);
+               processDefinition.getActivity().remove(hostActivity);
                parentLaneSymbol.getEndEventSymbols().remove(endEventSymbol);
+
             }
          }
       }

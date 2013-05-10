@@ -238,25 +238,28 @@ define(
 					}
 
 					var view = this;
-					jQuery.each(this.schema.types, function(i, type) {
-						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(type.name, view.schema);
+					//check if xsd contains any complex types
+					if (this.schema.types) {
+						jQuery.each(this.schema.types, function(i, type) {
+							var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(type.name, view.schema);
 
-						var path = "type-" + type.name.replace(/:/g, "-");
+							var path = "type-" + type.name.replace(/:/g, "-");
 
-						var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
-								function(row, element, schemaType) {
+							var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
+									function(row, element, schemaType) {
 
-							jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
-							jQuery("<td>" + type.name + "</td>").appendTo(row);
-							jQuery("<td></td>").appendTo(row);
+								jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
+								jQuery("<td>" + type.name + "</td>").appendTo(row);
+								jQuery("<td></td>").appendTo(row);
 
-							row.data("typeDeclaration", type);
+								row.data("typeDeclaration", type);
+							});
+							row.addClass("top-level");
+							view.tableBody.append(row);
+
+							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 						});
-						row.addClass("top-level");
-						view.tableBody.append(row);
-
-						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
-					});
+					}
 
 					this.tree.tableScroll({
 						height : 150

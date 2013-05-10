@@ -1324,11 +1324,18 @@ define(
 				Symbol.prototype.drag = function(dX, dY, x, y) {
 					this.diagram.resetEditableText();
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
-						var displ = this.getEffectiveDisplacement(x, y);
-						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
-								displ.deltaY);
 
-						this.postDrag(displ.deltaX, displ.deltaY, x, y);
+						//check if symbols are being dragged out of drawing area
+						if (x > 0 && y > 0) {
+							var displ = this.getEffectiveDisplacement(x, y);
+							this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+									displ.deltaY);
+
+							this.postDrag(displ.deltaX, displ.deltaY, x, y);
+						}
+						else{
+							this.dragStop();
+						}
 					}
 				};
 
@@ -2683,9 +2690,9 @@ define(
 						this.dragConnection.createUpdateCommand(changes);
 						m_messageDisplay.showMessage("Connection updated");
 					}
-					this.remove();
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
+					this.remove();
 				}
 
 				/**

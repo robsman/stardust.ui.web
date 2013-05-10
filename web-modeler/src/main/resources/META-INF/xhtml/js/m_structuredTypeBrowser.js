@@ -139,6 +139,9 @@ define(
 					jQuery.each(childRows, function(i, childRow) {
 						// append child rows
 						childRow.addClass("child-of-" + parentPath);
+						if (parentRow.hasClass("locked")) {
+							childRow.addClass("locked");
+						}
 						parentRow.after(childRow);
 					});
 				});
@@ -161,6 +164,9 @@ define(
 						childRows.reverse();
 						jQuery.each(childRows, function(i, childRow) {
 							// ... then move to the proper location
+							if (parentRow.hasClass("locked")) {
+								childRow.addClass("locked");
+							}
 							parentRow.after(childRow);
 							childRow.appendBranchTo(parentRow[0]);
 						});

@@ -1,0 +1,332 @@
+{
+    "Model21": {
+        "id": "Model21",
+        "name": "Model 2",
+        "uuid": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+        "fileName": "Model21.xpdl",
+        "filePath": "/process-models/Model21.xpdl",
+        "type": "model",
+        "dateOfCreation": "04/19/13 12:26 PM",
+        "dateOfModification": "04/19/13 12:27 PM",
+        "description": null,
+        "attributes": {
+            "carnot:engine:version": "1",
+            "carnot:engine:released": false,
+            "ipp:model:modified": "Fri Apr 19 12:27:46 IST 2013"
+        },
+        "comments": [],
+        "processes": {},
+        "participants": {
+            "Administrator": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "oid": 25,
+                "type": "roleParticipant",
+                "uuid": "f3ed4247-69bc-42b9-a96d-23005dd85209",
+                "cardinality": "",
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "externalReference": false,
+                "description": "",
+                "attributes": {},
+                "comments": []
+            }
+        },
+        "applications": {},
+        "dataItems": {
+            "PROCESS_ID": {
+                "id": "PROCESS_ID",
+                "type": "data",
+                "name": "Process OID",
+                "uuid": "93e52ac6-09b9-4d35-aeec-316925780dae",
+                "oid": 20,
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "description": "",
+                "attributes": {},
+                "primitiveDataType": "int",
+                "comments": [],
+                "externalReference": false,
+                "dataType": "primitive"
+            },
+            "ROOT_PROCESS_ID": {
+                "id": "ROOT_PROCESS_ID",
+                "type": "data",
+                "name": "Root Process OID",
+                "uuid": "5552c1f7-0656-4941-8c26-3ef3152a5314",
+                "oid": 21,
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "description": "",
+                "attributes": {},
+                "primitiveDataType": "int",
+                "comments": [],
+                "externalReference": false,
+                "dataType": "primitive"
+            },
+            "PROCESS_PRIORITY": {
+                "id": "PROCESS_PRIORITY",
+                "type": "data",
+                "name": "Process Priority",
+                "uuid": "6864a10f-4094-4274-b427-0410594cb596",
+                "oid": 22,
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "description": "",
+                "attributes": {},
+                "primitiveDataType": "int",
+                "comments": [],
+                "externalReference": false,
+                "dataType": "primitive"
+            },
+            "CURRENT_LOCALE": {
+                "id": "CURRENT_LOCALE",
+                "type": "data",
+                "name": "Current Locale",
+                "uuid": "47f22b3d-39e6-44ee-85aa-f53307501fb5",
+                "oid": 23,
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "description": "",
+                "attributes": {},
+                "primitiveDataType": "String",
+                "comments": [],
+                "externalReference": false,
+                "dataType": "primitive"
+            },
+            "CURRENT_DATE": {
+                "id": "CURRENT_DATE",
+                "type": "data",
+                "name": "Current Date",
+                "uuid": "a95e65c7-2666-4e03-8d15-292de56afe79",
+                "oid": 24,
+                "modelUUID": "25943c98-9d3d-453b-82eb-c76df2c2fbcf",
+                "modelId": "Model21",
+                "description": "",
+                "attributes": {},
+                "primitiveDataType": "Calendar",
+                "comments": [],
+                "externalReference": false,
+                "dataType": "primitive"
+            }
+        },
+        "typeDeclarations": {
+            "RGB": {
+                "id": "RGB",
+                "name": "RGB",
+                "uuid": "7b42a51d-e66a-4158-9661-53d0c4822981",
+                "modelId": "Model21",
+                "attributes": {},
+                "comments": [],
+                "description": "",
+                "typeDeclaration": {
+                    "type": {
+                        "classifier": "ExternalReference",
+                        "location": "http://localhost:8080/Demo2/plugins/common/TestSchema2.xsd",
+                        "xref": "{http://www.example.org/TestSchema}RGB"
+                    },
+                    "schema": {
+                        "targetNamespace": "http://www.example.org/TestSchema",
+                        "nsMappings": {
+                            "tns": "http://www.example.org/TestSchema"
+                        },
+                        "types": [
+                            {
+                                "name": "ARGB",
+                                "classifier": "complexType",
+                                "base": "tns:RGB",
+                                "method": "extension",
+                                "body": [
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "red",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "green",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "blue",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ],
+                                        "inherited": true
+                                    },
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "alpha",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "type": "typeDeclaration"
+            },
+            "ARGB": {
+                "id": "ARGB",
+                "name": "ARGB",
+                "uuid": "d6714db1-f91d-4ca2-b9b4-f082afb1faed",
+                "modelId": "Model21",
+                "attributes": {},
+                "comments": [],
+                "description": "",
+                "typeDeclaration": {
+                    "type": {
+                        "classifier": "ExternalReference",
+                        "location": "http://localhost:8080/Demo2/plugins/common/TestSchema2.xsd",
+                        "xref": "{http://www.example.org/TestSchema}ARGB"
+                    },
+                    "schema": {
+                        "targetNamespace": "http://www.example.org/TestSchema",
+                        "nsMappings": {
+                            "tns": "http://www.example.org/TestSchema"
+                        },
+                        "types": [
+                            {
+                                "name": "ARGB",
+                                "classifier": "complexType",
+                                "base": "tns:RGB",
+                                "method": "extension",
+                                "body": [
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "red",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "green",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "blue",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ],
+                                        "inherited": true
+                                    },
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "alpha",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "type": "typeDeclaration"
+            },
+            "ExtendedRGB": {
+                "id": "ExtendedRGB",
+                "name": "ExtendedRGB",
+                "uuid": "dca7394f-9aab-464d-b3f2-a98ceab2030a",
+                "modelId": "Model21",
+                "attributes": {},
+                "comments": [],
+                "description": "",
+                "typeDeclaration": {
+                    "type": {
+                        "classifier": "ExternalReference",
+                        "location": "http://localhost:8080/Demo2/plugins/common/TestSchema2.xsd",
+                        "xref": "{http://www.example.org/TestSchema}ExtendedRGB"
+                    },
+                    "schema": {
+                        "targetNamespace": "http://www.example.org/TestSchema",
+                        "nsMappings": {
+                            "tns": "http://www.example.org/TestSchema"
+                        },
+                        "types": [
+                            {
+                                "name": "ARGB",
+                                "classifier": "complexType",
+                                "base": "tns:RGB",
+                                "method": "extension",
+                                "body": [
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "red",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "green",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            },
+                                            {
+                                                "name": "blue",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ],
+                                        "inherited": true
+                                    },
+                                    {
+                                        "name": "<sequence>",
+                                        "classifier": "sequence",
+                                        "cardinality": "required",
+                                        "body": [
+                                            {
+                                                "name": "alpha",
+                                                "classifier": "element",
+                                                "cardinality": "required",
+                                                "type": "int"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "type": "typeDeclaration"
+            }
+        }
+    }
+}

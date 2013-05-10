@@ -9,84 +9,6 @@
 <head>
 <link href="../bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-	//
-	function openViewHandler(modelerLinkId, formId, viewId, viewParams,
-			viewIdentity) {
-		var form = document.getElementById(formId);
-		var link = document.getElementById(modelerLinkId);
-
-		// formOf and iceSubmit are javascript functions provided by icefaces
-		var linkForm = formOf(link);
-
-		linkForm[formId + ':_idcl'].value = modelerLinkId;
-		linkForm['viewParams'].value = viewParams;
-		linkForm['viewId'].value = viewId;
-		linkForm['viewIdentity'].value = viewIdentity;
-		iceSubmit(linkForm, link);
-	}
-
-	function setSelectedModleParams(modelDeployerLinkId, modelFileName,
-			modleFilePath, formId) {
-		var form = document.getElementById(formId);
-		var link = document.getElementById(modelDeployerLinkId);
-
-		// formOf and iceSubmit are javascript functions provided by icefaces
-
-		var linkForm = formOf(link);
-
-		linkForm[formId + ':_idcl'].value = modelDeployerLinkId;
-		linkForm['allowBrowse'].value = "false";
-		linkForm['fileName'].value = modelFileName;
-		linkForm['filePath'].value = modleFilePath;
-
-		iceSubmit(linkForm, link);
-	}
-
-	function updateView(modelerLinkId, formId, viewId, viewParams,
-			viewIdentity) {
-		var form = document.getElementById(formId);
-		var link = document.getElementById(modelerLinkId);
-
-		// formOf and iceSubmit are javascript functions provided by icefaces
-		var linkForm = formOf(link);
-
-		linkForm[formId + ':_idcl'].value = modelerLinkId;
-		linkForm['viewParams'].value = viewParams;
-		linkForm['viewId'].value = viewId;
-		linkForm['viewIdentity'].value = viewIdentity;
-		iceSubmit(linkForm, link);
-	}
-
-	function closeViewsForElement(modelerLinkId, formId, uuid) {
-		var form = document.getElementById(formId);
-		var link = document.getElementById(modelerLinkId);
-
-		// formOf and iceSubmit are javascript functions provided by icefaces
-		var linkForm = formOf(link);
-
-		linkForm[formId + ':_idcl'].value = modelerLinkId;
-		linkForm['uuid'].value = uuid;
-		iceSubmit(linkForm, link);
-	}
-
-	function openImportModelDialog(modelerLinkId, formId) {
-		var form = document.getElementById(formId);
-		var link = document.getElementById(modelerLinkId);
-
-		// formOf and iceSubmit are javascript functions provided by icefaces
-		var linkForm = formOf(link);
-
-		linkForm[formId + ':_idcl'].value = modelerLinkId;
-		iceSubmit(linkForm, link);
-	}
-
-	window.parent.EventHub.events.subscribe("OPEN_VIEW", openViewHandler);
-	window.parent.EventHub.events.subscribe("SELECT_MODEL_FOR_DEPLOYMENT",
-			setSelectedModleParams);
-	window.parent.EventHub.events.subscribe("UPDATE_VIEW", updateView);
-	window.parent.EventHub.events.subscribe("CLOSE_VIEWS", closeViewsForElement);
-	window.parent.EventHub.events.subscribe("OPEN_IMPORT_MODEL_DIALOG", openImportModelDialog);
-
 	function changeUserProfile(obj) {
 		window.parent.EventHub.events.publish("CHANGE_PROFILE", obj.options[obj.selectedIndex].value);
 	}
@@ -114,7 +36,7 @@
 		</ice:selectOneMenu>
 	</ice:panelGrid>
 
-	<ice:panelGroup styleClass="panelHeader" style="width: 290px;">
+	<ice:panelGroup styleClass="panelHeader">
 		<ice:commandLink action="#{processesView.toggle}">
 			<ice:panelGrid columns="2">
 				<ice:graphicImage rendered="#{!processesView.expanded}"
@@ -129,9 +51,8 @@
 		</ice:commandLink>
 	</ice:panelGroup>
 
-	<ice:panelGrid columns="1" rendered="#{processesView.expanded}"
-		style="width: 280px;">
-		<div id="outlineAnchor" style="width: 280px; height: 540px;"></div>
+	<ice:panelGrid columns="1" rendered="#{processesView.expanded}">
+		<div id="outlineAnchor"  style="width: 100%; height: 100%;"></div>
 		<ice:panelGroup style="display: none;">
 			<ice:commandLink id="model_view_link"
 				action="#{ippPortalApp.openView}" visible="false">

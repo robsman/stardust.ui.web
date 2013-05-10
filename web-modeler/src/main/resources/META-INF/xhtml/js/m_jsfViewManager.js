@@ -11,10 +11,11 @@
 
 /**
  * View Management
- * 
+ *
  * @author Marc.Gille
  */
-define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
+		function(m_utils, m_jsfViewManagerHelper) {
 	return {
 		create : function() {
 			return new JsfViewManager();
@@ -22,38 +23,41 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function JsfViewManager() {
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.toString = function() {
 			return "Lightdust.JsfViewManager";
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.openView = function(viewId, queryString,
 				objectId) {
+			m_utils.showWaitCursor();
 			m_utils.debug("Open View");
 			m_utils.debug(jQuery(window));
 			m_utils.debug(jQuery(window.top));
 			m_utils.debug(jQuery(window.top.frames['ippPortalMain']));
-			
+
 			var link = jQuery("a[id $= 'model_view_link']",
 					window.parent.frames['ippPortalMain'].document);
 			var linkId = link.attr('id');
 			var form = link.parents('form:first');
 			var formId = form.attr('id');
 
-			window.parent.EventHub.events.publish("OPEN_VIEW", linkId, formId, viewId,
-					queryString, objectId);
+//			window.parent.EventHub.events.publish("OPEN_VIEW", linkId, formId, viewId,
+//					queryString, objectId);
+
+			m_jsfViewManagerHelper.openView(linkId, formId, viewId, queryString, objectId);
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.updateView = function(viewId, queryString,
 				objectId) {
@@ -63,12 +67,11 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			var form = link.parents('form:first');
 			var formId = form.attr('id');
 
-			window.parent.EventHub.events.publish("UPDATE_VIEW", linkId,
-					formId, viewId, queryString, objectId);
+			m_jsfViewManagerHelper.updateView(linkId, formId, viewId, queryString, objectId);
 		};
 
 		/**
-		 * 
+		 *
 		 */
 		JsfViewManager.prototype.closeViewsForElement = function(uuid) {
 			var link = jQuery("a[id $= 'views_close_link']",
@@ -77,8 +80,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			var form = link.parents('form:first');
 			var formId = form.attr('id');
 
-			window.parent.EventHub.events.publish("CLOSE_VIEWS", linkId,
-					formId, uuid);
+			m_jsfViewManagerHelper.closeView(linkId, formId, uuid);
 		};
 	}
 });

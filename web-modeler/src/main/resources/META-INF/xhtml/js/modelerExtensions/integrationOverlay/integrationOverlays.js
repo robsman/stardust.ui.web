@@ -10,8 +10,10 @@
 
 define(
 		[ "bpm-modeler/js/GenericEndpointOverlay",
+			"bpm-modeler/js/MailIntegrationOverlay",
 				"bpm-modeler/js/RestServiceOverlay",
 				"bpm-modeler/js/RulesIntegrationOverlay",
+				"bpm-modeler/js/ScriptingIntegrationOverlay",
 				"bpm-modeler/js/m_manualTriggerIntegrationOverlay",
 				"bpm-modeler/js/m_timerEventIntegrationOverlay",
 				"bpm-modeler/js/m_fileEventIntegrationOverlay",
@@ -19,7 +21,7 @@ define(
 				"bpm-modeler/js/m_messageEventIntegrationOverlay",
 				"bpm-modeler/js/m_scanEventIntegrationOverlay",
 				"bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
-		function(GenericEndpointOverlay, RestServiceOverlay, RulesIntegrationOverlay, m_manualTriggerIntegrationOverlay,
+		function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay, m_manualTriggerIntegrationOverlay,
 				m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay,
 				m_emailEventIntegrationOverlay,
 				m_messageEventIntegrationOverlay,
@@ -32,17 +34,28 @@ define(
 					pageHtmlUrl : "genericEndpointOverlay.html",
 					provider : GenericEndpointOverlay
 				}, {
+					id : "mailIntegrationOverlay",
+					name : "E-Mail Send/Receive",
+					pageHtmlUrl : "mailIntegrationOverlay.html",
+					provider : MailIntegrationOverlay,
+					visibility : "preview"
+				}, {
 					id : "restServiceOverlay",
 					name : "REST Service",
 					pageHtmlUrl : "restServiceOverlay.html",
-					provider : RestServiceOverlay,
-					visibility : "preview"
+					provider : RestServiceOverlay
 				},
 				{
 					id : "rulesIntegrationOverlay",
 					name : "Rules Set Invocation",
 					pageHtmlUrl: "rulesIntegrationOverlay.html",
 					provider : RulesIntegrationOverlay,
+				},
+				{
+					id : "scriptingIntegrationOverlay",
+					name : "Script Invocation",
+					pageHtmlUrl: "scriptingIntegrationOverlay.html",
+					provider : ScriptingIntegrationOverlay,
 					visibility : "preview"
 				}],
 				eventIntegrationOverlay : [

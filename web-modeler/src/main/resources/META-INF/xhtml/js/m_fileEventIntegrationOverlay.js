@@ -131,14 +131,14 @@ define(
 					
 					if(this.fileNameInput != null && this.fileNameInput.val().length != 0){
 						uri += separator + "fileName="+this.fileNameInput.val();
-						separator = "&";
+						separator = "&amp;";
 						
 					}
 					
 					if (this.recursiveInput.is(":checked") == true) {
 						uri += separator + "recursive="
 								+ this.recursiveInput.is(":checked");
-						separator = "&";
+						separator = "&amp;";
 
 					}
 
@@ -150,7 +150,7 @@ define(
 								+ this.getIntervalInMilliseconds(
 										this.initialIntervalInput.val(),
 										this.initialIntervalUnitSelect.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
@@ -160,18 +160,18 @@ define(
 								+ this.getIntervalInMilliseconds(
 										this.repeatIntervalInput.val(),
 										this.repeatIntervalUnitSelect.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 					if (this.lockBehaviorSelect.val() == "none") {
 						// nothing to do
 					} else {
 						if (this.lockBehaviorSelect.val() == "markerFile") {
 							uri += separator + "readLock=markerFile";
-							separator = "&";
+							separator = "&amp;";
 						} else {
 							if (this.lockBehaviorSelect.val() == "changed") {
 								uri += separator + "readLock=changed";
-								separator = "&";
+								separator = "&amp;";
 							}
 						}
 					}
@@ -182,15 +182,12 @@ define(
 					 */
 
 					if (this.postProcessingSelect.val() == "noop") {
-						uri += "&noop=true";
-						uri += "&delete=false";
+						uri += "&amp;noop=true";
+						uri += "&amp;delete=false";
 					} else if (this.postProcessingSelect.val() == "delete") {
-						uri += "&noop=false";
-						uri += "&delete=true";
+						uri += "&amp;noop=false";
+						uri += "&amp;delete=true";
 					}
-
-					uri = uri.replace(/&/g, "&amp;")
-
 					return uri;
 				};
 

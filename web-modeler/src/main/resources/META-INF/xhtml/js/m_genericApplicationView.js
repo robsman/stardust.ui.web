@@ -21,6 +21,9 @@ define(
 				m_jsfViewManager, m_elementConfiguration) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new GenericApplicationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -28,6 +31,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+					m_utils.hideWaitCursor();
 				}
 			};
 

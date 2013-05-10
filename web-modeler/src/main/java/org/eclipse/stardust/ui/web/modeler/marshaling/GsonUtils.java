@@ -1,7 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public class GsonUtils
@@ -97,5 +97,58 @@ public class GsonUtils
    {
       JsonElement member = json.get(memberName);
       return (null != member && !member.isJsonNull()) ? true : false;
+   }
+
+
+   public static boolean safeGetBool(JsonObject jsonObject, String memberName)
+   {
+      if (jsonObject.has(memberName))
+      {
+         JsonElement member = jsonObject.get(memberName);
+         if (member.isJsonPrimitive())
+         {
+            return member.getAsBoolean();
+         }
+      }
+      return false;
+   }
+
+   public static String safeGetAsString(JsonObject jsonObject, String memberName)
+   {
+      if (jsonObject.has(memberName))
+      {
+         JsonElement member = jsonObject.get(memberName);
+         if (member.isJsonPrimitive())
+         {
+            return member.getAsString();
+         }
+      }
+      return null;
+   }
+
+   public static JsonObject safeGetAsJsonObject(JsonObject jsonObject, String memberName)
+   {
+      if (jsonObject.has(memberName))
+      {
+         JsonElement member = jsonObject.get(memberName);
+         if (member.isJsonObject())
+         {
+            return member.getAsJsonObject();
+         }
+      }
+      return null;
+   }
+
+   public static JsonArray safeGetAsJsonArray(JsonObject jsonObject, String memberName)
+   {
+      if (jsonObject.has(memberName))
+      {
+         JsonElement member = jsonObject.get(memberName);
+         if (member.isJsonArray())
+         {
+            return member.getAsJsonArray();
+         }
+      }
+      return null;
    }
 }

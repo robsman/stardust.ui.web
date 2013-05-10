@@ -9,22 +9,13 @@
 <head>
 <title>Process Definition View</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
+	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/codemirror.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/theme/eclipse.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/dialog.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/simple-hint.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/lightdust-codemirror.css"></link>
 <script type="text/javascript" data-main="../../js/modeler-main"
 	src="../../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
+<div id="processDefinitionView" style="visibility: hidden">
 	<table style="width: 100%; height: 100%" cellpadding="0"
 		cellspacing="0">
 		<tr style="vertical-align: top; height: 100%">
@@ -719,11 +710,11 @@
 
 															<div id="qualityControlPropertiesPage"
 																class="propertiesPage">
-																<div class="heading">Quality Control</div>
+																<div class="heading">Quality Assurance</div>
 																<table>
 																	<tr>
 																		<td><label for="qualityControlProbabilityInput">Quality
-																				Control Probability</label>
+																				Assurance Probability</label>
 																		</td>
 																		<td><input id="qualityControlProbabilityInput"
 																			type="text" /></td>
@@ -1395,5 +1386,6 @@
 	<form id="saveModelForm" method="get" target="_blank" />
 	<div id="editable" style="position: absolute"></div>
 	<div id="editableArea"></div>
+</div>
 </body>
 </html>

@@ -11,10 +11,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_propertiesPage" ],
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_jsfViewManagerHelper"],
 		function(m_utils, m_constants, m_command,
 				m_commandsController, m_model, m_propertiesPanel,
-				m_propertiesPage) {
+				m_propertiesPage, m_jsfViewManagerHelper) {
 
 			var activityPropertiesPanel = null;
 
@@ -64,8 +64,10 @@ define(
 					var form = link.parents('form:first');
 					var formId = form.attr('id');
 
-					window.parent.EventHub.events.publish("OPEN_VIEW", linkId,
-							formId, "modelingWorkAssignmentView");
+//					window.parent.EventHub.events.publish("OPEN_VIEW", linkId,
+//							formId, "modelingWorkAssignmentView");
+
+					m_jsfViewManagerHelper.openView(linkId, formId, viewId);
 				});
 
 				/**

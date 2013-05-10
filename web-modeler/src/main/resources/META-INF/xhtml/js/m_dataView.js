@@ -28,6 +28,9 @@ define(
 
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var data = m_model.findData(fullId);
 
 					m_utils.debug("===>  Data");
@@ -40,7 +43,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(data);
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -124,6 +127,7 @@ define(
 				 */
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
+					this.view = jQuery("#" + this.id);
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
@@ -169,6 +173,7 @@ define(
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
 					this.initializeModelElementView(data);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

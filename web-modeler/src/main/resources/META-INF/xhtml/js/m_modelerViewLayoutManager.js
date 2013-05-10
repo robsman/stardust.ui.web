@@ -14,8 +14,8 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelerCanvasController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_dialog, m_modelerCanvasController, m_propertiesPanel, m_processPropertiesPanel,m_i18nUtils) {
-			var innerHeight;
-			var innerWidth;
+			var innerHeight = 600;
+			var innerWidth = 800;
 			var propertiesPaneVisible = false;
 			var HORIZONTAL_SCROLL_OFFSET = 30;
 
@@ -29,24 +29,31 @@ define(
 			}
 
 			function initialize() {
-				innerHeight = window.innerHeight;
-				innerWidth = window.innerWidth;
 				i18nProcessScreen();
-				$("#modelerDiagramPanelWrapper").css("width",
-						(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px").css(
-						"overflow", "auto");
+				$("#modelerDiagramPanelWrapper").css("overflow", "auto");
 				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
 						"overflow", "hidden");
-
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
 
 				m_dialog.makeVisible($("#propertiesPanelShowControl"));
 				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
 				m_dialog.makeInvisible($("#modelerPropertiesPanelWrapper"));
 
 				initPropertiesPanelCollapseClickHandlers();
+
+				window.parent.EventHub.events.subscribe("PROCESS_IFRAME_RESIZED", setDimensions);
+				//window.parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeProcessDefinitionIFrame(window.frameElement.id, null);
 			}
 
+			/**
+			 * set Dimensions
+			 */
+			function setDimensions(dimensions) {
+				if (dimensions.anchorId == 'processDefinitionFrameAnchor') {
+					innerHeight = dimensions.height;
+					innerWidth = dimensions.width;
+					adjustPanels();
+				}
+			}
 
 			function i18nProcessScreen() {
 				jQuery("#basicPropertiesPage div.heading")
@@ -353,73 +360,67 @@ define(
 					propertiesPaneVisible = false;
 					$("#modelerPropertiesPanelWrapper").css("width", "0px")
 							.css("overflow", "hidden");
-					$("#modelerDiagramPanelWrapper").css("width",
-							(innerWidth - HORIZONTAL_SCROLL_OFFSET) + "px");
+
+					m_dialog.makeVisible($("#propertiesPanelShowControl"));
+					m_dialog.makeInvisible($("#propertiesPanelHideControl"));
+					m_dialog.makeInvisible($("#modelerPropertiesPanelWrapper"));
+					adjustPanels();
 				}
-
-				setDrawingPaneDivWidths((parseInt($("#modelerDiagramPanelWrapper").css("width")) - 2));
-
-				m_dialog.makeVisible($("#propertiesPanelShowControl"));
-				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
-				m_dialog.makeInvisible($("#modelerPropertiesPanelWrapper"));
 			}
+
+			/*
+			 * Ideally setting of toolbar / diagram pane width etc. should have been handled with width = auto / 100% etc but that
+			 * didn't work in latest FF (worked in FF4) hence taking a tedious way.
+			 */
 
 			function adjustPanels() {
+				var diagWidth = innerWidth - HORIZONTAL_SCROLL_OFFSET;
+
 				if (true == propertiesPaneVisible) {
-					m_dialog.makeVisible($("#modelerPropertiesPanelWrapper"));
-					// Collapse properties panel
-					$("#modelerPropertiesPanelWrapper").css("width", "0px");
-					$("#modelerDiagramPanelWrapper")
-							.css(
-									"width",
-									(innerWidth
-											- $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET)
-											+ "px").css("overflow", "auto");
-
-					// Expand properties panel using new values
-					$("#modelerPropertiesPanelWrapper").css("width", "auto")
-							.css("overflow", "auto");
-
-					var diagWidth = innerWidth - $("#modelerPropertiesPanelWrapper")[0].offsetWidth - HORIZONTAL_SCROLL_OFFSET;
-
-					if (diagWidth < getToolbarWidth()) {
-						diagWidth = getToolbarWidth() + 2;
-					}
-
-					setDrawingPaneDivWidths((diagWidth - 2));
-
-					$("#modelerDiagramPanelWrapper").css("width", (diagWidth) + "px").css("overflow", "auto");
+					$("#modelerPropertiesPanelWrapper").css("width", "auto");
+					diagWidth = diagWidth
+							- $("#modelerPropertiesPanelWrapper")[0].offsetWidth;
 				}
-			}
 
-			function showPropertiesPane() {
-				if (false == propertiesPaneVisible) {
-					propertiesPaneVisible = true;
-
-					adjustPanels();
-
-					m_dialog.makeVisible($("#propertiesPanelHideControl"));
-					m_dialog.makeInvisible($("#propertiesPanelShowControl"));
+				if (diagWidth < getToolbarWidth()) {
+					diagWidth = getToolbarWidth();
 				}
+
+				$("#modelerDiagramPanelWrapper").css("width", (diagWidth + 10) + "px");
+				$("#toolbar").css("width", (diagWidth) + "px");
+				$("#messagePanel").css("width", (diagWidth) + "px");
+				$("#scrollpane").css("width", (diagWidth) + "px");
+				$("#scrollpane").css("height", (innerHeight - getToolbarHeight() - 20) + "px");
+
 			}
 
 			function getToolbarWidth() {
 				return $("div.toolbar-section").last().offset().left + $("div.toolbar-section").last().width() + 20;
 			}
 
-			/*
-			 * Ideally setting of toolbar / diagram pane width etc. should have been handled with width = auto / 100% etc but that
-			 * didn't work in latest FF (worked in FF4) hence taking a tedious way.
-			 *
-			 * */
-			function setDrawingPaneDivWidths(width) {
-				$("#toolbar").css("width", (width) + "px");
-				$("#messagePanel").css("width", (width) + "px");
-				$("#scrollpane").css("width", (width) + "px");
+			function getToolbarHeight() {
+				return $("div.toolbar-section").last().offset().top + $("div.toolbar-section").last().height() + 20;
+			}
+
+			function showPropertiesPane() {
+				if (false == propertiesPaneVisible) {
+					propertiesPaneVisible = true;
+					m_dialog.makeVisible($("#modelerPropertiesPanelWrapper"));
+					// Collapse properties panel
+					$("#modelerPropertiesPanelWrapper").css("width", "0px");
+					// Expand properties panel using new values
+					$("#modelerPropertiesPanelWrapper").css("width", "auto").css("overflow", "auto");
+					m_dialog.makeVisible($("#propertiesPanelHideControl"));
+					m_dialog.makeInvisible($("#propertiesPanelShowControl"));
+					adjustPanels();
+				}
 			}
 
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					initialize();
 					m_modelerCanvasController.initialize(fullId, "canvas",
 							5000, 1000, 'toolbar');
@@ -427,6 +428,8 @@ define(
 					.initializeProcessPropertiesPanel(m_processPropertiesPanel
 							.getInstance());
 					this.showPropertiesPane();
+
+					m_utils.hideWaitCursor();
 				},
 
 				reInitialize : function() {

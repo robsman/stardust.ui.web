@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -33,6 +34,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,12 +48,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
@@ -867,9 +871,6 @@ public class ModelerResource
       if (interactionDataObject == null)
       {
          interactionDataObject = new JsonObject();
-
-         interactionDataObject.add("input", new JsonObject());
-         interactionDataObject.add("output", new JsonObject());
       }
 
       return interactionDataObject;
@@ -959,7 +960,18 @@ public class ModelerResource
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
          System.out.println(postedObject);
 
-         getInteractionDataObject().add("input", postedObject);
+         if (postedObject != null)
+         {
+            for (Map.Entry<String, ? > entry : postedObject.entrySet())
+            {
+               String key = entry.getKey();
+               JsonElement value = postedObject.get(key);
+
+               System.out.println("Storing " + key + " " + value);
+
+               getInteractionDataObject().add(key, value);
+            }
+         }
 
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
@@ -972,7 +984,7 @@ public class ModelerResource
       }
    }
 
-   @POST
+   @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("interactions/{interactionId}/outData")

@@ -124,10 +124,10 @@ define(
 																		+ "/embeddedWebApplication/"
 																		+ view
 																				.getApplication().id
-																		+ "?ippPortalBaseUri="
+																		+ "?ippInteractionUri="
 																		+ m_urlUtils
 																				.getModelerEndpointUrl()
-																		+ "/interactions/4711";
+																		+ "/interactions/4711&ippMode=modeler";
 
 																view.applicationFrame
 																		.attr(
@@ -141,10 +141,10 @@ define(
 																					"src",
 																					view.propertiesPanel.urlInput
 																							.val()
-																							+ "?ippPortalBaseUri="
+																							+ "?ippInteractionUri="
 																							+ m_urlUtils
 																									.getModelerEndpointUrl()
-																							+ "/interactions/4711");
+																							+ "/interactions/4711&ippMode=modeler");
 																} else {
 																	view.applicationFrame
 																	.attr(
@@ -234,7 +234,7 @@ define(
 											+ "/interactions/4711/outData",
 									contentType : "application/json"
 								}).done(function(data) {
-							outputDataTextarea.val(JSON.stringify(data));
+							outputDataTextarea.val(JSON.stringify(data, null, 3));
 						}).fail(function() {
 						});
 					});

@@ -15,6 +15,8 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -72,15 +74,22 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-		    Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
-            PortalApplication.getInstance().addEventScript(
-                  "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
-                        + event.getView().getParams() + "', {anchorId:'" + anchorId
-                        + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
+		   Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
+         PortalApplication.getInstance().addEventScript(
+               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
+                     + event.getView().getParams() + "', {anchorId:'" + anchorId
+                     + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
+         fireResizeIframeEvent();
+
+         if (View.ViewState.INACTIVE == event.getView().getViewState())
+         {
+            changeMouseCursorStyle("default");
+         }
 			break;
 
 		case TO_BE_DEACTIVATED:
 			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
+			 fireResizeIframeEvent();
 			break;
 
 		case CLOSED:
@@ -94,11 +103,23 @@ public class AbstractAdapterView implements ViewEventHandler {
 		case RESTORED_TO_NORMAL:
       case PINNED:
 		case PERSPECTIVE_CHANGED:
-			PortalApplication.getInstance().addEventScript(
-					"InfinityBpm.ProcessPortal.resizeContentFrame('"
-					+ iframeId + "', {anchorId:'" + anchorId + "'});");
+		   fireResizeIframeEvent();
 			break;
 		}
-
 	}
+
+	private void fireResizeIframeEvent()
+   {
+      PortalApplication.getInstance().addEventScript(
+            "InfinityBpm.ProcessPortal.resizeIFrames();");
+   }
+
+   /**
+    * @param style
+    */
+   private void changeMouseCursorStyle(String style)
+   {
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+   }
 }

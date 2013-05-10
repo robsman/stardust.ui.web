@@ -35,10 +35,10 @@ import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.xsd.XSDNamedComponent;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public final class WebServiceApplicationUtils
@@ -62,7 +62,7 @@ public final class WebServiceApplicationUtils
    {
       if (applicationJson.has("attributes"))
       {
-         JsonObject attributes = WebServiceApplicationUtils.safeGetAsJsonObject(applicationJson, "attributes");
+         JsonObject attributes = GsonUtils.safeGetAsJsonObject(applicationJson, "attributes");
          updateAddressing(application, attributes);
          updateSecurity(application, attributes);
          updateService(application, attributes);
@@ -75,7 +75,7 @@ public final class WebServiceApplicationUtils
       boolean hasReference = false;
       if (attributes.has(WSConstants.WS_IMPLEMENTATION_ATT))
       {
-         String implementation = safeGetAsString(attributes, WSConstants.WS_IMPLEMENTATION_ATT);
+         String implementation = GsonUtils.safeGetAsString(attributes, WSConstants.WS_IMPLEMENTATION_ATT);
          if (implementation != null)
          {
             hasReference = true;
@@ -123,9 +123,9 @@ public final class WebServiceApplicationUtils
       if (attributes.has(WSConstants.WS_AUTHENTICATION_ATT) || attributes.has(WSConstants.WS_VARIANT_ATT))
       {
          String authentication = attributes.has(WSConstants.WS_AUTHENTICATION_ATT)
-               ? safeGetAsString(attributes, WSConstants.WS_AUTHENTICATION_ATT)
+               ? GsonUtils.safeGetAsString(attributes, WSConstants.WS_AUTHENTICATION_ATT)
                : AttributeUtil.getAttributeValue(application, WSConstants.WS_AUTHENTICATION_ATT);
-         String variant = safeGetAsString(attributes, WSConstants.WS_VARIANT_ATT);
+         String variant = GsonUtils.safeGetAsString(attributes, WSConstants.WS_VARIANT_ATT);
          if (!WSConstants.WS_SECURITY_AUTHENTICATION.equals(authentication))
          {
             if (variant != null)
@@ -161,7 +161,7 @@ public final class WebServiceApplicationUtils
          application.getAccessPoint().retainAll(saveAccessPoints(application, WSConstants.WS_ENDPOINT_ADDRESS_ID,
                WSConstants.WS_ENDPOINT_REFERENCE_ID, WSConstants.WS_AUTHENTICATION_ID));
          
-         String wsdlUrl = safeGetAsString(attributes, WSConstants.WS_WSDL_URL_ATT);
+         String wsdlUrl = GsonUtils.safeGetAsString(attributes, WSConstants.WS_WSDL_URL_ATT);
          if (StringUtils.isEmpty(wsdlUrl))
          {
             wsdlUrl = AttributeUtil.getAttributeValue(application, WSConstants.WS_WSDL_URL_ATT);
@@ -172,9 +172,9 @@ public final class WebServiceApplicationUtils
             }
          }
          
-         String serviceName = safeGetAsString(attributes, WSConstants.WS_SERVICE_NAME_ATT);
-         String portName = safeGetAsString(attributes, WSConstants.WS_PORT_NAME_ATT);
-         String operationName = safeGetAsString(attributes, WSConstants.WS_OPERATION_NAME_ATT);
+         String serviceName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_SERVICE_NAME_ATT);
+         String portName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_PORT_NAME_ATT);
+         String operationName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_OPERATION_NAME_ATT);
          String operationInputName = null;
          String operationOutputName = null;
          if (operationName != null && operationName.endsWith(")"))
@@ -566,31 +566,5 @@ public final class WebServiceApplicationUtils
          }
       }
       return definition.getService(serviceName);
-   }
-
-   private static JsonObject safeGetAsJsonObject(JsonObject jsonObject, String memberName)
-   {
-      if (jsonObject.has(memberName))
-      {
-         JsonElement member = jsonObject.get(memberName);
-         if (member.isJsonObject())
-         {
-            return member.getAsJsonObject();
-         }
-      }
-      return null;
-   }
-
-   private static String safeGetAsString(JsonObject jsonObject, String memberName)
-   {
-      if (jsonObject.has(memberName))
-      {
-         JsonElement member = jsonObject.get(memberName);
-         if (member.isJsonPrimitive())
-         {
-            return member.getAsString();
-         }
-      }
-      return null;
    }
 }

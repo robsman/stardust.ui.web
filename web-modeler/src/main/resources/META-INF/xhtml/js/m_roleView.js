@@ -15,6 +15,9 @@ define(
 				m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var role = m_model.findParticipant(fullId);
 					i18nRoleScreen();
 					m_utils.debug("===> role");
@@ -23,18 +26,18 @@ define(
 					roleView.initialize(role);
 					m_commandsController.registerCommandHandler(roleView);
 					//view.initialize(m_model.findApplication(fullId));
-
+					m_utils.hideWaitCursor();
 				}
 			};
-			
+
 
 		function i18nRoleScreen() {
-                 
+
 			   $("label[for='guidOutput']")
 		        	.text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.uuid"));
-							
+
 		   	  $("label[for='idOutput']")
 			        .text(
 					m_i18nUtils
@@ -127,6 +130,7 @@ define(
 				 */
 				RoleView.prototype.initialize = function(role) {
 					this.id = "roleView";
+					this.view = jQuery("#" + this.id);
 
 					this.cardinalityInput = jQuery("#cardinalityInput");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
@@ -241,6 +245,7 @@ define(
 							"carnot:pwh:actualCostPerMinute");
 
 					this.initializeModelElementView(role);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

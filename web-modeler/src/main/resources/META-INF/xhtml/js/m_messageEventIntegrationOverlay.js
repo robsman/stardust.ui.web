@@ -124,24 +124,24 @@ define(
 
 					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
 						uri += separator + "clientId=" + encodeURIComponent(this.clientIdInput.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if (this.selectorInput.val() != null && this.selectorInput.val().length != 0) {
 						uri += separator + "selector=" + encodeURIComponent(this.selectorInput.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if(this.transactedInput.prop("checked")== true){
 						uri += separator + "transacted=";
-						separator = "&";
+						separator = "&amp;";
 						uri += this.transactedInput.prop("checked");
 					}
 					if(this.preserveQoSInput.prop("checked")==true){
 						uri += separator + "preserveMessageQos=";
 						uri += this.preserveQoSInput.prop("checked");
 					}
-					uri=uri.replace(/&/g, "&amp;");
+					//uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 
@@ -190,7 +190,7 @@ define(
 
 					// TODO Need better URL encoding
 
-				//	route = route.replace(/&/g, "&amp;");
+					//route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
 					var xmlObject = jQuery(xmlDoc);

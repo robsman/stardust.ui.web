@@ -100,11 +100,11 @@ define(
 					if (this.repeatCountInput.val() != null) {
 						uri += separator + "repeatCount="
 								+ this.repeatCountInput.val();
-						separator = "&";
+						separator = "&amp;";
 					}
 					if (this.fixedRateInput.prop("checked") == true) {
 						uri += separator + "fixedRate=true";
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
@@ -115,7 +115,7 @@ define(
 										this.repeatIntervalInput.val(),
 										this.repeatIntervalUnitSelect.val());
 					}
-					uri = uri.replace(/&/g, "&amp;");
+					//uri = uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 

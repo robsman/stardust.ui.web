@@ -14,13 +14,15 @@ define(
 				'bpm-modeler/js/m_processProcessInterfacePropertiesPage',
 				'bpm-modeler/js/m_processDataPathPropertiesPage',
 				'bpm-modeler/js/m_processDisplayPropertiesPage',
-				'bpm-modeler/js/m_processProcessAttachmentsPropertiesPage' ],
+				'bpm-modeler/js/m_processProcessAttachmentsPropertiesPage',
+				'bpm-modeler/js/ProcessRuntimePropertiesPage' ],
 		function(m_processBasicPropertiesPage,
 				m_modelElementCommentsPropertiesPage,
 				m_processProcessInterfacePropertiesPage,
 				m_processDataPathPropertiesPage,
 				m_processDisplayPropertiesPage,
-				m_processProcessAttachmentsPropertiesPage) {
+				m_processProcessAttachmentsPropertiesPage,
+				ProcessRuntimePropertiesPage) {
 			return {
 				propertiesPage : [
 						{
@@ -60,6 +62,12 @@ define(
 							pageHtmlUrl : "processDefinitionProcessAttachmentsPropertiesPage.html",
 							provider : m_processProcessAttachmentsPropertiesPage,
 							visibility : "always"
-						}, ]
+						}, {
+							panelId : "processPropertiesPanel",
+							id : "processRuntimePropertiesPage",
+							pageHtmlUrl : "processRuntimePropertiesPage.html",
+							provider : ProcessRuntimePropertiesPage,
+							visibility : "always"
+						} ]
 			};
 		});

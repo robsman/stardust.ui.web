@@ -36,7 +36,6 @@ define(
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
 							"Test", "../../images/icons/table.png");
 
-					this.camelContextInput = jQuery("#restServiceOverlay #camelContextInput");
 					this.uriInput = jQuery("#restServiceOverlay #uriInput");
 					this.queryStringLabel = jQuery("#restServiceOverlay #queryStringLabel");
 					this.commandSelect = jQuery("#restServiceOverlay #commandSelect");
@@ -76,14 +75,12 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : false
 							});
 
 					var self = this;
 
-					this.camelContextInput.change(function() {
-						self.submitChanges();
-					});
 					this.uriInput.change(function() {
 						self.submitChanges();
 					});
@@ -366,8 +363,12 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.getRoute = function() {
+
 					var uri = this.uriInput.val();
 					var start = true;
+					var route = "";
+					var httpUri = "";
+					var httpQuery = "";
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
@@ -381,40 +382,51 @@ define(
 						if (this.uriInput.val().indexOf(
 								"{" + accessPoint.id + "}") >= 0) {
 							uri = uri.replace("{" + accessPoint.id + "}",
-									"{header." + accessPoint.id + "}");
-						} else {
-							if (start) {
-								uri += "?";
-								start = false;
-							} else {
-								uri += "&";
-							}
-
-							uri += accessPoint.id;
-							uri += "=";
-							uri += "$simple{header." + accessPoint.id + "}";
+									"$simple{header." + accessPoint.id + "}");
+							route += "<setHeader headerName='" + accessPoint.id + "'>";
+							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
+							route += "</setHeader>";
 						}
 					}
 
-					var route = "";
+					uri = uri.replace(/&/g, "&amp;");
 
-					route += "<setHeader headerName='CamelHttpUri'>\n";
-					route += "\t<simple>" + uri + "</simple>\n";
-					route += "</setHeader>\n";
-					route += "<setHeader headerName='CamelHttpMethod'>\n";
-					route += "\t<constant>" + this.commandSelect.val()
-							+ "</constant>\n";
-					route += "</setHeader>\n";
-					route += "<setHeader headerName='CamelAcceptContentType'>\n";
-					route += "\t<constant>" + this.responseTypeSelect.val()
-							+ "</constant>\n";
-					route += "</setHeader>\n";
-					route += "<to uri='http://isoverwritten'/>\n";
+					if (uri.indexOf("?") > 0)
+					{
+						var index = uri.indexOf("?");
+						httpUri = uri.substring(0, index);
+						httpQuery = uri.substring(index + 1);
+						route += "<setHeader headerName='CamelHttpQuery'>";
+						route += "<simple>" + httpQuery + "</simple>";
+						route += "</setHeader>";
+					}
+					else
+					{
+						httpUri = uri;
+					}
+
+
+					route += "<setHeader headerName='CamelHttpUri'>";
+					route += "<simple>" + httpUri + "</simple>";
+					route += "</setHeader>";
+					route += "<setHeader headerName='CamelHttpMethod'>";
+					route += "<constant>" + this.commandSelect.val() + "</constant>";
+					route += "</setHeader>";
+
+
+
+					if (this.requestTypeSelect.val() === "application/json") {
+						route += "<to uri='bean:bpmTypeConverter?method=toJSON' />";
+					} else if (this.requestTypeSelect.val() === "application/xml") {
+						route += "<to uri='bean:bpmTypeConverter?method=toXML' />";
+					}
+
+					route += "<to uri='http://isoverwritten'/>";
 
 					if (this.responseTypeSelect.val() === "application/json") {
-						route += "<unmarshal ref='bpm.JsonUnmarshaller' />\n";
+						route += "<to uri='bean:bpmTypeConverter?method=fromJSON' />";
 					} else if (this.responseTypeSelect.val() === "application/xml") {
-						route += "<unmarshal ref='bpm.XmlUnmarshaller' />\n";
+						route += "<to uri='bean:bpmTypeConverter?method=fromXML' />";
 					}
 
 					return route;
@@ -481,8 +493,6 @@ define(
 							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-					this.camelContextInput
-					.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.uriInput
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
@@ -507,8 +517,7 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : this.camelContextInput
-											.val(),
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -539,8 +548,7 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : this.camelContextInput
-											.val(),
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -561,17 +569,6 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.validate = function() {
-					this.camelContextInput.removeClass("error");
-
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
-						this.view.errorMessages
-								.push("Camel Context must not be empty."); // TODO
-						// I18N
-						this.camelContextInput.addClass("error");
-
-						return false;
-					}
 
 					if (this.uriInput.val() == null
 							|| this.uriInput.val() == "") {

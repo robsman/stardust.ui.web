@@ -34,7 +34,7 @@ define(
 			 *
 			 */
 			function DataTypeSelector() {
-			
+
 			DataTypeSelector.prototype.startsWith = function(str, prefix) {
 						return str.indexOf(prefix) === 0;
 				}
@@ -43,7 +43,7 @@ define(
 							return id;
 					return "#"+id;
 				}
-				
+
 				/**
 				 * Options are
 				 *
@@ -56,8 +56,8 @@ define(
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
 					this.restrictToCurrentModel = options.restrictToCurrentModel;
 					this.hideEnumerations = options.hideEnumerations;
-					
-					
+
+
 					this.dataTypeSelect = jQuery(this.checkElementId(this.scope) + " #dataTypeSelect");
 					this.primitiveDataTypeRow = jQuery(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
 					this.primitiveDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #primitiveDataTypeSelect");
@@ -123,7 +123,7 @@ define(
 				}
 
 				DataTypeSelector.prototype.validateCircularModelReference = function() {
-					if (this.submitHandler.clearErrorMessages) {
+					if (this.submitHandler && this.submitHandler.clearErrorMessages) {
 						this.submitHandler.clearErrorMessages();
 					} else {
 						m_messageDisplay.clear();
@@ -140,11 +140,24 @@ define(
 					}
 
 					var otherModelId = m_model.stripModelId(dataInput.val());
-					if (this.scopeModel
-							&& this.scopeModel.id != otherModelId
-							&& m_model.isModelReferencedIn(this.scopeModel.id, otherModelId)) {
+
+					// Check needed for scenarios where the scope model is not the model to which the model element belongs.
+					// e.g. Property panel for external data (here data belongs to external model, but scopeModel is this model,
+					// as the property panel belongs to this model).
+					if (this.submitHandler
+							&& typeof this.submitHandler.getModelElement === "function"
+							&& this.submitHandler.getModelElement()
+							&& this.submitHandler.getModelElement().modelId) {
+						var thisModelId = this.submitHandler.getModelElement().modelId;
+					} else {
+						var thisModelId = this.scopeModel ? this.scopeModel.id : null;
+					}
+
+					if (thisModelId
+							&& thisModelId != otherModelId
+							&& m_model.isModelReferencedIn(thisModelId, otherModelId)) {
 						dataInput.addClass("error");
-						if (this.submitHandler.errorMessages) {
+						if (this.submitHandler && this.submitHandler.errorMessages) {
 							this.submitHandler.errorMessages
 									.push(m_i18nUtils
 											.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));

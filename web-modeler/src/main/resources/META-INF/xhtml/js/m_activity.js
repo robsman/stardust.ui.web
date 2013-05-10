@@ -161,7 +161,8 @@ define(
 
 					for ( var key in contexts) {
 						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
-							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT) {
+							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT ||
+									contexts[key].accessPoints[n].direction == m_constants.IN_OUT_ACCESS_POINT) {
 								return true;
 							}
 						}
@@ -178,7 +179,8 @@ define(
 
 					for ( var key in contexts) {
 						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
-							if (contexts[key].accessPoints[n].direction == m_constants.OUT_ACCESS_POINT) {
+							if (contexts[key].accessPoints[n].direction == m_constants.OUT_ACCESS_POINT ||
+									contexts[key].accessPoints[n].direction == m_constants.IN_OUT_ACCESS_POINT) {
 								return true;
 							}
 						}

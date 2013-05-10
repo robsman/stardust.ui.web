@@ -72,7 +72,8 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : false
 							});
 				};
 
@@ -163,7 +164,7 @@ define(
 
 					jQuery
 							.each(
-									typeDeclaration.getBody().elements,
+									typeDeclaration.getElements(),
 									function(i, element) {
 										var type = element.type;
 
@@ -201,7 +202,7 @@ define(
 
 					drl += "declare " + typeDeclaration.id + "\n";
 
-					jQuery.each(typeDeclaration.getBody().elements, function(i,
+					jQuery.each(typeDeclaration.getElements(), function(i,
 							element) {
 						var type = element.type;
 

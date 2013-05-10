@@ -12,9 +12,12 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_model","bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
+				m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var organization = m_model.findParticipant(fullId);
 					i18nOrganizationview();
 					m_utils.debug("===> Organization");
@@ -27,7 +30,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(organization);
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -35,14 +38,14 @@ define(
 			function i18nOrganizationview() {
 
 				$("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
 				$("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 
 
 				$("label[for='nameInput']")
@@ -122,6 +125,7 @@ define(
 				 */
 				OrganizationView.prototype.initialize = function(organization) {
 					this.id = "organizationView";
+					this.view = jQuery("#" + this.id);
 
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
@@ -252,57 +256,57 @@ define(
 										}
 									});
 
-					//TODO - check if needed, else delete
-//					this.supportsDepartmentsCheckbox
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view
-//												.setSupportDepartments(view.supportsDepartmentsCheckbox
-//														.is(":checked"));
-//
-//										// Submit changes
-//									});
-//					this.departmentDataSelect
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view.departmentDataPathInput.val(null);
-//										view
-//												.submitChanges({
-//													attributes : {
-//														"carnot:engine:dataId" : view.departmentDataSelect
-//																.val() == m_constants.TO_BE_DEFINED ? null
-//																: view.departmentDataSelect
-//																		.val(),
-//														"carnot:engine:dataId" : null
-//													}
-//												});
-//									});
-//					this.departmentDataPathInput
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view
-//												.submitChanges({
-//													attributes : {
-//														"carnot:engine:dataId" : view.departmentDataPathInput
-//																.val()
-//													}
-//												});
-//									});
+					// TODO - check if needed, else delete
+					// this.supportsDepartmentsCheckbox
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view
+					// .setSupportDepartments(view.supportsDepartmentsCheckbox
+					// .is(":checked"));
+					//
+					// // Submit changes
+					// });
+					// this.departmentDataSelect
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view.departmentDataPathInput.val(null);
+					// view
+					// .submitChanges({
+					// attributes : {
+					// "carnot:engine:dataId" : view.departmentDataSelect
+					// .val() == m_constants.TO_BE_DEFINED ? null
+					// : view.departmentDataSelect
+					// .val(),
+					// "carnot:engine:dataId" : null
+					// }
+					// });
+					// });
+					// this.departmentDataPathInput
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view
+					// .submitChanges({
+					// attributes : {
+					// "carnot:engine:dataId" : view.departmentDataPathInput
+					// .val()
+					// }
+					// });
+					// });
 
 					this.leaderSelect.change({
 						view : this
@@ -315,6 +319,7 @@ define(
 					});
 
 					this.initializeModelElementView(organization);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

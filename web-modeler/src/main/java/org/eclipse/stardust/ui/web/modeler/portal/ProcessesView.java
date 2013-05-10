@@ -39,10 +39,11 @@ import com.icesoft.faces.context.effects.JavascriptContext;
 @Component
 @Scope("session")
 public class ProcessesView extends AbstractLaunchPanel implements
-		PerspectiveEventHandler {
-   
+      PerspectiveEventHandler {
+
    private static final Logger trace = LogManager.getLogger(ProcessesView.class);
-   
+
+   private boolean initialized = false;
    /**
     *
     */
@@ -51,61 +52,69 @@ public class ProcessesView extends AbstractLaunchPanel implements
    private String profile;
 
    /**
-	 *
-	 */
-	public ProcessesView() {
-		super("processesView");
-		SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap
-				.getCurrent();
-		sessionMap.setObject("SESSION_CONTEXT",
-				SessionContext.findSessionContext());
-
-		profile = ModelingConfigurationPanel.getProfile();
-
-		// My processes panel should be expanded by default
-		// Set it to expanded and activate outline IFRAME
-		setExpanded(true);
-		activateIframe();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel#toggle()
-	 */
-	@Override
-	public void toggle() {
-		super.toggle();
-		if (isExpanded()) {
-			activateIframe();
-		} else {
-			deActivateIframe();
-		}
-		sessionLogPanel.repositionPanelIframe();
-	}
-
-	/**
     *
     */
-	private static void deActivateIframe() {
-		String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('modelOutlineFrame');";
-		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-				deActivateIframeJS);
-		PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
-	}
+   public ProcessesView() {
+      super("processesView");
+      SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap
+            .getCurrent();
+      sessionMap.setObject("SESSION_CONTEXT",
+            SessionContext.findSessionContext());
 
-	/**
-	 *
-	 */
-	private static void activateIframe() {
-		String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.html', {anchorId:'outlineAnchor', width:280, height:570, maxWidth:350, maxHeight:1000, zIndex:200, noUnloadWarning: 'true'});";
-		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-				deActivateIframeJS);
-        PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
-	}
+      profile = ModelingConfigurationPanel.getProfile();
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-	}
+      // My processes panel should be expanded by default
+      // Set it to expanded and activate outline IFRAME
+      setExpanded(true);
+      activateIframe();
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel#toggle()
+    */
+   @Override
+   public void toggle() {
+      super.toggle();
+      if (isExpanded()) {
+         activateIframe();
+      } else {
+         deActivateIframe();
+      }
+      sessionLogPanel.repositionPanelIframe();
+   }
+
+   /**
+    *
+    */
+   private static void deActivateIframe() {
+      String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('modelOutlineFrame');";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+            deActivateIframeJS);
+      PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
+   }
+
+   /**
+    *
+    */
+   private static void activateIframe() {
+      //activiate iframe
+      String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.html', " +
+		"{anchorId:'outlineAnchor', zIndex:200, noUnloadWarning: 'true'});";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+            activateIframeJS);
+      PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
+
+      //resize iframe
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.ProcessPortal.resizeIFrames();");
+
+
+   }
+
+   @Override
+   public void update() {
+      // TODO Auto-generated method stub
+   }
 
    /*
     * (non-Javadoc)
@@ -116,10 +125,19 @@ public class ProcessesView extends AbstractLaunchPanel implements
     */
    public void handleEvent(PerspectiveEvent event)
    {
+      boolean toggled = false;
       switch (event.getType())
       {
       case ACTIVATED:
+         if(!initialized){
+            changeMouseCursorStyle("progress");
+            toggled = true;
+            initialized = true;
+         }
       case LAUNCH_PANELS_ACTIVATED:
+         if(!toggled){
+            changeMouseCursorStyle("default");
+         }
          //Create "process-models" folder if it doesn't exist already.
          DocumentMgmtUtility.createFolderIfNotExists("/process-models");
          Boolean launchPanelActivated = null;
@@ -135,7 +153,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
          }
          if (isExpanded() && (launchPanelActivated == null || launchPanelActivated))
          {
-               activateIframe();
+            activateIframe();
          }
 
          if (null != sessionLogPanel && sessionLogPanel.isExpanded())
@@ -153,6 +171,16 @@ public class ProcessesView extends AbstractLaunchPanel implements
          FacesUtils.refreshPage();
          break;
       }
+   }
+
+
+   /**
+    * @param style
+    */
+   private void changeMouseCursorStyle(String style)
+   {
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
    }
 
    public String getProfile()

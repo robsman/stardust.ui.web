@@ -173,14 +173,14 @@ define(
 					}
 
 					if (this.passwordInput.val() != null) {
-						uri += "&password=" + this.passwordInput.val();
+						uri += "&amp;password=" + this.passwordInput.val();
 					}
 
 					
 					if(this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val()) != null){						
-					uri += "&connectionTimeout=";
+					uri += "&amp;connectionTimeout=";
 					uri += this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val());
@@ -189,7 +189,7 @@ define(
 					if(this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val()) != null){
-					uri += "&initialDelay=";
+					uri += "&amp;initialDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val());
@@ -202,16 +202,16 @@ define(
 							this.pollingDelayUnitSelect.val());
 							*/
 										
-					uri += "&unseen=";					
+					uri += "&amp;unseen=";
 					uri += this.unseenInput.prop("checked");
-					uri += "&delete=";
+					uri += "&amp;delete=";
 					uri += this.deleteInput.prop("checked");
 
 				/*	if (this.copyToInput.prop("checked")) {
 						uri += "&copyTo=";
 						uri += this.copyToFolderInput.val();
 					} */
-					uri=uri.replace(/&/g, "&amp;");
+					//uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 				

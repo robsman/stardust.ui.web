@@ -20,6 +20,9 @@ define(
 				m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new CamelApplicationView();
 					i18camelrouteproperties();
 					// TODO Unregister!
@@ -27,6 +30,8 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -90,7 +95,7 @@ define(
 					this.application = application;
 
 					this.view = jQuery("#camelApplicationView");
-					
+
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.overlayAnchor = jQuery("#overlayAnchor");
 
@@ -101,10 +106,6 @@ define(
 									},
 									function(event) {
 										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
 
 										if (view.modelElement.attributes["carnot:engine:visibility"]
 												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
@@ -127,10 +128,15 @@ define(
 					var self = this;
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
-						this.setOverlay("genericEndpointOverlay").done(function() {
-							self.initializeModelElementView(application);
-							self.view.css("visibility", "visible");
-						});
+						this
+								.setOverlay("genericEndpointOverlay")
+								.done(
+										function() {
+											self
+													.initializeModelElementView(application);
+											self.view.css("visibility",
+													"visible");
+										});
 					} else {
 						this
 								.setOverlay(
@@ -139,7 +145,8 @@ define(
 										function() {
 											self
 													.initializeModelElementView(application);
-											self.view.css("visibility", "visible");
+											self.view.css("visibility",
+													"visible");
 										});
 					}
 				};
@@ -174,7 +181,7 @@ define(
 				 * 
 				 */
 				CamelApplicationView.prototype.setOverlay = function(overlay) {
-					var deferred = jQuery.Deferred();					
+					var deferred = jQuery.Deferred();
 					var extension = m_extensionManager.findExtensions(
 							"applicationIntegrationOverlay", "id", overlay)[0];
 
@@ -247,7 +254,10 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
+					m_utils.debug("===> Updating Overlay");
+
 					this.overlayController.update();
+					m_utils.debug("===> Done updating");
 				};
 
 				/**
@@ -262,15 +272,6 @@ define(
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
-
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.errorMessages
-								.push("Application name must not be empty.");
-						this.nameInput.addClass("error");
-					}
 
 					if (this.overlayController) {
 						this.overlayController.validate();

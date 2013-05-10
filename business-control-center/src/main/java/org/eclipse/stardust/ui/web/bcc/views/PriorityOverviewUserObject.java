@@ -78,7 +78,6 @@ public class PriorityOverviewUserObject extends NodeUserObject
       else if (prioOverviewEntry instanceof ActivityDefinitionWithPrio)
       {
          Activity ai = ((ActivityDefinitionWithPrio) prioOverviewEntry).getActivity();
-         ai = ((ActivityDefinitionWithPrio) prioOverviewEntry).getProcessDefinition().getActivity(ai.getId());
          imagePath = ActivityInstanceUtils.getIconPath(ActivityInstanceUtils.getActivityType(ai, false));
          tooltip = I18nUtils.getDescriptionAsHtml(ai, ai.getDescription());
       }

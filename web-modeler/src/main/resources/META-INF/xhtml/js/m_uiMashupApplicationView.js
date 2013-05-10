@@ -10,20 +10,23 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce",
-				"bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_markupGenerator" ],
 		function(m_utils, m_constants, m_urlUtils, m_session, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_codeEditorAce, m_i18nUtils,
-				m_markupGenerator) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel,
+				m_codeEditorAce, m_i18nUtils, m_markupGenerator) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new UiMashupApplicationView();
 					i18uimashupproperties();
 					// TODO Unregister!
@@ -32,7 +35,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -156,6 +159,12 @@ define(
 								+ "</option>");
 
 				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.inout");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"INOUT\">" + selectdata
+								+ "</option>");
+
+				selectdata = m_i18nUtils
 						.getProperty("modeler.element.properties.commonProperties.out");
 				parameterDefinitionDirectionSelect
 						.append("<option value=\"OUT\">" + selectdata
@@ -178,16 +187,22 @@ define(
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 
-					this.view = jQuery("#uiMashupApplicationView");
+					this.view = jQuery("#" + this.id);
 					this.viaUriInput = jQuery("#viaUriInput");
 					this.embeddedInput = jQuery("#embeddedInput");
 					this.viaUriRow = jQuery("#viaUriRow");
 					this.embeddedRow = jQuery("#embeddedRow");
 					this.generateMarkupForAngularLink = jQuery("#generateMarkupForAngularLink");
-					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
 					this.markupTextarea = jQuery("#markupTextareaDiv");
 					this.urlInput = jQuery("#urlInput");
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.numberOfLabelInputPairsInput = jQuery("#numberOfLabelInputPairsInput");
+					this.generateCompleteButtonInput = jQuery("#generateCompleteButtonInput");
+					this.generateSuspendButtonInput = jQuery("#generateSuspendButtonInput");
+					this.generateAbortButtonInput = jQuery("#generateAbortButtonInput");
+					this.generateQaPassButtonInput = jQuery("#generateQaPassButtonInput");
+					this.generateQaFailButtonInput = jQuery("#generateQaFailButtonInput");
+
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "uiMashupApplicationView",
@@ -195,7 +210,7 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true,								
+								supportsDataTypeSelection : true,
 								tableWidth : "500px",
 								directionColumnWidth : "50px",
 								nameColumnWidth : "250px",
@@ -203,12 +218,12 @@ define(
 							});
 
 					var self = this;
-					this.embeddedHTMLEditor = m_codeEditorAce.getCodeEditor("markupTextareaDiv");
-					this.embeddedHTMLEditor.getEditor().on('blur', function(e){
+					this.embeddedHTMLEditor = m_codeEditorAce
+							.getCodeEditor("markupTextareaDiv");
+					this.embeddedHTMLEditor.getEditor().on('blur', function(e) {
 						if (!self.validate()) {
 							return;
 						}
-						m_utils.debug("Code editor blur.");
 						self.submitEmbeddedModeChanges();
 					});
 
@@ -228,17 +243,15 @@ define(
 															.val()
 												});
 									});
-					/*this.markupTextarea.change({
-						view : this
-					}, function(event) {
-						if (!event.data.view.validate()) {
-							return;
-						}
-						event.data.view.submitEmbeddedModeChanges();
-					});*/
-					
+					/*
+					 * this.markupTextarea.change({ view : this },
+					 * function(event) { if (!event.data.view.validate()) {
+					 * return; } event.data.view.submitEmbeddedModeChanges();
+					 * });
+					 */
+
 					this.generateTable = jQuery("#generateTable");
-					
+
 					if (!m_session.getInstance().technologyPreview) {
 						m_dialog.makeInvisible(this.generateTable);
 					}
@@ -246,14 +259,9 @@ define(
 					this.generateMarkupForAngularLink.click({
 						view : this
 					}, function(event) {
-						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForAngular());
-
-						event.data.view.submitEmbeddedModeChanges();
-					});
-					this.generateMarkupForJQueryLink.click({
-						view : this
-					}, function(event) {
-						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForJQuery());
+						event.data.view.embeddedHTMLEditor.getEditor()
+								.getSession().setValue(
+										event.data.view.generateMarkup());
 
 						event.data.view.submitEmbeddedModeChanges();
 					});
@@ -310,7 +318,7 @@ define(
 									});
 
 					this.initializeModelElementView(application);
-					
+
 					this.view.css("visibility", "visible");
 				};
 
@@ -319,7 +327,8 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
-								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor.getValue()
+								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor
+										.getValue()
 							});
 				};
 
@@ -420,11 +429,13 @@ define(
 
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
-//						this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
-						this.embeddedHTMLEditor.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						// this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						this.embeddedHTMLEditor
+								.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
 					} else {
 						this.setViaUri();
-						this.urlInput.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
+						this.urlInput
+								.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
 					}
 
 					this.initializeModelElement(application);
@@ -433,6 +444,16 @@ define(
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
 							.getContext().accessPoints);
+
+					// UI Only Defaults, do it only once on View load
+					if (this.numberOfLabelInputPairsInput.val() == "") {
+						this.numberOfLabelInputPairsInput.val(4);
+						this.generateCompleteButtonInput.prop("checked", true);
+						this.generateSuspendButtonInput.prop("checked", true);
+						this.generateAbortButtonInput.prop("checked", true);
+						this.generateQaPassButtonInput.prop("checked", false);
+						this.generateQaFailButtonInput.prop("checked", false);
+					}
 				};
 
 				/**
@@ -470,13 +491,14 @@ define(
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
-					// Context is regenerated on the server - hence, all data need to be provided
-					
+					// Context is regenerated on the server - hence, all data
+					// need to be provided
+
 					this.submitChanges({
 						contexts : {
 							"externalWebApp" : {
 								accessPoints : parameterDefinitionsChanges,
-								attributes: this.getContext().attributes
+								attributes : this.getContext().attributes
 							}
 						}
 					});
@@ -485,16 +507,24 @@ define(
 				/**
 				 * 
 				 */
-				UiMashupApplicationView.prototype.generateMarkupForAngular = function() {
-					return m_markupGenerator
-							.generateMarkupForAngular(this.getContext().accessPoints);
-				};
+				UiMashupApplicationView.prototype.generateMarkup = function() {
+					var generator = m_markupGenerator
+							.create({
+								numberOfPrimitivesPerColumns : this.numberOfLabelInputPairsInput
+										.val(),
+								generateCompleteButton : this.generateCompleteButtonInput
+										.prop("checked"),
+								generateSuspendButton : this.generateSuspendButtonInput
+										.prop("checked"),
+								generateAbortButton : this.generateAbortButtonInput
+										.prop("checked"),
+								generateQaPassButton : this.generateQaPassButtonInput
+										.prop("checked"),
+								generateQaFailButton : this.generateQaFailButtonInput
+										.prop("checked")
+							});
 
-				/**
-				 * 
-				 */
-				UiMashupApplicationView.prototype.generateMarkupForJQuery = function() {
-					return m_markupGenerator
+					return generator
 							.generateMarkup(this.getContext().accessPoints);
 				};
 			}

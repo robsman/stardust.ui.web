@@ -18,6 +18,9 @@ define(
 
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new WebServiceApplicationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -25,6 +28,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+					m_utils.hideWaitCursor();
 
 				}
 			};
@@ -162,6 +166,8 @@ define(
 						application) {
 					initializing = true;
 					this.id = "webServiceApplicationView";
+					this.view = jQuery("#" + this.id);
+
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
 					this.browseButton = jQuery("#browseButton");
@@ -324,6 +330,7 @@ define(
 														.val());
 									});
 					this.initializeModelElementView(application);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

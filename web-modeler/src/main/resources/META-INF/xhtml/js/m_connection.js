@@ -1621,11 +1621,16 @@ define(
 				Connection.prototype.deselect = function() {
 					this.selected = false;
 
-					this.path.attr({
-						"stroke-width" : m_constants.CONNECTION_STROKE_WIDTH
-					});
+					if(!this.path.removed){
+						this.path
+						.attr({
+							"stroke-width" : m_constants.CONNECTION_STROKE_WIDTH
+						});
+					}
+
 					this.fromAnchorPoint.hide();
 					this.toAnchorPoint.hide();
+
 				};
 
 				/**

@@ -23,6 +23,9 @@ define(
 				m_angularContextUtils, m_modelerUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new XsdStructuredDataTypeView();
 
 					// TODO Unregister!
@@ -31,6 +34,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findTypeDeclaration(fullId));
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -55,6 +59,8 @@ define(
 					this.internationalizeStaticData();
 
 					this.id = "xsdStructuredDataTypeView";
+					this.view = jQuery("#" + this.id);
+
 					this.tree = jQuery("table#typeDeclarationsTable");
 					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
 					this.addButton = jQuery("#addElementButton");
@@ -64,10 +70,9 @@ define(
 					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
 					this.visibilitySelect = jQuery("#publicVisibilityCheckbox");
 					this.structureKindSelect = jQuery("#structureKind select");
+					this.baseTypeSelect = jQuery("#baseTypeSelect select");
 					this.minimumLengthEdit = jQuery("#minLenghtInput");
 					this.maximumLengthEdit = jQuery("#maxLenghtInput");
-
-					this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
 
 					var view = this;
 
@@ -102,6 +107,22 @@ define(
 							}
 						});
 
+					this.baseTypeSelect
+							.change(function(event) {
+								if (jQuery(event.target).val() == "None") {
+									view.typeDeclaration.setBaseType();
+								} else {
+									view.typeDeclaration.setBaseType(m_model
+											.findElementByUuid(jQuery(
+													event.target).val()));
+								}
+
+								view
+										.submitChanges({
+											typeDeclaration : view.typeDeclaration.typeDeclaration
+										});
+							});
+
 					var self = this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
 						$scope.$watch("minLength", function(newValue, oldValue) {
@@ -109,12 +130,23 @@ define(
 								if (newValue == "" || validateRange(parseInt(newValue), $scope.maxLength)){
 									if (newValue == "") {
 										$scope.minLength = undefined;
-										self.typeDeclaration.getTypeDeclaration().minLength = undefined;
+//										self.typeDeclaration.getTypeDeclaration().minLength = undefined;
+										self.typeDeclaration.deleteFacet("minLength");
 									} else {
-										self.typeDeclaration.getTypeDeclaration().minLength = parseInt(newValue);
+										//self.typeDeclaration.getTypeDeclaration().minLength = parseInt(newValue);
+										self.typeDeclaration.deleteFacet("minLength");
+										self.typeDeclaration.addFacet({
+											classifier : "minLength",
+											name : parseInt(newValue)
+										});
 									}
 									if ($scope.maxLength) {
-										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt($scope.maxLength);
+										//self.typeDeclaration.getTypeDeclaration().maxLength = parseInt($scope.maxLength);
+										self.typeDeclaration.deleteFacet("maxLength");
+										self.typeDeclaration.addFacet({
+											classifier : "maxLength",
+											name : parseInt($scope.maxLength)
+										});
 									}
 									$scope.minMaxError = false;
 									self.submitChanges({
@@ -130,12 +162,23 @@ define(
 								if (newValue == "" || validateRange($scope.minLength, parseInt(newValue))){
 									if (newValue == "") {
 										$scope.maxLength = undefined;
-										self.typeDeclaration.getTypeDeclaration().maxLength = undefined;
+										//self.typeDeclaration.getTypeDeclaration().maxLength = undefined;
+										self.typeDeclaration.deleteFacet("maxLength");
 									} else {
-										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt(newValue);
+										//self.typeDeclaration.getTypeDeclaration().maxLength = parseInt(newValue);
+										self.typeDeclaration.deleteFacet("maxLength");
+										self.typeDeclaration.addFacet({
+											classifier : "maxLength",
+											name : parseInt(newValue)
+										});
 									}
 									if ($scope.minLength) {
-										self.typeDeclaration.getTypeDeclaration().minLength = parseInt($scope.minLength);
+										//self.typeDeclaration.getTypeDeclaration().minLength = parseInt($scope.minLength);
+										self.typeDeclaration.deleteFacet("minLength");
+										self.typeDeclaration.addFacet({
+											classifier : "minLength",
+											name : parseInt($scope.minLength)
+										});
 									}
 									$scope.minMaxError = false;
 									self.submitChanges({
@@ -161,6 +204,7 @@ define(
 						m_modelerUtils.disableToolbarControl(this.deleteButton);
 						m_modelerUtils.disableToolbarControl(this.upButton);
 						m_modelerUtils.disableToolbarControl(this.downButton);
+						this.baseTypeSelect.attr("disabled", true);
 					} else {
 						jQuery(this.addButton).click(
 								function(event) {
@@ -188,7 +232,41 @@ define(
 								});
 					}
 
+					this.populateBaseTypeSelectMenu(typeDeclaration);
+					this.setBaseType(typeDeclaration);
+
 					this.initializeModelElementView(typeDeclaration);
+					this.view.css("visibility", "visible");
+				};
+
+				XsdStructuredDataTypeView.prototype.populateBaseTypeSelectMenu = function(typeDeclaration) {
+					var optionsString = "<option value='None'>" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.none") + "</option>";
+
+					if (typeDeclaration) {
+						var thisModel = m_model.findModelForElement(typeDeclaration.uuid);
+						for (var i in thisModel.typeDeclarations) {
+							if (thisModel.typeDeclarations[i].uuid !== typeDeclaration.uuid
+									&& thisModel.typeDeclarations[i].isSequence()
+									&& (typeDeclaration.getType() === "importedStructuredDataType"
+										|| thisModel.typeDeclarations[i].getType() !== "importedStructuredDataType")) {
+								optionsString += "<option value='" + thisModel.typeDeclarations[i].uuid + "'>" + thisModel.typeDeclarations[i].name + "</option>";
+							}
+						}
+					}
+					this.baseTypeSelect.html(optionsString);
+				};
+
+				XsdStructuredDataTypeView.prototype.setBaseType = function(typeDeclaration) {
+					if (typeDeclaration
+							&& typeDeclaration.getTypeDeclaration()
+							&& typeDeclaration.getTypeDeclaration().base) {
+						var baseTypeId = typeDeclaration.getTypeDeclaration().base.substring(typeDeclaration.getTypeDeclaration().base.indexOf(":") + 1);
+						if (typeDeclaration.model.typeDeclarations[baseTypeId]) {
+							this.baseTypeSelect.val(typeDeclaration.model.typeDeclarations[baseTypeId].uuid);
+						}
+					} else {
+						this.baseTypeSelect.val("None");
+					}
 				};
 
 				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
@@ -225,6 +303,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minGreaterThanMaxError"));
+					jQuery("tr#baseTypeSelect td.label")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.parentType") + ":");
 				};
 
 				/**
@@ -237,8 +319,25 @@ define(
 
 					var self = this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
-						$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
-						$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
+						if (self.typeDeclaration && self.typeDeclaration.getTypeDeclaration()) {
+//							$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
+//							$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
+							var facets = self.typeDeclaration.getFacets();
+							if (facets) {
+								var minVal;
+								var maxVal;
+								for (var i in facets) {
+									if (facets[i].classifier === "minLength") {
+										minVal = facets[i].name;
+									}
+									if (facets[i].classifier === "maxLength") {
+										maxVal = facets[i].name;
+									}
+								}
+								$scope.minLength = minVal;
+								$scope.maxLength = maxVal;
+							}
+						}
 					});
 
 					this.updateViewIcon();
@@ -247,6 +346,7 @@ define(
 					m_utils.debug(this.typeDeclaration);
 
 					this.initializeTypeDeclaration();
+
 				};
 
 				/**
@@ -280,7 +380,10 @@ define(
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 
+					this.setBaseType(this.typeDeclaration);
+
 					this.refreshElementsTable();
+
 				};
 
 				/**
@@ -384,12 +487,13 @@ define(
 
 					jQuery(tableRows).each(function(i, tableRow) {
 						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), -1);
+						var moved = typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), -1);
 
-						view.submitChanges({
-							typeDeclaration : typeDeclaration.typeDeclaration
-						});
-
+						if (moved) {
+							view.submitChanges({
+								typeDeclaration : typeDeclaration.typeDeclaration
+							});
+						}
 					});
 				};
 
@@ -398,12 +502,13 @@ define(
 
 					jQuery(tableRows).each(function(i, tableRow) {
 						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), 1);
+						var moved = typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), 1);
 
-						view.submitChanges({
-							typeDeclaration : typeDeclaration.typeDeclaration
-						});
-
+						if (moved) {
+							view.submitChanges({
+								typeDeclaration : typeDeclaration.typeDeclaration
+							});
+						}
 					});
 				};
 
@@ -411,12 +516,17 @@ define(
 
 					row.data("typeDeclaration", this.typeDeclaration);
 					row.data("elementName", element.name);
+					row.data("element", element);
+
+					if (element.readOnly) {
+						row.addClass("locked");
+					}
 
 					var elementName = element.name;
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
 					var nameColumn = jQuery("<td class='elementCell'></td>").appendTo(row);
-					if ( !this.typeDeclaration.isReadOnly()) {
+					if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
 						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
@@ -425,7 +535,7 @@ define(
 					var typeColumn = jQuery("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
-						if ( !this.typeDeclaration.isReadOnly()) {
+						if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
 							typeColumn.append(this.getTypeSelectList(schemaType));
 						} else {
 							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : ""));
@@ -434,7 +544,7 @@ define(
 
 					var cardinalityColumn = jQuery("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
-						if ( !this.typeDeclaration.isReadOnly()) {
+						if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
 							var cardinalityBox = jQuery("<select size='1' class='cardinalitySelect'></select>");
 							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
 								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
@@ -471,11 +581,19 @@ define(
 
 						jQuery.each(childRows, function(i, childRow) {
 							childRow.addClass("child-of-" + parentPath);
+							if (parentRow.hasClass("locked")) {
+								childRow.addClass("locked");
+							}
 							view.tableBody.append(childRow);
 						});
 					});
 
 					jQuery("table#typeDeclarationsTable #" + selectedRowId).addClass("selected");
+
+					//update properties/annotation table
+					if(this.propertiesTree){
+						m_propertiesTree.refresh(this.propertiesTree, jQuery(jQuery("tr.selected", this.tableBody)).data("element"), view);
+					}
 
 					//this.tree.tableScroll("undo");
 					this.tree.tableScroll({
@@ -535,6 +653,7 @@ define(
 						function() {
 							jQuery("tr.selected", view.tableBody).removeClass("selected");
 							jQuery(this).addClass("selected");
+							view.propertiesTree = m_propertiesTree.create(jQuery(this).data("element"), view);
 						});
 
 					jQuery(".nameInput", this.tree).on("change", function(event) {
@@ -587,7 +706,8 @@ define(
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
 
-						if (thisTypeDeclaration.uuid != typeDeclaration.uuid) {
+						if (thisTypeDeclaration.uuid != typeDeclaration.uuid
+								&& typeDeclaration.getType() !== "importedStructuredDataType") {
 							var tdType = typeDeclaration.asSchemaType();
 							if (tdType) {
 								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
@@ -753,6 +873,8 @@ define(
 						}
 					}
 					if (refresh) {
+						this.populateBaseTypeSelectMenu(typeDeclaration);
+						this.setBaseType(typeDeclaration);
 						this.refreshElementsTable();
 					}
 				};

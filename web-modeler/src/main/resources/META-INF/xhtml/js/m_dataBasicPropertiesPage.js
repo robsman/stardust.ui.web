@@ -148,8 +148,12 @@ define(
 					m_utils.debug(this.propertiesPanel.element);
 					m_utils.debug(this.getModelElement());
 
-					this.dataTypeSelector
-							.setScopeModel(this.getModelElement().model);
+					// Set scope model to this model and not to the model
+					// to which the model element belongs as it may belong to
+					// another model and then the "this model" / "other model"
+					// semantics in the properties page goes for a toss.
+					this.dataTypeSelector.setScopeModel(this.propertiesPanel.getModel());
+
 					this.dataTypeSelector.setDataType(this.getModelElement());
 					this
 							.initializeDataType(

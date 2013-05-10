@@ -89,10 +89,18 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.isSequence = function() {
-					return (null != this.getBody())
-							&& (this.getBody().classifier === 'sequence'
-								|| this.getBody().classifier === 'all'
-								|| this.getBody().classifier === 'choice');
+					var body = this.getBody();
+					if (body) {
+						for (i in body) {
+							if (!body[i].inherited
+									&& (body[i].classifier === 'sequence'
+											|| body[i].classifier === 'all' || body[i].classifier === 'choice')) {
+								return true;
+							}
+						}
+					}
+
+					return false;
 				};
 
 				TypeDeclaration.prototype.asSchemaType = function() {
@@ -125,8 +133,60 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.getFacets = function() {
-					if (this.getTypeDeclaration()) {
-						return this.getTypeDeclaration().facets;
+					var facets = [];
+					if (this.typeDeclaration
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
+						for (var i in this.typeDeclaration.schema.elements) {
+							if (this.typeDeclaration.schema.elements[i].facets) {
+								for (var j in this.typeDeclaration.schema.elements[i].facets) {
+									facets.push(this.typeDeclaration.schema.elements[i].facets[j]);
+								}
+							}
+						}
+					}
+					if (this.typeDeclaration.schema.types) {
+						for (var i in this.typeDeclaration.schema.types) {
+							if (this.typeDeclaration.schema.types[i].facets) {
+								for (var j in this.typeDeclaration.schema.types[i].facets) {
+									facets.push(this.typeDeclaration.schema.types[i].facets[j]);
+								}
+							}
+						}
+					}
+
+					return facets;
+				};
+
+				/**
+				 *
+				 */
+				TypeDeclaration.prototype.deleteFacet = function(classifier) {
+					if (this.typeDeclaration
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
+						for (var i in this.typeDeclaration.schema.elements) {
+							if (this.typeDeclaration.schema.elements[i].facets) {
+								for (var j in this.typeDeclaration.schema.elements[i].facets) {
+									if (this.typeDeclaration.schema.elements[i].facets[j].classifier === classifier) {
+										this.typeDeclaration.schema.elements[i].facets.splice(j, 1);
+									}
+								}
+							}
+						}
+					}
+				};
+
+
+				/**
+				 *
+				 */
+				TypeDeclaration.prototype.addFacet = function(facet) {
+					if (this.typeDeclaration
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
+						for (var i in this.typeDeclaration.schema.elements) {
+							if (this.typeDeclaration.schema.elements[i].facets) {
+								this.typeDeclaration.schema.elements[i].facets.push(facet);
+							}
+						}
 					}
 				};
 
@@ -159,13 +219,18 @@ define(
 				/**
 				 *
 				 */
-				TypeDeclaration.prototype.createInstance = function() {
+				TypeDeclaration.prototype.createInstance = function(options) {
+					if (!options) {
+						options = {
+							initializePrimitives : true
+						};
+					}
+
 					if (this.isSequence()) {
 						var instance = {};
 
-						this
-								.populateSequenceInstanceRecursively(this,
-										instance);
+						this.populateSequenceInstanceRecursively(this.asSchemaType(),
+								instance, options);
 
 						return instance;
 					} else {
@@ -177,40 +242,74 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursively = function(
-						typeDeclaration, instance) {
+						typeDeclaration, instance, options) {
 
 					var obj = this;
-					jQuery.each(typeDeclaration.getBody().elements, function(i,
-							element) {
-						var type = element.type;
+					jQuery
+							.each(
+									typeDeclaration.getElements(),
+									function(i, element) {
+										var type = element.type;
 
-						// Strip prefix
-						if (element.type.indexOf(':') !== -1) {
-							type = element.type.split(":")[1];
-						}
+										// Strip prefix
+										if (element.type.indexOf(':') !== -1) {
+											type = element.type.split(":")[1];
+										}
 
-						var childTypeDeclaration = obj.model
-								.findTypeDeclarationBySchemaName(type);
+										var childTypeDeclaration = obj.model
+												.findTypeDeclarationBySchemaName(type);
 
-						if (childTypeDeclaration != null) {
-							if (childTypeDeclaration.isSequence()) {
-								instance[element.name] = {};
+										if (element.cardinality === "required") {
+											if (childTypeDeclaration != null) {
+												if (childTypeDeclaration
+														.isSequence()) {
 
-								obj.populateSequenceInstanceRecursively(
-										childTypeDeclaration,
-										instance[element.name]);
-							} else {
-								for ( var enumerator in childTypeDeclaration
-										.getFacets()) {
-									instance[element.name] = enumerator;
+													instance[element.name] = {};
 
-									break;
-								}
-							}
-						} else {
-							instance[element.name] = "";
-						}
-					});
+													obj
+															.populateSequenceInstanceRecursively(
+																	childTypeDeclaration,
+																	instance[element.name],
+																	options);
+												} else {
+													if (options.initializePrimitives) {
+														for ( var enumerator in childTypeDeclaration
+																.getFacets()) {
+															instance[element.name] = enumerator;
+
+															break;
+														}
+													}
+												}
+											} else {
+												if (options.initializePrimitives) {
+													// TODO Consider primitive
+													// type
+
+													instance[element.name] = "";
+												}
+											}
+										} else {
+											instance[element.name] = [];
+
+											if (childTypeDeclaration != null
+													&& childTypeDeclaration
+															.isSequence()) {
+												instance[element.name][0] = {};
+
+												obj
+														.populateSequenceInstanceRecursively(
+																childTypeDeclaration,
+																instance[element.name][0],
+																options);
+											} else {
+												// TODO Consider primitive type
+
+												instance[element.name][0] = "";
+											}
+										}
+									});
+
 					return instance;
 				};
 
@@ -218,18 +317,18 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
-					if (!this.isSequence()
-							&& this.getTypeDeclaration()) {
+					if (!this.isSequence() && this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
-						delete td.type;
 						delete td.facets;
+						delete td.base;
+						delete td.method;
 
-						td.body = {
+						td.body = [{
 							name : "<sequence>",
 							icon : "XSDModelGroupSequence.gif",
 							classifier : "sequence",
-							elements : []
-						};
+							body : []
+						}];
 						td.icon = "XSDComplexTypeDefinition.gif";
 					}
 				};
@@ -238,20 +337,49 @@ define(
 				 *
 				 */
 				TypeDeclaration.prototype.switchToEnumeration = function() {
-					if (this.isSequence()
-							&& this.getTypeDeclaration()) {
+					if (this.isSequence() && this.getTypeDeclaration()) {
 						var td = this.getTypeDeclaration();
 						delete td.body;
 
-						td.type = "xsd:string";
+						td.base = "{http://www.w3.org/2001/XMLSchema}string";
 						td.facets = [];
-						td.icon = "XSDSimpleTypeDefinition.gif";
 					}
 				};
 
 				TypeDeclaration.prototype.getElements = function() {
-					return this.isSequence() ? this.getBody().elements : this
-							.getFacets();
+					if (this.isSequence()) {
+						var elements = [];
+						var body = this.getBody();
+						if (body) {
+							getElementsFromBody(body, elements);
+						}
+
+						return elements;
+					} else {
+						return this.getFacets();
+					}
+				};
+
+				TypeDeclaration.prototype.getUninheritedElements = function() {
+					if (this.isSequence()) {
+						var body = this.getBody();
+						if (body) {
+							for (var i in body) {
+								if (!body[i].inherited && body[i].body) {
+									return body[i].body;
+								}
+							}
+						}
+					} else {
+						if (this.typeDeclaration
+								&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
+							for (var i in this.typeDeclaration.schema.elements) {
+								if (!this.typeDeclaration.schema.elements.inherited) {
+									return this.typeDeclaration.schema.elements[i].facets;
+								}
+							}
+						}
+					}
 				};
 
 				TypeDeclaration.prototype.getElement = function(name) {
@@ -274,23 +402,63 @@ define(
 						newElement = {
 							name : newName,
 							type : "xsd:string",
-							cardinality : "required"
+							cardinality : "required",
+							classifier : "element"
 						};
+						this.addNewElementToSequence(newElement);
 					} else {
 						newElement = {
 							name : newName,
 							classifier : "enumeration"
 						};
+						this.addFacet(newElement);
 					}
-					this.getElements().push(newElement);
 
 					return newElement;
 				};
 
+				TypeDeclaration.prototype.addNewElementToSequence = function(newElement) {
+					if (this.isSequence()) {
+						var body = this.getBody();
+						var thisBody;
+						for (var i in body) {
+							if (!body[i].inherited) {
+								body[i].body = body[i].body ? body[i].body : [];
+								thisBody = body[i].body;
+							}
+						}
+
+						// Additional check - may not be needed
+						if (!thisBody) {
+							body[0].body = [];
+							thisBody = body[0].body;
+						}
+
+						thisBody.push(newElement);
+					}
+				};
+
+				TypeDeclaration.prototype.addFacet = function(newElement) {
+					if (this.typeDeclaration
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
+						for (var i in this.typeDeclaration.schema.elements) {
+							if (!this.typeDeclaration.schema.elements.inherited) {
+								if (!this.typeDeclaration.schema.elements[i].facets) {
+									this.typeDeclaration.schema.elements[i].facets = [];
+								}
+								this.typeDeclaration.schema.elements[i].facets.push(newElement);
+								break;
+							}
+						}
+					}
+				};
+
 				TypeDeclaration.prototype.moveElement = function(name, dIdx) {
+					var moved = false;
+
 					var element = this.getElement(name);
-					if (element) {
-						var elements = this.getElements();
+					if (element && !element.readOnly) {
+						var elements = this.getUninheritedElements();
 						var oldIdx = elements.indexOf(element);
 						var newIdx = oldIdx + dIdx;
 						if ((0 <= newIdx) && (newIdx < elements.length)) {
@@ -302,8 +470,11 @@ define(
 							// }
 							// insert at new position
 							elements.splice(newIdx, 0, element);
+							moved = true;
 						}
 					}
+
+					return moved;
 				};
 
 				TypeDeclaration.prototype.renameElement = function(oldName,
@@ -341,8 +512,11 @@ define(
 				TypeDeclaration.prototype.removeElement = function(name) {
 					var element = this.getElement(name);
 					if (element) {
-						var elements = this.getElements();
-						elements.splice(elements.indexOf(element), 1);
+						var elements = this.getUninheritedElements();
+						var idx = elements.indexOf(element);
+						if (idx >= 0) {
+							elements.splice(idx, 1);
+						}
 					}
 				};
 
@@ -350,6 +524,17 @@ define(
 					var element = this.getElement(name);
 					if (element) {
 						return this.resolveSchemaType(element.type);
+					}
+				};
+
+
+				TypeDeclaration.prototype.setBaseType = function(baseType) {
+					if (baseType) {
+						this.getTypeDeclaration().base = "{" + baseType.typeDeclaration.schema.targetNamespace + "}" + baseType.id;
+						this.getTypeDeclaration().method = "extension";
+					} else {
+						this.getTypeDeclaration().base = null;
+						this.getTypeDeclaration().method = null;
 					}
 				};
 
@@ -400,11 +585,28 @@ define(
 			 * @returns {Boolean}
 			 */
 			SchemaType.prototype.isStructure = function() {
-				return (null != this.type)
-						&& (null != this.type.body)
-						&& ((this.type.body.classifier === 'sequence')
-								|| (this.type.body.classifier === 'choice')
-								|| (this.type.body.classifier === 'all'));
+//				return (null != this.type)
+//						&& (null != this.type.body)
+//						&& ((this.type.body.classifier === 'sequence')
+//								|| (this.type.body.classifier === 'choice') || (this.type.body.classifier === 'all'));
+
+				// TODO - check
+				if (this.type) {
+					var type = this.type
+				} else if (this.schema && this.schema.types) {
+					var type = this.schema.types[0];
+				}
+				if (type && type.body) {
+					for (i in type.body) {
+						if (!type.body[i].inherited
+								&& (type.body[i].classifier === 'sequence'
+										|| type.body[i].classifier === 'all' || type.body[i].classifier === 'choice')) {
+							return true;
+						}
+					}
+				}
+
+				return false;
 			};
 
 			/**
@@ -418,10 +620,46 @@ define(
 			 * @returns {Array}
 			 */
 			SchemaType.prototype.getElements = function() {
+				// TODO - check
 				if (this.isStructure()) {
-					return this.type.body.elements;
+					var elements = [];
+					if (this.type) {
+						var type = this.type
+					} else if (this.schema && this.schema.types) {
+						var type = this.schema.types[0];
+					}
+
+					if (type && type.body) {
+						getElementsFromBody(type.body, elements);
+					}
+
+					return elements;
 				} else {
-					return this.type.facets || [];
+					var facets = [];
+					if (this.schema && this.schema.elements) {
+						for (var i in this.schema.elements) {
+							if (this.schema.elements[i].facets) {
+								for (var j in this.schema.elements[i].facets) {
+									if (this.schema.elements[i].facets[j].classifier === "enumeration") {
+										facets.push(this.schema.elements[i].facets[j]);
+									}
+								}
+							}
+						}
+					}
+					if (this.schema.types) {
+						for (var i in this.schema.types) {
+							if (this.schema.types[i].facets) {
+								for (var j in this.schema.types[i].facets) {
+									if (this.schema.types[i].facets[j].classifier === "enumeration") {
+										facets.push(this.schema.types[i].facets[j]);
+									}
+								}
+							}
+						}
+					}
+
+					return facets;
 				}
 			};
 
@@ -467,6 +705,19 @@ define(
 				}
 			};
 
+			function getElementsFromBody(body, elements, inherited) {
+				for (var i in body) {
+					if (body[i] && body[i].classifier !== "element") {
+						getElementsFromBody(body[i].body, elements, (inherited || body[i].inherited));
+					} else {
+						if (inherited || body[i].inherited) {
+							body[i].readOnly = true;
+						}
+						elements.push(body[i]);
+					}
+				}
+			};
+
 			function resolveSchemaTypeFromModel(sqName, model) {
 				var schema;
 				var parsedName = parseQName(sqName);
@@ -482,7 +733,8 @@ define(
 										function(i, declaration) {
 											if ((null != declaration.typeDeclaration)
 													&& (null != declaration.typeDeclaration.schema)
-													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
+													&& (declaration.id === parsedName.name)) {
 												schema = declaration.typeDeclaration.schema;
 												return false;
 											}
@@ -559,7 +811,7 @@ define(
 					}
 
 					if (element) {
-						if (element.body) {
+						if (element.body || element.facets) {
 							// (fh) anonymous type declaration
 							return element;
 						}
@@ -603,8 +855,8 @@ define(
 			 *          equivalent to the list of Java primitive types)
 			 */
 			function getXsdCoreTypes() {
-				return [ "string", "boolean", "long", "int", "short",
-						"byte", "double", "float", "decimal", "date", "dateTime" ];
+				return [ "string", "boolean", "long", "int", "short", "byte",
+						"double", "float", "decimal", "date", "dateTime" ];
 			}
 
 			/**
@@ -665,7 +917,7 @@ define(
 
 				jQuery
 						.each(
-								typeDeclaration.getBody().elements,
+								typeDeclaration.getElements(),
 								function(i, element) {
 									var type = element.type;
 

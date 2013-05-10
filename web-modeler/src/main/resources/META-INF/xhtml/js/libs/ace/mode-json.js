@@ -92,7 +92,7 @@ oop.inherits(Mode, TextMode);
 exports.Mode = Mode;
 });
 
-define('ace/mode/drl_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
+define('ace/mode/json_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
 
 
 var oop = require("../lib/oop");
@@ -141,17 +141,14 @@ var JsonHighlightRules = function() {
             }, {
                 token : "string",
                 regex : '[^"\\\\]+',
-                merge : true
             }, {
                 token : "string",
                 regex : '"',
                 next  : "start",
-                merge : true
             }, {
                 token : "string",
                 regex : "",
                 next  : "start",
-                merge : true
             }
         ]
     };
@@ -517,7 +514,7 @@ var CstyleBehaviour = function () {
         if (!range.isMultiLine() && (selected == '"' || selected == "'")) {
             var line = session.doc.getLine(range.start.row);
             var rightChar = line.substring(range.start.column + 1, range.start.column + 2);
-            if (rightChar == '"') {
+            if (rightChar == selected) {
                 range.end.column++;
                 return range;
             }

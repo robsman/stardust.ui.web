@@ -28,7 +28,9 @@ define(
 
 				disableToolbarControl : disableToolbarControl,
 
-				enableToolbarControl : enableToolbarControl
+				enableToolbarControl : enableToolbarControl,
+
+				getUniqueNameForElement : getUniqueNameForElement
 			};
 
 			function getScrollpaneScrollPosition() {
@@ -69,5 +71,21 @@ define(
 				input.fadeTo(0, 1);
 				input.css("cursor", "pointer");
 				input.addClass("toolbarButton");
+			}
+
+			/**
+			 *
+			 */
+			function getUniqueNameForElement(modelId, namePrefix) {
+				var suffix = 0;
+				var name = namePrefix + " " + (++suffix);
+				var model = m_model.findModel(modelId);
+				if (model) {
+					while (model.findModelElementByName(name)) {
+						var name = namePrefix + " " + (++suffix);
+					}
+				}
+
+				return name;
 			}
 		});

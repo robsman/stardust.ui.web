@@ -41,7 +41,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
@@ -102,7 +101,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-import org.eclipse.xsd.*;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -330,6 +330,7 @@ public class ModelService
       if (serviceFactory == null)
       {
          serviceFactory = serviceFactoryLocator.get();
+         SpiExtensionRegistry.instance().setExtensionRegistry(StardustExtensionRegistry.instance());
       }
 
       return serviceFactory;
@@ -2365,13 +2366,13 @@ public class ModelService
       String xsdUrl = postedData.get("url").getAsString();
       System.out.println("===> Get XSD Structure for URL " + xsdUrl);
 
-      JsonObject json = new JsonObject();
+      JsonObject json = null;
 
       try
       {
          XSDSchema schema = loadSchema(xsdUrl);
 
-         loadSchemaInfo(json, schema);
+         json = XsdSchemaUtils.toSchemaJson(schema);
       }
       catch (IOException ioex)
       {
@@ -2383,7 +2384,7 @@ public class ModelService
       return json;
    }
 
-   public static void loadSchemaInfo(JsonObject json, XSDSchema schema)
+   /*public static void loadSchemaInfo(JsonObject json, XSDSchema schema)
    {
       XsdContentProvider cp = new XsdContentProvider(true);
       XsdTextProvider lp = new XsdTextProvider();
@@ -2429,9 +2430,9 @@ public class ModelService
       {
          json.add("types", types);
       }
-   }
+   }*/
 
-   private static void addChildren(JsonElement parentNodeJs, EObject component,
+   /*private static void addChildren(JsonElement parentNodeJs, EObject component,
          XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip,
          Predicate<EObject> filter)
    {
@@ -2536,9 +2537,9 @@ public class ModelService
             }
          }
       }
-   }
+   }*/
 
-   private static void addNamedChild(JsonElement parentNodeJs, String childName,
+   /*private static void addNamedChild(JsonElement parentNodeJs, String childName,
          JsonElement childJs)
    {
       if (parentNodeJs instanceof JsonObject)
@@ -2549,9 +2550,9 @@ public class ModelService
       {
          throw new IllegalArgumentException("Expected an object, but got " + parentNodeJs);
       }
-   }
+   }*/
 
-   private static void addChild(JsonElement parentNodeJs, String childName,
+   /*private static void addChild(JsonElement parentNodeJs, String childName,
          JsonElement childJs)
    {
       if (parentNodeJs instanceof JsonObject)
@@ -2567,7 +2568,7 @@ public class ModelService
          throw new IllegalArgumentException("Expected an array or object, but got "
                + parentNodeJs);
       }
-   }
+   }*/
 
    /* remove */private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
 

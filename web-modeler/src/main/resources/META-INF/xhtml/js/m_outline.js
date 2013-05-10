@@ -24,13 +24,14 @@ define(
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils",
+				"bpm-modeler/js/m_jsfViewManagerHelper"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,
 				m_data, m_elementConfiguration, m_jsfViewManager,
-				m_messageDisplay, m_i18nUtils, m_modelerUtils) {
+				m_messageDisplay, m_i18nUtils, m_modelerUtils, m_jsfViewManagerHelper) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			var displayScope = "";
@@ -394,8 +395,7 @@ define(
 				var formId = form.attr('id');
 
 				if (model.fileName && model.filePath) {
-					window.parent.EventHub.events.publish(
-							"SELECT_MODEL_FOR_DEPLOYMENT",
+					m_jsfViewManagerHelper.openModelDeploymentDialog(
 							modeleDeployerLinkId, model.fileName,
 							model.filePath, formId);
 				} else {
@@ -621,8 +621,8 @@ define(
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 					var formId = form.attr('id');
-					window.parent.EventHub.events.publish(
-							"OPEN_IMPORT_MODEL_DIALOG", linkId, formId);
+					m_jsfViewManagerHelper
+							.openImportModelDialog(linkId, formId);
 				}
 			}
 
@@ -795,7 +795,7 @@ define(
 																+ encodeURIComponent(role
 																		.getFullId())
 																+ "&uuid="
-																+ encodeURIComponent(role.uuid)
+																+ role.uuid
 																+ "&modelUUID="
 																+ model.uuid,
 														role.uuid);
@@ -889,14 +889,14 @@ define(
 										viewManager.openView(
 												"webServiceApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -914,14 +914,14 @@ define(
 												.openView(
 														"messageTransformationApplicationView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&applicationId="
-																+ application.id
+																+ encodeURIComponent(application.id)
 																+ "&applicationName="
-																+ application.name
+																+ encodeURIComponent(application.name)
 																+ "&fullId="
-																+ application
-																		.getFullId()
+																+ encodeURIComponent(application
+																		.getFullId())
 																+ "&uuid="
 																+ application.uuid
 																+ "&modelUUID="
@@ -938,14 +938,14 @@ define(
 										viewManager.openView(
 												"camelApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -962,14 +962,14 @@ define(
 										viewManager.openView(
 												"uiMashupApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -988,14 +988,14 @@ define(
 										viewManager.openView(
 												"genericApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -1016,14 +1016,14 @@ define(
 												.openView(
 														"xsdStructuredDataTypeView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&structuredDataTypeId="
-																+ structuredDataType.id
+																+ encodeURIComponent(structuredDataType.id)
 																+ "&structuredDataTypeName="
-																+ structuredDataType.name
+																+ encodeURIComponent(structuredDataType.name)
 																+ "&fullId="
-																+ structuredDataType
-																		.getFullId()
+																+ encodeURIComponent(structuredDataType
+																		.getFullId())
 																+ "&uuid="
 																+ structuredDataType.uuid
 																+ "&modelUUID="
@@ -1041,14 +1041,14 @@ define(
 												.openView(
 														"conditionalPerformerView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&conditionalPerformerId="
-																+ conditionalPerformer.id
+																+ encodeURIComponent(conditionalPerformer.id)
 																+ "&conditionalPerformerName="
-																+ conditionalPerformer.name
+																+ encodeURIComponent(conditionalPerformer.name)
 																+ "&fullId="
-																+ conditionalPerformer
-																		.getFullId()
+																+ encodeURIComponent(conditionalPerformer
+																		.getFullId())
 																+ "&uuid="
 																+ conditionalPerformer.uuid
 																+ "&modelUUID="
@@ -2139,26 +2139,10 @@ define(
 				/**
 				 *
 				 */
-				function getUniqueNameForElement(modelId, namePrefix) {
-					var suffix = 0;
-					var name = namePrefix + " " + (++suffix);
-					var model = m_model.findModel(modelId);
-					if (model) {
-						while (model.findModelElementByName(name)) {
-							var name = namePrefix + (++suffix);
-						}
-					}
-
-					return name;
-				}
-
-				/**
-				 *
-				 */
 				function createProcess(modelId) {
 					var procNamePrefix = m_i18nUtils
 							.getProperty("modeler.outline.newProcess.namePrefix");
-					var name = getUniqueNameForElement(modelId, procNamePrefix);
+					var name = m_modelerUtils.getUniqueNameForElement(modelId, procNamePrefix);
 
 					// TODO
 					// Temporarily added I18n FOR default pool and lane names on
@@ -2277,7 +2261,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newPrimitivedata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController
 							.submitCommand(m_command
@@ -2298,7 +2282,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newDocumentdata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateDocumentDataCommand(model.id,
@@ -2315,7 +2299,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newStructureddata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateStructuredDataCommand(model.id,
@@ -2332,7 +2316,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newRole.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
@@ -2351,7 +2335,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newConditionalperformer.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
@@ -2387,7 +2371,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newOrganization.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 					var targetOid = (targetUUID ? m_model
 							.findElementInModelByUuid(model.id, targetUUID).oid
 							: model.id);
@@ -2407,7 +2391,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newWebservice.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateWebServiceAppCommand(model.id,
@@ -2424,7 +2408,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newMsgTransformation.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateMessageTransfromationAppCommand(
@@ -2440,12 +2424,10 @@ define(
 				function createCamelApplication(modelUUId, name, attributes) {
 					var model = m_model.findModelByUuid(modelUUId);
 
-					if (!name) {
-						name = getUniqueNameForElement(
-								model.id,
-								m_i18nUtils
-										.getProperty("modeler.outline.newCamelroute.namePrefix"));
-					}
+					//if (!name) {
+						name = m_modelerUtils.getUniqueNameForElement(
+								model.id,name);
+					//}
 
 					m_commandsController.submitCommand(m_command
 							.createCreateCamelAppCommand(model.id, model.id, {
@@ -2462,7 +2444,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newUimashup.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateUiMashupAppCommand(model.id, model.id,
@@ -2481,7 +2463,7 @@ define(
 					var model = m_model.findModelByUuid(modelUUId);
 					var titledata = m_i18nUtils
 							.getProperty("modeler.outline.newXsddatastructure.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
+					var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
 					m_commandsController.submitCommand(m_command
 							.createCreateStructuredDataTypeCommand(model.id,
@@ -2607,6 +2589,8 @@ define(
 
 			return {
 				init : function(newViewManager, newDisplayScope) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
 
 					if (newDisplayScope) {
 						displayScope = "#" + newDisplayScope + " ";
@@ -2625,6 +2609,9 @@ define(
 					outline.initialize();
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
+					jQuery("#outlineDiv").css("visibility", "visible");
+
+					m_utils.hideWaitCursor();
 
 					return outline;
 				},

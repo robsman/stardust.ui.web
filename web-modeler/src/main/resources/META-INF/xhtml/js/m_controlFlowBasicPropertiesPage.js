@@ -45,10 +45,9 @@ define(
 					// TODO - ace code editor doesn't have refresh at present
 					//this.conditionExpressionInputEditor.refresh();
 
-					// TODO - ace code editor doesn't have code complete at present
 					// Global variables for Code Editor auto-complete / validation
-					//var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					//this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
+					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
+					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**

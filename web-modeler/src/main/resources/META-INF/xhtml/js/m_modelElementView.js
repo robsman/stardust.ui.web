@@ -146,10 +146,6 @@ define(
 					}, function(event) {
 						var view = event.data.view;
 
-						if (!view.validate()) {
-							return;
-						}
-
 						if (view.modelElement.name != view.nameInput.val()) {
 							view.renameModelElement();
 						}
@@ -351,7 +347,11 @@ define(
 				/**
 				 *
 				 */
-				ModelElementView.prototype.submitChanges = function(changes) {
+				ModelElementView.prototype.submitChanges = function(changes, skipValidation) {
+					if (!skipValidation && !this.validate()) {
+						return;
+					}
+
 					// Generic attributes
 					// TODO Is this really needed?
 
@@ -377,10 +377,6 @@ define(
 						var view = event.data.view;
 						var input = event.data.input;
 
-						if (!view.validate()) {
-							return;
-						}
-
 						if (view.getModelElement()[property] != input.val()) {
 							var modelElement = {};
 							modelElement[property] = input.val();
@@ -395,28 +391,23 @@ define(
 				 */
 				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
-					input
-							.change(
-									{
-										"view" : this,
-										"input" : input
-									},
-									function(event) {
-										var view = event.data.view;
-										var input = event.data.input;
+					input.change({
+						"view" : this,
+						"input" : input
+					}, function(event) {
+						var view = event.data.view;
+						var input = event.data.input;
 
-										if (!view.validate()) {
-											return;
-										}
-
-										view.submitModelElementAttributeChange(attribute, input.val());
-									});
+						view.submitModelElementAttributeChange(attribute, input
+								.val());
+					});
 				};
 
 				/**
 				 *
 				 */
-				ModelElementView.prototype.submitModelElementAttributeChange = function(attribute, value) {
+				ModelElementView.prototype.submitModelElementAttributeChange = function(
+						attribute, value) {
 					if (this.getModelElement().attributes[attribute] != value) {
 						var modelElement = {
 							attributes : {}
@@ -440,10 +431,6 @@ define(
 									function(event) {
 										var view = event.data.view;
 										var input = event.data.input;
-
-										if (!view.validate()) {
-											return;
-										}
 
 										if (view.getModelElement().attributes[attribute] != input
 												.val()) {
@@ -491,10 +478,11 @@ define(
 				};
 
 				/**
-				 * In case individual views want to do additional stuff
-				 * they can over ride this function.
+				 * In case individual views want to do additional stuff they can
+				 * over ride this function.
 				 */
-				ModelElementView.prototype.postProcessCommand = function(command) {
+				ModelElementView.prototype.postProcessCommand = function(
+						command) {
 				};
 			}
 		});

@@ -17,6 +17,9 @@ define(
 				m_modelElementView, m_codeEditorAce, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var view = new MessageTransformationApplicationView();
 					i18nmessageTransformationproperties();
 					// TODO Unregister!
@@ -25,6 +28,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+					m_utils.hideWaitCursor();
 					}
 				};
 
@@ -277,6 +281,7 @@ define(
 				MessageTransformationApplicationView.prototype.initialize = function(
 						application) {
 					this.id = "messageTransformationApplicationView";
+					this.view = jQuery("#" + this.id);
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
@@ -326,6 +331,7 @@ define(
 					this.bindEventHandlers();
 
 					this.initializeModelElementView(application);
+					this.view.css("visibility", "visible");
 				}
 
 				/**
@@ -463,10 +469,11 @@ define(
 						}
 					}
 
+					this.expressionEditor.setGlobalVariables(globalVariables);
+
 					// TODO - these things below were possible with CodeMirror editor out of box
 					// But not in case of Ace editor hence temporarily commented out
 
-					//this.expressionEditor.setGlobalVariables(globalVariables);
 					// Perform mapping expression validation
 //					var source, errors;
 //					for (var n = 0; n < this.outputTableRows.length; ++n) {
@@ -610,13 +617,13 @@ define(
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 						this.inputData[accessPoint.id] = typeDeclaration;
-						this.initializeInputTableRowsRecursively(accessPoint,
+						this.initializeTableRowsRecursively(false, accessPoint,
 								typeDeclaration.getBody(), null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
 						this.inputData[accessPoint.id] = null; // TODO
-						this.initializeInputTableRowsRecursively(accessPoint, null, null, null);
+						this.initializeTableRowsRecursively(false, accessPoint, null, null, null);
 					}
 				};
 
@@ -656,117 +663,86 @@ define(
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 						this.outputData[accessPoint.id] = typeDeclaration;
-						this.initializeOutputTableRowsRecursively(accessPoint,
+						this.initializeTableRowsRecursively(true, accessPoint,
 								typeDeclaration.getBody(), null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
 						this.inputData[accessPoint.id] = null; // TODO
-						this.initializeOutputTableRowsRecursively(accessPoint, null, null, null);
+						this.initializeTableRowsRecursively(true, accessPoint, null, null, null);
 					}
 				};
 
 				/**
-				 *
+				 * This method handles both Input and Output data Mapping
 				 */
-				MessageTransformationApplicationView.prototype.initializeInputTableRowsRecursively = function(
-						accessPoint, element, parentPath, scopeModel) {
-					var path = parentPath == null ? accessPoint.id
-							: (parentPath + "." + element.name);
-					var tableRow = {};
+				MessageTransformationApplicationView.prototype.initializeTableRowsRecursively = function(
+						output, accessPoint, element, parentPath, scopeModel,
+						elementName, elementType) {
 
-					this.inputTableRows.push(tableRow);
+					elementName = elementName ? elementName
+							: element ? element.name : null;
+					elementType = elementType ? elementType
+							: element ? element.type : null;
+
+					var path = parentPath == null ? accessPoint.id
+							: (parentPath + "." + elementName);
+
+					var tableRow = {};
 
 					tableRow.accessPoint = accessPoint;
 					tableRow.element = element;
 					tableRow.path = path;
 					tableRow.parentPath = parentPath;
 					tableRow.name = parentPath == null ? accessPoint.id
-							: element.name;
+							: elementName;
 
-					tableRow.typeName = parentPath == null ?
-							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
-							: element.type;
+					tableRow.typeName = parentPath == null ? (accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint
+							.retrieveTypeDeclaration(accessPoint, this
+									.getModel()).name
+							: accessPoint.primitiveDataType)
+							: elementType;
+
+					if (output) {
+						// for output mapping
+						tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
+								: this.mappingExpressions[path];
+						tableRow.problems = "";
+
+						this.outputTableRows.push(tableRow);
+					} else {
+						// for input mapping
+						this.inputTableRows.push(tableRow);
+					}
 
 					// Embedded structure
 					if (element == null) {
 						return;
 					}
 
-					var childElements = element.elements;
+					if (element.length > 0) {
+						for ( var elmnt in element) {
+							var childElements = element[elmnt].body;
+							if (childElements == null) {
+								continue;
+							}
 
-					// Recursive resolution
-					if (childElements == null && element.type != null) {
-						var typeDeclaration = scopeModel
-								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
+							for ( var index in childElements) {
+								var childElement = childElements[index];
+								if (childElement.body) {
+									this.initializeTableRowsRecursively(output,
+											accessPoint, childElement.body,
+											path, scopeModel,
+											childElement.name,
+											childElement.type);
 
-						if (typeDeclaration != null
-								&& typeDeclaration.isSequence()) {
-							childElements = typeDeclaration.getBody().elements;
+								} else {
+									this.initializeTableRowsRecursively(output,
+											accessPoint, childElement, path,
+											scopeModel);
+								}
+							}
 						}
-					}
-
-					if (childElements == null) {
-						return;
-					}
-
-					for ( var childElement in childElements) {
-						this.initializeInputTableRowsRecursively(accessPoint,
-								childElements[childElement], path, scopeModel);
-					}
-				};
-
-				/**
-				 *
-				 */
-				MessageTransformationApplicationView.prototype.initializeOutputTableRowsRecursively = function(
-						accessPoint, element, parentPath, scopeModel) {
-					var path = parentPath == null ? accessPoint.id
-							: (parentPath + "." + element.name);
-					var tableRow = {};
-
-					this.outputTableRows.push(tableRow);
-
-					tableRow.accessPoint = accessPoint;
-					tableRow.element = element;
-					tableRow.path = path;
-					tableRow.parentPath = parentPath;
-					tableRow.name = parentPath == null ? accessPoint.id
-							: element.name;
-					tableRow.typeName = parentPath == null ?
-							(accessPoint.dataType == m_constants.STRUCTURED_DATA_TYPE ? m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel()).name : accessPoint.primitiveDataType)
-							: element.type;
-
-					tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
-							: this.mappingExpressions[path];
-					tableRow.problems = "";
-
-					// Embedded structure
-					if (element == null) {
-						return;
-					}
-
-					var childElements = element.elements;
-
-					// Recursive resolution
-
-					if (childElements == null && element.type != null) {
-						var typeDeclaration = scopeModel
-								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
-
-						if (typeDeclaration != null
-								&& typeDeclaration.isSequence()) {
-							childElements = typeDeclaration.getBody().elements;
-						}
-					}
-
-					if (childElements == null) {
-						return;
-					}
-
-					for ( var childElement in childElements) {
-						this.initializeOutputTableRowsRecursively(accessPoint,
-								childElements[childElement], path, scopeModel);
 					}
 				};
 
@@ -840,6 +816,7 @@ define(
 								"view" : this,
 								"tableRow" : tableRow
 							}, function(event) {
+								event.data.view.clearErrorMessages();
 								event.data.view
 										.highlightSource(event.data.tableRow);
 							});
@@ -902,6 +879,35 @@ define(
 													.data("tableRow");
 
 											// TODO: @Anoop - Refactor
+											// invalid operations
+											view.clearErrorMessages();
+											var valid = true;
+											if (view
+													.isStructuredType(inputTableRow)
+													&& !view
+															.isStructuredType(outputTableRow)) {
+												valid = false;
+											}else if (!view
+													.isStructuredType(inputTableRow)
+													&& view
+															.isStructuredType(outputTableRow)) {
+												valid = false;
+											} else if (view
+													.isStructuredType(inputTableRow)
+													&& view
+															.isStructuredType(outputTableRow)
+													&& (inputTableRow.typeName != outputTableRow.typeName)) {
+												valid = false;
+											}
+
+											if (valid == false) {
+												view.errorMessages
+														.push(m_i18nUtils
+																.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.differentMappingTypes"));
+												view.showErrorMessages();
+												return;
+											}
+
 											if (view.isStructuredType(inputTableRow) && view.isStructuredType(outputTableRow) &&
 													(inputTableRow.typeName === outputTableRow.typeName)) {
 												var prefix = outputTableRow.path + ".";
@@ -942,6 +948,7 @@ define(
 								"view" : this,
 								"tableRow" : tableRow
 							}, function(event) {
+								event.data.view.clearErrorMessages();
 								event.data.view
 										.highlightTarget(event.data.tableRow);
 							});
@@ -1900,21 +1907,7 @@ define(
 						return false;
 					}
 
-					var childElements = element.elements;
-
-					// Recursive resolution
-
-					if (childElements == null && element.type != null) {
-						var typeDeclaration = this.getModel()
-								.findTypeDeclarationBySchemaName(m_model.stripElementId(element.type));
-
-						if (typeDeclaration != null
-								&& typeDeclaration.isSequence()) {
-							return true;
-						}
-					}
-
-					if (childElements == null) {
+					if(!element.length){
 						return false;
 					}
 

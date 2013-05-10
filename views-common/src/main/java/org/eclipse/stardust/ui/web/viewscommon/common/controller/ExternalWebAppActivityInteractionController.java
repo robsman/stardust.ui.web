@@ -125,7 +125,8 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          SessionContext ippSessionContext = SessionContext.findSessionContext();
 
          Interaction interaction = new Interaction(ippSessionContext.getUser(),
-               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai));
+               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
+               ippSessionContext.getServiceFactory());
 
          // performing client side IN mappings
          Map<String, Serializable> inParams = newHashMap();
@@ -206,7 +207,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             trace.info("Overriding external Web App URI to " + uri);
          }
       }
-      
+
       StringBuilder uriBuilder = new StringBuilder();
 
       uriBuilder.append(uri) //

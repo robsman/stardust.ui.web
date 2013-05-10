@@ -50,7 +50,8 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : false
 							});
 
 					this.directionInput

@@ -15,6 +15,9 @@ define(
 				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var conditionalPerformer = m_model.findParticipant(fullId);
 					i18nconditionalScreen();
 					var view = new ConditionalPerformerView();
@@ -24,6 +27,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(conditionalPerformer);
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -127,6 +131,7 @@ define(
 				ConditionalPerformerView.prototype.initialize = function(
 						conditionalPerformer) {
 					this.id = "conditionalPerformerView";
+					this.view = jQuery("#" + this.id);
 					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
 					this.performerTypeSelect = jQuery("#performerTypeSelect");
 					this.bindingDataSelect = jQuery("#bindingDataSelect");
@@ -178,6 +183,7 @@ define(
 							this.userRealmBindingDataPathInput,
 							"carnot:engine:conditionalPerformer:realmDataPath");
 					this.initializeModelElementView(conditionalPerformer);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

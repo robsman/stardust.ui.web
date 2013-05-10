@@ -16,6 +16,9 @@ define(
 				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants) {
 			return {
 				initialize : function(modelId) {
+					m_utils.initializeWaitCursor($("html"));
+					m_utils.showWaitCursor();
+
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
 					i18modelview();
@@ -24,6 +27,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(model);
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -107,6 +111,7 @@ define(
 				 */
 				ModelView.prototype.initialize = function(model) {
 					this.id = "modelView";
+					this.view = jQuery("#" + this.id);
 					this.versionTable = jQuery("#versionTable");
 					this.versionTableBody = jQuery("table#versionTable tbody");
 					this.problemsTable = jQuery("#problemsTable");
@@ -166,6 +171,7 @@ define(
 									});
 
 					this.initializeModelElementView(model);
+					this.view.css("visibility", "visible");
 				};
 
 				/**

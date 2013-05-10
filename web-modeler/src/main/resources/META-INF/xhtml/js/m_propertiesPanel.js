@@ -378,6 +378,10 @@ define(
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setElement(this.element);
 
+						// Update the selectable property pages list
+						// for the given profile
+						currentPropertiesPanel.show();
+
 						return;
 					}
 
