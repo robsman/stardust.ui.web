@@ -36,6 +36,8 @@ public interface UserPreferencesEntries
    public static final String V_ROLE_ASSIGNABLE = "roleAssignable";
    public static final String V_ACTIVITY_CRITICALITY_VIEW = "activityCriticalityView";
    
+   public static final String V_DEPUTY_TEAM_MEMBER_VIEW = "deputyTeamMemberView";
+
    public static final String V_PROCESS_SEARCH = "processSearch";
    public static final String F_PROCESS_SEARCH_PROCESS_TABLE = "processTable";
    public static final String F_PROCESS_SEARCH_ACTIVITY_TABLE = "activityTable";

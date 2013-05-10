@@ -38,6 +38,7 @@ public interface UserPreferencesEntries
    public static final String F_SHOW_MAPPED_DOC_WARNING = "prefs.showMappedDocWarning"; // true/false
    public static final String F_NO_OF_COLUMNS_IN_COLUMN_LAYOUT = "prefs.noOfColumnsInColumnLayout"; // int
    public static final String F_NO_OF_COLUMNS_IN_TABLE = "prefs.noOfColumnsInTable"; // int
+   public static final String F_REFRESH_INTERVAL = "prefs.refreshInterval"; // int
    
    //Preference IDs for Participant/Process Worklist Column Configuration and 
    public static final String P_WORKLIST_PART_CONF = "worklist-participant-columns";

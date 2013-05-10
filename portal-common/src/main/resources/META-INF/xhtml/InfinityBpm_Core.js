@@ -29,6 +29,8 @@ if ( !InfinityBpm.Core) {
     var iceHandlerRegistered = false;
     var logoutUri = "";
 
+    var timerInfo = {};
+
     // define module private functions
 
     function debug(msg) {
@@ -312,6 +314,26 @@ if ( !InfinityBpm.Core) {
         debug("Navigating to inner frame target: " + innerLocation);
         mainIppFrame.location = innerLocation;
       }
+    }
+
+    // Supports multiple times
+    function startTimer(id, interval) {
+	if(isThisIppWindow(window)) {
+		var timerId = window.setInterval(new TimerHandler(id).timerInvoked, interval);
+		timerInfo[id] = timerId;
+	} else {
+		parent.InfinityBpm.Core.startTimer(id, interval);
+	}
+    }
+
+    function stopTimer(id) {
+		if(isThisIppWindow(window)) {
+			if (timerInfo[id]) {
+				window.clearInterval(timerInfo[id]);
+			}
+		} else {
+			parent.InfinityBpm.Core.stopTimer(id);
+		}
     }
 
     function setLogoutUri(uri) {
@@ -627,6 +649,14 @@ if ( !InfinityBpm.Core) {
         onPortalMainLoaded(event);
       },
 
+      startTimer : function(id, interval) {
+	  startTimer(id, interval);
+      },
+
+      stopTimer : function(id) {
+	  stopTimer(id);
+      },
+
       onPortalMainResized : function() {
         onPortalMainResized();
       },
@@ -758,3 +788,16 @@ if ( !InfinityBpm.ProcessPortal) {
     };
   };
 } // !InfinityBpm.ProcessPortal
+
+
+function TimerHandler(id) {
+	this.id = id;
+	this.timerInvoked = timerInvoked;
+    function timerInvoked() {
+	var timeField = document.getElementById("timerForm:timerInvoked");
+	if (timeField) {
+		timeField.value = id + ":" + new Date().getTime();
+			iceSubmitPartial(document.getElementById("timerForm"), timeField);
+	}
+    }
+}

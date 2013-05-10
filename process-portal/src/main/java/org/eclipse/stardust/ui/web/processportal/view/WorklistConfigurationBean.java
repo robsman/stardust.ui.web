@@ -20,8 +20,11 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
+import org.eclipse.stardust.ui.web.common.views.PortalConfigurationListener;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.common.WorkflowTimerHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.ParticipantWorklistColumnConfigurationBean;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.ProcessWorklistColumnConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FilterProviderUtil;
@@ -31,7 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author Subodh.Godbole
  * 
  */
-public class WorklistConfigurationBean implements InitializingBean, ConfirmationDialogHandler
+public class WorklistConfigurationBean implements InitializingBean, ConfirmationDialogHandler, PortalConfigurationListener
 {
    public static final String BEAN_NAME = "worklistConfigurationBean";
 
@@ -39,6 +42,8 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    private String configFilterProviders;
    private ConfirmationDialog worklistConfirmationDialog;
    
+   private Integer refreshInterval = null;
+
    //Participant Table
    private ParticipantWorklistColumnConfigurationBean participantWorklistConfBean;
    private boolean participantsSectionExpanded;
@@ -66,7 +71,13 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
     */
    public void afterPropertiesSet() throws Exception
    {
-      configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();     
+      configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();
+      UserPreferencesHelper userPrefsHelper = getUserPreferencesHelper(PortalConfiguration.getInstance()
+            .getPrefScopesHelper()
+            .getSelectedPreferenceScope());
+      refreshInterval = userPrefsHelper.getInteger(UserPreferencesEntries.V_WORKLIST,
+            UserPreferencesEntries.F_REFRESH_INTERVAL, 0);
+      refreshInterval = refreshInterval == 0 ? null : refreshInterval;
       initializeWorklistColumnConfiguration();
    }
 
@@ -78,18 +89,44 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
       setFilterProviderPreferences(configFilterProviders);
       FilterProviderUtil.getInstance().initializeFilterProviders();
       
+      PreferenceScope prefScope = PortalConfiguration.getInstance().getPrefScopesHelper().getSelectedPreferenceScope();
+      UserPreferencesHelper userPrefsHelper = getUserPreferencesHelper(prefScope);
+      refreshInterval = refreshInterval == null ? 0 : refreshInterval;
+      userPrefsHelper.setString(UserPreferencesEntries.V_WORKLIST,
+            UserPreferencesEntries.F_REFRESH_INTERVAL, String.valueOf(refreshInterval));
+      refreshInterval = refreshInterval == 0 ? null : refreshInterval;
+      resetTimer();
+
       saveWorklistColumnConfiguration();
       
       MessageDialog.addInfoMessage(MessagePropertiesBean.getInstance().getString(
             "views.worklistPanelConfiguration.saveSuccessful"));
    }
 
+   /**
+    * Stop the timer on save/reset of config, and restart
+    */
+   public void resetTimer()
+   {
+      WorkflowTimerHandler.getInstance().stopTimer();
+      if (refreshInterval != null && refreshInterval > 0)
+      {
+         WorkflowTimerHandler.getInstance().startTimer();
+      }
+   }
+
+   /**
+    *
+    */
    public void reset()
    {
+      PreferenceScope prefScope = PortalConfiguration.getInstance().getPrefScopesHelper().getSelectedPreferenceScope();
       getUserPreferencesHelper().resetValue(UserPreferencesEntries.V_WORKLIST, UserPreferencesEntries.F_PROVIDERS);
+      getUserPreferencesHelper(prefScope).resetValue(UserPreferencesEntries.V_WORKLIST, UserPreferencesEntries.F_REFRESH_INTERVAL);
       resetWorklistColumnConfiguration();
       FacesUtils.clearFacesTreeValues();
       configFilterProviders = FilterProviderUtil.getInstance().getFilterProviderPreferences();
+      resetTimer();
    }
 
    /**
@@ -181,6 +218,16 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
       return UserPreferencesHelper.getInstance(UserPreferencesEntries.M_WORKFLOW, PreferenceScope.PARTITION);
    }
 
+   /**
+    * @return
+    */
+   private UserPreferencesHelper getUserPreferencesHelper(PreferenceScope prefScope)
+   {
+      // Filter Providers are always saved in PARTITION and never at USER
+      // scope
+      return UserPreferencesHelper.getInstance(UserPreferencesEntries.M_WORKFLOW, prefScope);
+   }
+
    public String getConfigFilterProviders()
    {
       return configFilterProviders;
@@ -194,6 +241,26 @@ public class WorklistConfigurationBean implements InitializingBean, Confirmation
    public ConfirmationDialog getWorklistConfirmationDialog()
    {
       return worklistConfirmationDialog;
+   }
+
+   public Integer getRefreshInterval()
+   {
+      return refreshInterval;
+   }
+
+   public void setRefreshInterval(Integer refreshInterval)
+   {
+      this.refreshInterval = refreshInterval;
+   }
+
+   public boolean preferencesScopeChanging(PreferenceScope pScope)
+   {
+      return true;
+   }
+
+   public void preferencesScopeChanged(PreferenceScope pScope)
+   {
+     refreshInterval = null;
    }
 
    public ParticipantWorklistColumnConfigurationBean getParticipantWorklistConfBean()

@@ -196,7 +196,6 @@ public class IppDocumentInputController extends DocumentInputController implemen
             "views.genericRepositoryView.specificDocument.uploadFile", label));
       attributes.setOpenDocumentFlag(openDocument);
       attributes.setEnableOpenDocument(enableOpenDocument);
-
       fileUploadDialog.setCallbackHandler(new FileUploadCallbackHandler()
       {
          public void handleEvent(FileUploadEvent eventType)
@@ -210,7 +209,12 @@ public class IppDocumentInputController extends DocumentInputController implemen
                   rawDocument.setDescription(fileWrapper.getDescription());
                   rawDocument.setComments(fileWrapper.getComments());
                   rawDocument.setDocumentType(fileWrapper.getDocumentType());
-
+                  if(fileWrapper.isOpenDocument())
+                  {
+                     // disableAutoDownload : To Suppress autoDownload for
+                     // unsupportedFileType on DocumentViewer open after upload
+                     disableAutoDownload = true;
+                  }
                   if (!fireEvent(DocumentInputEventType.TO_BE_UPLOADED, getFileSystemDocument(rawDocument)))
                   {
                      setValue(rawDocument);
@@ -528,4 +532,5 @@ public class IppDocumentInputController extends DocumentInputController implemen
    {
       this.enableOpenDocument = enableOpenDocument;
    }
+
 }

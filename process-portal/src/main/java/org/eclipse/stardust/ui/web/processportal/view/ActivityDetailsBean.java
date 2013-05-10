@@ -152,7 +152,11 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       COMPLETE,
       SUSPEND,
-      SAVE
+      SAVE,
+      SUSPEND_TO_USER_WORKLIST,
+      SAVE_TO_USER_WORKLIST,
+      SUSPEND_TO_DEFAULT_PERFORMER,
+      SAVE_TO_DEFAULT_PERFORMER
    }
 
    private String title;
@@ -208,6 +212,8 @@ public class ActivityDetailsBean extends UIComponentBean
    private boolean notesPopupOpened = false;
    private boolean linkedProcessPopupOpened = false;
    private boolean switchProcessPopupOpened = false;
+   private boolean suspendActivityPopupOpened = false;
+   private boolean saveActivityPopupOpened = false;
    private boolean casePopupOpened = false;
    private boolean supportsProcessDocuments = false;
    private QualityAssuranceCodesBean qaCodeIframeBean;
@@ -618,6 +624,8 @@ public class ActivityDetailsBean extends UIComponentBean
          closeLinkedProcessIframePopup();
          closeCaseIframePopup();
          qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         closeSuspendActivityIframePopup();
+         closeSaveActivityIframePopup();
          break;
       case CLOSED:
          closeProcessAttachmentsIframePopup();
@@ -626,6 +634,8 @@ public class ActivityDetailsBean extends UIComponentBean
          closeLinkedProcessIframePopup();
          closeCaseIframePopup();
          qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         closeSuspendActivityIframePopup();
+         closeSaveActivityIframePopup();
          break;
       }
    }
@@ -1189,6 +1199,26 @@ public class ActivityDetailsBean extends UIComponentBean
    }
 
    /**
+    * @param event
+    */
+   public void suspendToUserWorklistAction(ActionEvent event)
+   {
+      closeSuspendActivityIframePopup();
+      processActivityInstance(WorkflowAction.SUSPEND_TO_USER_WORKLIST);
+      renderSession();
+   }
+
+   /**
+    * @param event
+    */
+   public void suspendToDefaultPerformerAction(ActionEvent event)
+   {
+      closeSuspendActivityIframePopup();
+      processActivityInstance(WorkflowAction.SUSPEND_TO_DEFAULT_PERFORMER);
+      renderSession();
+   }
+
+   /**
     * 
     */
    public void suspendCurrentActivity()
@@ -1202,6 +1232,26 @@ public class ActivityDetailsBean extends UIComponentBean
    public void saveAction(ActionEvent event)
    {
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE);
+   }
+
+   /**
+    * @param event
+    */
+   public void saveToUserWorklistAction(ActionEvent event)
+   {
+      closeSaveActivityIframePopup();
+      showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_USER_WORKLIST);
+      renderSession();
+   }
+
+   /**
+    * @param event
+    */
+   public void saveToDefaultPerformerAction(ActionEvent event)
+   {
+      closeSaveActivityIframePopup();
+      showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_DEFAULT_PERFORMER);
+      renderSession();
    }
 
    public void suspendAndSaveCurrentActivity()
@@ -1381,6 +1431,224 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
    
+   public boolean isSaveActivityPopupOpened()
+   {
+      return saveActivityPopupOpened;
+   }
+
+   /**
+    *
+    */
+   public void toggleSaveActivityIframePopup()
+   {
+      if (saveActivityPopupOpened)
+      {
+         closeSaveActivityIframePopup();
+      }
+      else
+      {
+         if (isProcessAttachmentsPopupOpened())
+         {
+            closeProcessAttachmentsIframePopup();
+         }
+         if (isNotesPopupOpened())
+         {
+            closeNotesIframePopup();
+         }
+         if (isLinkedProcessPopupOpened())
+         {
+            closeLinkedProcessIframePopup();
+         }
+         if (isSwitchProcessPopupOpened())
+         {
+            closeSwitchProcessIframePopup();
+         }
+         if(isCasePopupOpened())
+         {
+            closeCaseIframePopup();
+         }
+         if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
+         {
+            qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         openSaveActivityIframePopup();
+      }
+   }
+
+   /**
+    * closes the popup from portal application like completing activity
+    */
+   public void closeSaveActivityIframePopup()
+   {
+      if (saveActivityPopupOpened)
+      {
+         String iFrameId = getSaveActivityIframePopupId();
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+
+         PortalApplication.getInstance().addEventScript(script);
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+         saveActivityPopupOpened = false;
+      }
+   }
+
+   /**
+    *
+    */
+   public void openSaveActivityIframePopup()
+   {
+      String iFrameId = getSaveActivityIframePopupId();
+      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+      + "/plugins/processportal/toolbar/suspendAndSaveIframePopup.iface?random=" + System.currentTimeMillis() + "'";
+
+      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
+            + getSwitchProcessIframePopupArgs() + ");";
+      PortalApplication.getInstance().addEventScript(script);
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+      saveActivityPopupOpened = true;
+   }
+
+   /**
+    * @return
+    */
+   public String getSaveActivityIframePopupArgs()
+   {
+      String advanceArgs =
+         "{anchorId:'ippSaveActivityAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+      return advanceArgs;
+   }
+
+   /**
+    * @return
+    */
+   public String getSaveActivityIframePopupId()
+   {
+      try
+      {
+         String iFrameId = "'SAS" + getActivityInstance().getOID() + "'";
+         return iFrameId;
+      }
+      catch (Exception e)
+      {
+         return "''"; // Consume Exception
+      }
+   }
+
+   public boolean isSuspendActivityPopupOpened()
+   {
+      return suspendActivityPopupOpened;
+   }
+
+   /**
+    *
+    */
+   public void toggleSuspendActivityIframePopup()
+   {
+      if (suspendActivityPopupOpened)
+      {
+         closeSuspendActivityIframePopup();
+      }
+      else
+      {
+         if (isProcessAttachmentsPopupOpened())
+         {
+            closeProcessAttachmentsIframePopup();
+         }
+         if (isNotesPopupOpened())
+         {
+            closeNotesIframePopup();
+         }
+         if (isLinkedProcessPopupOpened())
+         {
+            closeLinkedProcessIframePopup();
+         }
+         if (isSwitchProcessPopupOpened())
+         {
+            closeSwitchProcessIframePopup();
+         }
+         if(isCasePopupOpened())
+         {
+            closeCaseIframePopup();
+         }
+         if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
+         {
+            qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
+         openSuspendActivityIframePopup();
+      }
+   }
+
+   /**
+    * closes the popup from portal application like completing activity
+    */
+   public void closeSuspendActivityIframePopup()
+   {
+      if (suspendActivityPopupOpened)
+      {
+         String iFrameId = getSuspendActivityIframePopupId();
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+
+         PortalApplication.getInstance().addEventScript(script);
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+         suspendActivityPopupOpened = false;
+      }
+   }
+
+   /**
+    *
+    */
+   public void openSuspendActivityIframePopup()
+   {
+      String iFrameId = getSuspendActivityIframePopupId();
+      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+      + "/plugins/processportal/toolbar/suspendActivityIframePopup.iface?random=" + System.currentTimeMillis() + "'";
+
+      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
+            + getSwitchProcessIframePopupArgs() + ");";
+      PortalApplication.getInstance().addEventScript(script);
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+      suspendActivityPopupOpened = true;
+   }
+
+   /**
+    * @return
+    */
+   public String getSuspendActivityIframePopupArgs()
+   {
+      String advanceArgs =
+         "{anchorId:'ippSuspendAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+      return advanceArgs;
+   }
+
+   /**
+    * @return
+    */
+   public String getSuspendActivityIframePopupId()
+   {
+      try
+      {
+         String iFrameId = "'SA" + getActivityInstance().getOID() + "'";
+         return iFrameId;
+      }
+      catch (Exception e)
+      {
+         return "''"; // Consume Exception
+      }
+   }
+
    /**
     * 
     */
@@ -1411,6 +1679,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if(isCasePopupOpened())
          {
             closeCaseIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          qaCodeIframeBean.openQualityAssuranceCodesIframePopup();
       }
@@ -1565,6 +1841,46 @@ public class ActivityDetailsBean extends UIComponentBean
             params = getPinViewStatusParam();
 
             suspendAndSaveCurrentActivity();
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SUSPEND_TO_USER_WORKLIST:
+            params = getPinViewStatusParam();
+
+            suspendCurrentActivity(true, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SAVE_TO_USER_WORKLIST:
+            params = getPinViewStatusParam();
+
+            suspendAndSaveCurrentActivity(true, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SUSPEND_TO_DEFAULT_PERFORMER:
+            params = getPinViewStatusParam();
+
+            suspendCurrentActivity(false, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SAVE_TO_DEFAULT_PERFORMER:
+            params = getPinViewStatusParam();
+
+            suspendAndSaveCurrentActivity(false, true, false);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
@@ -2089,6 +2405,14 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
          }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
          openProcessAttachmentsIframePopup();
       }
    }
@@ -2209,6 +2533,14 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
          }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
          openNotesIframePopup();
       }
    }
@@ -2328,6 +2660,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          openLinkedProcessIframePopup();
       }
@@ -2457,6 +2797,14 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
          }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
          openSwitchProcessIframePopup();
       }
    }
@@ -2502,7 +2850,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSwitchAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    
@@ -2561,6 +2909,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          openCaseIframePopup();
       }

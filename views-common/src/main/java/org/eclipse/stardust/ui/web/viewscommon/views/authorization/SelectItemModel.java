@@ -25,13 +25,20 @@ public class SelectItemModel implements Serializable
 
    private static final long serialVersionUID = 1L;
    private Object value;
+   private Object valueObject;
    private String label;
    private boolean disable;
    private String allLabel;
 
    public SelectItemModel(String label, Object value, boolean disable)
    {
+      this(label, value, value, disable);
+   }
+
+   public SelectItemModel(String label, Object value, Object valueObject, boolean disable)
+   {
       this.value = value;
+      this.valueObject = valueObject;
       this.label = label;
       this.disable = disable;
       if(disable)
@@ -48,6 +55,16 @@ public class SelectItemModel implements Serializable
    public void setValue(Object value)
    {
       this.value = value;
+   }
+
+   public Object getValueObject()
+   {
+      return valueObject;
+   }
+
+   public void setValueObject(Object valueObject)
+   {
+      this.valueObject = valueObject;
    }
 
    public String getLabel()
@@ -69,5 +86,4 @@ public class SelectItemModel implements Serializable
    {
       this.disable = disable;
    }
-
 }

@@ -63,6 +63,11 @@ import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
@@ -75,6 +80,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPickList;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
@@ -108,6 +114,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -135,7 +142,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class WorklistTableBean extends UIComponentBean
       implements InitializingBean, DisposableBean,
       ActivityEventObserver, IUserObjectBuilder<WorklistTableEntry>, 
-      ICallbackHandler, Serializable,ViewEventHandler
+      ICallbackHandler, Serializable,ViewEventHandler,ConfirmationDialogHandler
 {
 
    protected final static String PROCESS_DEFINITION_MODEL = "carnotBcProcessInstanceFilter/processDefinitionModel";
@@ -180,6 +187,12 @@ public class WorklistTableBean extends UIComponentBean
    private Set<String> visibleDescriptorsIds;
    
    private boolean fetchAllDescriptors;
+
+   private boolean showResubmissionLink = false;
+
+   private ConfirmationDialog workListConfirmationDialog;
+
+   private ActivityInstance resubmitionActivity;
 
    private ProcessDefinition processDefintion;
    
@@ -313,13 +326,55 @@ public class WorklistTableBean extends UIComponentBean
       {
          String oidStr = org.eclipse.stardust.ui.web.common.util.FacesUtils.getRequestParameter("oid");
          Long oid = (oidStr != null) ? Long.parseLong(oidStr) : 0;
-
          ActivityInstance ai = getActivityObjectById(oid);
-         ActivityInstanceUtils.openActivity(ai);
+         Boolean resubmitActivity = Boolean.valueOf(org.eclipse.stardust.ui.web.common.util.FacesUtils.getRequestParameter("resubmitActivity"));
+         if (resubmitActivity)
+         {
+            resubmitionActivity = ai;
+            // For resubmition WorkList, confirmation dialog is show to reactivate
+            if (null == workListConfirmationDialog)
+            {
+               workListConfirmationDialog = new ConfirmationDialog(
+                     DialogContentType.WARNING, DialogActionType.YES_NO, null,
+                     DialogStyle.COMPACT, this);
+               workListConfirmationDialog.setTitle(MessagesViewsCommonBean.getInstance()
+                     .getString("common.confirm"));
+               workListConfirmationDialog.setMessage(this.getMessages().getString(
+                     "resubmit.confirm"));
+            }
+            workListConfirmationDialog.openPopup();
+         }
+         else
+         {
+            ActivityInstanceUtils.openActivity(ai);
+         }
+
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
+      }
+   }
+
+   /**
+    *
+    */
+   public void resubmitActivityInstance()
+   {
+      ActivityInstance ai = null;
+      try
+      {
+         ai = ActivityInstanceUtils.activate(resubmitionActivity);
+         ai = ServiceFactoryUtils.getWorkflowService().unbindActivityEventHandler(
+               ai.getOID(), "Resubmission");
+         ActivityInstanceUtils.openActivity(ai);
+      }
+      catch (Exception e)
+      {
+         MessageDialog.addErrorMessage(this.getMessages().getString("resubmit.error",
+               String.valueOf(resubmitionActivity.getOID())));
+         // TODO - Identify a way to handle when unbind fails, with AI
+         // state-Application
       }
    }
 
@@ -425,6 +480,11 @@ public class WorklistTableBean extends UIComponentBean
       else
       {
          preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
+         Object showResubmitLink = getParamFromView("showResubmitLink");
+         if (null != showResubmitLink)
+         {
+            showResubmissionLink = (Boolean)showResubmitLink;
+         }
       }
       
       worklistId = (String) getParamFromView("id");
@@ -669,6 +729,27 @@ public class WorklistTableBean extends UIComponentBean
       this.processPortalContext = processPortalContext;
    }
 
+   public ConfirmationDialog getWorkListConfirmationDialog()
+   {
+      return workListConfirmationDialog;
+   }
+
+   public boolean accept()
+   {
+      resubmitActivityInstance();
+      return true;
+   }
+
+   public boolean cancel()
+   {
+      return true;
+   }
+
+   public void setNeedUpdateForActvityEvent(Boolean needUpdateForActvityEvent)
+   {
+      this.needUpdateForActvityEvent = needUpdateForActvityEvent;
+   }
+
    /*
     * (non-Javadoc)
     * 
@@ -729,7 +810,7 @@ public class WorklistTableBean extends UIComponentBean
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
                   ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), pi.getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
-                  ai.getProcessInstanceOID(), ai, currentPerformerOID);
+                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
          }
          catch (Exception e)
          {
@@ -1355,4 +1436,5 @@ public class WorklistTableBean extends UIComponentBean
          return text;
       }
    }
+
 }

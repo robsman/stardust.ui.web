@@ -65,6 +65,9 @@ public class MimeTypesHelper implements Serializable
 
    public static final MIMEType X_MPEG = new MIMEType("audio/x-mpeg", "mp3", "document-music.png", "Audio");
 
+   public static final MIMEType CSV = new MIMEType("text/csv", "csv",
+         "document-excel-csv.png", "CSV");
+
    public MimeTypesHelper()
    {
       super();
@@ -228,5 +231,6 @@ public class MimeTypesHelper implements Serializable
       allMimeTypes.add(RPT_DESIGN);
       allMimeTypes.add(CSS);
       allMimeTypes.add(X_MPEG);
+      allMimeTypes.add(CSV);
    }
 }

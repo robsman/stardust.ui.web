@@ -54,8 +54,7 @@
    </bean>
 
    <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
-      scope="singleton">
-   </bean>
+      scope="singleton">   </bean>
 
    <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
       scope="session">
@@ -91,4 +90,5 @@
 		<property name="navigationProvider" ref="navigationProvider" />
 		<property name="preferenceProvider" ref="preferenceProvider"/>
 	</bean>
+   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"      scope="session" />
 </beans>

@@ -473,4 +473,14 @@
 		scope="session">
 	</bean>	
 		
+
+	<bean name="deputyManagementBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.DeputyManagementBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="createOrModifyDeputyPopupBean" class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.CreateOrModifyDeputyPopupBean"
+		scope="portalTab">
+	</bean>
+
 </beans>

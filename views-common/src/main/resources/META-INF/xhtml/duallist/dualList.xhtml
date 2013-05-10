@@ -1,0 +1,100 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		dualListModel* = Instance of dualListModel
+		listMinWidth = Numeric value in Pixel
+		listHeight = Numeric value in Pixel
+	-->
+
+	<ui:component>
+		<c:if test="#{empty listMinWidth}">
+			<c:set var="listMinWidth" value="300" />
+		</c:if>
+		<c:if test="#{empty listMinHeight}">
+			<c:set var="listHeight" value="150" />
+		</c:if>
+
+		<ice:panelGrid columns="3"
+			style="vertical-align: top; white-space: nowrap; text-align:center;">
+			<ice:outputLabel
+				value="#{views_common_msgPropsBean['dualList.available.header']}" />
+			<ice:outputLabel value="" />
+			<ice:outputLabel
+				value="#{views_common_msgPropsBean['dualList.selected.header']}" />
+			<ice:column>
+				<ice:selectManyListbox size="10" styleClass="icon-menu"
+					value="#{dualListModel.sourceSelected}"
+					style="min-width: #{listMinWidth}px; height: #{listHeight}px;">
+					<pc:automationTag value="auto-COM-dualList-Source" standAlone="false"/>
+					<c:forEach
+						items="#{dualListModel.source}"
+						var="source">
+						<f:selectItem itemLabel="#{source.label}"
+							itemValue="#{source.value}" itemDisabled="#{source.disable}" />
+					</c:forEach>
+				</ice:selectManyListbox>
+			</ice:column>
+			<ice:column>
+				<ice:panelGrid columns="1"
+					style="vertical-align: top;margin-bottom: ">
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink action="#{dualListModel.add}">
+							<pc:automationTag value="auto-COM-dualList-AddLink" standAlone="false"/>
+							<ice:outputText
+								value="#{views_common_msgPropsBean['dualList.add.label']}"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink action="#{dualListModel.addAll}">
+							<pc:automationTag value="auto-COM-dualList-AddAllLink" standAlone="false"/>
+							<ice:outputText
+								value="#{views_common_msgPropsBean['dualList.addAll.label']}"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink action="#{dualListModel.remove}">
+							<pc:automationTag value="auto-COM-dualList-RemoveLink" standAlone="false"/>
+							<ice:outputText
+								value="#{views_common_msgPropsBean['dualList.remove.label']}"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+					</ice:panelGroup>
+					<ice:panelGroup style="padding: 5px;width:80px;"
+						styleClass="button">
+						<ice:commandLink action="#{dualListModel.removeAll}">
+							<pc:automationTag value="auto-COM-dualList-RemoveAllLink" standAlone="false"/>
+							<ice:outputText
+								value="#{views_common_msgPropsBean['dualList.removeAll.label']}"
+								styleClass="action-link" escape="false" />
+						</ice:commandLink>
+					</ice:panelGroup>
+				</ice:panelGrid>
+			</ice:column>
+			<ice:column>
+				<ice:selectManyListbox size="10" styleClass="icon-menu"
+					value="#{dualListModel.targetSelected}"
+					style="min-width: #{listMinWidth}px; height: #{listHeight}px;">
+					<pc:automationTag value="auto-COM-dualList-Target" standAlone="false"/>
+					<c:forEach
+						items="#{dualListModel.target}"
+						var="target">
+						<f:selectItem itemLabel="#{target.label}"
+							itemValue="#{target.value}" itemDisabled="#{target.disable}" />
+					</c:forEach>
+				</ice:selectManyListbox>
+			</ice:column>
+		</ice:panelGrid>
+	</ui:component>
+</f:view>

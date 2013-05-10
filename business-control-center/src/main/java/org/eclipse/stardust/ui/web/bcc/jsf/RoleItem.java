@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 
 
@@ -157,6 +158,14 @@ public class RoleItem implements Serializable
    {
       loggedInUserCount -= count;
       loggedInUserCount = loggedInUserCount < 0 ? 0 : loggedInUserCount;
+   }
+
+   /**
+    * @return
+    */
+   public String getUniqueKey()
+   {
+      return ParticipantUtils.getParticipantUniqueKey(role);
    }
 
    // @Override

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +41,8 @@ import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEventType;
 import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
@@ -1154,6 +1157,30 @@ public class ProcessInstanceUtils
 
    }
    
+   /**
+    *
+    * @param pi
+    * @return
+    */
+   public static String getAbortedUser(ProcessInstance pi)
+   {
+      List<HistoricalEvent> events = pi.getHistoricalEvents();
+      String abortedUser = null;
+      Iterator<HistoricalEvent> i = events.iterator();
+
+      while (i.hasNext())
+      {
+         HistoricalEvent event = i.next();
+         if (event.getEventType().equals(HistoricalEventType.StateChange)
+               && event.getDetails().equals(ProcessInstanceState.Aborted))
+         {
+            abortedUser = "   (" + event.getUser().getId() + ")";
+            break;
+         }
+      }
+      return abortedUser;
+   }
+
    public static Map<String, String> getPriorityColorMap()
    {
       return PRIORITY_COLOR_MAP;

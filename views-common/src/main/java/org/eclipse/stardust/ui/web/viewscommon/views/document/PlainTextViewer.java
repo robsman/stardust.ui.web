@@ -22,7 +22,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 public class PlainTextViewer implements IDocumentViewer
 {
    private final String contentUrl = "/plugins/views-common/views/document/plainTextViewer.xhtml";
-   private final MIMEType[] mimeTypes = {MimeTypesHelper.TXT, MimeTypesHelper.XML, MimeTypesHelper.CSS};
+   private final MIMEType[] mimeTypes = {MimeTypesHelper.TXT, MimeTypesHelper.XML, MimeTypesHelper.CSS, MimeTypesHelper.CSV};
    private String content = "";
 
    /**

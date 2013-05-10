@@ -74,5 +74,4 @@ public interface ResourcePaths
 //   static final String V_roleManagerActivityInstanceDetailColumn = "/plugins/business-control-center/views/roleManagerActivityInstanceDetailColumn.xhtml";
    static final String V_trafficLightViewColumns = "/plugins/business-control-center/views/trafficLightViewColumns.xhtml";
    static final String V_MY_FAV_REPORT = "myReportsViewPanel";
-
 }

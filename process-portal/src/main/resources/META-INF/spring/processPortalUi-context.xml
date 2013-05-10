@@ -16,7 +16,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<!-- Workflow Execution Perspective -->
-	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true">
+	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true" 		controller="workflowPerspectiveEventHandler">
 		<ippui:preferences>
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/handbooks/execution-clients/pp_renovated/process-portal.html" />
@@ -51,8 +51,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/processportal/toolbar/workflowActionsAttachments.xhtml"
 			requiredView="activityPanel" />
 		
-		<ippui:toolbarSection name="workflowActionsExtension"			include="/plugins/processportal/toolbar/workflowActionsExtension.xhtml"			requiredView="activityPanel" />
-		<ippui:toolbarSection name="worklistPanelViewToolbar"
+		<ippui:toolbarSection name="workflowActionsExtension"			include="/plugins/processportal/toolbar/workflowActionsExtension.xhtml"			requiredView="activityPanel" />		<ippui:toolbarSection name="worklistPanelViewToolbar"
 			include="/plugins/processportal/toolbar/worklistPanelViewToolbar.xhtml"
 			requiredView="worklistPanel" />
 			

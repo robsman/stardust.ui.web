@@ -32,6 +32,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
 import org.eclipse.stardust.engine.api.query.LinkDirection;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -40,6 +41,7 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
@@ -104,6 +106,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean supportsProcessAttachments;
    private boolean abortProcess;
    private String state;
+   private String abortedUser;
 
    private boolean overviewPanelExpanded = true;
    private boolean descriptorPanelExpanded = false;
@@ -179,10 +182,40 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       setDisableSpawnProcess(ProcessInstanceUtils.isTerminatedProcessInstances(sourceList));
       state = MessagesViewsCommonBean.getInstance().getString(
             STATE_PREFIX + processInstance.getState().getName().toLowerCase());
+
+      if(processInstance.getState().equals(ProcessInstanceState.Aborted))
+      {
+         setAbortedUser(processInstance);
+      }
+
    
       trace.debug("<----------- ProcessInstanceDetailsBean Initialize");
    }
    
+   /**
+    *  TODO - Identify a better way to getAborting User for current PI
+    * @param processInstance
+    */
+   private void setAbortedUser(ProcessInstance processInstance)
+   {
+      ProcessInstanceQuery query = new ProcessInstanceQuery();
+      query.getFilter()
+            .and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.isEqual(processInstance.getOID()));
+      query.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+
+      List<ProcessInstance> pis = ServiceFactoryUtils.getQueryService()
+            .getAllProcessInstances(query);
+
+      Iterator<ProcessInstance> iter = pis.iterator();
+
+      while (iter.hasNext())
+      {
+         ProcessInstance pi = iter.next();
+         abortedUser = ProcessInstanceUtils.getAbortedUser(pi);
+      }
+
+   }
+
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.common.event.ViewEventHandler#handleEvent(org.eclipse.stardust.ui.web.common.event.ViewEvent)
     */
@@ -947,7 +980,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void setDisableSpawnProcess(boolean disableSpawnProcess)
    {
       this.disableSpawnProcess = disableSpawnProcess;
+   }
+
+   public String getAbortedUser()
+   {
+      return abortedUser;
    }  
    
    
+
 }

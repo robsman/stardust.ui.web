@@ -32,6 +32,12 @@
 		</ice:panelGroup>
 	</ice:panelGroup>
 
+	<ice:panelGroup rendered="#{col.columnName == 'Status'}">
+		<ice:outputLabel value="#{row.state}" style="font-weight: bold;color:black;"/>
+		<ice:outputLabel value="#{row.abortedUser}"
+			rendered="#{row.abortedUser !=null}" style="font-weight: bold;color:black;"/>
+	</ice:panelGroup>
+
 	<ice:panelGroup rendered="#{col.columnName == 'Priority'}"
 		styleClass="#{row.oldPriority eq row.priority ? '' : 'priorityChanged'}">
 		<ice:panelGroup rendered="#{row.canModifyProcessInstance}">

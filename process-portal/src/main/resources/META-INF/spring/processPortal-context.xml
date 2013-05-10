@@ -33,6 +33,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		class="org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean"
 		scope="session" />
 
+	 <bean name="workflowPerspectiveEventHandler" class="org.eclipse.stardust.ui.web.processportal.WorkflowPerspectiveEventHandler"
+        scope="session">
+   </bean>
+
 	<bean name="sessionContext"
 		class="org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext"
 		scope="session" />
@@ -123,6 +127,11 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 	<bean name="pollingProperties"
 		class="org.eclipse.stardust.ui.web.processportal.PollingProperties"
+		scope="session" />
+
+
+	<bean name="workflowTimer"
+		class="org.eclipse.stardust.ui.web.processportal.common.WorkflowTimerHandler"
 		scope="session" />
 
 	<bean name="selectProcessPopup"

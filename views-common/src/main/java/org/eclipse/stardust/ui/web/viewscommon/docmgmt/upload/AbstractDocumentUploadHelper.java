@@ -353,6 +353,8 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
 
          if (fileWrapper.isOpenDocument())
          {
+            // disableAutoDownload : To Suppress autoDownload for unsupportedFileType on
+            // DocumentViewer open after upload
             viewParam.put("disableAutoDownload", true);
             openDocument(updatedDocument);
          }

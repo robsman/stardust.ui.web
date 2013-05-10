@@ -60,6 +60,12 @@
 				value="#{messages_bcc['views.activityCriticalityManagerView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false" />
 		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<pc:automationTag value="auto-BCC-LP-DeputyView" standAlone="false"/>
+			<f:param name="viewId" value="deputyTeamMemberView" />
+			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.deputyTeamMemberView.title']} &amp;raquo;"
+				styleClass="action-link" escape="false" />
+		</ice:commandLink>
 	</ice:panelGrid>
 	
 </f:view>

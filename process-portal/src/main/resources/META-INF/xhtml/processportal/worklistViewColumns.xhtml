@@ -11,19 +11,19 @@
 		row*= Instance of Row Class
 		col*= Instance of ColumnPreference 
 	 -->
-
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 
 		<!--	Overview	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Overview'}">
 			<ice:panelGrid columns="2" style="width:100%">
 				<ice:panelGrid columns="1">
-					<ice:commandLink disabled="#{!row.activatable}"
+					<ice:commandLink disabled="#{(!row.activatable) and (!row.showResubmissionLink)}"
 						value="#{row.processName}" style="white-space: nowrap;"
 						actionListener="#{worklistTableBean.openActivity}" onclick="Event.stop(event);"
 						title="#{worklistTableBean.messages['tooltip.openActivity']}">
 						<pc:automationTag value="auto-PP-WorkList-DataTable-Overview" standAlone="false"/>
 						<f:param name="oid" value="#{row.oid}" />
+						<f:param name="resubmitActivity" value="#{row.showResubmissionLink}" />
 						<ice:graphicImage rendered="#{row.renderIcon}" style="margin-left:5px; vertical-align:middle"
 							value="#{row.iconPath}"
 							title="" />
