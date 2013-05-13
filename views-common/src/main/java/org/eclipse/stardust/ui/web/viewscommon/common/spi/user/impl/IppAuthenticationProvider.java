@@ -44,18 +44,8 @@ public class IppAuthenticationProvider implements AuthenticationProvider
    public void initialize(ServletContext servletContext, HttpServletRequest request,
          HttpServletResponse response)
    {
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#IppAuthenticationProvider()....");
-      }
       infinityStartup = new InfinityStartup(servletContext, request, response);
       infinityStartup.createSession();
-      
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#IppAuthenticationProvider initialized....");
-      }
-      
    }
 
    /* (non-Javadoc)

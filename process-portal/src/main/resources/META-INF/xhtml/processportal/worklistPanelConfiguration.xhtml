@@ -37,7 +37,36 @@
 
 		<ice:panelGroup styleClass="clearing" />
 
+			<ice:panelGroup styleClass="heading" style="width: 100%">
+			<ice:outputText value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.refreshInterval.title']}" />
+		</ice:panelGroup>
+		<ice:panelGrid columns="3" cellspacing="2px" cellpadding="2px">
+			<ice:outputLabel
+				value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.refreshInterval']}#{common_msgPropsBean['common.colon']}"
+				styleClass="label-form" />
+			<ice:panelGroup>
+				<ice:panelGrid columns="2" cellspacing="0px" cellpadding="0px">
+					<ice:inputText partialSubmit="true" immediate="true"
+						id="refreshInterval" maxlength="3" style="width: 30px"
+						value="#{worklistConfigurationBean.refreshInterval}">
+						<f:validateLongRange maximum="100" minimum="1" />
+						<pc:automationTag value="auto-PP-WorklistPnlConf-RefreshInterval"
+							standAlone="false" />
+					</ice:inputText>
+				</ice:panelGrid>
+			</ice:panelGroup>
 
+			<ice:panelGroup >
+				<ice:outputLabel styleClass="label-desc"
+					value="#{processportal_msgPropsBean['views.worklistPanelConfiguration.refreshIntMsg']}" />
+			</ice:panelGroup>
+		</ice:panelGrid>
+		<ice:panelGrid columns="2">
+			<ice:message styleClass="iceMsgImage" id="refIntervalErrorImage"
+				for="refreshInterval" showDetail="false" showSummary="false" />
+			<ice:message id="refIntervalError" for="refreshInterval" />
+		</ice:panelGrid>
+		
 		<ice:panelCollapsible
 			expanded="#{worklistConfigurationBean.participantsSectionExpanded}">
 			<f:facet name="header">
