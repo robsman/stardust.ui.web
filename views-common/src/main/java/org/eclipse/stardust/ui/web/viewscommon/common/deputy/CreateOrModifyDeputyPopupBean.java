@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IParametricCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DateUtils;
@@ -80,7 +81,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
    List<ModelParticipantInfo> modelParticipantInfoList;
    UserQuery query;
 
-   private IParametricCallbackHandler callbackHandler;
+   private ParametricCallbackHandler callbackHandler;
    private ValidationMessageBean validationMessageBean = new ValidationMessageBean();
 
    /**
@@ -105,7 +106,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
     * @param modifyMode
     * @param callbackHandler
     */
-   public void openPopup(DeputyTableEntry deputyTableEntry, User user, IParametricCallbackHandler callbackHandler)
+   public void openPopup(DeputyTableEntry deputyTableEntry, User user, ParametricCallbackHandler callbackHandler)
    {
       this.deputyTableEntry = deputyTableEntry;
       this.user = user;
@@ -203,7 +204,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
                   false));
          }
       }
-      dualListModel.setSource(assignedList);
+      dualListModel.setFilteredSource(assignedList);
 
       // Selected Participants
       List<SelectItemModel> assignablesList = new ArrayList<SelectItemModel>();
@@ -212,7 +213,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
          assignablesList.add(new SelectItemModel(ModelHelper.getParticipantName(participant), ParticipantUtils
                .getParticipantUniqueKey(participant), participant, false));
       }
-      dualListModel.setTarget(assignablesList);
+      dualListModel.setFilteredTarget(assignablesList);
    }
 
    /**
