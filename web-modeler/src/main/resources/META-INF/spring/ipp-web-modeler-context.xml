@@ -26,6 +26,8 @@
 
 	<bean name="webModelerModelManagementStrategy" class="org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy" scope="prototype" />
 
+	<bean name="defaultClassLoaderProvider" class="org.eclipse.stardust.ui.web.modeler.marshaling.DefaultClassLoaderProvider" scope="prototype" />
+
 	<bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
 		<qualifier value="default" />
 	</bean>

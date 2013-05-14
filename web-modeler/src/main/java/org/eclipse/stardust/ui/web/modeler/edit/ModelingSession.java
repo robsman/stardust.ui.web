@@ -23,6 +23,8 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
+import org.eclipse.stardust.ui.web.modeler.marshaling.DefaultClassLoaderProvider;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
@@ -49,6 +51,9 @@ public class ModelingSession
    @Resource(name="webModelerModelManagementStrategy")
    private ModelManagementStrategy modelManagementStrategy;
 
+   @Resource(name="defaultClassLoaderProvider")
+   private ClassLoaderProvider classLoaderProvider;
+
    @Resource
    private ModelPersistenceService modelPersistenceService;
 
@@ -66,6 +71,12 @@ public class ModelingSession
       protected ModelManagementStrategy modelManagementStrategy()
       {
          return ModelingSession.this.modelManagementStrategy();
+      }
+
+      @Override
+      protected ClassLoaderProvider classLoaderProvider()
+      {
+         return ModelingSession.this.classLoaderProvider();
       }
    };
 
@@ -101,6 +112,11 @@ public class ModelingSession
    public ModelManagementStrategy modelManagementStrategy()
    {
       return modelManagementStrategy;
+   }
+
+   public ClassLoaderProvider classLoaderProvider()
+   {
+      return classLoaderProvider;
    }
 
    /**

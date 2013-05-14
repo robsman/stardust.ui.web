@@ -665,21 +665,30 @@ define(
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
 							continue;
 						}
+
 						if (accessPoint.dataType == "primitive") {
-							route += "var "+ accessPoint.id+";\n";
-							route +="if(request.headers.get('"        + accessPoint.id + "')!=null){\n"
-							route += accessPoint.id+ " =  request.headers.get('"        + accessPoint.id + "');\n";
+							route += "var " + accessPoint.id + ";\n";
+							route += "if(request.headers.get('"
+									+ accessPoint.id + "') != null){\n";
+							route += accessPoint.id
+									+ " =  request.headers.get('"
+									+ accessPoint.id + "');\n";
 							route += "}\n";
 
-						}
-						if (accessPoint.dataType == "struct") {
-							route += "var "+ accessPoint.id+";\n";
-							route +="if(request.headers.get('"+ accessPoint.id + "')!=null){\n"
-							route += accessPoint.id  + " =  eval('(' + request.headers.get('"+ accessPoint.id + "')+ ')');\n";
+						} else if (accessPoint.dataType == "struct") {
+							route += "var " + accessPoint.id + ";\n";
+							route += "if(request.headers.get('"
+									+ accessPoint.id + "') != null){\n";
+							route += accessPoint.id
+									+ " =  eval('(' + request.headers.get('"
+									+ accessPoint.id + "')+ ')');\n";
 							route += "}\n";
 
+						} else {
+							route += "      var " + accessPoint.id
+									+ " =  eval('(' + request.headers.get('"
+									+ accessPoint.id + "')+ ')');\n";
 						}
-
 					}
 
 					route += "\n";
@@ -696,8 +705,9 @@ define(
 									.replace(new RegExp("\n", 'g'), " ")
 									.replace(new RegExp("<", 'g'), "&lt;")
 									.replace(new RegExp(">", 'g'), "&gt;")
-									.replace(new RegExp("&nbsp;", 'g'), "&amp;nbsp;")
-									.replace(new RegExp("{{", 'g'), "\" + ")
+									.replace(new RegExp("&nbsp;", 'g'),
+											"&amp;nbsp;").replace(
+											new RegExp("{{", 'g'), "\" + ")
 									.replace(new RegExp("}}", 'g'), " + \"")
 							+ "\";\n";
 

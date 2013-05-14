@@ -9,6 +9,8 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 
@@ -57,6 +59,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    protected abstract EObjectUUIDMapper eObjectUUIDMapper();
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
+
+   protected abstract ClassLoaderProvider classLoaderProvider();
 
    private ModelBuilderFacade modelBuilderFacade;
 
@@ -253,7 +257,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                      DirectionType.OUT_LITERAL.getLiteral());
             }
-            else {
+            else
+            {
                formalParameterJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                      DirectionType.INOUT_LITERAL.getLiteral());
             }
@@ -875,7 +880,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   {
                      if (DirectionType.INOUT_LITERAL == accessPoint.getDirection())
                      {
-                        // skip INOUT access points since they were already added for IN direction.
+                        // skip INOUT access points since they were already added for IN
+                        // direction.
                         continue;
                      }
                      JsonObject accessPointJson = new JsonObject();
@@ -1135,7 +1141,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY, startEventSymbol.getYPos()
             + laneOffsetY);
 
-      //set default height and width if not defined
+      // set default height and width if not defined
 
       int width = startEventSymbol.getWidth();
 
@@ -1199,7 +1205,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       setNodeSymbolCoordinates(eventSymbolJson, endEventSymbol);
 
-      //set default height and width if not defined
+      // set default height and width if not defined
       int width = endEventSymbol.getWidth();
       if ( -1 == width)
       {
@@ -1250,7 +1256,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventSymbol.getElementOid());
 
-      //set default height and width if not defined
+      // set default height and width if not defined
       int width = eventSymbol.getWidth();
       if ( -1 == width)
       {
@@ -1438,11 +1444,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (event.getType().getId().equals("manual"))
          {
-            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "manualTrigger");
+            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY)
+                  .getAsJsonObject()
+                  .addProperty("carnot:engine:integration::overlay", "manualTrigger");
          }
          else if (event.getType().getId().equals("scan"))
          {
-            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject().addProperty("carnot:engine:integration::overlay", "scanEvent");
+            eventJson.get(ModelerConstants.ATTRIBUTES_PROPERTY)
+                  .getAsJsonObject()
+                  .addProperty("carnot:engine:integration::overlay", "scanEvent");
          }
       }
 
@@ -1462,7 +1472,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       catch (ObjectNotFoundException ex)
       {
-         //No participant found - FULL ID stays null
+         // No participant found - FULL ID stays null
       }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
@@ -1872,7 +1882,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                ModelerConstants.BINDING_DATA_FULL_ID_PROPERTY, bindingDataFullID);
       }
 
-
       conditionalPerformerJson.addProperty(ModelerConstants.BINDING_DATA_PATH_PROPERTY,
             conditionalPerformer.getDataPath());
       conditionalPerformerJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -1956,6 +1965,19 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       loadAttributes(org, orgJson);
 
       return orgJson;
+   }
+
+   /**
+    * For testing population of implicit Access Points for Java-typed applications.
+    *
+    * TODO Remove
+    *
+    * @param serializabe
+    * @return
+    */
+   public String test(Serializable serializabe)
+   {
+      return null;
    }
 
    /**
@@ -2097,6 +2119,164 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          loadAttributes(accessPoint, accessPointJson);
       }
 
+      // Retrieve implicit Java Access Points
+
+      // TODO Other Java Application Types
+
+      if (application.getType() != null
+            && (application.getType().getId().equals("plainJava")
+                  || application.getType().getId().equals("???sessionBean") || application.getType()
+                  .getId()
+                  .equals("???springBean")))
+      {
+         if (hasNotJsonNull(contextsJson, ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
+         {
+            applicationContextJson = contextsJson.get(
+                  ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY).getAsJsonObject();
+         }
+         else
+         {
+            applicationContextJson = new JsonObject();
+
+            contextsJson.add(ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY,
+                  applicationContextJson);
+
+            accessPointsJson = new JsonArray();
+
+            applicationContextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY,
+                  accessPointsJson);
+         }
+
+         // Retrieve Class from SPI and do reflection
+
+         // TODO Inject Class Loader SPI here
+
+         ClassLoader classLoader = classLoaderProvider().classLoader();
+
+         // String classPath = getModelBuilderFacade().getAttributeValue(
+         // getModelBuilderFacade().getAttribute(application,
+         // "carnot:engine:className"));
+         // String methodSignature = getModelBuilderFacade().getAttributeValue(
+         // getModelBuilderFacade().getAttribute(application,
+         // "complete(com.sungard.leo.TestSerializable)"));
+
+         // For testing
+
+         String classPath = getClass().getName();
+         String methodSignature = "test(java.io.Serializable)";
+
+         System.out.println("Classpath: " + classPath);
+         System.out.println("Method Signature: " + methodSignature);
+
+         String methodName = methodSignature.split("\\(")[0];
+
+         System.out.println("Method Name: " + methodName);
+
+         String signature = methodSignature.split("\\(")[1];
+
+         signature = signature.substring(0, signature.length() - 1);
+
+         String[] parameterClassNames = signature.split(",");
+         Class[] parameterClasses = new Class[parameterClassNames.length];
+
+         try
+         {
+            for (int n = 0; n < parameterClassNames.length; ++n)
+            {
+               System.out.println("Adding Parameter Class: " + parameterClassNames[n]);
+               parameterClasses[n] = classLoader.loadClass(parameterClassNames[n]);
+            }
+
+            Class type = classLoader.loadClass(classPath);
+
+            // TODO obtain method by signature
+
+            Method method = type.getMethod(methodName, parameterClasses);
+            JsonObject accessPointJson;
+
+            // Process arguments
+
+            for (int n = 0; n < method.getParameterTypes().length; ++n)
+            {
+               accessPointJson = new JsonObject();
+
+               accessPointsJson.add(accessPointJson);
+               accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     DirectionType.IN_LITERAL.toString());
+
+               // TODO Handle Arrays etc.
+
+               if (method.getParameterTypes()[n].isPrimitive())
+               {
+                  // TODO Dispatch type names
+                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
+                        method.getParameterTypes()[n].getName() + n);
+                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                        method.getParameterTypes()[n].getName() + n);
+                  accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+                  accessPointJson.addProperty(
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+                        method.getParameterTypes()[n].getName());
+               }
+               else
+               {
+                  accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, "object" + n);
+                  accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, "object"
+                        + n);
+                  accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        "serializable");
+                  accessPointJson.addProperty("javaClass",
+                        method.getParameterTypes()[n].getName());
+               }
+            }
+
+            // Return type
+
+            accessPointJson = new JsonObject();
+
+            accessPointsJson.add(accessPointJson);
+            accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, "returnValue");
+            accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, "returnValue");
+            accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                  DirectionType.OUT_LITERAL.toString());
+
+            if (method.getReturnType() != null)
+            {
+               if (method.getReturnType().isPrimitive())
+               {
+                  // TODO Dispatch type
+
+                  accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+                  accessPointJson.addProperty(
+                        ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+                        method.getReturnType().getName());
+               }
+               else
+               {
+                  accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                        "serializable");
+                  accessPointJson.addProperty("javaClass", method.getReturnType()
+                        .getName());
+               }
+            }
+         }
+         catch (SecurityException e)
+         {
+            e.printStackTrace();
+         }
+         catch (NoSuchMethodException e)
+         {
+            e.printStackTrace();
+         }
+         catch (ClassNotFoundException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+
       return applicationJson;
    }
 
@@ -2134,7 +2314,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       annotationSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
             annotationSymbol.getYPos() + laneOffsetY);
 
-      //set default height and width if not defined
+      // set default height and width if not defined
       int width = annotationSymbol.getWidth();
       int height = annotationSymbol.getHeight();
       if ( -1 == width)
@@ -2241,7 +2421,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          if (dataFlowJson != null)
          {
-            if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+            if (hasNotJsonNull(dataFlowJson,
+                  ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
             {
                connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
                      dataMappingConnection.getActivitySymbol().getElementOid());
@@ -2333,7 +2514,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
          DiagramType containingDiagram = findContainingDiagram(transitionConnection);
-         if(containingDiagram != null)
+         if (containingDiagram != null)
          {
             connectionJson.addProperty(
                   ModelerConstants.TO_MODEL_ELEMENT_OID,
@@ -2810,7 +2991,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             componentId = ((ExternalReferenceType) type).getXref();
          }
-         typeDeclarationJson.add("schema", XsdSchemaUtils.toSchemaJson(schema, componentId));
+         typeDeclarationJson.add("schema",
+               XsdSchemaUtils.toSchemaJson(schema, componentId));
       }
 
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
@@ -2905,7 +3087,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject attributes;
 
-      if (!hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
+      if ( !hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
       {
          json.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes = new JsonObject());
       }
@@ -2978,7 +3160,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      if (!hasNotJsonNull(json, ModelerConstants.COMMENTS_PROPERTY))
+      if ( !hasNotJsonNull(json, ModelerConstants.COMMENTS_PROPERTY))
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
@@ -3094,7 +3276,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
    }
 
-
    /**
     * @param data
     * @param model
@@ -3157,9 +3338,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                         .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
                   {
                      String primitiveDataType = null;
-                     JsonElement jsonElementType = formalParameterJson.get(
-                           ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
-                     if(jsonElementType != null)
+                     JsonElement jsonElementType = formalParameterJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+                     if (jsonElementType != null)
                      {
                         primitiveDataType = jsonElementType.getAsString();
                      }

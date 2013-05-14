@@ -32,7 +32,8 @@ define(
 			};
 
 			/**
-			 * Generates JS and HTML for a UI to modify data of structures defined as In and Out Access Points.
+			 * Generates JS and HTML for a UI to modify data of structures
+			 * defined as In and Out Access Points.
 			 */
 			function MarkupGenerator() {
 				/**
@@ -69,6 +70,14 @@ define(
 
 					if (!this.options.generateQaFailButton === undefined) {
 						this.options.generateQaFailButton = false;
+					}
+
+					if (!this.options.tabsForFirstLevel === undefined) {
+						this.options.tabsForFirstLevel = false;
+					}
+
+					if (!this.options.tabsForFirstLevelTables === undefined) {
+						this.options.tabsForFirstLevelTables = false;
 					}
 				}
 
@@ -122,7 +131,9 @@ define(
 				 */
 				MarkupGenerator.prototype.generateJavaScript = function(
 						parameterDefinitions) {
-					writeTag("<script src='" + m_urlUtils.getPlugsInRoot() + "/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
+					writeTag("<script src='"
+							+ m_urlUtils.getPlugsInRoot()
+							+ "/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
 					writeTag("<script>");
 					indentUp();
 					writeTag("var baseUrl = window.location.search;");
@@ -143,9 +154,15 @@ define(
 					writeTag("      'angularjs' : [");
 					writeTag("         'bpm-modeler/js/libs/angular/angular-1.0.2',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],");
-					writeTag("      'xml2json' : [ 'processportal/xml2js' ],");
-					writeTag("      'bpm.portal.Interaction' : [ 'processportal/Interaction' ],");
-					writeTag("      'bpm.portal.GenericController' : [ 'processportal/GenericController' ]");
+					writeTag(" 'xml2json' : [ 'processportal/xml2js' ],");
+					writeTag(" 'bpm.portal.Interaction' : [ 'processportal/Interaction' ],");
+					writeTag(" 'bpm.portal.GenericController' : [ 'processportal/GenericController' ]");
+					// writeTag(" 'xml2json' : [
+					// 'bpm-modeler/public/mashup/xml2js' ],");
+					// writeTag(" 'bpm.portal.Interaction' : [
+					// 'bpm-modeler/public/mashup/Interaction' ],");
+					// writeTag(" 'bpm.portal.GenericController' : [
+					// 'bpm-modeler/public/mashup/GenericController' ]");
 					writeTag("   },");
 					writeTag("   shim : {");
 					writeTag("      'jquery-ui' : [ 'jquery' ],");
@@ -165,6 +182,7 @@ define(
 					writeTag("      function() {");
 					writeTag("         var interaction = new bpm.portal.Interaction();");
 					writeTag("         var controller = new bpm.portal.GenericController();");
+					writeTag("         jQuery('.structureTabs').tabs();");
 					writeTag("      interaction.bind().done(function(){");
 					writeTag("         controller.bind(angularjs, interaction);");
 					writeTag("         });");
@@ -202,7 +220,20 @@ define(
 									parameterDefinition.primitiveDataType,
 									parameterDefinition.id,
 									parameterDefinition.name, readonly);
-						} else if (parameterDefinition.dataType == "struct"
+						}
+					}
+
+					for ( var n = 0; n < parameterDefinitions.length; ++n) {
+						var parameterDefinition = parameterDefinitions[n];
+
+						m_utils.debug("Parameter Definition");
+						m_utils.debug(parameterDefinition);
+
+						var readonly = (parameterDefinition.direction == m_constants.IN_ACCESS_POINT);
+
+						m_utils.debug("readonly = " + readonly);
+
+						if (parameterDefinition.dataType == "struct"
 								|| parameterDefinition.dataType == "dmsDocument") {
 							writeTag("<tr>");
 							indentUp();
@@ -212,8 +243,6 @@ define(
 							writeTag("</td>");
 							indentDown();
 							writeTag("</tr>");
-						} else {
-							// Deal with primitives
 						}
 					}
 
@@ -336,12 +365,14 @@ define(
 					var mandatory = annotations.InputPreferences_mandatory;
 					var disabled = readonly ? "disabled" : "";
 					var required = mandatory ? "required" : "";
-					var ngModel = path == null ? "" : " ng-model='" + path + "'";
+					var ngModel = path == null ? "" : " ng-model='" + path
+							+ "'";
 
 					if (type === "xsd:boolean") {
 						if (readonly
 								&& annotations.BooleanInputPreferences_readonlyOutputType !== "CHECKBOX") {
-							writeTag("<label>" + path == null ? "" : "{{" + path + "}}" + "</label>");
+							writeTag("<label>" + path == null ? "" : "{{"
+									+ path + "}}" + "</label>");
 						} else {
 							writeTag("<input type='checkbox' class='input' "
 									+ disabled + ngModel + "/>");
@@ -350,16 +381,17 @@ define(
 						writeTag("<input type='number' class='integerInputField' "
 								+ disabled
 								+ ngModel
-								+ " sd-integer " + required + "/>");
+								+ " sd-integer "
+								+ required + "/>");
 					} else if (type === "xsd:decimal") {
 						writeTag("<input type='text' class='decimalInputField' "
 								+ disabled
 								+ ngModel
-								+ " sd-decimal " + required + "/>");
-					} else if (type === "xsd:date") {
-						writeTag("<input type='text' " + disabled
-								+ ngModel + " sd-date "
+								+ " sd-decimal "
 								+ required + "/>");
+					} else if (type === "xsd:date") {
+						writeTag("<input type='text' " + disabled + ngModel
+								+ " sd-date " + required + "/>");
 					} else {
 						if (annotations.StringInputPreferences_stringInputType === "TEXTAREA") {
 							var textAreaRows = annotations.StringInputPreferences_textAreaRows;
@@ -376,12 +408,10 @@ define(
 
 							writeTag("<textarea " + disabled + " rows="
 									+ textAreaRows + " cols=" + textAreaColumns
-									+ ngModel + " " + required
-									+ "/>");
+									+ ngModel + " " + required + "/>");
 						} else {
-							writeTag("<input type='text' " + disabled
-									+ ngModel + " " + required
-									+ "/>");
+							writeTag("<input type='text' " + disabled + ngModel
+									+ " " + required + "/>");
 						}
 					}
 				};
@@ -397,14 +427,9 @@ define(
 					m_utils.debug("Type Declaration");
 					m_utils.debug(typeDeclaration);
 
-					writeTag("<h1>"
-							+ this.generateLabel(parameterDefinition.name)
-							+ "</h1>");
-					writeTag("<table>");
 					this.generateStructurePanelRecursively(
 							typeDeclaration.model, typeDeclaration,
 							parameterDefinition.id, readonly, 1);
-					writeTag("</table>");
 				};
 
 				/**
@@ -442,64 +467,126 @@ define(
 							/ this.options.numberOfPrimitivesPerColumns);
 					var inputCount = 0;
 
-					writeTag("<table cellpadding='0' cellspacing='0' class='formTable'>");
-					indentUp();
-					writeTag("<tr>");
-					indentUp();
+					if (primitiveCount > 0) {
+						writeTag("<table cellpadding='0' cellspacing='0' class='formTable'>");
+						indentUp();
+						writeTag("<tr>");
+						indentUp();
 
-					// All primitives
+						// All primitives
 
-					jQuery.each(typeDeclaration.getElements(), function(i,
-							element) {
-						if (element.cardinality === "required") {
-							var type = element.type;
+						jQuery.each(typeDeclaration.getElements(), function(i,
+								element) {
+							if (element.cardinality === "required") {
+								var type = element.type;
 
-							// Strip prefix
+								// Strip prefix
 
-							if (element.type.indexOf(':') !== -1) {
-								type = element.type.split(":")[1];
-							}
+								if (element.type.indexOf(':') !== -1) {
+									type = element.type.split(":")[1];
+								}
 
-							var childTypeDeclaration = model
-									.findTypeDeclarationBySchemaName(type);
+								var childTypeDeclaration = model
+										.findTypeDeclarationBySchemaName(type);
 
-							if (childTypeDeclaration == null) {
-								self.generateCellForPrimitive(element.type,
-										path + "." + element.name,
-										element.name, readonly,
-										element.annotations);
-							} else {
-								if (!childTypeDeclaration.isSequence()) {
-									self.generateCellForEnumeration(
-											childTypeDeclaration, path + "."
-													+ element.name,
-											element.name, readonly);
+								if (childTypeDeclaration == null) {
+									self.generateCellForPrimitive(element.type,
+											path + "." + element.name,
+											element.name, readonly,
+											element.annotations);
+								} else {
+									if (!childTypeDeclaration.isSequence()) {
+										self.generateCellForEnumeration(
+												childTypeDeclaration, path
+														+ "." + element.name,
+												element.name, readonly);
+									}
+								}
+
+								inputCount++;
+
+								if (inputCount == columnCount) {
+									inputCount = 0;
+
+									indentDown();
+									writeTag("</tr>");
+									writeTag("<tr>");
+									indentUp();
 								}
 							}
+						});
 
-							inputCount++;
-
-							if (inputCount == columnCount) {
-								inputCount = 0;
-
-								indentDown();
-								writeTag("</tr>");
-								writeTag("<tr>");
-								indentUp();
-							}
-						}
-					});
-
-					indentDown();
-					writeTag("</tr>");
-					indentDown();
-					writeTag("</table>");
+						indentDown();
+						writeTag("</tr>");
+						indentDown();
+						writeTag("</table>");
+					}
 
 					// Generate structures and arrays
 
-					writeTag("<table cellpadding='0' cellspacing='0' class='formTable'>");
-
 					++depth;
+
+					m_utils.debug("Arrays: "
+							+ this.options.tabsForFirstLevelTables);
+
+					if (this.options.tabsForFirstLevel && depth == 2) {
+						writeTag("<div class='structureTabs'>");
+						indentUp();
+						writeTag("<ul>");
+						indentUp();
+
+						jQuery
+								.each(
+										typeDeclaration.getElements(),
+										function(i, element) {
+											if (element.cardinality === "required") {
+												var type = element.type;
+
+												// Strip prefix
+
+												if (element.type.indexOf(':') !== -1) {
+													type = element.type
+															.split(":")[1];
+												}
+
+												var childTypeDeclaration = model
+														.findTypeDeclarationBySchemaName(type);
+
+												if (childTypeDeclaration != null) {
+													if (childTypeDeclaration
+															.isSequence()) {
+
+														writeTag("<li><a href='#"
+																+ element.name
+																+ "Tab'><span id='"
+																+ element.name
+																+ "'>"
+																+ self
+																		.generateLabel(element.name)
+																+ "</span></a></li>");
+													}
+												}
+											} else if (self.options.tabsForFirstLevelTables) {
+												m_utils.debug("Generate LIs");
+
+												writeTag("<li><a href='#"
+														+ element.name
+														+ "Tab'><span id='"
+														+ element.name
+														+ "'>"
+														+ self
+																.generateLabel(element.name)
+														+ "</span></a></li>");
+
+											}
+										});
+
+						indentDown();
+						writeTag("</ul>");
+					} else {
+						writeTag("<table cellpadding='0' cellspacing='0' class='formTable'>");
+						indentUp();
+					}
 
 					jQuery
 							.each(
@@ -520,21 +607,30 @@ define(
 											if (childTypeDeclaration != null) {
 												if (childTypeDeclaration
 														.isSequence()) {
-													writeTag("<tr>");
-													writeTag("<td>");
-													writeTag("<h"
-															+ Math
-																	.min(depth,
-																			5)
-															+ ">"
-															+ self
-																	.generateLabel(element.name)
-															+ "</h"
-															+ Math
-																	.min(depth,
-																			5)
-															+ ">");
-													writeTag("<table>");
+													if (self.options.tabsForFirstLevel
+															&& depth == 2) {
+														writeTag("<div id='"
+																+ element.name
+																+ "Tab'>");
+														indentUp();
+													} else {
+														writeTag("<tr>");
+														indentUp();
+														writeTag("<td>");
+														writeTag("<h"
+																+ Math.min(
+																		depth,
+																		5)
+																+ ">"
+																+ self
+																		.generateLabel(element.name)
+																+ "</h"
+																+ Math.min(
+																		depth,
+																		5)
+																+ ">");
+													}
+
 													self
 															.generateStructurePanelRecursively(
 																	model,
@@ -544,18 +640,32 @@ define(
 																			+ element.name,
 																	readonly,
 																	depth);
-													writeTag("</table>");
-													writeTag("</td>");
-													writeTag("</tr>");
+
+													if (self.options.tabsForFirstLevel
+															&& depth == 2) {
+														indentDown();
+														writeTag("</div>");
+													} else {
+														writeTag("</td>");
+														indentDown();
+														writeTag("</tr>");
+													}
 												}
 											}
 										} else {
 											self.generateTableForToMany(model,
 													element, path, depth);
 										}
+
 									});
 
-					writeTag("</table>");
+					if (this.options.tabsForFirstLevel && depth == 2) {
+						indentDown();
+						writeTag("</div>");
+					} else {
+						indentDown();
+						writeTag("</table>");
+					}
 				};
 
 				/**
@@ -563,21 +673,27 @@ define(
 				 */
 				MarkupGenerator.prototype.generateTableForToMany = function(
 						model, element, path, depth) {
-					writeTag("<tr>");
-					indentUp();
-					writeTag("<td>");
-					indentUp();
-					writeTag("<h" + Math.min(depth, 5) + ">"
-							+ this.generateLabel(element.name) + "</h"
-							+ Math.min(depth, 5) + ">");
-					indentDown();
-					writeTag("</td>");
-					indentDown();
-					writeTag("</tr>");
-					writeTag("<tr>");
-					indentUp();
-					writeTag("<td>");
-					indentUp();
+					if (this.options.tabsForFirstLevelTables) {
+						writeTag("<div id='" + element.name + "Tab'>");
+						indentUp();
+					} else {
+						writeTag("<tr>");
+						indentUp();
+						writeTag("<td>");
+						indentUp();
+						writeTag("<h" + Math.min(depth, 5) + ">"
+								+ this.generateLabel(element.name) + "</h"
+								+ Math.min(depth, 5) + ">");
+						indentDown();
+						writeTag("</td>");
+						indentDown();
+						writeTag("</tr>");
+						writeTag("<tr>");
+						indentUp();
+						writeTag("<td>");
+						indentUp();
+					}
+
 					writeTag("<table cellpadding='0' cellspacing='0' class='dataTable'>");
 					indentUp();
 
@@ -621,7 +737,9 @@ define(
 							writeTag("<tr class='referenceRow'>");
 							indentUp();
 
-							writeTag("<td><img src='" + m_urlUtils.getPlugsInRoot()+ "/views-common/images/icons/delete.png' alt='Delete'/></td>");
+							writeTag("<td><img src='"
+									+ m_urlUtils.getPlugsInRoot()
+									+ "/views-common/images/icons/delete.png' alt='Delete'/></td>");
 
 							jQuery
 									.each(
@@ -664,15 +782,17 @@ define(
 
 							indentDown();
 							writeTag("</tr>");
-							writeTag("<tr ng-repeat='$tableIterator in " + path + "."
-									+ element.name + "'>");
+							writeTag("<tr ng-repeat='$tableIterator in " + path
+									+ "." + element.name + "'>");
 							indentUp();
 
 							writeTag("<td><href ng-click='deleteRow($event, $index)' path='"
 									+ path
 									+ "."
 									+ element.name
-									+ "'><img src='" + m_urlUtils.getPlugsInRoot() + "/views-common/images/icons/delete.png' alt='Delete'/></href></td>");
+									+ "'><img src='"
+									+ m_urlUtils.getPlugsInRoot()
+									+ "/views-common/images/icons/delete.png' alt='Delete'/></href></td>");
 
 							jQuery
 									.each(
@@ -723,7 +843,9 @@ define(
 									+ path
 									+ "."
 									+ element.name
-									+ "'><img src='" + m_urlUtils.getPlugsInRoot() + "/views-common/images/icons/add.png' alt='Add'/></href></td>");
+									+ "'><img src='"
+									+ m_urlUtils.getPlugsInRoot()
+									+ "/views-common/images/icons/add.png' alt='Add'/></href></td>");
 							writeTag("<td></td>");
 							writeTag("<td></td>");
 							writeTag("<td></td>");
@@ -739,12 +861,16 @@ define(
 
 					indentDown();
 					writeTag("</table>");
-					indentDown();
-					writeTag("</select>");
-					indentDown();
-					writeTag("</td>");
-					indentDown();
-					writeTag("</tr>");
+
+					if (this.options.tabsForFirstLevelTables) {
+						indentDown();
+						writeTag("</div>");
+					} else {
+						indentDown();
+						writeTag("</td>");
+						indentDown();
+						writeTag("</tr>");
+					}
 				};
 
 				/**

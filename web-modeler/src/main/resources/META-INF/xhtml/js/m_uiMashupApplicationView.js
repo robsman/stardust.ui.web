@@ -202,6 +202,8 @@ define(
 					this.generateAbortButtonInput = jQuery("#generateAbortButtonInput");
 					this.generateQaPassButtonInput = jQuery("#generateQaPassButtonInput");
 					this.generateQaFailButtonInput = jQuery("#generateQaFailButtonInput");
+					this.generateTabsForFirstLevelInput = jQuery("#generateTabsForFirstLevelInput");
+					this.generateTabsForFirstLevelTablesInput = jQuery("#generateTabsForFirstLevelTablesInput");
 
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -521,6 +523,10 @@ define(
 								generateQaPassButton : this.generateQaPassButtonInput
 										.prop("checked"),
 								generateQaFailButton : this.generateQaFailButtonInput
+										.prop("checked"),
+								tabsForFirstLevel : this.generateTabsForFirstLevelInput
+										.prop("checked"),
+								tabsForFirstLevelTables : this.generateTabsForFirstLevelTablesInput
 										.prop("checked")
 							});
 

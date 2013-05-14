@@ -119,11 +119,36 @@ if (!window.bpm.portal.Interaction) {
 
 										console.log(json);
 
-										if (json.inDataValues
-												&& json.inDataValues.parameter
-												&& json.inDataValues.parameter.xml) {
+										self.transfer = {};
 
-											self.transfer = json.inDataValues.parameter.xml;
+										if (json.inDataValues
+												&& json.inDataValues.parameter) {
+
+											for ( var n = 0; n < json.inDataValues.parameter_asArray.length; ++n) {
+												if (json.inDataValues.parameter_asArray[n].primitive) {
+													self.transfer[json.inDataValues.parameter_asArray[n].name] = json.inDataValues.parameter_asArray[n].primitive;
+												} else {
+													// Determine structure name
+
+													var structureName;
+
+													for (structureName in json.inDataValues.parameter_asArray[n].xml) {
+														if (structureName
+																.indexOf("_asArray") != -1) {
+															structureName = structureName
+																	.substring(
+																			0,
+																			structureName
+																					.indexOf("_asArray"));
+															self.transfer[json.inDataValues.parameter_asArray[n].name] = json.inDataValues.parameter_asArray[n].xml[structureName];
+
+															break;
+														}
+													}
+												}
+											}
+
+											console.log(self.transfer);
 										}
 									}
 

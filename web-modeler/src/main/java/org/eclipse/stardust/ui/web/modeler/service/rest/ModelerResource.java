@@ -866,6 +866,15 @@ public class ModelerResource
     *
     * @return
     */
+   private void clearInteractionDataObject()
+   {
+      interactionDataObject = new JsonObject();
+   }
+
+   /**
+    *
+    * @return
+    */
    private JsonObject getInteractionDataObject()
    {
       if (interactionDataObject == null)
@@ -928,9 +937,6 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Retrieving interaction input:");
-         System.out.println(getInteractionDataObject());
-
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
       }
@@ -955,10 +961,9 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Set interaction input:");
-         System.out.println(postedData);
+         clearInteractionDataObject();
+
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
-         System.out.println(postedObject);
 
          if (postedObject != null)
          {
@@ -966,8 +971,6 @@ public class ModelerResource
             {
                String key = entry.getKey();
                JsonElement value = postedObject.get(key);
-
-               System.out.println("Storing " + key + " " + value);
 
                getInteractionDataObject().add(key, value);
             }
@@ -993,10 +996,7 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Set interaction input:");
-         System.out.println(postedData);
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
-         System.out.println(postedObject);
 
          getInteractionDataObject().add("output", postedObject);
 

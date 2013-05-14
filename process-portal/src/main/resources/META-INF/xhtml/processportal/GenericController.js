@@ -30,13 +30,6 @@ if (!window.bpm.portal.GenericController) {
 				this.options = {};
 			}
 
-			console.log("Angular");
-			console.log(angular);
-			console.log("Interaction");
-			console.log(this.interaction);
-			console.log("Options");
-			console.log(this.options);
-
 			this.validationErrorMessageDialog = jQuery("#validationErrorMessageDialog");
 
 			this.validationErrorMessageDialog.dialog({
