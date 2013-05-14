@@ -424,13 +424,17 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
        */
       private void applyFilters(UserQuery userQuery, String searchValue)
       {
+         String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(searchValue);
          userQuery.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
-
+         
          FilterAndTerm andFilter = userQuery.getFilter().addAndTerm();
          FilterOrTerm filter = andFilter.addOrTerm();
          filter.or(UserQuery.FIRST_NAME.like(searchValue));
+         filter.or(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
          filter.or(UserQuery.LAST_NAME.like(searchValue));
+         filter.or(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
          filter.or(UserQuery.ACCOUNT.like(searchValue));
+         filter.or(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
          userQuery.where(filter);
 
          userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
