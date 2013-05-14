@@ -204,7 +204,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
                   false));
          }
       }
-      dualListModel.setFilteredSource(assignedList);
+      dualListModel.getSource().addAll(assignedList);
 
       // Selected Participants
       List<SelectItemModel> assignablesList = new ArrayList<SelectItemModel>();
@@ -213,7 +213,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
          assignablesList.add(new SelectItemModel(ModelHelper.getParticipantName(participant), ParticipantUtils
                .getParticipantUniqueKey(participant), participant, false));
       }
-      dualListModel.setFilteredTarget(assignablesList);
+      dualListModel.getTarget().addAll(assignablesList);
    }
 
    /**
