@@ -137,7 +137,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
    private UserQuery getUsersWithSimilarGrants(boolean excludeThisUser)
    {
       UserQuery query = UserQuery.findActive();
-      User user = SessionContext.findSessionContext().getUser();
+      User user = null == this.user ? SessionContext.findSessionContext().getUser() : this.user;
       if (user != null)
       {
          FilterTerm filter = query.getFilter().addOrTerm();
