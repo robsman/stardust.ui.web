@@ -79,8 +79,8 @@ var iDnD = function () {
 			if ((true == ifDrag) && (dragContentIFrame.style.visibility == "visible"))
 			{
 				dragContentIFrame.style.position = 'absolute';
-				dragContentIFrame.style.left = (coordinates.x + 10);
-				dragContentIFrame.style.top = (coordinates.y + 10);
+				dragContentIFrame.style.left = (coordinates.x + 10) + "px";
+				dragContentIFrame.style.top = (coordinates.y + 10) + "px";
 			}
 			else if (true == ifDrag)
 			{
