@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2012 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    _http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="org.eclipse.stardust.ui.web" module="ipp-end-user-doc"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="ipp-end-user-doc" description="End User Documentation" />
+      <conf name="pom" description="End User Doc POMs" />
+
+      <conf name="compile" extends="ipp-end-user-doc" />
+      <conf name="all" visibility="private" extends="compile" />
+   </configurations>
+
+   <publications>
+      <artifact name="ipp-end-user-doc" type="jar" conf="ipp-end-user-doc" />
+      <artifact name="ipp-end-user-doc" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies/>
+
+</ivy-module>

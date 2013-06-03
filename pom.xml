@@ -23,6 +23,7 @@
     <module>business-control-center</module>
     <module>admin-portal</module>
     <module>portal-persistence-jpa</module>
+    <module>end-user-doc</module>
   </modules>
 
 </project>
