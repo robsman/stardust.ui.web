@@ -30,7 +30,6 @@
    <import file="../../build.tools/commons-build.xml" />
 
    <property name="documentation.dir" location="../../documentation" />
-	<property file="../../product/product-parent/src/main/filters/product.properties"/>
 
 	<target name="init">
 		<property name="build.dir" location="${project.dir}/build"/>
@@ -63,11 +62,11 @@
 	<target name="prepareSources" depends="initBuildDirectories">
 
       <filterset id="filter.product">
-         <filter token="productname" value="${productname}" />
-         <filter token="productnameshort" value="${productnameshort}" />
-         <filter token="productnameonly" value="${productnameonly}" />
-         <filter token="article" value="${article}" />
-         <filter token="artup" value="${artup}" />
+         <filter token="productname" value="${product.productname}" />
+         <filter token="productnameshort" value="${product.productnameshort}" />
+         <filter token="productnameonly" value="${product.productnameonly}" />
+         <filter token="article" value="${product.article}" />
+         <filter token="artup" value="${product.artup}" />
       </filterset>
 
       <copy todir="${build.src}/" overwrite="true">
