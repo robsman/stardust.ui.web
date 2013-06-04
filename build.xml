@@ -100,6 +100,15 @@
 		</ant>
    </target> 
 
+   <target name="end-user-doc" depends="init">
+      <ant dir="end-user-doc" antfile="build.xml" target="${subtarget}" inheritall="false">
+         <property name="build.lib" value="${build.lib}"/>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+         <property name="product.properties.file" value="${product.properties.file}"/>
+         <property name="styles.dir" location="${styles.dir}"/>
+      </ant>
+   </target> 
+
    <!-- - - - - - - - - - -->
    <!-- Stardust projects -->
    <!-- - - - - - - - - - -->
@@ -136,7 +145,7 @@
 
 	<target name="package" depends="init, portal-common,portal-api, 
 	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
-	   views-common, graphics-common, process-portal, business-control-center, admin-portal">
+	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc">
 	</target>
 
    <!-- - - - - - - - -  -->
