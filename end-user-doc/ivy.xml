@@ -14,7 +14,7 @@
    xmlns:m="http://ant.apache.org/ivy/maven"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="org.eclipse.stardust.ui.web" module="ipp-end-user-doc"
+   <info organisation="com.infinity.bpm" module="ipp-end-user-doc"
       revision="${ipp.version.full}" />
 
    <configurations>
