@@ -26,7 +26,6 @@
    
    <property name="artifactId" value="ipp-end-user-doc" />
 
-
    <import file="../../build.tools/commons-build.xml" />
 
    <property name="documentation.dir" location="../../documentation" />
