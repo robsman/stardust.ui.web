@@ -20,12 +20,14 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -70,8 +72,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
@@ -517,8 +517,31 @@ public class DocumentMgmtUtility
          {
             processAttachments = new ArrayList<Document>();
          }
+         else
+         {
+               processAttachments = filterWithReadAccess(processAttachments);
+         }
       }
       return processAttachments;
+   }
+   
+   /**
+    * Filter the documents for which user do not have READ access
+    * 
+    * @param documentsList
+    * @return
+    */
+  private static List<Document> filterWithReadAccess(List<Document> documentsList)
+   {
+      List<Document> updatedDocumentList = CollectionUtils.newArrayList();
+      for (Document doc : documentsList)
+      {
+         if (null != getDocumentManagementService().getDocument(doc.getId()))
+         {
+            updatedDocumentList.add(doc);
+         }
+      }
+      return updatedDocumentList;
    }
 
    /**

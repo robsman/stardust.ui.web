@@ -30,7 +30,6 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
@@ -45,7 +44,6 @@ import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssu
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
-import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.client.common.ClientContext;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
@@ -101,9 +99,10 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -115,7 +114,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.JsfBackingBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QualityAssuranceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -2135,6 +2133,12 @@ public class ActivityDetailsBean extends UIComponentBean
          
          if (null != docController && null != docController.getValue())
          {
+            if (!docController.isReadable())
+            {
+               singleDocumentCase = false;
+               return;
+            }
+            
             singleDocumentDatgaMapping = docController.getDataMapping();
    
             IDocumentContentInfo documentContentInfo = docController.getDocumentContentInfo();
@@ -2292,27 +2296,13 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       if (activityInstance != null)
       {
-         processAttachmentsFolderPath = DMSHelper
-               .getProcessAttachmentsFolderPath(processInstance);
+         processAttachmentsFolderPath = DMSHelper.getProcessAttachmentsFolderPath(processInstance);
 
-         supportsProcessAttachments = DMSHelper
-               .existsProcessAttachmentsDataPath(processInstance);
+         supportsProcessAttachments = DMSHelper.existsProcessAttachmentsDataPath(processInstance);
          if (supportsProcessAttachments)
          {
-            WorkflowService ws = ServiceFactoryUtils
-                  .getWorkflowService();
-
-            processAttachments = null;
-            Object o = ws.getInDataPath(processInstance.getOID(),
-                  DmsConstants.PATH_ID_ATTACHMENTS);
-
-            DataDetails data = (DataDetails) ModelCache.findModelCache().getModel(
-                  processInstance.getModelOID())
-                  .getData(DmsConstants.PATH_ID_ATTACHMENTS);
-            if (DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(data.getTypeId()))
-            {
-               refreshProcessAttachments((List<Document>) o);
-            }
+            processAttachments = DocumentMgmtUtility.getProcesInstanceDocuments(processInstance);
+            refreshProcessAttachments(processAttachments);
          }
       }
    }

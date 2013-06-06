@@ -76,6 +76,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private Document documentToBeMoved;
    private Document documentToBeDeleted;
    private boolean disableAutoDownload;
+   private Boolean readable = null;
 
    /**
     * @param path
@@ -115,6 +116,15 @@ public class IppDocumentInputController extends DocumentInputController implemen
          setOpenLabel(document.getName());
          MIMEType mimeType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
          setOpenIcon(mimeType.getCompleteIconPath());
+         readable = true;
+         if (!(document instanceof RawDocument))
+         {
+            // TODO : review later
+            if (null == DocumentMgmtUtility.getDocumentManagementService().getDocument(document.getId()))
+            {
+               readable = false;
+            }
+         }
       }
       else
       {
@@ -126,7 +136,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    @Override
    public void viewDocument()
    {
-      if (null != document)
+      if (null != document && isReadable())
       {
          if (!fireEvent(DocumentInputEventType.TO_BE_VIEWED, null))
          {
@@ -248,7 +258,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    public void deleteDocument()
    {
       // check if the document is JCR document
-      if (!(document instanceof RawDocument))
+      if (!(document instanceof RawDocument) && isReadable())
       {
          MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
 
@@ -533,4 +543,8 @@ public class IppDocumentInputController extends DocumentInputController implemen
       this.enableOpenDocument = enableOpenDocument;
    }
 
+   public boolean isReadable()
+   {
+      return readable;
+   }
 }
