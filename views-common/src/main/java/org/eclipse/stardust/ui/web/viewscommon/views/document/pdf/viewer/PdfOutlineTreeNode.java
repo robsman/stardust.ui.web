@@ -35,11 +35,12 @@
 
 package org.eclipse.stardust.ui.web.viewscommon.views.document.pdf.viewer;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.icepdf.core.pobjects.Destination;
+import org.icepdf.core.pobjects.Name;
 import org.icepdf.core.pobjects.OutlineItem;
 import org.icepdf.core.pobjects.PageTree;
 import org.icepdf.core.pobjects.actions.Action;
@@ -160,8 +161,8 @@ public class PdfOutlineTreeNode extends DefaultMutableTreeNode
                else
                {
                   Library library = action.getLibrary();
-                  Hashtable entries = action.getEntries();
-                  dest = new Destination(library, library.getObject(entries, "D"));
+                  HashMap entries = action.getEntries();
+                  dest = new Destination(library, library.getObject(entries, new Name("D")));
                }
                goToPage = pageTree.getPageNumber(dest.getPageReference());
             }
