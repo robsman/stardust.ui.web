@@ -67,7 +67,7 @@ public class CategoryTree extends UIViewComponentBean
       iconMap.put("strandedActivities", "activity_stranded.png");
       iconMap.put("resourceAvailabilityView", "group.png");
       iconMap.put("roleAssignmentView", "role.png");
-      iconMap.put("deputyManagementView", "user-silhouette.png");
+      iconMap.put("deputyTeamMemberView", "user-silhouette.png");
       iconMap.put("resourceLoginView", "group_key.png");
       iconMap.put("resourcePerformance", "chart-up.png");
       iconMap.put("performanceTeamleader", "chart-up-color.png");
@@ -143,8 +143,8 @@ public class CategoryTree extends UIViewComponentBean
          resourcesNode.addItem("roleAssignmentView",
                messageBean.getString(PRE_LEAF + "roleAssignmentView" + POST_LEAF), getItem("roleAssignmentView", null),
                getIconPath("roleAssignmentView"));
-         resourcesNode.addItem("deputyManagementView", messageBean.getString(PRE_LEAF + "deputyManagementView" + POST_LEAF),
-               getItem("deputyManagementView", null), getIconPath("deputyManagementView"));
+         resourcesNode.addItem("deputyTeamMemberView", messageBean.getString(PRE_LEAF + "deputyTeamMemberView" + POST_LEAF),
+               getItem("deputyTeamMemberView", null), getIconPath("deputyTeamMemberView"));
          resourcesNode.addItem("resourceLoginView", messageBean.getString(PRE_LEAF + "resourceLoginView" + POST_LEAF),
                getItem("resourceLoginView", null), getIconPath("resourceLoginView"));
          resourcesNode.addItem("resourcePerformance", messageBean.getString(PRE_LEAF + "resourcePerformance"
