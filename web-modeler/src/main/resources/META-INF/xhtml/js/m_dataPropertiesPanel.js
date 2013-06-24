@@ -67,11 +67,33 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		 */
 		DataPropertiesPanel.prototype.openView = function() {
 			m_utils.debug("Open View");
-			this.viewManager
-					.openView("dataView", "dataId=" + this.data.id
-							+ "&modelId=" + "notsetyet" + "&dataName="
-							+ this.data.name + "&fullId="
-							+ this.data.getFullId(), this.data.getFullId());
+
+			var data = this.data;
+
+			//If external data, then use the external data's identifiers to open view.
+			if (this.data.externalReference) {
+				data = m_model.findData(this.data.dataFullId);
+			}
+
+			if (data && data.model) {
+				this.viewManager
+				.openView(
+						"dataView",
+						"dataId="
+								+ encodeURIComponent(data.id)
+								+ "&modelId="
+								+ encodeURIComponent(data.model.id)
+								+ "&dataName="
+								+ encodeURIComponent(data.name)
+								+ "&fullId="
+								+ encodeURIComponent(data
+										.getFullId())
+								+ "&uuid="
+								+ data.uuid
+								+ "&modelUUID="
+								+ data.model.uuid,
+								data.uuid);
+			}
 		};
 
 		/**

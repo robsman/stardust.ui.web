@@ -23,13 +23,14 @@ define(
 				"bpm-modeler/js/m_gatewaySymbol",
 				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_controlFlow",
 				"bpm-modeler/js/m_dataFlow", "bpm-modeler/js/m_modelerUtils",
-				"bpm-modeler/js/m_messageDisplay" ],
+				"bpm-modeler/js/m_messageDisplay",
+				"bpm-modeler/js/libs/jsPlumb/jquery.jsPlumb-1.4.1-all-min" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_dataFlowPropertiesPanel,
 				m_controlFlowPropertiesPanel, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
-				m_modelerUtils, m_messageDisplay) {
+				m_modelerUtils, m_messageDisplay, jquery_jsPlumb) {
 
 			return {
 				createConnection : function(diagram, fromAnchorPoint) {
@@ -115,58 +116,60 @@ define(
 				Connection.prototype.initializeFromJson = function() {
 					// Adjust anchor orientation
 					var orientation = this.determineOrientation();
-					this.fromAnchorPointOrientation = orientation["from"];
-					this.toAnchorPointOrientation = orientation["to"];
+					if (orientation) {
+						this.fromAnchorPointOrientation = orientation["from"];
+						this.toAnchorPointOrientation = orientation["to"];
 
-					if (this.fromModelElementType == m_constants.ACTIVITY) {
-						this
-								.setFirstAnchorPoint(this.diagram.activitySymbols[this.fromModelElementOid
-										.toString()].anchorPoints[this.fromAnchorPointOrientation]);
-					} else if (this.fromModelElementType == m_constants.EVENT) {
-						this
-								.setFirstAnchorPoint(this.diagram.eventSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
-					} else if (this.fromModelElementType == m_constants.DATA) {
-						this
-								.setFirstAnchorPoint(this.diagram.dataSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
-					} else if (this.fromModelElementType == m_constants.GATEWAY) {
-						this
-								.setFirstAnchorPoint(this.diagram.gatewaySymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
-					}
-
-					this.prepare();
-
-					if (this.toModelElementType == m_constants.ACTIVITY) {
-						this.toAnchorPoint = this.diagram.activitySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
-					} else if (this.toModelElementType == m_constants.EVENT) {
-						this.toAnchorPoint = this.diagram.eventSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
-					} else if (this.toModelElementType == m_constants.DATA) {
-						this.toAnchorPoint = this.diagram.dataSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
-					} else if (this.toModelElementType == m_constants.GATEWAY) {
-						this.toAnchorPoint = this.diagram.gatewaySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
-					}
-
-					this.toAnchorPoint.symbol.connections.push(this);
-
-					if (this.isDataFlow()) {
-						m_dataFlow.initializeFromJson(this.diagram.process,
-								this.modelElement);
-						this.propertiesPanel = m_dataFlowPropertiesPanel
-								.getInstance();
-					} else {
-						if (!this.modelElement.prototype) {
-							this.modelElement.prototype = {};
+						if (this.fromModelElementType == m_constants.ACTIVITY) {
+							this
+									.setFirstAnchorPoint(this.diagram.activitySymbols[this.fromModelElementOid
+											.toString()].anchorPoints[this.fromAnchorPointOrientation]);
+						} else if (this.fromModelElementType == m_constants.EVENT) {
+							this
+									.setFirstAnchorPoint(this.diagram.eventSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
+						} else if (this.fromModelElementType == m_constants.DATA) {
+							this
+									.setFirstAnchorPoint(this.diagram.dataSymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
+						} else if (this.fromModelElementType == m_constants.GATEWAY) {
+							this
+									.setFirstAnchorPoint(this.diagram.gatewaySymbols[this.fromModelElementOid].anchorPoints[this.fromAnchorPointOrientation]);
 						}
-						m_utils.inheritMethods(this.modelElement.prototype,
-								m_controlFlow.prototype);
-						this.propertiesPanel = m_controlFlowPropertiesPanel
-								.getInstance();
 
-						this.adjustConditionExpressionText();
+						this.prepare();
 
-					}
+						if (this.toModelElementType == m_constants.ACTIVITY) {
+							this.toAnchorPoint = this.diagram.activitySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+						} else if (this.toModelElementType == m_constants.EVENT) {
+							this.toAnchorPoint = this.diagram.eventSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+						} else if (this.toModelElementType == m_constants.DATA) {
+							this.toAnchorPoint = this.diagram.dataSymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+						} else if (this.toModelElementType == m_constants.GATEWAY) {
+							this.toAnchorPoint = this.diagram.gatewaySymbols[this.toModelElementOid].anchorPoints[this.toAnchorPointOrientation];
+						}
 
-					this.completeNoTransfer();
-					this.reroute();
+						this.toAnchorPoint.symbol.connections.push(this);
+
+						if (this.isDataFlow()) {
+							m_dataFlow.initializeFromJson(this.diagram.process,
+									this.modelElement);
+							this.propertiesPanel = m_dataFlowPropertiesPanel
+									.getInstance();
+						} else {
+							if (!this.modelElement.prototype) {
+								this.modelElement.prototype = {};
+							}
+							m_utils.inheritMethods(this.modelElement.prototype,
+									m_controlFlow.prototype);
+							this.propertiesPanel = m_controlFlowPropertiesPanel
+									.getInstance();
+
+							this.adjustConditionExpressionText();
+
+						}
+
+						this.completeNoTransfer();
+						this.reroute();
+				}
 				};
 
 				/*
@@ -461,10 +464,14 @@ define(
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
 
 							if (null != this.fromAnchorPoint.symbol.modelElement) {
-								this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+								if (this.fromAnchorPoint.symbol.modelElement.type === m_constants.ACTIVITY
+										&& this.fromAnchorPoint.symbol.modelElement.activityType === m_constants.GATEWAY_ACTIVITY_TYPE) {
+									this.fromModelElementType = m_constants.GATEWAY;
+								} else {
+									this.fromModelElementType = this.fromAnchorPoint.symbol.modelElement.type;
+								}
 							} else {
 								this.fromModelElementType = this.fromAnchorPoint.symbol.type;
-								;
 							}
 							this.toModelElementOid = this.toAnchorPoint.symbol.oid;
 							if (this.toAnchorPoint.symbol.modelElement) {
@@ -818,24 +825,27 @@ define(
 				 *
 				 */
 				Connection.prototype.initializeEventHandling = function() {
+					// Exclude Click from readonly check to show properties panel
 					this.auxiliaryPickPath.click(Connection_clickClosure);
-					this.auxiliaryPickPath.hover(Connection_hoverInClosure,
-							Connection_hoverOutClosure);
-					this.auxiliaryPickPath.drag(Connection_dragMoveClosure,
-							Connection_dragStartClosure,
-							Connection_dragStopClosure);
-					this.path.drag(Connection_dragMoveClosure,
-							Connection_dragStartClosure,
-							Connection_dragStopClosure);
-					this.path.hover(Connection_hoverInClosure,
-							Connection_hoverOutClosure);
-					this.conditionExpressionText.hover(
-							Connection_hoverInConditionExpressionTextClosure,
-							Connection_hoverOutConditionExpressionTextClosure);
-					this.conditionExpressionText.drag(
-							Connection_dragConditionExpressionTextClosure,
-							Connection_dragStartConditionExpressionTextClosure,
-							Connection_dragStopConditionExpressionTextClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.auxiliaryPickPath.hover(Connection_hoverInClosure,
+								Connection_hoverOutClosure);
+						this.auxiliaryPickPath.drag(Connection_dragMoveClosure,
+								Connection_dragStartClosure,
+								Connection_dragStopClosure);
+						this.path.drag(Connection_dragMoveClosure,
+								Connection_dragStartClosure,
+								Connection_dragStopClosure);
+						this.path.hover(Connection_hoverInClosure,
+								Connection_hoverOutClosure);
+						this.conditionExpressionText.hover(
+								Connection_hoverInConditionExpressionTextClosure,
+								Connection_hoverOutConditionExpressionTextClosure);
+						this.conditionExpressionText.drag(
+								Connection_dragConditionExpressionTextClosure,
+								Connection_dragStartConditionExpressionTextClosure,
+								Connection_dragStopConditionExpressionTextClosure);
+					}
 				};
 
 				Connection.prototype.createProximitySensorPrimitive = function() {
@@ -961,7 +971,7 @@ define(
 				 *
 				 */
 				Connection.prototype.adjustConditionExpressionText = function() {
-					if (this.modelElement.attributes) {
+					if (this.modelElement && this.modelElement.attributes) {
 						this.conditionExpressionTextXOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextXOffset"]);
 						this.conditionExpressionTextYOffset = parseInt(this.modelElement.attributes["carnot:engine:conditionExpressionTextYOffset"]);
 					}
@@ -988,6 +998,7 @@ define(
 				 *
 				 */
 				Connection.prototype.reroute = function() {
+					var t = null, p = null;
 					if (this.isControlFlow()) {
 						this.segments = new Array();
 
@@ -1221,26 +1232,121 @@ define(
 
 						}
 
+						if (!this.conditionExpressionTextXOffset
+								|| !this.conditionExpressionTextYOffset) {
+							this.adjustConditionExpressionText();
+						}
+
 						this.conditionExpressionText.attr({
 							x : this.toAnchorPoint.x
 									+ this.conditionExpressionTextXOffset,
 							y : this.toAnchorPoint.y
 									+ this.conditionExpressionTextYOffset
 						});
+
+						var fromAnchor = { x: this.fromAnchorPoint.x,
+								y: this.fromAnchorPoint.y,
+								orientation: this.fromAnchorPoint.orientation
+						};
+						var toAnchor = { x: this.toAnchorPoint.x,
+							y: this.toAnchorPoint.y,
+							orientation: this.toAnchorPoint.orientation
+						};
+
+						var swapX = this.toAnchorPoint.x < this.fromAnchorPoint.x;
+						var swapY = this.toAnchorPoint.y < this.fromAnchorPoint.y;
+						var xShift = swapX ? this.toAnchorPoint.x : this.fromAnchorPoint.x;
+						var yShift = swapY ? this.toAnchorPoint.y : this.fromAnchorPoint.y;
+
+						t = "T" + xShift + " " + yShift;
+						p = this.getPathSvgString(fromAnchor, toAnchor);
+					}
+					else {
+						t = "T" + (xShift * -1) + " " + (yShift * -1);
+						p = this.getSvgString();
 					}
 
 					if (this.isCompleted()) {
 						this.auxiliaryPickPath.attr({
-							'path' : this.getSvgString()
+							'path' : p
+						});
+						this.auxiliaryPickPath.attr({
+							'transform' : t
 						});
 						this.proximitySensor.attr({
-							'path' : this.getSvgString()
+							'path' : p
+						});
+						this.proximitySensor.attr({
+							'transform' : t
 						});
 					}
 
 					this.path.attr({
-						'path' : this.getSvgString()
+						'path' : p
 					});
+					this.path.attr({
+						'transform' : t
+					});
+				};
+
+				Connection.prototype.getOrientation = function(orientation) {
+					switch (orientation) {
+						case 0: // m_constants.NORTH:
+							return [0, -1];
+							break;
+
+						case 1: // m_constants.EAST:
+							return [1, 0];
+							break;
+
+						case 2: // m_constants.SOUTH:
+							return [0, 1];
+							break;
+
+						case 3: //m_constants.WEST:
+							return [-1, 0];
+							break;
+
+						default:
+							return [0, 0];
+					}
+				};
+
+				Connection.prototype.getPathSvgString = function(fromAnchor, toAnchor) {
+					var connectorParams = { lineWidth: 1,
+						sourcePos: [fromAnchor.x, fromAnchor.y],
+						targetPos: [toAnchor.x, toAnchor.y],
+						sourceEndpoint: {anchor: {orientation: this.getOrientation(fromAnchor.orientation), elementId: "a"}},
+						targetEndpoint: {anchor: {orientation: this.getOrientation(toAnchor.orientation)}, elementId: "b"}
+					};
+
+					// From jQuery.jsPlumb.js > jsPlumb.Connection
+					var makeConnector = function(renderMode, connectorName, connectorArgs) {
+						var c = new Object();
+						if (!jsPlumb.Defaults.DoNotThrowErrors && jsPlumb.Connectors[connectorName] == null)
+								throw { msg:"jsPlumb: unknown connector type '" + connectorName + "'" };
+
+						jsPlumb.Connectors[connectorName].apply(c, [connectorArgs]);
+						// jsPlumb.ConnectorRenderers[renderMode].apply(c, [connectorArgs]);
+						return c;
+					};
+
+					var renderMode = "svg";
+					var connectorName = "Flowchart", connectorArgs = {stub: m_constants.CONNECTION_MINIMAL_SEGMENT_LENGTH,
+							cornerRadius: m_constants.CONNECTION_DEFAULT_EDGE_RADIUS };
+					var connector = makeConnector(renderMode, connectorName, connectorArgs);
+
+					connector.compute(connectorParams);
+
+					// From jQuery.jsPlumb.js > SvgConnector
+					var segments = connector.getSegments(), p = "";
+					// create path from segments.
+					for (var i = 0; i < segments.length; i++) {
+						p += jsPlumb.Segments.svg.SegmentRenderer.getPath(segments[i]);
+						p += " ";
+					}
+
+					return p;
 				};
 
 				/**
@@ -1637,7 +1743,7 @@ define(
 				 *
 				 */
 				Connection.prototype.dragMove = function(dX, dY, x, y, event) {
-					if (this.clickedSegmentIndex > 0
+					/*if (this.clickedSegmentIndex > 0
 							&& this.clickedSegmentIndex < this.segments.length - 1) {
 
 						if (this.segments[this.clickedSegmentIndex]) {
@@ -1655,7 +1761,7 @@ define(
 						this.path.attr({
 							'path' : this.getSvgString()
 						});
-					}
+					}*/
 				};
 
 				/**

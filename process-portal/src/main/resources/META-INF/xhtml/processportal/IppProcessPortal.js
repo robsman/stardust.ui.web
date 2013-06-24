@@ -36,6 +36,8 @@ InfinityBpm.ProcessPortal = new function() {
 	                     "organizationFrameAnchor", "roleFrameAnchor", "uiMashupApplicationFrameAnchor", "webServiceApplicationFrameAnchor",
 	                     "xsdStructuredDataTypeFrameAnchor"];
 	var PORTAL_FRAMES = ["ippActivityPanelAnchor", "tiffViewerIframe"];
+	//do not resize iframes if following Iframes are active
+	var PORTAL_FRAMES_RESIZE_NOT_REQUIRED = ["ippCommonMenuAnchor", "ippPerspectiveMenuAnchor"];
 
 	function debug(msg) {
 		//alert(msg);
@@ -597,17 +599,33 @@ InfinityBpm.ProcessPortal = new function() {
      */
     function resizeIFrames(params) {
 	var gotActiveFrame = false;
+	var stopResize = false;
+
+	doWithContentFrame(null, function(contentFrame){
+			 if (contentFrame && 'inline' == contentFrame.style.display) {
+				 iFrameAnchor = contentFrame.getAttribute('anchorId');
+				 if (PORTAL_FRAMES_RESIZE_NOT_REQUIRED.indexOf(iFrameAnchor) > -1){
+					 stopResize = true;
+		         }
+			 }
+	});
+
+	if(stopResize){
+		return gotActiveFrame;
+	}
+
     	doWithContentFrame(null, function(contentFrame){
 		 if (contentFrame && 'inline' == contentFrame.style.display) {
 			 iFrameAnchor = contentFrame.getAttribute('anchorId');
 			 if ('outlineAnchor' == iFrameAnchor){
 				resizeModelerOutlineIFrame(contentFrame.id);
 			 }else if (PEPPER_FRAMES.indexOf(iFrameAnchor) > -1 || PORTAL_FRAMES.indexOf(iFrameAnchor) > -1){
-				resizeIFrame({"id": contentFrame.id, "iFrameAnchor": iFrameAnchor});
+				resizeIFrame({"id": contentFrame.id, "iFrameAnchor": iFrameAnchor}, params);
 				gotActiveFrame = true;
 			 }
     		 }
     	});
+
 	return gotActiveFrame;
 	 }
 
@@ -641,7 +659,7 @@ InfinityBpm.ProcessPortal = new function() {
     /**
      * resizes Process Definition Iframe and adjust associated div
      */
-    function resizeIFrame(contentFrame) {
+    function resizeIFrame(contentFrame, params) {
 
 	var contentFrameId = contentFrame.id;
 	var iFrameAnchor = contentFrame.iFrameAnchor;
@@ -652,22 +670,46 @@ InfinityBpm.ProcessPortal = new function() {
         var iFrameAnchorDiv = ippPortalDom.getElementById(iFrameAnchor);
 
         if(iFrameAnchorDiv && (InfinityBpm && InfinityBpm.Core)){
+
 		var divOffsetTop = InfinityBpm.Core.getOffsetTop(iFrameAnchorDiv);
 		var divOffsetLeft = InfinityBpm.Core.getOffsetLeft(iFrameAnchorDiv);
 
 			var windowSize = InfinityBpm.Core.getBrowserDimensions();
 
-			// set height and width
+			//adjust iframe height
 			var dimensions = {};
-			dimensions.height = windowSize.height - divOffsetTop - 80;
-			dimensions.width = windowSize.width - divOffsetLeft - 45;
+			dimensions.height = (windowSize.height - divOffsetTop) - 80;
 
-//	  	  	if(iFrameAnchorDiv.offsetHeight > dimensions.height){
-//	  	  		dimensions.height = iFrameAnchorDiv.offsetHeight
-//	  	  	}
-//	  	  	if(iFrameAnchorDiv.offsetWidth > dimensions.width){
-//	  	  	dimensions.width = iFrameAnchorDiv.offsetWidth;
-//	  	  	}
+			//check if the modeler outline iframe is active
+			var modelerOutlineIframeActive = false;
+			doWithContentFrame(null, function(contentFrame){
+			 if (contentFrame && 'inline' == contentFrame.style.display) {
+				 iFrameAnchor = contentFrame.getAttribute('anchorId');
+				 if ('outlineAnchor' == iFrameAnchor){
+					 modelerOutlineIframeActive = true;
+				 }
+			 }
+		});
+
+			// adjust iframe height considering the launch panel height
+		    var launchPanelEndDiv = ippPortalDom.getElementById("ippPortalEndLP");
+		    if(launchPanelEndDiv && !(params && params.considerWindowSize) && !modelerOutlineIframeActive){
+			  var heightRelLaunch = launchPanelEndDiv.offsetTop * 0.90;
+			  if(heightRelLaunch > dimensions.height){
+			    dimensions.height = heightRelLaunch;
+			  }
+		    }
+
+		    //adjust iframe width
+			dimensions.width = (windowSize.width - divOffsetLeft) - 45 ;
+
+			// adjust iframe width considering the available portal content size
+			if(!(params && params.considerWindowSize)){
+				var portalConentDiv = ippPortalDom.getElementById("PortalContent");
+				if(portalConentDiv && portalConentDiv.offsetWidth > dimensions.width){
+					dimensions.width = portalConentDiv.offsetWidth * 0.95;
+				}
+			}
 
 			dimensions.anchorId = iFrameAnchor;
 
@@ -728,6 +770,10 @@ InfinityBpm.ProcessPortal = new function() {
         }, CONTENT_FRAME_CLOSE_DELAY);
 
         removeIframe(contentId);
+
+        if (InfinityBpm && InfinityBpm.Core){
+	  InfinityBpm.Core.resizePortalMainWindow();
+        }
       });
     }
 

@@ -7,7 +7,7 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>REST Service Overlay</title>
+<title>E-Mail Integration Overlay</title>
 <link rel="stylesheet" type="text/css"
 	href="../../css/jquery-ui-1.8.20.custom.css"></link>
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
@@ -91,6 +91,7 @@
 										<td><input id="bccInput" type="text"></input>
 										</td>
 									</tr>
+									<!--
 									<tr>
 										<td><label for="prioritySelect"></label></td>
 										<td><select id="prioritySelect">
@@ -102,6 +103,7 @@
 										</select>
 										</td>
 									</tr>
+									 -->
 								</table>
 							</td>
 						</tr>
@@ -124,43 +126,62 @@
 					<td>
 						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 							<tr>
-								<td><label for="responseTypeSelect">Response Type</label></td>
-								<td><select id="responseTypeSelect"><option
-											value="none"></option>
-										<option value="rest"></option>
-										<option value="eMail"></option>
-								</select>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+										<tr>
+											<td><label for="responseTypeSelect">Response Type</label></td>
+											<td>
+												<select id="responseTypeSelect">
+														<option value="none"></option>
+														<option value="http"></option>
+												</select>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div id="httpResponseDiv" style="margin-top: 10px;">
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+											<tr>
+												<td>
+													<label id="responseOptionsTypeHintLabel"></label>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+														<tr>
+															<td><label for="responseOptionsTypeSelect"></label></td>
+															<td><select id="responseOptionsTypeSelect" size="1"></select></td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<label id="responseHttpUrlIHintLabel"></label>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+														<tr>
+															<td><label for="responseHttpUrlInput"></label></td>
+															<td><input id="responseHttpUrlInput" type="text" style="width: 457px;"></input></td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</div>
 								</td>
 							</tr>
 						</table>
 					</td>
 				</tr>
-				<tr>
-					<td>
-						<div id="restResponseDiv" style="margin-top: 10px;">
-							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-								<tr>
-									<td><input id="responseOptionsInput" type="checkbox"></input>
-									</td>
-									<td><label for="responseOptionsInput">Generate
-											Response Options for E-Mail</label></td>
-								</tr>
-								<tr>
-									<td><label for="responseRestServerInput">Response
-											REST Server</label></td>
-									<td><input id="responseRestServerInput" type="text"></input>
-									</td>
-								</tr>
-								<tr>
-									<td><label for="responseRestPortInput">Response
-											Port</label></td>
-									<td><input id="responseRestPortInput" type="number" style="width: 50px;"></input>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</td>
-				</tr>
+				<!-- here -->
 				<tr>
 					<td>
 						<div id="emailResponseDiv" style="margin-top: 10px;">
@@ -274,58 +295,60 @@
 			</table>
 		</div>
 		<div id="testTab">
-			<table cellpadding="0" cellspacing="0" class="layoutTable">
-				<tr>
-					<td>
-						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-							<tr>
-								<td>
-									<table cellpadding="0" cellspacing="5" class="layoutTable">
-										<tr>
-											<td><input id="resetButton" type="image"
-												src="../../images/icons/arrow_refresh.png" />
-											</td>
-											<td><input id="runButton" type="image"
-												src="../../images/icons/run.png" /></td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<table cellpadding="0" cellspacing="5" class="layoutTable">
-										<tr>
-											<td>
-												<table cellpadding="0" cellspacing="5" class="layoutTable">
-													<tr>
-														<td><label for="inputDataTextArea"></label></td>
-													</tr>
-													<tr>
-														<td><textarea id="inputDataTextarea" rows="10"
-																cols="80" class="code" style="width: 400px;"></textarea>
-														</td>
-													</tr>
-												</table></td>
-											<td>
-												<table cellpadding="0" cellspacing="5" class="layoutTable"
-													style="margin-left: 10px;">
-													<tr>
-														<td><label for="outputDataTextarea"></label></td>
-													</tr>
-													<tr>
-														<td><div id="outputDataTextarea"
-																style="width: 600px; height: 300px; border: 1px solid grey; padding: 10px;" />
-														</td>
-													</tr>
-												</table></td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+			<div class="noDataChange">
+				<table cellpadding="0" cellspacing="0" class="layoutTable">
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td><input id="resetButton" type="image"
+													src="../../images/icons/arrow_refresh.png" />
+												</td>
+												<td><input id="runButton" type="image"
+													src="../../images/icons/run.png" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td>
+													<table cellpadding="0" cellspacing="5" class="layoutTable">
+														<tr>
+															<td><label for="inputDataTextArea"></label></td>
+														</tr>
+														<tr>
+															<td><textarea id="inputDataTextarea" rows="10"
+																	cols="80" class="code" style="width: 400px;"></textarea>
+															</td>
+														</tr>
+													</table></td>
+												<td>
+													<table cellpadding="0" cellspacing="5" class="layoutTable"
+														style="margin-left: 10px;">
+														<tr>
+															<td><label for="outputDataTextarea"></label></td>
+														</tr>
+														<tr>
+															<td><div id="outputDataTextarea"
+																	style="width: 600px; height: 300px; border: 1px solid grey; padding: 10px;" />
+															</td>
+														</tr>
+													</table></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </body>

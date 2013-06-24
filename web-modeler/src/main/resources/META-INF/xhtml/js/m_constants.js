@@ -228,6 +228,9 @@ define(function() {
 		// Application
 
 		APPLICATION : "application",
+		JAVA_APPLICATION_TYPE : "plainJava",
+		SPRING_BEAN_APPLICATION_TYPE : "springBean",
+		SESSION_BEAN_APPLICATION_TYPE : "sessionBean",
 
 		// Participant
 
@@ -271,6 +274,8 @@ define(function() {
 		STRUCTURED_DATA_TYPE : "struct",
 		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "dmsDocument",
+		ENTITY_DATA_TYPE : "entity",
+		HIBERNATE_DATA_TYPE : "hibernate",
 
 		// Type Declarations
 

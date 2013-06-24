@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Read-Only Model</title>
+</head>
+<body>
+	<form name="form">
+		<div id="modelReadOnlyDiv" class="noDataChange">
+			<div id="readOnlyModelHeading" class="heading">Enter password to
+				prevent model editing.</div>
+			<div>
+				<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+					<tbody>
+						<tr>
+							<td><label for="readOnlyStatus">Status</label>
+							</td>
+							<td><label id="readOnlyStatus">Writable</label>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="password">Password</label></td>
+							<td><input id="password" id="password" ng-model="password"
+								type="text"/>
+						</tr>
+						<tr>
+							<td><label for="rePassword" ng-show="!readonlyModel">Reenter</label>
+							</td>
+							<td><input id="rePassword" name="rePassword" ng-model="rePassword"
+								type="text" ng-show="!readonlyModel" />
+								<div id="passwordsEmptyErrorDiv" ng-show="passwordsEmpty" style="color: red">Please enter password</div>
+								<div id="reEnterPasswordErrorDiv" ng-show="reEnterPasswordError" style="color: red">Re-enter password</div>
+								<div id="minLengthErrorDiv" ng-show="minLengthError" style="color: red">Password should be at least 4 characters long.</div>
+								<div id="passwordMismatchErrorDiv" ng-show="passwordMismatchError" style="color: red">Passwords don't match</div></td>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div>
+				<input id="submitReadOnly" type="button" ng-click="submitReadOnly();" />
+			</div>
+		</div>
+	</form>
+</body>
+</html>

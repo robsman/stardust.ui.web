@@ -15,8 +15,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils) {
+				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_model" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -237,10 +238,12 @@ define(
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = null;
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = null;
 										} else {
-											var data = value.split(":");
+											var colIndex = value.indexOf(":");
+											var context = value.substring(0, colIndex);
+											var accessPointId = value.substring(colIndex + 1);
 
-											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = data[0];
-											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = data[1];
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = context;
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = accessPointId;
 										}
 
 										page
@@ -292,18 +295,50 @@ define(
 						hasInputMapping, hasOutputMapping) {
 					if (hasInputMapping) {
 						m_dialog.makeVisible(this.inputAccessPointPanel);
+						this.disableDataPath(this.inputDataPathInput);
 					} else {
 						m_dialog.makeInvisible(this.inputAccessPointPanel);
 					}
 
 					if (hasOutputMapping) {
 						m_dialog.makeVisible(this.outputAccessPointPanel);
+						this.disableDataPath(this.outputDataPathInput);
 					} else {
 						m_dialog.makeInvisible(this.outputAccessPointPanel);
 					}
 
 					this.inputInput.attr("checked", hasInputMapping);
 					this.outputInput.attr("checked", hasOutputMapping);
+				};
+
+				/**
+				 * Input / output dataPath text-boxes are disabled for
+				 * java-like application activities (plainJava, springBean, sessionBean)
+				 * and data (entity, hibernate).
+				 */
+				DataFlowBasicPropertiesPage.prototype.disableDataPath = function(dataPath) {
+					dataPath.removeAttr("disabled");
+					if (this.propertiesPanel.element
+							&& this.propertiesPanel.element.modelElement) {
+						if (this.propertiesPanel.element.modelElement.activity
+								&& this.propertiesPanel.element.modelElement.activity.activityType === "Task"
+								&& this.propertiesPanel.element.modelElement.activity.applicationFullId) {
+							var app = m_model
+									.findApplication(this.propertiesPanel.element.modelElement.activity.applicationFullId);
+							if (app
+									&& (app.applicationType === m_constants.JAVA_APPLICATION_TYPE
+											|| app.applicationType === m_constants.SPRING_BEAN_APPLICATION_TYPE
+											|| app.applicationType === m_constants.SESSION_BEAN_APPLICATION_TYPE)) {
+								dataPath.attr("disabled", "disabled");
+							}
+						}
+
+						if (this.propertiesPanel.element.modelElement.data
+								&& (this.propertiesPanel.element.modelElement.data.dataType === m_constants.ENTITY_DATA_TYPE
+									|| this.propertiesPanel.element.modelElement.data.dataType === m_constants.HIBERNATE_DATA_TYPE)) {
+							dataPath.attr("disabled", "disabled");
+						}
+					}
 				};
 
 				/**

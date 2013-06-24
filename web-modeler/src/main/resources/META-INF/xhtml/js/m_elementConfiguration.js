@@ -18,12 +18,13 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 	var validDataTypes = supportedDataTypes.concat(unSupportedDataTypes);
 
 	var supportedAppTypes = [ "webservice", "messageTransformationBean",
-			"camelBean", "interactive" ];
+			"interactive", "camelSpringProducerApplication",
+			"camelConsumerApplication" ];
 
 	var unSupportedAppTypes = [ "dmsOperation", "messageParsingBean",
 			"messageSerializationBean", "springBean", "mailBean", "jms",
 			"plainJava", "xslMessageTransformationBean", "rulesEngineBean",
-			"sessionBean", "camelSpringProducerApplication" ];
+			"sessionBean"];
 
 	var validAppTypes = supportedAppTypes.concat(unSupportedAppTypes);
 
@@ -35,6 +36,8 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			.concat(unSupportedParticipants);
 
 	var elementTypeVsIconsMap = {
+			"model" : "/plugins/bpm-modeler/images/icons/model.png",
+			"lockedModel" : "/plugins/bpm-modeler/images/icons/model-locked.png",
 			"primitive" : "/plugins/bpm-modeler/images/icons/data-primitive.png",
 			"dmsDocument" : "/plugins/bpm-modeler/images/icons/data-document.png",
 			"struct" : "/plugins/bpm-modeler/images/icons/data-structured.png",
@@ -60,6 +63,7 @@ define([ "bpm-modeler/js/m_utils" ], function(m_utils) {
 			"rulesEngineBean" : "/plugins/bpm-modeler/images/icons/application-drools.png",
 			"sessionBean" : "/plugins/bpm-modeler/images/icons/application-session.png",
 			"camelSpringProducerApplication" : "/plugins/bpm-modeler/images/icons/application-camel.png",
+			"camelConsumerApplication" : "/plugins/bpm-modeler/images/icons/application-camel.png",
 			"roleParticipant" : "/plugins/bpm-modeler/images/icons/role.png",
 			"teamLeader" : "/plugins/bpm-modeler/images/icons/manager.png",
 			"organizationParticipant" : "/plugins/bpm-modeler/images/icons/organization.png",

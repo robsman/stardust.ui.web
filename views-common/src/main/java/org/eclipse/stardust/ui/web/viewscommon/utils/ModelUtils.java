@@ -22,12 +22,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.api.model.Data;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.engine.api.model.Participant;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
@@ -35,6 +30,8 @@ import org.eclipse.stardust.engine.api.runtime.Models;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
 
@@ -45,6 +42,8 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
  */
 public class ModelUtils
 {
+   private static final Logger trace = LogManager.getLogger(ModelUtils.class);
+
    private ModelUtils()
    {
       // Utility class
@@ -66,7 +65,7 @@ public class ModelUtils
 
    /**
     * Returns all models sorted by active models first
-    * 
+    *
     * @return
     */
    public static List<DeployedModel> getAllModelsActiveFirst()
@@ -86,7 +85,7 @@ public class ModelUtils
       activeModels.addAll(allModels);
       return activeModels;
    }
-   
+
    /**
     * @return
     */
@@ -130,7 +129,7 @@ public class ModelUtils
     * Returns the model with the given Id. Initial search is in "Active" models (see
     * {@link #getActiveModel(String)}). If an "Active" model is not found, then search in
     * "All" models (see {@link #getAllModels()}).
-    * 
+    *
     * @param modelId
     * @return
     */
@@ -138,7 +137,7 @@ public class ModelUtils
    {
       // Initial search is "Active" models
       DeployedModel model = getActiveModel(modelId);
-      
+
       // If an "Active" model is not found, then search in "All" models
       if (model == null)
       {
@@ -152,7 +151,7 @@ public class ModelUtils
             }
          }
       }
-      
+
       return model;
    }
 
@@ -172,7 +171,7 @@ public class ModelUtils
 
       return modelId;
    }
-   
+
 
    /**
     * @param qualifiedParticipantId
@@ -193,7 +192,7 @@ public class ModelUtils
 
    /**
     * returns admin participant if at least one active model exist
-    * 
+    *
     * @return
     */
    public static Participant getAdminParticipant()
@@ -206,8 +205,8 @@ public class ModelUtils
       return null;
    }
 
-   
-   
+
+
    /**
     * method returns Map of DataPath from all active models (exclude PredefinedModel)
     * @return
@@ -235,12 +234,12 @@ public class ModelUtils
          {
             dataMap.put(path.getId(), path);
          }
-      }      
+      }
       return dataMap;
    }
 
    /**
-    * Returns the Document Types for all models with keeping Active Model at Priority 
+    * Returns the Document Types for all models with keeping Active Model at Priority
     * @return
     */
    public static Set<DocumentTypeWrapper> getAllDeclaredDocumentTypes()
@@ -249,7 +248,7 @@ public class ModelUtils
 
       // Add Active First
       allDocumentTypes.addAll(getAllActiveDeclaredDocumentTypes());
-      
+
       // Add Other Models
       for (DeployedModel model : getModelCache().getActiveModels())
       {
@@ -273,7 +272,7 @@ public class ModelUtils
       {
          allDocumentTypes.addAll(getDeclaredDocumentTypes(model));
       }
-      
+
       return allDocumentTypes;
    }
 
@@ -294,12 +293,48 @@ public class ModelUtils
       for (Data docData : referedDocData)
       {
          DeployedModel dataModel = getModel(docData.getModelOID());
-         allDocumentTypes.add(new DocumentTypeWrapper(DocumentTypeUtils.getDocumentTypeFromData(dataModel, docData),
-               dataModel));
+         DocumentType documentType = getDocumentTypeFromData(dataModel, docData);
+         if (documentType != null)
+         {
+            allDocumentTypes.add(new DocumentTypeWrapper(documentType, dataModel));
+         }
+         else
+         {
+            trace.error("Could not resolve type for Document " + docData.getQualifiedId());
+         }
       }
       return allDocumentTypes;
    }
-   
+
+   public static DocumentType getDocumentTypeFromData(Model model, Data data)
+   {
+      DocumentType result = null;
+      int modelOid = model.getModelOID();
+
+      if (data.getModelOID() == modelOid && null != model.getData(data.getId())
+            && DocumentTypeUtils.isDmsDocumentData(data.getTypeId()))
+      {
+         String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(data);
+         Reference ref = data.getReference();
+         if (ref != null)
+         {
+            DeployedModel otherModel = getModel(ref.getModelOid());
+            if (otherModel != null)
+            {
+               model = otherModel;
+               typeDeclarationId = ref.getId();
+            }
+         }
+         if (typeDeclarationId != null)
+         {
+            result = DocumentTypeUtils.getDocumentType(typeDeclarationId, model);
+
+         }
+      }
+
+      return result;
+   }
+
    /**
     * @param documentType
     * @return
@@ -313,14 +348,14 @@ public class ModelUtils
             // For Internal XSDs
             String schemaLocation = documentType.getSchemaLocation();
             String modelNo = schemaLocation.substring(schemaLocation.indexOf("?") + 1);
-   
+
             long modelOID = Long.parseLong(modelNo);
             return ModelCache.findModelCache().getModel(modelOID);
          }
          catch (Exception e)
          {
             // For External XSDs, Lookup all Models, starting with Active
-            
+
             // Process Active Models
             for (DeployedModel model : getActiveModels())
             {
@@ -329,7 +364,7 @@ public class ModelUtils
                   return model;
                }
             }
-   
+
             // Process In-Active Models
             for (DeployedModel model : getAllModels())
             {
@@ -342,10 +377,10 @@ public class ModelUtils
       }
       return null;
    }
-   
+
    /**
     * returns Models referring to the provided model
-    * 
+    *
     * @param modelId
     * @return
     */

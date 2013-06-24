@@ -20,7 +20,7 @@
 					<td class="rightContentTd">
 						<ui:include src="portalToolbar.xhtml" />
 						<ui:include src="portalBreadCrumb.xhtml" />
-						<div class="content">
+						<div id="PortalContent" class="content">
 							<f:subview id="subView">
 								<ice:panelGroup>
 									<ice:form partialSubmit="false">
@@ -50,10 +50,10 @@
 						<td style="white-space: nowrap">
 							<ice:outputText value="#{ippPortalApp.focusView.fullLabel}" />
 						</td>
-	
+
 						<!-- Filler TD -->
 						<td style="width: 100%" />
-	
+
 						<td style="text-align: right; white-space: nowrap">
 							<ice:panelGroup styleClass="toolbarGroupRight">
 								<pc:automationTag value="auto-FW-ToolbarBtnsCloseFullScreen" standAlone="false" />

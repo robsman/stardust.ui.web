@@ -190,6 +190,28 @@ define(
 				/**
 				 *
 				 */
+				EventIntegrationOverlay.prototype.initializedelayTimerUnitSelect = function(
+						select) {
+					select
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					select
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					select
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
+									+ "</option>");
+				};
+
+				/**
+				 *
+				 */
 				EventIntegrationOverlay.prototype.getIntervalInMilliseconds = function(
 						value, unitFactor) {
 					return (value == null ? 0 : value * unitFactor);

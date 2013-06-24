@@ -59,6 +59,7 @@ import org.eclipse.xsd.XSDTypeDefinition;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  *
@@ -99,7 +100,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       propertiesMap.put(LaneSymbol.class, new String[] {});
       // propertiesMap.put(EndEventSymbol.class,
       // new String[] {ModelerConstants.NAME_PROPERTY});
+
       propertiesMap.put(ApplicationType.class, new String[] {});
+
       // propertiesMap.put(TypeDeclarationType.class, new String[] {
       // ModelerConstants.NAME_PROPERTY, ModelerConstants.ID_PROPERTY});
       propertiesMap.put(ModelType.class, new String[] {});
@@ -886,52 +889,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                data = getModelBuilderFacade().importData(model, dataFullID);
             }
 
-            if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+            String formalParameterName = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.NAME_PROPERTY);
+            String formalParameterId = NameIdUtils.createIdFromName(formalParameterName);
+            String dataTypeId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.DATA_TYPE_PROPERTY);
+
+            if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(dataTypeId))
             {
-               String primitiveDataType = null;
-               JsonElement jsonElementType = formalParameterJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
-               if (jsonElementType != null)
-               {
-                  primitiveDataType = jsonElementType.getAsString();
-               }
-               else
-               {
-                  primitiveDataType = "String"; //$NON-NLS-1$
-               }
-
-               getModelBuilderFacade().createPrimitiveParameter(
-                     processDefinition,
-                     data,
-                     NameIdUtils.createIdFromName(formalParameterJson.get(
-                           ModelerConstants.NAME_PROPERTY).getAsString()),
-                     formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
-                           .getAsString(), primitiveDataType, mode);
+               String primitiveDataType = GsonUtils.safeGetAsString(formalParameterJson,
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+               getModelBuilderFacade().createPrimitiveParameter(processDefinition,
+                     data, formalParameterId, formalParameterName,
+                     primitiveDataType == null ? "String" : primitiveDataType, mode); //$NON-NLS-1$
             }
-            else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+            else if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(dataTypeId))
             {
-               String structuredDataTypeFullId = null;
-
-               if (hasNotJsonNull(formalParameterJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
-               {
-                  structuredDataTypeFullId = formalParameterJson.get(
-                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
-                        .getAsString();
-               }
-
-               getModelBuilderFacade().createStructuredParameter(
-                     processDefinition,
-                     data,
-                     NameIdUtils.createIdFromName(formalParameterJson.get(
-                           ModelerConstants.NAME_PROPERTY).getAsString()),
-                     formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
-                           .getAsString(), structuredDataTypeFullId, mode);
+               String structuredDataTypeFullId = GsonUtils.safeGetAsString(formalParameterJson,
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+               getModelBuilderFacade().createStructuredParameter(processDefinition,
+                     data, formalParameterId, formalParameterName,
+                     structuredDataTypeFullId, mode);
             }
-            else if (formalParameterJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
-                  .getAsString()
+            else if (dataTypeId
                   .equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
             {
                String structuredDataTypeFullId = null;
@@ -946,10 +924,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                getModelBuilderFacade().createDocumentParameter(
                      processDefinition,
                      data,
-                     NameIdUtils.createIdFromName(formalParameterJson.get(
-                           ModelerConstants.NAME_PROPERTY).getAsString()),
-                     formalParameterJson.get(ModelerConstants.NAME_PROPERTY)
-                           .getAsString(), structuredDataTypeFullId, mode);
+                     formalParameterId,
+                     formalParameterName, structuredDataTypeFullId, mode);
             }
          }
       }
@@ -1838,6 +1814,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(application, applicationJson,
             propertiesMap.get(ApplicationType.class));
 
+      if (hasNotJsonNull(applicationJson, ModelerConstants.TYPE_PROPERTY))
+      {
+	  JsonPrimitive typeJson = applicationJson.get(ModelerConstants.TYPE_PROPERTY).getAsJsonPrimitive();
+
+	  if (!application.getType().getId().equals(typeJson.getAsString()))
+		  {
+		  ModelType modelType = ModelUtils.findContainingModel(application);
+		  ApplicationTypeType type = getModelBuilderFacade()
+			.findApplicationTypeType(modelType, typeJson.getAsString());
+
+		  if (type != null)
+		  {
+			  application.setType(type);
+		  }
+		  }
+      }
+
       // (fh) must update before changing the attributes so we can compare with old values.
       if (WebServiceApplicationUtils.isWebServiceApplication(application))
       {
@@ -2093,11 +2086,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   {
                      DataTypeType dataType = type.getDataType();
                      DeclaredTypeType declaredType = dataType.getDeclaredType();
-                     String declaredTypeId = declaredType.getId();
-                     if ( !StringUtils.isEmpty(declaredTypeId)
-                           && declaredTypeId.equals(oldId))
+                     if (declaredType != null)
                      {
-                        declaredType.setId(typeDeclaration.getId());
+                        String declaredTypeId = declaredType.getId();
+                        if ( !StringUtils.isEmpty(declaredTypeId)
+                              && declaredTypeId.equals(oldId))
+                        {
+                           declaredType.setId(typeDeclaration.getId());
+                        }
                      }
                   }
                }
@@ -2113,8 +2109,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
                   .getAsString()))
       {
-         XsdSchemaUtils.updateXSDSchemaType(typeDeclaration.getSchemaType(),
-               declarationJson.getAsJsonObject("schema"));
+         XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
+               typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
       }
 
       // ExternalReference ?

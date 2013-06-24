@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 @Service
 @Scope("singleton")
@@ -36,15 +37,16 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
    }
 
    @Override
-   public ModelDescriptor<ModelType> loadModel(String contentName,
-         InputStream modelContent)
+   public ModelDescriptor<ModelType> loadModel(String contentName, InputStream modelContent)
    {
       if (canLoadModel(contentName))
       {
          try
          {
-            ModelType xpdlModel = XpdlModelIoUtils.loadModel(modelContent,
-                  modelService.currentSession().modelManagementStrategy());
+            ModelManagementStrategy strategy = modelService.currentSession().modelManagementStrategy();
+            WebModelerModelManager modelMgr = new WebModelerModelManager(strategy);
+            modelMgr.load(URI.createURI(contentName), modelContent);
+            ModelType xpdlModel = modelMgr.getModel();
             return new ModelDescriptor<ModelType>(xpdlModel.getId(), xpdlModel.getName(), xpdlModel);
          }
          catch (IOException ioe)
@@ -64,7 +66,10 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
    @Override
    public void saveModel(ModelType model, OutputStream modelContent) throws IOException
    {
-      modelContent.write(XpdlModelIoUtils.saveModel(model));
+      ModelManagementStrategy strategy = modelService.currentSession().modelManagementStrategy();
+      WebModelerModelManager modelMgr = new WebModelerModelManager(strategy);
+      modelMgr.setModel(model);
+      modelMgr.save(URI.createURI(generateDefaultFileName(model)), modelContent);
    }
 
    @Override

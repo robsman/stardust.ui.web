@@ -11,9 +11,9 @@
 define(
 		[ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
 				"bpm-modeler/js/m_i18nUtils",
-				'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage' ],
+				'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage', 'bpm-modeler/js/m_modelReadOnlyPropertiesPage' ],
 		function(m_modelElementCommentsPropertiesPage, m_i18nUtils,
-				m_modelConfigurationVariablesPropertiesPage) {
+				m_modelConfigurationVariablesPropertiesPage, m_modelReadOnlyPropertiesPage) {
 			return {
 				propertiesPage : [
 						{
@@ -35,6 +35,16 @@ define(
 							pageName : m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
 							pageIconUrl : "../../images/icons/table.png"
-						} ]
+						},
+						{
+							panelId : "modelView",
+							id : "modelReadOnlyPropertiesPage",
+							pageHtmlUrl : "modelReadOnlyPropertiesPage.html",
+							provider : m_modelReadOnlyPropertiesPage,
+							visibility : "always",
+							pageName : m_i18nUtils
+									.getProperty("modeler.propertyView.modelView.readOnlyPage.title"),
+							pageIconUrl : "../../images/icons/key--pencil.png"
+						}]
 			};
 		});

@@ -26,13 +26,15 @@ define(
 								"name" : "indexed",
 								"label" : m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.storage.indexed"),
-								"type" : "boolean"
+								"type" : "boolean",
+								"defaultValue" : "true"
 							},
 							{
 								"name" : "persistent",
 								"label" : m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.storage.persistent"),
-								"type" : "boolean"
+								"type" : "boolean",
+								"defaultValue" : "true"
 							}, ]
 				},
 				"ui" : {
@@ -43,6 +45,12 @@ define(
 								"name" : "InputPreferences_label",
 								"label" : m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.label"),
+								"type" : "string"
+							},
+							{
+								"name" : "InputPreferences_labelKey",
+								"label" : m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.labelKey"),
 								"type" : "string"
 							},
 							{
@@ -63,12 +71,12 @@ define(
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.mandatory"),
 								"type" : "boolean"
 							},
-							{
-								"name" : "InputPreferences_uiformat",
-								"label" : m_i18nUtils
-										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.format"),
-								"type" : "string"
-							},
+//							{
+//								"name" : "InputPreferences_uiformat",
+//								"label" : m_i18nUtils
+//										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.ui.format"),
+//								"type" : "string"
+//							},
 							{
 								"name" : "InputPreferences_style",
 								"label" : m_i18nUtils
@@ -192,13 +200,31 @@ define(
 						PropertiesTree.prototype.updateAnnotation = function(
 								name, newValue) {
 
-							if (this.element.annotations) {
-								this.element.annotations[name] = newValue;
-								this.view
-										.submitChanges({
-											typeDeclaration : this.view.typeDeclaration.typeDeclaration
-										});
+							if (!name || name.indexOf(".") == -1) {
+								return;
 							}
+
+							if(!this.element.appinfo){
+								this.element.appinfo = {};
+							}
+
+							var nameArr = name.split(".");
+							var category = nameArr[0];
+							var attr = nameArr[1];
+
+							if(!category || !attr){
+								return;
+							}
+
+							if (!this.element.appinfo[category]) {
+								this.element.appinfo[category] = {};
+							}
+							this.element.appinfo[category][attr] = newValue;
+
+							this.view
+									.submitChanges({
+										typeDeclaration : this.view.typeDeclaration.typeDeclaration
+									});
 						},
 
 						/**
@@ -266,6 +292,10 @@ define(
 
 							this.tableBody.empty();
 
+							if (!element) {
+								return;
+							}
+
 							var n = 0;
 
 							for (categoryName in this.categories) {
@@ -282,8 +312,6 @@ define(
 
 								this.tableBody.append(content);
 
-								var keyPrefix = "appinfo.stardust."
-										+ categoryName + ".";
 								var m = 0;
 
 								for (propertyName in category.properties) {
@@ -298,27 +326,35 @@ define(
 									content += "</span></td>";
 									content += "<td class=\"editable\">";
 
-									var propertyPrefV;
+									var propertyPrefV = null;
 
-									if (element.annotations) {
-										propertyPrefV = element.annotations[keyPrefix
-												+ property.name];
+									if (element.appinfo) {
+										if (element.appinfo[categoryName]) {
+											propertyPrefV = element.appinfo[categoryName][property.name];
+										}
 									}
 
-									propertyPrefV = propertyPrefV ? propertyPrefV
-											: "";
+									if (!propertyPrefV) {
+										if (property.defaultValue) {
+											propertyPrefV = property.defaultValue;
+										} else {
+											propertyPrefV = "";
+										}
+									}
+
+									var keyName = categoryName + "." + property.name;
 
 									if (property.type == "string") {
 										if (property.enumeration == null) {
 											content += "<input type=\"text\" name="
-													+ keyPrefix
-													+ property.name
+													+ keyName
 													+ " value="
+													+ "\""
 													+ propertyPrefV
-													+ "\>";
+													+ "\"" + "\>";
 										} else {
 											content += "<select name="
-													+ keyPrefix + property.name
+													+ keyName
 													+ ">";
 
 											for (enumeratorName in property.enumeration) {
@@ -341,11 +377,16 @@ define(
 											content += "</select>";
 										}
 									} else if (property.type == "long") {
-										content += "<input type=\"text\"\ style=\"text-align: right;\">";
+										content += "<input type=\"text\" style=\"text-align: right;\" name="
+												+ keyName
+												+ " value="
+												+ propertyPrefV
+												+ "\>";
 									} else if (property.type == "boolean") {
 										content += "<input type=\"checkbox\" name="
-												+ keyPrefix + property.name;
-										if (propertyPrefV) {
+												+ keyName;
+										if (propertyPrefV == "true"
+												|| propertyPrefV == true) {
 											content += " checked";
 										}
 										content += "\>";
@@ -412,7 +453,17 @@ define(
 																				":checked") ? true
 																		: false);
 											});
+
+							if (this.view.getModelElement().isReadonly()) {
+								m_utils
+										.markControlsReadonly(
+												"fieldPropertiesTableDiv",
+												this.view.getModelElement()
+														.isReadonly());
+							}
+
+							var width = jQuery("#fieldPropertiesTableDiv").find("#property").width();
+							jQuery("table#fieldPropertiesTable").find("tr > td:first").width(width + "px");
 						};
-			}
-			;
+			};
 		});

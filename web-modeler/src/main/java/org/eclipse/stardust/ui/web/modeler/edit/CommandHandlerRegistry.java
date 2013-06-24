@@ -145,6 +145,15 @@ public class CommandHandlerRegistry
          {
             trace.error("Failed invoking handler for '" + commandId + "' command.",
                   ite.getTargetException());
+
+            if (ite.getTargetException() instanceof RuntimeException)
+            {
+               throw (RuntimeException) ite.getTargetException();
+            }
+            else
+            {
+               throw new RuntimeException(ite.getTargetException().getMessage(), ite.getTargetException());
+            }
          }
       }
    }

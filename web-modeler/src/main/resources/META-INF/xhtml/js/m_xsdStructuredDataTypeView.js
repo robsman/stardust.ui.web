@@ -73,6 +73,7 @@ define(
 					this.baseTypeSelect = jQuery("#baseTypeSelect select");
 					this.minimumLengthEdit = jQuery("#minLenghtInput");
 					this.maximumLengthEdit = jQuery("#maxLenghtInput");
+					this.focusAttr = {};
 
 					var view = this;
 
@@ -242,6 +243,7 @@ define(
 				XsdStructuredDataTypeView.prototype.populateBaseTypeSelectMenu = function(typeDeclaration) {
 					var optionsString = "<option value='None'>" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.none") + "</option>";
 
+					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
 					if (typeDeclaration) {
 						var thisModel = m_model.findModelForElement(typeDeclaration.uuid);
 						for (var i in thisModel.typeDeclarations) {
@@ -253,19 +255,96 @@ define(
 							}
 						}
 					}
+					optionsString += "</optgroup>";
+
+					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+					var allModels = m_model.getModels();
+					for ( var i in allModels) {
+						var model = allModels[i];
+
+						if (model == typeDeclaration.model) {
+							continue;
+						}
+
+						for ( var n in model.typeDeclarations) {
+							var typeDeclarationN = model.typeDeclarations[n];
+							if (m_modelElementUtils
+									.hasPublicVisibility(typeDeclarationN)
+									&& typeDeclarationN.isSequence()
+									&& (typeDeclaration.getType() === "importedStructuredDataType" || typeDeclarationN
+											.getType() !== "importedStructuredDataType")) {
+								var x = "<option value='" + typeDeclarationN.uuid + "' ";
+								x += ">" + model.name + "/"
+										+ typeDeclarationN.name + "</option>";
+								optionsString += x;
+							}
+						}
+					}
+					optionsString += "</optgroup>";
+
 					this.baseTypeSelect.html(optionsString);
 				};
 
-				XsdStructuredDataTypeView.prototype.setBaseType = function(typeDeclaration) {
-					if (typeDeclaration
-							&& typeDeclaration.getTypeDeclaration()
-							&& typeDeclaration.getTypeDeclaration().base) {
-						var baseTypeId = typeDeclaration.getTypeDeclaration().base.substring(typeDeclaration.getTypeDeclaration().base.indexOf(":") + 1);
-						if (typeDeclaration.model.typeDeclarations[baseTypeId]) {
-							this.baseTypeSelect.val(typeDeclaration.model.typeDeclarations[baseTypeId].uuid);
-						}
+				XsdStructuredDataTypeView.prototype.setBaseType = function(
+						typeDeclaration) {
+					var baseTypeDeclaration = this
+							.resolveBaseType(typeDeclaration);
+					if (baseTypeDeclaration != null) {
+						this.baseTypeSelect.val(baseTypeDeclaration.uuid);
 					} else {
 						this.baseTypeSelect.val("None");
+					}
+				};
+
+				/**
+				 * resolve base type from current and other models
+				 */
+				XsdStructuredDataTypeView.prototype.resolveBaseType = function(
+						typeDeclaration) {
+					var basetypeDecl = null;
+					if (typeDeclaration && typeDeclaration.getTypeDeclaration()
+							&& typeDeclaration.getTypeDeclaration().base) {
+						var baseTypeId = typeDeclaration.getTypeDeclaration().base
+								.substring(typeDeclaration.getTypeDeclaration().base
+										.indexOf(":") + 1);
+						//get from current model
+						basetypeDecl = typeDeclaration.model.typeDeclarations[baseTypeId];
+
+						//search in other models
+						if (!basetypeDecl
+								&& typeDeclaration.getTypeDeclaration().base
+										.indexOf(":") != -1) {
+							var nsMappingPrefix = typeDeclaration
+									.getTypeDeclaration().base.split(":")[0];
+							var nameSpace = typeDeclaration.typeDeclaration.schema.nsMappings[nsMappingPrefix];
+
+							if (!nameSpace
+									|| !typeDeclaration.typeDeclaration.schema.locations) {
+								return null;
+							}
+							var location = typeDeclaration.typeDeclaration.schema.locations[nameSpace];
+
+							if (!location) {
+								return null;
+							}
+							var modelIdTypeId = m_typeDeclaration
+									.parseQName(location);
+
+							referenceModel = m_model.findModel(modelIdTypeId.namespace);
+
+							if (!referenceModel) {
+								return null;
+							}
+
+							jQuery.each(referenceModel.typeDeclarations, function(i,
+									declaration) {
+								if (declaration.id === modelIdTypeId.name) {
+									basetypeDecl = declaration;
+									return false;
+								}
+							});
+						}
+						return basetypeDecl;
 					}
 				};
 
@@ -384,6 +463,8 @@ define(
 
 					this.refreshElementsTable();
 
+					//restore focus if the entry is changed
+					this.restoreFocus();
 				};
 
 				/**
@@ -395,8 +476,6 @@ define(
 					this.submitChanges({
 						typeDeclaration : this.typeDeclaration.typeDeclaration
 					});
-
-					this.refreshElementsTable();
 				};
 
 				/**
@@ -421,28 +500,38 @@ define(
 						}
 					});
 
-					if (isValidName) {
-						view.refreshElementsTable();
-					}
-
 					return isValidName;
 				};
 
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.setElementType = function(tableRows, typeName) {
+				XsdStructuredDataTypeView.prototype.setElementType = function(tableRows, dataValue) {
 					var view = this;
 
 					jQuery(tableRows).each(function(i, tableRow) {
 						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
+						var typeName = dataValue;
+						var location = null;
+
+						if (dataValue.indexOf("#location:") != -1) {
+							typeName = dataValue.substr(dataValue.indexOf("#typeName:") + 10);
+							location = dataValue.substring(dataValue.indexOf("#location:") + 10, dataValue.indexOf("#typeName:"));
+						}
+
+						if (location) {
+							if (!typeDeclaration.typeDeclaration.schema.locations) {
+								typeDeclaration.typeDeclaration.schema.locations = {};
+							}
+							typeDeclaration.typeDeclaration.schema.locations[m_typeDeclaration
+									.parseQName(typeName).namespace] = location;
+						}
+
 						typeDeclaration.setElementType(jQuery(tableRow).data("elementName"), typeName);
 
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
@@ -459,8 +548,6 @@ define(
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
@@ -477,8 +564,6 @@ define(
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
@@ -518,7 +603,7 @@ define(
 					row.data("elementName", element.name);
 					row.data("element", element);
 
-					if (element.readOnly) {
+					if (element.inherited) {
 						row.addClass("locked");
 					}
 
@@ -526,7 +611,7 @@ define(
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
 					var nameColumn = jQuery("<td class='elementCell'></td>").appendTo(row);
-					if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
+					if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
 						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
@@ -535,16 +620,16 @@ define(
 					var typeColumn = jQuery("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
-						if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
+						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
 							typeColumn.append(this.getTypeSelectList(schemaType));
 						} else {
-							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : ""));
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : (element.type ? element.type : "")));
 						}
 					}
 
 					var cardinalityColumn = jQuery("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
-						if ( !this.typeDeclaration.isReadOnly() && !element.readOnly) {
+						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
 							var cardinalityBox = jQuery("<select size='1' class='cardinalitySelect'></select>");
 							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
 								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
@@ -557,7 +642,8 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
-					var selectedRowId = jQuery("table#typeDeclarationsTable tr.selected").first().attr('id');
+
+					var selectedRowIndex = jQuery("table#typeDeclarationsTable tr.selected").first().index();
 
 					// TODO merge instead of fully rebuild table
 					this.tableBody.empty();
@@ -588,7 +674,7 @@ define(
 						});
 					});
 
-					jQuery("table#typeDeclarationsTable #" + selectedRowId).addClass("selected");
+					jQuery("table#typeDeclarationsTable tr").eq(selectedRowIndex).addClass("selected");
 
 					//update properties/annotation table
 					if(this.propertiesTree){
@@ -659,12 +745,88 @@ define(
 					jQuery(".nameInput", this.tree).on("change", function(event) {
 							return view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target));
 						});
+
+					jQuery(".nameInput", this.tree).on("keydown", function(event) {
+						if (event.which == 9) { //tab key pressed
+							if(!event.shiftKey){
+								view.preserveFocus($(this), true);
+							}
+						}
+					});
+
 					jQuery(".typeSelect", this.tree).on("change", function(event) {
+							view.preserveFocus($(this), false);
 							view.setElementType(jQuery(event.target).closest("tr"), jQuery(event.target).val());
 						});
+
+					jQuery(".cardinalitySelect", this.tree).on("keydown", function(event) {
+						if (event.which == 9) { //tab key pressed
+							if(!event.shiftKey){
+								view.preserveFocus($(this), true);
+								view.restoreFocus();
+								event.preventDefault();
+							}
+						}
+					});
+
 					jQuery(".cardinalitySelect", this.tree).on("change", function(event) {
+							view.preserveFocus($(this), false);
 							view.setElementCardinality(jQuery(event.target).closest("tr"), jQuery(event.target).val());
 						});
+				};
+
+				/**
+				 *  record the focus attributes (row, column)
+				 */
+				XsdStructuredDataTypeView.prototype.preserveFocus = function(
+						element, focusNext) {
+					this.focusAttr.rowIndex = element.closest("tr").index();
+					this.focusAttr.colIndex = element.closest("td").index();
+					this.focusAttr.focusNext = focusNext;
+				};
+
+				/**
+				 *	restore the focus attributes (row, column)
+				 */
+				XsdStructuredDataTypeView.prototype.restoreFocus = function() {
+					if (this.focusAttr.rowIndex == 'undefined'
+							|| this.focusAttr.colIndex == 'undefined') {
+						return;
+					}
+					var lastRowIndex = jQuery(".nameInput:last", this.tree)
+							.closest("tr").index();
+
+					if (2 == this.focusAttr.colIndex
+							&& lastRowIndex == this.focusAttr.rowIndex
+							&& this.focusAttr.focusNext) {
+
+						this.addButton.focus();
+
+					} else {
+						var columnId = {
+							0 : ".nameInput",
+							1 : ".typeSelect",
+							2 : ".cardinalitySelect"
+						};
+
+						var nextRowIndex = this.focusAttr.rowIndex;
+						if (this.focusAttr.colIndex == 2
+								&& this.focusAttr.focusNext) {
+							nextRowIndex++;
+						}
+
+						var nextColIndex = this.focusAttr.colIndex;
+						if (this.focusAttr.focusNext) {
+							nextColIndex = (this.focusAttr.colIndex + 1) % 3;
+						}
+
+						var cell = jQuery("table#typeDeclarationsTable tr").eq(
+								nextRowIndex).find("td").eq(nextColIndex).find(
+								columnId[nextColIndex]);
+						cell.focus();
+					}
+					//reset
+					this.focusAttr = {};
 				};
 
 				/**
@@ -721,33 +883,36 @@ define(
 					});
 					select += "</optgroup>";
 
-//					Disabling selection of external structured types as there isn't kernel support for it yet
-//					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
-//					 for ( var i in m_model.getModels()) {
-//							var model = m_model.getModels()[i];
-//
-//							if (model == this.typeDeclaration.model) {
-//								continue;
-//							}
-//
-//							for ( var n in model.typeDeclarations) {
-//								var typeDeclaration = model.typeDeclarations[n];
-//								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
-//										var tdType = typeDeclaration.asSchemaType();
-//										if (tdType) {
-//											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-//											if ( !schemaType.isBuiltinType()) {
-//												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
-//												selected = true;
-//											}
-//											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
-//											select += x;
-//										}
-//								 }
-//							}
-//						}
-//
-//					select += "</optgroup>";
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+					 for ( var i in m_model.getModels()) {
+							var model = m_model.getModels()[i];
+
+							if (model == this.typeDeclaration.model) {
+								continue;
+							}
+
+							for ( var n in model.typeDeclarations) {
+								var typeDeclaration = model.typeDeclarations[n];
+								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
+										var tdType = typeDeclaration.asSchemaType();
+										if (tdType) {
+											var typeName = "{" + tdType.nsUri + "}" + tdType.name;
+											var dataValue = "#location:" + "{" + model.id + "}" + tdType.name + "#typeName:" + typeName;
+
+											var x = "<option value='" + dataValue + "' ";
+											if (schemaType && !schemaType.isBuiltinType()) {
+												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+												selected = true;
+											}
+											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
+											select += x;
+										}
+								 }
+							}
+						}
+
+					select += "</optgroup>";
+
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
 

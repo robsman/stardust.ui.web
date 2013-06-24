@@ -20,20 +20,6 @@ import java.util.Iterator;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDCompositor;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDFactory;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDPackage;
-import org.eclipse.xsd.XSDParticle;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -43,20 +29,9 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
-import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
@@ -65,6 +40,10 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.xsd.*;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -110,13 +89,22 @@ public class DataChangeCommandHandler
       }
 
       TypeDeclarationsType declarations = model.getTypeDeclarations();
-      if (declarations != null && declarations.getTypeDeclaration(id) != null)
+      // lazily initialize type declarations container
+      if (declarations == null)
+      {
+         declarations = XpdlFactory.eINSTANCE.createTypeDeclarationsType();
+         model.setTypeDeclarations(declarations);
+      }
+      else if (declarations.getTypeDeclaration(id) != null)
       {
          // TODO: change to error case ?
          throw new PublicException("Duplicate type declaration id '" + id + "'.");
       }
 
-      trace.debug("Creating Type Declaration " + request);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Creating Type Declaration " + request);
+      }
 
       TypeDeclarationType declaration = XpdlFactory.eINSTANCE.createTypeDeclarationType();
       declarations.getTypeDeclaration().add(declaration);
@@ -200,14 +188,6 @@ public class DataChangeCommandHandler
                return null;
             }
          }.populateFromJson(declaration, request);
-      }
-
-      // attach properly initialized declaration to model
-      if (declarations == null)
-      {
-         // lazily initialize type declarations container
-         declarations = XpdlFactory.eINSTANCE.createTypeDeclarationsType();
-         model.setTypeDeclarations(declarations);
       }
 
       // Map newly created data element to a UUID

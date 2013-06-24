@@ -9,8 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model" ],
-		function(m_utils, m_constants, m_i18nUtils, m_model) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model",
+		  "bpm-modeler/js/m_modelElement"],
+		function(m_utils, m_constants, m_i18nUtils, m_model, m_modelElement) {
 
 			return {
 				createStartEvent : function(process) {
@@ -48,6 +49,10 @@ define(
 			 *
 			 */
 			function Event() {
+				var modelElement = m_modelElement.create();
+				m_utils.inheritFields(this, modelElement);
+				m_utils.inheritMethods(Event.prototype, modelElement);
+
 				this.type = m_constants.EVENT;
 				this.id = null;
 				this.name = null;

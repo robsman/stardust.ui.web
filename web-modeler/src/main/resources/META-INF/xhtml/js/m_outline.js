@@ -25,15 +25,14 @@ define(
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_messageDisplay",
 				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils",
-				"bpm-modeler/js/m_jsfViewManagerHelper"],
+				"bpm-modeler/js/m_jsfViewManagerHelper", "bpm-modeler/js/m_modelsSaveStatus" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,
 				m_data, m_elementConfiguration, m_jsfViewManager,
-				m_messageDisplay, m_i18nUtils, m_modelerUtils, m_jsfViewManagerHelper) {
+				m_messageDisplay, m_i18nUtils, m_modelerUtils, m_jsfViewManagerHelper, m_modelsSaveStatus) {
 			var isElementCreatedViaOutline = false;
-			var hasUnsavedModifications = false;
 			var displayScope = "";
 
 			function getURL() {
@@ -62,14 +61,15 @@ define(
 											{
 												"attr" : {
 													"id" : model.uuid,
-													"rel" : "model",
+													"rel" : model.isReadonly() ? "lockedModel" : "model",
 													"elementId" : model.id
 												},
 												"data" : model.name
 											}, null, true);
 
+									var modType = model.isReadonly() ? "lockedModel" : "model";
 									jQuery(displayScope + "#outline").jstree(
-											"set_type", "model",
+											"set_type", modType,
 											"#" + model.uuid);
 
 									jQuery
@@ -273,6 +273,7 @@ define(
 																				"attr" : {
 																					"id" : data.uuid,
 																					"modelUUID" : model.uuid,
+																					"modelId" : model.id,
 																					"fullId" : data
 																							.getFullId(),
 																					"rel" : data.dataType,
@@ -355,7 +356,8 @@ define(
 									jQuery(displayScope + "#outline").jstree(
 											"close_node", "#" + model.uuid);
 								});
-				hasUnsavedModifications = false;
+				m_messageDisplay.markSaved();
+				m_modelsSaveStatus.setModelsSaved();
 				jQuery("#undoChange").addClass("toolDisabled");
 				jQuery("#redoChange").addClass("toolDisabled");
 			};
@@ -477,13 +479,14 @@ define(
 			};
 
 			var renameNodeHandler = function(event, data) {
-				if (data.rslt.obj.attr('rel') == 'model') {
+				if (data.rslt.obj.attr('rel') == 'model'
+					|| data.rslt.obj.attr('rel') == 'lockedModel') {
 					var model = m_model.findModelByUuid(data.rslt.obj
 							.attr("id"));
 
 					if (model && (model.name != data.rslt.name)) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelCommand(model.uuid, {
+								.createUpdateModelCommand(model.uuid, model.id, {
 									"name" : data.rslt.name
 								}));
 					}
@@ -504,7 +507,7 @@ define(
 			};
 
 			var renameElementViewLabel = function(type, uuid, name) {
-				if (type == 'model') {
+				if (type == 'model' || type == 'lockedModel') {
 					renameView("modelView", uuid, "modelName", name);
 				} else if (type == 'process') {
 					renameView("processDefinitionView", uuid, "processName",
@@ -589,7 +592,7 @@ define(
 			};
 
 			var importModel = function() {
-				if (true == hasUnsavedModifications) {
+				if (false == m_modelsSaveStatus.areModelsSaved()) {
 					if (parent.iPopupDialog) {
 						parent.iPopupDialog
 								.openPopup({
@@ -690,7 +693,9 @@ define(
 									return {
 										success : function(data) {
 											m_messageDisplay.markSaved();
-											hasUnsavedModifications = false;
+											m_modelsSaveStatus.setModelsSaved();
+											jQuery("#undoChange").addClass("toolDisabled");
+											jQuery("#redoChange").addClass("toolDisabled");
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {
@@ -758,7 +763,8 @@ define(
 						.bind(
 								"select_node.jstree",
 								function(event, data) {
-									if (data.rslt.obj.attr('rel') == 'model') {
+									if (data.rslt.obj.attr('rel') == 'model'
+											|| data.rslt.obj.attr('rel') == 'lockedModel') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -927,7 +933,8 @@ define(
 																+ "&modelUUID="
 																+ model.uuid,
 														application.uuid);
-									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication") {
+									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication" ||
+											data.rslt.obj.attr('rel') == "camelConsumerApplication") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -1168,8 +1175,9 @@ define(
 											"ui" ],
 									contextmenu : {
 										"items" : function(node) {
-											if ('model' == node.attr('rel')) {
-												return {
+											if ('model' == node.attr('rel')
+													|| 'lockedModel' == node.attr('rel')) {
+												var ctxMenu =  {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1238,6 +1246,16 @@ define(
 												// }
 												// }
 												};
+
+												var mod = m_model.findModelByUuid(node.attr('id'))
+												if (mod.isReadonly()) {
+													ctxMenu.rename = false;
+													ctxMenu.deleteModel = false;
+													ctxMenu.deleteModel = false;
+													ctxMenu.createProcess = false;
+												}
+
+												return ctxMenu;
 											} else if ('process' == node
 													.attr('rel')) {
 												var options = {
@@ -1277,7 +1295,8 @@ define(
 												addMenuOptions(options,
 														"process");
 
-												return options;
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												return elem.isReadonly() ? {} : options;
 											} else if ('applications' == node
 													.attr('rel')) {
 												var options = {
@@ -1318,10 +1337,12 @@ define(
 
 												addCamelOverlayMenuOptions(options);
 
-												return options;
+												var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+												return mod.isReadonly() ? {} : options;
 											} else if ('data' == node
 													.attr('rel')) {
-												return {
+												var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+												var ctxMenu = mod.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : false,
@@ -1350,10 +1371,13 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu
 											} else if (m_elementConfiguration
 													.isValidDataType(node
 															.attr("rel"))) {
-												return {
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												var ctxMenu = elem.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1386,9 +1410,12 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if ("participants" == node
 													.attr('rel')) {
-												return {
+												var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+												var ctxMenu = mod.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : false,
@@ -1417,6 +1444,8 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if (m_elementConfiguration
 													.isValidAppType(node
 															.attr("rel"))) {
@@ -1457,10 +1486,12 @@ define(
 												addMenuOptions(options,
 														"application");
 
-												return options;
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												return elem.isReadonly() ? {} : options;
 											} else if ('structuredTypes' == node
 													.attr('rel')) {
-												return {
+												var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+												var ctxMenu = mod.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : false,
@@ -1484,6 +1515,8 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if ("structuredDataType" == node
 													.attr('rel')
 													|| "compositeStructuredDataType" == node
@@ -1492,7 +1525,8 @@ define(
 															.attr('rel')
 													|| "importedStructuredDataType" == node
 															.attr('rel')) {
-												return {
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												var ctxMenu = elem.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1525,11 +1559,14 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if ('roleParticipant' == node
 													.attr('rel')
 													|| 'teamLeader' == node
 															.attr('rel')) {
-												return {
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												var ctxMenu = elem.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1578,9 +1615,12 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if ("conditionalPerformerParticipant" == node
 													.attr('rel')) {
-												return {
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												var ctxMenu = elem.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1613,9 +1653,12 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											} else if ('organizationParticipant' == node
 													.attr('rel')) {
-												return {
+												var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+												var ctxMenu = elem.isReadonly() ? {} : {
 													"ccp" : false,
 													"create" : false,
 													"rename" : {
@@ -1670,6 +1713,8 @@ define(
 														}
 													}
 												};
+
+												return ctxMenu;
 											}
 
 											return {};
@@ -1682,6 +1727,19 @@ define(
 													"image" : m_urlUtils
 															.getPlugsInRoot()
 															+ "bpm-modeler/images/icons/model.png"
+												},
+												"valid_children" : [
+														"participants",
+														"process",
+														"applications",
+														"structuredTypes",
+														"data" ]
+											},
+											"lockedModel" : {
+												"icon" : {
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/model-locked.png"
 												},
 												"valid_children" : [
 														"participants",
@@ -1838,6 +1896,13 @@ define(
 												}
 											},
 											"camelSpringProducerApplication" : {
+												"icon" : {
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/application-camel.png"
+												}
+											},
+											"camelConsumerApplication" : {
 												"icon" : {
 													"image" : m_urlUtils
 															.getPlugsInRoot()
@@ -2133,7 +2198,7 @@ define(
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
 					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, {}));
+							.createDeleteModelCommand(model.uuid, model.id, {}));
 				}
 
 				/**
@@ -2681,8 +2746,6 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
-						m_messageDisplay.markModified();
-						hasUnsavedModifications = true;
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
@@ -2763,6 +2826,14 @@ define(
 									node.attr("rel", modelElement.getType());
 								}
 
+								// Change model icon in case the read-only factor has changed.
+								if (m_constants.MODEL === modelElement.type) {
+									node.attr("rel", (modelElement.isReadonly() ? "lockedModel" : "model"));
+									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
+										var isModelLockCommand = true;
+									}
+								}
+
 								renameElementViewLabel(node.attr("rel"), node
 										.attr("id"), node.attr("name"));
 							}
@@ -2808,6 +2879,16 @@ define(
 							this.processPendingUndo(command);
 							jQuery("#undoChange").removeClass("toolDisabled");
 							jQuery("#redoChange").addClass("toolDisabled");
+						}
+
+						if (command.commandId === "modelLockStatus.update") {
+							if (isModelLockCommand) {
+								jQuery("#undoChange").addClass("toolDisabled");
+								jQuery("#redoChange").addClass("toolDisabled");
+							}
+						} else {
+							m_messageDisplay.markModified();
+							m_modelsSaveStatus.setModelsModified();
 						}
 					} else if (command.scope == "all") {
 						// @deprecated

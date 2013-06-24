@@ -186,7 +186,6 @@ define(
 						dataChanges) {
 					// These are changes on the data, not the symbol
 
-					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
 				};
 
@@ -245,6 +244,10 @@ define(
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
 						});
+					}
+
+					if (data.isReadonly()) {
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
 					}
 				};
 

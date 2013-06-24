@@ -106,7 +106,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean disableAutoDownload = false;
    private String loadUnsuccessfulMsg;
    private ConfirmationDialog confirmationDialog;
-   
+
    private String autoDownloadLinkId;
 
    /**
@@ -116,7 +116,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       super("documentView");
    }
-   
+
    public static DocumentHandlerBean getInstance()
    {
       return (DocumentHandlerBean) FacesUtils.getBeanFromContext(BEAN_NAME);
@@ -124,7 +124,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see
     * org.eclipse.stardust.ui.web.common.event.ViewEventHandler#handleEvent(com.sungard.framework
     * .ui.event.ViewEvent)
@@ -133,12 +133,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       propsBean = MessagesViewsCommonBean.getInstance();
       loadUnsuccessfulMsg = propsBean.getString("views.documentView.fetchError");
-      
+
       if (ViewEventType.CREATED == event.getType())
       {
          loadSuccessful = false;
          thisView = event.getView();
-        
+
          if (!retrieveAndSetInputParameters(event))
          {
             return;
@@ -180,14 +180,14 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             event.setVetoed(true);
             return;
          }
-         
+
          // pop-out the document
          String displayMode = thisView.getParamValue("displayMode");
          if (RepositoryUtility.DOCUMENT_DISPLAY_MODE_NEWBROWSER.equals(displayMode))
          {
             popOutDocument();
          }
-         
+
          // disableAutoDownload : true when DocumentViewer opened after FileUpload for
          // UnsupportedFileType when OpenDocument check is true
          if (null == contentHandler && !embededView && !disableAutoDownload)
@@ -216,7 +216,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                return;
             }
          }
-         
+
          //refresh if different document is selected (but with same view-key)
          IDocumentContentInfo documentInfoParam = (IDocumentContentInfo) event.getView().getViewParams()
                .get("documentInfo");
@@ -229,14 +229,14 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                return;
             }
          }
-         
+
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();
          if (externalDocumentViewer.isOpened()
                && !externalDocumentViewer.getDocumentId().equals(documentContentInfo.getId()))
          {
             externalDocumentViewer.openDocument(this, thisView);
          }
-         
+
          loadSuccessful = true;
       }
       else if (ViewEventType.TO_BE_CLOSED == event.getType())
@@ -278,7 +278,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       if (null == documentContentInfo && null != thisView.getViewParams().get("documentId"))
       {
          String documentId = (String) thisView.getViewParams().get("documentId");
-         
+
          try
          {
             documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
@@ -338,7 +338,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             disableSaveAction = Boolean.valueOf((String) disableSaveActionObj);
          }
       }
-      
+
       Object disableAutoDownloadObj = thisView.getViewParams().get("disableAutoDownload");
 
       if (null != disableAutoDownloadObj)
@@ -354,10 +354,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       }
       return true;
    }
-   
+
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.common.UIComponentBean#initialize()
     */
    public boolean initializeBean()
@@ -381,7 +381,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             description = "";
          }
          inputDescription = description;
-         
+
          String documentVersion = "";
          if (documentContentInfo.isSupportsVersioning())
          {
@@ -392,7 +392,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          thisView.setIcon(documentContentInfo.getIcon());
          thisView.getViewParams().put("documentName", documentContentInfo.getName());
          thisView.resolveLabelAndDescription();
-         
+
          // update popup content if it is already in open state
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();
          if (externalDocumentViewer.isOpened())
@@ -435,8 +435,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             {
                dataId = dataList.get(0).getId();
             }
-         }         
-         
+         }
+
          ILabelProvider labelProvider = null;
          FormGenerator formGenerator;
          if (null != model && StringUtils.isNotEmpty(dataId))
@@ -471,14 +471,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          if (documentContentInfo instanceof JCRDocument)
          {
-            fileOutputResource = new OutputResource(documentContentInfo.getName(), documentContentInfo.getId(),
-                  documentContentInfo.getMimeType().getType(), null,
-                  DocumentMgmtUtility.getDocumentManagementService(), true);
+            fileOutputResource = new OutputResource(
+                  new DefualtResourceDataProvider(documentContentInfo.getName(),
+                        documentContentInfo.getId(), documentContentInfo.getMimeType()
+                              .getType(),
+                        DocumentMgmtUtility.getDocumentManagementService(), true), null);
          }
      }
       return fileOutputResource;
    }
-   
+
    /**
     * Save document action handler
     */
@@ -534,7 +536,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          callback.handleEvent(EventType.APPLY);
       }
    }
-   
+
    /**
     * @param callback
     */
@@ -544,13 +546,13 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          FileSaveDialog fileSaveDialog = FileSaveDialog.getInstance();
          fileSaveDialog.initialize();
-         
+
          if (documentContentInfo instanceof FileSystemJCRDocument)
          {
             fileSaveDialog.setComments(documentContentInfo.getComments());
          }
          fileSaveDialog.setCallbackHandler(new DCCallBackHandler(callback, false));
-        
+
          if (contentHandler instanceof ICustomDocumentSaveHandler
                && ((ICustomDocumentSaveHandler) contentHandler).usesCustomSaveDialog())
          {
@@ -570,8 +572,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          }
       }
    }
-   
-   
+
+
    /**
     * @param e
     */
@@ -584,9 +586,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.DETAILS_PANEL_COLLAPSED);
       }
    }
-   
+
    /**
-    * 
+    *
     */
    public void togglePropertiesPanel()
    {
@@ -595,7 +597,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    }
 
    /**
-    * 
+    *
     */
    public void toggleMetaDataPanel()
    {
@@ -626,7 +628,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             fileSaveDialog.setMessage(propsBean.getParamString(
                   "views.documentView.saveDocumentDialog.documentTypeWarning", getDocumentTypeName()));
          }
-         
+
          fileSaveDialog.openPopup();
       }
       catch (Exception e)
@@ -636,7 +638,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    }
 
    /**
-    * 
+    *
     */
    public void popOutDocument()
    {
@@ -649,7 +651,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    }
 
    /**
-    * 
+    *
     */
    public void popInDocument()
    {
@@ -678,17 +680,17 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
    /**
     * Save document contents
-    * 
+    *
     * @param force
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     */
-   private void saveDocumentContents(String comments, boolean revert) throws ResourceNotFoundException 
+   private void saveDocumentContents(String comments, boolean revert) throws ResourceNotFoundException
    {
       if (contentHandler instanceof ICustomDocumentSaveHandler)
       {
          documentContentInfo = ((ICustomDocumentSaveHandler) contentHandler).save();
       }
-      
+
       if (isDescriptionChanged())
       {
          documentContentInfo.setDescription(inputDescription);
@@ -729,7 +731,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
        * In case of TIFF documents the view / tiff-iframe needs to be refreshed with the latest
        * document id if the document being saved is a FileSystemJCRDocument.
        * The refreshViewer flag is set if the document being save
-       * 
+       *
        * TODO - review
       */
       boolean refreshViewer = false;
@@ -737,9 +739,9 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          refreshViewer = true;
       }
-      
+
       beforeSave(refreshViewer);
-      
+
       documentContentInfo = documentContentInfo.save(contentByte);
 
       postSave(refreshViewer);
@@ -748,7 +750,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    /**
     * This is needed for TIFF viewer when the document being saved is a FileSystemJCRDocument.
     * The iframe with the older document id is removed.
-    * 
+    *
     * Viewer will be refreshed with the latest saved version in the postSave() method.
     */
    private void beforeSave(boolean refreshViewer)
@@ -758,10 +760,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          fireRefreshViewerToBeInvoked();
       }
    }
-   
+
    /**
     * Updates the ProcessAttachments and reinitialize the data
-    * @throws ResourceNotFoundException 
+    * @throws ResourceNotFoundException
     */
    private void postSave(boolean refreshViewer) throws ResourceNotFoundException
    {
@@ -786,7 +788,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             documentContentInfo = documentContentInfo.reset();
          }
       }
-      
+
       //update view parameter - this is used to check if refresh is required while handling "Activated" event
       thisView.getViewParams().put("documentInfo", documentContentInfo);
 
@@ -794,14 +796,14 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             new ViewDataEvent(thisView, ViewDataEventType.DATA_MODIFIED, documentContentInfo));
 
       initializeBean();
-      
+
       if(refreshViewer)
       {
          fireRefreshViewerInvoked();
          PortalApplication.getInstance().updateViewKey(thisView, "documentOID=" + documentContentInfo.getId());
       }
    }
-   
+
    public boolean isDescriptionChanged()
    {
       return !description.equals(inputDescription);
@@ -821,8 +823,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          {
             ((ICustomDocumentSaveHandler) contentHandler).setDescriptionChanged(true);
          }
-      }      
-      
+      }
+
       if ((contentHandler instanceof ICustomDocumentSaveHandler && ((ICustomDocumentSaveHandler) contentHandler)
             .isModified())
             || (contentHandler instanceof IDocumentEditor && ((IDocumentEditor) contentHandler).isContentChanged())
@@ -830,7 +832,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          return true;
       }
-      
+
       return false;
    }
 
@@ -853,7 +855,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       this.inputDescription = inputDescription;
       if (isDescriptionChanged() && (contentHandler instanceof ICustomDocumentSaveHandler))
-      { 
+      {
          ((ICustomDocumentSaveHandler) contentHandler).setDescriptionChanged(true);
       }
    }
@@ -866,7 +868,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          documentContentInfo = documentContentInfo.getVersionTracker().shiftToPreviousVersion();
          initializeBean();
          fireShowPreviousVersionInvoked();
-         
+
          if (isMetaDataAvailable())
          {
             FacesUtils.refreshPage(); // This is needed otherwise Meta Data is not rendered correctly
@@ -897,7 +899,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ExceptionHandler.handleException(e);
       }
    }
-   
+
    /**
     * This method is called when Upload New Version is called from Document Viewer
     * toolbar.
@@ -920,7 +922,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       documentUploadHelper.setCallbackHandler(new DocumentUploadCallbackHandler()
       {
          public void handleEvent(DocumentUploadEventType eventType)
-         { 
+         {
             if (DocumentUploadEventType.VERSION_SAVED == eventType)
             {
                // Close the current IFrame if available
@@ -945,11 +947,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       });
       documentUploadHelper.uploadFile();
    }
-   
+
    /**
     * This method is called when document is modified in the background and the
     * viewer needs to be refreshed with the latest document.
-    *  
+    *
     * @param document
     */
    public void refreshViewer()
@@ -964,7 +966,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          ExceptionHandler.handleException(e);
       }
-      
+
       initializeBean();
       fireRefreshViewerInvoked();
    }
@@ -1055,7 +1057,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       return getThisView().getViewParams().get("documentName") + " " + thisView.getParamValue("documentVersion");
    }
-   
+
    private void fireShowPreviousVersionToBeInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1063,7 +1065,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.SHOW_PREVIOUS_VERSION_TO_BE_INVOKED);
       }
    }
-   
+
    private void fireShowPreviousVersionInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1071,7 +1073,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.SHOW_PREVIOUS_VERSION_INVOKED);
       }
    }
-   
+
    private void fireShowNextVersionToBeInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1079,7 +1081,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.SHOW_NEXT_VERSION_TO_BE_INVOKED);
       }
    }
-   
+
    private void fireShowNextVersionInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1087,7 +1089,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.SHOW_NEXT_VERSION_INVOKED);
       }
    }
-   
+
    private void fireDocumentDeletedEvent()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1095,7 +1097,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.DOCUMENT_DELETED);
       }
    }
-   
+
    private void fireRefreshViewerToBeInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1103,7 +1105,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.REFRESH_VIWER_TO_BE_INVOKED);
       }
    }
-   
+
    private void fireRefreshViewerInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1111,7 +1113,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          ((IDocumentEventListener) contentHandler).handleEvent(DocumentEventType.REFRESH_VIWER_INVOKED);
       }
    }
-   
+
    private void fireRefreshViewerWithDelayInvoked()
    {
       if (contentHandler instanceof IDocumentEventListener)
@@ -1134,7 +1136,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       return documentForm;
    }
-   
+
    public boolean isMetaDataAvailable()
    {
       return (null != documentForm && documentForm.isMetaDataAvailable()) ? true : false;
@@ -1173,12 +1175,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       private ICallbackHandler callback;
       private boolean revert;
-      
+
       public DCCallBackHandler(ICallbackHandler callback, boolean revert)
       {
          this.callback = callback;
          this.revert = revert;
-      }      
+      }
 
       public void handleEvent(EventType eventType)
       {
@@ -1228,7 +1230,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public void initialize()
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    public boolean isLoadSuccessful()
@@ -1260,6 +1262,6 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    {
       return disableAutoDownload;
    }
-   
-   
+
+
 }

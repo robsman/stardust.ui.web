@@ -135,7 +135,12 @@ public class ConnectionCommandHandler
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
-                           : DirectionType.OUT_LITERAL, "left", "right", PredefinedConstants.DEFAULT_CONTEXT, null);
+                           : DirectionType.OUT_LITERAL,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           PredefinedConstants.DEFAULT_CONTEXT, null);
             }
             else
             {
@@ -199,8 +204,12 @@ public class ConnectionCommandHandler
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
-                           : DirectionType.OUT_LITERAL, "left", "right", PredefinedConstants.DEFAULT_CONTEXT, null);
-
+                           : DirectionType.OUT_LITERAL,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           PredefinedConstants.DEFAULT_CONTEXT, null);
             }
             else
             {

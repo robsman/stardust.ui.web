@@ -61,7 +61,7 @@ public class ModelerSessionRestController
 
    @Context
    private UriInfo uriInfo;
-   
+
    private static CommandJto CommandJto;
 
    public static CommandJto getCommandJto()
@@ -121,6 +121,16 @@ public class ModelerSessionRestController
       for (EObject removedObject : change.getRemovedElements())
       {
          jto.changes.removed.add(marshaller.toJson(removedObject));
+      }
+
+      if (change.wasFailure())
+      {
+         ChangeJto.ProblemJto failureJto = new ChangeJto.ProblemJto();
+         failureJto.severity = "error";
+         failureJto.message = change.getFailure().getMessage();
+
+         jto.problems = newArrayList();
+         jto.problems.add(failureJto);
       }
 
       return jto;
@@ -318,7 +328,7 @@ public class ModelerSessionRestController
    @Path("/changes")
    public Response applyChange(String postedData)
    {
-      System.out.println("postedData ==============> " + postedData);    
+      System.out.println("postedData ==============> " + postedData);
       try
       {
          CommandJto commandJto = jsonIo().gson().fromJson(postedData, CommandJto.class);
@@ -338,14 +348,15 @@ public class ModelerSessionRestController
       String commandId = commandJto.commandId;
       String modelId = commandJto.modelId;
 
-      if (isEmpty(modelId))
+      EObject model = modelService().currentSession().modelRepository().findModel(modelId);
+
+      if (commandId.indexOf("model.") >= 0 && !modelService().getModelBuilderFacade().isReadOnly(model))
       {
          return applyGlobalChange(commandId, commandJto);
       }
       else
       {
          // change to be interpreted in context of a model
-         EObject model = modelService().currentSession().modelRepository().findModel(commandJto.modelId);
          if (null == model)
          {
             return Response.status(Status.BAD_REQUEST) //
@@ -364,27 +375,21 @@ public class ModelerSessionRestController
     */
    private Response applyGlobalChange(String commandId, CommandJto commandJto)
    {
-      // TODO global command (e.g. "model.create")
-      if ("model.create".equalsIgnoreCase(commandId)
-            || "model.delete".equalsIgnoreCase(commandId)
-            || "model.update".equalsIgnoreCase(commandId))
-      {
-         List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
-         for (ChangeDescriptionJto changeDescrJto : changesJson) {
-            if (null != changeDescrJto) {
-               EObject targetElement = null;
-               if (null != changeDescrJto.uuid) {
-                  String uuid = changeDescrJto.uuid;
-                  targetElement = modelService().uuidMapper().getEObject(uuid);
-               }
+      List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
+      for (ChangeDescriptionJto changeDescrJto : changesJson) {
+         if (null != changeDescrJto) {
+            EObject targetElement = null;
+            if (null != changeDescrJto.uuid) {
+               String uuid = changeDescrJto.uuid;
+               targetElement = modelService().uuidMapper().getEObject(uuid);
+            }
 
-               JsonElement changeJson = changeDescrJto.changes;
-               ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
-               // TODO make this a regular modification
-               JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
-               if (null != response) {
-                  return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
-               }
+            JsonElement changeJson = changeDescrJto.changes;
+            ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
+            // TODO make this a regular modification
+            JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
+            if (null != response) {
+               return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
             }
          }
       }
@@ -414,8 +419,8 @@ public class ModelerSessionRestController
          return wae.getResponse();
       }
 
-      ModelerSessionRestController.CommandJto = commandJto;      
-      
+      ModelerSessionRestController.CommandJto = commandJto;
+
       // dispatch to actual command handler
       EditingSession editingSession = modelService().currentSession().getSession(model);
       Modification change = commandHandlingMediator().handleCommand(editingSession,
@@ -430,7 +435,7 @@ public class ModelerSessionRestController
          {
             change.getMetadata().put("account", commandJto.account);
          }
-         
+
          // Notify unsaved models tracker of the change to the model.
          UnsavedModelsTracker.getInstance().notifyModelModfied(modelBinding.getModelId(model));
 
@@ -438,8 +443,8 @@ public class ModelerSessionRestController
 
          commandHandlingMediator().broadcastChange(change.getSession(), changeJto);
 
-         ModelerSessionRestController.CommandJto = null;               
-         
+         ModelerSessionRestController.CommandJto = null;
+
          return Response.created(URI.create(toChangeUri(change))) //
                .entity(jsonIo().writeJsonObject(changeJto))
                .type(MediaType.APPLICATION_JSON_TYPE)
@@ -597,7 +602,16 @@ public class ModelerSessionRestController
          public Modification handleCommand(EditingSession editingSession,
                String commandId, List<ChangeRequest> changes)
          {
-            return mediator.handleCommand(editingSession, commandId, changes);
+            try
+            {
+               return mediator.handleCommand(editingSession, commandId, changes);
+            }
+            catch (Exception e)
+            {
+               trace.warn("Failed handling command '" + commandId + "'", e);
+
+               return new Modification(editingSession, e);
+            }
          }
       };
    }
@@ -611,6 +625,8 @@ public class ModelerSessionRestController
       public String account;
 
       public ChangesJto changes = new ChangesJto();
+
+      public List<ProblemJto> problems = null;
 
       public String pendingUndo;
       public String pendingRedo;
@@ -629,6 +645,12 @@ public class ModelerSessionRestController
          public JsonArray added = new JsonArray();
          public JsonArray removed = new JsonArray();
       };
+
+      static class ProblemJto
+      {
+         public String severity;
+         public String message;
+      }
    };
 
    public static class CommandJto

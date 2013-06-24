@@ -380,9 +380,31 @@ define(
 						}
 
 						if (this.uriInput.val().indexOf(
-								"{" + accessPoint.id + "}") >= 0) {
+								"{" + accessPoint.id + "}") >= 0)
+						{
 							uri = uri.replace("{" + accessPoint.id + "}",
 									"$simple{header." + accessPoint.id + "}");
+
+							route += "<setHeader headerName='" + accessPoint.id + "'>";
+							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
+							route += "</setHeader>";
+						}
+						else
+						{
+							if (start)
+							{
+								uri += "?";
+								start = false;
+							}
+							else
+							{
+								uri += "&";
+							}
+
+							uri += accessPoint.id;
+							uri += "=";
+							uri += "$simple{header." + accessPoint.id + "}";
+
 							route += "<setHeader headerName='" + accessPoint.id + "'>";
 							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
 							route += "</setHeader>";
@@ -441,7 +463,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay"
 								}
-							});
+							}, true);
 				};
 
 				/**
@@ -570,12 +592,12 @@ define(
 				 */
 				RestServiceOverlay.prototype.validate = function() {
 
-					if (this.uriInput.val() == null
-							|| this.uriInput.val() == "") {
-						this.view.errorMessages.push("URI must not be empty."); // TODO
-						// I18N
-						this.uriInput.addClass("error");
+					this.uriInput.removeClass("error");
 
+					if (this.uriInput.val() == null || this.uriInput.val() == "")
+					{
+						this.view.errorMessages.push("URI must not be empty."); // TODO I18N
+						this.uriInput.addClass("error");
 						return false;
 					}
 

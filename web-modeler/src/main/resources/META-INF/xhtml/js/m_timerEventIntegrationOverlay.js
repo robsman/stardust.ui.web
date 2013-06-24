@@ -61,6 +61,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.fixedRate"));
+					jQuery("label[for='delayTimerInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent.delayTimer"));
 
 					this.configurationSpan = this.mapInputId("configuration");
 
@@ -78,16 +82,21 @@ define(
 					this.repeatIntervalUnitSelect = this
 							.mapInputId("repeatIntervalUnitSelect");
 					this.fixedRateInput = this.mapInputId("fixedRateInput");
+					this.delayTimerInput = this.mapInputId("delayTimerInput");
+					this.delayTimerUnitSelect = this
+							.mapInputId("delayTimerUnitSelect");
 
-					this
-							.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
+					this.initializedelayTimerUnitSelect(this.delayTimerUnitSelect);
 
+					this.initializeIntervalUnitSelect(this.repeatIntervalUnitSelect);
 					this.repeatCountInput = this.mapInputId("repeatCountInput");
 
 					this.registerForRouteChanges(this.repeatCountInput);
 					this.registerForRouteChanges(this.repeatIntervalInput);
 					this.registerForRouteChanges(this.repeatIntervalUnitSelect);
 					this.registerForRouteChanges(this.fixedRateInput);
+					this.registerForRouteChanges(this.delayTimerInput);
+					this.registerForRouteChanges(this.delayTimerUnitSelect);
 				};
 
 				/**
@@ -114,6 +123,16 @@ define(
 								+ this.getIntervalInMilliseconds(
 										this.repeatIntervalInput.val(),
 										this.repeatIntervalUnitSelect.val());
+						separator = "&amp;";
+					}
+
+					if (this.getIntervalInMilliseconds(this.delayTimerInput
+							.val(), this.delayTimerUnitSelect.val()) != null) {
+						uri += separator
+								+ "delay="
+								+ this.getIntervalInMilliseconds(
+										this.delayTimerInput.val(),
+										this.delayTimerUnitSelect.val());
 					}
 					//uri = uri.replace(/&/g, "&amp;");
 					return uri;
@@ -125,7 +144,7 @@ define(
 				TimerEventIntegrationOverlay.prototype.activate = function() {
 					this.repeatIntervalInput.val(5000);
 					this.repeatCountInput.val(1);
-
+					this.delayTimerInput.val(0);
 					var parameterMappings = [];
 
 					/*
@@ -220,6 +239,13 @@ define(
 										.val(intervalWithUnit.value);
 								this.repeatIntervalUnitSelect
 										.val(intervalWithUnit.unit);
+							} else if (name == "delay") {
+								var delayWithUnit = this
+										.getIntervalWithUnit(value);
+								this.delayTimerInput
+										.val(delayWithUnit.value);
+								this.delayTimerUnitSelect
+										.val(delayWithUnit.unit);
 							} else if (name == "fixedRate") {
 								if(value =="true")
 								this.fixedRateInput.prop("checked",
@@ -240,6 +266,7 @@ define(
 				TimerEventIntegrationOverlay.prototype.validate = function() {
 					this.repeatCountInput.removeClass("error");
 					this.repeatIntervalInput.removeClass("error");
+					this.delayTimerInput.removeClass("error");
 
 					if (m_utils.isEmptyString(this.repeatCountInput.val())) {
 						this.getPropertiesPanel().errorMessages
@@ -283,6 +310,30 @@ define(
 										.getProperty("modeler.general.fieldMustContainANumber"));
 						this.repeatIntervalInput.addClass("error");
 						this.repeatIntervalInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (m_utils.isEmptyString(this.delayTimerInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustNotBeEmpty"));
+						this.delayTimerInput.addClass("error");
+						this.delayTimerInput.focus();
+
+						this.getPropertiesPanel().showErrorMessages();
+
+						return false;
+					}
+
+					if (!m_utils.isNumber(this.delayTimerInput.val())) {
+						this.getPropertiesPanel().errorMessages
+								.push(m_i18nUtils
+										.getProperty("modeler.general.fieldMustContainANumber"));
+						this.delayTimerInput.addClass("error");
+						this.delayTimerInput.focus();
 
 						this.getPropertiesPanel().showErrorMessages();
 

@@ -11,10 +11,11 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils"],
+				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
-				m_modelElementView, m_codeEditorAce, m_i18nUtils) {
+				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor($("html"));
@@ -71,11 +72,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.heading.sourceMessage"));
-				jQuery("#addInputDataButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.sourceMessage.addInput"));
 				jQuery("#inputElementColumn")
 						.text(
 								m_i18nUtils
@@ -116,11 +112,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.problem"));
-				jQuery("#addOutputDataButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.targetMessage.addOutput"));
 				jQuery("#filterFieldsWithMappingInput")
 						.attr(
 								"title",
@@ -171,6 +162,10 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.testProperties.outputData"));
+				jQuery("#paramDef")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.parameterDefinitions"));
 
 				// Data Type Selector
 				jQuery("label[for='dataTypeSelect']")
@@ -189,30 +184,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-
-				// Add Input Message dialog
-				jQuery("#inputDataDialog #applyButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
-				jQuery("#inputDataDialog #closeButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
-
-				// Add Output Message dialog
-				jQuery("#outputDataDialog #applyButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.apply"));
-				jQuery("#outputDataDialog #closeButton")
-						.attr(
-								"value",
-								m_i18nUtils
-										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.close"));
 
 				// Index Configuration pop-up dialog
 				jQuery("#idx-sourcemessage")
@@ -263,6 +234,62 @@ define(
 						.prop('value',
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.cancel"));
+
+				var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+				var selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
+				primitiveDataTypeSelect.append("<option value=\"String\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
+				primitiveDataTypeSelect.append("<option value=\"boolean\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
+				primitiveDataTypeSelect.append("<option value=\"int\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
+				primitiveDataTypeSelect.append("<option value=\"long\">"
+						+ selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
+				primitiveDataTypeSelect.append("<option value=\"double\">"
+						+ selectdata + "</option>");
+
+				// Commented as we don't support Money values yet.
+				// selectdata = m_i18nUtils
+				// .getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
+				// primitiveDataTypeSelect.append("<option value=\"Decimal\">"
+				// + selectdata + "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.calender");
+				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
+						+ selectdata + "</option>");
+
+				$("label[for='primitiveDataTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+
+				var parameterDefinitionDirectionSelect = jQuery("#parameterDefinitionDirectionSelect");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.in");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"IN\">" + selectdata
+								+ "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.out");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"OUT\">" + selectdata
+								+ "</option>");
 			}
 
 			/**
@@ -300,6 +327,22 @@ define(
 					this.showAllSourceFieldsInput = jQuery("#showAllSourceFieldsInput");
 					this.showAllTargetFieldsInput = jQuery("#showAllTargetFieldsInput");
 
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+					.create({
+						scope : "messageTransformationApplicationView",
+						submitHandler : this,
+						supportsOrdering : false,
+						supportsDataMappings : false,
+						supportsDescriptors : false,
+						supportsDataTypeSelection : true,
+						hideEnumerations : true,
+						supportsDocumentTypes : false,
+						tableWidth : "500px",
+						directionColumnWidth : "50px",
+						nameColumnWidth : "250px",
+						typeColumnWidth : "200px"
+					});
+
 					this.filterFieldsWithMappingInput.data('enabled', false);
 					this.filterFieldsWithNoMappingInput.data('enabled', false);
 					this.filterFieldsWithMappingInvalidInput.data('enabled', false);
@@ -311,16 +354,6 @@ define(
 
 					this.inputTableRows = [];
 					this.outputTableRows = [];
-
-					this.inputDataTypeSelector = m_dataTypeSelector.create({
-						scope : "inputDataDialog",
-						hideEnumerations : true
-					});
-
-					this.outputDataTypeSelector = m_dataTypeSelector.create({
-						scope : "outputDataDialog",
-						hideEnumerations : true
-					});
 
 					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
 					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
@@ -380,6 +413,11 @@ define(
 					this.expressionEditor.setValue("");
 					this.expressionEditor.disable();
 
+					this.parameterDefinitionsPanel
+							.setScopeModel(this.application.model);
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.application.contexts["application"].accessPoints);
+
 					this
 							.convertFromMappingsXml(this.application.attributes["messageTransformation:TransformationProperty"]);
 
@@ -434,17 +472,6 @@ define(
 						this.expressionEditor.setValue(this.selectedOutputTableRow.mappingExpression);
 						this.expressionEditor.enable();
 					}
-
-					// Initialize the Input / Output Data Type Selector dialogs
-					this.inputDataTypeSelector.setScopeModel(this.getModel());
-					this.inputDataTypeSelector.populatePrimitivesSelectInput();
-					this.inputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
-					this.inputDataTypeSelector.setPrimitiveDataType();
-
-					this.outputDataTypeSelector.setScopeModel(this.getModel());
-					this.outputDataTypeSelector.populatePrimitivesSelectInput();
-					this.outputDataTypeSelector.setDataTypeSelectVal({dataType: m_constants.PRIMITIVE_DATA_TYPE});
-					this.outputDataTypeSelector.setPrimitiveDataType();
 
 					// Global variables for Code Editor auto-complete / validation
 					var globalVariables = {};
@@ -673,6 +700,24 @@ define(
 					}
 				};
 
+
+				/**
+				 *
+				 */
+				MessageTransformationApplicationView.prototype.submitParameterDefinitionsChanges = function(
+						parameterDefinitionsChanges) {
+					// Context is regenerated on the server - hence, all data
+					// need to be provided
+
+					this.submitChanges({
+						contexts : {
+							application : {
+								accessPoints : parameterDefinitionsChanges
+							}
+						}
+					});
+				};
+
 				/**
 				 * This method handles both Input and Output data Mapping
 				 */
@@ -801,14 +846,18 @@ define(
 								"view" : this,
 								"tableRow" : tableRows[tableRow]
 							});
-							dataElement.draggable({
-								helper : "clone",
-								opacity : .75,
-								refreshPositions : true,
-								revert : "invalid",
-								revertDuration : 300,
-								scroll : true
-							});
+
+							if (this.getModelElement()
+									&& !this.getModelElement().isReadonly()) {
+								dataElement.draggable({
+									helper : "clone",
+									opacity : .75,
+									refreshPositions : true,
+									revert : "invalid",
+									revertDuration : 300,
+									scroll : true
+								});
+							}
 
 							var row = jQuery("#sourceTable #" + rowId);
 
@@ -868,81 +917,84 @@ define(
 								"tableRow" : tableRows[tableRow]
 							});
 
-							row
-									.droppable({
-										accept : ".data-element",
-										drop : function(e, ui) {
-											var view = jQuery(this)
-													.data("view");
-											var outputTableRow = jQuery(this).data("tableRow");
-											var inputTableRow = ui.draggable
-													.data("tableRow");
+							if (this.getModelElement()
+									&& !this.getModelElement().isReadonly()) {
+								row
+										.droppable({
+											accept : ".data-element",
+											drop : function(e, ui) {
+												var view = jQuery(this)
+														.data("view");
+												var outputTableRow = jQuery(this).data("tableRow");
+												var inputTableRow = ui.draggable
+														.data("tableRow");
 
-											// TODO: @Anoop - Refactor
-											// invalid operations
-											view.clearErrorMessages();
-											var valid = true;
-											if (view
-													.isStructuredType(inputTableRow)
-													&& !view
-															.isStructuredType(outputTableRow)) {
-												valid = false;
-											}else if (!view
-													.isStructuredType(inputTableRow)
-													&& view
-															.isStructuredType(outputTableRow)) {
-												valid = false;
-											} else if (view
-													.isStructuredType(inputTableRow)
-													&& view
-															.isStructuredType(outputTableRow)
-													&& (inputTableRow.typeName != outputTableRow.typeName)) {
-												valid = false;
-											}
+												// TODO: @Anoop - Refactor
+												// invalid operations
+												view.clearErrorMessages();
+												var valid = true;
+												if (view
+														.isStructuredType(inputTableRow)
+														&& !view
+																.isStructuredType(outputTableRow)) {
+													valid = false;
+												}else if (!view
+														.isStructuredType(inputTableRow)
+														&& view
+																.isStructuredType(outputTableRow)) {
+													valid = false;
+												} else if (view
+														.isStructuredType(inputTableRow)
+														&& view
+																.isStructuredType(outputTableRow)
+														&& (inputTableRow.typeName != outputTableRow.typeName)) {
+													valid = false;
+												}
 
-											if (valid == false) {
-												view.errorMessages
-														.push(m_i18nUtils
-																.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.differentMappingTypes"));
-												view.showErrorMessages();
-												return;
-											}
+												if (valid == false) {
+													view.errorMessages
+															.push(m_i18nUtils
+																	.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.differentMappingTypes"));
+													view.showErrorMessages();
+													return;
+												}
 
-											if (view.isStructuredType(inputTableRow) && view.isStructuredType(outputTableRow) &&
-													(inputTableRow.typeName === outputTableRow.typeName)) {
-												var prefix = outputTableRow.path + ".";
-												for (var n = 0; n < view.outputTableRows.length; ++n) {
-													if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
-														if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
-															view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
-															view.populateMappingCell(view.outputTableRows[n]);
+												if (view.isStructuredType(inputTableRow) && view.isStructuredType(outputTableRow) &&
+														(inputTableRow.typeName === outputTableRow.typeName)) {
+													var prefix = outputTableRow.path + ".";
+													for (var n = 0; n < view.outputTableRows.length; ++n) {
+														if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
+															if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
+																view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
+																view.populateMappingCell(view.outputTableRows[n]);
+															}
 														}
 													}
 												}
-											}
-											else {
-												outputTableRow.mappingExpression = inputTableRow.path;
-												view.populateMappingCell(outputTableRow);
+												else {
+													outputTableRow.mappingExpression = inputTableRow.path;
+													view.populateMappingCell(outputTableRow);
 
-												// Update expression text area if needed
-												if (view.selectedOutputTableRow == outputTableRow) {
-													view.expressionEditor
-															.setValue(outputTableRow.mappingExpression);
+													// Update expression text area if needed
+													if (view.selectedOutputTableRow == outputTableRow) {
+														view.expressionEditor
+																.setValue(outputTableRow.mappingExpression);
+													}
 												}
+
+												// Remove the drag helper
+												ui.helper.remove();
+
+												view
+														.submitChanges(view
+																.determineTransformationChanges());
+
+											},
+											hoverClass : "accept",
+											over : function(e, ui) {
 											}
-
-											// Remove the drag helper
-											ui.helper.remove();
-
-											view
-													.submitChanges(view
-															.determineTransformationChanges());
-
-										},
-										hoverClass : "accept",
-										over : function(e, ui) {
-										}
-									});
+										});
+							}
 
 							row.click({
 								"view" : this,
@@ -1583,117 +1635,6 @@ define(
 						var enabled = event.data.view.filterFieldsWithMappingInvalidInput.data('enabled');
 						event.data.view.filterFieldsWithMappingInvalidInput.data('enabled', !enabled);
 						event.data.view.filterFieldsWithMappingInvalid(!enabled);
-					});
-
-					// Add Input Message dialog
-					jQuery("#inputDataDialog").dialog({
-						autoOpen : false,
-						draggable : true,
-						resizable : false,
-						minWidth : 400,
-						title : m_i18nUtils
-									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addInput.popUp")
-									});
-
-					jQuery("#inputDataDialog").bind("dialogclose", {view : this},function(event, ui) {
-						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#inputDataDialog #nameTextInput");
-						nameInput.val('');
-						nameInput.removeClass("error");
-						event.data.view.clearErrorMessages();
-									});
-
-					jQuery("#addInputDataButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										jQuery("#inputDataDialog").dialog(
-												"open");
-
-//										event.data.view.openIndexConfigurationDialog();
-									});
-
-					jQuery("#inputDataDialog #applyButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										var selectedData = {};
-										event.data.view.inputDataTypeSelector.getDataType(selectedData);
-
-										// Validate if a concrete Structured Type was selected
-										if (selectedData.structuredDataTypeFullId === m_constants.TO_BE_DEFINED) {
-											var msg = m_i18nUtils.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.errorMessage.invalidType");
-											event.data.view.errorMessages.push(msg);
-											event.data.view.showErrorMessages();
-											return;
-										}
-
-										// Validate message name
-										var nameTextInput = jQuery("#inputDataDialog #nameTextInput");
-										var isValidName = event.data.view.validateMessageName(nameTextInput);
-										if (isValidName) {
-											event.data.view.addInputAccessPoint(nameTextInput.val(), selectedData);
-											event.data.view.resume();
-											jQuery("#inputDataDialog").dialog("close");
-										}
-									});
-
-					jQuery("#inputDataDialog #closeButton").click(function() {
-						jQuery("#inputDataDialog").dialog("close");
-					});
-
-					// Add Output Message dialog
-					jQuery("#outputDataDialog").dialog({
-						autoOpen : false,
-						draggable : true,
-						resizable : false,
-						minWidth : 400,
-						title : m_i18nUtils
-									.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.addOutput.popUp")
-									});
-
-					jQuery("#outputDataDialog").bind("dialogclose", {view : this}, function(event, ui) {
-						// Clear the 'name' field and any errors
-						var nameInput = jQuery("#outputDataDialog #nameTextInput");
-						nameInput.val('');
-						nameInput.removeClass("error");
-						event.data.view.clearErrorMessages();
-									});
-
-					jQuery("#addOutputDataButton")
-							.click(
-									{
-										view : this
-									},
-									function(event) {
-										jQuery("#outputDataDialog").dialog(
-												"open");
-									});
-
-					jQuery("#outputDataDialog #applyButton")
-							.click(
-									{
-										"view" : this
-									},
-									function(event) {
-										var selectedData = {};
-										event.data.view.outputDataTypeSelector.getDataType(selectedData);
-
-										var nameTextInput = jQuery("#outputDataDialog #nameTextInput");
-										var isValidName = event.data.view.validateMessageName(nameTextInput);
-										if (isValidName) {
-											event.data.view.addOutputAccessPoint(nameTextInput.val(), selectedData);
-											event.data.view.resume();
-											jQuery("#outputDataDialog").dialog("close");
-										}
-									});
-
-					jQuery("#outputDataDialog #closeButton").click(function() {
-						jQuery("#outputDataDialog").dialog("close");
 					});
 
 					// Index Configuration Dialog

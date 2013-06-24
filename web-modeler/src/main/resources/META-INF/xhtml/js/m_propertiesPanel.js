@@ -29,11 +29,17 @@ define(
 
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
 					currentPropertiesPanel = element.propertiesPanel;
 
 					if (currentPropertiesPanel != null) {
+						if (currentPropertiesPanel.diagram && currentPropertiesPanel.diagram.process
+								&& currentPropertiesPanel.diagram.process.isReadonly()) {
+							m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
+						}
+
 						currentPropertiesPanel.setElement(element);
 						currentPropertiesPanel.show(page);
 					}
@@ -45,9 +51,15 @@ define(
 						processPropertiesPanel) {
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
 					currentPropertiesPanel = processPropertiesPanel;
+
+					if (currentPropertiesPanel.diagram && currentPropertiesPanel.diagram.process
+							&& currentPropertiesPanel.diagram.process.isReadonly()) {
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
+					}
 
 					currentPropertiesPanel.show();
 				},
@@ -246,7 +258,7 @@ define(
 								+ this.propertiesPages[n].imageUrl
 								+ "\" title=\"" + this.propertiesPages[n].title
 								+ "\" alt=\"" + this.propertiesPages[n].title
-								+ "\" class=\"toolbarButton\" />" + "</td>"
+								+ "\" class=\"toolbarButton noDataChange\" />" + "</td>"
 								+ "</tr>");
 
 						jQuery(

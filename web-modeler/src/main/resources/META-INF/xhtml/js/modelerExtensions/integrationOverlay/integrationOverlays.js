@@ -56,7 +56,6 @@ define(
 					name : "Script Invocation",
 					pageHtmlUrl: "scriptingIntegrationOverlay.html",
 					provider : ScriptingIntegrationOverlay,
-					visibility : "preview"
 				}],
 				eventIntegrationOverlay : [
 						{

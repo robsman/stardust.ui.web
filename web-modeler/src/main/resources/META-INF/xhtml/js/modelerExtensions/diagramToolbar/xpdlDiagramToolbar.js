@@ -71,7 +71,8 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "../../images/icons/zoom_in.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomIn",
-			visibility : "always"
+			visibility : "always",
+			styleClass: "noDataChange"
 		}, {
 			id : "zoomOutButton",
 			paletteId : "drawingPalette",
@@ -79,7 +80,8 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "../../images/icons/zoom_out.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomOut",
-			visibility : "always"
+			visibility : "always",
+			styleClass: "noDataChange"
 		}, {
 			id : "flipOrientationButton",
 			paletteId : "drawingPalette",
@@ -95,7 +97,8 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "../../images/icons/printer.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "print",
-			visibility : "always"
+			visibility : "always",
+			styleClass: "noDataChange"
 		}, {
 			id : "activityButton",
 			paletteId : "activityPalette",

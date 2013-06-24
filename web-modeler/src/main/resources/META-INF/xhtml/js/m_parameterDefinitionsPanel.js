@@ -114,8 +114,10 @@ define(
 											: this.options.supportsOtherData,
 									supportsDocumentTypes : (typeof this.options.supportsDocumentTypes === "undefined") ? true
 											: this.options.supportsDocumentTypes,
-									restrictToCurrentModel : (typeof this.options.restrictToCurrentModel === "undefined") ? true
-											: this.options.restrictToCurrentModel
+									restrictToCurrentModel : (typeof this.options.restrictToCurrentModel === "undefined") ? false
+											: this.options.restrictToCurrentModel,
+									hideEnumerations : (typeof this.options.hideEnumerations === "undefined") ? false
+											: this.options.hideEnumerations
 								});
 					}
 
@@ -203,6 +205,10 @@ define(
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
 
+											// Reset descriptor and key-descriptor on direction change
+											event.data.panel.currentParameterDefinition.descriptor = false;
+											event.data.panel.currentParameterDefinition.keyDescriptor = false;
+
 											// Switch back to standard focus
 											// handling
 
@@ -221,6 +227,8 @@ define(
 										function(event) {
 											event.data.panel.currentParameterDefinition.descriptor = event.data.panel.descriptorInput
 													.prop("checked");
+											// Reset key-descriptor input on descriptor change.
+											event.data.panel.currentParameterDefinition.keyDescriptor = false;
 
 											if (event.data.panel.descriptorInput
 													.prop("checked")) {
@@ -758,6 +766,8 @@ define(
 						if (this.currentParameterDefinition.dataFullId
 								&& (-1 != this.currentParameterDefinition.dataFullId
 										.indexOf("PROCESS_ATTACHMENTS"))) {
+							this.parameterDefinitionNameInput.attr(
+									"disabled", true);
 							this.parameterDefinitionDirectionSelect.attr(
 									"disabled", true);
 							this.parameterDefinitionDataSelect.attr("disabled",
@@ -767,6 +777,8 @@ define(
 										"disabled", true);
 							}
 						} else {
+							this.parameterDefinitionNameInput
+									.removeAttr("disabled");
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
 
@@ -788,6 +800,13 @@ define(
 							this.currentFocusInput.focus();
 							this.currentFocusInput.select();
 						}
+					}
+
+					if (this.scopeModel && this.scopeModel.isReadonly()
+							&& this.dataTypeSelectorScope) {
+						m_utils.markControlsReadonlyForScope(
+								this.dataTypeSelectorScope, this.scopeModel
+										.isReadonly());
 					}
 				};
 

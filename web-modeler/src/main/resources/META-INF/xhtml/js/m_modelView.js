@@ -11,9 +11,11 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants" ],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_elementConfiguration"],
 		function(m_utils, m_extensionManager, m_communicationController,
-				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants) {
+				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants,
+				m_jsfViewManager, m_elementConfiguration) {
 			return {
 				initialize : function(modelId) {
 					m_utils.initializeWaitCursor($("html"));
@@ -105,6 +107,7 @@ define(
 				m_utils.inheritFields(this, modelElementView);
 				m_utils.inheritMethods(ModelView.prototype,
 						modelElementView);
+				var viewManager = m_jsfViewManager.create();
 
 				/**
 				 *
@@ -210,6 +213,8 @@ define(
 						this.model.attributes = {};
 					}
 
+					this.updateViewIcon();
+
 					// TODO Commented out because it is slow
 
 					//this.refreshValidation();
@@ -276,7 +281,7 @@ define(
 					}
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelCommand(this.getModelElement().uuid, changes));
+							.createUpdateModelCommand(this.getModelElement().uuid, this.getModelElement().id, changes));
 				};
 
 				/**
@@ -463,6 +468,31 @@ define(
 						height : 200
 					});
 
+				};
+
+				/**
+				 * Updates the view icon as per the read-only status.
+				 */
+				ModelView.prototype.updateViewIcon = function() {
+					if (this.model.isReadonly()) {
+						viewManager
+								.updateView(
+										"modelView",
+										m_constants.VIEW_ICON_PARAM_KEY
+												+ "="
+												+ m_elementConfiguration
+														.getIconForElementType("lockedModel"),
+										this.model.uuid);
+					} else {
+						viewManager
+								.updateView(
+										"modelView",
+										m_constants.VIEW_ICON_PARAM_KEY
+												+ "="
+												+ m_elementConfiguration
+														.getIconForElementType("model"),
+										this.model.uuid);
+					}
 				};
 			}
 		});

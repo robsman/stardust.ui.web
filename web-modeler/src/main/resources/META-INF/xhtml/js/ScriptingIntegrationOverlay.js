@@ -64,6 +64,10 @@ define(
 
 					var self = this;
 
+					jQuery("a[href='#configurationTab']").click(function() {
+						self.setGlobalVariables();
+					});
+
 					this.languageSelect
 							.change(function() {
 								var code = self.codeEditor.getEditor()
@@ -171,6 +175,7 @@ define(
 								.createParameterObjectString(
 										m_constants.IN_ACCESS_POINT, true));
 					});
+				this.update();
 				};
 
 				/**
@@ -179,7 +184,6 @@ define(
 				ScriptingIntegrationOverlay.prototype.createParameterObjectString = function(
 						direction, initializePrimitives, singleVariables) {
 					var otherDirection;
-
 					if (direction === m_constants.IN_ACCESS_POINT) {
 						otherDirection = m_constants.OUT_ACCESS_POINT;
 					} else {
@@ -355,15 +359,16 @@ define(
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
 							if (accessPoint.dataType == "primitive") {
-								code += "var "
-										+ accessPoint.id
-										+ " =  eval('(' + request.headers.get('"
-										+ accessPoint.id + "')+ ')');\n";
+								code += "var "+ accessPoint.name+";\n";
+								code +="if(request.headers.get('"        + accessPoint.name + "')!=null){\n"
+								code += accessPoint.name+ " =  request.headers.get('"        + accessPoint.name + "');\n";
+								code += "}\n";
+
 							} else if (accessPoint.dataType == "struct") {
-								code += "var "
-										+ accessPoint.id
-										+ " =  eval('(' + request.headers.get('"
-										+ accessPoint.id + "')+ ')');\n";
+								code += "var "+ accessPoint.name+";\n";
+								code +="if(request.headers.get('"+ accessPoint.name + "')!=null){\n"
+								code += accessPoint.name  + " =  eval('(' + request.headers.get('"+ accessPoint.name + "')+ ')');\n";
+								code += "}\n";
 							}
 						}
 					}
@@ -380,7 +385,9 @@ define(
 									+ accessPoint.id + ");";
 						}
 					}
-
+					code = code.replace(/&/g, "&amp;");
+					code = code.replace(/</g, "&lt;");
+					code = code.replace(/>/g, "&gt;");
 					// Determine language
 
 					if (this.languageSelect.val() === "JavaScript") {
@@ -427,6 +434,7 @@ define(
 				 */
 				ScriptingIntegrationOverlay.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
+					this.getApplication().contexts.application.accessPoints = parameterDefinitionsChanges;
 					this.view
 							.submitChanges({
 								contexts : {
@@ -444,6 +452,32 @@ define(
 											.getValue()
 								}
 							});
+				};
+
+				/**
+				 *
+				 */
+				ScriptingIntegrationOverlay.prototype.setGlobalVariables = function() {
+					// Global variables for Code Editor auto-complete / validation
+					var globalVariables = {};
+
+					for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+						var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
+
+						var typeDeclaration = null;
+						if (parameterDefinition.dataType == "struct") {
+							typeDeclaration = m_model.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+						}
+
+						if (typeDeclaration != null) {
+							globalVariables[parameterDefinition.id] = typeDeclaration.createInstance();
+						}
+						else {
+							globalVariables[parameterDefinition.id] = "";
+						}
+					}
+
+					this.codeEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**

@@ -167,8 +167,10 @@ define(
 
 					// Event handling
 
-					element
-							.dblclick(Drawable_doubleClickEditableTextPrimitiveClosure);
+					if (!this.diagram.process.isReadonly()) {
+						element
+								.dblclick(Drawable_doubleClickEditableTextPrimitiveClosure);
+					}
 				};
 
 				Drawable.prototype.createProximitySensor = function() {
@@ -181,10 +183,12 @@ define(
 						callbackScope : this
 					};
 
-					// this.proximitySensor.mouseover(mouseOverClosure);
-					this.proximitySensor.hover(
-							Drawable_proximityHoverInClosure,
-							Drawable_proximityHoverOutClosure);
+					if (!this.diagram.process.isReadonly()) {
+						// this.proximitySensor.mouseover(mouseOverClosure);
+						this.proximitySensor.hover(
+								Drawable_proximityHoverInClosure,
+								Drawable_proximityHoverOutClosure);
+					}
 				};
 
 				/**
@@ -457,11 +461,13 @@ define(
 						callbackScope : this
 					};
 
-					item.click(clickHandler);
-					item.hover(Drawable_hoverInFlyMenuItemClosure,
-							Drawable_hoverOutFlyMenuItemClosure);
-					item.hover(Drawable_hoverInFlyMenuItemClosure,
-							Drawable_hoverOutFlyMenuItemClosure);
+					if (!this.diagram.process.isReadonly()) {
+						item.click(clickHandler);
+						item.hover(Drawable_hoverInFlyMenuItemClosure,
+								Drawable_hoverOutFlyMenuItemClosure);
+						item.hover(Drawable_hoverInFlyMenuItemClosure,
+								Drawable_hoverOutFlyMenuItemClosure);
+					}
 
 					return item;
 				};

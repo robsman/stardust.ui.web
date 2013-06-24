@@ -115,7 +115,12 @@ define(
 
 						parent.iDnD.dragMode = false;
 
-						if (parent.iDnD.getTransferObject()) {
+						if (diagram.process.isReadonly()) {
+							m_messageDisplay.clear();
+							m_messageDisplay.showErrorMessage("Process is marked as Read-only.");
+						}
+
+						if (!diagram.process.isReadonly() && parent.iDnD.getTransferObject()) {
 							var clickCoordinates = parent.iDnD
 									.getMouseCoordinates(eve);
 							var scrollPos = m_modelerUtils
@@ -350,7 +355,7 @@ define(
 					diagram.loadProcess();
 
 						// TODO Used temporarily to indicate the VIEW_LOADED event for the Process Definition View
-					
+
 						window.parent.EventHub.events.publish("VIEW_LOADED", "");
 						jQuery("#processDefinitionView").css("visibility", "visible");
 				}

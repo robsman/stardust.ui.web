@@ -36,7 +36,7 @@
 										</td>
 										<td style="white-space: nowrap;">
 											<pc:automationTag value="auto-FW-Logout" />
-					            			<ice:commandLink value="#{common_msgPropsBean['portalFramework.logout']}" 
+									<ice:commandLink value="#{common_msgPropsBean['portalFramework.logout']}"
 					               				action="#{ippPortalApp.logout}" styleClass="logout portal-ui-session-control"/>
 					               		</td>
 					               	</tr>
@@ -47,22 +47,36 @@
 				</table>
 			</ice:form>
 		</div>
-	
+
 		<div class="topMenu">
 			<ice:form partialSubmit="false">
 				<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
 					<tr>
 						<td class="topMenuTd">
-							<ice:menuBar styleClass="topMenuBar">
-								<pc:automationTag value="auto-FW-PerspectiveMenu" />
-								<ice:menuItem value="#{ippPortalUi.perspective.label}" icon="/plugins/common/images/icons/trigger-perspective.png">
-									<ice:menuItems value="#{ippPortalUi.perspectiveItems}" />
-								</ice:menuItem>
-							</ice:menuBar>
+							<ice:panelGroup
+								styleClass="topMenuIframeBar">
+								<ice:panelGrid columns="2" styleClass="menuItm"
+									style="margin-top:-2px;">
+									<ice:commandLink
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<ice:panelGroup style="padding-top: 1px; padding-right: 2px;">
+										<ice:graphicImage
+											value="/plugins/common/images/icons/trigger-perspective.png" />
+										</ice:panelGroup>
+									</ice:commandLink>
+									<ice:commandLink value="#{ippPortalUi.perspective.label}"
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<pc:automationTag value="auto-FW-PerspectiveMenu" standAlone="false" />
+									</ice:commandLink>
+									<div id="ippPerspectiveMenuAnchor"></div>
+								</ice:panelGrid>
+							</ice:panelGroup>
 						</td>
-						
+
 						<td class="topMenuTd">
-							<ice:menuBar styleClass="topMenuBar" orientation="horizontal">
+							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true">
 								<!-- HELP Menu Item -->
 								<c:if test="#{not empty ippPortalApp.helpDocPreference}">
 									<pc:automationTag value="auto-FW-HelpMenu" />
@@ -71,7 +85,7 @@
 											onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;"/>
 									</ice:menuItem>
 								</c:if>
-	
+
 								<c:forEach items="#{ippPortalUi.perspective.menuSections}" var="menuSection">
 									<ui:include src="portalUserDefinedInclude.xhtml">
 										<ui:param name="includeFilePath" value="#{menuSection.include}" />
@@ -79,9 +93,9 @@
 								</c:forEach>
 							</ice:menuBar>
 						</td>
-	
+
 						<td style="width: 100%" /> <!-- Filler TD -->
-	
+
 						<td class="topMenuTd">
 							<ice:menuBar styleClass="topMenuBar">
 								<pc:automationTag value="auto-FW-ConfigMenu" />

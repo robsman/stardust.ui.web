@@ -20,3 +20,14 @@
 .topMenuBarSubMenu {
 	margin-top: 8px;
  }
+
+ .form-panel-summary-bar-text
+{
+	color: rgb (77, 77, 77);
+	padding: 8px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+	line-height: 10px;
+	font-size:13px;
+	float:left;
+}

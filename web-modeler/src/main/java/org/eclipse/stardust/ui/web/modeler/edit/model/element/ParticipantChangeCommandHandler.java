@@ -18,25 +18,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -178,8 +170,8 @@ public class ParticipantChangeCommandHandler
       {
          synchronized (model)
          {
-            List<OrganizationType> parentOrgs = getModelBuilderFacade()
-                  .getParentOrganizations(model, modelParticipantInfo);
+            List<OrganizationType> parentOrgs = ModelBuilderFacade.getParentOrganizations(
+                  model, modelParticipantInfo);
 
             for (OrganizationType org : parentOrgs)
             {

@@ -35,6 +35,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentTemplate;
 
 
@@ -54,16 +55,16 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
 
    /**
     * custom constructor initialing document user object
-    * 
+    *
     * @param defaultMutableTreeNode
     * @param document
     */
    public RepositoryDocumentUserObject(DefaultMutableTreeNode defaultMutableTreeNode, Document document)
-   { 
+   {
       super(defaultMutableTreeNode, document);
       propsBean = MessagesViewsCommonBean.getInstance();
       this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
-      
+
       PrintDocumentAnnotations annotations = (PrintDocumentAnnotations) document.getDocumentAnnotations();
 
       if (null != annotations
@@ -77,11 +78,11 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       {
          setLeafIcon(ResourcePaths.I_DOCUMENT_PATH + this.mType.getIconPath());
       }
-      
+
       defaultMutableTreeNode.setAllowsChildren(false);
       this.setLeaf(true);
       this.setCanUploadFile(false);
-    
+
       documentToolTip = new DocumentToolTip(null, document);
    }
 
@@ -111,8 +112,9 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    {
       DownloadPopupDialog downloadPopupDialog = DownloadPopupDialog.getCurrent();
       Document document = getDocument();
-      OutputResource resource = new OutputResource(document.getName(), document.getId(), getMType().toString(),
-            downloadPopupDialog, getDMS(), true);
+      OutputResource resource = new OutputResource(new DefualtResourceDataProvider(
+            document.getName(), document.getId(), getMType().toString(), getDMS(), true),
+            downloadPopupDialog);
       downloadPopupDialog.open(resource);
    }
 
@@ -131,8 +133,8 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
          MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.permissionDenied"));
       }
    }
-   
-   
+
+
 
    @Override
    public void deleteResource()
@@ -241,7 +243,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       {
          document.setName(oldName);
          this.setName(oldName);
-         DocumentMgmtUtility.verifyExistanceOfDocumentAndShowMessage(document.getId(), "", e);         
+         DocumentMgmtUtility.verifyExistanceOfDocumentAndShowMessage(document.getId(), "", e);
       }
       this.setEditingName(false);
       RepositoryUtility.refreshNode(this.wrapper);
@@ -365,7 +367,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#createNote()
     */
    public void createNote()
@@ -373,7 +375,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
 
    /**
     * Update document into process instance
-    * 
+    *
     * @param document
     */
    private void updateprocessInstance(Document document)

@@ -45,7 +45,7 @@ public class XSDInheritanceTest
       JsonObject manualUpdatedPersonSchema = createUpdatedPersonJSON();
       SchemaTypeType schemaTypeType = XpdlFactory.eINSTANCE.createSchemaTypeType();
       schemaTypeType.setSchema(externalSchema);
-      XsdSchemaUtils.updateXSDSchemaType(schemaTypeType, manualUpdatedPersonSchema);
+      XsdSchemaUtils.updateXSDSchemaType(null, schemaTypeType, manualUpdatedPersonSchema);
       //assertEquality(externalSchema, manualUpdatedPersonSchema);
    }
 
@@ -56,7 +56,7 @@ public class XSDInheritanceTest
       JsonObject manualUpdatedPersonSchema = createUpdatedPersonJSON2();
       SchemaTypeType schemaTypeType = XpdlFactory.eINSTANCE.createSchemaTypeType();
       schemaTypeType.setSchema(externalSchema);
-      XsdSchemaUtils.updateXSDSchemaType(schemaTypeType, manualUpdatedPersonSchema);
+      XsdSchemaUtils.updateXSDSchemaType(null, schemaTypeType, manualUpdatedPersonSchema);
       //assertEquality(externalSchema, manualUpdatedPersonSchema);
    }
 

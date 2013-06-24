@@ -455,6 +455,15 @@ define(
 
 					return null;
 				};
+
+				Model.prototype.isReadonly = function() {
+					if (this.attributes
+							&& this.attributes["stardust:security:hash"]) {
+						return true;
+					}
+
+					return false;
+				};
 			}
 
 			/**

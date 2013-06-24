@@ -31,7 +31,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ActionListener;
 
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
@@ -115,6 +114,8 @@ public class PortalUiController
 
    private CommonMenuIframeHandler commonMenuIframeHandler;
    
+   private PerspectiveMenuIframeHandler perspectiveMenuIframeHandler;
+
    private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
    
    private List<IPerspectiveDefinition> allPerspectives;
@@ -128,6 +129,7 @@ public class PortalUiController
       this.openViews = new ArrayList<View>();
       this.recreatableViews = new HashMap<String, View>();
       this.viewDataEventHandlers = new HashMap<View, List<ViewDataEventHandler>>();
+      this.perspectiveMenuIframeHandler = new PerspectiveMenuIframeHandler();
    }
    
    /**
@@ -348,7 +350,6 @@ public class PortalUiController
       result.setTitle(perspective.getLabel());
       result.setValue(perspective.getLabel());
       result.setId(perspective.getName());
-      result.addActionListener(new PerspectiveMenuListener());
       return result;
    }
 
@@ -387,29 +388,32 @@ public class PortalUiController
       return perspectiveItems;
    }
 
-   private class PerspectiveMenuListener implements ActionListener
+   /**
+    *
+    * @param ae
+    * @throws AbortProcessingException
+    */
+   public void perspectiveChangeActionListener(ActionEvent ae) throws AbortProcessingException
    {
-      public void processAction(ActionEvent ae) throws AbortProcessingException
+      String perspectiveId = FacesUtils.getRequestParameter("perspectiveId");
+      for (IPerspectiveDefinition perspective : perspectives.values())
       {
-         for (IPerspectiveDefinition perspective : perspectives.values())
+         if (areEqual(perspectiveId, perspective.getName()) && (currentPerspective != perspective))
          {
-            if (areEqual(ae.getComponent().getId(), perspective.getName())
-                  && (currentPerspective != perspective))
+            setPerspective(perspective);
+
+            // Avoiding accessing PortalApplication statically in this class
+            // So using bean name and get bean from context directly
+            PortalApplication portalApplication = (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
+            if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
             {
-               setPerspective(perspective);
-
-               // Avoiding accessing PortalApplication statically in this class
-               // So using bean name and get bean from context directly
-               PortalApplication portalApplication = (PortalApplication)FacesUtils.getBeanFromContext("ippPortalApp");
-               if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
-               {
-                  broadcastNonVetoableViewEvent(portalApplication.getPinView(), ViewEventType.PERSPECTIVE_CHANGED);
-               }
-
-               break;
+               broadcastNonVetoableViewEvent(portalApplication.getPinView(), ViewEventType.PERSPECTIVE_CHANGED);
             }
+            portalApplication.renderPortalSession();
+            break;
          }
       }
+      perspectiveMenuIframeHandler.closeIframePopup();
    }
 
    /**
@@ -1391,6 +1395,16 @@ public class PortalUiController
       return this.commonMenuIframeHandler;
    }
    
+   /**
+    * Implementation class handles Perspective menu Iframe
+    *
+    * @return
+    */
+   public PerspectiveMenuIframeHandler getPerspectiveMenuIframeHandler()
+   {
+      return perspectiveMenuIframeHandler;
+   }
+
    /**
     * @param perspectiveDef
     * @return

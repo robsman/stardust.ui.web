@@ -36,9 +36,8 @@
          <c:when test="#{('ui:include' == ippActivityPanelController.panelIntegrationStrategy) and not empty ippActivityPanelController.panelUrl}">
             <c:choose>
                <c:when test="#{'manual' == ippActivityPanelController.panelUrl}">
-               	  <!-- For now use the default style from new form generation -->
-	              <ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
- 				  <ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
+		<!-- loading stardust-ui-form-jsf.css and stardust-ui-form-jsf-override.css has been moved from activityPanel.xhtml
+					to portalHead.xhtml, as the dymanic / delayed loading sometimes caused problems in page width calculation.  -->
  				  <c:if test="#{not activityDetailsBean.singleDocumentCase}">
 		              <f:subview id="#{activityDetailsBean.formId}">
 						<ice:panelGrid binding="#{activityDetailsBean.rootGrid}" style="width: 100%;" />

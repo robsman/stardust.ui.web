@@ -517,9 +517,11 @@ define(
 						callbackScope : this
 					};
 
-					this.flyOutMenuBackground.hover(
-							SwimlaneSymbol_hoverInFlyOutMenuClosure,
-							SwimlaneSymbol_hoverOutFlyOutMenuClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.flyOutMenuBackground.hover(
+								SwimlaneSymbol_hoverInFlyOutMenuClosure,
+								SwimlaneSymbol_hoverOutFlyOutMenuClosure);
+					}
 				};
 
 				/**
@@ -528,14 +530,22 @@ define(
 				SwimlaneSymbol.prototype.initializeEventHandling = function() {
 					this.borderRectangle.auxiliaryProperties.callbackScope = this;
 
+					// Exclude Click from readonly check to show properties panel
 					this.borderRectangle.click(SwimlaneSymbol_clickClosure);
-					this.borderRectangle.hover(SwimlaneSymbol_hoverInClosure,
-							SwimlaneSymbol_hoverOutClosure);
+
+					if (!this.diagram.process.isReadonly()) {
+						this.borderRectangle.hover(SwimlaneSymbol_hoverInClosure,
+								SwimlaneSymbol_hoverOutClosure);
+					}
 					this.topRectangle.auxiliaryProperties.callbackScope = this;
 
+					// Exclude Click from readonly check to show properties panel
 					this.topRectangle.click(SwimlaneSymbol_clickClosure);
-					this.topRectangle.hover(SwimlaneSymbol_topRect_hoverInClosure,
+					if (!this.diagram.process.isReadonly()) {
+						this.topRectangle.hover(SwimlaneSymbol_topRect_hoverInClosure,
 							SwimlaneSymbol_topRect_hoverOutClosure);
+					}
+
 					this.minimizeIcon
 							.click(SwimlaneSymbol_minimizeClickClosure);
 					this.maximizeIcon
@@ -1369,6 +1379,14 @@ define(
 						this.x -= this.symbolXOffset;
 					} else {
 						this.y -= this.symbolYOffset;
+					}
+
+					//Perform client side adjustments
+					for ( var n in this.parentSymbol.laneSymbols) {
+						for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+							this.parentSymbol.laneSymbols[n].containedSymbols[c]
+									.performClientSideAdj();
+						}
 					}
 				};
 

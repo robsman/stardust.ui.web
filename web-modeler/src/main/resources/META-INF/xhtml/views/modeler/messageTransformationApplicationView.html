@@ -164,6 +164,9 @@
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
+							<li><a href="#parametersTab"><img
+									src="../../images/icons/database_link.png"></img><span
+									class="tabLabel" id="parameters">Parameters</span> </a></li>
 							<li><a href="#configurationTab"><img
 									src="../../images/icons/table.png"></img><span
 									class="tabLabel" id="configuration">Configuration</span> </a></li>
@@ -171,6 +174,101 @@
 									src="../../images/icons/table.png"></img><span
 									class="tabLabel" id="testdata">Test</span> </a></li>
 						</ul>
+						<div id="parametersTab">
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
+								<tr>
+									<td>
+										<div class="heading" id="paramDef">Parameter Definitions</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="panelBorder" style="width: 500px;">
+											<table cellpadding="0" cellspacing="0" width="100%"
+												class="layoutTable">
+												<tr>
+													<td><div class="toolBar">
+															<table>
+																<tr>
+																	<td><input id="deleteParameterDefinitionButton"
+																		type="image" src="../../images/icons/delete.png"
+																		title="Delete" alt="Delete" class="toolbarButton" />
+																	</td>
+																</tr>
+															</table>
+														</div></td>
+												</tr>
+												<tr>
+													<td>
+														<div class="dataTable">
+															<table id="parameterDefinitionsTable" cellpadding="0"
+																cellspacing="0">
+																<tbody />
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div></td>
+								</tr>
+								<tr>
+									<td>
+										<table id="parameterDefinitionTypeSelector"
+											class="fieldSetTable" style="margin-top: 10px;">
+											<tr>
+												<td><input id="addParameterDefinitionButton"
+													type="image" src="../../images/icons/add.png" title="Add"
+													alt="Add" class="toolbarButton" />
+												</td>
+												<td></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionNameInput" id="name">Name</label>
+												</td>
+												<td><input id="parameterDefinitionNameInput"
+													type="text" style="width: 200px;" /></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionDirectionSelect"
+													id="direction">Direction</label>
+												</td>
+												<td><select id="parameterDefinitionDirectionSelect">
+												</select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="dataTypeSelect" id="dataType">Data
+														Type</label></td>
+												<td><select id="dataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="primitiveDataTypeRow">
+												<td><label for="primitiveDataTypeSelect"
+													id="primitiveType" />Primitive Type</label></td>
+												<td><select id="primitiveDataTypeSelect" size="1">
+												</select></td>
+											</tr>
+											<tr id="structuredDataTypeRow">
+												<td><label for="structuredDataTypeSelect">Data
+														Structure</label>
+												</td>
+												<td><select id="structuredDataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="documentTypeRow">
+												<td><label for="documentTypeSelect">Document
+														Type</label>
+												</td>
+												<td><select id="documentTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+										</table></td>
+								</tr>
+							</table>
+						</div>
 						<div id="configurationTab">
 							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 								<tr>
@@ -194,8 +292,6 @@
 																		<table cellpadding="0" cellspacing="5"
 																			class="layoutTable">
 																			<tr>
-																				<td><input id="addInputDataButton"
-																					type="button" value="Add Input ..." /></td>
 																				<td><input
 																					id="filterHighlightedSourceFieldsInput"
 																					type="image" src="../../images/icons/lightbulb.png"
@@ -242,9 +338,6 @@
 																			<table cellpadding="0" cellspacing="5"
 																				class="layoutTable">
 																				<tr>
-																					<td><input id="addOutputDataButton"
-																						type="button" value="Add Output ..." />
-																					</td>
 																					<td><input id="filterFieldsWithMappingInput"
 																						type="image" src="../../images/icons/mapping.gif"
 																						title="Display only fields with mapping expressions" />
@@ -314,133 +407,45 @@
 							</table>
 						</div>
 						<div id="testTab">
-							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-								<tr>
-									<td>
-										<table cellpadding="0" cellspacing="5" class="layoutTable">
-											<tr>
-												<td><input id="runButton" type="image"
-													src="../../images/icons/run.png"
-													title="Run Message Transformation" />
-												</td>
-												<td><input id="resetButton" type="image"
-													src="../../images/icons/arrow_refresh.png"
-													title="Clear input data fields" /></td>
-											</tr>
-										</table></td>
-								</tr>
-								<tr>
-									<td><label for="inputDataTextArea" id="inputData">Input Data</label>
-									</td>
-								</tr>
-								<tr>
-									<td><textarea id="inputDataTextarea" rows="10" cols="80"
-											style="width: 680px;"></textarea></td>
-								</tr>
-								<tr>
-									<td><label for="outputDataTable" id="outputData">Output Data</label>
-									</td>
-								</tr>
-								<tr>
-									<td><div
-											style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
-											<table id="outputDataTable" style="width: 680px;">
-											</table>
-										</div></td>
-								</tr>
-							</table>
+							<div class="noDataChange">
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+									<tr>
+										<td>
+											<table cellpadding="0" cellspacing="5" class="layoutTable">
+												<tr>
+													<td><input id="runButton" type="image"
+														src="../../images/icons/run.png"
+														title="Run Message Transformation" />
+													</td>
+													<td><input id="resetButton" type="image"
+														src="../../images/icons/arrow_refresh.png"
+														title="Clear input data fields" /></td>
+												</tr>
+											</table></td>
+									</tr>
+									<tr>
+										<td><label for="inputDataTextArea" id="inputData">Input Data</label>
+										</td>
+									</tr>
+									<tr>
+										<td><textarea id="inputDataTextarea" rows="10" cols="80"
+												style="width: 680px;"></textarea></td>
+									</tr>
+									<tr>
+										<td><label for="outputDataTable" id="outputData">Output Data</label>
+										</td>
+									</tr>
+									<tr>
+										<td><div
+												style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
+												<table id="outputDataTable" style="width: 680px;">
+												</table>
+											</div></td>
+									</tr>
+								</table>
+							</div>
 						</div>
 					</div></td>
-			</tr>
-		</table>
-	</div>
-	<div id="inputDataDialog" title="Input Data"
-		style="min-width: 300px; min-height: 200px;">
-		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-			<tr>
-				<td>
-					<table style="margin-top: 10px;">
-						<tr>
-							<td><label for="dataTypeSelect" id="dataType1">Data Type</label>
-							</td>
-							<td><select id="dataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive Type</label>
-							</td>
-							<td><select id="primitiveDataTypeSelect" size="1">
-							</select>
-							</td>
-						</tr>
-						<tr id="structuredDataTypeRow">
-							<td><label for="structuredDataTypeSelect">Structured
-									Type</label></td>
-							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="nameTextInput" id="name">Name</label></td>
-							<td><input id="nameTextInput" type="text" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td><input id="applyButton" type="button" value="Apply" />
-							</td>
-							<td><input id="closeButton" type="button" value="Close" />
-							</td>
-						</tr>
-					</table></td>
-			</tr>
-		</table>
-	</div>
-	<div id="outputDataDialog" title="Output Data"
-		style="min-width: 300px; min-height: 200px;">
-		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-			<tr>
-				<td>
-					<table style="margin-top: 10px;">
-						<tr>
-							<td><label for="dataTypeSelect" id="dataType1">Data Type</label>
-							</td>
-							<td><select id="dataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive Type</label>
-							</td>
-							<td><select id="primitiveDataTypeSelect" size="1">
-							</select>
-							</td>
-						</tr>
-						<tr id="structuredDataTypeRow">
-							<td><label for="structuredDataTypeSelect">Structured
-									Type</label></td>
-							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="nameTextInput" id="name">Name</label></td>
-							<td><input id="nameTextInput" type="text" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td><input id="applyButton" type="button" value="Apply" />
-							</td>
-							<td><input id="closeButton" type="button" value="Close" />
-							</td>
-						</tr>
-					</table></td>
 			</tr>
 		</table>
 	</div>

@@ -75,6 +75,51 @@ define(
 					window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
 				},
 
+				isBrowserChrome : function() {
+					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+						return true;
+					}
+				},
+
+				markControlsReadonly : function(divName, readonly) {
+					var lookupScope = divName == undefined ? null : jQuery("#" + divName);
+					this.markControlsReadonlyForScope(lookupScope, readonly);
+				},
+
+				/**
+				 * lookupscope should be a jQuery('#elementId') object
+				 */
+				markControlsReadonlyForScope : function(lookupScope, readonly) {
+					jQuery(['input:not(.noDataChange input)', 'textarea:not(.noDataChange textarea)', 'select:not(.noDataChange select)']).each(function(index, type){
+						jQuery(type, lookupScope).each(function(index, control){
+							if (readonly == undefined || readonly == true) {
+								if (control.disabled !== undefined) {
+									// Exclude links marked specifically
+									if(control.className.indexOf("noDataChange") == -1) {
+										control.disabled = true;
+										control.style.opacity = 0.5;
+										control.style.cursor = "default";
+									}
+								}
+							} else {
+								control.disabled = false;
+								control.style.opacity = 1;
+								control.style.cursor = "auto";
+							}
+						});
+					});
+				},
+
+				isElementReadonly : function(element) {
+					if (element) {
+						if ((typeof element.isReadonly === "function")) {
+							return element.isReadonly();
+						}
+					}
+
+					return false;
+				},
+
 				prettyDateTime : prettyDateTime,
 
 				formatDate : formatDate,

@@ -22,6 +22,10 @@ define(
 
 					palette.initialize(diagram);
 
+					if (diagram.process.isReadonly()) {
+						m_utils.markControlsReadonly();
+					}
+
 					return palette;
 				}
 			};

@@ -37,11 +37,15 @@ define(['angularjs'],
 		        }
 		    };
 		});
-		
+
 		var app = {};
 
-		app.init = function() {
-			angular.bootstrap(document, ['angularApp']);
+		app.init = function(div) {
+			if (!div) {
+				angular.bootstrap(document, ['angularApp']);
+			} else if (!jQuery(div).hasClass("ng-scope")) {
+				angular.bootstrap(div, ['angularApp']);
+			}
 		};
 
 		app.__defineGetter__('angularApp', function() {

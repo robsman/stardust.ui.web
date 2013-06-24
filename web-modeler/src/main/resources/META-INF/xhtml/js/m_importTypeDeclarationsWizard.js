@@ -262,8 +262,13 @@ define(
 					}
 
 					this.tree.tableScroll({
-						height : 150
+						height : 170
 					});
+					// TODO - hack
+					// The table scroll plugin sets height to auto if the
+					// initial height is less than the provided height
+					// settig max-height in the plugin should also work.
+					jQuery("div.tablescroll_wrapper").css("max-height", "170px");
 					this.tree.treeTable({
 						indent: 14,
 						onNodeShow: function() {

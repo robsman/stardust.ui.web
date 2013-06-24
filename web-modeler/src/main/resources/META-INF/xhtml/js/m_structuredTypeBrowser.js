@@ -81,13 +81,22 @@ define(
 							childRow.addClass("expanded");
 						}
 					}
+					if (element.body
+							&& element.body.length > 0) {
+						childRow.addClass("parent");
+						childRow.addClass("expanded");
+					}
 				}
 
 				if (parentPath) {
 					childRow.data("parentId", parentPath);
 				}
 				childRow.data("path", childPath);
-				childRow.data("schemaType", schemaType);
+				if (schemaType) {
+					childRow.data("schemaType", schemaType);
+				} else if (element.body && element.body[0].classifier == "sequence") {
+					childRow.data("schemaType", element.body[0].body);
+				}
 
 				return childRow;
 			}

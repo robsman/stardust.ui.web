@@ -12,7 +12,7 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_modelElement" ],
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_modelElement"],
 		function(m_utils, m_modelElement) {
 			var STRUCTURE_TYPE = "STRUCTURE_TYPE";
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
@@ -80,7 +80,7 @@ define(
 									: this.id);
 				};
 
-				TypeDeclaration.prototype.isReadOnly = function() {
+				TypeDeclaration.prototype.isExternalReference = function() {
 					return (null != this.typeDeclaration.type)
 							&& (this.typeDeclaration.type.classifier === 'ExternalReference');
 				};
@@ -144,7 +144,7 @@ define(
 							}
 						}
 					}
-					if (this.typeDeclaration.schema.types) {
+					if (facets.length == 0 && this.typeDeclaration.schema.types) {
 						for (var i in this.typeDeclaration.schema.types) {
 							if (this.typeDeclaration.schema.types[i].facets) {
 								for (var j in this.typeDeclaration.schema.types[i].facets) {
@@ -457,7 +457,7 @@ define(
 					var moved = false;
 
 					var element = this.getElement(name);
-					if (element && !element.readOnly) {
+					if (element && !element.inherited) {
 						var elements = this.getUninheritedElements();
 						var oldIdx = elements.indexOf(element);
 						var newIdx = oldIdx + dIdx;
@@ -532,6 +532,11 @@ define(
 					if (baseType) {
 						this.getTypeDeclaration().base = "{" + baseType.typeDeclaration.schema.targetNamespace + "}" + baseType.id;
 						this.getTypeDeclaration().method = "extension";
+						if (!this.typeDeclaration.schema.locations) {
+							this.typeDeclaration.schema.locations = {};
+						}
+						this.typeDeclaration.schema.locations[baseType.typeDeclaration.schema.targetNamespace] = "{"
+							+ baseType.model.id + "}" + baseType.id;
 					} else {
 						this.getTypeDeclaration().base = null;
 						this.getTypeDeclaration().method = null;
@@ -542,8 +547,11 @@ define(
 					var typeQName = parseQName(name);
 					if (typeQName.namespace) {
 						return resolveSchemaTypeFromModel("{"
-								+ typeQName.namespace + "}" + typeQName.name,
-								this.model);
+								+ typeQName.namespace + "}"
+										+ typeQName.name,
+								this.model,
+								this.typeDeclaration.schema ? this.typeDeclaration.schema.locations
+										: null);
 					} else {
 						// no ns prefix, resolve to containing schema
 						var schema = this.typeDeclaration.schema;
@@ -647,7 +655,7 @@ define(
 							}
 						}
 					}
-					if (this.schema.types) {
+					if (facets.length == 0 && this.schema.types) {
 						for (var i in this.schema.types) {
 							if (this.schema.types[i].facets) {
 								for (var j in this.schema.types[i].facets) {
@@ -693,7 +701,8 @@ define(
 						if (this.scope) {
 							return resolveSchemaTypeFromModel("{"
 									+ typeQName.namespace + "}"
-									+ typeQName.name, this.scope);
+									+ typeQName.name, this.scope,
+									this.schema ? this.schema.locations : null);
 						} else if (this.schema) {
 							return resolveSchemaTypeFromSchema("{"
 									+ typeQName.namespace + "}"
@@ -711,15 +720,15 @@ define(
 						getElementsFromBody(body[i].body, elements, (inherited || body[i].inherited));
 					} else {
 						if (inherited || body[i].inherited) {
-							body[i].readOnly = true;
+							body[i].inherited = true;
 						}
 						elements.push(body[i]);
 					}
 				}
 			};
 
-			function resolveSchemaTypeFromModel(sqName, model) {
-				var schema;
+			function resolveSchemaTypeFromModel(sqName, model, locations) {
+				var schema = null;
 				var parsedName = parseQName(sqName);
 				if (parsedName.namespace) {
 					// resolve ns prefix to schema
@@ -740,29 +749,41 @@ define(
 											}
 										});
 
-						// Disabled as Kernal still doesn't support external
-						// schema
-						// TODO - review
-						// Looping over all models as there can be external
-						// references.
-						// var allModels = model.getAllModels();
-						// for (var i in allModels) {
-						// var mod = window.top.models[i];
-						// if (schema) {
-						// break;
-						// }
-						// jQuery.each(mod.typeDeclarations, function(i,
-						// declaration) {
-						// if ((null != declaration.typeDeclaration)
-						// && (null != declaration.typeDeclaration.schema)
-						// &&
-						// (declaration.typeDeclaration.schema.targetNamespace
-						// === parsedName.namespace)) {
-						// schema = declaration.typeDeclaration.schema;
-						// return false;
-						// }
-						// });
-						// }
+						if(!schema){
+							var referenceModelId = null;
+
+							if(locations){
+								var location = locations[parsedName.namespace];
+								if(location){
+									referenceModelId = parseQName(location).namespace;
+								}
+							}
+
+							var allModels = window.top.models;
+							for ( var i in allModels) {
+								var mod = allModels[i];
+								if (schema) {
+									break;
+								}
+								if (referenceModelId
+										&& mod.id != referenceModelId) {
+									continue;
+								}
+
+								jQuery
+										.each(
+												mod.typeDeclarations,
+												function(i, declaration) {
+													if ((null != declaration.typeDeclaration)
+															&& (null != declaration.typeDeclaration.schema)
+															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
+															&& (declaration.id === parsedName.name)) {
+														schema = declaration.typeDeclaration.schema;
+														return false;
+													}
+												});
+							}
+						}
 
 						if (schema) {
 							var type = findType(schema, parsedName.name);
@@ -997,8 +1018,8 @@ define(
 				 *            The model providing context for type resolution.
 				 * @returns {SchemaType} The resolved schema type.
 				 */
-				resolveSchemaTypeFromModel : function(sqName, model) {
-					return resolveSchemaTypeFromModel(sqName, model);
+				resolveSchemaTypeFromModel : function(sqName, enclosingType) {
+					return resolveSchemaTypeFromModel(sqName, enclosingType);
 				},
 				resolveSchemaTypeFromSchema : function(typeName, schema) {
 					return resolveSchemaTypeFromSchema(typeName, schema);

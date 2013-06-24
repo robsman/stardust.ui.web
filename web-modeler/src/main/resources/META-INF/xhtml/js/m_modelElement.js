@@ -20,16 +20,33 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	function ModelElement() {
 		this.comments = [];
 
 		/**
-		 * 
+		 *
 		 */
 		ModelElement.prototype.getFullId = function() {
 			return this.model.id + ":" + this.id;
+		};
+
+		/**
+		 *
+		 */
+		ModelElement.prototype.isReadonly = function() {
+			var rOnly = false;
+
+			if (this.readonly != undefined) {
+				rOnly = this.readonly;
+			} else {
+				if (this.model != undefined) {
+					rOnly = this.model.isReadonly();
+				}
+			}
+
+			return rOnly;
 		};
 	}
 });

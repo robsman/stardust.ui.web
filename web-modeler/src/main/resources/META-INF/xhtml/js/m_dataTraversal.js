@@ -55,7 +55,9 @@ define(
 
 				case m_constants.STRUCTURED_DATA_TYPE:
 					var typeDeclaration = m_model.findTypeDeclaration(data.structuredDataTypeFullId);
-					obj = createObject(typeDeclaration.asSchemaType());
+					if (typeDeclaration) {
+						obj = createObject(typeDeclaration.asSchemaType());
+					}
 					break;
 
 				// Treat unrecognized / unsupported data types as empty Objects

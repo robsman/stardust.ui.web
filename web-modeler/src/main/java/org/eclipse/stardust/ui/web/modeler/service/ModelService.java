@@ -115,9 +115,9 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Shrikant.Gangal, Marc.Gille
- * 
+ *
  */
 public class ModelService
 {
@@ -339,14 +339,19 @@ public class ModelService
    public ModelingSession currentSession()
    {
       TypeDeclarationUtils.defaultURIConverter.set(getClasspathUriConverter());
+      boolean wasNull = currentUserId == null;
       currentUserId = me.getCurrentUserId();
+      if (wasNull) // (fh) workaround for ejb case where the destroyModelingSession does not get invoked.
+      {
+         destroyModelingSession();
+      }
       return sessionManager.currentSession(me.getCurrentUserId());
    }
 
    /**
     * Removes the modeling session from cached list when user session ends. TODO -
     * commented pending review by Robert S
-    * 
+    *
     */
    @PreDestroy
    public void destroyModelingSession()
@@ -358,7 +363,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public ModelManagementStrategy getModelManagementStrategy()
@@ -373,7 +378,7 @@ public class ModelService
 
    /**
     * Only used for ORION integration
-    * 
+    *
     * @param modelManagementStrategy
     */
    public void setModelManagementStrategy(ModelManagementStrategy modelManagementStrategy)
@@ -387,7 +392,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param attrs
     * @param attrType
     */
@@ -404,7 +409,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param json
     * @param element
     * @throws JSONException
@@ -439,7 +444,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param model
     * @param processDefinition
     * @return
@@ -450,7 +455,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<User> getNotInvitedUsers()
@@ -504,7 +509,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param account
     * @return
     */
@@ -583,7 +588,7 @@ public class ModelService
    /**
     * Retrieves all the stored models and returns a json array of references of these
     * getModelManagementStrategy().getModels().
-    * 
+    *
     * @return
     */
    public String getAllModels(boolean reload)
@@ -620,7 +625,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param httpRequest
     * @param modelId
     * @return
@@ -647,7 +652,7 @@ public class ModelService
        * changedModels) { ModelType model =
        * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
        * getModelManagementStrategy().saveModel(model); } }
-       * 
+       *
        * //Clear the unsaved models' list.
        * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
        */
@@ -661,7 +666,11 @@ public class ModelService
       {
          try
          {
-            getModelManagementStrategy().saveModel(model);
+            if (!getModelBuilderFacade().isReadOnly(model))
+            {
+               getModelManagementStrategy().saveModel(model);
+            }
+            getEditingSession(model).clearUndoRedoStack();
          }
          catch (Exception e)
          {
@@ -671,7 +680,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param id
     * @return
     */
@@ -682,7 +691,7 @@ public class ModelService
 
    /**
     * TODO - This should probably be delegated to the model management strategy?
-    * 
+    *
     * @param id
     * @return
     */
@@ -693,7 +702,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param id
     * @param postedData
@@ -728,7 +737,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param activityId
@@ -763,7 +772,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param gatewaySymbol
     * @param gatewaySymbolJson
     * @return
@@ -822,7 +831,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelElementJson
     * @param element
     */
@@ -841,7 +850,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param orientation
     * @return
     */
@@ -868,9 +877,9 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * TODO From DynamicConnectionCommand. Refactor?
-    * 
+    *
     * @param activity
     * @return
     */
@@ -912,7 +921,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param connectionId
@@ -988,7 +997,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param poolSymbol
     * @param poolSymbolJson
     * @return
@@ -1024,7 +1033,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1054,7 +1063,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param laneSymbol
     * @param laneSymbolJson
     * @return
@@ -1247,7 +1256,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @param processId
     * @param postedData
@@ -1478,7 +1487,7 @@ public class ModelService
       // ObjectNotFoundException
 
       data = null;
-      
+
       try
       {
          data = getModelBuilderFacade().findData(model, dataId);
@@ -1861,7 +1870,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    DocumentManagementService getDocumentManagementService()
@@ -1875,7 +1884,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private UserService getUserService()
@@ -1889,7 +1898,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private QueryService getQueryService()
@@ -1923,7 +1932,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @param modelId
     * @return
     */
@@ -2031,7 +2040,7 @@ public class ModelService
     * </ul>
     * </li>
     * </ul>
-    * 
+    *
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
@@ -2057,7 +2066,7 @@ public class ModelService
 
    /**
     * Adds the service definitions to the parent json object.
-    * 
+    *
     * @param webServiceJson
     *           the parent json object.
     * @param services
@@ -2096,7 +2105,7 @@ public class ModelService
 
    /**
     * Adds port or binding definitions to the service json.
-    * 
+    *
     * @param serviceJson
     *           the json object representing the parent service.
     * @param ports
@@ -2149,7 +2158,7 @@ public class ModelService
 
    /**
     * Adds operation definitions to the port json.
-    * 
+    *
     * @param portJson
     *           the json object representing the parent port.
     * @param operations
@@ -2209,7 +2218,7 @@ public class ModelService
    /**
     * Computes a string containing a comma separated list of the parts composing the
     * message.
-    * 
+    *
     * @param message
     *           the Message
     * @return the computed list of parts
@@ -2246,7 +2255,7 @@ public class ModelService
    /**
     * Computes a unique label for the operation by appending the input and output names to
     * the operation name.
-    * 
+    *
     * @param operation
     *           the BindingOperation
     * @return the computed label
@@ -2351,10 +2360,10 @@ public class ModelService
     * <li><code>classifier</code> a string identifying the type of the facet, i.e.
     * <code>enumeration</code>, <code>pattern</code>, etc.</li>
     * </ul>
-    * 
+    *
     * Each item described above has a member <code>icon</code> that specifies the
     * corresponding icon.
-    * 
+    *
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name "url"
     *           that specifies the URL from where the XSD should be loaded.
@@ -2676,7 +2685,7 @@ public class ModelService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public JsonObject getPreferences()
@@ -2733,11 +2742,11 @@ public class ModelService
     * ); postedData.addProperty("url",
     * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
     * );
-    * 
+    *
     * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
     * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
     * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-    * 
+    *
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new java.io.File(
@@ -2745,26 +2754,26 @@ public class ModelService
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
     * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
     * = new EObjectUUIDMapper();
-    * 
+    *
     * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
-    * 
+    *
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } };
-    * 
+    *
     * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
     * getTypeDeclaration("Pattern1"))));
-    * 
+    *
     * TypeDeclarationType typeDeclaration =
     * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
     * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
-    * 
+    *
     * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
     * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
-    * 
+    *
     * modifyComplexType(json); //modifyEnumType(json);
-    * 
+    *
     * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
-    * 
+    *
     * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
     * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
     * json); System.out.println(typeDeclaration); }
@@ -2776,7 +2785,7 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
     * cs.getAsJsonObject("facets");
-    * 
+    *
     * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
     * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
     * d); }
@@ -2788,11 +2797,11 @@ public class ModelService
     * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
     * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
     * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
-    * 
+    *
     * es.remove("b");
-    * 
+    *
     * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
-    * 
+    *
     * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
     * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
     * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
@@ -2801,27 +2810,27 @@ public class ModelService
    /*
     * public static void testTD() { DataChangeCommandHandler handler = new
     * DataChangeCommandHandler();
-    * 
+    *
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
     * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
     * wmm.load(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
     * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    * 
+    *
     * String structId = "Composite3", structName = "Composite3";
-    * 
+    *
     * JsonObject structJson = new JsonObject();
     * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
     * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
     * typeDeclarationJson = new JsonObject();
     * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-    * 
+    *
     * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
     * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
     * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
     * schema.add("types", types); JsonObject typesType = new JsonObject();
     * types.add(structId, typesType); typesType.addProperty("name", structId);
-    * 
+    *
     * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
     * facet = new JsonObject(); facet.addProperty("name", "abceee");
     * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
@@ -2837,9 +2846,9 @@ public class ModelService
     * "at least one");
     */
    /*
-    * 
+    *
     * handler.createTypeDeclaration(model, structJson);
-    * 
+    *
     * try { wmm.save(URI.createFileURI(new
     * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
     * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block
@@ -2848,7 +2857,7 @@ public class ModelService
 
    /**
     * @return
-    * 
+    *
     */
    public void deleteConfigurationVariable(String modelId, String variableName,
          JsonObject json)

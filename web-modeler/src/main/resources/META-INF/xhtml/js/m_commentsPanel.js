@@ -76,6 +76,12 @@ define(
 						this.comments = [];
 					}
 
+					if (this.comments.length == 0) {
+						jQuery(this.scope + " div.panelBorder").hide();
+					} else {
+						jQuery(this.scope + " div.panelBorder").show();
+					}
+
 					this.populateCommentsTable();
 					m_modelerUtils.disableToolbarControl(this.deleteButton);
 				};
@@ -103,7 +109,11 @@ define(
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
 
-					for ( var n = 0; (this.comments && n < this.comments.length); ++n) {
+					if (!this.comments) {
+						return;
+					}
+
+					for ( var n = this.comments.length - 1; n >= 0; n--) {
 						var comment = this.comments[n];
 
 						var rowContent = "<tr id='" + n
@@ -112,7 +122,7 @@ define(
 						rowContent += "<td style='padding-left: 0px;'>";
 						rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
 						rowContent += "<tr>";
-						rowContent += "<td><span class='commentUserTimestampSpan'>";
+						rowContent += "<td style='padding-right: 10px;'><span class='commentUserTimestampSpan'>";
 						rowContent += comment.userFirstName + " "
 								+ comment.userLastName;
 						rowContent += " &bull; ";
@@ -125,7 +135,7 @@ define(
 						rowContent += "</span></td>";
 						rowContent += "</tr>";
 						rowContent += "<tr>";
-						rowContent += "<td><span class='commentContentSpan'>";
+						rowContent += "<td style='padding-right: 10px;'><span class='commentContentSpan'>";
 						rowContent += comment.content;
 						rowContent += "</span></td>";
 						rowContent += "</tr>";

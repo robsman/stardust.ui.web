@@ -141,6 +141,7 @@ define(
 					diagram : this
 				};
 
+				// Exclude Click from readonly check to show properties panel
 				this.background.click(Diagram_clickClosure);
 
 				// Register with Command Controller
@@ -220,7 +221,9 @@ define(
 									+ "title=\"" + paletteEntries[m].title
 									+ "\" height=\"16\" width=\"16\" alt=\""
 									+ paletteEntries[m].title
-									+ "\" class=\"toolbarButton\" /></td>");
+									+ "\" class=\"toolbarButton"
+									+ (paletteEntries[m].styleClass ? (" " + paletteEntries[m].styleClass) : "")
+									+ "\" /></td>");
 
 							jQuery(
 									"#diagramToolbarTable #paletteRow #"
@@ -269,10 +272,24 @@ define(
 				this.canvas = jQuery('#' + this.divId);
 				this.scrollPane = jQuery("#scrollpane");
 
+
+				// dirty workaround - only chrome being triggerring 'blur' event on clicking scrollbars
+				// resetForm and submit form conflicts in this case
+				var clickedOnScrollBar = false;
+				this.scrollPane.mousedown({
+					"diagram" : this
+				}, function(event) {
+					if (m_utils.isBrowserChrome()) {
+						event.data.diagram.clickedOnScrollBar = true;
+					}
+				});
+
 				this.scrollPane.scroll({
 					"diagram" : this
 				}, function(event) {
-					event.data.diagram.resetEditableText();
+					if (event.data.diagram.clickedOnScrollBar == false) {
+						event.data.diagram.resetEditableText();
+					}
 				});
 
 				// Define event handling for DOM elements
@@ -1903,6 +1920,9 @@ define(
 				 *
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
+
+					m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
+
 					m_processPropertiesPanel.getInstance().setElement(
 							this.process);
 
@@ -1983,11 +2003,28 @@ define(
 					// textbox
 					if (!this.symbolEditMode) {
 						m_utils.debug("text primitive set");
+						// TODO: Can registering for this event be blocked for some Symbols
+						if (textPrimitive.auxiliaryProperties.callbackScope.modelElement
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.isReadonly()) {
+							return;
+						}
+
+						// If data, check if it's external data and if external check if it's read-only
+						if (textPrimitive.auxiliaryProperties.callbackScope.modelElement
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.type === m_constants.DATA
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.externalReference
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.dataFullId) {
+							var extData = m_model.findData(textPrimitive.auxiliaryProperties.callbackScope.modelElement.dataFullId);
+							if (extData && extData.isReadonly()) {
+								return;
+							}
+						}
 
 						this.currentTextPrimitive = textPrimitive.auxiliaryProperties.callbackScope
 								.showEditable();
 
 						this.symbolEditMode = true;
+						this.clickedOnScrollBar = false;
 						m_utils.debug("editable activated");
 					}
 				};
@@ -2015,6 +2052,7 @@ define(
 					this.currentTextPrimitive.auxiliaryProperties.callbackScope
 							.adjustPrimitivesOnShrink();
 					this.symbolEditMode = false;
+					this.clickedOnScrollBar = false;
 					m_utils.debug("text primitive shown");
 					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}

@@ -59,6 +59,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.InfoPanelBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataFilterOnOff;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
@@ -127,8 +128,12 @@ public class ParticipantTree
 
    private boolean filterPredefniedModelNodes = true;
 
+   private boolean participantTreeUpdated;
+
    private Map<String, List<String>> referringModels = new HashMap<String, List<String>>();
    
+   private InfoPanelBean infoPanelBean;
+
    public ParticipantTree()
    {
       //super(view);
@@ -150,6 +155,8 @@ public class ParticipantTree
       refreshTreeModel();
       highlightAllSelectedUsers();
       selectedUsers = new HashSet<User>();
+      infoPanelBean = new InfoPanelBean();
+      participantTreeUpdated = false;
    }
    
    public void applyFilter(ActionEvent event)
@@ -762,6 +769,16 @@ public class ParticipantTree
       }
    }
 
+   public void notifyParticipantTreeUpdate()
+   {
+      // If alert message is alread visible, no need to recreate the notify message
+      if (!participantTreeUpdated)
+      {
+         infoPanelBean.setNotificationMsg(MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.toolbar.highlightUsers.alertMsg"));
+         participantTreeUpdated = true;
+      }
+   }
    /**
     * @param dragEvent
     */
@@ -769,7 +786,7 @@ public class ParticipantTree
    {
       Object dragObject = dragEvent.getTargetDragValue();
       Object dropObject = dragEvent.getTargetDropValue();
-
+      boolean userGrantsChanged = false;
       if (!(dragObject instanceof User) || !(dropObject instanceof ParticipantUserObject))
       {
          trace.debug("Invalid drag / drop object");
@@ -788,10 +805,12 @@ public class ParticipantTree
       case ROLE_UNSCOPED:
       case ROLE_SCOPED:
          addUserToModelParticipant(user, participantUserObject.getQualifiedModelParticipantInfo());
+         userGrantsChanged = true;
          break;
 
       case USERGROUP:
          addUserToUserGroup(user, participantUserObject.getUserGroup());
+         userGrantsChanged = true;
          break;
 
       case DEPARTMENT:
@@ -799,6 +818,7 @@ public class ParticipantTree
          QualifiedModelParticipantInfo qualifiedParticipantInfo = department.getScopedParticipant(department
                .getOrganization());
          addUserToModelParticipant(user, qualifiedParticipantInfo);
+         userGrantsChanged = true;
          break;
 
       default:
@@ -807,6 +827,10 @@ public class ParticipantTree
       }
       participantUserObject.setExpanded(true);
       refreshParticipantNode(participantNode, NODE_TYPE.USER);
+      if(userGrantsChanged && isLoggedInUser(user))
+      {
+         notifyParticipantTreeUpdate();
+      }
    }
 
    /**
@@ -887,10 +911,29 @@ public class ParticipantTree
                break;
             }
             refreshParticipantNode(parentNode, NODE_TYPE.USER);
+            // If user is currently logged in User, notify to re-login
+            if (isLoggedInUser(user))
+            {
+               notifyParticipantTreeUpdate();
+            }
          }
       }
    }
 
+   /**
+    *
+    * @param user
+    * @return
+    */
+   private boolean isLoggedInUser(User user)
+   {
+      User loggedInUser = SessionContext.findSessionContext().getUser();
+      if (null != loggedInUser && user.getQualifiedId().equals(loggedInUser.getQualifiedId()))
+      {
+         return true;
+      }
+      return false;
+   }
    /**
     * @param user
     * @param qualifiedParticipantInfo
@@ -1905,4 +1948,15 @@ public class ParticipantTree
    {
       this.filterPredefniedModelNodes = filterPredefniedModelNodes;
    }
+
+   public void setParticipantTreeUpdated(boolean participantTreeUpdated)
+   {
+      this.participantTreeUpdated = participantTreeUpdated;
+   }
+
+   public InfoPanelBean getInfoPanelBean()
+   {
+      return infoPanelBean;
+   }
+
 }

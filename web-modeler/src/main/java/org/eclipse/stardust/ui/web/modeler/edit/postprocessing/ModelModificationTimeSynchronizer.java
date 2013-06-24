@@ -60,7 +60,10 @@ public class ModelModificationTimeSynchronizer implements ChangePostprocessor
       Date now = new Date();
       for (ModelType xpdlModel : modifiedXpdlModels)
       {
-         modelService.getModelBuilderFacade().setModified(xpdlModel, now);
+         if ( !modelService.getModelBuilderFacade().isReadOnly(xpdlModel))
+         {
+            modelService.getModelBuilderFacade().setModified(xpdlModel, now);
+         }
       }
    }
 

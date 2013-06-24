@@ -7,12 +7,12 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 	<ui:include src="I18NInclude.xhtml" />
-	
+
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/InfinityBpm_Core.js" />
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/UiUtils.js" />
-	
+
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/eventHub.js" />
-	
+
 	<script
 		src="#{facesContext.externalContext.requestContextPath}/plugins/views-common/scripts/documentUtil.js"
 		type="text/javascript" />
@@ -20,9 +20,14 @@
 		src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortal.js" />
 
 	<ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
-	<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />	
+	<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 	<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
 	<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+
+	<!-- stardust-ui-form-jsf.css and stardust-ui-form-jsf-override.css have been moved from activityPanel.xhtml
+		to portalHead.xhtml, as the dymanic / delayed loading sometimes caused problems in page width calculation.  -->
+	<ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
+	<ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
 
 	<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
 		<ice:outputStyle href="#{skinFile}" />

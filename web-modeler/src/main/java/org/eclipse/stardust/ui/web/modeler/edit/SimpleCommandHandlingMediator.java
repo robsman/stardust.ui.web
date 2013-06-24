@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandHandlerInvoker;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 
@@ -66,6 +70,13 @@ public class SimpleCommandHandlingMediator
          for (CommandHandlingMediator.ChangeRequest modification : changes)
          {
             ICommandHandlerInvoker invoker = null;
+            if (isReadOnly(modification.getModel())
+                  && !(commandId.equalsIgnoreCase("modelLockStatus.update")))
+            {
+               trace.error("Failed handling command: '" + commandId
+                     + "' - Request tried to modify a locked model!");
+               throw new RuntimeException("Request tried to modify a locked model!");
+            }
             if (null != commandHandlerRegistry)
             {
                invoker = commandHandlerRegistry.findCommandHandler(commandId,
@@ -98,5 +109,21 @@ public class SimpleCommandHandlingMediator
       }
 
       return change;
+   }
+
+   public boolean isReadOnly(EObject element)
+   {
+      if (element != null && element instanceof ModelType)
+      {
+         AttributeType attribute = AttributeUtil.getAttribute((ModelType) element,
+               "stardust:security:hash");
+         if ((attribute != null) && (attribute.getValue() != null)
+               && (attribute.getValue().length() > 0))
+         {
+            return true;
+         }
+
+      }
+      return false;
    }
 }

@@ -36,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
@@ -64,6 +65,10 @@ public class ModelChangeCommandHandler
       else if ("model.update".equals(commandId))
       {
          return updateModel(commandId, targetElement, request);
+      }
+      else if ("model.delete".equals(commandId))
+      {
+         return deleteModel(commandId, targetElement, request);
       }
       else if ("model.delete".equals(commandId))
       {
@@ -101,12 +106,13 @@ public class ModelChangeCommandHandler
 
       model.getRole().add(admin);
       mapper.map(admin);
-      
+
       modelService().getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
       modelService().getModelManagementStrategy().saveModel(model);
-
+      Object o = model.eResource();
+      model.eResource().eAdapters().add(new SchemaLocatorAdapter());
       JsonArray added = new JsonArray();
       JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(model);
       added.add(addedModel);
@@ -151,7 +157,7 @@ public class ModelChangeCommandHandler
          modelMgtStrategy.deleteModel(model);
 
          modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
-                  
+
          modelMgtStrategy.getModels().put(model.getId(), model);
          modelService().getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
@@ -224,5 +230,6 @@ public class ModelChangeCommandHandler
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
+
 }
 

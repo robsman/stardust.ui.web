@@ -18,6 +18,7 @@ if ( !window["InfinityBpm"]) {
 var InfinityBpm = window["InfinityBpm"];
 
 var CONTENT_FRAME_CLOSE_DELAY  = 100;
+var cursorTimer = undefined;
 
 if ( !InfinityBpm.Core) {
 
@@ -244,6 +245,24 @@ if ( !InfinityBpm.Core) {
      * change Cursor Style
      */
     function changeMouseCursorStyle(style){
+	changeMouseCursorStyle_(style);
+	// restore cursor type to default, in case of error
+	// cursor remains in progress or wait state
+	// in few cases for Firefox because of unknown reasons
+	// After 10 seconds the cursor type would be reset
+		if ("default" != style) {
+			//clear previous timer
+			if(cursorTimer){
+				clearTimeout(cursorTimer);
+			}
+			cursorTimer = setTimeout(function(){changeMouseCursorStyle_('default')}, 10000);
+		}
+	}
+
+    /**
+     * change Cursor Style
+     */
+    function changeMouseCursorStyle_(style){
 	var portalMainWnd = mainIppFrame["ippPortalMain"];
         var portalMainBody = portalMainWnd.document.getElementsByTagName("body")[0];
 
@@ -251,7 +270,9 @@ if ( !InfinityBpm.Core) {
 
 		//change cursor style on all iframes
 		doWithContentFrame(null, function(contentFrame) {
-			contentFrame.contentDocument.body.style.cursor =  style;
+			if(contentFrame.contentDocument){
+				contentFrame.contentDocument.body.style.cursor =  style;
+			}
 	    });
 	}
 
@@ -458,13 +479,14 @@ if ( !InfinityBpm.Core) {
 	//resize IFrames
 	  var portalMainWnd = mainIppFrame["ippPortalMain"];
 
-	  if (portalMainWnd.InfinityBpm && portalMainWnd.InfinityBpm.ProcessPortal) {
-		gotActiveFrame = portalMainWnd.InfinityBpm.ProcessPortal.resizeIFrames();
-	  } else {
-		  alert(getMessage(	"portal.common.js.processPortal.api.notAvailable",
+	//adjust the iframes based on available browser window size
+		if (portalMainWnd.InfinityBpm && portalMainWnd.InfinityBpm.ProcessPortal) {
+			var params = { "considerWindowSize" : true };
+			gotActiveFrame = portalMainWnd.InfinityBpm.ProcessPortal.resizeIFrames(params);
+		} else {
+			alert(getMessage( "portal.common.js.processPortal.api.notAvailable",
 					"The Process Portal API is not available."));
-	  }
-
+		}
 
   	  var portalMainContainer = mainIppFrame.document.getElementById("ippPortalMainContainer");
 
@@ -475,13 +497,17 @@ if ( !InfinityBpm.Core) {
 	  if (isIE()) {
 		width -= 25;
 	  }
-	  if(gotActiveFrame){
-		  portalMainContainer.style.width = (windowSize.width - 10 + 'px');
-		  //portalMainContainer.style.width = (width + 'px');
-	  }
-	  else{
-		  portalMainContainer.style.width = (width + 'px');
-	  }
+
+//	  if(gotActiveFrame){
+//		  portalMainContainer.style.width = ((windowSize.width * 0.98) + 'px');
+//		  //portalMainContainer.style.width = (width + 'px');
+//	  }
+//	  else{
+//		  portalMainContainer.style.width = (width * 0.98 + 'px');
+//	  }
+
+	  portalMainContainer.style.width = (width + 'px');
+
 	  //Set portalMainContainer height
 	  var endDivContent = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndContent");
 	  var endDivLP = mainIppFrame["ippPortalMain"].document.getElementById("ippPortalEndLP");
@@ -496,12 +522,19 @@ if ( !InfinityBpm.Core) {
 		  height = height + heightOffset;
 	  }
 
-	  height = (height < windowSize.height) ? windowSize.height : height;
+	  height = (height < windowSize.height) ? windowSize.height : height * 1.15;
 
 	  portalMainContainer.style.height = (height + 'px');
 
 	  // Reposition View Specific Toolbar
 	  repositionViewToolbar();
+
+	  // adjust the iframes to fit available portal content size
+	  if (portalMainWnd.InfinityBpm && portalMainWnd.InfinityBpm.ProcessPortal) {
+		portalMainWnd.InfinityBpm.ProcessPortal.resizeIFrames();
+	  } else {
+		alert(getMessage("portal.common.js.processPortal.api.notAvailable","The Process Portal API is not available."));
+	  }
     }
 
     function getWindowScrollPosition(targetWin) {

@@ -12,8 +12,8 @@
  * @author shrikant.gangal
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelerCanvasController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel","bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_dialog, m_modelerCanvasController, m_propertiesPanel, m_processPropertiesPanel,m_i18nUtils) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelerCanvasController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model"],
+		function(m_utils, m_constants, m_dialog, m_modelerCanvasController, m_propertiesPanel, m_processPropertiesPanel,m_i18nUtils, m_model) {
 			var innerHeight = 600;
 			var innerWidth = 800;
 			var propertiesPaneVisible = false;
@@ -430,6 +430,11 @@ define(
 					this.showPropertiesPane();
 
 					m_utils.hideWaitCursor();
+
+					var process = m_model.findProcess(fullId);
+					if (process && process.isReadonly()) {
+						m_utils.markControlsReadonly();
+					}
 				},
 
 				reInitialize : function() {

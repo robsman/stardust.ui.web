@@ -838,9 +838,11 @@ define(
 						callbackScope : this
 					};
 
-					this.flyOutMenuBackground.hover(
-							PoolSymbol_hoverInFlyOutMenuClosure,
-							PoolSymbol_hoverOutFlyOutMenuClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.flyOutMenuBackground.hover(
+								PoolSymbol_hoverInFlyOutMenuClosure,
+								PoolSymbol_hoverOutFlyOutMenuClosure);
+					}
 				};
 
 				/**

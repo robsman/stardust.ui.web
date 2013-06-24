@@ -38,6 +38,10 @@ require.config({
 		'json': {
 			exports: "JSON"
 		},
+		'angularjs': {
+			require: "jquery",
+			exports: "angular"
+		},
 		'i18n': {
 			exports: "InfinityBPMI18N"
 		},
@@ -67,6 +71,7 @@ require(["require",
          //"extensions_jquery",
          "bpm-modeler/js/m_utils",
          "i18n",
+         "bpm-modeler/angular/app",
 		 "common-plugins",
 		 "bpm-modeler/js/m_communicationController",
 		 "bpm-modeler/js/m_urlUtils",
@@ -75,6 +80,8 @@ require(["require",
 		 "bpm-modeler/js/m_commandsController",
 		 "bpm-modeler/js/m_view",
 		 "bpm-modeler/js/m_modelView"], function(require) {
+	require("bpm-modeler/angular/app").init();
+
 	require("bpm-modeler/js/m_modelView").initialize(
 			jQuery.url(window.location.search).param("modelId"));
 });

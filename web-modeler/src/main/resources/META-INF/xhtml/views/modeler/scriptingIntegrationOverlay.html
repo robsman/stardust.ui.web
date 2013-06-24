@@ -31,8 +31,8 @@
 			<tr>
 				<td><select id="languageSelect"><option
 							value="JavaScript">JavaScript</option>
-						<option value="Python">Python</option>
-						<option value="Groovy">Groovy</option>
+						<!-- option value="Python">Python</option>
+						<option value="Groovy">Groovy</option> -->
 				</select></td>
 			</tr>
 			<tr>
@@ -137,43 +137,45 @@
 			</table>
 		</div>
 		<div id="testTab">
-			<table cellpadding="0" cellspacing="0" class="layoutTable">
-				<tr>
-					<td>
-						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-							<tr>
-								<td>
-									<table cellpadding="0" cellspacing="5" class="layoutTable">
-										<tr>
-											<td><input id="resetButton" type="image"
-												src="../../images/icons/arrow_refresh.png" />
-											</td>
-											<td><input id="runButton" type="image"
-												src="../../images/icons/run.png" /></td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td><label for="inputDataTextArea"></label></td>
-							</tr>
-							<tr>
-								<td><textarea id="inputDataTextarea" rows="10" cols="80"
-										class="code" style="width: 400px;"></textarea>
-								</td>
-							</tr>
-							<tr>
-								<td><label for="outputDataTextarea"></label></td>
-							</tr>
-							<tr>
-								<td><textarea id="outputDataTextarea" rows="10" cols="80"
-										class="code" style="width: 400px;"></textarea>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+			<div class="noDataChange">
+				<table cellpadding="0" cellspacing="0" class="layoutTable">
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td><input id="resetButton" type="image"
+													src="../../images/icons/arrow_refresh.png" />
+												</td>
+												<td><input id="runButton" type="image"
+													src="../../images/icons/run.png" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="inputDataTextArea"></label></td>
+								</tr>
+								<tr>
+									<td><textarea id="inputDataTextarea" rows="10" cols="80"
+											class="code" style="width: 400px;"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="outputDataTextarea"></label></td>
+								</tr>
+								<tr>
+									<td><textarea id="outputDataTextarea" rows="10" cols="80"
+											class="code" style="width: 400px;"></textarea>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </body>

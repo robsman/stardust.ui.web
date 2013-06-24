@@ -1077,9 +1077,11 @@ define(
 						callbackScope : this
 					};
 
-					this.flyOutMenuBackground.hover(
-							Symbol_hoverInFlyOutMenuClosure,
-							Symbol_hoverOutFlyOutMenuClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.flyOutMenuBackground.hover(
+								Symbol_hoverInFlyOutMenuClosure,
+								Symbol_hoverOutFlyOutMenuClosure);
+					}
 				};
 
 				/**
@@ -1596,7 +1598,7 @@ define(
 						};
 
 						// Event handling
-
+						// Exclude Click from readonly check to show properties panel
 						this.primitives[element].click(Symbol_clickClosure);
 					}
 				};
@@ -1605,10 +1607,12 @@ define(
 				 *
 				 */
 				Symbol.prototype.initializeCommentPrimitivesEventHandling = function() {
-					this.commentCountIcon
-							.click(Symbol_clickCommentPrimitiveClosure);
-					this.commentCountText
-							.click(Symbol_clickCommentPrimitiveClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.commentCountIcon
+								.click(Symbol_clickCommentPrimitiveClosure);
+						this.commentCountText
+								.click(Symbol_clickCommentPrimitiveClosure);
+					}
 				};
 
 				/**
@@ -1625,17 +1629,19 @@ define(
 						};
 
 						// Event handling
+						if (!this.diagram.process.isReadonly()) {
+							this.primitives[element]
+									.mousemove(Symbol_mouseMoveClosure);
+							this.primitives[element].hover(Symbol_hoverInClosure,
+									Symbol_hoverOutClosure);
 
-						this.primitives[element]
-								.mousemove(Symbol_mouseMoveClosure);
-						this.primitives[element].hover(Symbol_hoverInClosure,
-								Symbol_hoverOutClosure);
-						// Drag and Drop not allowed for Pools
-						if (this.type != m_constants.POOL_SYMBOL
-								&& this.type != m_constants.SWIMLANE_SYMBOL) {
-							this.primitives[element].drag(Symbol_dragClosure,
-									Symbol_dragStartClosure,
-									Symbol_dragStopClosure);
+							// Drag and Drop not allowed for Pools
+							if (this.type != m_constants.POOL_SYMBOL
+									&& this.type != m_constants.SWIMLANE_SYMBOL) {
+								this.primitives[element].drag(Symbol_dragClosure,
+										Symbol_dragStartClosure,
+										Symbol_dragStopClosure);
+							}
 						}
 					}
 				};
@@ -2347,12 +2353,18 @@ define(
 
 				// Event handling
 
+				// Exclude this ffrom readonly check to show properties panel
 				this.graphics.click(AnchorPoint_clickClosure);
-				this.graphics.hover(AnchorPoint_hoverInClosure,
-						AnchorPoint_hoverOutClosure);
-				this.graphics.drag(AnchorPoint_dragClosure,
-						AnchorPoint_dragStartClosure,
-						AnchorPoint_dragStopClosure);
+
+				// Sometimes Symbol is null
+				var readonly = this.symbol && this.symbol.diagram.process.isReadonly();
+				if (!readonly) {
+					this.graphics.hover(AnchorPoint_hoverInClosure,
+							AnchorPoint_hoverOutClosure);
+					this.graphics.drag(AnchorPoint_dragClosure,
+							AnchorPoint_dragStartClosure,
+							AnchorPoint_dragStopClosure);
+				}
 
 				/**
 				 *

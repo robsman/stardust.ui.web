@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
 
 
 /**
@@ -45,11 +46,11 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
    private ProcessInstance processInstance;
    private String resourcePath;
    private boolean leafNode = false;
- 
+
 
 /**
     * constructor - set default properties
-    * 
+    *
     * @param defaultMutableTreeNode
     */
    public RepositoryVirtualUserObject(DefaultMutableTreeNode defaultMutableTreeNode)
@@ -58,8 +59,8 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
       propsBean = MessagesViewsCommonBean.getInstance();
       this.setLeaf(false);
    }
-   
-   
+
+
    /**
     * download file or folder as a zip file
     */
@@ -69,9 +70,12 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
       if(null != resourcePath){
          Folder resource = DocumentMgmtUtility.getFolder(resourcePath);
          DownloadPopupDialog downloadPopupDialog = DownloadPopupDialog.getCurrent();
-         OutputResource outputResource = new OutputResource(resource.getName(), resource.getId(), this.getMTypeStr(),
-               downloadPopupDialog, DocumentMgmtUtility.getDocumentManagementService(), false);
-         downloadPopupDialog.open(outputResource);   
+         OutputResource outputResource = new OutputResource(
+               new DefualtResourceDataProvider(resource.getName(),
+                     resource.getId(), this.getMTypeStr(),
+                     DocumentMgmtUtility.getDocumentManagementService(), false),
+               downloadPopupDialog);
+         downloadPopupDialog.open(outputResource);
       }
    }
 
@@ -159,17 +163,17 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
             "views.genericRepositoryView.replaceFoldersConfirmation"));
       panelConfirmation.openPopup();
    }
-   
+
    /*
     * upload configuration (non-Javadoc)
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#uploadFolder()
     */
    private void updateConfiguration()
    {
       CommonFileUploadDialog fileUploadDialog = CommonFileUploadDialog.getInstance();
       fileUploadDialog.initializeBean();
-      
+
       FileUploadDialogAttributes attributes = fileUploadDialog.getAttributes();
       attributes.setHeaderMessage(propsBean.getParamString("common.uploadIntoFolder", getLabel()));
       attributes.setTitle(propsBean.getString("common.fileUpload"));
@@ -194,7 +198,7 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
             }
          }
       });
-      
+
       fileUploadDialog.openPopup();
    }
 
@@ -213,7 +217,7 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
    {
       return null;
    }
-   
+
    @Override
    public boolean isDownloadable()
    {
@@ -282,18 +286,18 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
    {
       return this.leafNode;
    }
-   
+
    public void setLeafNode(boolean leafNode)
    {
       this.leafNode = leafNode;
    }
 
-   
+
    public ProcessInstance getProcessInstance()
    {
       return processInstance;
    }
-   
+
    public void setResourcePath(String resourcePath)
    {
       this.resourcePath = resourcePath;
@@ -301,9 +305,9 @@ public class RepositoryVirtualUserObject extends RepositoryResourceUserObject
 
    /**
     * loads old configuration
-    * 
+    *
     * @throws Exception
-    * 
+    *
     */
    private void loadConf(File uploadedFile) throws Exception
    {

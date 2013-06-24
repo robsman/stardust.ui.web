@@ -166,6 +166,16 @@ define(
 								propertiesPagesExtensions, 0);
 					} else {
 						this.setModelElement(modelElement);
+						this.checkAndMarkIfReadonly();
+					}
+				};
+
+				/**
+				 *
+				 */
+				ModelElementView.prototype.checkAndMarkIfReadonly = function(override) {
+					if (this.modelElement && (this.modelElement.isReadonly() || override)) {
+						m_utils.markControlsReadonly(null, this.modelElement.isReadonly());
 					}
 				};
 
@@ -177,6 +187,7 @@ define(
 					if (n == propertiesPagesExtensions.length) {
 						this.propertiesTabs.tabs();
 						this.setModelElement(modelElement);
+						this.checkAndMarkIfReadonly();
 
 						return;
 					}
@@ -454,6 +465,7 @@ define(
 
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setModelElement(this.getModelElement());
+						this.checkAndMarkIfReadonly();
 
 						return;
 					}
@@ -471,6 +483,9 @@ define(
 
 								this.setModelElement(this.getModelElement());
 							}
+						}
+						if (command.commandId === "modelLockStatus.update") {
+							this.checkAndMarkIfReadonly(true);
 						}
 					}
 

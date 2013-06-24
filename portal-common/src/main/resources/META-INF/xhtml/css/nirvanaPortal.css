@@ -230,6 +230,35 @@ div#loginBox .buttonContainer input{
 	border: none;
 }
 
+.topMenu .iceMnuItm .iceOutTxt {
+	color: #FFFFFF;
+}
+
+/* Style for Perspective Menu - copy of topMenu bar style*/
+.topMenuIframeBar {
+	background: none;
+	border-top: none;
+	border-bottom: none;
+	color: #DDDDDD;
+	margin-top:-2px;
+}
+
+.topMenuIframeBar .menuItm a{
+	color: #ffffff;
+}
+
+.topMenuIframeBar .menuItm:hover{
+	text-decoration:none;
+	 background: url("../images/menuTop-item-hover.jpg") repeat-x scroll center top transparent;
+	padding:none;
+}
+
+.topMenuIframeBar .menuItm span, .menuItm a:hover {
+	text-decoration:none;
+}
+
+/* Perspective Menu Ends*/
+
 .leftContentTd{
 	vertical-align: top;
 	width: 200px;
@@ -1954,3 +1983,39 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	display: inline-block;
 }
 /***************Participant Single Select AutoComplete Ends *******************/
+
+/* ********* Info Panel Style Starts ********** */
+.form-panel-summary-bar
+{
+	padding: 2px;
+	border-radius: 8px;
+	border:1px solid rgb(153, 153, 153);
+	width: 100%;
+	margin-top:5px;
+}
+
+.form-panel-summary-bar .windowClose {
+	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
+	border: none;
+	float: right;
+	padding-top: 5px;
+	padding-right: 10px;
+	cursor: pointer;
+}
+
+.form-panel-summary-barCol1
+{
+	width: 30px;
+}
+
+.form-panel-summary-bar-text
+{
+	color: rgb (77, 77, 77);
+	padding: 8px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+	line-height: 24px;
+	font-size:13px;
+}
+
+/***************Info Panel Style Ends *******************/
