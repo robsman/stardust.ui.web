@@ -18,7 +18,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.change.ChangeDescription;
 import org.eclipse.xsd.XSDSchema;
 
 import com.google.gson.JsonArray;
