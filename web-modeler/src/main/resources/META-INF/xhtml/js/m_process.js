@@ -161,7 +161,17 @@ define(
 						++index;
 					}
 
-					++index;
+					var match = true;
+					while(match) {
+						var id = "ControlFlow" + ++index;
+						match = false;
+						for ( var n in this.controlFlows) {
+							if (id === this.controlFlows[n].id) {
+								match = true;
+								break;
+							}
+						}
+					}
 
 					return index;
 				};

@@ -37,7 +37,9 @@ InfinityBpm.ProcessPortal = new function() {
 	                     "xsdStructuredDataTypeFrameAnchor"];
 	var PORTAL_FRAMES = ["ippActivityPanelAnchor", "tiffViewerIframe"];
 	//do not resize iframes if following Iframes are active
-	var PORTAL_FRAMES_RESIZE_NOT_REQUIRED = ["ippCommonMenuAnchor", "ippPerspectiveMenuAnchor"];
+	var PORTAL_FRAMES_RESIZE_NOT_REQUIRED = ["ippCommonMenuAnchor", "ippPerspectiveMenuAnchor", "ippNotesAnchor", "ippOverflowTabAnchor",
+	                                         "ippQualityAssuranceCodesAnchor", "ippSwitchAnchor", "ippCaseAnchor", "ippProcessAttachmentsAnchor",
+	                                         "ippLinkedProcessAnchor"];
 
 	function debug(msg) {
 		//alert(msg);
