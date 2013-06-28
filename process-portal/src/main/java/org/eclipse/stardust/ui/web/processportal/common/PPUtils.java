@@ -227,8 +227,27 @@ public class PPUtils
          break;
 
       case USER:
-         extractedWorklist = worklist;
-         break;
+         if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
+         {
+            extractedWorklist = worklist;
+            break;
+         }
+         else
+         {
+			// User-Worklist(Deputy Of) is contained in Sub-worklist of
+			// User worklist(Deputy)
+            Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
+            Worklist subWorklist1;
+            while (subWorklistIter.hasNext())
+            {
+               subWorklist1 = subWorklistIter.next();
+               if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
+               {
+                  extractedWorklist = subWorklist1;
+                  break;
+               }
+            }
+         }
       }
 
       return extractedWorklist;

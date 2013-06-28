@@ -68,15 +68,17 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       ParticipantInfo worklistOwner = null;
       try
       {
-         List<Worklist> worklists = WorklistUtils.getWorklist_anyForUser();
-         for (Worklist worklist : worklists)
+         Map<String, List<Worklist>> worklistMap = WorklistUtils.getWorklist_anyForUser();
+         for (Entry<String, List<Worklist>> entry : worklistMap.entrySet())
          {
-            worklistOwner = worklist.getOwner();
-
-            participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
-                  worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),worklist.getTotalCountThreshold()));
+            for (Worklist worklist : entry.getValue())
+            {
+               worklistOwner = worklist.getOwner();
+               
+               participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
+                     worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),worklist.getTotalCountThreshold(),entry.getKey()));
+            }
          }
-
       }
       catch (Exception e)
       {
@@ -115,19 +117,28 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       return Long.MAX_VALUE;
    }
 
+   
    /**
     * @return
     */
-   public Set<ParticipantInfo> getWorklistParticipants()
+   public Map<String, Set<ParticipantInfo>> getWorklistParticipants()
    {
-      Set<ParticipantInfo> worklistParticipants = new LinkedHashSet<ParticipantInfo>();
-      
+      Map<String, Set<ParticipantInfo>> worklistParticipantMap = new LinkedHashMap<String, Set<ParticipantInfo>>();
+
       for (Entry<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> entry : participantWorklists.entrySet())
       {
+    	  
+         Set<ParticipantInfo> worklistParticipants = worklistParticipantMap.get(entry.getValue().getWorklistOwner());
+         if (null == worklistParticipants)
+         {
+            worklistParticipants = new LinkedHashSet<ParticipantInfo>();
+            worklistParticipantMap.put(entry.getValue().getWorklistOwner(), worklistParticipants);
+         }
          worklistParticipants.add(entry.getKey().getParticipantInfo());
+         //
       }
-      
-      return worklistParticipants;
+
+      return worklistParticipantMap;
    }
 
    /**

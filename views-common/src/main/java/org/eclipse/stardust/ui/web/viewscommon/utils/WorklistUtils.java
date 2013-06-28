@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,13 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.Worklist;
+import org.eclipse.stardust.engine.api.query.WorklistLayoutPolicy;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
@@ -327,25 +330,71 @@ public class WorklistUtils
     * 
     * @return
     */
-   public static List<Worklist> getWorklist_anyForUser()
+   public static Map<String, List<Worklist>> getWorklist_anyForUser()
    {
       SubsetPolicy policy = new SubsetPolicy(0, true);
       WorklistQuery query = new WorklistQuery();
       query.setUserContribution(policy);
       query.setParticipantContribution(PerformingParticipantFilter.ANY_FOR_USER, policy);
-
+      query.setPolicy(WorklistLayoutPolicy.SEPARATE_DEPUTY);
       applyFilterProviders(query);
 
+      Map<String, List<Worklist>> worklistMap = new LinkedHashMap<String, List<Worklist>>();
       List<Worklist> worklists = CollectionUtils.newArrayList();
+      
       Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist(query);
+      // Worklist map is used for maintaining relation of 'Worklist Owner-worklist Set', used while
+      // creating worklist tree
+      worklistMap.put(worklist.getOwnerID(), worklists);
       worklists.add(worklist);
+      getSubWorklist(worklist, worklistMap,worklists);
+      return worklistMap;
+   }
+   
+   /**
+    * Following methods returns all Sub-Worklist for top level UserWorklist Also store the
+    * Worklist as Map <UserWorklist-OwnerId,Set<ParticipantWorklist1>> 
+    * Worklist Tree has following structure 
+    *   (top level) UserWorklist containing own workitems, 
+    *    ..(sub)   ParticipantWorklist1 (own or inherited grant),
+    *      (sub) userWorklist1 (for 1st user being deputy of) 
+    *       ..(sub) ParticipantWorklist1_1 (inherited grant)
+    * 
+    * @param worklist
+    * @param worklistMap
+    * @return
+    */
+   private static void getSubWorklist(Worklist worklist, Map<String, List<Worklist>> worklistMap,List<Worklist> worklists)
+   {
       @SuppressWarnings("unchecked")
       Iterator<Worklist> subworklists = worklist.getSubWorklists();
       while (subworklists.hasNext())
       {
-         worklists.add(subworklists.next());
+         Worklist subws = subworklists.next();
+         // For every sub-userWorklist (deputy), a new Map<ownerId,List<Worklists>> is
+         // maintained
+         if (!(subws.getOwner() instanceof UserInfo))
+         {
+            // For Participant worklist new <key,value> is not created,
+            worklists = worklistMap.get(worklist.getOwner().getId());
+         }
+         else
+         {
+            // For user worklist, create new map entry
+            worklists = worklistMap.get(subws.getOwnerID());
+         }
+         if (CollectionUtils.isEmpty(worklists))
+         {
+            worklists = CollectionUtils.newArrayList();
+            worklistMap.put(subws.getOwnerID(), worklists);
+         }
+         worklists.add(subws);
+         if (subws.getSubWorklists().hasNext()) // If additional Sub-Worklist are present
+         {
+        	 getSubWorklist(subws, worklistMap,worklists);
+         }
       }
-      return worklists;
+
    }
 
    /**
@@ -388,6 +437,8 @@ public class WorklistUtils
 
       case USER:
          query.setUserContribution(true);
+ 		 // Deputy should be retrieved seperate from User worklist
+         query.setPolicy(WorklistLayoutPolicy.SEPARATE_DEPUTY);
          break;
       }
 

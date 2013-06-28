@@ -24,6 +24,7 @@ public class ParticipantWorklistCacheEntry implements Serializable
    private long count;
    private long totalCountThreshold;
    private WorklistQuery worklistQuery;
+   private String worklistOwner;
 
    /**
     * @param count
@@ -39,10 +40,11 @@ public class ParticipantWorklistCacheEntry implements Serializable
     * @param count
     * @param worklistQuery
     */
-   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, long totalCountThreshold)
+   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, long totalCountThreshold,String worklistOwner)
    {
       this(count,worklistQuery);
       this.totalCountThreshold = totalCountThreshold;
+      this.worklistOwner = worklistOwner;
    }
 
    public long getCount()
@@ -73,6 +75,11 @@ public class ParticipantWorklistCacheEntry implements Serializable
    public void setWorklistQuery(WorklistQuery worklistQuery)
    {
       this.worklistQuery = worklistQuery;
+   }
+   
+   public String getWorklistOwner()
+   {
+      return worklistOwner;
    }
 
    @Override

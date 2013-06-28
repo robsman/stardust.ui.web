@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,6 +47,8 @@ import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RawQueryResult;
+import org.eclipse.stardust.engine.api.query.UserWorklist;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -200,6 +203,8 @@ public class WorklistTableBean extends UIComponentBean
    
    private String defaultUserDisplayFormat = null;
    
+   private Boolean showAllWorklist = false;
+   
    public WorklistTableBean()
    {
       super("worklistPanel");
@@ -235,6 +240,7 @@ public class WorklistTableBean extends UIComponentBean
          
          // set wrapped label if provided
          String wrappedLabel = (String) getParamFromView("wrappedLabel");
+         showAllWorklist = (Boolean) getParamFromView("showAllWorklist");
          if (StringUtils.isNotEmpty(wrappedLabel))
          {
             this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
@@ -417,12 +423,29 @@ public class WorklistTableBean extends UIComponentBean
       if (query instanceof WorklistQuery)
       {
          Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
-         queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
-
-         if (!filtersAddedToQuery)
+         if (showAllWorklist)
          {
-            ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, queryResult.getTotalCount());
-            ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, queryResult.getTotalCountThreshold());
+            List<Object> worklistList = fetchWorklistResult(worklist,participantInfo);
+            queryResult = new RawQueryResult<Object>(worklistList, worklist.getSubsetPolicy(), false,
+                  Long.valueOf(worklistList.size()), worklist.getTotalCountThreshold());
+         }
+         else
+         {
+            queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
+            //TODO- Temperory code added to handle scenario when null Sub-Worklist is returned.
+            //Engine should return empty list
+            if(null == queryResult)
+            {
+            	queryResult = new RawQueryResult<Object>(worklist, worklist.getSubsetPolicy(), false,
+                        Long.valueOf(0), worklist.getTotalCountThreshold());
+            }
+            if (!filtersAddedToQuery)
+            {
+               ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo,
+                     queryResult.getTotalCount());
+               ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo,
+                     queryResult.getTotalCountThreshold());
+            }
          }
       }
       else if (query instanceof ActivityInstanceQuery)
@@ -449,6 +472,55 @@ public class WorklistTableBean extends UIComponentBean
       }
       
       return queryResult;
+   }
+   
+   /**
+    * 
+    * @param worklist
+    * @return
+    */
+   private List<Object> fetchWorklistResult(Worklist worklist, ParticipantInfo participant)
+   {
+      List<Object> list = CollectionUtils.newArrayList();
+      if (participant.getId().equals(worklist.getOwner().getId()))
+      {
+         list.addAll(iterateWorklistObjects(worklist.listIterator()));
+      }
+      list.addAll(fetchSubWorklist(worklist, participant));
+      return list;
+   }
+
+   private List<Object> fetchSubWorklist(Worklist worklist, ParticipantInfo participant)
+   {
+      List<Object> list = CollectionUtils.newArrayList();
+      Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
+      while (subWorklistIter.hasNext())
+      {
+         Worklist subWorklist = subWorklistIter.next();
+         if ((subWorklist instanceof UserWorklist) && (!subWorklist.getOwner().getId().equals(participant.getId())))
+         {
+            continue;
+         }
+         list.addAll(iterateWorklistObjects(subWorklist.listIterator()));
+         list.addAll(fetchSubWorklist(subWorklist, participant));
+      }
+      return list;
+   }
+   
+   /**
+    * 
+    * @param listIterator
+    * @param list
+    * @return
+    */
+   private List<Object> iterateWorklistObjects(ListIterator<ActivityInstance> listIterator)
+   {
+      List<Object> list=CollectionUtils.newArrayList();
+      while (listIterator.hasNext())
+      {
+         list.add(listIterator.next());
+      }
+      return list;
    }
    
    /**
