@@ -93,16 +93,16 @@ public class ProcessesView extends AbstractLaunchPanel implements
       PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
    }
 
-   /**
-    *
-    */
-   private static void activateIframe() {
-      //activiate iframe
-      String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '../bpm-modeler/launchpad/outline.html', " +
-		"{anchorId:'outlineAnchor', zIndex:200, noUnloadWarning: 'true'});";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-            activateIframeJS);
-      PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
+    /**
+     *
+     */
+    private static void activateIframe() {
+        String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+           + "/plugins/bpm-modeler/launchpad/outline.html";
+        String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '" + outlinePath + "', {anchorId:'modelerLaunchPanels:outlineAnchor', zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+        JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+                activateIframeJS);
+        PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
 
       //resize iframe
       PortalApplicationEventScript.getInstance().addEventScript(

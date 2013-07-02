@@ -391,7 +391,7 @@ define(
 				var model = m_model.findModelByUuid(modelUUID);
 				var modeleDeployerLink = jQuery(
 						"a[id $= 'model_deployer_link']",
-						window.parent.frames['ippPortalMain'].document);
+						m_utils.getOutlineWindowAndDocument().doc);
 				var modeleDeployerLinkId = modeleDeployerLink.attr('id');
 				var form = modeleDeployerLink.parents('form:first');
 				var formId = form.attr('id');
@@ -620,7 +620,7 @@ define(
 				} else {
 					var link = jQuery(
 							"a[id $= 'open_model_upload_dialog_link']",
-							window.parent.frames['ippPortalMain'].document);
+							m_utils.getOutlineWindowAndDocument().doc);
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 					var formId = form.attr('id');

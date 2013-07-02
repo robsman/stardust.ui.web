@@ -169,6 +169,7 @@ public class AuditTrailBean extends PopupUIComponentBean
          mappedConfirmationDialog = new AuditTrailConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO,
                ResourcePaths.LP_CleanAuditTrailDB);
          mappedConfirmationDialog.setTitle(propsBean.getString("launchPanels.ippAdmAdministrativeActions.catd.title"));
+         mappedConfirmationDialog.setFromlaunchPanels(true);
          mappedConfirmationDialog.openPopup();
       }
       else
@@ -210,6 +211,7 @@ public class AuditTrailBean extends PopupUIComponentBean
          auditTrailAndModelCleanUpDialog.setDialogStyle(DialogStyle.COMPACT);
          auditTrailAndModelCleanUpDialog.setTitle(propsBean
                .getString("launchPanels.ippAdmAdministrativeActions.catmd.title"));
+         auditTrailAndModelCleanUpDialog.setFromlaunchPanels(true);
          auditTrailAndModelCleanUpDialog.openPopup();
       }
       else
@@ -252,6 +254,7 @@ public class AuditTrailBean extends PopupUIComponentBean
       recoveryDialog.setDialogStyle(DialogStyle.COMPACT);
       recoveryDialog.setTitle(propsBean
             .getString("launchPanels.ippAdmAdministrativeActions.recovery.title"));
+      recoveryDialog.setFromlaunchPanels(true);
       recoveryDialog.openPopup();
    }
    
@@ -305,6 +308,7 @@ public class AuditTrailBean extends PopupUIComponentBean
       {
          errorDialog = new ConfirmationDialog(DialogContentType.ERROR, DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, null);
          errorDialog.setMessage(propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
+         errorDialog.setFromlaunchPanels(true);
       }
    }
 

@@ -41,7 +41,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "processInterfacePropertiesPage",
 						processInterfacetext,
-						"../../images/icons/process-interface.png");
+						"plugins/bpm-modeler/images/icons/process-interface.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

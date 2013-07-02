@@ -25,7 +25,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		var displayText = m_i18nUtils.getProperty("modeler.propertyPages.commonProperties.display");
 		var propertiesPage = m_propertiesPage.createPropertiesPage(
 				propertiesPanel, "displayPropertiesPage", displayText,
-				"../../images/icons/display-properties-page.png");
+				"plugins/bpm-modeler/images/icons/display-properties-page.png");
 
 
 		m_utils.inheritFields(this, propertiesPage);

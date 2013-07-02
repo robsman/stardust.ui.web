@@ -41,7 +41,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
 						"General Properties",
-						"../../images/icons/table.png");
+						"plugins/bpm-modeler/images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(AnnotationBasicPropertiesPage.prototype,

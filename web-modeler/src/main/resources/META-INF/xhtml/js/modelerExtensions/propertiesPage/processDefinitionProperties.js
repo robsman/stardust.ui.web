@@ -34,7 +34,7 @@ define(
 						{
 							panelId : "processPropertiesPanel",
 							id : "processCommentsPropertiesPage",
-							pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 							provider : m_modelElementCommentsPropertiesPage,
 							visibility : "always"
 						},
@@ -59,13 +59,13 @@ define(
 						{
 							panelId : "processPropertiesPanel",
 							id : "processAttachmentsPropertiesPage",
-							pageHtmlUrl : "processDefinitionProcessAttachmentsPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/processDefinitionProcessAttachmentsPropertiesPage.html",
 							provider : m_processProcessAttachmentsPropertiesPage,
 							visibility : "always"
 						}, {
 							panelId : "processPropertiesPanel",
 							id : "processRuntimePropertiesPage",
-							pageHtmlUrl : "processRuntimePropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/processRuntimePropertiesPage.html",
 							provider : ProcessRuntimePropertiesPage,
 							visibility : "always"
 						} ]

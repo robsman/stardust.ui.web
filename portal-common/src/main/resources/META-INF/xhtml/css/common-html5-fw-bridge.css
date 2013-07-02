@@ -1,0 +1,44 @@
+/* This class will need to be removed when issue at HTML5 FW is fixed */
+.sidebar {
+	z-index: 800;
+}
+
+
+.gray-out-header {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.3;
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 0px;
+	height: 91px;
+}
+
+.gray-out-footer {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.5;
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 0px;
+	height: 56px;
+}
+
+.gray-out-sidebar {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.5;
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	top: 90px;
+	height: 0px;
+	width: 41px;
+}

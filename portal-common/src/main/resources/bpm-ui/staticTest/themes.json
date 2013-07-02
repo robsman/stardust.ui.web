@@ -1,0 +1,24 @@
+[
+    {
+        "name": "Camino",
+        "id": "default",
+        "rel": "stylesheet",
+        "stylesheets": [
+            "shell/themes/camino/style.css"
+        ],
+        "scripts": [
+		"plugins/common/js/BridgeUtils.js"
+        ]
+    },
+    {
+        "name": "CaminoNoir",
+        "id": "noir",
+        "rel": "stylesheet",
+        "stylesheets": [
+            "shell/themes/caminonoir/style.css"
+        ],
+        "scripts": [
+		"plugins/common/js/BridgeUtils.js"
+        ]
+    }
+]

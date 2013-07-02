@@ -34,7 +34,7 @@ public class PortalApplicationPhaseListener implements PhaseListener
     */
    public void beforePhase(PhaseEvent event)
    {
-      if (PhaseId.INVOKE_APPLICATION == event.getPhaseId())
+      if (PhaseId.RESTORE_VIEW == event.getPhaseId())
       {
          PortalApplicationEventScript.getInstance().cleanEventScripts();
       }
@@ -45,6 +45,6 @@ public class PortalApplicationPhaseListener implements PhaseListener
     */
    public PhaseId getPhaseId()
    {
-      return PhaseId.INVOKE_APPLICATION;
+      return PhaseId.RESTORE_VIEW;
    }
 }

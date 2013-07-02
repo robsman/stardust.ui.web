@@ -20,12 +20,12 @@
       <from-view-id>/plugins/views-common/login.xhtml</from-view-id>  
       <navigation-case>
          <from-outcome>loggedIn_processPlatform</from-outcome>
-         <to-view-id>/plugins/common/main.iface</to-view-id>
+         <to-view-id>/main.html</to-view-id>
          <redirect/>
       </navigation-case>
       <navigation-case>
          <from-outcome>loggedIn_processPortal</from-outcome>
-         <to-view-id>/plugins/common/main.iface</to-view-id>
+         <to-view-id>/main.html</to-view-id>
          <redirect/>
       </navigation-case>
       <navigation-case>

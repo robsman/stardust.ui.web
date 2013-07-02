@@ -507,44 +507,44 @@ define(
 									[],
 									[
 											{
-												imageUrl : "../../images/icons/connect.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/end-event-toolbar.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/end-event-toolbar.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToEndEventClosure
 											} ],
 									[
 											{
-												imageUrl : "../../images/icons/delete.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_removeClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway-xor.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway-xor.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToXorGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway-and.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway-and.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToAndGatewayClosure

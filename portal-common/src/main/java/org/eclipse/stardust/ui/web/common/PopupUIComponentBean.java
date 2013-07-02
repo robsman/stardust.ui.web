@@ -42,6 +42,8 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
    protected boolean firePerspectiveEvents = true;
   
+   protected boolean fromlaunchPanels;
+
    /**
     * 
     */
@@ -79,6 +81,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       visible = false;
       FacesUtils.clearFacesTreeValues();
 
+      // FOR PANAMA
+      String popupScript = "parent.BridgeUtils.Dialog.close();";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+      PortalApplication.getInstance().addEventScript(popupScript);
+
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))
       {
          // TODO trace
@@ -99,6 +106,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
      
       addPopupCenteringScript();
       visible = true;
+
+      // FOR PANAMA
+      String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+      PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.DEACTIVATED))
       {
@@ -161,5 +173,15 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void setPopupAutoCenter(boolean popupAutoCenter)
    {
       this.popupAutoCenter = popupAutoCenter;
+   }
+
+   public boolean isFromlaunchPanels()
+   {
+      return fromlaunchPanels;
+   }
+
+   public void setFromlaunchPanels(boolean fromlaunchPanels)
+   {
+      this.fromlaunchPanels = fromlaunchPanels;
    }
 }

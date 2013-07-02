@@ -14,7 +14,7 @@
  */
 
 require.config({
-	baseUrl: "../../../",
+	baseUrl: "plugins/",
 	paths : {
 		'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],
 		'json' : ['bpm-modeler/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2'],
@@ -80,9 +80,12 @@ require(["require",
 		 "bpm-modeler/js/m_commandsController",
 		 "bpm-modeler/js/m_view",
 		 "bpm-modeler/js/m_modelView"], function(require) {
-	require("bpm-modeler/angular/app").init();
 
-	require("bpm-modeler/js/m_modelView").initialize(
-			jQuery.url(window.location.search).param("modelId"));
+	//require("bpm-modeler/angular/app").init();
+
+//		require("bpm-modeler/js/m_modelView").initialize(
+//			jQuery.url(window.location.search).param("modelId"));
+
+		require("bpm-modeler/js/m_modelView").initialize(BridgeUtils.View.getActiveViewParams().param("modelId"));
 });
 

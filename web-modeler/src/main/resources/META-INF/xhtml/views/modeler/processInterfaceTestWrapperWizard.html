@@ -1,13 +1,13 @@
 <html>
 <head>
 <link type="text/css" rel="stylesheet"
-	href="../../../common/css/iPopupDialogStyle.css">
+	href="plugins/common/css/iPopupDialogStyle.css">
 </link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <style>
 .swWizardPopupDialogCloseControl {
 	background:
-		url("../../../common/images/icons/dialog-windowbttn-close.png")
+		url("plugins/common/images/icons/dialog-windowbttn-close.png")
 		no-repeat scroll 0 50% transparent !important;
 	border: medium none !important;
 	cursor: pointer;
@@ -22,8 +22,8 @@
 }
 </style>
 <script type="text/javascript"
-	data-main="../../js/processInterfaceTestWrapperWizardMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/processInterfaceTestWrapperWizardMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body style="width: 100%; height: 100%; overflow: auto; margin: 0px;">
 	<div id="titleBar" class="iPopupDialogTitleBar">
@@ -39,7 +39,7 @@
 					<td>
 						<table>
 							<tr>
-								<td><img src="../../images/icons/wand.png" /></td>
+								<td><img src="plugins/bpm-modeler/images/icons/wand.png" /></td>
 								<td><label id="introLabel"></label></td>
 							</tr>
 						</table>
@@ -98,5 +98,8 @@
 			class="iPopupDialogControlButton" /> <input id="cancelButton"
 			type="button" value="Cancel" class="iPopupDialogControlButton" />
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/processInterfaceTestWrapperWizardMain.js"></script>
+
 </body>
 </html>

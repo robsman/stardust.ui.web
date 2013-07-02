@@ -158,9 +158,9 @@ public class ActivityPanelController extends UIComponentBean
 
    public String getRemoteControlActivityStateChangeCommandId()
    {
-      FacesContext facesContext = FacesContext.getCurrentInstance();
-      JavascriptContext.addJavascriptCall(facesContext,
-            "InfinityBpm.ProcessPortal.enableRemoteControlApi();");
+//      FacesContext facesContext = FacesContext.getCurrentInstance();
+//      JavascriptContext.addJavascriptCall(facesContext,
+//            "InfinityBpm.ProcessPortal.enableRemoteControlApi();");
 
       return null;
    }

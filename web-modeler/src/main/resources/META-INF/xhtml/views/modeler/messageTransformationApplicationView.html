@@ -9,11 +9,11 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-	data-main="../../js/messageTransformationApplicationViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/messageTransformationApplicationViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 <style>
 #inputDataTextarea {
 	font-family: monospace;
@@ -85,18 +85,18 @@
 }
 
 .mappingError {
-	background-image: url(../../images/icons/exclamation.png);
+	background-image: url(plugins/bpm-modeler/images/icons/exclamation.png);
 }
 
 .deleteAction {
-	background: url(../../images/icons/delete.png) no-repeat;
+	background: url(plugins/bpm-modeler/images/icons/delete.png) no-repeat;
 	height: 16px;
 	width: 16px;
 	float: left;
 }
 
 .clearMappingAction {
-	background: url(../../images/icons/script_delete.png) no-repeat;
+	background: url(plugins/bpm-modeler/images/icons/script_delete.png) no-repeat;
 	height: 16px;
 	width: 16px;
 	float: left;
@@ -168,10 +168,10 @@
 									src="../../images/icons/database_link.png"></img><span
 									class="tabLabel" id="parameters">Parameters</span> </a></li>
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
 									class="tabLabel" id="configuration">Configuration</span> </a></li>
 							<li><a href="#testTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
 									class="tabLabel" id="testdata">Test</span> </a></li>
 						</ul>
 						<div id="parametersTab">
@@ -294,11 +294,11 @@
 																			<tr>
 																				<td><input
 																					id="filterHighlightedSourceFieldsInput"
-																					type="image" src="../../images/icons/lightbulb.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/lightbulb.png"
 																					title="Display only highlighted fields" />
 																				</td>
 																				<td><input id="showAllSourceFieldsInput"
-																					type="image" src="../../images/icons/lightbulb_off.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/lightbulb_off.png"
 																					title="Display highlighted and non-highlighted fields" />
 																				</td>
 																				<td><input id="sourceFilterInput" type="text"
@@ -339,24 +339,24 @@
 																				class="layoutTable">
 																				<tr>
 																					<td><input id="filterFieldsWithMappingInput"
-																						type="image" src="../../images/icons/mapping.gif"
+																						type="image" src="plugins/bpm-modeler/images/icons/mapping.gif"
 																						title="Display only fields with mapping expressions" />
 																					</td>
 																					<td><input id="filterFieldsWithNoMappingInput"
-																						type="image" src="../../images/icons/no-mapping.gif"
+																						type="image" src="plugins/bpm-modeler/images/icons/no-mapping.gif"
 																						title="Display only fields with no mapping expression" />
 																					</td>
 																					<td><input
 																						id="filterHighlightedTargetFieldsInput"
-																						type="image" src="../../images/icons/lightbulb.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/lightbulb.png"
 																						title="Display only highlighted fields" />
 																					</td>
 																					<td><input id="showAllTargetFieldsInput"
-																						type="image" src="../../images/icons/lightbulb_off.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/lightbulb_off.png"
 																						title="Display highlighted and non-highlighted fields" />
 																					</td>
 																					<td><input id="filterFieldsWithMappingInvalidInput"
-																						type="image" src="../../images/icons/exclamation.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/exclamation.png"
 																						title="Display only fields whose mapping expression is invalid" />
 																					</td>
 																					<td><input id="targetFilterInput" type="text"
@@ -414,11 +414,11 @@
 											<table cellpadding="0" cellspacing="5" class="layoutTable">
 												<tr>
 													<td><input id="runButton" type="image"
-														src="../../images/icons/run.png"
+													src="plugins/bpm-modeler/images/icons/run.png"
 														title="Run Message Transformation" />
 													</td>
 													<td><input id="resetButton" type="image"
-														src="../../images/icons/arrow_refresh.png"
+													src="plugins/bpm-modeler/images/icons/arrow_refresh.png"
 														title="Clear input data fields" /></td>
 												</tr>
 											</table></td>
@@ -558,5 +558,8 @@
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/messageTransformationApplicationViewMain.js"></script>
+
 </body>
 </html>

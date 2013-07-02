@@ -1,0 +1,138 @@
+{
+    "main":[
+	    {
+	        "label" : "Portal",
+	        "id" : "ippPortal",
+	        "children" : [
+	            {
+	                "label": "Configuration",
+	                "title": "Configuration",
+	                "id": "configurationTreeView",
+	                "icon":"viewIconBase genericViewIcon",
+	                "module": "bpm-ui",
+	                "partial": "bpm-ui/partials/externalPage.html",
+	                "controller": "bpm-ui.ExternalPageCtrl",
+	                "target": "tab",
+	                "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView",
+	                "children": [
+			            {
+			                "label": "{label}",
+			                "id": "Ext/:type/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "bpm-ui/partials/externalPage.html",
+			                "controller": "bpm-ui.ExternalPageCtrl",
+			                "target": "tab",
+			                "externalURL": ":url"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/modelView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/modelView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/processDefinitionView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/processDefinitionView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/dataView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/dataView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/xsdStructuredDataTypeView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/roleView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/roleView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/conditionalPerformerView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/uiMashupApplicationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/messageTransformationApplicationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/organizationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/organizationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/camelApplicationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/camelApplicationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/genericApplicationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/genericApplicationView.html"
+			            }
+					]
+	            }
+			]
+		}
+	],
+	"utility":[
+		{
+		    "label":"Alerts",
+		    "id":"link",
+		    "icon":"viewIconBase genericViewIcon",
+		    "module":"bpm-ui"
+		},
+		{
+		    "label":"LOGGED_IN_USER_LABEL"
+		},
+		{
+		    "label":"Sign Out",
+		    "id":"signOut",
+		    "cls":"ng-hide: true",
+		    "actionController":"bpm-ui.BpmUiController",
+		    "action":"logout()"
+		}
+	],
+	"footer":[
+	],
+    "sidebar":[
+	    {
+	        "id":"sidebarLaunchPanels",
+	        "module":"bpm-ui",
+	        "controller": "bpm-ui.BpmUiController",
+	        "partial":"bpm-ui/partials/sidebarLaunchPanels.html"
+	    }
+    ]
+}

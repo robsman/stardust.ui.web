@@ -22,10 +22,16 @@ if (!window["IppProcessPortalClient"]) {
 				if (-1 != baseLocation.indexOf("?")) {
 					baseLocation = baseLocation.substr(0, baseLocation.indexOf("?"));
 				}
-	
+
+				// Remove # Params
+				if (-1 != baseLocation.indexOf("#")) {
+					baseLocation = baseLocation.substr(0, baseLocation.indexOf("#"));
+				}
+
 				// Check url, it should either read main.iface or login.iface
 				if (-1 != baseLocation.indexOf("main.iface")
-						|| -1 != baseLocation.indexOf("login.iface")) {
+						|| -1 != baseLocation.indexOf("login.iface")
+						|| -1 != baseLocation.indexOf("main.html")) {
 					return true;
 				} else {
 					return false;

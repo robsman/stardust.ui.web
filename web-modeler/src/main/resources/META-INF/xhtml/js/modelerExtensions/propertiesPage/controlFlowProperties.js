@@ -23,13 +23,13 @@ define([ 'bpm-modeler/js/m_controlFlowBasicPropertiesPage',
 		}, {
 			panelId : "controlFlowPropertiesPanel",
 			id : "transactionPropertiesPage",
-			pageHtmlUrl : "controlFlowTransactionPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/controlFlowTransactionPropertiesPage.html",
 			provider : m_controlFlowTransactionPropertiesPage,
 			visibility : "always"
 		}, {
 			panelId : "controlFlowPropertiesPanel",
 			id : "controlFlowCommentsPropertiesPage",
-			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 			provider : m_modelElementCommentsPropertiesPage,
 			visibility : "always"
 		}, ]

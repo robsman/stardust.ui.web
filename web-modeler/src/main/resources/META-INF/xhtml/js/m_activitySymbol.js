@@ -215,50 +215,50 @@ define(
 					this.addToEditableTextPrimitives(this.text);
 
 					this.manualTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/manual-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/manual-task.png", this.x + 5,
 							this.y + 5, 18, 13).hide();
 
 					this.addToPrimitives(this.manualTaskIcon);
 
 					this.receiveTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/receive-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/receive-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.receiveTaskIcon);
 
 					this.ruleTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/rule-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/rule-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.ruleTaskIcon);
 
 					this.scriptTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/script-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/script-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.scriptTaskIcon);
 
 					this.sendTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/send-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/send-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.sendTaskIcon);
 
 					this.serviceTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/service-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/service-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.serviceTaskIcon);
 
 					this.userTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/user-task.png", this.x + 5,
+							"plugins/bpm-modeler/images/icons/user-task.png", this.x + 5,
 							this.y + 5, 16, 18).hide();
 
 					this.addToPrimitives(this.userTaskIcon);
 
 					this.parallelMultiProcessingMarkerIcon = m_canvasManager
 							.drawImageAt(
-									"../../images/icons/parallel-marker.gif",
+									"plugins/bpm-modeler/images/icons/parallel-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
 									16, 16).hide();
 
@@ -267,7 +267,7 @@ define(
 
 					this.sequentialMultiProcessingMarkerIcon = m_canvasManager
 							.drawImageAt(
-									"../../images/icons/sequential-marker.gif",
+									"plugins/bpm-modeler/images/icons/sequential-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
 									16, 16).hide();
 
@@ -275,7 +275,7 @@ define(
 							.addToPrimitives(this.sequentialMultiProcessingMarkerIcon);
 
 					this.subprocessMarkerIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/subprocess-marker.gif",
+							"plugins/bpm-modeler/images/icons/subprocess-marker.gif",
 							this.x + 0.5 * this.width - 8,
 							this.y + this.height - 16, 16, 16).hide();
 
@@ -502,44 +502,44 @@ define(
 									[],
 									[
 											{
-												imageUrl : "../../images/icons/connect.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/end-event-toolbar.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/end-event-toolbar.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToEndEventClosure
 											} ],
 									[
 											{
-												imageUrl : "../../images/icons/delete.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_removeClosure
 											},
 											/*{
-												imageUrl : "../../images/icons/activity-subprocess.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity-subprocess.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToSubprocessActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity-manual.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity-manual.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToManualActivityClosure

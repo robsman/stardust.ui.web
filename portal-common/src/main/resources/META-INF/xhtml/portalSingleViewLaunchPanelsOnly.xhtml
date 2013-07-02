@@ -1,0 +1,62 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ice:outputDeclaration doctypeRoot="HTML"
+	doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+	doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+
+<html>
+<head>
+	<!-- TODO: Include selective js files o create new one -->
+	<!-- <ui:include src="portalHead.xhtml" /> -->
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+
+	<ui:include src="portalStyleSheets.xhtml" />
+
+	<script lang="javascript">
+		/*
+		 *
+		 */
+		function init() {
+			parent.BridgeUtils.log("Listening for session expiry");
+			Ice.onSessionExpired('document:body', function() {
+			parent.BridgeUtils.handleServerDisconnect("SessionExpired");
+	        });
+		parent.BridgeUtils.log("Successfully listened for session expiry");
+		}
+	</script>
+</head>
+<body onload="init();">
+	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
+
+	<div id="viewFormLPContainer">
+		<!-- Active View Handlers -->
+		<ice:form id="viewFormLP">
+		<ice:inputHidden id="activeViewChanged" value=""
+				valueChangeListener="#{ippSingleViewLaunchPanels.activeViewChanged}"
+				partialSubmit="true" immediate="true" />
+		<ice:inputHidden id="viewClosed" value=""
+				valueChangeListener="#{ippSingleViewLaunchPanels.viewClosed}"
+				partialSubmit="true" immediate="true" />
+		<ice:inputHidden id="launchPanelsSync" value=""
+				valueChangeListener="#{ippSingleViewLaunchPanels.launchPanelsSynced}"
+				partialSubmit="true" immediate="true" />
+		<ice:inputHidden id="sidebarChanged" value=""
+				valueChangeListener="#{ippSingleViewLaunchPanels.sidebarChanged}"
+				partialSubmit="true" immediate="true" />
+		<ice:inputHidden id="messageData" value=""
+				valueChangeListener="#{ippSingleViewLaunchPanels.messageReceived}"
+					partialSubmit="true" immediate="true" />
+		</ice:form>
+	</div>
+
+	<script id="postScriptsLP" lang="javascript">
+		#{ippSingleViewLaunchPanels.eventScripts}
+	</script>
+</body>
+</html>
+</f:view>

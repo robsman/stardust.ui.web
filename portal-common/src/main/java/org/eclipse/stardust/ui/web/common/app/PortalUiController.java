@@ -389,6 +389,15 @@ public class PortalUiController
    }
 
    /**
+    * @param ae
+    * @throws AbortProcessingException
+    */
+   public void processPerspectiveMenuAction(ActionEvent ae) throws AbortProcessingException
+   {
+      processPerspectiveChange(ae.getComponent().getId());
+   }
+
+   /**
     *
     * @param ae
     * @throws AbortProcessingException
@@ -396,6 +405,15 @@ public class PortalUiController
    public void perspectiveChangeActionListener(ActionEvent ae) throws AbortProcessingException
    {
       String perspectiveId = FacesUtils.getRequestParameter("perspectiveId");
+      processPerspectiveChange(perspectiveId);
+   }
+
+   /**
+    * @param perspectiveId
+    * @throws AbortProcessingException
+    */
+   private void processPerspectiveChange(String perspectiveId) throws AbortProcessingException
+   {
       for (IPerspectiveDefinition perspective : perspectives.values())
       {
          if (areEqual(perspectiveId, perspective.getName()) && (currentPerspective != perspective))
@@ -404,7 +422,7 @@ public class PortalUiController
 
             // Avoiding accessing PortalApplication statically in this class
             // So using bean name and get bean from context directly
-            PortalApplication portalApplication = (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
+            PortalApplication portalApplication = (PortalApplication)FacesUtils.getBeanFromContext("ippPortalApp");
             if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
             {
                broadcastNonVetoableViewEvent(portalApplication.getPinView(), ViewEventType.PERSPECTIVE_CHANGED);
@@ -517,7 +535,12 @@ public class PortalUiController
    public View findView(String viewId, String viewKey)
    {
       ViewDefinition viewDefinition = lookupViewID(viewId);
-      return findView(viewDefinition, viewKey);
+      if (null != viewDefinition)
+      {
+         return findView(viewDefinition, viewKey);
+      }
+
+      return null;
    }
    
    /**
@@ -641,7 +664,7 @@ public class PortalUiController
       }
 
       // replace map
-      if (view != null)
+      if (view != null && params != null && params.get("doNotCopyParams") == null)
       {
          view.setViewParams(params);
       }

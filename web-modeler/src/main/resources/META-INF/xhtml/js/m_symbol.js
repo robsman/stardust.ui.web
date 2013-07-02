@@ -399,7 +399,7 @@ define(
 					this.addToPrimitives(this.commentCountText);
 
 					this.commentCountIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/comments.png",
+							"plugins/bpm-modeler/images/icons/comments.png",
 							this.x + this.width - 40, this.y - 12, 16, 16)
 							.hide();
 

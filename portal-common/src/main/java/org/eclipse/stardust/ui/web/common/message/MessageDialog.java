@@ -54,6 +54,7 @@ public class MessageDialog extends PopupDialog
    {
       super(""); // Title not known at this stage
       firePerspectiveEvents = true;
+      modal = true;
    }
    
    /**

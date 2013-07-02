@@ -1,20 +1,23 @@
 <!-- no ng-app as angular is explicitly bootstrapped -->
 <html>
 <head>
-<script type="text/javascript" data-main="../js/reportMain"
-	src="../js/libs/require/2.0.5/require.js"></script>
-<link href="../css/lightdust-report.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/reportMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
+<link href="plugins/bpm-modeler/css/lightdust-report.css" rel="stylesheet" type="text/css" />
 </head>
 <body ng-controller="ModelReportCtrl" ng-cloak>
 	<div id="reportHeading" class="title">Model {{name}}</div>
 	<div id="modelDescription">{{description}}</div>
 	<div class="heading">Processes</div>
 	<div id="processesList" ng-repeat="process in processes">
-		<a ng-href="../public/processReport.html?modelId={{id}}&processId={{process.id}}">{{process.name}}</a><br/>
+		<a ng-href="plugins/bpm-modeler/public/processReport.html?modelId={{id}}&processId={{process.id}}">{{process.name}}</a><br/>
 	</div>
 	<div class="heading">Applications</div>
 	<div id="applicationsList" ng-repeat="application in applications">
-		<a ng-href="../public/applicationReport.html?modelId={{modelId}}&applicationId={{application.id}}">{{application.name}}</a><br/>
+		<a ng-href="plugins/bpm-modeler/public/applicationReport.html?modelId={{modelId}}&applicationId={{application.id}}">{{application.name}}</a><br/>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/reportMain.js"></script>
+
 </body>
 </html>

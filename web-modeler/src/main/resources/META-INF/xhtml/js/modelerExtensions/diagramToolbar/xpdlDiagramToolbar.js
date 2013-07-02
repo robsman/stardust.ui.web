@@ -43,7 +43,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 		}, {
 			id : "decorationPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.panels.decoration.title"),
-			contentHtmlUrl : "decorationPalette.html",
+			contentHtmlUrl : "plugins/bpm-modeler/views/modeler/decorationPalette.html",
 			provider: m_decorationPalette,
 			visibility : "preview"
 		}, ],
@@ -52,7 +52,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "selectModeButton",
 			paletteId : "drawingPalette",
 			title :  m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.selectMode.title"),
-			iconUrl : "../../images/icons/cursor.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/cursor.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSelectMode",
 			visibility : "always"
@@ -60,7 +60,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "separatorModeButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.separateMode.title"),
-			iconUrl : "../../images/icons/separator.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/separator.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSeparatorMode",
 			visibility : "always"
@@ -68,7 +68,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "zoomInButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomIn.title"),
-			iconUrl : "../../images/icons/zoom_in.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/zoom_in.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomIn",
 			visibility : "always",
@@ -77,7 +77,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "zoomOutButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.zoomOut.title"),
-			iconUrl : "../../images/icons/zoom_out.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/zoom_out.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "zoomOut",
 			visibility : "always",
@@ -86,7 +86,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "flipOrientationButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.flipOrientation.title"),
-			iconUrl : "../../images/icons/horizontal-flip.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/horizontal-flip.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "flipOrientation",
 			visibility : "always"
@@ -94,7 +94,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "printButton",
 			paletteId : "drawingPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.print.title"),
-			iconUrl : "../../images/icons/printer.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/printer.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "print",
 			visibility : "always",
@@ -103,7 +103,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "activityButton",
 			paletteId : "activityPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createActivity.title"),
-			iconUrl : "../../images/icons/activity.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/activity.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createActivity",
 			visibility : "always"
@@ -111,7 +111,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "gatewayButton",
 			paletteId : "activityPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createGateway.title"),
-			iconUrl : "../../images/icons/gateway.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createGateway",
 			visibility : "always"
@@ -119,7 +119,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "startEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createStartEvent.title"),
-			iconUrl : "../../images/icons/start-event-toolbar.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/start-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createStartEvent",
 			visibility : "always"
@@ -127,7 +127,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "intermediateEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createIntermediateEvent.title"),
-			iconUrl : "../../images/icons/intermediate-event-toolbar.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/intermediate-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createIntermediateEvent",
 			visibility : "preview"
@@ -135,7 +135,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "endEventButton",
 			paletteId : "eventPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createEndEvent.title"),
-			iconUrl : "../../images/icons/end-event-toolbar.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/end-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createEndEvent",
 			visibility : "always"
@@ -143,7 +143,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "dataButton",
 			paletteId : "dataPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createPrimitiveData.title"),
-			iconUrl : "../../images/icons/data.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/data.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createData",
 			visibility : "always"
@@ -151,7 +151,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "swimlaneButton",
 			paletteId : "lanePalette",
 			title :m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createSwimlane.title"),
-			iconUrl : "../../images/icons/lane.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/lane.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createSwimlane",
 			visibility : "always"
@@ -159,7 +159,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "connectorButton",
 			paletteId : "connectorPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createConnector.title"),
-			iconUrl : "../../images/icons/connect.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/connect.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createConnector",
 			visibility : "always"
@@ -167,7 +167,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			id : "annotationButton",
 			paletteId : "annotationPalette",
 			title : m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.createAnnotation.title"),
-			iconUrl : "../../images/icons/edit.png",
+			iconUrl : "plugins/bpm-modeler/images/icons/edit.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createAnnotation",
 			visibility : "always"

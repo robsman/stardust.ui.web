@@ -201,8 +201,15 @@ InfinityBpm.ProcessPortal = new function() {
         	baseLocation = baseLocation.substr(0, baseLocation.indexOf("?"));
         }
 
+        // Remove # Params
+        if (-1 != baseLocation.indexOf("#")) {
+		baseLocation = baseLocation.substr(0, baseLocation.indexOf("#"));
+        }
+
         // Check url, it should either read main.iface or login.iface
-        if (-1 != baseLocation.indexOf("main.iface") || -1 != baseLocation.indexOf("login.iface")) {
+        if (-1 != baseLocation.indexOf("main.iface") ||
+			-1 != baseLocation.indexOf("login.iface") ||
+			-1 != baseLocation.indexOf("main.html")) {
         	return true;
     	}
         else{
@@ -910,6 +917,10 @@ InfinityBpm.ProcessPortal = new function() {
 
 	    init : function() {
 	    	init();
+	    },
+
+	    registerMessageHandler : function() {
+		registerMessageHandler();
 	    },
 
 		enableRemoteControlApi: function() {

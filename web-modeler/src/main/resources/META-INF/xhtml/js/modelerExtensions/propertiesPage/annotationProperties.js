@@ -14,7 +14,7 @@ define([ 'bpm-modeler/js/m_annotationBasicPropertiesPage' ], function(
 		propertiesPage : [ {
 			panelId : "annotationPropertiesPanel",
 			id : "basicPropertiesPage",
-			pageHtmlUrl : "annotationBasicPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/annotationBasicPropertiesPage.html",
 			provider : m_annotationBasicPropertiesPage,
 			visibility : "always"
 		}, ]

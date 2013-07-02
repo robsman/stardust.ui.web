@@ -19,32 +19,32 @@ define(
 						{
 							panelId : "modelView",
 							id : "modelCommentsPropertiesPage",
-							pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 							provider : m_modelElementCommentsPropertiesPage,
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.element.properties.commonProperties.comments"),
-							pageIconUrl : "../../images/icons/comments.png"
+							pageIconUrl : "plugins/bpm-modeler/images/icons/comments.png"
 						},
 						{
 							panelId : "modelView",
 							id : "configurationVariablesPropertiesPage",
-							pageHtmlUrl : "modelConfigurationVariablesPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelConfigurationVariablesPropertiesPage.html",
 							provider : m_modelConfigurationVariablesPropertiesPage,
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
-							pageIconUrl : "../../images/icons/table.png"
+							pageIconUrl : "plugins/bpm-modeler/images/icons/table.png"
 						},
 						{
 							panelId : "modelView",
 							id : "modelReadOnlyPropertiesPage",
-							pageHtmlUrl : "modelReadOnlyPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelReadOnlyPropertiesPage.html",
 							provider : m_modelReadOnlyPropertiesPage,
 							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.readOnlyPage.title"),
-							pageIconUrl : "../../images/icons/key--pencil.png"
+							pageIconUrl : "plugins/bpm-modeler/images/icons/key--pencil.png"
 						}]
 			};
 		});

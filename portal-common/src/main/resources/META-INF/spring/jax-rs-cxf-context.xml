@@ -14,10 +14,14 @@
 	<jaxrs:server id="common" address="/common">
 		<jaxrs:serviceBeans>
 			<ref bean="clientPropertiesRestletBean" />
+			<ref bean="html5FrameworkServices" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
 
 	<bean id="clientPropertiesRestletBean"
 		class="org.eclipse.stardust.ui.web.common.services.rest.ClientPropertiesRestlet" />
+
+	<bean id="html5FrameworkServices"
+		class="org.eclipse.stardust.ui.web.html5.rest.HTML5FrameworkServices" />
 
 </beans>

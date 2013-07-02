@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -102,6 +103,8 @@ import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnPreferenceHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
@@ -226,7 +229,14 @@ public class WorklistTableBean extends UIComponentBean
       case CREATED:
          this.view = event.getView();
          currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
-         initViewParams();
+         if ("true".equals((String)getParamFromView("standaloneMode")))
+         {
+            initViewParamsStandalone();
+         }
+         else
+         {
+            initViewParams();
+         }
          break;
          
       case ACTIVATED:
@@ -566,7 +576,49 @@ public class WorklistTableBean extends UIComponentBean
          worklistId = UserPreferencesEntries.V_WORKLIST;
       }
    }
-   
+
+   /**
+    *
+    */
+   private void initViewParamsStandalone()
+   {
+      String participantQId = (String) getParamFromView("participantQId");
+
+      if (StringUtils.isNotEmpty(participantQId))
+      {
+         preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
+         worklistId = preferenceId;
+
+         boolean found = false;
+         Map<String, Set<ParticipantInfo>> participantMap = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants();
+         for (Entry<String, Set<ParticipantInfo>> entry : participantMap.entrySet())
+         {
+            Set<ParticipantInfo> participants = entry.getValue();
+            for (ParticipantInfo partInfo : participants)
+            {
+               if (partInfo.getQualifiedId().equals(participantQId))
+               {
+                  participantInfo = partInfo;
+                  query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo);
+                  view.getViewParams().put(Query.class.getName(), query);
+
+                  ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+                  view.getViewParams().put("name", label.getLabel());
+
+                  view.resolveLabelAndDescription();
+
+                  found = true;
+                  break;
+               }
+            }
+            if (found)
+            {
+               break;
+            }
+         }
+      }
+   }
+
    /**
     * @param key
     * @return

@@ -13,11 +13,11 @@ define([ ], function() {
 		modelDecoration : [ {
 			id : "processInstanceProgress",
 			title : "Progress",
-			dialogHtmlUrl: "processInstanceProgressDecorationDialog.html"
+			dialogHtmlUrl: "plugins/bpm-modeler/views/modeler/processInstanceProgressDecorationDialog.html"
 		}, {
 			id : "processInstanceDashboard",
 			title : "Dashboard",
-			dialogHtmlUrl: "processInstanceProgressDecorationDialog.html"
+			dialogHtmlUrl: "plugins/bpm-modeler/views/modeler/processInstanceProgressDecorationDialog.html"
 		}]
 	};
 });

@@ -31,9 +31,9 @@ define(
 
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"parameters", "Parameters",
-							"../../images/icons/mapping.gif");
+							"plugins/bpm-modeler/images/icons/mapping.gif");
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
-							"drl", "DRL", "../../images/icons/bricks.png");
+							"drl", "DRL", "plugins/bpm-modeler/images/icons/bricks.png");
 
 					this.typeDeclarationsTextarea = jQuery("#rulesIntegrationOverlay #typeDeclarationsTextarea");
 					this.ruleSetEditor = m_codeEditorAce

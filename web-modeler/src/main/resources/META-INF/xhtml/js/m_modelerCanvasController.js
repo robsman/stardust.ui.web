@@ -336,7 +336,7 @@ define(
 					m_canvasManager.initialize(divId, width, height);
 
 					currentImage = m_canvasManager.addImage(
-							"../../images/white-bg.png", width, height);
+							"plugins/bpm-modeler/images/white-bg.png", width, height);
 
 					diagram = m_diagram.createDiagram(divId);
 
@@ -579,7 +579,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/activity_application.gif",
+						"plugins/bpm-modeler/images/icons/activity_application.gif",
 						parseInt(x) + 5, parseInt(y) + 5, 20, 16);
 
 				setId(txt, rect.customProps.id);
@@ -766,7 +766,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/activity-subprocess.png",
+						"plugins/bpm-modeler/images/icons/activity-subprocess.png",
 						parseInt(x) + 5, parseInt(y) + 5, 20, 16);
 
 				setId(txt, rect.customProps.id);
@@ -961,7 +961,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/activity_manual.png",
+						"plugins/bpm-modeler/images/icons/activity_manual.png",
 						parseInt(x) + 5, parseInt(y) + 5, 20, 16);
 
 				setId(txt, rect.customProps.id);
@@ -1156,7 +1156,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/role.png", x + 17, y + 1, 20, 16);
+						"plugins/bpm-modeler/images/icons/role.png", x + 17, y + 1, 20, 16);
 
 				setId(txt, role.customProps.id);
 				role.text = txt;
@@ -1314,7 +1314,7 @@ define(
 				};
 
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/role.png", x + 17, y + 1, 20, 16);
+						"plugins/bpm-modeler/images/icons/role.png", x + 17, y + 1, 20, 16);
 
 				setId(txt, role.customProps.id);
 				role.text = txt;
@@ -1469,7 +1469,7 @@ define(
 				};
 				// Default data icon
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/data.png", x + 17, y + 1, 20,
+						"plugins/bpm-modeler/images/icons/data.png", x + 17, y + 1, 20,
 						16);
 
 				datatype.customProps.type = "dataSymbol";
@@ -1477,11 +1477,11 @@ define(
 				if (attrs.dataTypeType) {
 					if ('Primitive_Data' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/data.png", x + 17,
+								"plugins/bpm-modeler/images/icons/data.png", x + 17,
 								y + 1, 20, 16);
 					} else if ('Structured_Data' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/data-structured.png", x + 17,
+								"plugins/bpm-modeler/images/icons/data-structured.png", x + 17,
 								y + 1, 20, 16);
 					}
 				}
@@ -1630,20 +1630,20 @@ define(
 				};
 				// Default data icon
 				var icon = m_canvasManager.drawImageAt(
-						"../../images/icons/data.png", x + 17, y + 1, 20,
+						"plugins/bpm-modeler/images/icons/data.png", x + 17, y + 1, 20,
 						16);
 				// Overwrite the icon for specific data types
 				if (attrs.dataTypeType) {
 					if ('Primitive_Data' == attrs.dataTypeType
 							|| 'primitiveDataType' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/data.png", x + 17,
+								"plugins/bpm-modeler/images/icons/data.png", x + 17,
 								y + 1, 20, 16);
 						datatype.customProps.type = "primitiveDataType";
 					} else if ('Structured_Data' == attrs.dataTypeType
 							|| 'structuredDataType' == attrs.dataTypeType) {
 						var icon = m_canvasManager.drawImageAt(
-								"../../images/icons/data-structured.png", x + 17,
+								"plugins/bpm-modeler/images/icons/data-structured.png", x + 17,
 								y + 1, 20, 16);
 						datatype.customProps.type = "structuredDataType";
 					}
@@ -1759,10 +1759,10 @@ define(
 				var eventType = null;
 
 				if (type == 'start') {
-					imageUrl = "../../images/icons/start_event_with_border.png";
+					imageUrl = "plugins/bpm-modeler/images/icons/start_event_with_border.png";
 					eventType = "startEvent";
 				} else {
-					imageUrl = "../../images/icons/end-event-toolbar.png";
+					imageUrl = "plugins/bpm-modeler/images/icons/end-event-toolbar.png";
 					eventType = "stopEvent";
 				}
 

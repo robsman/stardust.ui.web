@@ -12975,7 +12975,7 @@ var WorkerClient = function(topLevelNamespaces, mod, classname) {
 
     // TODO: Hack!
     if (mod == "ace/mode/autocomplete_worker") {
-	workerUrl = "../../js/libs/ace/worker-autocomplete.js";
+	workerUrl = "plugins/bpm-modeler/js/libs/ace/worker-autocomplete.js";
     }
 
     this.$worker = new Worker(workerUrl);

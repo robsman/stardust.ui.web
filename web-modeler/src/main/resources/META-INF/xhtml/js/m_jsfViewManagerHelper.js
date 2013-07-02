@@ -13,40 +13,34 @@
  *
  * @author Yogesh.Manware
  */
-define([], function() {
+define(["bpm-modeler/js/m_utils"], function(m_utils) {
 	return {
-		openView : function(modelerLinkId, formId, viewId, viewParams,
-				viewIdentity) {
+		openView : function(modelerLinkId, formId, viewId, viewParams, viewIdentity) {
+			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
-			var link = getIPPPortalMainWindow().document
-					.getElementById(modelerLinkId);
-
-			var linkForm = getIPPPortalMainWindow().formOf(link);
+			var link = portalWinDoc.doc.getElementById(modelerLinkId);
+			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
 			linkForm[formId + ':_idcl'].value = modelerLinkId;
 			linkForm['viewParams'].value = viewParams;
 			linkForm['viewId'].value = viewId;
 			linkForm['viewIdentity'].value = viewIdentity;
 
-			getIPPPortalMainWindow().iceSubmit(linkForm, link);
+			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},
 
-		openModelDeploymentDialog : function(modelDeployerLinkId,
-				modelFileName, modleFilePath, formId) {
+		openModelDeploymentDialog : function(modelDeployerLinkId, modelFileName, modleFilePath, formId) {
+			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
-			var link = getIPPPortalMainWindow().document
-					.getElementById(modelDeployerLinkId);
-
-			// formOf and iceSubmit are javascript functions provided by
-			// icefaces
-			var linkForm = getIPPPortalMainWindow().formOf(link);
+			var link = portalWinDoc.doc.getElementById(modelDeployerLinkId);
+			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
 			linkForm[formId + ':_idcl'].value = modelDeployerLinkId;
 			linkForm['allowBrowse'].value = "false";
 			linkForm['fileName'].value = modelFileName;
 			linkForm['filePath'].value = modleFilePath;
 
-			getIPPPortalMainWindow().iceSubmit(linkForm, link);
+			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},
 
 		/**
@@ -59,19 +53,18 @@ define([], function() {
 		 * @param viewIdentity
 		 * @returns
 		 */
-		updateView : function(modelerLinkId, formId, viewId, viewParams,
-				viewIdentity) {
-			var link = getIPPPortalMainWindow().document
-					.getElementById(modelerLinkId);
+		updateView : function(modelerLinkId, formId, viewId, viewParams, viewIdentity) {
+			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
-			var linkForm = getIPPPortalMainWindow().formOf(link);
+			var link = portalWinDoc.doc.getElementById(modelerLinkId);
+			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
 			linkForm[formId + ':_idcl'].value = modelerLinkId;
 			linkForm['viewParams'].value = viewParams;
 			linkForm['viewId'].value = viewId;
 			linkForm['viewIdentity'].value = viewIdentity;
 
-			getIPPPortalMainWindow().iceSubmit(linkForm, link);
+			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},
 
 		/**
@@ -82,17 +75,15 @@ define([], function() {
 		 * @returns
 		 */
 		closeView : function(modelerLinkId, formId, uuid) {
-			var link = getIPPPortalMainWindow().document
-					.getElementById(modelerLinkId);
+			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
-			// formOf and iceSubmit are javascript functions provided by
-			// icefaces
-			var linkForm = getIPPPortalMainWindow().formOf(link);
+			var link = portalWinDoc.doc.getElementById(modelerLinkId);
+			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
 			linkForm[formId + ':_idcl'].value = modelerLinkId;
 			linkForm['uuid'].value = uuid;
 
-			getIPPPortalMainWindow().iceSubmit(linkForm, link);
+			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},
 
 		/**
@@ -102,19 +93,13 @@ define([], function() {
 		 * @returns
 		 */
 		openImportModelDialog : function(modelerLinkId, formId) {
-			var link = getIPPPortalMainWindow().document
-					.getElementById(modelerLinkId);
+			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
-			// formOf and iceSubmit are javascript functions provided by
-			// icefaces
-			var linkForm = getIPPPortalMainWindow().formOf(link);
+			var link = portalWinDoc.doc.getElementById(modelerLinkId);
+			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
 			linkForm[formId + ':_idcl'].value = modelerLinkId;
-			getIPPPortalMainWindow().iceSubmit(linkForm, link);
-		},
+			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
+		}
 	};
-
-	function getIPPPortalMainWindow() {
-		return window.top.frames['ippPortalMain'];
-	}
 });

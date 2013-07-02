@@ -7,17 +7,16 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Process Definition View</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/modeler-main"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 <div id="processDefinitionView" style="visibility: hidden">
-	<table style="width: 100%; height: 100%" cellpadding="0"
-		cellspacing="0">
+  <div style="margin-left: 10px; overflow: auto;">
+	<table style="width: 100%; height: 680px;" cellpadding="0" cellspacing="0"> <!-- Height to be adjusted with available area -->
 		<tr style="vertical-align: top; height: 100%">
 			<td>
 				<div id="modelerDiagramPanelWrapper" class="panelWrapperBorder">
@@ -57,7 +56,7 @@
 			<td>
 				<div id="propertiesPanelDisplayControlDiv" style="height: 100%;">
 					<img id="propertiesPanelShowControl"
-						src="../../images/icons/collapse.png"
+						src="plugins/bpm-modeler/images/icons/collapse.png"
 						class="propertyPageVisibilityControl invisible" title="Show Property Panel" />
 				</div></td>
 			<td
@@ -70,7 +69,7 @@
 								<table>
 									<tr>
 										<td><img id="propertiesPanelHideControl"
-											src="../../images/icons/expand.png"
+											src="plugins/bpm-modeler/images/icons/expand.png"
 											class="propertyPageVisibilityControl invisible"
 											title="Hide Property Panel"
 											style="padding-left: 5px; margin-top: 0;" />
@@ -175,27 +174,27 @@
 																										<td><input
 																											id="deleteParameterDefinitionButton"
 																											type="image"
-																											src="../../images/icons/delete.png"
+																											src="plugins/bpm-modeler/images/icons/delete.png"
 																											title="Delete" alt="Delete"
 																											class="toolbarButton" />
 																										</td>
 																										<td><img
-																											src="../../images/icons/toolbar-separator.png"></img>
+																											src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																										</td>
 																										<td><input
 																											id="moveParameterDefinitionUpButton"
 																											type="image"
-																											src="../../images/icons/arrow_up.png"
+																											src="plugins/bpm-modeler/images/icons/arrow_up.png"
 																											title="Move Up" alt="Move Up"
 																											class="toolbarButton" />
 																										</td>
 																										<td><img
-																											src="../../images/icons/toolbar-separator.png"></img>
+																											src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																										</td>
 																										<td><input
 																											id="moveParameterDefinitionDownButton"
 																											type="image"
-																											src="../../images/icons/arrow_down.png"
+																											src="plugins/bpm-modeler/images/icons/arrow_down.png"
 																											title="Move Down" alt="Move Down"
 																											class="toolbarButton" />
 																										</td>
@@ -221,7 +220,7 @@
 																			<table id="directionlistTable">
 																				<tr>
 																					<td><input id="addParameterDefinitionButton"
-																						type="image" src="../../images/icons/add.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/add.png"
 																						title="Add" alt="Add" class="toolbarButton" />
 																					</td>
 																					<td></td>
@@ -360,7 +359,7 @@
 																														<td><input
 																															id="deleteParameterDefinitionButton"
 																															type="image"
-																															src="../../images/icons/delete.png"
+																															src="plugins/bpm-modeler/images/icons/delete.png"
 																															title="Delete" alt="Delete"
 																															class="toolbarButton" />
 																														</td>
@@ -388,7 +387,7 @@
 																								<tr>
 																									<td><input
 																										id="addParameterDefinitionButton" type="image"
-																										src="../../images/icons/add.png" title="Add"
+																										src="plugins/bpm-modeler/images/icons/add.png" title="Add"
 																										alt="Add" class="toolbarButton" />
 																									</td>
 																									<td></td>
@@ -1386,6 +1385,10 @@
 	<form id="saveModelForm" method="get" target="_blank" />
 	<div id="editable" style="position: absolute"></div>
 	<div id="editableArea"></div>
+  </div>
 </div>
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/modeler-main.js"></script>
+
 </body>
 </html>

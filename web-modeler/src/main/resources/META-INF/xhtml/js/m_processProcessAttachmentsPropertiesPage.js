@@ -41,7 +41,7 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.processAttachmentText.checkboxInstanceSupport"));
-				jQuery("title").html("+testing");
+				//jQuery("title").html("+testing");
 
 			}
 			/**
@@ -53,7 +53,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processAttachmentsPropertiesPage",
 						processAttachText,
-						"../../images/icons/process-attachment.png");
+						"plugins/bpm-modeler/images/icons/process-attachment.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

@@ -1,0 +1,27 @@
+{
+	"windowTitle": "Infinity Process Platfofrm",
+	"appId": "ipp",
+	"appTitle": "Infinity Process Platfofrm",
+	"locale": "en",
+	"sidebar": {
+	    "title": "Navigation",
+	    "name": "main",
+	    "enabled": true,
+	    "mode": "click",
+	    "position": "left",
+	    "width": "350"
+	},
+	"menuApi":{
+      "searchEnabled": false
+    },
+    "supportedLanguages": [
+                            {"value" : "en", "label": "English"},
+                            {"value" : "de", "label": "Deutsch"},
+                            {"value" : "fr", "label": "Francais"}
+                        ],
+	"endpoints": {
+		"navigation": "/CONTEXT_ROOT/services/rest/common/html5/api/navigation",
+		"i18n": "/CONTEXT_ROOT/services/rest/common/html5/api/messages",
+		"theme": "/CONTEXT_ROOT/services/rest/common/html5/api/themes"
+	}
+}

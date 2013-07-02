@@ -38,7 +38,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "implementationPropertiesPage",
 						"Implementation", // TODO I18N
-						"../../images/icons/wrench.png");
+						"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

@@ -9,11 +9,11 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-	data-main="../../js/uiMashupApplicationViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/uiMashupApplicationViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 <style type="text/css" media="screen">
 #markupTextareaDiv {
 	position: relative;
@@ -23,8 +23,7 @@
 </style>
 </head>
 <body>
-	<div id="uiMashupApplicationView" class="panel"
-		style="visibility: hidden;">
+	<div id="uiMashupApplicationView" class="panel" style="visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -85,10 +84,12 @@
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span class="tabLabel"
-									id="configuration">Configuration</span> </a></li>
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
+									class="tabLabel" id="configuration">Configuration</span>
+							</a>
+							</li>
 							<li><a href="#parametersTab"><img
-									src="../../images/icons/database_link.png"></img><span
+									src="plugins/bpm-modeler/images/icons/database_link.png"></img><span
 									class="tabLabel" id="parameters">Parameters</span> </a></li>
 						</ul>
 						<div id="configurationTab">
@@ -239,7 +240,7 @@
 															<table>
 																<tr>
 																	<td><input id="deleteParameterDefinitionButton"
-																		type="image" src="../../images/icons/delete.png"
+																		type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 																		title="Delete" alt="Delete" class="toolbarButton" />
 																	</td>
 																</tr>
@@ -265,7 +266,7 @@
 											class="fieldSetTable" style="margin-top: 10px;">
 											<tr>
 												<td><input id="addParameterDefinitionButton"
-													type="image" src="../../images/icons/add.png" title="Add"
+													type="image" src="plugins/bpm-modeler/images/icons/add.png" title="Add"
 													alt="Add" class="toolbarButton" />
 												</td>
 												<td></td>
@@ -321,5 +322,8 @@
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/uiMashupApplicationViewMain.js"></script>
+
 </body>
 </html>

@@ -120,7 +120,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "controllingPropertiesPage",
 						controlling,
-						"../../images/icons/chart-up.png");
+						"plugins/bpm-modeler/images/icons/chart-up.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

@@ -14,7 +14,7 @@
  */
 
 require.config({
-	baseUrl: "../../../",
+	baseUrl: "plugins/",
 	paths : {
 		'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],
 		'json' : ['bpm-modeler/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2'],
@@ -68,7 +68,10 @@ require(["require",
 		 "i18n",
          "bpm-modeler/js/m_messageTransformationApplicationView"],
 		 function(require) {
-	require("bpm-modeler/js/m_messageTransformationApplicationView").initialize(
-			jQuery.url(window.location.search).param("fullId"));
+
+//		require("bpm-modeler/js/m_messageTransformationApplicationView").initialize(
+//				jQuery.url(window.location.search).param("fullId"));
+
+		require("bpm-modeler/js/m_messageTransformationApplicationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
 });
 

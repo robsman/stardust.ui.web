@@ -31,7 +31,7 @@ public class DepartmentDialogBean extends PopupUIComponentBean
     */
    public DepartmentDialogBean()
    {
-
+      fromlaunchPanels = true;
    }
 
    public static DepartmentDialogBean getCurrent()

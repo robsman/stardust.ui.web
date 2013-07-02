@@ -19,6 +19,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 
@@ -74,27 +75,27 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-		   Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
-         PortalApplication.getInstance().addEventScript(
-               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
-                     + event.getView().getParams() + "', {anchorId:'" + anchorId
-                     + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
-         fireResizeIframeEvent();
+            try
+            {
+               // Using reflection. To be converted to direct call later
+               ReflectionUtils.invokeMethod(PortalApplication.getInstance(), "processPanamaCall", event.getView(),
+                     pagePath + event.getView().getParams(), false);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
 
-         if (View.ViewState.INACTIVE == event.getView().getViewState())
-         {
-            changeMouseCursorStyle("default");
-         }
-			break;
+            break;
 
 		case TO_BE_DEACTIVATED:
-			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
-			 fireResizeIframeEvent();
+			//PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
+			// fireResizeIframeEvent();
 			break;
 
 		case CLOSED:
-			PortalApplication.getInstance().addEventScript(
-					"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
+			//PortalApplication.getInstance().addEventScript(
+			//		"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
 			break;
 
 		case LAUNCH_PANELS_ACTIVATED:
@@ -103,7 +104,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 		case RESTORED_TO_NORMAL:
       case PINNED:
 		case PERSPECTIVE_CHANGED:
-		   fireResizeIframeEvent();
+		   //fireResizeIframeEvent();
 			break;
 		}
 	}

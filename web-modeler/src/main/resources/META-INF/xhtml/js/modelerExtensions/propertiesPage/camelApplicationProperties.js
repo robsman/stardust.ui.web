@@ -16,12 +16,12 @@ define(
 				propertiesPage : [ {
 					panelId : "camelApplicationView",
 					id : "camelApplicationCommentsPropertiesPage",
-					pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 					provider : m_modelElementCommentsPropertiesPage,
 					visibility : "always",
 					pageName : m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.comments"),
-					pageIconUrl : "../../images/icons/comments.png"
+					pageIconUrl : "plugins/bpm-modeler/images/icons/comments.png"
 				} ]
 			};
 		});

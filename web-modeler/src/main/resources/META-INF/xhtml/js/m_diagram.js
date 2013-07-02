@@ -518,9 +518,9 @@ define(
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
 
-					this.modelId = jQuery.url(window.location.search).param(
+					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");
-					this.processId = jQuery.url(window.location.search).param(
+					this.processId = BridgeUtils.View.getActiveViewParams().param(
 							"processId");
 					this.model = m_model.findModel(this.modelId);
 

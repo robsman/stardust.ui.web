@@ -37,12 +37,29 @@
 					advanceArgs.width = document.documentElement.scrollWidth+20;
 					advanceArgs.height = document.documentElement.scrollHeight+20;
 	
-					if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+					var firefox = false;
+					if (parent.BridgeUtils)
+					{
+						firefox = parent.BridgeUtils.Util.isFF();
+					}
+					else
+					{
+						firefox = parent.ippPortalMain.InfinityBpm.Core.isFF();
+					}
+
+					if (firefox)
 					{
 						advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 17; 
 					}
 
-					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					if (parent.BridgeUtils)
+					{
+						parent.BridgeUtils.FrameManager.resizeAndReposition(iFrameId, advanceArgs);
+					}
+					else
+					{
+						parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					}
 				}
 			}
 		</script>

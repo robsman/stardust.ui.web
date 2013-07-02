@@ -33,7 +33,7 @@ define(
 						propertiesPanel, "processRuntimePropertiesPage",
 						m_i18nUtils
 						.getProperty("modeler.processDefinition.propertyPages.runtimeBehavior.heading"),
-						"../../images/icons/process-runtime-settings.png");
+						"plugins/bpm-modeler/images/icons/process-runtime-settings.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ProcessRuntimePropertiesPage.prototype,

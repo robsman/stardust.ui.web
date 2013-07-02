@@ -7,14 +7,14 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<link href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
+<link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
 	type="text/css" />
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/modelViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/modelViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<div id="modelView" style="visibility: hidden;">
+	<div id="modelView" style="margin-left: 10px; visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -87,10 +87,10 @@
 									class="tabLabel">Versioning</span> </a></li> -->
 							<!-- Commented out as part of CRNT-28611
 							<li><a href="#accessControlTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
 									class="tabLabel" id="accesscontrol">Access Control</span> </a></li> -->
 							<li><a href="#problemsTab"><img
-									src="../../images/icons/error.png"></img><span
+									src="plugins/bpm-modeler/images/icons/error.png"></img><span
 									class="tabLabel" id="problem">Problems</span> </a></li>
 						</ul>
 						<!-- <div id="versioningTab">
@@ -176,7 +176,7 @@
 									<tr>
 										<td><div class="toolBar">
 												<input id="refreshValidationButton" type="image"
-													src="../../images/icons/arrow_refresh.png"
+													src="plugins/bpm-modeler/images/icons/arrow_refresh.png"
 													title="Validation Refresh" alt="Validation Refresh"
 													class="toolbarButton" />
 											</div></td>
@@ -206,5 +206,8 @@
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/modelViewMain.js"></script>
+
 </body>
 </html>

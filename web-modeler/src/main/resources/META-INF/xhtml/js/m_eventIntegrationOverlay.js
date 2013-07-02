@@ -46,7 +46,7 @@ define(
 
 						this.parameterMappingsPanelAnchor
 								.load(
-										"parameterDefinitionsPanel.html",
+										"plugins/bpm-modeler/views/modeler/parameterDefinitionsPanel.html",
 										function(response, status, xhr) {
 											if (status == "error") {
 												var msg = "Properties Page Load Error: "

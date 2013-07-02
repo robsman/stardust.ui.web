@@ -307,12 +307,12 @@ define(
 				 */
 				DataSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/connect.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : DataSymbol_connectToClosure
 					} ], [ {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : DataSymbol_removeClosure

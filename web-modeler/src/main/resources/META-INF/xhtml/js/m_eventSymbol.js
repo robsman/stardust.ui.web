@@ -95,11 +95,11 @@ define(
 					this.innerCircle = null;
 					this.image = null;
 					this.text = null;
-					this.timerCatchingUrl = "../../images/icons/event-timer-catching.png";
-					this.messageCatchingUrl = "../../images/icons/event-message-catching.png";
-					this.messageThrowingUrl = "../../images/icons/event-message-throwing.png";
-					this.errorCatchingUrl = "../../images/icons/event-error-catching.png";
-					this.errorThrowingUrl = "../../images/icons/event-error-throwing.png";
+					this.timerCatchingUrl = "plugins/bpm-modeler/images/icons/event-timer-catching.png";
+					this.messageCatchingUrl = "plugins/bpm-modeler/images/icons/event-message-catching.png";
+					this.messageThrowingUrl = "plugins/bpm-modeler/images/icons/event-message-throwing.png";
+					this.errorCatchingUrl = "plugins/bpm-modeler/images/icons/event-error-catching.png";
+					this.errorThrowingUrl = "plugins/bpm-modeler/images/icons/event-error-throwing.png";
 
 					this.performClientSideAdj();
 				};
@@ -352,17 +352,17 @@ define(
 					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
 							|| this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						rightMenu = [ {
-							imageUrl : "../../images/icons/connect.png",
+							imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 							imageWidth : 16,
 							imageHeight : 16,
 							clickHandler : EventSymbol_connectToClosure
 						}, {
-							imageUrl : "../../images/icons/activity.png",
+							imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 							imageWidth : 16,
 							imageHeight : 16,
 							clickHandler : EventSymbol_connectToActivityClosure
 						}, {
-							imageUrl : "../../images/icons/gateway.png",
+							imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 							imageWidth : 16,
 							imageHeight : 16,
 							clickHandler : EventSymbol_connectToGatewayClosure
@@ -370,7 +370,7 @@ define(
 					}
 
 					this.addFlyOutMenuItems([], rightMenu, [ {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : EventSymbol_removeClosure

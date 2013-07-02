@@ -926,7 +926,7 @@ public class ActivityDetailsBean extends UIComponentBean
          // Hence for now do both!
 
          ViewEventAwareInteractionController veaic = ((ViewEventAwareInteractionController) interactionController);
-         veaic.handleEvent(activityInstance, event);
+         //veaic.handleEvent(activityInstance, event);
          PortalApplication.getInstance().addEventScript(
                veaic.getEventScript(activityInstance, event));
       }

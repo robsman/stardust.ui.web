@@ -33,7 +33,7 @@ define(
 				var commentsText = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, commentsText,
-						"../../images/icons/comments.png");
+						"plugins/bpm-modeler/images/icons/comments.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(CommentsPropertiesPage.prototype,

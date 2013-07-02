@@ -1,0 +1,34 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+<div style="border-bottom: 1px solid #DDDDDD;">
+<div id="ippViewToolbar" style="text-align: right;"> <!-- style="float: right;" --> <!-- style="position:absolute; visibility:hidden" -->
+	<table cellpadding="0" cellspacing="0" style="display:inline">
+		<tr>
+			<td><span id="ippViewToolbarStart"></span></td>
+			<c:forEach items="#{ippPortalUi.toolbarSections}" var="toolbarSection">
+				<c:if test="#{pc:isToolbarEnabledForView(ippPortalAppSingleView.view, toolbarSection)}">
+					<c:choose>
+				<c:when test="#{not empty toolbarSection.include}">
+					<td class="toolbarGroupRight">
+                                <pc:tabScoped currentTab="#{ippPortalAppSingleView.view}">
+								    <ui:include src="portalUserDefinedInclude.xhtml">
+									    <ui:param name="includeFilePath" value="#{toolbarSection.include}" />
+								    </ui:include>
+                                </pc:tabScoped>
+			                </td>
+						</c:when>
+					</c:choose>
+				</c:if>
+			</c:forEach>
+			<td><span id="ippViewToolbarEnd"></span></td>
+		</tr>
+	</table>
+</div>
+</div>
+</f:view>

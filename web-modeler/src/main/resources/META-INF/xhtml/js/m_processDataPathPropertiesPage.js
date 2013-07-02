@@ -27,7 +27,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "dataPathPropertiesPage",
 						datapathText,
-						"../../images/icons/database_link.png");
+						"plugins/bpm-modeler/images/icons/database_link.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(ProcessDataPathPropertiesPage.prototype,

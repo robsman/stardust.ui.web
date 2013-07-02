@@ -20,7 +20,7 @@ define([ 'bpm-modeler/js/m_swimlaneBasicPropertiesPage',
 		}, {
 			panelId : "swimlanePropertiesPanel",
 			id : "swimlaneCommentsPropertiesPage",
-			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 			provider : m_modelElementCommentsPropertiesPage,
 			visibility : "always"
 		}, ]

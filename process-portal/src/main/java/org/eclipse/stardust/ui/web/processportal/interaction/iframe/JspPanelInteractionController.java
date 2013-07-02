@@ -44,21 +44,21 @@ public class JspPanelInteractionController extends JspActivityInteractionControl
       case TO_BE_ACTIVATED:
          String uri = provideIframePanelUri(activityInstance);
 
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
+//                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
          break;
 
       case TO_BE_DEACTIVATED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
          
       case CLOSED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.closeContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.closeContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
          
       case LAUNCH_PANELS_ACTIVATED:
@@ -67,9 +67,9 @@ public class JspPanelInteractionController extends JspActivityInteractionControl
       case RESTORED_TO_NORMAL:
       case PINNED:
       case PERSPECTIVE_CHANGED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.resizeContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.resizeContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
       }
    }

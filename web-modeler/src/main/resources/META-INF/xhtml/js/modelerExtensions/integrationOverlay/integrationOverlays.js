@@ -31,7 +31,7 @@ define(
 				applicationIntegrationOverlay : [ {
 					id : "genericEndpointOverlay",
 					name : "Generic Camel Endpoint",
-					pageHtmlUrl : "genericEndpointOverlay.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/genericEndpointOverlay.html",
 					provider : GenericEndpointOverlay
 				}, {
 					id : "mailIntegrationOverlay",
@@ -42,13 +42,13 @@ define(
 				}, {
 					id : "restServiceOverlay",
 					name : "REST Service",
-					pageHtmlUrl : "restServiceOverlay.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/restServiceOverlay.html",
 					provider : RestServiceOverlay
 				},
 				{
 					id : "rulesIntegrationOverlay",
 					name : "Rules Set Invocation",
-					pageHtmlUrl: "rulesIntegrationOverlay.html",
+					pageHtmlUrl: "plugins/bpm-modeler/views/modeler/rulesIntegrationOverlay.html",
 					provider : RulesIntegrationOverlay,
 				},
 				{
@@ -63,7 +63,7 @@ define(
 							name : "Manual Start by User",
 							eventTypes : [ "startEvent" ],
 							eventClass : "none",
-							pageHtmlUrl : "manualTriggerIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/manualTriggerIntegrationOverlay.html",
 							provider : m_manualTriggerIntegrationOverlay
 						},
 						{
@@ -71,7 +71,7 @@ define(
 							name : "Timer Event",
 							eventTypes : [ "startEvent", "intermediateEvent" ],
 							eventClass : "timer",
-							pageHtmlUrl : "timerEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/timerEventIntegrationOverlay.html",
 							provider : m_timerEventIntegrationOverlay
 						},
 						{
@@ -80,7 +80,7 @@ define(
 							eventTypes : [ "startEvent", "intermediateEvent",
 									"endEvent" ],
 							eventClass : "message",
-							pageHtmlUrl : "fileEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/fileEventIntegrationOverlay.html",
 							provider : m_fileEventIntegrationOverlay
 						},
 						{
@@ -89,7 +89,7 @@ define(
 							eventTypes : [ "startEvent", "intermediateEvent",
 									"endEvent" ],
 							eventClass : "message",
-							pageHtmlUrl : "emailEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/emailEventIntegrationOverlay.html",
 							provider : m_emailEventIntegrationOverlay
 						},
 						{
@@ -98,7 +98,7 @@ define(
 							eventTypes : [ "startEvent", "intermediateEvent",
 									"endEvent" ],
 							eventClass : "message",
-							pageHtmlUrl : "messageEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/messageEventIntegrationOverlay.html",
 							provider : m_messageEventIntegrationOverlay
 						},
 						{
@@ -106,7 +106,7 @@ define(
 							name : "Scan Event",
 							eventTypes : [ "startEvent" ],
 							eventClass : "message",
-							pageHtmlUrl : "scanEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/scanEventIntegrationOverlay.html",
 							provider : m_scanEventIntegrationOverlay
 						},
 						{
@@ -114,7 +114,7 @@ define(
 							name : "Generic Camel Route Event",
 							eventTypes : [ "startEvent" ],
 							eventClass : "message",
-							pageHtmlUrl : "genericCamelRouteEventIntegrationOverlay.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/genericCamelRouteEventIntegrationOverlay.html",
 							provider : m_genericCamelRouteEventIntegrationOverlay
 						} ]
 			};

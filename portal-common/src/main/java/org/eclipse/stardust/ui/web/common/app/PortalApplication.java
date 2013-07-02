@@ -11,16 +11,20 @@
 package org.eclipse.stardust.ui.web.common.app;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.PreferencePage;
@@ -52,6 +56,7 @@ import org.springframework.beans.factory.InitializingBean;
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
+import com.icesoft.faces.webapp.http.servlet.ServletExternalContext;
 
 
 /**
@@ -636,6 +641,19 @@ public class PortalApplication
    }
 
    /**
+    * @return
+    */
+   public void printOpenViews()
+   {
+      trace.info("Open Views::");
+      List<View> openViews = getOpenViews();
+      for (View view : openViews)
+      {
+         trace.info("\t" + view);
+      }
+   }
+
+   /**
     *
     */
    public void setActiveViewBreadCrumb()
@@ -1061,6 +1079,8 @@ public class PortalApplication
          {
             firePostOpenLifeCycleEvent(view);
          }
+
+         handleViewOpenPanama(view);
       }
       else
       {
@@ -1069,6 +1089,116 @@ public class PortalApplication
             setActiveView(null);
          }
       }
+   }
+
+   /**
+    * @param view
+    */
+   private void handleViewOpenPanama(View view)
+   {
+      if (StringUtils.isEmpty(view.getParamValue("standaloneMode")))
+      {
+         if (!"ippBpmModeler".equals(view.getDefinition().getDefinedIn()))
+         {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            String contextPath = externalContext.getRequestContextPath();
+
+            String url = "singleViewId=_PERSPECTIVE_ID_::_VIEW_ID_&standaloneMode=true&singleViewKey=_VIEW_KEY_";
+            url = StringUtils.replace(url, "_PERSPECTIVE_ID_", encodeUrl(view.getDefinition().getDefinedIn()));
+            url = StringUtils.replace(url, "_VIEW_ID_", encodeUrl(view.getDefinition().getName()));
+            url = StringUtils.replace(url, "_VIEW_KEY_", encodeUrl(view.getViewKey()));
+
+            if (externalContext instanceof ServletExternalContext)
+            {
+               HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+               String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                     + contextPath + "/plugins/common/portalSingleViewMain.iface?";
+               url = urlBase + url;
+
+               processPanamaCall(view, url, true);
+            }
+            else
+            {
+               trace.error("Other than Servlet Context is not Supported");
+            }
+         }
+         else
+         {
+            trace.info("Skipped Pepper View, it will be opened natively");
+         }
+      }
+   }
+
+   /**
+    * @param view
+    * @param url
+    * @param ext
+    */
+   public void processPanamaCall(View view, String url, Boolean ext)
+   {
+      String viewId = "";
+      if (ext)
+      {
+         viewId = "Ext/:type/:id";
+      }
+      else
+      {
+         if (StringUtils.isEmpty(view.getViewKey()))
+         {
+            return;
+         }
+
+         viewId = "Int/" + view.getDefinition().getName() + "/:id";
+      }
+
+      String script = "parent.BridgeUtils.View.openView('" + viewId + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', url: '_URL_', custom: {_CUSTOM_}});";
+      script = StringUtils.replace(script, "_TYPE_", view.getDefinition().getName());
+      script = StringUtils.replace(script, "_ID_", StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "");
+      script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
+      script = StringUtils.replace(script, "_URL_", url);
+      script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
+
+      //System.out.println("\tPANAMA Script = \n" + script);
+      addEventScript(script);
+   }
+
+   /**
+    * @param view
+    */
+   private void handleViewClosePanama(View view)
+   {
+      if (StringUtils.isEmpty(view.getParamValue("skipViewCloseScript")))
+      {
+         String script = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/_TYPE_/_ID_');";
+         script = StringUtils.replace(script, "_TYPE_", view.getDefinition().getName());
+         script = StringUtils.replace(script, "_ID_", view.getViewKey());
+         addEventScript(script);
+
+         String script2 = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/Ext/_TYPE_/_ID_');";
+         script2 = StringUtils.replace(script2, "_TYPE_", view.getDefinition().getName());
+         script2 = StringUtils.replace(script2, "_ID_", view.getViewKey());
+         addEventScript(script2);
+      }
+   }
+
+   /**
+    * @param str
+    * @return
+    */
+   private String encodeUrl(String str)
+   {
+      if (str != null)
+      {
+         try
+         {
+            return URLEncoder.encode(str, "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+         }
+      }
+
+      return str;
    }
 
    public int getViewIndex(View view)
@@ -1340,6 +1470,9 @@ public class PortalApplication
          fullScreenModeActivated = false;
          restorePinView();
       }
+
+      handleViewClosePanama(closedView);
+      //handleViewOpenPanama(focusView);
 
       closeChildViews(closedView, forceClose);
    }

@@ -353,7 +353,7 @@ define(
 
 					this.minimizeIcon = m_canvasManager
 							.drawImageAt(
-									"../../images/icons/min.png",
+									"plugins/bpm-modeler/images/icons/min.png",
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 											+ this.width - 20)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -370,7 +370,7 @@ define(
 
 					this.maximizeIcon = m_canvasManager
 					.drawImageAt(
-							"../../images/icons/max.png",
+							"plugins/bpm-modeler/images/icons/max.png",
 							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 									+ this.width - 20)
 									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -638,12 +638,12 @@ define(
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/shrink-to-fit.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/shrink-to-fit.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : SwimlaneSymbol_shrinkToFitClickClosure
 					}, {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : SwimlaneSymbol_removeClosure

@@ -57,7 +57,7 @@ define(
 				},
 
 				initializeWaitCursor : function(element) {
-					if (element) {
+					if (element && window.parent.InfinityBpm.Core) {
 						element.ajaxStart(function() {
 							window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
 						});
@@ -68,11 +68,15 @@ define(
 				},
 
 				showWaitCursor : function() {
-					window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+					if (window.parent.InfinityBpm.Core) {
+						window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+					}
 				},
 
 				hideWaitCursor : function () {
-					window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+					if (window.parent.InfinityBpm.Core) {
+						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+					}
 				},
 
 				isBrowserChrome : function() {
@@ -134,7 +138,48 @@ define(
 
 				isEmptyString : isEmptyString,
 
-				isNumber : isNumber
+				isNumber : isNumber,
+
+				getOutlineWindowAndDocument : getOutlineWindowAndDocument,
+
+				jQuerySelect : jQuerySelect
+			};
+
+			/*
+			 *
+			 */
+			function jQuerySelect(pattern) {
+				// Find HTML5 Framework parent div for current View
+				var views = jQuery(".sg-view-panel").children();
+				if (views) {
+					for(var i = 0; i< views.length; i++) {
+						if (views[i].style.display == "" || views[i].style.display == "inline") {
+							var ret = jQuery(pattern, jQuery(views[i]));
+							if (ret.length > 0) {
+								return ret;
+							}
+						}
+					}
+				}
+
+				return jQuery(pattern);
+			}
+
+			/*
+			 *
+			 */
+			function getOutlineWindowAndDocument() {
+				if (parent && parent.window["BridgeUtils"]) {
+					return {
+						win: parent.document.getElementById("modelerLaunchPanels"),
+						doc: parent.document.getElementById("modelerLaunchPanels").contentDocument
+					};
+				} else { // Compatibility to old portal
+					return {
+						win: window.parent.frames['ippPortalMain'],
+						doc: window.parent.frames['ippPortalMain'].document
+					};
+				}
 			};
 
 			/**

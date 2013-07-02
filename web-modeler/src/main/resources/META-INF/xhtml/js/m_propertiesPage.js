@@ -36,7 +36,7 @@ define(
 						+ this.id);
 
 				if (imageUrl == null) {
-					this.imageUrl = "../../images/icons/page_white.png";
+					this.imageUrl = "plugins/bpm-modeler/images/icons/page_white.png";
 				} else {
 					this.imageUrl = imageUrl;
 				}

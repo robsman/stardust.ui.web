@@ -14,6 +14,7 @@ import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -42,6 +43,9 @@ public abstract class PopupDialog implements Serializable
    
    protected boolean fireViewEvents = true;
    protected boolean firePerspectiveEvents = false;
+
+   protected boolean modal;
+   protected boolean fromlaunchPanels;
 
    public abstract void apply();
    public abstract void reset();
@@ -87,6 +91,14 @@ public abstract class PopupDialog implements Serializable
 
       visible = false;
 
+      // FOR PANAMA
+      if (modal)
+      {
+         String popupScript = "parent.BridgeUtils.Dialog.close();";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+         PortalApplication.getInstance().addEventScript(popupScript);
+      }
+
       if(fireViewEvents)
       {
          if ((null != focusView) && !portalUiController.broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))
@@ -118,6 +130,14 @@ public abstract class PopupDialog implements Serializable
 
       addPopupCenteringScript();
       visible = true;
+
+      // FOR PANAMA
+      if (modal)
+      {
+         String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+         PortalApplication.getInstance().addEventScript(popupScript);
+      }
 
       if(fireViewEvents)
       {
@@ -202,5 +222,15 @@ public abstract class PopupDialog implements Serializable
    public void setPopupAutoCenter(boolean popupAutoCenter)
    {
       this.popupAutoCenter = popupAutoCenter;
+   }
+
+   public boolean isFromlaunchPanels()
+   {
+      return fromlaunchPanels;
+   }
+
+   public void setFromlaunchPanels(boolean fromlaunchPanels)
+   {
+      this.fromlaunchPanels = fromlaunchPanels;
    }
 }

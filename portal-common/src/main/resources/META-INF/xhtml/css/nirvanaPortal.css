@@ -267,6 +267,19 @@ div#loginBox .buttonContainer input{
 	background:url(../images/toolbar-shadow.jpg) top repeat-x;
 }
 
+.leftContentTdCol{
+	vertical-align: top;
+	border-right:1px solid #CCCCCC;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
+.leftContentTdOnly{
+	vertical-align: top;
+	min-width: 200px;
+	border-right:1px solid #CCCCCC;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
 .rightContentTd{
 	vertical-align: top;
 	height: 100%;
