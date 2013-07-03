@@ -726,7 +726,7 @@ define(
 						originalY) {
 					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
 						this.boundaryEventSymbols[n].moveBy(x - originalX, y
-								- originalY, true);
+								- originalY);
 						this.boundaryEventSymbols[n].toFront();
 					}
 				};
@@ -736,24 +736,29 @@ define(
 				 */
 				ActivitySymbol.prototype.addBoundaryEvent = function(
 						eventSymbol) {
-					if (m_utils.isItemInArray(this.boundaryEventSymbols,
+
+					if (!m_utils.isItemInArray(this.boundaryEventSymbols,
 							eventSymbol)) {
-						return;
+						this.boundaryEventSymbols.push(eventSymbol);
+
+						eventSymbol.bindingActivitySymbol = this;
+
+						eventSymbol.modelElement
+								.bindWithActivity(this.modelElement);
 					}
 
-					this.boundaryEventSymbols.push(eventSymbol);
-
-					eventSymbol.bindingActivity = this;
-
-					eventSymbol.modelElement
-							.bindWithActivity(this.modelElement);
-
 					// Align all boundary events on the symbol boundary
+					this.realignBoundaryEvent();
 
+				};
+
+				ActivitySymbol.prototype.realignBoundaryEvent = function(){
 					var x = this.x + this.width;
 
+					var eventSymbol;
 					for ( var i = 0; i < this.boundaryEventSymbols.length; ++i) {
 						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
+						eventSymbol = this.boundaryEventSymbols[i];
 
 						eventSymbol.moveTo(x - 0.5 * eventSymbol.width, this.y
 								+ this.height - 0.5 * eventSymbol.height);
@@ -761,6 +766,7 @@ define(
 						x -= eventSymbol.width;
 					}
 				};
+
 
 				/**
 				 *
@@ -770,7 +776,9 @@ define(
 					m_utils.removeItemFromArray(this.boundaryEventSymbols,
 							eventSymbol);
 
-					eventSymbol.bindingActivity = null;
+					this.realignBoundaryEvent();
+
+					eventSymbol.bindingActivitySymbol = null;
 
 					eventSymbol.modelElement
 							.unbindFromActivity(this.modelElement);
@@ -814,6 +822,15 @@ define(
 				ActivitySymbol.prototype.postComplete = function() {
 					this.select();
 					this.diagram.showEditable(this.text);
+				};
+
+				ActivitySymbol.prototype.click = function(x, y) {
+					if (this.diagram.CREATE_MODE == this.diagram.mode
+							&& m_constants.INTERMEDIATE_EVENT_TYPE == this.diagram.newSymbol.modelElement.eventType) {
+						this.diagram.onClick(x, y);
+					} else {
+						this.click_(x, y);
+					}
 				};
 			}
 

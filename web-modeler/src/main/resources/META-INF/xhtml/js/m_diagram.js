@@ -1767,43 +1767,52 @@ define(
 
 					this.newSymbol = targetSymbol;
 					this.mode = this.CREATE_MODE;
+					var x_adj = 0, y_adj = 0, fromAnchor, toAnchor;
 
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
-						this.newSymbol.prepare(startSymbol.x,
-								startSymbol.y + 100);
-						// Create connection if connectionValidation passes
-						this.currentConnection = m_connection.createConnection(
-								this, startSymbol.anchorPoints[2]);
-						if (null != this.currentConnection
-								&& this.currentConnection
-										.validateCreateConnection(
-												this.currentConnection.fromAnchorPoint,
-												this.newSymbol.anchorPoints[0])) {
-							this.currentConnection.prepare();
-							this.currentConnection
-									.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
-						} else {
-							// Remove the connection and symbol created, if
-							// validation fails
-							if (this.currentConnection) {
-								this.currentConnection.remove();
-							}
-							this.newSymbol.remove();
-							this.newSymbol = null;
-							this.mode = this.NORMAL_MODE;
+						x_adj = 0;
+						y_adj = 100;
+						fromAnchor = 2;
+						toAnchor = 0;
+						if (m_constants.INTERMEDIATE_EVENT_TYPE == startSymbol.modelElement.eventType) {
+							fromAnchor = 2;
+							toAnchor = 3;
 						}
 					} else {
-						this.newSymbol.prepare(startSymbol.x + 200,
-								startSymbol.y);
-						this.currentConnection = m_connection.createConnection(
-								this, startSymbol.anchorPoints[1]);
-						this.currentConnection.prepare();
-						this.currentConnection
-								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[3]);
+						x_adj = 200;
+						y_adj = 0;
+						fromAnchor = 1;
+						toAnchor = 3;
+						if (m_constants.INTERMEDIATE_EVENT_TYPE == startSymbol.modelElement.eventType) {
+							fromAnchor = 1;
+							toAnchor = 0;
+						}
 					}
 
-					// TODO Is this needed
-					// this.mode = this.NORMAL_MODE;
+					this.newSymbol.prepare(startSymbol.x + x_adj, startSymbol.y
+							+ y_adj);
+					// Create connection if connectionValidation passes
+					this.currentConnection = m_connection.createConnection(
+							this, startSymbol.anchorPoints[fromAnchor]);
+
+					if (null != this.currentConnection
+							&& this.currentConnection
+									.validateCreateConnection(
+											this.currentConnection.fromAnchorPoint,
+											this.newSymbol.anchorPoints[toAnchor])) {
+						this.currentConnection.prepare();
+						this.currentConnection
+								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[toAnchor]);
+					} else {
+						// Remove the connection and symbol created, if
+						// validation fails
+						if (this.currentConnection) {
+							this.currentConnection.remove();
+						}
+						this.newSymbol.remove();
+						this.newSymbol = null;
+						this.mode = this.NORMAL_MODE;
+					}
 				};
 
 				/**
@@ -2089,7 +2098,11 @@ define(
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
 							.trigger("blur");
-					this.currentTextPrimitive.show();
+
+					if (!this.currentTextPrimitive.removed) {
+						this.currentTextPrimitive.show();
+					}
+
 					this.symbolEditMode = false;
 					m_utils.debug("text primitive hidden");
 				};

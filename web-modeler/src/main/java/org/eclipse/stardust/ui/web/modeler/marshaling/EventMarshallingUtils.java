@@ -49,6 +49,11 @@ public class EventMarshallingUtils
       AttributeUtil.setBooleanAttribute(activity, TAG_INTERMEDIATE_EVENT_HOST, true);
    }
 
+   public static void unTagAsIntermediateEventHost(ActivityType activity)
+   {
+      AttributeUtil.clearExcept(activity, new String[]{TAG_INTERMEDIATE_EVENT_HOST});
+   }
+
    /**
     * Determines if the host activity is just an artificial carrier for an intermediate
     * event.
@@ -196,6 +201,18 @@ public class EventMarshallingUtils
             (null != config) //
                   ? config.toString()
                   : null);
+   }
+
+   /**
+    * @param activity
+    * @param eventSymbol
+    */
+   public static void deleteEventHostingConfig(IExtensibleElement activity,
+         AbstractEventSymbol eventSymbol)
+   {
+      String ids[] = new String[] {PREFIX_HOSTED_EVENT + ":"
+            + Long.toString(eventSymbol.getElementOid())};
+      AttributeUtil.clearExcept(activity, ids);
    }
 
    public static String encodeEventHandlerType(EventConditionTypeType conditionType)

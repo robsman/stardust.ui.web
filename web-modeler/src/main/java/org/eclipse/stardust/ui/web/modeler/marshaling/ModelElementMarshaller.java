@@ -2404,10 +2404,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
-         connectionJson.addProperty(
-               ModelerConstants.FROM_MODEL_ELEMENT_OID,
-               resolveSymbolAssociatedWithActivity(transition.getFrom(),
-                     findContainingDiagram(transitionConnection)).getElementOid());
+
+         DiagramType containingDiagram = findContainingDiagram(transitionConnection);
+
+         if (null != containingDiagram)
+         {
+            connectionJson.addProperty(
+                  ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                  resolveSymbolAssociatedWithActivity(transition.getFrom(),
+                        findContainingDiagram(transitionConnection)).getElementOid());
+         }
 
          // TODO Hack to identify gateways
 
@@ -2428,7 +2434,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   ModelerConstants.ACTIVITY_KEY);
          }
 
-         DiagramType containingDiagram = findContainingDiagram(transitionConnection);
+
          if (containingDiagram != null)
          {
             connectionJson.addProperty(

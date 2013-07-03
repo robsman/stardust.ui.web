@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
@@ -112,12 +114,24 @@ public class EventCommandHandler
             parentLaneSymbol.getIntermediateEventSymbols().add(eventSymbol);
 
             // add a host activity
-            ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
-                  .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
-                  .build();
-            EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
+            ActivityType hostActivity  = null;
+            JsonObject modelElement = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+            if (modelElement.has(ModelerConstants.BINDING_ACTIVITY_UUID))
+            {
+               hostActivity = ModelUtils.findIdentifiableElement(
+                     processDefinition.getActivity(),
+                     extractAsString(modelElement, ModelerConstants.BINDING_ACTIVITY_UUID));
+            }
 
-            processDefinition.getActivity().add(hostActivity);
+            if (null == hostActivity)
+            {
+               hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
+                     .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
+                     .build();
+               processDefinition.getActivity().add(hostActivity);
+            }
+
+            EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
 
             EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
                   new JsonObject());
@@ -193,7 +207,40 @@ public class EventCommandHandler
                   .remove(startEventSymbol);
             parentLaneSymbol.getStartEventSymbols().remove(startEventSymbol);
          }
-         else
+         if (ModelerConstants.INTERMEDIATE_EVENT.equals(extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         {
+            IntermediateEventSymbol intEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+                  parentLaneSymbol, eventOId);
+            if(intEventSymbol != null)
+            {
+               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, intEventSymbol);
+               processDefinition.getDiagram()
+                     .get(0)
+                     .getIntermediateEventSymbols()
+                     .remove(intEventSymbol);
+
+               ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(intEventSymbol);
+
+               //delete associated activity
+               if (null != hostActivity)
+               {
+                  if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
+                  {
+                     processDefinition.getActivity().remove(hostActivity);
+                  }
+                  // unbind the event from activity
+                  else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
+                  {
+                     EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
+                     EventMarshallingUtils.deleteEventHostingConfig(hostActivity,
+                           intEventSymbol);
+                  }
+               }
+               parentLaneSymbol.getIntermediateEventSymbols().remove(intEventSymbol);
+
+            }
+         }else
          {
             EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(parentLaneSymbol,
                   eventOId);

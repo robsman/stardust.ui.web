@@ -513,11 +513,12 @@ define(
 				Symbol.prototype.toFront = function() {
 					//Following delay is added specifically for Chrome / IE browsers.
 					//RaphaelJs .toFront() causes loss of double click event.
-					setTimeout(function(){
-						for ( var n in this.primitives) {
-							this.primitives[n].toFront();
+					var thisSymbol = this;
+					setTimeout(function() {
+						for ( var n in thisSymbol.primitives) {
+							thisSymbol.primitives[n].toFront();
 						}
-				    }, 600);
+					}, 600);
 				};
 
 				/**
@@ -1144,11 +1145,6 @@ define(
 				 */
 				Symbol.prototype.moveBy = function(dX, dY, force) {
 
-					if (this.bindingActivity && !force) {
-						// TODO quick hack for boundary events
-						return;
-					}
-
 					var originalX = this.x;
 					var originalY = this.y;
 					this.x = this.x + dX;
@@ -1366,10 +1362,15 @@ define(
 					}
 				};
 
+
+				Symbol.prototype.dragStop_ = function(multipleSymbols) {
+					return this.dragStopBase(multipleSymbols);
+				};
+
 				/**
 				 *
 				 */
-				Symbol.prototype.dragStop_ = function(multipleSymbols) {
+				Symbol.prototype.dragStopBase = function(multipleSymbols) {
 					this.showProximitySensor();
 					// Only process if symbol has been moved at all
 					var newGeometry = {};
@@ -1720,10 +1721,14 @@ define(
 					}
 				};
 
+
+				Symbol.prototype.click = function(x, y) {
+					this.click_(x, y);
+				};
 				/**
 				 *
 				 */
-				Symbol.prototype.click = function(x, y) {
+				Symbol.prototype.click_ = function(x, y) {
 					// When symbol is Draged, the edit symbol operation should
 					// reset
 					//this.diagram.resetEditableText();
@@ -1839,6 +1844,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.remove = function() {
+					this.remove_();
+				};
+
+				Symbol.prototype.remove_ = function() {
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();

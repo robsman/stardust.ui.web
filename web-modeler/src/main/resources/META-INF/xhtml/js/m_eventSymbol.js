@@ -162,7 +162,9 @@ define(
 					transferObject.startImageUrl = null;
 					transferObject.stopImageUrl = null;
 					transferObject.bindingActivitySymbol = null;
-					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+					transferObject.bindingActivity = null;
+					if (this.modelElement.eventType == m_constants.START_EVENT_TYPE
+							|| this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						transferObject.width = m_constants.EVENT_ICON_WIDTH_EC;
 						transferObject.height = m_constants.EVENT_ICON_HEIGHT_EC;
 						var clientSideAdjX = (m_constants.EVENT_ICON_WIDTH_EC / 2)
@@ -212,6 +214,7 @@ define(
 							});
 
 					this.addToPrimitives(this.innerCircle);
+					this.addToEditableTextPrimitives(this.innerCircle);
 
 					this.image = m_canvasManager.drawImageAt(
 							this.timerCatchingUrl, this.x
@@ -223,7 +226,7 @@ define(
 							m_constants.EVENT_ICON_WIDTH);
 
 					this.addToPrimitives(this.image);
-
+					this.addToEditableTextPrimitives(this.image);
 
 					this.text = m_canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
@@ -598,25 +601,31 @@ define(
 				/**
 				 *
 				 */
-				EventSymbol.prototype.postDragStop = function() {
+				EventSymbol.prototype.getBindingChanges = function() {
 					var hitSymbol = this.diagram
 							.getSymbolOverlappingWithSymbol(this);
 
 					if (hitSymbol != null
 							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+
+						// if intermediate event is dragged from one activity
+						// to other activity
+						if (this.bindingActivitySymbol != null) {
+							this.bindingActivitySymbol
+									.removeBoundaryEvent(this);
+						}
+
 						hitSymbol.addBoundaryEvent(this);
-
-						// submit change to server
-						var command = m_command.createUpdateModelElementCommand(
-										this.diagram.model.id, this.oid,
-										{ modelElement: {
-											bindingActivityUuid: this.modelElement.bindingActivityUuid }
-										});
-						m_commandsController.submitCommand(command);
-
+						return {
+							bindingActivityUuid : this.modelElement.bindingActivityUuid
+						};
 					} else if (this.bindingActivitySymbol != null) {
 						this.bindingActivitySymbol.removeBoundaryEvent(this);
+						return {
+							bindingActivityUuid : null
+						};
 					}
+					return null;
 				};
 
 				/**
@@ -627,6 +636,30 @@ define(
 						this.bindingActivitySymbol = this.diagram
 								.findActivitySymbolById(this.modelElement.bindingActivityUuid);
 					}
+				};
+
+				EventSymbol.prototype.remove = function() {
+					if (this.modelElement.isBoundaryEvent()) {
+						this.resolveNonHierarchicalRelationships();
+						if (null != this.bindingActivitySymbol) {
+							this.bindingActivitySymbol
+									.removeBoundaryEvent(this);
+						}
+					}
+					this.remove_();
+				};
+
+				/**
+				 * symbol move request and activity binding being fired
+				 * separately was resulting into "Bad Request"
+				 */
+				EventSymbol.prototype.dragStop_ = function(multipleSymbols) {
+					var bindingChanges = this.getBindingChanges();
+					var changeDesc = this.dragStopBase(multipleSymbols);
+					if (null != bindingChanges) {
+						changeDesc.changes["modelElement"] = bindingChanges;
+					}
+					return changeDesc;
 				};
 			}
 

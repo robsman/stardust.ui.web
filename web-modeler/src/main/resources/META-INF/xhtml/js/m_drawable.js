@@ -686,6 +686,9 @@ define(
 			}
 
 			function Drawable_hoverOutFlyMenuItemClosure(event) {
+				if (this.removed) {
+					return;
+				}
 				this.attr({
 					"fill" : "white",
 					"fill-opacity" : 1

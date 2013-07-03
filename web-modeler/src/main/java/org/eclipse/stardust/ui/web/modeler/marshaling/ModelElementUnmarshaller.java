@@ -1444,8 +1444,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
-      JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(
-            hostActivity, eventSymbol, jsonIo);
+      JsonObject hostingConfig = null;
+      if (null != hostActivity)
+      {
+         hostingConfig = EventMarshallingUtils.getEventHostingConfig(
+               hostActivity, eventSymbol, jsonIo);
+      }
+
       if (null == hostingConfig)
       {
          hostingConfig = new JsonObject();
@@ -1453,13 +1458,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       EventHandlerType eventHandler = null;
       //TODO: hasNotJsonNull required here?
-      if (hasNotJsonNull(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
+      if (hasNotJsonNull(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID)
+            && null != hostActivity)
       {
          eventHandler = findIdentifiableElement(hostActivity.getEventHandler(),
                extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID));
       }
-      //TODO: hasNotJsonNull required here?
-      if (hasNotJsonNull(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID))
+
+      if (eventJson.has(ModelerConstants.BINDING_ACTIVITY_UUID))
       {
          // potentially detach from old host
          ProcessDefinitionType containingProcess = ModelUtils.findContainingProcess(eventSymbol);
@@ -1470,19 +1476,35 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             if (hostActivity != newHostActivity)
             {
-               EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
-                     null);
-               if (EventMarshallingUtils.isIntermediateEventHost(hostActivity)
+               if(null != hostActivity){
+                  EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
+                        null);
+               }
+
+               if (null != hostActivity
+                     && EventMarshallingUtils.isIntermediateEventHost(hostActivity)
                      && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                {
                   // TODO reconnect transitions?
 
-                  // collect garbage
-                  containingProcess.getActivity().remove(hostActivity);
+                  // delete associated activity
+                  if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
+                  {
+                     containingProcess.getActivity().remove(hostActivity);
+                  }
+                  else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
+                  {
+                     EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
+                     EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
+                  }
                }
 
-               EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
-                     eventSymbol, hostingConfig);
+               if (null != newHostActivity)
+               {
+                  EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
+                        eventSymbol, hostingConfig);
+               }
+
                hostActivity = newHostActivity;
             }
          }
