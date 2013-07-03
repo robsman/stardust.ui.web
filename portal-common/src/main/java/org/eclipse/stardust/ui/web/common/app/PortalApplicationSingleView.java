@@ -1,18 +1,17 @@
 package org.eclipse.stardust.ui.web.common.app;
 
-import static org.eclipse.stardust.ui.web.common.util.StringUtils.isEmpty;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.Application;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
-import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
@@ -22,10 +21,10 @@ import org.springframework.beans.factory.InitializingBean;
 import com.icesoft.util.encoding.Base64;
 
 /**
- * TODO: Move some / all logic to Phase Listener
+ * Request Scoped Bean backing Single Views
  *
  * @author Subodh.Godbole
- *
+ * 
  */
 public class PortalApplicationSingleView implements Serializable, InitializingBean
 {
@@ -34,117 +33,107 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
 
    private PortalApplicationSingleViewEventScript singleViewEventScript;
 
-   private String perspectiveId;
-   private String viewId;
-   private String viewKey;
-   private String viewParams;
+   private View singleView;
+   private List<View> breadCrumb;
 
-   /* (non-Javadoc)
+   /* 
+    * Request scope bean, set view context immediately after construction
+    * (non-Javadoc)
     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
     */
    public void afterPropertiesSet() throws Exception
    {
+      FacesContext facesContext = FacesContext.getCurrentInstance();
+      UIViewRoot viewRoot = facesContext.getViewRoot();
+
+      HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+      String singleViewId = request.getParameter("singleViewId");
+      String singleViewKey = request.getParameter("singleViewKey");
+
+      // First time - View just now opened
+      if (StringUtils.isNotEmpty(singleViewId))
+      {
+         if (-1 != singleViewId.indexOf("::"))
+         {
+            singleViewId = singleViewId.substring(singleViewId.indexOf("::") + 2);
+         }
+
+         // Same view information into view root for later use
+         Application facesApp = facesContext.getApplication();
+         viewRoot.setValueBinding("singleViewId", facesApp.createValueBinding("#{'" + singleViewId + "'}"));
+         viewRoot.setValueBinding("singleViewKey", facesApp.createValueBinding("#{'" + singleViewKey + "'}"));
+      }
+      else // Actions within View
+      {
+         singleViewId = (String)viewRoot.getValueBinding("singleViewId").getValue(facesContext);
+         singleViewKey = (String)viewRoot.getValueBinding("singleViewKey").getValue(facesContext);
+      }
+    
+      associateView(singleViewId, singleViewKey);
+      setBreadcrumb();
+      trace.info("Single View Context = " + singleViewId + ":" + singleViewKey);
    }
 
-
    /**
-    * @return
+    * @param singleViewId
+    * @param singleViewKey
     */
-   @SuppressWarnings({"rawtypes", "unchecked"})
-   public View getView()
+   private void associateView(String singleViewId, String singleViewKey)
    {
       try
       {
-         View view = null;
          PortalApplication portalApp = PortalApplication.getInstance();
-
-         if (!isViewJustNowOpened())
+         singleView = portalApp.getPortalUiController().findView(singleViewId, singleViewKey);
+         if (null == singleView)
          {
-            // Actions within View
-            view = portalApp.getPortalUiController().findView(viewId, viewKey);
-         }
-         else
-         {
-            // View Just now Opened
+            @SuppressWarnings("rawtypes")
             Map requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-            String fullViewId = (String) requestMap.get("singleViewId");
-
-            String params = ViewInfo.calculateViewParams(requestMap);
-            if (null != viewId && fullViewId.equals(perspectiveId + "::" + viewId) && params.equals(viewParams))
+            Map<String, Object> params = new HashMap<String, Object>();
+            for (Object obj : requestMap.keySet())
             {
-               view = portalApp.getPortalUiController().findView(viewId, viewKey);
-            }
-
-            if (null == view)
-            {
-               ViewInfo viewInfo = new ViewInfo();
-               initialize(viewInfo);
-               viewInfo.getParams().put("standaloneMode", "true");
-               viewInfo.getParams().put("doNotCopyParams", "true");
-
-               view = portalApp.openViewById(viewInfo.getViewId(), viewInfo.getViewKey(), viewInfo.getParams(), null,
-                     false);
-            }
-
-            if (null != view)
-            {
-               if (!view.getViewParams().containsKey("addedToSessionRenderer"))
+               if (null != obj && requestMap.get(obj) instanceof String)
                {
-                  String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
-                  sessionId += view.getIdentityParams();
-                  sessionId = Base64.encode(sessionId);
-                  //SessionRendererHelper.addCurrentSession(sessionId);
-
-                  view.getViewParams().put("addedToSessionRenderer", true);
+                  params.put(obj.toString(), requestMap.get(obj));
                }
             }
+            params.put("standaloneMode", "true");
+            params.put("doNotCopyParams", "true");
+
+            singleView = portalApp.openViewById(singleViewId, singleViewKey, params, null, false);
          }
 
-         if(null == view)
+         if (null != singleView && !singleView.getViewParams().containsKey("addedToSessionRenderer"))
          {
-            trace.error("View Can't be NULL. Fallback to active View");
-            //view = PortalApplication.getInstance().getActiveView();
+            String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
+            sessionId += singleView.getIdentityParams();
+            sessionId = Base64.encode(sessionId);
+            //SessionRendererHelper.addCurrentSession(sessionId);
+
+            singleView.getViewParams().put("addedToSessionRenderer", true);
          }
 
-         return view;
+         if(null == singleView)
+         {
+            trace.error("Can not find View for " + singleViewId + ":" + singleViewKey);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("", new Throwable());
+            }
+            // Fallback?
+            //singleView = PortalApplication.getInstance().getActiveView();
+         }
       }
       catch (Exception e)
       {
-         //TODO Handle
-         e.printStackTrace();
-
-         return null;
+         trace.error("Could not set view context for " + singleViewId + ":" + singleViewKey, e);
       }
    }
 
    /**
-    * @return
+    * 
     */
-   @SuppressWarnings("rawtypes")
-   public boolean isViewJustNowOpened()
+   private void setBreadcrumb()
    {
-      Map requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-      String fullViewId = (String) requestMap.get("singleViewId");
-      return StringUtils.isNotEmpty(fullViewId);
-   }
-
-   /**
-    * @param viewInfo
-    */
-   private void initialize(ViewInfo viewInfo)
-   {
-      setPerspectiveId(viewInfo.getPerspectiveId());
-      setViewId(viewInfo.getViewId());
-      setViewKey(viewInfo.getViewKey());
-      setViewParams(viewInfo.getViewParams());
-   }
-
-   /**
-    * @return
-    */
-   public List<View> getBreadCrumb()
-   {
-      List<View> breadCrumb;
       List<View> views = new ArrayList<View>();
 
       View view = getView();
@@ -169,8 +158,6 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
       {
          breadCrumb.add(views.get(i));
       }
-
-      return breadCrumb;
    }
 
    /**
@@ -189,37 +176,17 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
     */
    public void activeViewSync(ValueChangeEvent event)
    {
-      trace.info("********** Active View Synced");
+      trace.info("Active View Synced");
    }
 
-   public String getViewKey()
+   public View getView()
    {
-      return viewKey;
+      return singleView;
    }
 
-   public void setViewKey(String viewKey)
+   public List<View> getBreadCrumb()
    {
-      this.viewKey = viewKey;
-   }
-
-   public void setViewParams(String viewParams)
-   {
-      this.viewParams = viewParams;
-   }
-
-   public void setPerspectiveId(String perspectiveId)
-   {
-      this.perspectiveId = perspectiveId;
-   }
-
-   public String getViewId()
-   {
-      return viewId;
-   }
-
-   public void setViewId(String viewId)
-   {
-      this.viewId = viewId;
+      return breadCrumb;
    }
 
    public PortalApplicationSingleViewEventScript getSingleViewEventScript()
@@ -230,121 +197,5 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
    public void setSingleViewEventScript(PortalApplicationSingleViewEventScript singleViewEventScript)
    {
       this.singleViewEventScript = singleViewEventScript;
-   }
-
-   /**
-    * @author Subodh.Godbole
-    *
-    */
-   @SuppressWarnings("rawtypes")
-   public static class ViewInfo implements Serializable
-   {
-      private static final long serialVersionUID = 1L;
-
-      private String perspectiveId;
-      private String viewId;
-      private String viewKey;
-      private String viewParams;
-      private Map<String, Object> params;
-
-      private ViewDefinition viewDef;
-
-      /**
-       * @return
-       */
-      private static String calculateViewParams(Map params)
-      {
-         StringBuffer sbParams = new StringBuffer();
-         for (Object key : params.keySet())
-         {
-            if (key instanceof String)
-            {
-               sbParams.append(key).append("=").append(params.get(key)).append("&");
-            }
-         }
-
-         if (sbParams.length() > 0)
-         {
-            sbParams.deleteCharAt(sbParams.length() - 1);
-         }
-
-         return sbParams.toString();
-      }
-
-      /**
-       * @param perspectiveId
-       * @param viewId
-       * @param viewKey
-       */
-      public ViewInfo()
-      {
-         Map requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-
-         String fullViewId = (String) requestMap.get("singleViewId");
-
-         if (-1 == fullViewId.indexOf("::"))
-         {
-            perspectiveId = "*";
-            viewId = fullViewId;
-         }
-         else
-         {
-            perspectiveId = fullViewId.substring(0, fullViewId.indexOf("::"));
-            viewId = fullViewId.substring(fullViewId.indexOf("::") + 2);
-         }
-
-         viewKey = (String) requestMap.get("singleViewKey");
-
-         this.params = new HashMap<String, Object>();
-         for (Object obj : requestMap.keySet())
-         {
-            if (null != obj && requestMap.get(obj) instanceof String)
-            {
-               this.params.put(obj.toString(), requestMap.get(obj));
-            }
-         }
-
-         this.viewParams = calculateViewParams(requestMap);
-
-         PortalApplication portalApp = PortalApplication.getInstance();
-
-         IPerspectiveDefinition perspectiveDef = isEmpty(perspectiveId) || "*".equals(perspectiveId)
-               ? portalApp.getPortalUiController().getPerspective()
-               : portalApp.getPortalUiController().getPerspective(perspectiveId);
-         if (null != perspectiveDef)
-         {
-            this.viewDef = perspectiveDef.getViewDefinition(viewId);
-         }
-      }
-
-      public String getPerspectiveId()
-      {
-         return perspectiveId;
-      }
-
-      public String getViewId()
-      {
-         return viewId;
-      }
-
-      public String getViewKey()
-      {
-         return viewKey;
-      }
-
-      public String getViewParams()
-      {
-         return viewParams;
-      }
-
-      public Map getParams()
-      {
-         return params;
-      }
-
-      public ViewDefinition getViewDef()
-      {
-         return viewDef;
-      }
    }
 }
