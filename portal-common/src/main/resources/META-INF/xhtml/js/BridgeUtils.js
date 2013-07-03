@@ -566,6 +566,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			var head = document.getElementsByTagName('head')[0];
 			injectJavaScript(head, 'plugins/common/eventHub.js');
 			injectJavaScript(head, 'plugins/common/iDnD.js');
+			injectJavaScript(head, 'plugins/common/iPopupDialog.js');
 			injectJavaScript(head, 'plugins/common/js/Messaging.js');
 			injectJavaScript(head, 'plugins/common/js/ProcessPortal.js');
 		}
