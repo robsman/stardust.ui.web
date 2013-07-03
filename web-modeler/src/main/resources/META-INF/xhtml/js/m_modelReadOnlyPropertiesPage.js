@@ -191,8 +191,7 @@ define(
 												attributes : {
 													width : "400px",
 													height : "200px",
-													src : m_urlUtils.getPlugsInRoot()
-															+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
+													src : "../bpm-modeler/popups/confirmationPopupDialogContent.html"
 												},
 												payload : {
 													title : m_i18nUtils
