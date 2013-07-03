@@ -19,9 +19,11 @@ public class PortalApplicationSingleViewEventScript implements Serializable
     */
    public static String wrapIntoRunScript(String scripts)
    {
-      scripts = "function() {" + scripts + "}";
-      scripts = "parent.BridgeUtils.runScript(" + scripts + ", " + Math.random() + ")";
-
+      if (StringUtils.isNotEmpty(scripts))
+      {
+         scripts = "function() {" + scripts + "}";
+         scripts = "parent.BridgeUtils.runScript(" + scripts + ", " + Math.random() + ")";
+      }
       return scripts;
    }
 
