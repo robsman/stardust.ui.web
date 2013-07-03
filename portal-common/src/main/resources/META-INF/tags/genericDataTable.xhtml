@@ -183,7 +183,7 @@
 			</ice:panelGroup>
 
 			<!-- ********** DATA TABLE PAGIANTION INFO ********** -->
-			<c:if test="#{false}"> <!-- displayPaginator -->
+			<c:if test="#{displayPaginator}">
 				<ice:panelGroup
 						rendered="#{displayPaginator}"
 						styleClass="#{styleClass}PaginatorInfoSection"
@@ -440,7 +440,7 @@
 			</ice:panelGroup>
 
 			<!-- ********** DATA TABLE PAGINATOR BAR ********** -->
-			<c:if test="#{false}"> <!-- displayPaginator -->
+			<c:if test="#{displayPaginator}">
 				<ice:panelGroup style="width:100%; margin-top:2px;">
 					<pc:automationTag value="auto-DT-PaginatorBar" standAlone="false" requiredValue="#{styleClass}PaginatorBarSection" />
 					<ice:dataPaginator
