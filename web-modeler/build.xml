@@ -122,6 +122,7 @@
       <!-- compile all other classes if it is not done by the previous step -->
       <ipp:javac-java6 destdir="${build.classes}"
          srcdir="${build.src.static}" sourcepath="${build.src.generated}:${build.src.static}">
+         <exclude name="**/web/modeler/edit/twophase/**" />
          <classpath refid="compile6.classpath" />
       </ipp:javac-java6>
    </target>
