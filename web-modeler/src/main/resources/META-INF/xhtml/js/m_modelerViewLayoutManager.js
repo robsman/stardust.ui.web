@@ -29,6 +29,7 @@ define(
 			}
 
 			function initialize() {
+				propertiesPaneVisible = false;
 				i18nProcessScreen();
 				$("#modelerDiagramPanelWrapper").css("overflow", "auto");
 				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
