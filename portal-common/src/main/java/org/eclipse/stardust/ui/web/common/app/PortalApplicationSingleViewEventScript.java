@@ -56,6 +56,10 @@ public class PortalApplicationSingleViewEventScript implements Serializable
 
          StringBuffer openViewScripts = new StringBuffer();
          StringBuffer closeViewScripts = new StringBuffer();
+         
+         StringBuffer openDialogScripts = new StringBuffer();
+         StringBuffer closeDialogScripts = new StringBuffer();
+         
          StringBuffer restOfTheScripts = new StringBuffer();
 
          Iterator<String> it = StringUtils.split(scripts, "\n");
@@ -78,6 +82,14 @@ public class PortalApplicationSingleViewEventScript implements Serializable
             {
                closeViewScripts.append(script).append("\n");
             }
+            else if (script.contains("parent.BridgeUtils.Dialog.open"))
+            {
+               openDialogScripts.append(script).append("\n");
+            }
+            else if (script.contains("parent.BridgeUtils.Dialog.close"))
+            {
+               closeDialogScripts.append(script).append("\n");
+            }
             else
             {
                restOfTheScripts.append(script).append("\n");
@@ -89,6 +101,8 @@ public class PortalApplicationSingleViewEventScript implements Serializable
          allScripts.append(iframeCloseScripts);
          allScripts.append(openViewScripts);
          allScripts.append(iframeCreateScripts);
+         allScripts.append(closeDialogScripts);
+         allScripts.append(openDialogScripts);
          allScripts.append(restOfTheScripts);
          allScripts.append(closeViewScripts);
 
