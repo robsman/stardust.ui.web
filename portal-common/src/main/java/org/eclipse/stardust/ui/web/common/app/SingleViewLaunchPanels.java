@@ -69,7 +69,8 @@ public class SingleViewLaunchPanels implements InitializingBean
 
             if (null != view)
             {
-               //portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
+               portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
+
                String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
                sessionId += view.getIdentityParams();
                sessionId = Base64.encode(sessionId);

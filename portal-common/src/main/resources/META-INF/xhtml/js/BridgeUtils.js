@@ -350,7 +350,7 @@ if (!window["BridgeUtils"].View) {
 				} else {
 					BridgeUtils.log("Could not sync active view, has no iframeId");
 				}
-			}, 400);
+			}, 200);
 		}
 
 		/*

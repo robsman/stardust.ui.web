@@ -36,6 +36,8 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
    private View singleView;
    private List<View> breadCrumb;
 
+   boolean syncLaunchPanels = true;
+
    /* 
     * Request scope bean, set view context immediately after construction
     * (non-Javadoc)
@@ -165,7 +167,7 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
     */
    public String getEventScripts()
    {
-      String scripts = singleViewEventScript.getEventScripts(true);
+      String scripts = singleViewEventScript.getEventScripts(syncLaunchPanels);
       scripts = PortalApplicationSingleViewEventScript.wrapIntoRunScript(scripts);
       trace.info("SingleApp_View:getEventScripts():\n" + scripts);
       return scripts;
@@ -176,6 +178,7 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
     */
    public void activeViewSync(ValueChangeEvent event)
    {
+      syncLaunchPanels = false; // No need to sync LPs, just active view is changed
       trace.info("Active View Synced");
    }
 
