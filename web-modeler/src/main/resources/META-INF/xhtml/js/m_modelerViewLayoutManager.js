@@ -374,6 +374,11 @@ define(
 			 */
 
 			function adjustPanels() {
+				// Assign available horizontal width to innerWidth with a hardcoded offset of 10 pixels
+				// to avoid extra horizontal scrolls
+				innerWidth = document.body.scrollWidth - $("div.toolbar-section").first().offset().left - 10;
+				innerHeight = document.body.scrollHeight - $("div.toolbar-section").first().offset().top;
+
 				var diagWidth = innerWidth - HORIZONTAL_SCROLL_OFFSET;
 
 				if (true == propertiesPaneVisible) {
@@ -395,7 +400,8 @@ define(
 			}
 
 			function getToolbarWidth() {
-				return $("div.toolbar-section").last().offset().left + $("div.toolbar-section").last().width() + 20;
+				return $("div.toolbar-section").last().offset().left + $("div.toolbar-section").last().width()
+							- $("div.toolbar-section").first().offset().left + 20;
 			}
 
 			function getToolbarHeight() {
