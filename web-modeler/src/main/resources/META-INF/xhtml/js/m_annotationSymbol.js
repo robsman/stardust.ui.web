@@ -278,10 +278,10 @@ define(
 					editableTextArea.css("visibility", "visible").html(
 							name).moveDiv(
 							{
-								"x" : this.x + this.diagram.X_OFFSET
-										+ this.width / 5 - scrollPos.left - 10,
-								"y" : this.y + this.diagram.Y_OFFSET
-										+ this.height / 8 - scrollPos.top
+								"x" : this.x + this.diagram.getCanvasPosition().left
+										+ this.width / 5 - 10,
+								"y" : this.y + this.diagram.getCanvasPosition().top
+										+ this.height / 8
 							}).show().trigger("dblclick");
 					return this.text;
 				};

@@ -48,8 +48,9 @@ define(
 				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
 				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
 
-			var X_OFFSET; // Set fpr #panningSensor
-			var Y_OFFSET; // Set for #toolbar +
+			//var X_OFFSET; // Set fpr #panningSensor
+			//var Y_OFFSET; // Set for #toolbar +
+
 			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
 
@@ -70,8 +71,8 @@ define(
 				currentDiagram = this;
 
 				var canvasPos = $("#canvas").position();
-				X_OFFSET = canvasPos.left; // Set fpr #panningSensor
-				Y_OFFSET = canvasPos.top; // Set for #toolbar +
+				//X_OFFSET = canvasPos.left; // Set fpr #panningSensor
+				//Y_OFFSET = canvasPos.top; // Set for #toolbar +
 
 				// Constants
 
@@ -85,8 +86,8 @@ define(
 				this.SYMBOL_MOVE_MODE = "SYMBOL_MOVE_MODE";
 				this.SEPARATOR_MODE = "SEPARATOR_MODE";
 				this.CREATE_MODE = "CREATE_MODE";
-				this.X_OFFSET = X_OFFSET;
-				this.Y_OFFSET = Y_OFFSET;
+				//this.X_OFFSET = X_OFFSET;
+				//this.Y_OFFSET = Y_OFFSET;
 				this.width = m_canvasManager.getCanvasWidth();
 				this.height = m_canvasManager.getCanvasHeight();
 				this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
@@ -300,12 +301,8 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseDown(event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- getCanvasPosition().left, event.pageY
+											- getCanvasPosition().top);
 						});
 
 				this.canvas.mousemove({
@@ -314,26 +311,18 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseMove(event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- getCanvasPosition().left, event.pageY
+											- getCanvasPosition().top);
 						});
 
 				this.canvas.mouseup({
 					"diagram" : this
 				}, function(event) {
 					event.data.diagram
-							.onGlobalMouseUp(event.pageX - X_OFFSET,
+							.onGlobalMouseUp(event.pageX - getCanvasPosition().left,
 									event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- getCanvasPosition().left, event.pageY
+											- getCanvasPosition().top);
 				});
 
 				this.panningSensorNorthWest = {};
@@ -581,13 +570,9 @@ define(
 											currentDiagram
 													.onGlobalMouseMove(
 															event.pageX
-																	- X_OFFSET
-																	+ currentDiagram.scrollPane
-																			.scrollLeft(),
+																	- getCanvasPosition().left,
 															event.pageY
-																	- Y_OFFSET
-																	+ currentDiagram.scrollPane
-																			.scrollTop());
+																	- getCanvasPosition().top);
 										} else if (currentDiagram.currentSelection.length > 0) {
 											for ( var i in currentDiagram.currentSelection) {
 												if (currentDiagram.currentSelection[i]
@@ -1594,8 +1579,8 @@ define(
 						// If the symbol was created with a connection traversal
 						// the connection needs to be completed, too
 						if (null != this.currentConnection) {
-							var status = this.placeNewSymbol(x - this.X_OFFSET,
-									y - this.Y_OFFSET, true);
+							var status = this.placeNewSymbol(x - getCanvasPosition().left,
+									y - getCanvasPosition().top, true);
 							if (status) {
 								this.currentConnection.toModelElementOid = this.lastSymbol.oid;
 								this.currentConnection.updateAnchorPointForSymbol();
@@ -2303,45 +2288,45 @@ define(
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);
 				};
+
+
+				/**
+				 *
+				 */
+				Diagram.prototype.getCanvasPosition = function() {
+					return getCanvasPosition();
+				}
+			}
+
+			function getCanvasPosition() {
+				var canvasPos = $("#canvas").position();
+				return {
+					left : canvasPos.left,
+					top : canvasPos.top
+				};
 			}
 
 			function Diagram_clickClosure(event) {
 				this.auxiliaryProperties.diagram.onClick(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
+						- getCanvasPosition().left, event.pageY
+						- getCanvasPosition().top);
 			}
 
 			function Diagram_mouseDownClosure(event) {
 				this.auxiliaryProperties.diagram.onMouseDown(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
+						- getCanvasPosition().left, event.pageY
+						- getCanvasPosition().top);
 			}
 
 			function Diagram_mouseMoveClosure(event) {
 				this.auxiliaryProperties.diagram.onMouseMove(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
+						- getCanvasPosition().left, event.pageY
+						- getCanvasPosition().top);
 			}
 
 			function Diagram_mouseUpClosure(event) {
 				this.auxiliaryProperties.diagram.onMouseUp(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
+						- getCanvasPosition().left, event.pageY
+						- getCanvasPosition().top);
 			}
 		});

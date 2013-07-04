@@ -1800,17 +1800,17 @@ define(
 						var symbol = this.diagram
 								.getSymbolContainingCoordinatesExcludeContainerSymbols(
 										x / this.diagram.zoomFactor
-												+ this.diagram.X_OFFSET, y
+												+ this.diagram.getCanvasPosition().left, y
 												/ this.diagram.zoomFactor
-												+ this.diagram.Y_OFFSET);
+												+ this.diagram.getCanvasPosition().top);
 
 						if (symbol != null) {
 							m_utils.debug("Symbol found");
 							var anchorPoint = symbol.getClosestAnchorPoint(x
 									/ this.diagram.zoomFactor
-									+ this.diagram.X_OFFSET, y
+									+ this.diagram.getCanvasPosition().left, y
 									/ this.diagram.zoomFactor
-									+ this.diagram.Y_OFFSET);
+									+ this.diagram.getCanvasPosition().top);
 							this.diagram.setAnchorPoint(anchorPoint);
 						}
  						else {
@@ -1848,11 +1848,11 @@ define(
 				Connection.prototype.dragConditionExpressionText = function(dX,
 						dY, x, y, event) {
 					this.conditionExpressionTextXOffset = x
-							* this.diagram.zoomFactor - this.diagram.X_OFFSET
-							- this.toAnchorPoint.x + this.diagram.scrollPane.scrollLeft() ;
+							* this.diagram.zoomFactor - this.diagram.getCanvasPosition().left
+							- this.toAnchorPoint.x;
 					this.conditionExpressionTextYOffset = y
-							* this.diagram.zoomFactor - this.diagram.Y_OFFSET
-							- this.toAnchorPoint.y + this.diagram.scrollPane.scrollTop();
+							* this.diagram.zoomFactor - this.diagram.getCanvasPosition().top
+							- this.toAnchorPoint.y;
 
 					this.conditionExpressionText.attr({
 						"x" : this.conditionExpressionTextXOffset + this.toAnchorPoint.x,
@@ -1951,11 +1951,10 @@ define(
 								.getModelerScrollPosition();
 
 						this.adjustFlyOutMenu(event.pageX
-								- this.diagram.X_OFFSET + scrollPos.left
+								- this.diagram.getCanvasPosition().left
 								- m_constants.FLY_OUT_MENU_ITEM_MARGIN,
-								event.pageY - this.diagram.Y_OFFSET
-										- FLYOUT_MENU_LOC_OFFSET
-										+ scrollPos.top, 60, 30);
+								event.pageY - this.diagram.getCanvasPosition().top
+										- FLYOUT_MENU_LOC_OFFSET, 60, 30);
 						// If connection hoverIn is called before other symbol
 						// hoverOut, manual HoverOut is required.
 						if (this.diagram.currentFlyOutSymbol
@@ -2353,12 +2352,10 @@ define(
 									{
 										"x" : this.conditionExpressionText
 												.getBBox().x
-												+ this.diagram.X_OFFSET
-												- scrollPos.left,
+												+ this.diagram.getCanvasPosition().left,
 										"y" : this.conditionExpressionText
 												.getBBox().y
-												+ this.diagram.Y_OFFSET
-												- scrollPos.top
+												+ this.diagram.getCanvasPosition().top
 							}).show().trigger("dblclick");
 
 					return this.conditionExpressionText;

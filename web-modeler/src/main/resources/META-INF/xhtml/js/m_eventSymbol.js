@@ -544,10 +544,9 @@ define(
 					editableText.css("visibility", "visible").html(name)
 							.moveDiv(
 									{
-										"x" : this.x + this.diagram.X_OFFSET
-												- scrollPos.left - 10,
-										"y" : this.y + this.diagram.Y_OFFSET
-												+ (2 * m_constants.EVENT_DEFAULT_RADIUS + 5) - scrollPos.top
+										"x" : this.x + this.diagram.getCanvasPosition().left - 10,
+										"y" : this.y + this.diagram.getCanvasPosition().top
+												+ (2 * m_constants.EVENT_DEFAULT_RADIUS + 5)
 									}).show().trigger("dblclick");
 
 					return this.text;

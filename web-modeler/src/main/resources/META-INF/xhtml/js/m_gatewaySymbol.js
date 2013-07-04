@@ -639,12 +639,12 @@ define(
 					editableText.css("visibility", "visible").html(name)
 							.moveDiv(
 									{
-										"x" : this.x + this.diagram.X_OFFSET
-												- scrollPos.left - 10,
+										"x" : this.x + this.diagram.getCanvasPosition().left
+												- 10,
 										"y" : this.y
-												+ this.diagram.Y_OFFSET
+												+ this.diagram.getCanvasPosition().top
 												+ m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT
-												+ 5 - scrollPos.top
+												+ 5
 									}).show().trigger("dblclick");
 
 					return this.text;

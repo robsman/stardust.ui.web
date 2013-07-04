@@ -125,8 +125,8 @@ define(
 									.getMouseCoordinates(eve);
 							var scrollPos = m_modelerUtils
 									.getModelerScrollPosition();
-							clickCoordinates.x += scrollPos.left;
-							clickCoordinates.y += scrollPos.top;
+//							clickCoordinates.x += scrollPos.left;
+//							clickCoordinates.y += scrollPos.top;
 
 							var otherModelId = m_model.stripModelId(parent.iDnD.getTransferObject().attr.fullId);
 							if (otherModelId != diagram.modelId
@@ -183,9 +183,9 @@ define(
 													data);
 
 									dataSymbol.initialize(clickCoordinates.x
-											- diagram.X_OFFSET,
+											- diagram.getCanvasPosition().left,
 											clickCoordinates.y
-													- diagram.Y_OFFSET);
+													- diagram.getCanvasPosition().top);
 								} else {
 									m_messageDisplay
 											.showErrorMessage("Data symbol already present");
@@ -236,8 +236,8 @@ define(
 									.createDataSymbolFromData(diagram, data);
 
 									dataSymbol.initialize(clickCoordinates.x
-											- diagram.X_OFFSET, clickCoordinates.y
-											- diagram.Y_OFFSET);
+											- diagram.getCanvasPosition().left, clickCoordinates.y
+											- diagram.getCanvasPosition().top);
 									dataSymbol.refreshFromModelElement();
 								}
 							} else if ('process' == parent.iDnD
@@ -261,8 +261,8 @@ define(
 												diagram, process);
 
 								activitySymbol.initialize(clickCoordinates.x
-										- diagram.X_OFFSET, clickCoordinates.y
-										- diagram.Y_OFFSET);
+										- diagram.getCanvasPosition().left, clickCoordinates.y
+										- diagram.getCanvasPosition().top);
 								activitySymbol.refreshFromModelElement();
 							} else if (m_elementConfiguration
 									.isValidAppType(parent.iDnD
@@ -287,8 +287,8 @@ define(
 												diagram, application);
 
 								activitySymbol.initialize(clickCoordinates.x
-										- diagram.X_OFFSET, clickCoordinates.y
-										- diagram.Y_OFFSET);
+										- diagram.getCanvasPosition().left, clickCoordinates.y
+										- diagram.getCanvasPosition().top);
 								activitySymbol.refreshFromModelElement();
 							} else {
 								m_messageDisplay

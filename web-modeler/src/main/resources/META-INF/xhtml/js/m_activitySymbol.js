@@ -803,9 +803,8 @@ define(
 						textBoxY = this.y + this.height / 3;
 					}
 
-					textBoxX = textBoxX + this.diagram.X_OFFSET
-							- scrollPos.left;
-					textBoxY = textBoxY + this.diagram.Y_OFFSET - scrollPos.top;
+					textBoxX = textBoxX + this.diagram.getCanvasPosition().left;
+					textBoxY = textBoxY + this.diagram.getCanvasPosition().top;
 
 					editableText.css("width", parseInt(textboxWidth.valueOf()));
 					editableText.css("height",

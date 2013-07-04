@@ -443,8 +443,8 @@ define(
 					if (!skipScrollAdjustment) {
 						var scrollPos = m_modelerUtils
 								.getModelerScrollPosition();
-						x += scrollPos.left;
-						y += scrollPos.top;
+//						x += scrollPos.left;
+//						y += scrollPos.top;
 					}
 
 					var distance = this.width + this.height;
@@ -1451,12 +1451,10 @@ define(
 				 */
 				Symbol.prototype.getEffectiveDisplacement = function(x, y) {
 					var moveX = x * this.diagram.zoomFactor
-							- this.diagram.X_OFFSET
-							+ this.diagram.scrollPane.scrollLeft()
+							- this.diagram.getCanvasPosition().left
 							- (this.width / 2);
 					var moveY = y * this.diagram.zoomFactor
-							- this.diagram.Y_OFFSET
-							+ this.diagram.scrollPane.scrollTop()
+							- this.diagram.getCanvasPosition().top
 							- (this.height / 2);
 					return {
 						'deltaX' : moveX - this.x,
@@ -1552,10 +1550,8 @@ define(
 
 						var scrollPos = m_modelerUtils
 								.getModelerScrollPosition();
-						var xPos = event.pageX - this.diagram.X_OFFSET
-								+ scrollPos.left;
-						var yPos = event.pageY - this.diagram.Y_OFFSET
-								+ scrollPos.top;
+						var xPos = event.pageX - this.diagram.getCanvasPosition().left;
+						var yPos = event.pageY - this.diagram.getCanvasPosition().top;
 
 						var rightProximityMargin = this.proximitySensor
 								.attr('x')
@@ -1655,9 +1651,9 @@ define(
 						this.deselectAnchorPoints();
 						var anchorPoint = this.getClosestAnchorPoint(x
 								* this.diagram.zoomFactor
-								- this.diagram.X_OFFSET, y
+								- this.diagram.getCanvasPosition().left, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.getCanvasPosition().top);
 
 						anchorPoint.select();
 
@@ -1682,9 +1678,9 @@ define(
 						this.deselectAnchorPoints();
 						var anchorPoint = this.getClosestAnchorPoint(x
 								* this.diagram.zoomFactor
-								- this.diagram.X_OFFSET, y
+								- this.diagram.getCanvasPosition().left, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.getCanvasPosition().top);
 
 						anchorPoint.select();
 
@@ -1737,8 +1733,8 @@ define(
 						// false
 						if (null != this.diagram.currentConnection) {
 							var status = this.diagram.placeNewSymbol(x
-									- this.diagram.X_OFFSET, y
-									- this.diagram.Y_OFFSET, true);
+									- this.diagram.getCanvasPosition().left, y
+									- this.diagram.getCanvasPosition().top, true);
 
 							this.diagram.currentConnection.toModelElementOid = this.oid;
 							this.diagram.currentConnection
@@ -1747,8 +1743,8 @@ define(
 							this.diagram.currentConnection = null;
 						} else {
 							var status = this.diagram.placeNewSymbol(x
-									- this.diagram.X_OFFSET, y
-									- this.diagram.Y_OFFSET);
+									- this.diagram.getCanvasPosition().left, y
+									- this.diagram.getCanvasPosition().top);
 						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
@@ -1757,9 +1753,9 @@ define(
 								this.diagram.setAnchorPoint(this
 										.getClosestAnchorPoint(x
 												* this.diagram.zoomFactor
-												- this.diagram.X_OFFSET, y
+												- this.diagram.getCanvasPosition().left, y
 												* this.diagram.zoomFactor
-												- this.diagram.Y_OFFSET));
+												- this.diagram.getCanvasPosition().top));
 								this.hideAnchorPoints();
 							}
 						} else if (this.diagram.dragEnabled
@@ -1995,9 +1991,9 @@ define(
 				 */
 				Symbol.prototype.stretchLeft = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.width += this.x - scrollPos.left
-							- (x - this.diagram.X_OFFSET);
-					this.x = x - this.diagram.X_OFFSET + scrollPos.left;
+					this.width += this.x
+							- (x - this.diagram.getCanvasPosition().left);
+					this.x = x - this.diagram.getCanvasPosition().left;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2008,9 +2004,8 @@ define(
 				 */
 				Symbol.prototype.stretchTop = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.height += this.y - (y - this.diagram.Y_OFFSET)
-							- scrollPos.top;
-					this.y = y + scrollPos.top - this.diagram.Y_OFFSET;
+					this.height += this.y - (y - this.diagram.getCanvasPosition().top);
+					this.y = y - this.diagram.getCanvasPosition().top;
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2021,8 +2016,7 @@ define(
 				 */
 				Symbol.prototype.stretchRight = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.width = x - this.diagram.X_OFFSET - this.x
-							+ scrollPos.left;
+					this.width = x - this.diagram.getCanvasPosition().left - this.x;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2033,7 +2027,7 @@ define(
 				 */
 				Symbol.prototype.stretchBottom = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.height += ((y + scrollPos.top - this.diagram.Y_OFFSET) - (this.y + this.height));
+					this.height += ((y - this.diagram.getCanvasPosition().top) - (this.y + this.height));
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2489,13 +2483,13 @@ define(
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Calculate diagram coordinates
 
-					this.moveTo((x + scrollPos.left)
+					this.moveTo((x)
 							* this.symbol.diagram.zoomFactor
-							- this.symbol.diagram.X_OFFSET - 0.5
+							- this.symbol.diagram.getCanvasPosition().left - 0.5
 							* m_constants.DEFAULT_ANCHOR_WIDTH,
-							(y + scrollPos.top)
+							(y)
 									* this.symbol.diagram.zoomFactor
-									- this.symbol.diagram.Y_OFFSET - 0.5
+									- this.symbol.diagram.getCanvasPosition().top - 0.5
 									* m_constants.DEFAULT_ANCHOR_HEIGHT);
 
 					// TODO Panning

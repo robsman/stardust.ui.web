@@ -404,12 +404,10 @@ define(
 					editableText.css("visibility", "visible").html(name)
 							.moveDiv(
 									{
-										"x" : this.x + this.diagram.X_OFFSET
-												+ this.width / 5
-												- scrollPos.left - 10,
-										"y" : this.y + this.diagram.Y_OFFSET
+										"x" : this.x + this.diagram.getCanvasPosition().left
+												+ this.width / 5 - 10,
+										"y" : this.y + this.diagram.getCanvasPosition().top
 												+ (this.height) + 5
-												- scrollPos.top
 									}).show().trigger("dblclick");
 					return this.text;
 				};
