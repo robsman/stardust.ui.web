@@ -377,7 +377,11 @@ define(
 				// Assign available horizontal width to innerWidth with a hardcoded offset of 10 pixels
 				// to avoid extra horizontal scrolls
 				innerWidth = document.body.scrollWidth - $("div.toolbar-section").first().offset().left - 10;
-				innerHeight = document.body.scrollHeight - $("div.toolbar-section").first().offset().top;
+				if ($("div.sg-footer-bar").length > 0) {
+					innerHeight = $("div.sg-footer-bar").first().offset().top - $("div.toolbar-section").first().offset().top - 10;
+				} else {
+					innerHeight = document.body.scrollHeight - $("div.toolbar-section").first().offset().top - 50;
+				}
 
 				var diagWidth = innerWidth - HORIZONTAL_SCROLL_OFFSET;
 
@@ -395,7 +399,7 @@ define(
 				$("#toolbar").css("width", (diagWidth) + "px");
 				$("#messagePanel").css("width", (diagWidth) + "px");
 				$("#scrollpane").css("width", (diagWidth) + "px");
-				$("#scrollpane").css("height", (innerHeight - getToolbarHeight() - 20) + "px");
+				$("#scrollpane").css("height", (innerHeight - getToolbarHeight() - 50) + "px");
 
 			}
 
@@ -405,7 +409,7 @@ define(
 			}
 
 			function getToolbarHeight() {
-				return $("div.toolbar-section").last().offset().top + $("div.toolbar-section").last().height() + 20;
+				return $("div.toolbar-section").last().height();
 			}
 
 			function showPropertiesPane() {
