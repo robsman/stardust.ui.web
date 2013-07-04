@@ -1164,10 +1164,10 @@ public class PortalApplication
    }
 
    /**
-    * @param view
+    * @param iconUrl
     * @return
     */
-   private String deriveIconClass(String iconUrl)
+   public static String deriveIconClass(String iconUrl)
    {
       String icon = "";
       if (StringUtils.isNotEmpty(iconUrl))
