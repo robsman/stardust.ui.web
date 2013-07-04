@@ -18,7 +18,7 @@
 			            {
 			                "label": "{label}",
 			                "id": "Ext/:type/:id",
-			                "icon":"viewIconBase genericViewIcon",
+			                "icon":"viewIconBase genericViewIcon :icon",
 			                "module": "bpm-ui",
 			                "partial": "bpm-ui/partials/externalPage.html",
 			                "controller": "bpm-ui.ExternalPageCtrl",

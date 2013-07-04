@@ -1151,15 +1151,34 @@ public class PortalApplication
          viewId = "Int/" + view.getDefinition().getName() + "/:id";
       }
 
-      String script = "parent.BridgeUtils.View.openView('" + viewId + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', url: '_URL_', custom: {_CUSTOM_}});";
+      String script = "parent.BridgeUtils.View.openView('" + viewId + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
       script = StringUtils.replace(script, "_TYPE_", view.getDefinition().getName());
       script = StringUtils.replace(script, "_ID_", StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "");
       script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
+      script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
       script = StringUtils.replace(script, "_URL_", url);
       script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
 
       //System.out.println("\tPANAMA Script = \n" + script);
       addEventScript(script);
+   }
+
+   /**
+    * @param view
+    * @return
+    */
+   private String deriveIconClass(String iconUrl)
+   {
+      String icon = "";
+      if (StringUtils.isNotEmpty(iconUrl))
+      {
+         int slashIndex = iconUrl.lastIndexOf("/");
+         if (slashIndex > -1)
+         {
+            icon = iconUrl.substring(slashIndex+1, iconUrl.lastIndexOf("."));
+         }
+      }
+      return icon;
    }
 
    /**

@@ -1,7 +1,7 @@
-.worklistPanel {
+.clipboard-task {
 	background: url("../images/icons/clipboard-task.png") no-repeat;
 }
 
-.activityPanel {
+.activity {
 	background: url("../images/icons/process-history/activity.png") no-repeat;
 }

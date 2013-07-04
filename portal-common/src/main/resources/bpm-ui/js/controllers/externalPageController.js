@@ -35,6 +35,9 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 			$scope.iframeUrl = view.externalURL;
 			if (view.params) {
 				$scope.iframeUrl = substituteParams($scope.iframeUrl, view.params, true);
+				if (view.icon && view.icon != "") {
+					$scope.setIcon(substituteParams(view.icon, view.params, true));
+				}
 			} else {
 				view.params = [];
 			}

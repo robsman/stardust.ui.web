@@ -367,6 +367,24 @@ if (!window["BridgeUtils"].View) {
 		}
 
 		/*
+		 * 
+		 */
+		function setIcon(icon) {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.setIcon(icon);
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function setTitle(title) {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.resetTitle(title);
+			});			
+		}
+
+		/*
 		 * Private Function
 		 */
 		function isPortalPath(navPath) {
@@ -420,7 +438,9 @@ if (!window["BridgeUtils"].View) {
 			getIframeIdForActiveView : getIframeIdForActiveView,
 			doPartialSubmit : doPartialSubmit,
 			syncActiveView : syncActiveView,
-			syncLaunchPanels : syncLaunchPanels
+			syncLaunchPanels : syncLaunchPanels,
+			setIcon : setIcon,
+			setTitle : setTitle
 		}
 	};
 
