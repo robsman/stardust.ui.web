@@ -92,6 +92,28 @@ if (!window["BridgeUtils"]) {
 			return parseInt(size);
 		}
 
+		/*
+		 * Copied from HTML5 Framework and modified a bit
+		 */
+		function substituteParams(path, localParams, onePass) {
+	        var tempPath = path;
+	        while (tempPath.indexOf(':') > -1) {
+	            var paramStr = tempPath.substring(tempPath.indexOf(':') + 1);
+	            var param = paramStr.indexOf('/') > -1 ? paramStr.substring(0, paramStr.indexOf('/')) : paramStr;
+	            var remainingStr = paramStr.substring(param.length);
+	            var paramValue = localParams[param];
+	            if (paramValue != undefined) {
+	            	path = path.substring(0, path.indexOf(':')) + paramValue + remainingStr;
+	            }
+	            tempPath = path;
+
+	            if (onePass){
+					break;
+				}
+	        }
+	        return path;
+	    }
+
 		return {
 			log : log,
 			runInAngularContext : runInAngularContext,
@@ -99,7 +121,8 @@ if (!window["BridgeUtils"]) {
 			isScriptRunning : isScriptRunning,
 			handleServerDisconnect : handleServerDisconnect,
 			logout : logout,
-			getAbsoluteSize : getAbsoluteSize
+			getAbsoluteSize : getAbsoluteSize,
+			substituteParams : substituteParams
 		}
 	};
 } // !BridgeUtils
@@ -371,7 +394,13 @@ if (!window["BridgeUtils"].View) {
 		 */
 		function setIcon(icon) {
 			BridgeUtils.runInAngularContext(function($scope) {
-				$scope.setIcon(icon);
+				var view = $scope.activeViewPanel();
+				if (view) {
+					if (view.iconBase) {
+						icon = BridgeUtils.substituteParams(view.iconBase, {"icon": icon}, true);
+					}
+					view.setIcon(icon);
+				}
 			});
 		}
 
@@ -380,7 +409,10 @@ if (!window["BridgeUtils"].View) {
 		 */
 		function setTitle(title) {
 			BridgeUtils.runInAngularContext(function($scope) {
-				$scope.resetTitle(title);
+				var view = $scope.activeViewPanel();
+				if (view) {
+					view.setTitle(title);
+				}
 			});			
 		}
 
