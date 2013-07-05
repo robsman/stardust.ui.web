@@ -17,7 +17,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.springframework.core.io.ClassPathResource;
 
 
@@ -52,8 +52,8 @@ public class HTML5FrameworkServices
       String contents = getCodeResource("bpm-ui/staticTest/navigation-en.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
-      contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL", "Of the Universe, Master");
-      //RestControllerUtils.resolveSpringBean(PortalApplication.class, servletContext).getLoggedInUser().getDisplayName()
+      contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
+            RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
