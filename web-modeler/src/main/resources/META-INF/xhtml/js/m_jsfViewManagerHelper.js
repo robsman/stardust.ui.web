@@ -37,6 +37,7 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 
 			linkForm[formId + ':_idcl'].value = modelDeployerLinkId;
 			linkForm['allowBrowse'].value = "false";
+			linkForm['fromlaunchPanels'].value = "true";
 			linkForm['fileName'].value = modelFileName;
 			linkForm['filePath'].value = modleFilePath;
 
@@ -98,6 +99,7 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 			var link = portalWinDoc.doc.getElementById(modelerLinkId);
 			var linkForm = portalWinDoc.win.contentWindow.formOf(link);
 
+			linkForm['fromlaunchPanels'].value = "true";
 			linkForm[formId + ':_idcl'].value = modelerLinkId;
 			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		}

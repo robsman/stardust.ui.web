@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.common.util;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -74,6 +75,7 @@ public abstract class PopupDialog implements Serializable
     */
    public void closePopup()
    {
+	  setFromlaunchPanels(false);
       // TODO remove duplicate code, see CRNT-16380
       PortalUiController portalUiController = null;
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
@@ -113,6 +115,11 @@ public abstract class PopupDialog implements Serializable
     */
    public void openPopup()
    {
+      Map requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      if ("true".equals(requestParams.get("fromlaunchPanels")))
+      {
+    	  setFromlaunchPanels(true);
+      }
       PortalUiController portalUiController = null;
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       View focusView = null;

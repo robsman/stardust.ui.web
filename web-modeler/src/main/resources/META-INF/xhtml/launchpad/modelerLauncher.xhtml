@@ -157,6 +157,7 @@
 				<f:param name="allowBrowse" />
 				<f:param name="fileName" />
 				<f:param name="filePath" />
+				<f:param name="fromlaunchPanels" />
 				<ice:outputText
 					style="color: #00629A; font-family: Arial,Helvetica,sans-serif;"
 					value="Deploy Model" />
@@ -177,6 +178,7 @@
 			</ice:commandLink>
 			<ice:commandLink id="open_model_upload_dialog_link"
 				action="#{modelFileUploadDialog.openPopup}">
+				<f:param name="fromlaunchPanels" />
 				<ice:outputText value="Open upload model dialog &amp;raquo;"
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>

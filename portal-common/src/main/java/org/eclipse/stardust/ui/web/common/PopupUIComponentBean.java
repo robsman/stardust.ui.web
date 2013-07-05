@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common;
 
+import java.util.Map;
+
 import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -71,6 +73,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
     */
    public void closePopup()
    {
+	  setFromlaunchPanels(false);
       View focusView = PortalApplication.getInstance().getFocusView();
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_ACTIVATED))
@@ -97,6 +100,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
     */
    public void openPopup()
    {
+      Map requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      if ("true".equals(requestParams.get("fromlaunchPanels")))
+      {
+    	  setFromlaunchPanels(true);
+      }
       View focusView = PortalApplication.getInstance().getFocusView();
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_DEACTIVATED))
