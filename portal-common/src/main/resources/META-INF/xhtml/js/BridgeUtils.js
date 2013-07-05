@@ -959,7 +959,7 @@ if (!window["BridgeUtils"].FrameManager) {
 							pos.y += posFrame.y;
 
 							var iFrameWith = (width == undefined) ? contentPanelAnchor.offsetWidth : width;
-							if (iFrameWith == 0) {
+							if (iFrameWith < 10) {
 								iFrameWith = 300; // TODO?
 							}
 
