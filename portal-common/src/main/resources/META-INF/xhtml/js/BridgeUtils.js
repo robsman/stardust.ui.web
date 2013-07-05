@@ -589,6 +589,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			injectJavaScript(head, 'plugins/common/iPopupDialog.js');
 			injectJavaScript(head, 'plugins/common/js/Messaging.js');
 			injectJavaScript(head, 'plugins/common/js/ProcessPortal.js');
+			injectJavaScript(head, 'plugins/common/UiUtils.js');
 		}
 
 		/*
