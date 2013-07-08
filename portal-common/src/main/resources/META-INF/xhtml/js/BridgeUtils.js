@@ -958,11 +958,7 @@ if (!window["BridgeUtils"].FrameManager) {
 							pos.x += posFrame.x;
 							pos.y += posFrame.y;
 
-							var iFrameWith = (width == undefined) ? contentPanelAnchor.offsetWidth : width;
-							if (iFrameWith < 10) {
-								iFrameWith = 300; // TODO?
-							}
-
+							var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
 							var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
 							if (iFrameHeight == 0) {
 								iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
@@ -1200,6 +1196,29 @@ if (!window["BridgeUtils"].FrameManager) {
 					return null;
 				}
 			}
+		}
+
+		/*
+		 * If node parent is TD then offsetWidth value is not correct.
+		 * So loop through all parents till correct value is found
+		 */
+		function getOffsetWidth(node, shouldBeMoreThan, defaultOffsetWidth) {
+			var minOffsetWidth = shouldBeMoreThan ? shouldBeMoreThan : 10;
+			var defValue = defaultOffsetWidth ? defaultOffsetWidth : 200;
+
+			var offsetWidth = minOffsetWidth;
+			while (node && node.offsetWidth != undefined) {
+				if (node.offsetWidth > minOffsetWidth) {
+					offsetWidth = node.offsetWidth;
+					break;
+				} else {
+					node = node.parentNode;
+				}
+			}
+
+			offsetWidth = offsetWidth > minOffsetWidth ? offsetWidth : defValue;
+
+			return offsetWidth;
 		}
 
 		/*
