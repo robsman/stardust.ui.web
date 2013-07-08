@@ -40,19 +40,19 @@
 	<div id="viewFormLPContainer">
 		<!-- Active View Handlers -->
 		<ice:form id="viewFormLP">
-		<ice:inputHidden id="activeViewChanged" value=""
+	       	<ice:inputHidden id="activeViewChanged" value="#{ippSingleViewLaunchPanels.emptyString}"
 				valueChangeListener="#{ippSingleViewLaunchPanels.activeViewChanged}"
 				partialSubmit="true" immediate="true" />
-		<ice:inputHidden id="viewClosed" value=""
+	       	<ice:inputHidden id="viewClosed" value="#{ippSingleViewLaunchPanels.emptyString}"
 				valueChangeListener="#{ippSingleViewLaunchPanels.viewClosed}"
 				partialSubmit="true" immediate="true" />
-		<ice:inputHidden id="launchPanelsSync" value=""
+	       	<ice:inputHidden id="launchPanelsSync" value="#{ippSingleViewLaunchPanels.emptyString}"
 				valueChangeListener="#{ippSingleViewLaunchPanels.launchPanelsSynced}"
 				partialSubmit="true" immediate="true" />
-		<ice:inputHidden id="sidebarChanged" value=""
+	       	<ice:inputHidden id="sidebarChanged" value="#{ippSingleViewLaunchPanels.emptyString}"
 				valueChangeListener="#{ippSingleViewLaunchPanels.sidebarChanged}"
 				partialSubmit="true" immediate="true" />
-		<ice:inputHidden id="messageData" value=""
+	       	<ice:inputHidden id="messageData" value="#{ippSingleViewLaunchPanels.emptyString}"
 				valueChangeListener="#{ippSingleViewLaunchPanels.messageReceived}"
 					partialSubmit="true" immediate="true" />
 		</ice:form>

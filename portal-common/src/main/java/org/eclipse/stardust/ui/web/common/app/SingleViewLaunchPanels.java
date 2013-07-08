@@ -169,4 +169,14 @@ public class SingleViewLaunchPanels implements InitializingBean
    {
       this.singleViewEventScript = singleViewEventScript;
    }
+   
+   public String getEmptyString()
+   {
+      return "";
+   }
+
+   public void setEmptyString(String empty)
+   {
+      // IGNORE
+   }
 }
