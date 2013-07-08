@@ -1182,6 +1182,32 @@ public class PortalApplication
    }
 
    /**
+    * 
+    * @param view
+    */
+   public void updateViewIconClass(View view)
+   {
+      String iconClass = deriveIconClass(view.getIcon());
+      // FOR PANAMA
+      String popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "');";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+      addEventScript(popupScript);
+   }
+
+   /**
+    * 
+    * @param view
+    */
+   public void updateViewTitle(View view)
+   {
+      String title = view.getLabel();
+      // FOR PANAMA
+      String popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
+      addEventScript(popupScript);
+   }
+   
+   /**
     * @param view
     */
    private void handleViewClosePanama(View view)

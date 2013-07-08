@@ -390,8 +390,12 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
          thisView.getViewParams().put("documentVersion", documentVersion);
          thisView.setIcon(documentContentInfo.getIcon());
+         // FOR PANAMA
+         PortalApplication.getInstance().updateViewIconClass(thisView);
+         
          thisView.getViewParams().put("documentName", documentContentInfo.getName());
          thisView.resolveLabelAndDescription();
+         PortalApplication.getInstance().updateViewTitle(thisView);
 
          // update popup content if it is already in open state
          ExternalDocumentViewerBean externalDocumentViewer = ExternalDocumentViewerBean.getInstance();

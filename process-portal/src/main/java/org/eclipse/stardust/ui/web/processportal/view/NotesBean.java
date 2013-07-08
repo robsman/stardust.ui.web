@@ -30,6 +30,7 @@ import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
@@ -145,10 +146,13 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       List<Note> noteList = attributes.getNotes();
       setNotes(noteList);
       if (noteList != null && noteList.size() > 0)
-        thisView.setIcon("/plugins/views-common/images/icons/mime-types/notes-filled.png");
-      else
-         thisView.setIcon("/plugins/views-common/images/icons/notes-blank.png");
-
+         thisView.setIcon("/plugins/views-common/images/icons/mime-types/notes-filled.png");
+       else
+          thisView.setIcon("/plugins/views-common/images/icons/notes-blank.png");
+      
+      // FOR PANAMA
+      PortalApplication.getInstance().updateViewIconClass(thisView);
+      
       Date noteTimestamp = (Date) getParamValue("noteTimestamp");
       Integer noteIndex = (Integer) getParamValue("noteIndex");
       if (null != noteTimestamp)

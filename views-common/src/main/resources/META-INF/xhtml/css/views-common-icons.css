@@ -3,5 +3,173 @@
 }
 
 .activity {
-	background: url("../images/icons/process-history/activity.png") no-repeat;
+	background: url("../images/icons/process-history/activity.png")
+		no-repeat;
 }
+
+.process {
+	background: url("../images/icons/process.png") no-repeat;
+}
+
+.page_white_find {
+	background: url("../images/icons/page_white_find.png") no-repeat;
+}
+
+.envelope {
+	background: url("../images/icons/envelope.png") no-repeat;
+}
+
+.chart-pie {
+	background: url("../images/icons/chart-pie.png") no-repeat;
+}
+
+.user-silhouette {
+	background: url("../images/icons/user-silhouette.png") no-repeat;
+}
+
+.process_manager {
+	background: url("../images/icons/process_manager.png") no-repeat;
+}
+
+.cog_search {
+	background: url("../images/icons/cog_search.png") no-repeat;
+}
+
+.pending_activities {
+	background: url("../images/icons/pending_activities.png") no-repeat;
+}
+
+.activity_completed {
+	background:
+		url("../images/icons/process-history/activity_completed.png")
+		no-repeat;
+}
+
+.activity_postponed {
+	background: url("../images/icons/activity_postponed.png") no-repeat;
+}
+
+.activity_stranded {
+	background: url("../images/icons/activity_stranded.png") no-repeat;
+}
+
+.group {
+	background: url("../images/icons/group.png") no-repeat;
+}
+
+.role {
+	background: url("../images/icons/role.png") no-repeat;
+}
+
+.group_key {
+	background: url("../images/icons/group_key.png") no-repeat;
+}
+
+.chart-up {
+	background: url("../images/icons/chart-up.png") no-repeat;
+}
+
+.chart-up-color {
+	background: url("../images/icons/chart-up-color.png") no-repeat;
+}
+
+.traffic_light {
+	background: url("../images/icons/traffic_light.png") no-repeat;
+}
+
+.money-coin {
+	background: url("../images/icons/money-coin.png") no-repeat;
+}
+
+.criticality_manager {
+	background: url("../images/icons/criticality_manager.png") no-repeat;
+}
+
+.criticality_manager {
+	background: url("../images/icons/criticality_manager.png") no-repeat;
+}
+
+.notes-filled {
+	background: url("../images/icons/mime-types/notes-filled.png") no-repeat;
+}
+
+.notes-blank {
+	background: url("../images/icons/notes-blank.png") no-repeat;
+}
+
+.activity_qa_passed {
+	background: url("../images/icons/activity_qa_passed.png") no-repeat;
+}
+
+.activity_qa_failed {
+	background: url("../images/icons/activity_qa_failed.png") no-repeat;
+}
+
+.activity_qa_await {
+	background: url("../images/icons/activity_qa_await.png") no-repeat;
+}
+
+.html {
+	background: url("../images/icons/mime-types/html.png") no-repeat;
+}
+
+.document-image {
+	background: url("../images/icons/mime-types/document-image.png") no-repeat;
+}
+
+.images {
+	background: url("../images/icons/mime-types/images.png") no-repeat;
+}
+
+.document-pdf-text {
+	background: url("../images/icons/mime-types/document-pdf-text.png") no-repeat;
+}
+
+.document-word-text {
+	background: url("../images/icons/mime-types/document-word-text.png") no-repeat;
+}
+
+.document-film {
+	background: url("../images/icons/mime-types/document-film.png") no-repeat;
+}
+
+.document-flash-movie {
+	background: url("../images/icons/mime-types/document-flash-movie.png") no-repeat;
+}
+
+.document-music {
+	background: url("../images/icons/mime-types/document-music.png") no-repeat;
+}
+
+.document-zipper {
+	background: url("../images/icons/mime-types/document-zipper.png") no-repeat;
+}
+
+.document-text {
+	background: url("../images/icons/mime-types/document-text.png") no-repeat;
+}
+
+.document-code {
+	background: url("../images/icons/mime-types/document-code.png") no-repeat;
+}
+
+.document-powerpoint {
+	background: url("../images/icons/mime-types/document-powerpoint.png") no-repeat;
+}
+
+.document-excel {
+	background: url("../images/icons/mime-types/document-excel.png") no-repeat;
+}
+
+.tree_document {
+	background: url("../images/icons/mime-types/tree_document.gif") no-repeat;
+}
+
+.report {
+	background: url("../images/icons/mime-types/report.png") no-repeat;
+}
+
+.document-excel-csv {
+	background: url("../images/icons/mime-types/document-excel-csv.png") no-repeat;
+}
+

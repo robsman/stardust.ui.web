@@ -401,6 +401,8 @@ public class ActivityDetailsBean extends UIComponentBean
          if (StringUtils.isNotEmpty(iconPath))
          {
             thisView.setIcon(iconPath);
+            // FOR PANAMA
+            PortalApplication.getInstance().updateViewIconClass(thisView);
          }
          
          hasCreateCasePermission = AuthorizationUtils.canCreateCase();
