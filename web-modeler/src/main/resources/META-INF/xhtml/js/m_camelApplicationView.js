@@ -170,11 +170,16 @@ define(
 							+ "'></img><span class='tabLabel' id='" + id + "'>"
 							+ name + "</span> </a></li>");
 
-					var html = jQuery("#" + scope + " #" + id + "Tab").html();
+					var elem = jQuery("#" + scope + " #" + id + "Tab");
+					var html = elem.html();
 
 					jQuery("#" + scope + " #" + id + "Tab").empty();
 					propertiesTabs.append("<div id='" + id + "Tab'>" + html
 							+ "</div>");
+					// After append remove old contents
+					if (elem.length > 0) {
+						elem[0].parentNode.removeChild(elem[0]);
+					}
 				};
 
 				/**
