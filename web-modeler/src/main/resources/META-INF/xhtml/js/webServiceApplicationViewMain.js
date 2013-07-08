@@ -55,8 +55,9 @@ require(["require",
 		 "i18n",
 		 "bpm-modeler/js/m_webServiceApplicationView"],
 		 function(require) {
-		require("bpm-modeler/js/m_webServiceApplicationView").initialize(
-				jQuery.url(window.location.search).param("fullId"));
+
+//		require("bpm-modeler/js/m_webServiceApplicationView").initialize(
+//				jQuery.url(window.location.search).param("fullId"));
 
 		require("bpm-modeler/js/m_webServiceApplicationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
 });

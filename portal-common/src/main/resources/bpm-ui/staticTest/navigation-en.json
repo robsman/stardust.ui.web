@@ -102,6 +102,13 @@
 			                "icon":"viewIconBase tabIcon-generic",
 			                "module": "bpm-ui",
 			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/genericApplicationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/webServiceApplicationView/:id",
+			                "icon":"viewIconBase genericViewIcon",
+			                "module": "bpm-ui",
+			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
 			            }
 					]
 	            }
