@@ -22,6 +22,7 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -300,6 +301,10 @@ public class LoginDialogBean implements Serializable, InitializingBean
                // and can be accessed from REST calls (without FacesContext)
                UserProvider userProvider = (UserProvider)FacesUtils.getBeanFromContext("userProvider");
                userProvider.getUser().getDisplayName();
+
+               // Completely Initialize Application,
+               // so that it and can be accessed from REST calls (without FacesContext)
+               PortalApplication.getInstance();
             }
          }
 

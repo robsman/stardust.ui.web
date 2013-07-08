@@ -2,6 +2,8 @@ package org.eclipse.stardust.ui.web.html5.rest;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -15,8 +17,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.springframework.core.io.ClassPathResource;
 
@@ -79,7 +83,26 @@ public class HTML5FrameworkServices
    @Path("themes/current")
    public Response themesCurrent(@QueryParam("context") String context, @QueryParam("appStage") String appStage)
    {
-      return Response.ok(getCodeResource("bpm-ui/staticTest/theme1.json"), MediaType.APPLICATION_JSON_TYPE).build();
+      String contents = getCodeResource("bpm-ui/staticTest/theme1.json");
+
+      String stylesJson = "";
+      ThemeProvider themeProvider = RestControllerUtils.resolveSpringBean(ThemeProvider.class, servletContext);
+      List<String> styleSheets = themeProvider.getStyleSheets();
+      if (CollectionUtils.isNotEmpty(styleSheets))
+      {
+         StringBuffer sb = new StringBuffer();
+         Iterator<String> it = styleSheets.iterator();
+         while(it.hasNext())
+         {
+            String css = it.next();
+            sb.append(",\n\t\"").append(css.substring(1)).append("\"");
+         }
+         stylesJson = sb.toString();
+      }
+      
+      contents = StringUtils.replace(contents, "PORAL_SKIN_STYLE_SHEETS", stylesJson);
+
+      return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    /**
