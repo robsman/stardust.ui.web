@@ -20,7 +20,7 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 				view.params = [];
 			}
 
-			$scope.iframeId = "Frame" + Math.floor((Math.random()*100) + 1);
+			$scope.iframeId = "Frame" + Math.floor((Math.random()*100000) + 1);
 			view.params["iframeId"] = $scope.iframeId;
 
 			$scope.label = view.label;
