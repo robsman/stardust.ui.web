@@ -155,8 +155,9 @@ define(
 							getCumulatedExtensions()[m] = [];
 						}
 
-						getCumulatedExtensions()[m]
-								.push(extensionsForExtensionPoint[n]);
+						if (-1 == getCumulatedExtensions()[m].indexOf(extensionsForExtensionPoint[n])) {
+							getCumulatedExtensions()[m].push(extensionsForExtensionPoint[n]);
+						}
 					}
 				}
 			}
