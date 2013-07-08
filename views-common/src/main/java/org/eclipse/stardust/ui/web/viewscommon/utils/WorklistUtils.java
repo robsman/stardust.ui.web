@@ -518,6 +518,25 @@ public class WorklistUtils
    }
    
    /**
+    * returns unified list of activities assigned to user(Personal,Role)
+    * 
+    * @return
+    */
+   public static ActivityInstanceQuery getAllUserAssignedActivities()
+   {
+      ActivityInstanceQuery allAssignedActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+      allAssignedActivitiesQuery.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+
+      allAssignedActivitiesQuery.setPolicy(new SubsetPolicy(0, true));
+      allAssignedActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
+
+      applyFilterProviders(allAssignedActivitiesQuery);
+
+      return allAssignedActivitiesQuery;
+   }
+   
+   /**
     * @param query
     * @param process
     */

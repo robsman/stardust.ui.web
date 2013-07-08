@@ -15,10 +15,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -74,7 +75,12 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
             for (Worklist worklist : entry.getValue())
             {
                worklistOwner = worklist.getOwner();
-               
+               if(entry.getKey().equals(worklistOwner.getId()))
+               {
+                  participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
+                        worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),WorklistUtils.getAllUserAssignedActivities(),worklist.getTotalCountThreshold(),entry.getKey()));
+               }
+               else
                participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
                      worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),worklist.getTotalCountThreshold(),entry.getKey()));
             }
@@ -149,6 +155,17 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    {
       WorklistQuery worklistQuery = participantWorklists.get(new ParticipantInfoWrapper(participantInfo)).getWorklistQuery();
       return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
+   }
+   
+   /**
+    * @param participantInfo
+    * @return
+    */
+   public ActivityInstanceQuery getActivityInstanceQuery(ParticipantInfo participantInfo)
+   {
+      ParticipantWorklistCacheEntry pwc=participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      ActivityInstanceQuery activityInstanceQuery = participantWorklists.get(new ParticipantInfoWrapper(participantInfo)).getActivityInstanceQuery();
+      return (ActivityInstanceQuery) QueryUtils.getClonedQuery(activityInstanceQuery);
    }
    
    /**

@@ -20,9 +20,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
+import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
@@ -67,22 +70,29 @@ public class WorklistsTreeUserObject extends IceUserObject
       String viewKey = ParticipantUtils.getWorklistViewKey(participantInfo);
       Participant participant= ParticipantUtils.getParticipant(participantInfo);
       Map<String, Object> params = CollectionUtils.newTreeMap();
+      Query query = null;
       boolean leafNode= Boolean.valueOf((FacesUtils.getRequestParameter("leafNode")));
-      WorklistQuery query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo);
       if (!leafNode)
       {
+         // Use Activity Instance Query for Unified worklist
+         query = ParticipantWorklistCacheManager.getInstance().getActivityInstanceQuery(participantInfo);
+         FilterOrTerm or = query.getFilter().addOrTerm();
+         User user = (User) ParticipantUtils.getParticipant(participantInfo);
+         or.add(new PerformingUserFilter(user.getOID()));
          Set<ParticipantInfo> partInfo = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
                .get(participantInfo.getId());
          for (ParticipantInfo participantInfo1 : partInfo)
          {
-            if (!participantInfo1.getId().equals(participantInfo.getId()))
-            {
-               query.setParticipantContribution(PerformingParticipantFilter.forParticipant(participantInfo1, false));
-            }
+            if (!(participantInfo1 instanceof UserInfo))
+               or.add(PerformingParticipantFilter.forParticipant(participantInfo1));
          }
          // As Personal WL also has same viewKey,append Qualifier Id to make Unique
          // viewKey at parent Node
          viewKey = viewKey + participantInfo.getQualifiedId();
+      }
+      else
+      {
+         query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo);
       }
       params.put(Query.class.getName(), query);
       params.put("participantInfo", participantInfo);
