@@ -23,7 +23,7 @@
 	for (var prop in pathsWithContext) {
 		pathsWithContext[prop] = pathsWithContext[prop].replace('/main.html/', '/');
 	}
-	var packages = sungard.packages(['bpm-ui', 'shell', 'sg-components', 'sg-kendo-components']);
+	var packages = sungard.packages(['bpm-ui', 'shell', 'sg-components']);
 
 	var r = requirejs.config({
 		paths: pathsWithContext,
@@ -33,7 +33,7 @@
 	});
 
 	// invoke initialization
-	r(['sg-kendo-components', 'sg-components', 'shell', 'bpm-ui'
+	r(['sg-components', 'shell', 'bpm-ui'
 		], function() {
 			// everything is loaded, start application
 			sungard.start();
