@@ -32,6 +32,10 @@
 </head>
 <body onload="init();">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
+	<ice:panelGroup
+		rendered="#{ippMessageDialog.fromlaunchPanels == 'true'}">
+		<ui:include src="portalMessageDialog.xhtml" />
+	</ice:panelGroup>
 
 	<div id="viewFormLPContainer">
 		<!-- Active View Handlers -->

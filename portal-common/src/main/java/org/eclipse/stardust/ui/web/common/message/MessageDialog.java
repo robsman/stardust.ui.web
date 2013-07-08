@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.faces.context.FacesContext;
+
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -57,6 +59,20 @@ public class MessageDialog extends PopupDialog
       modal = true;
    }
    
+   public void openPopup()
+   {
+	   String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+	   if (StringUtils.isNotEmpty(viewId))
+	   {
+		   if (viewId.endsWith("/portalSingleViewLaunchPanelsOnly.xhtml"))
+		   {
+			   fromlaunchPanels = true;
+		   }
+	   }
+	   
+	   super.openPopup();
+   }
+
    /**
     * @return
     */
@@ -292,4 +308,5 @@ public class MessageDialog extends PopupDialog
    {
       return exception;
    }
+   
 }
