@@ -36,7 +36,7 @@ define(
 				}, {
 					id : "mailIntegrationOverlay",
 					name : "E-Mail Send/Receive",
-					pageHtmlUrl : "mailIntegrationOverlay.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/mailIntegrationOverlay.html",
 					provider : MailIntegrationOverlay,
 					visibility : "preview"
 				}, {
@@ -54,7 +54,7 @@ define(
 				{
 					id : "scriptingIntegrationOverlay",
 					name : "Script Invocation",
-					pageHtmlUrl: "scriptingIntegrationOverlay.html",
+					pageHtmlUrl: "plugins/bpm-modeler/views/modeler/scriptingIntegrationOverlay.html",
 					provider : ScriptingIntegrationOverlay,
 				}],
 				eventIntegrationOverlay : [

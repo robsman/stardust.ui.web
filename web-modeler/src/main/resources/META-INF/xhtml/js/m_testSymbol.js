@@ -151,7 +151,7 @@ define(
 					this.addToPrimitives(this.rect);
 
 					this.image = m_canvasManager.drawImageAt(
-							"../../images/icons/camunda.gif", this.x
+							"plugins/bpm-modeler/images/icons/camunda.gif", this.x
 									+ TEST_WIDTH - 0.5 * 16, this.y
 									+ TEST_HEIGHT - 0.5 * 16, 16, 16);
 

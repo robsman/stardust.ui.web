@@ -37,14 +37,14 @@ define(
 									"parameters",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.scripting.parameters.title"),
-									"../../images/icons/table.png");
+									"plugins/bpm-modeler/images/icons/table.png");
 					this.view
 							.insertPropertiesTab(
 									"scriptingIntegrationOverlay",
 									"test",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.scripting.test.title"),
-									"../../images/icons/table.png");
+									"plugins/bpm-modeler/images/icons/table.png");
 
 					this.scriptCodeHeading = jQuery("#scriptingIntegrationOverlay #scriptCodeHeading");
 					this.languageSelect = jQuery("#scriptingIntegrationOverlay #languageSelect");

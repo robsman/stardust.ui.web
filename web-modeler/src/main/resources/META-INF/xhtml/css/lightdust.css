@@ -361,7 +361,7 @@ div.toolBar {
 }
 
 .selected-tool {
-	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
+	background: url(plugins/bpm-modeler/images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
 }
@@ -378,7 +378,7 @@ input.toolbarButton .disabled {
 }
 
 input.toolbarButton:hover {
-	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
+	background: url(plugins/bpm-modeler/images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700;
 	cursor: pointer;
 }

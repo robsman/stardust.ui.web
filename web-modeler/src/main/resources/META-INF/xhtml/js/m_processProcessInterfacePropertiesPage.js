@@ -188,7 +188,7 @@ define(
 										}
 
 										event.data.page.parameterDefinitionsTableBody
-												.append("<tr id=\"newRow\"><td><a id=\"newLink\"><img src=\"../../images/icons/add.png\"/></a></td><td></td><td></td><td></td>");
+												.append("<tr id=\"newRow\"><td><a id=\"newLink\"><img src=\"plugins/bpm-modeler/images/icons/add.png\"/></a></td><td></td><td></td><td></td>");
 
 										jQuery(
 												"#processInterfaceFromDataCreationWizard")

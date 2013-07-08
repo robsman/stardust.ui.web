@@ -36,11 +36,11 @@ define(
 
 					this.view.insertPropertiesTab("genericEndpointOverlay",
 							"producerRoute", "Producer Route",
-							"../../images/icons/table.png");
+							"plugins/bpm-modeler/images/icons/table.png");
 
 					this.view.insertPropertiesTab("genericEndpointOverlay",
 							"consumerRoute", "Consumer Route",
-							"../../images/icons/table.png");
+							"plugins/bpm-modeler/images/icons/table.png");
 
 
 

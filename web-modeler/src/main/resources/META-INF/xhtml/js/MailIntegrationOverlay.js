@@ -67,21 +67,21 @@ define(
 									"parameters",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.parameters.title"),
-									"../../images/icons/table.png");
+									"plugins/bpm-modeler/images/icons/table.png");
 					this.view
 							.insertPropertiesTab(
 									"mailIntegrationOverlay",
 									"response",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.response.title"),
-									"../../images/icons/table.png");
+									"plugins/bpm-modeler/images/icons/table.png");
 					this.view
 							.insertPropertiesTab(
 									"mailIntegrationOverlay",
 									"test",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.test.title"),
-									"../../images/icons/table.png");
+									"plugins/bpm-modeler/images/icons/table.png");
 
 					this.scriptCodeHeading = jQuery("#mailIntegrationOverlay #scriptCodeHeading");
 					this.serverInput = jQuery("#mailIntegrationOverlay #serverInput");

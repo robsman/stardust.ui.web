@@ -81,7 +81,7 @@ define(
 					this.applicationFrame
 					.attr(
 							"src",
-							"./emptyScreen.html");
+							"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 
 					this.runButton
 							.click(
@@ -149,14 +149,14 @@ define(
 																	view.applicationFrame
 																	.attr(
 																			"src",
-																			"./emptyScreen.html");
+																			"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 																}
 															}
 														}).fail(function() {
 															view.applicationFrame
 															.attr(
 																	"src",
-																	"./emptyScreen.html");
+																	"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 												});
 									});
 					this.resetButton

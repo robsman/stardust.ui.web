@@ -19,7 +19,7 @@ define(
 						{
 							panelId : "uiMashupApplicationView",
 							id : "uiMashupTestPropertiesPage",
-							pageHtmlUrl : "uiMashupTestPropertiesPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/uiMashupTestPropertiesPage.html",
 							provider : UiMashupTestPropertiesPage,
 							visibility : "preview",
 							pageName : m_i18nUtils
