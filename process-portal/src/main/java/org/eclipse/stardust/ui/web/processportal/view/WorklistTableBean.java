@@ -432,13 +432,7 @@ public class WorklistTableBean extends UIComponentBean
       {
          Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
             queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
-            //TODO- Temperory code added to handle scenario when null Sub-Worklist is returned.
-            //Engine should return empty list
-            if(null == queryResult)
-            {
-            	queryResult = new RawQueryResult<Object>(worklist, worklist.getSubsetPolicy(), false,
-                        Long.valueOf(0), worklist.getTotalCountThreshold());
-            }
+            
             if (!filtersAddedToQuery)
             {
                ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo,
