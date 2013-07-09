@@ -953,7 +953,7 @@ define(
 
 						select += "<option value=\"other\" selected>"
 						+ m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.other")
+								.getProperty("modeler.general.toBeDefined")
 						+ "</option>";
 					}
 
