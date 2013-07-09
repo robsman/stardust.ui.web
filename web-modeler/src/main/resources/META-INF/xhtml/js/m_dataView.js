@@ -291,11 +291,11 @@ define(
 									$scope.watchRegistered = true;
 								}
 							}
-						});
+						}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 					} else {
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
-						});
+						}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 					}
 				};
 
@@ -315,7 +315,7 @@ define(
 							// Parse Error
 							$scope.timestampInputTextError = true;
 						}
-					});
+					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 				}
 
 				/**

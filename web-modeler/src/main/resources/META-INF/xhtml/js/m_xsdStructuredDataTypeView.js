@@ -198,7 +198,7 @@ define(
 
 							return true;
 						}
-					});
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
 
 					if (typeDeclaration.getType() === "importedStructuredDataType") {
 						m_modelerUtils.disableToolbarControl(this.addButton);
@@ -434,7 +434,7 @@ define(
 								$scope.maxLength = maxVal;
 							}
 						}
-					});
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
 
 					this.updateViewIcon();
 
