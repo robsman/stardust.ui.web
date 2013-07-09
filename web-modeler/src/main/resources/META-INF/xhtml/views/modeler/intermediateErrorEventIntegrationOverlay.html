@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Timer Event</title>
+</head>
+<body>
+	<div id="propertiesTabs" style="margin-top: 10px;">
+		<ul id="propertiesTabsList">
+			<li><a href="#configurationTab"><span class="tabLabel"
+					id="configuration">Configuration</span> </a>
+			</li>
+			<!--li><a href="#parametersTab"><span class="tabLabel"
+					id="parameters">Parameters</span> </a></li-->
+		</ul>
+
+		<div id="configurationTab">
+			<!-- intermediate event  -->
+			<table
+				style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
+				<tr>
+					<td style="width: 5%"><input id="autoBindingInput"
+						type="checkbox" /></td>
+					<td style="width: 95%"><label for="autoBindingInput">Automatic
+							Binding</label></td>
+				</tr>
+				<tr>
+					<td><input id="logHandlerInput" type="checkbox" /></td>
+					<td><label for="logHandlerInput">Log Handler</label></td>
+				</tr>
+				<tr>
+					<td><input id="consumeOnMatchInput" type="checkbox" /></td>
+					<td><label for="consumeOnMatchInput">Consume On Match</label>
+					</td>
+				</tr>
+				<tr>
+					<td><input id="interruptingInput" type="checkbox" /></td>
+					<td><label for="interruptingInput">Interrupting</label></td>
+				</tr>
+			</table>
+			<table
+				style="width: 100%; border-collapse: separate; border-spacing: 2px 2px">
+				<tr>
+					<td><select id="interruptingSelect"
+						style="margin-left: 25px; width: 150px"></select></td>
+				</tr>
+			</table>
+			<table
+				style="width: 100%; border-collapse: separate; border-spacing: 2px 10px">
+				<tr>
+					<td style="width: 30%;"><label for="eventTriggerInput">Event
+							Trigger</label>
+					</td>
+					<td style="width: 70%;"><input id="eventTriggerInput" style="width: 150px;">
+					</input>
+					</td>
+				</tr>
+			</table>
+
+			<table
+				style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
+				<tr>
+					<td style="width: 30%;"><label for="eventActionSelect">Event Action</label>
+					</td>
+					<td style="width: 70%;"><select id="eventActionSelect" style="height: 22px; width: 150px;">
+					</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

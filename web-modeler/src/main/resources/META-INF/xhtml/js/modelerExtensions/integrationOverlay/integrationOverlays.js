@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -16,14 +16,16 @@ define(
 				"bpm-modeler/js/ScriptingIntegrationOverlay",
 				"bpm-modeler/js/m_manualTriggerIntegrationOverlay",
 				"bpm-modeler/js/m_timerEventIntegrationOverlay",
+				"bpm-modeler/js/m_intermediateTimerEventIntegrationOverlay",
+				"bpm-modeler/js/m_intermediateErrorEventIntegrationOverlay",
 				"bpm-modeler/js/m_fileEventIntegrationOverlay",
 				"bpm-modeler/js/m_emailEventIntegrationOverlay",
 				"bpm-modeler/js/m_messageEventIntegrationOverlay",
 				"bpm-modeler/js/m_scanEventIntegrationOverlay",
 				"bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
 		function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay, m_manualTriggerIntegrationOverlay,
-				m_timerEventIntegrationOverlay, m_fileEventIntegrationOverlay,
-				m_emailEventIntegrationOverlay,
+				m_timerEventIntegrationOverlay,  m_intermediateTimerEventIntegrationOverlay, m_intermediateErrorEventIntegrationOverlay,
+				m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay,
 				m_messageEventIntegrationOverlay,
 				m_scanEventIntegrationOverlay,
 				m_genericCamelRouteEventIntegrationOverlay) {
@@ -69,16 +71,31 @@ define(
 						{
 							id : "timerEvent",
 							name : "Timer Event",
-							eventTypes : [ "startEvent", "intermediateEvent" ],
+							eventTypes : [ "startEvent"],
 							eventClass : "timer",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/timerEventIntegrationOverlay.html",
 							provider : m_timerEventIntegrationOverlay
 						},
 						{
+							id : "timerEvent_intermediate",
+							name : "Timer Event",
+							eventTypes : [ "intermediateEvent" ],
+							eventClass : "timer",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/intermediateTimerEventIntegrationOverlay.html",
+							provider : m_intermediateTimerEventIntegrationOverlay
+						},
+						{
+							id : "errorEvent_intermediate",
+							name : "error Event",
+							eventTypes : [ "intermediateEvent" ],
+							eventClass : "error",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/intermediateErrorEventIntegrationOverlay.html",
+							provider : m_intermediateErrorEventIntegrationOverlay
+						},
+						{
 							id : "fileEvent",
 							name : "File Event",
-							eventTypes : [ "startEvent", "intermediateEvent",
-									"endEvent" ],
+							eventTypes : [ "startEvent", "endEvent" ],
 							eventClass : "message",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/fileEventIntegrationOverlay.html",
 							provider : m_fileEventIntegrationOverlay
@@ -86,8 +103,7 @@ define(
 						{
 							id : "emailEvent",
 							name : "EMail Event",
-							eventTypes : [ "startEvent", "intermediateEvent",
-									"endEvent" ],
+							eventTypes : [ "startEvent", "endEvent" ],
 							eventClass : "message",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/emailEventIntegrationOverlay.html",
 							provider : m_emailEventIntegrationOverlay
@@ -95,8 +111,7 @@ define(
 						{
 							id : "messageEvent",
 							name : "Message Event",
-							eventTypes : [ "startEvent", "intermediateEvent",
-									"endEvent" ],
+							eventTypes : [ "startEvent", "endEvent" ],
 							eventClass : "message",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/messageEventIntegrationOverlay.html",
 							provider : m_messageEventIntegrationOverlay
