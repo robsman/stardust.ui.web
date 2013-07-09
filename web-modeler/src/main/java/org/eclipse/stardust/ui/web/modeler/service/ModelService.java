@@ -1978,6 +1978,11 @@ public class ModelService
             modelElemendId = modelId + "/" + modelId + "/"
                   + ((ModelType) modelElement).getOid();
          }
+         else if (modelElement != null && modelElement instanceof TypeDeclarationType)
+         {
+            modelElemendId = modelId + "/" + modelId + "/"
+                  + ((TypeDeclarationType) modelElement).getId();
+         }
 
          issueJson.addProperty("modelElement", modelElemendId);
          issuesJson.add(issueJson);
