@@ -122,9 +122,11 @@ define(
 				if (elements) {
 					// append child rows
 					jQuery.each(elements, function(i, element) {
-						var childSchemaType = (isStruct && (typeof schemaTypeOrElements.resolveElementType === "function"))
-							? schemaTypeOrElements.resolveElementType(element.name)
-							: undefined;
+
+						var childSchemaType = undefined;
+						if(isStruct && (typeof schemaTypeOrElements.resolveElementType === "function")){
+							childSchemaType = schemaTypeOrElements.resolveElementType(element.name);
+						}
 						var childRow = generateChildElementRow(parentPath, element, childSchemaType, rowInitializer);
 
 						childRows.push(childRow);

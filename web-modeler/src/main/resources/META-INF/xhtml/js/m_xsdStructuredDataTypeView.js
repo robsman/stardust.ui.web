@@ -287,10 +287,28 @@ define(
 
 				XsdStructuredDataTypeView.prototype.setBaseType = function(
 						typeDeclaration) {
-					var baseTypeDeclaration = this
-							.resolveBaseType(typeDeclaration);
-					if (baseTypeDeclaration != null) {
-						this.baseTypeSelect.val(baseTypeDeclaration.uuid);
+					var baseTypeDeclaration = null;
+
+					if (typeDeclaration && typeDeclaration.getTypeDeclaration()
+							&& typeDeclaration.getTypeDeclaration().base) {
+						baseTypeDeclaration = this
+								.resolveBaseType(typeDeclaration);
+
+							if (baseTypeDeclaration == null) {
+								this.errorMessages.push(m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.parentStrTypeNotResolved")
+										+ " " + typeDeclaration.getTypeDeclaration().base);
+
+							if (this.baseTypeSelect.val() != 'pleaseSpecify') {
+								var optionsString = "<option value='pleaseSpecify'>"
+										+ m_i18nUtils.getProperty("modeler.general.toBeDefined")
+										+ "</option>";
+								this.baseTypeSelect.append(optionsString);
+								this.baseTypeSelect.val('pleaseSpecify');
+							}
+						} else {
+							this.baseTypeSelect.val(baseTypeDeclaration.uuid);
+						}
 					} else {
 						this.baseTypeSelect.val("None");
 					}
@@ -302,8 +320,7 @@ define(
 				XsdStructuredDataTypeView.prototype.resolveBaseType = function(
 						typeDeclaration) {
 					var basetypeDecl = null;
-					if (typeDeclaration && typeDeclaration.getTypeDeclaration()
-							&& typeDeclaration.getTypeDeclaration().base) {
+					 {
 						var baseTypeId = typeDeclaration.getTypeDeclaration().base
 								.substring(typeDeclaration.getTypeDeclaration().base
 										.indexOf(":") + 1);
@@ -459,9 +476,11 @@ define(
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 
+					this.clearErrorMessages();
 					this.setBaseType(this.typeDeclaration);
 
 					this.refreshElementsTable();
+					this.showErrorMessages();
 
 					//restore focus if the entry is changed
 					this.restoreFocus();
@@ -621,7 +640,7 @@ define(
 					if (this.typeDeclaration.isSequence()) {
 
 						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
-							typeColumn.append(this.getTypeSelectList(schemaType));
+							typeColumn.append(this.getTypeSelectList(schemaType, element));
 						} else {
 							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : (element.type ? element.type : "")));
 						}
@@ -642,7 +661,6 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
-
 					var selectedRowIndex = jQuery("table#typeDeclarationsTable tr.selected").first().index();
 
 					// TODO merge instead of fully rebuild table
@@ -844,7 +862,7 @@ define(
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
+				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType, element) {
 					var select = "<select size='1' class='typeSelect'>";
 					var selected = false;
 
@@ -929,10 +947,14 @@ define(
 					select += "</optgroup>";
 
 					if (!selected) {
+						this.errorMessages.push(element.name  + " : " + m_i18nUtils
+								.getProperty("modeler.model.propertyView.structuredTypes.nestedStrTypeNotResolved")
+								+ " " + element.type);
+
 						select += "<option value=\"other\" selected>"
 						+ m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.other")
-						+ "</option>"
+						+ "</option>";
 					}
 
 					select += "</select>";
