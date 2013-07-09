@@ -1348,7 +1348,7 @@ public class ModelService
 
       // Request data
 
-      String dataId = NameIdUtils.createIdFromName(extractString(json, "requestDataName"));
+      String dataId = NameIdUtilsExtension.createIdFromName(extractString(json, "requestDataName"));
 
       // TODO Weird programming because Model Builder Facade throws
       // ObjectNotFoundException
@@ -1373,7 +1373,7 @@ public class ModelService
       }
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
-            NameIdUtils.createIdFromName(extractString(json, "requestDataName")),
+            NameIdUtilsExtension.createIdFromName(extractString(json, "requestDataName")),
             extractString(json, "requestDataName"),
             extractString(json, "requestDataTypeFullId"), ModeType.IN);
 
@@ -1481,7 +1481,7 @@ public class ModelService
 
       // Create Response Data
 
-      dataId = NameIdUtils.createIdFromName(extractString(json, "responseDataName"));
+      dataId = NameIdUtilsExtension.createIdFromName(extractString(json, "responseDataName"));
 
       // TODO Weird programming because Model Builder Facade throws
       // ObjectNotFoundException
@@ -1506,7 +1506,7 @@ public class ModelService
       }
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
-            NameIdUtils.createIdFromName(extractString(json, "responseDataName")),
+            NameIdUtilsExtension.createIdFromName(extractString(json, "responseDataName")),
             extractString(json, "responseDataName"),
             extractString(json, "responseDataTypeFullId"), ModeType.OUT);
 

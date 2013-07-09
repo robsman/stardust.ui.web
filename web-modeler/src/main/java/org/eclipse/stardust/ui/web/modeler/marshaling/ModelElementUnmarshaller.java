@@ -795,17 +795,17 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                if (element instanceof IIdentifiableElement)
                {
-                  newId = NameIdUtils.createIdFromName(null,
+                  newId = NameIdUtilsExtension.createIdFromName(null,
                         (IIdentifiableElement) element, base);
                }
                else if (element instanceof TypeDeclarationType)
                {
-                  newId = NameIdUtils.createIdFromName(null,
+                  newId = NameIdUtilsExtension.createIdFromName(null,
                         (TypeDeclarationType) element);
                }
                else
                {
-                  newId = NameIdUtils.createIdFromName(newName);
+                  newId = NameIdUtilsExtension.createIdFromName(newName);
                }
             }
          }
@@ -890,7 +890,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             String formalParameterName = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.NAME_PROPERTY);
-            String formalParameterId = NameIdUtils.createIdFromName(formalParameterName);
+            String formalParameterId = NameIdUtilsExtension.createIdFromName(formalParameterName);
             String dataTypeId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.DATA_TYPE_PROPERTY);
 
             if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(dataTypeId))
@@ -983,7 +983,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             dataPath.setName(dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
-            dataPath.setId(NameIdUtils.createIdFromName(dataPathJson.get(
+            dataPath.setId(NameIdUtilsExtension.createIdFromName(dataPathJson.get(
                   ModelerConstants.NAME_PROPERTY).getAsString()));
 
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
@@ -1896,7 +1896,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-                  String id = NameIdUtils.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
+                  String id = NameIdUtilsExtension.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString()); // ID provided from client is ignored
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
