@@ -245,6 +245,7 @@ define(
 						this.throwingInput.prop("disabled", true);
 
 						if (this.propertiesPanel.element.modelElement.eventClass == m_constants.ERROR_EVENT_CLASS) {
+							this.interruptingInput.prop("checked", true);
 							this.interruptingInput.prop("disabled", true);
 						} else {
 							this.interruptingInput.prop("disabled", false);
