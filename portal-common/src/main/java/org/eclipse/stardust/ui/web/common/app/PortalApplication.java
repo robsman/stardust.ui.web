@@ -1223,6 +1223,11 @@ public class PortalApplication
          script2 = StringUtils.replace(script2, "_TYPE_", view.getDefinition().getName());
          script2 = StringUtils.replace(script2, "_ID_", view.getViewKey());
          addEventScript(script2);
+         
+         String script3 = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/Int/_TYPE_/_ID_');";
+         script3 = StringUtils.replace(script3, "_TYPE_", view.getDefinition().getName());
+         script3 = StringUtils.replace(script3, "_ID_", view.getViewKey());
+         addEventScript(script3);
       }
    }
 
