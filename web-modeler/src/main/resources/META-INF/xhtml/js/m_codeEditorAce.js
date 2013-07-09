@@ -13,7 +13,10 @@ define([ "jquery" ], function(jquery) {
 	// Interface
 	return {
 		getCodeEditor : function(textArea) {
-			return new CodeEditor(textArea, "ace/mode/html");
+			// TODO: Ace editor (HTML mode) not working in Panama
+			//return new CodeEditor(textArea, "ace/mode/html");
+			jQuery("#" + textArea).css("display", "none");
+			return new TextAreaEditor(textArea.substring(0, textArea.indexOf("Div")));
 		},
 		getDrlEditor : function(textArea) {
 			return new CodeEditor(textArea, "ace/mode/drl");
@@ -22,7 +25,7 @@ define([ "jquery" ], function(jquery) {
 			return new CodeEditor(textArea, "ace/mode/javascript");
 		}
 	};
-
+	
 	function CodeEditor(textArea, mode) {
 
 		var editor = null;
@@ -82,6 +85,36 @@ define([ "jquery" ], function(jquery) {
 			for (var key in globalVariables) {
 				window[key] = globalVariables[key];
 			}
+		};
+	}
+	
+
+	/**
+	 * Temporary workaround for HTML mode Ace editor.
+	 * Here we return a simple text area wrapped as an editor.
+	 */
+	function TextAreaEditor(textAreaId) {
+		var textArea = jQuery("#" + textAreaId);
+		textArea.css("display", "inline");
+		
+		TextAreaEditor.prototype.getValue = function() {
+			return textArea.val();
+		};
+		
+		TextAreaEditor.prototype.setValue = function(value) {
+			textArea.val(value);
+		};
+		
+		TextAreaEditor.prototype.getEditor = function () {
+			var self = this;
+			return {
+				on : function(eventType, eventHandler) {
+					textArea.change(eventHandler);
+				},
+				getSession : function() {
+					return self;
+				}
+			};
 		};
 	}
 });
