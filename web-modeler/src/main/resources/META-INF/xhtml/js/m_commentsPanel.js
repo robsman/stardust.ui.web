@@ -190,7 +190,7 @@ define(
 					var remainingComments = [];
 					var rows = jQuery(this.scope + " table#commentsTable tr.commentRow");
 
-					for ( var n = 0; n < rows.length; ++n) {
+					for ( var n = rows.length - 1; n >= 0; n--) {
 						if (!jQuery(rows[n]).is(".selected")) {
 							remainingComments
 									.push(this.comments[jQuery(rows[n]).attr(
