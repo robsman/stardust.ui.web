@@ -200,10 +200,8 @@ define(
 					// this.showHideEventTriggerFields('constant');
 
 					this.autoBindingInput.attr("disabled", "disabled");
-
 					this.interruptingInput.attr("checked", "checked");
 					this.interruptingInput.attr("disabled", "disabled");
-
 					this.eventActionSelect.attr("disabled", "disabled");
 
 					var route = null;

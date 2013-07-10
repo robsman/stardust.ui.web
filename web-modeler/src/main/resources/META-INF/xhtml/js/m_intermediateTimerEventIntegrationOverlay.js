@@ -278,10 +278,19 @@ define(
 
 				IntermediateTimerEventIntegrationOverlay.prototype.initializeDataSelect = function(
 						select) {
-					select.append("<option value='sample1'>"
-							+ "Primitive Data1" + "</option>");
-					select.append("<option value='sample2'>"
-							+ "Primitive Data2" + "</option>");
+					this.dataSelect.empty();
+
+					this.dataSelect.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+
+					var dataItems = this.page.propertiesPanel.getModel().dataItems;
+
+					for ( var m in dataItems) {
+						this.dataSelect.append("<option value='"
+								+ dataItems[m].getFullId() + "'>"
+								+ dataItems[m].name + "</option>");
+					}
 				};
 
 				IntermediateTimerEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
@@ -378,6 +387,10 @@ define(
 				IntermediateTimerEventIntegrationOverlay.prototype.update = function() {
 					// retrieve and populated stored values
 					// this.showHideEventTriggerFields('constant');
+					this.autoBindingInput.prop("checked", true);
+					this.autoBindingInput.prop("disabled", true);
+					this.consumeOnMatchInput.prop("disabled", true);
+
 					var route = null;
 					if (this.page.propertiesPanel.element.modelElement.attributes) {
 						route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];

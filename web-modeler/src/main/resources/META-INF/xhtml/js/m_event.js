@@ -88,7 +88,7 @@ define(
 
 						this.attributes["carnot:engine:eventIntegrationOverlay"] = "manualTrigger";
 					} else if (this.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-						this.eventClass = m_constants.MESSAGE_EVENT_CLASS;
+						this.eventClass = m_constants.TIMER_EVENT_CLASS;
 						this.interrupting = true;
 						this.throwing = false;
 					} else {

@@ -620,9 +620,16 @@ define(
 						};
 					} else if (this.bindingActivitySymbol != null) {
 						this.bindingActivitySymbol.removeBoundaryEvent(this);
-						return {
-							bindingActivityUuid : null
-						};
+						if (m_constants.TIMER_EVENT_CLASS == this.modelElement.eventClass) {
+							return {
+								bindingActivityUuid : null,
+								eventClass : m_constants.ERROR_EVENT_CLASS
+							};
+						} else {
+							return {
+								bindingActivityUuid : null,
+							};
+						}
 					}
 					return null;
 				};
