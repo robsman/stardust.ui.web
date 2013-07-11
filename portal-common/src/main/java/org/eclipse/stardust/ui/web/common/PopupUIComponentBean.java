@@ -86,7 +86,6 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
       // FOR PANAMA
       String popupScript = "parent.BridgeUtils.Dialog.close();";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
       PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))

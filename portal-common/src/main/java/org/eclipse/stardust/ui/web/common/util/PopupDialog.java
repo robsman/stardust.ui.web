@@ -97,7 +97,6 @@ public abstract class PopupDialog implements Serializable
       if (modal)
       {
          String popupScript = "parent.BridgeUtils.Dialog.close();";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
          PortalApplication.getInstance().addEventScript(popupScript);
       }
 

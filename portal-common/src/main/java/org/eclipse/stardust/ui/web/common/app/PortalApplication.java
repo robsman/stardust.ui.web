@@ -1193,7 +1193,6 @@ public class PortalApplication
       String iconClass = deriveIconClass(view.getIcon());
       // FOR PANAMA
       String popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
       addEventScript(popupScript);
    }
 
@@ -1206,7 +1205,6 @@ public class PortalApplication
       String title = view.getLabel();
       // FOR PANAMA
       String popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
       addEventScript(popupScript);
    }
    
