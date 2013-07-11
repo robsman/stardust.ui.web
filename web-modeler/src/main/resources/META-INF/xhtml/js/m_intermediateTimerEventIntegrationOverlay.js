@@ -126,7 +126,6 @@ define(
 					this.logHandlerInput = this.mapInputId("logHandlerInput");
 					//this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
 					this.interruptingInput = this.mapInputId("interruptingInput");
-					this.interruptingSelect = this.mapInputId("interruptingSelect");
 					this.eventTriggerSelect = this.mapInputId("eventTriggerSelect");
 
 					this.delayTimerRow = this.mapInputId("delayTimerRow");
@@ -142,7 +141,6 @@ define(
 					//this.delegateToSelect = this.mapInputId("delegateToSelect");
 
 					this.initializedelayTimerUnitSelect(this.delayTimerUnitSelect);
-					this.initializeInterruptingSelect(this.interruptingSelect);
 					this.initializeEventTriggerSelect(this.eventTriggerSelect);
 					this.initializeDataSelect(this.dataSelect);
 					//this.initializeEventActionSelect(this.eventActionSelect);
@@ -152,7 +150,6 @@ define(
 					this.registerForRouteChanges(this.logHandlerInput);
 					//this.registerForRouteChanges(this.consumeOnMatchInput);
 					this.registerForRouteChanges(this.interruptingInput);
-					this.registerForRouteChanges(this.interruptingSelect);
 					this.registerForRouteChanges(this.eventTriggerSelect);
 					this.registerForRouteChanges(this.delayTimerInput);
 					this.registerForRouteChanges(this.delayTimerUnitSelect);

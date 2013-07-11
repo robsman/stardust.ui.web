@@ -299,7 +299,7 @@ define(function() {
 		NONE_EVENT_CLASS : "none",
 		TIMER_EVENT_CLASS : "timer",
 		MESSAGE_EVENT_CLASS : "message",
-		ERROR_EVENT_CLASS : "error",
+		ERROR_EVENT_CLASS : "exception",
 
 		// Access Points
 

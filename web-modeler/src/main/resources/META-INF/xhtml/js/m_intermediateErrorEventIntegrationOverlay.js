@@ -124,21 +124,14 @@ define(
 					this.interruptingInput = this
 							.mapInputId("interruptingInput");
 
-					this.interruptingSelect = this
-							.mapInputId("interruptingSelect");
-
 					this.eventTriggerInput = this
 							.mapInputId("eventTriggerInput");
 
 					// this.eventActionSelect = this.mapInputId("eventActionSelect");
-
-					this.initializeInterruptingSelect(this.interruptingSelect);
-
 					// this.initializeEventActionSelect(this.eventActionSelect);
 
 					this.registerForRouteChanges(this.logHandlerInput);
 					//this.registerForRouteChanges(this.consumeOnMatchInput);
-					this.registerForRouteChanges(this.interruptingSelect);
 					this.registerForRouteChanges(this.eventTriggerInput);
 				};
 
@@ -192,6 +185,7 @@ define(
 				IntermediateErrorEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
 				};
+
 				/**
 				 *
 				 */
@@ -199,14 +193,10 @@ define(
 					// retrieve and populated stored values
 					// this.showHideEventTriggerFields('constant');
 
-					loghandler
 					// this.autoBindingInput.attr("disabled", "disabled");
 					this.interruptingInput.attr("checked", "checked");
 					this.interruptingInput.attr("disabled", "disabled");
 					// this.eventActionSelect.attr("disabled", "disabled");
-					interruptingAction
-					eventTrigger
-
 
 					var route = null;
 					if (this.page.propertiesPanel.element.modelElement.attributes) {

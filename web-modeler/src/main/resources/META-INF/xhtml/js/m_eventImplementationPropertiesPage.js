@@ -259,9 +259,9 @@ define(
 
 						//TODO Temporary code - to be reviewed
 						if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-							if (this.getModelElement().eventClass == "timer") {
+							if (this.getModelElement().eventClass == m_constants.TIMER_EVENT_CLASS) {
 								overlay = "timerEvent_intermediate";
-							} else if (this.getModelElement().eventClass == "error") {
+							} else if (this.getModelElement().eventClass == m_constants.ERROR_EVENT_CLASS) {
 								overlay = "errorEvent_intermediate";
 							}
 						}

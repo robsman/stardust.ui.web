@@ -88,7 +88,7 @@ define(
 							id : "errorEvent_intermediate",
 							name : "error Event",
 							eventTypes : [ "intermediateEvent" ],
-							eventClass : "error",
+							eventClass : "exception",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/intermediateErrorEventIntegrationOverlay.html",
 							provider : m_intermediateErrorEventIntegrationOverlay
 						},
