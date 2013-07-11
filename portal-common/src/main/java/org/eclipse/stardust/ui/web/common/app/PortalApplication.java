@@ -1112,8 +1112,9 @@ public class PortalApplication
             String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
                   + contextPath + "/plugins/common/portalSingleViewMain.iface?";
             url = urlBase + url;
-
-            processPanamaCall(view, url, !"ippBpmModeler".equals(view.getDefinition().getDefinedIn()));
+            
+            // Protocol - Include ending with FrameAdapter.xhtml are HTML based Views
+            processPanamaCall(view, url, !view.getDefinition().getInclude().endsWith("FrameAdapter.xhtml"));
          }
          else
          {
