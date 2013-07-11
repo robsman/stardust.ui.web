@@ -1098,33 +1098,26 @@ public class PortalApplication
    {
       if (StringUtils.isEmpty(view.getParamValue("standaloneMode")))
       {
-         if (!"ippBpmModeler".equals(view.getDefinition().getDefinedIn()))
+         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+         String contextPath = externalContext.getRequestContextPath();
+
+         String url = "singleViewId=_PERSPECTIVE_ID_::_VIEW_ID_&standaloneMode=true&singleViewKey=_VIEW_KEY_";
+         url = StringUtils.replace(url, "_PERSPECTIVE_ID_", encodeUrl(view.getDefinition().getDefinedIn()));
+         url = StringUtils.replace(url, "_VIEW_ID_", encodeUrl(view.getDefinition().getName()));
+         url = StringUtils.replace(url, "_VIEW_KEY_", encodeUrl(view.getViewKey()));
+
+         if (externalContext instanceof ServletExternalContext)
          {
-            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-            String contextPath = externalContext.getRequestContextPath();
+            HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+            String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                  + contextPath + "/plugins/common/portalSingleViewMain.iface?";
+            url = urlBase + url;
 
-            String url = "singleViewId=_PERSPECTIVE_ID_::_VIEW_ID_&standaloneMode=true&singleViewKey=_VIEW_KEY_";
-            url = StringUtils.replace(url, "_PERSPECTIVE_ID_", encodeUrl(view.getDefinition().getDefinedIn()));
-            url = StringUtils.replace(url, "_VIEW_ID_", encodeUrl(view.getDefinition().getName()));
-            url = StringUtils.replace(url, "_VIEW_KEY_", encodeUrl(view.getViewKey()));
-
-            if (externalContext instanceof ServletExternalContext)
-            {
-               HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
-               String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                     + contextPath + "/plugins/common/portalSingleViewMain.iface?";
-               url = urlBase + url;
-
-               processPanamaCall(view, url, true);
-            }
-            else
-            {
-               trace.error("Other than Servlet Context is not Supported");
-            }
+            processPanamaCall(view, url, !"ippBpmModeler".equals(view.getDefinition().getDefinedIn()));
          }
          else
          {
-            trace.info("Skipped Pepper View, it will be opened natively");
+            trace.error("Other than Servlet Context is not Supported");
          }
       }
    }
@@ -1151,15 +1144,24 @@ public class PortalApplication
          viewId = "Int/" + view.getDefinition().getName() + "/:id";
       }
 
-      String script = "parent.BridgeUtils.View.openView('" + viewId + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
-      script = StringUtils.replace(script, "_TYPE_", view.getDefinition().getName());
-      script = StringUtils.replace(script, "_ID_", StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "");
+      String typeId = view.getDefinition().getName();
+      String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "";
+
+      // Save HTML5 FW View Id, for to be used at the time of closing
+      String html5FWViewId = "/ippPortal/configurationTreeView/" + viewId;
+      html5FWViewId = StringUtils.replace(html5FWViewId, ":type", typeId);
+      html5FWViewId = StringUtils.replace(html5FWViewId, ":id", id);
+      view.getViewParams().put("html5FWViewId", html5FWViewId);
+
+      String script = "parent.BridgeUtils.View.openView('" + viewId
+            + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
+      script = StringUtils.replace(script, "_TYPE_", typeId);
+      script = StringUtils.replace(script, "_ID_", id);
       script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
       script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
       script = StringUtils.replace(script, "_URL_", url);
       script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
 
-      //System.out.println("\tPANAMA Script = \n" + script);
       addEventScript(script);
    }
 
@@ -1214,20 +1216,9 @@ public class PortalApplication
    {
       if (StringUtils.isEmpty(view.getParamValue("skipViewCloseScript")))
       {
-         String script = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/_TYPE_/_ID_');";
-         script = StringUtils.replace(script, "_TYPE_", view.getDefinition().getName());
-         script = StringUtils.replace(script, "_ID_", view.getViewKey());
+         String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+         String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
          addEventScript(script);
-
-         String script2 = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/Ext/_TYPE_/_ID_');";
-         script2 = StringUtils.replace(script2, "_TYPE_", view.getDefinition().getName());
-         script2 = StringUtils.replace(script2, "_ID_", view.getViewKey());
-         addEventScript(script2);
-         
-         String script3 = "parent.BridgeUtils.View.closeView('/ippPortal/configurationTreeView/Int/_TYPE_/_ID_');";
-         script3 = StringUtils.replace(script3, "_TYPE_", view.getDefinition().getName());
-         script3 = StringUtils.replace(script3, "_ID_", view.getViewKey());
-         addEventScript(script3);
       }
    }
 

@@ -75,17 +75,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-            try
-            {
-               // Using reflection. To be converted to direct call later
-               ReflectionUtils.invokeMethod(PortalApplication.getInstance(), "processPanamaCall", event.getView(),
-                     pagePath + event.getView().getParams(), false);
-            }
-            catch (Exception e)
-            {
-               e.printStackTrace();
-            }
-
+		    //PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
             break;
 
 		case TO_BE_DEACTIVATED:
@@ -102,7 +92,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 		case LAUNCH_PANELS_DEACTIVATED:
 		case FULL_SCREENED:
 		case RESTORED_TO_NORMAL:
-      case PINNED:
+        case PINNED:
 		case PERSPECTIVE_CHANGED:
 		   //fireResizeIframeEvent();
 			break;
