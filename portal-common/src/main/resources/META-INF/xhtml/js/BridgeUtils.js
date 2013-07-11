@@ -76,6 +76,7 @@ if (!window["BridgeUtils"]) {
 		 *
 		 */
 		function logout(force) {
+			log("Logging out = " + force);
 			if (force == undefined || !force) {
 				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "logout", Math.floor(Math.random()*10000)+1);
 			} else {

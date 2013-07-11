@@ -132,15 +132,6 @@ public class SingleViewLaunchPanels implements InitializingBean
    /**
     * @param event
     */
-   public void sidebarChanged(ValueChangeEvent event)
-   {
-      // Pinned/Unpinned,Expanded/Collapsed
-      // TODO
-   }
-
-   /**
-    * @param event
-    */
    public void logout(ValueChangeEvent event)
    {
       PortalApplication portalApp = PortalApplication.getInstance();
