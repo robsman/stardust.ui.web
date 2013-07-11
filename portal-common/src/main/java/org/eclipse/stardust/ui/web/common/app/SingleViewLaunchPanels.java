@@ -141,6 +141,27 @@ public class SingleViewLaunchPanels implements InitializingBean
    /**
     * @param event
     */
+   public void logout(ValueChangeEvent event)
+   {
+      PortalApplication portalApp = PortalApplication.getInstance();
+      portalApp.closeAllViews();
+      
+      String script;
+      if (portalApp.getOpenViewsSize() == 0)
+      {
+         script = "parent.BridgeUtils.logout(true);";
+      }
+      else
+      {
+         script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
+         trace.warn("Not all Views got closed successully. Cannot logout...");
+      }
+      portalApp.addEventScript(script);
+   }
+
+   /**
+    * @param event
+    */
    public void messageReceived(ValueChangeEvent event)
    {
       PortalApplication portalApp = PortalApplication.getInstance();

@@ -67,7 +67,7 @@ if (!window["BridgeUtils"]) {
 		log("Handling Server Disconnect for " + type);
 		BridgeUtils.FrameManager.closeAll();
 		runInAngularContext(function($scope) {
-			BridgeUtils.logout();
+	    		BridgeUtils.logout(true);
 			});
 		log("Handled Server Disconnect for " + type);
 	    }
@@ -75,10 +75,14 @@ if (!window["BridgeUtils"]) {
 		/*
 		 *
 		 */
-		function logout() {
-			var href = window.location.href.substr(0, window.location.href.indexOf('/main.html'));
-			href += '/ipp/common/ippPortalLogout.jsp';
-			window.location.replace(href);
+		function logout(force) {
+			if (force == undefined || !force) {
+				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "logout", Math.floor(Math.random()*10000)+1);
+			} else {
+				var href = window.location.href.substr(0, window.location.href.indexOf('/main.html'));
+				href += '/ipp/common/ippPortalLogout.jsp';
+				window.location.replace(href);
+			}
 		}
 
 		/*
@@ -114,6 +118,13 @@ if (!window["BridgeUtils"]) {
 	        return path;
 	    }
 
+		/*
+		 * 
+		 */
+		function showAlert(msg) {
+			alert(msg);
+		}
+
 		return {
 			log : log,
 			runInAngularContext : runInAngularContext,
@@ -122,7 +133,8 @@ if (!window["BridgeUtils"]) {
 			handleServerDisconnect : handleServerDisconnect,
 			logout : logout,
 			getAbsoluteSize : getAbsoluteSize,
-			substituteParams : substituteParams
+			substituteParams : substituteParams,
+			showAlert : showAlert
 		}
 	};
 } // !BridgeUtils
