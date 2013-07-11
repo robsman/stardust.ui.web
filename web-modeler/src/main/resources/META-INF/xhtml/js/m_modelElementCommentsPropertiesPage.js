@@ -76,16 +76,16 @@ define(
 			 * 
 			 */
 			function i18nStaticLabels() {
-				jQuery("#commentsHeading").html(
+				m_utils.jQuerySelect("#commentsHeading").html(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.comments"));		
 				
-				jQuery("#deleteButton")
+				m_utils.jQuerySelect("#deleteButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("#submitButton")
+				m_utils.jQuerySelect("#submitButton")
 						.attr(
 								"value",
 								m_i18nUtils

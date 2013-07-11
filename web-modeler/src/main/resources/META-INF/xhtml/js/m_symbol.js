@@ -2173,7 +2173,7 @@ define(
 				if (this.auxiliaryProperties
 						&& this.auxiliaryProperties.callbackScope.diagram
 								.isInNormalMode()) {
-					$(".selected-tool").removeClass("selected-tool");
+					m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 				}
 			}
 

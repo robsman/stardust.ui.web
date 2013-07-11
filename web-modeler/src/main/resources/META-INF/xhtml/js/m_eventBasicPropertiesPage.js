@@ -211,23 +211,23 @@ define(
 							|| this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
 						this.catchingInput.hide();
 						this.throwingInput.hide();
-						$("label[for='catchingInput']").hide();
-						$("label[for='throwingInput']").hide();
+						m_utils.jQuerySelect("label[for='catchingInput']").hide();
+						m_utils.jQuerySelect("label[for='throwingInput']").hide();
 					} else {
 						this.catchingInput.show();
 						this.throwingInput.show();
-						$("label[for='catchingInput']").show();
-						$("label[for='throwingInput']").show();
+						m_utils.jQuerySelect("label[for='catchingInput']").show();
+						m_utils.jQuerySelect("label[for='throwingInput']").show();
 					}
 
 					if (this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
 						this.interruptingInput.hide();
 						this.participantOutput.hide();
-						$("label[for='interruptingInput']").hide();
+						m_utils.jQuerySelect("label[for='interruptingInput']").hide();
 					} else {
 						this.interruptingInput.show();
 						this.participantOutput.show();
-						$("label[for='interruptingInput']").show();
+						m_utils.jQuerySelect("label[for='interruptingInput']").show();
 					}
 
 					this.setInterrupting(this.getModelElement().interrupting);

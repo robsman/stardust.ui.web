@@ -39,7 +39,7 @@ define(
 				 *
 				 */
 				DecorationPalette.prototype.initialize = function(diagram) {
-					var dialog = jQuery("#decorationConfigurationDialog")
+					var dialog = m_utils.jQuerySelect("#decorationConfigurationDialog")
 							.dialog({
 								autoOpen : false,
 								draggable : false
@@ -47,7 +47,7 @@ define(
 
 					// Decoration list
 
-					var decorationList = jQuery("#decorationList");
+					var decorationList = m_utils.jQuerySelect("#decorationList");
 					var decorationExtensions = m_extensionManager
 							.findExtensions("modelDecoration");
 
@@ -58,7 +58,7 @@ define(
 								+ decorationExtension.id + "'>"
 								+ decorationExtension.title + "</option>");
 
-						var contentDiv = jQuery("<div></div>");
+						var contentDiv = m_utils.jQuerySelect("<div></div>");
 
 						this.dialogContent[decorationExtension.id] = contentDiv;
 
@@ -72,7 +72,7 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(
+												m_utils.jQuerySelect(
 														"#decorationConfigurationDialog")
 														.append(msg);
 											} else {
@@ -88,10 +88,10 @@ define(
 									},
 									function(event) {
 										decorationId = decorationList.val();
-										jQuery(
+										m_utils.jQuerySelect(
 												"#decorationConfigurationDialog #contentAnchor")
 												.empty();
-										jQuery(
+										m_utils.jQuerySelect(
 												"#decorationConfigurationDialog #contentAnchor")
 												.append(
 														event.data.palette.dialogContent[decorationId]);
@@ -101,19 +101,19 @@ define(
 										// available. Use provider object in the
 										// future
 
-										jQuery(
+										m_utils.jQuerySelect(
 												"#decorationConfigurationDialog #closeButton")
 												.click(
 														function() {
 															m_utils
 																	.debug("Close dialog");
-															jQuery(
+															m_utils.jQuerySelect(
 																	"#decorationConfigurationDialog")
 																	.dialog(
 																			"close");
 														});
 
-										jQuery(
+										m_utils.jQuerySelect(
 												"#decorationConfigurationDialog #applyButton")
 												.click(
 														function() {
@@ -142,23 +142,23 @@ define(
 																					alert('Could not retrieve decoration');
 																				}
 																			});
-															jQuery(
+															m_utils.jQuerySelect(
 																	"#decorationConfigurationDialog")
 																	.dialog(
 																			"close");
 														});
 
-										jQuery("#decorationConfigurationDialog")
+										m_utils.jQuerySelect("#decorationConfigurationDialog")
 												.dialog('open');
 									});
 
-					jQuery("#decorationConfigurationButton").click(
+					m_utils.jQuerySelect("#decorationConfigurationButton").click(
 							function() {
-								jQuery("#decorationConfigurationDialog")
+								m_utils.jQuerySelect("#decorationConfigurationDialog")
 										.dialog('open');
 							});
 
-					jQuery("#decorationRefreshButton").click(
+					m_utils.jQuerySelect("#decorationRefreshButton").click(
 							function() {
 								m_communicationController.postData({
 									url : m_communicationController

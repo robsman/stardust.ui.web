@@ -46,7 +46,7 @@ define(
 					this.persistenceSelect = this
 							.mapInputId("persistenceSelect");
 
-					jQuery("label[for='persistenceSelect']")
+					m_utils.jQuerySelect("label[for='persistenceSelect']")
 					.text(
 							m_i18nUtils
 									.getProperty("modeler.processDefinition.propertyPages.runtimeBehavior.persistenceSelect.label"));

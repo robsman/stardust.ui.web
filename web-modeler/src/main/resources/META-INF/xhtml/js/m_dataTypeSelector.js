@@ -58,15 +58,15 @@ define(
 					this.hideEnumerations = options.hideEnumerations;
 
 
-					this.dataTypeSelect = jQuery(this.checkElementId(this.scope) + " #dataTypeSelect");
-					this.primitiveDataTypeRow = jQuery(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
-					this.primitiveDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #primitiveDataTypeSelect");
-					this.structuredDataTypeRow = jQuery(this.checkElementId(this.scope)	+ " #structuredDataTypeRow");
-					this.structuredDataTypeSelect = jQuery(this.checkElementId(this.scope)+ " #structuredDataTypeSelect");
-					this.documentTypeSelect = jQuery(this.checkElementId(this.scope)+ " #documentTypeSelect");
-					this.documentTypeRow = jQuery(this.checkElementId(this.scope)+ " #documentTypeRow");
-					this.otherTypeRow = jQuery(this.checkElementId(this.scope)+ " #otherTypeRow");
-					this.otherTypeName = jQuery(this.checkElementId(this.scope)	+ " #otherTypeName");
+					this.dataTypeSelect = m_utils.jQuerySelect(this.checkElementId(this.scope) + " #dataTypeSelect");
+					this.primitiveDataTypeRow = m_utils.jQuerySelect(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
+					this.primitiveDataTypeSelect = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #primitiveDataTypeSelect");
+					this.structuredDataTypeRow = m_utils.jQuerySelect(this.checkElementId(this.scope)	+ " #structuredDataTypeRow");
+					this.structuredDataTypeSelect = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #structuredDataTypeSelect");
+					this.documentTypeSelect = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #documentTypeSelect");
+					this.documentTypeRow = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #documentTypeRow");
+					this.otherTypeRow = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #otherTypeRow");
+					this.otherTypeName = m_utils.jQuerySelect(this.checkElementId(this.scope)	+ " #otherTypeName");
 
 					this.initializeDataTypeOptions();
 

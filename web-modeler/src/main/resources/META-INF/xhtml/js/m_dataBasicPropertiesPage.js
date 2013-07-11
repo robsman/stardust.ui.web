@@ -86,18 +86,18 @@ define(
 									});
 
 					// Timestamp handling
-					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText = m_utils.jQuerySelect("#TimestampInputText");
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
 					// I18N
-					jQuery("#doubleInputTextError").text(
+					m_utils.jQuerySelect("#doubleInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#intInputTextError").text(
+					m_utils.jQuerySelect("#intInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#longInputTextError").text(
+					m_utils.jQuerySelect("#longInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#TimestampInputTextError").text(
+					m_utils.jQuerySelect("#TimestampInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 				};
 

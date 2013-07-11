@@ -57,26 +57,26 @@ define(
 				},
 
 				initializeWaitCursor : function(element) {
-					if (element && window.parent.InfinityBpm.Core) {
-						element.ajaxStart(function() {
-							window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
-						});
-						element.ajaxStop(function() {
-							window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
-						});
-					}
+//					if (element && window.parent.InfinityBpm.Core) {
+//						element.ajaxStart(function() {
+//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+//						});
+//						element.ajaxStop(function() {
+//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+//						});
+//					}
 				},
 
 				showWaitCursor : function() {
-					if (window.parent.InfinityBpm.Core) {
-						window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
-					}
+//					if (window.parent.InfinityBpm.Core) {
+//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+//					}
 				},
 
 				hideWaitCursor : function () {
-					if (window.parent.InfinityBpm.Core) {
-						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
-					}
+//					if (window.parent.InfinityBpm.Core) {
+//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+//					}
 				},
 
 				isBrowserChrome : function() {
@@ -86,16 +86,16 @@ define(
 				},
 
 				markControlsReadonly : function(divName, readonly) {
-					var lookupScope = divName == undefined ? null : jQuery("#" + divName);
+					var lookupScope = divName == undefined ? null : jQuerySelect("#" + divName);
 					this.markControlsReadonlyForScope(lookupScope, readonly);
 				},
 
 				/**
-				 * lookupscope should be a jQuery('#elementId') object
+				 * lookupscope should be a jQuerySelect('#elementId') object
 				 */
 				markControlsReadonlyForScope : function(lookupScope, readonly) {
-					jQuery(['input:not(.noDataChange input)', 'textarea:not(.noDataChange textarea)', 'select:not(.noDataChange select)']).each(function(index, type){
-						jQuery(type, lookupScope).each(function(index, control){
+					jQuerySelect(['input:not(.noDataChange input)', 'textarea:not(.noDataChange textarea)', 'select:not(.noDataChange select)']).each(function(index, type){
+						jQuerySelect(type, lookupScope).each(function(index, control){
 							if (readonly == undefined || readonly == true) {
 								if (control.disabled !== undefined) {
 									// Exclude links marked specifically
@@ -148,21 +148,35 @@ define(
 			/*
 			 *
 			 */
-			function jQuerySelect(pattern) {
-				// Find HTML5 Framework parent div for current View
-				var views = jQuery(".sg-view-panel").children();
-				if (views) {
-					for(var i = 0; i< views.length; i++) {
-						if (views[i].style.display == "" || views[i].style.display == "inline") {
-							var ret = jQuery(pattern, jQuery(views[i]));
-							if (ret.length > 0) {
-								return ret;
+			function jQuerySelect(pattern, context) {
+				var ret = null;
+				if (!context) {
+					if (!(typeof pattern === "string"
+						&& (pattern.indexOf("</") != -1
+									|| pattern.indexOf("/>") != -1))) {
+						// Find HTML5 Framework parent div for current View
+						var views = jQuery(".sg-view-panel").children();
+						if (views) {
+							for(var i = 0; i< views.length; i++) {
+								if (views[i].style.display == "" || views[i].style.display == "inline") {
+									var ret = jQuery(pattern, jQuery(views[i]));
+									if (ret.length > 0) {
+										return ret;
+									}
+								}
 							}
 						}
 					}
+					
+					ret = jQuery(pattern);
 				}
-
-				return jQuery(pattern);
+				ret = jQuery(pattern, context);
+				
+//				if (ret.length == 0) {
+//					return null;
+//				}
+					
+				return ret;
 			}
 
 			/*

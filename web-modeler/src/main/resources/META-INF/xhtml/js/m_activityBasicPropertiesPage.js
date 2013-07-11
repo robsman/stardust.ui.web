@@ -34,37 +34,37 @@ define(
 			};
 
 			function i18nProcessActivityScreen() {
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#name")
+				m_utils.jQuerySelect("#name")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("label[for='allowAbortByParticipantInput']")
+				m_utils.jQuerySelect("label[for='allowAbortByParticipantInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.participantAction"));
-				$("label[for='hibernateInitiallyInput']")
+				m_utils.jQuerySelect("label[for='hibernateInitiallyInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.hibernate"));
-				$("label[for='supportsRelocationInput']")
+				m_utils.jQuerySelect("label[for='supportsRelocationInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.relocation"));
-				$("label[for='isRelocationTargetInput']")
+				m_utils.jQuerySelect("label[for='isRelocationTargetInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.relocationTarget"));
@@ -106,7 +106,7 @@ define(
 
 					// I18N
 
-					jQuery("label[for='taskInput']")
+					m_utils.jQuerySelect("label[for='taskInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.activity.propertyPages.general.task"));
@@ -154,7 +154,7 @@ define(
 										+ "</option>");
 					}
 
-					jQuery("label[for='subprocessInput']")
+					m_utils.jQuerySelect("label[for='subprocessInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.activity.propertyPages.general.subProcessInput"));

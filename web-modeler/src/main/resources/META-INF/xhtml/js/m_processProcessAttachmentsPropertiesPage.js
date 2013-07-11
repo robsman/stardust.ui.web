@@ -28,20 +28,20 @@ define(
 
 			function i18nProcessStaticLabels() {
 				// headingdata
-				jQuery("#propertiesText")
+				m_utils.jQuerySelect("#propertiesText")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.processAttachments.heading"));
-				// jQuery("#commentsHeading").html(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments"));
-				$("label[for='supportsAttachmentsInput']")
+				// m_utils.jQuerySelect("#commentsHeading").html(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments"));
+				m_utils.jQuerySelect("label[for='supportsAttachmentsInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.processAttachmentText.checkboxSupport"));
-				$("label[for='uniquePerRootProcessInstanceInput']")
+				m_utils.jQuerySelect("label[for='uniquePerRootProcessInstanceInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.processAttachmentText.checkboxInstanceSupport"));
-				//jQuery("title").html("+testing");
+				//m_utils.jQuerySelect("title").html("+testing");
 
 			}
 			/**

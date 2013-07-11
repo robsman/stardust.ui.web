@@ -40,7 +40,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		m_utils.inheritFields(this, propertiesPanel);
 		m_utils.inheritMethods(DataPropertiesPanel.prototype, propertiesPanel);
 
-		this.viewLink = jQuery("#dataPropertiesPanel #viewLink");
+		this.viewLink = m_utils.jQuerySelect("#dataPropertiesPanel #viewLink");
 
 		this.data = null;
 

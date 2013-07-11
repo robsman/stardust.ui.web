@@ -79,21 +79,21 @@ define(
 					this.parameterDefinitions = [];
 					this.currentParameterDefinition = null;
 					this.selectedRowIndex = -1;
-					this.parameterDefinitionsTable = jQuery(this.options.scope
+					this.parameterDefinitionsTable = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable");
 
 					this.parameterDefinitionsTable.css("width",
 							this.options.tableWidth);
 
-					this.parameterDefinitionsTableBody = jQuery(this.options.scope
+					this.parameterDefinitionsTableBody = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tbody");
-					this.parameterDefinitionNameInput = jQuery(this.options.scope
+					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
-					this.parameterDefinitionDirectionSelect = jQuery(this.options.scope
+					this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionDirectionSelect");
-					this.addParameterDefinitionButton = jQuery(this.options.scope
+					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
-					this.deleteParameterDefinitionButton = jQuery(this.options.scope
+					this.deleteParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #deleteParameterDefinitionButton");
 
 					this.addParameterDefinitionButton.attr("src", m_urlUtils
@@ -122,25 +122,25 @@ define(
 					}
 
 					if (this.options.supportsOrdering) {
-						this.moveParameterDefinitionUpButton = jQuery(this.options.scope
+						this.moveParameterDefinitionUpButton = m_utils.jQuerySelect(this.options.scope
 								+ " #moveParameterDefinitionUpButton");
-						this.moveParameterDefinitionDownButton = jQuery(this.options.scope
+						this.moveParameterDefinitionDownButton = m_utils.jQuerySelect(this.options.scope
 								+ " #moveParameterDefinitionDownButton");
 					}
 
 					if (this.options.supportsDescriptors) {
-						this.descriptorInput = jQuery(this.options.scope
+						this.descriptorInput = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionDescriptorInput");
-						this.keyDescriptorInput = jQuery(this.options.scope
+						this.keyDescriptorInput = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionKeyDescriptorInput");
 					}
 
 					if (this.options.supportsDataMappings) {
-						this.parameterDefinitionDataSelect = jQuery(this.options.scope
+						this.parameterDefinitionDataSelect = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionDataSelect");
 
 						if (this.options.supportsDataPathes) {
-							this.parameterDefinitionPathInput = jQuery(this.options.scope
+							this.parameterDefinitionPathInput = m_utils.jQuerySelect(this.options.scope
 									+ " #parameterDefinitionPathInput");
 						}
 					}
@@ -318,7 +318,7 @@ define(
 
 					if (this.options.hideDirectionSelection) {
 						m_dialog
-								.makeInvisible(jQuery(this.options.scope
+								.makeInvisible(m_utils.jQuerySelect(this.options.scope
 										+ "label[for='parameterDefinitionDirectionSelect']"));
 						m_dialog
 								.makeInvisible(this.parameterDefinitionDirectionSelect);
@@ -367,10 +367,10 @@ define(
 
 					// Select row
 
-					var tableRows = jQuery(this.options.scope
+					var tableRows = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tr");
 
-					jQuery(tableRows[this.selectedRowIndex]).addClass(
+					m_utils.jQuerySelect(tableRows[this.selectedRowIndex]).addClass(
 							"selected");
 				};
 
@@ -606,7 +606,7 @@ define(
 
 						this.parameterDefinitionsTableBody.append(content);
 
-						jQuery(
+						m_utils.jQuerySelect(
 								this.options.scope
 										+ "table#parameterDefinitionsTable tr")
 								.mousedown(
@@ -616,9 +616,9 @@ define(
 										function(event) {
 											event.data.panel
 													.deselectParameterDefinitions();
-											jQuery(this).addClass("selected");
+											m_utils.jQuerySelect(this).addClass("selected");
 
-											var index = jQuery(this).attr("id");
+											var index = m_utils.jQuerySelect(this).attr("id");
 
 											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
 											event.data.panel.selectedRowIndex = index;
@@ -640,7 +640,7 @@ define(
 				 */
 				ParameterDefinitionsPanel.prototype.deselectParameterDefinitions = function(
 						dataPath) {
-					jQuery(
+					m_utils.jQuerySelect(
 							this.options.scope
 									+ "table#parameterDefinitionsTable tr.selected")
 							.removeClass("selected");

@@ -49,15 +49,15 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 					
-					jQuery("label[for='camelContextInput']")
+					m_utils.jQuerySelect("label[for='camelContextInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.genericCamelRouteEvent.camelContext"));
-					jQuery("label[for='routeTextarea']")
+					m_utils.jQuerySelect("label[for='routeTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.genericCamelRouteEvent.routeDefinition"));
-					jQuery("label[for='beanTextarea']")
+					m_utils.jQuerySelect("label[for='beanTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));

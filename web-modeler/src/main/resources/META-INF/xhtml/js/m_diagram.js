@@ -56,7 +56,7 @@ define(
 
 			return {
 				createDiagram : function(divId) {
-					return new Diagram("canvas");
+					return new Diagram(divId);
 				}
 			};
 
@@ -70,7 +70,7 @@ define(
 			function Diagram(newDivId) {
 				currentDiagram = this;
 
-				var canvasPos = $("#canvas").position();
+				var canvasPos = m_utils.jQuerySelect("#" + newDivId).position();
 				//X_OFFSET = canvasPos.left; // Set fpr #panningSensor
 				//Y_OFFSET = canvasPos.top; // Set for #toolbar +
 
@@ -156,7 +156,7 @@ define(
 				var toolbarPalettes = m_extensionManager
 						.findExtensions("diagramToolbarPalette");
 
-				var paletteTableRow = jQuery("#diagramToolbarTable #paletteRow");
+				var paletteTableRow = m_utils.jQuerySelect("#diagramToolbarTable #paletteRow");
 
 				for ( var n = 0; n < toolbarPalettes.length; ++n) {
 					if (!m_session.initialize().technologyPreview
@@ -173,14 +173,14 @@ define(
 									+ toolbarPalettes[n].title
 									+ "</div></div></td>");
 
-					var entryRow = jQuery("#diagramToolbarTable #paletteRow #"
+					var entryRow = m_utils.jQuerySelect("#diagramToolbarTable #paletteRow #"
 							+ toolbarPalettes[n].id + "EntryRow");
 
 					if (toolbarPalettes[n].contentHtmlUrl != null) {
 						var extension = toolbarPalettes[n];
 						var dummy = this;
 
-						jQuery(
+						m_utils.jQuerySelect(
 								"#diagramToolbarTable #paletteRow #"
 										+ toolbarPalettes[n].id + "EntryRow")
 								.load(
@@ -192,7 +192,7 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(
+												m_utils.jQuerySelect(
 														"#"
 																+ panel.id
 																+ " #"
@@ -226,7 +226,7 @@ define(
 									+ (paletteEntries[m].styleClass ? (" " + paletteEntries[m].styleClass) : "")
 									+ "\" /></td>");
 
-							jQuery(
+							m_utils.jQuerySelect(
 									"#diagramToolbarTable #paletteRow #"
 											+ toolbarPalettes[n].id
 											+ "EntryRow #"
@@ -252,7 +252,7 @@ define(
 
 				}
 
-				var selectModeButton = jQuery("#selectModeButton");
+				var selectModeButton = m_utils.jQuerySelect("#selectModeButton");
 
 				selectModeButton.click({
 					"diagram" : this
@@ -260,7 +260,7 @@ define(
 					event.data.diagram.setSelectMode();
 				});
 
-				var separatorModeButton = jQuery("#separatorModeButton");
+				var separatorModeButton = m_utils.jQuerySelect("#separatorModeButton");
 
 				separatorModeButton.click({
 					"diagram" : this
@@ -270,8 +270,8 @@ define(
 
 				// === End Toolbar
 
-				this.canvas = jQuery('#' + this.divId);
-				this.scrollPane = jQuery("#scrollpane");
+				this.canvas = m_utils.jQuerySelect('#' + this.divId);
+				this.scrollPane = m_utils.jQuerySelect("#scrollpane");
 
 
 				// dirty workaround - only chrome being triggerring 'blur' event on clicking scrollbars
@@ -301,8 +301,8 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseDown(event.pageX
-											- getCanvasPosition().left, event.pageY
-											- getCanvasPosition().top);
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 						});
 
 				this.canvas.mousemove({
@@ -311,18 +311,18 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseMove(event.pageX
-											- getCanvasPosition().left, event.pageY
-											- getCanvasPosition().top);
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 						});
 
 				this.canvas.mouseup({
 					"diagram" : this
 				}, function(event) {
 					event.data.diagram
-							.onGlobalMouseUp(event.pageX - getCanvasPosition().left,
+							.onGlobalMouseUp(event.pageX - event.data.diagram.getCanvasPosition().left,
 									event.pageX
-											- getCanvasPosition().left, event.pageY
-											- getCanvasPosition().top);
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 				});
 
 				this.panningSensorNorthWest = {};
@@ -432,7 +432,7 @@ define(
 				this.rubberBandWidth = 0;
 				this.rubberBandHeight = 0;
 
-				this.editableText = jQuery("#editable")
+				this.editableText = m_utils.jQuerySelect("#editable")
 						.editable(
 								function(value, settings) {
 									return value;
@@ -455,13 +455,13 @@ define(
 									onsubmit : function(settings, value) {
 										jQuery.data(document, "diagram")
 												.submitEditable(
-														$('input', this).val());
+														m_utils.jQuerySelect('input', this).val());
 									}
 								}).css("font-family",
 								m_constants.DEFAULT_FONT_FAMILY).css(
 								"font-size", m_constants.DEFAULT_FONT_SIZE);
 
-				this.editableTextArea = jQuery("#editableArea").editable(
+				this.editableTextArea = m_utils.jQuerySelect("#editableArea").editable(
 						function(value, settings) {
 							return value;
 						},
@@ -483,7 +483,7 @@ define(
 							onsubmit : function(settings, value) {
 								jQuery.data(document, "diagram")
 										.submitEditableArea(
-												$('textarea', this).val());
+												m_utils.jQuerySelect('textarea', this).val());
 							}
 						}).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
 						.css("font-size", m_constants.DEFAULT_FONT_SIZE);
@@ -530,7 +530,7 @@ define(
 
 					// TODO Should be done via extension mechanism
 
-					m_processPropertiesPanel.initialize(this);
+					m_processPropertiesPanel.initialize(this, this.process);
 					m_activityPropertiesPanel.initialize(this);
 					m_dataPropertiesPanel.initialize(this);
 					m_eventPropertiesPanel.initialize(this);
@@ -570,9 +570,9 @@ define(
 											currentDiagram
 													.onGlobalMouseMove(
 															event.pageX
-																	- getCanvasPosition().left,
+																	- currentDiagram.getCanvasPosition().left,
 															event.pageY
-																	- getCanvasPosition().top);
+																	- currentDiagram.getCanvasPosition().top);
 										} else if (currentDiagram.currentSelection.length > 0) {
 											for ( var i in currentDiagram.currentSelection) {
 												if (currentDiagram.currentSelection[i]
@@ -1579,8 +1579,8 @@ define(
 						// If the symbol was created with a connection traversal
 						// the connection needs to be completed, too
 						if (null != this.currentConnection) {
-							var status = this.placeNewSymbol(x - getCanvasPosition().left,
-									y - getCanvasPosition().top, true);
+							var status = this.placeNewSymbol(x - this.getCanvasPosition().left,
+									y - this.getCanvasPosition().top, true);
 							if (status) {
 								this.currentConnection.toModelElementOid = this.lastSymbol.oid;
 								this.currentConnection.updateAnchorPointForSymbol();
@@ -1594,7 +1594,7 @@ define(
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
 									* this.zoomFactor);
-							$(".selected-tool").removeClass("selected-tool");
+							m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 						}
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
@@ -1615,7 +1615,7 @@ define(
 						this.currentConnection = null;
 						m_messageDisplay.clear();
 						this.mode = this.NORMAL_MODE;
-						$(".selected-tool").removeClass("selected-tool");
+						m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 					}
 				};
 
@@ -1694,7 +1694,7 @@ define(
 				 *
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
-					jQuery("#canvas").jqprint();
+					m_utils.jQuerySelect("#canvas").jqprint();
 				};
 
 				/**
@@ -1827,7 +1827,7 @@ define(
 
 							// When connection created from toolbar, the anchor
 							// point should not change
-							if (!$(".selected-tool").is("#connectorButton")) {
+							if (!m_utils.jQuerySelect(".selected-tool").is("#connectorButton")) {
 								this.currentConnection
 										.updateAnchorPointForSymbol();
 							}
@@ -1917,12 +1917,12 @@ define(
 
 					m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 
-					m_processPropertiesPanel.getInstance().setElement(
+					m_processPropertiesPanel.getInstance(this.process).setElement(
 							this.process);
 
 					m_propertiesPanel
 							.initializeProcessPropertiesPanel(m_processPropertiesPanel
-									.getInstance());
+									.getInstance(this.process));
 				}
 
 				/**
@@ -2215,7 +2215,7 @@ define(
 						this.symbols[n].resolveNonHierarchicalRelationships();
 					}
 
-					m_processPropertiesPanel.getInstance().setElement(
+					m_processPropertiesPanel.getInstance(this.process).setElement(
 							this.process);
 				};
 
@@ -2294,39 +2294,39 @@ define(
 				 *
 				 */
 				Diagram.prototype.getCanvasPosition = function() {
-					return getCanvasPosition();
+					return getCanvasPosition(this.divId);
 				}
-			}
+				
+				function getCanvasPosition(divId) {
+					var canvasPos = m_utils.jQuerySelect("#" + divId).position();
+					return {
+						left : canvasPos.left,
+						top : canvasPos.top
+					};
+				}
 
-			function getCanvasPosition() {
-				var canvasPos = $("#canvas").position();
-				return {
-					left : canvasPos.left,
-					top : canvasPos.top
-				};
-			}
+				function Diagram_clickClosure(event) {
+					this.auxiliaryProperties.diagram.onClick(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
 
-			function Diagram_clickClosure(event) {
-				this.auxiliaryProperties.diagram.onClick(event.pageX
-						- getCanvasPosition().left, event.pageY
-						- getCanvasPosition().top);
-			}
+				function Diagram_mouseDownClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseDown(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
 
-			function Diagram_mouseDownClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseDown(event.pageX
-						- getCanvasPosition().left, event.pageY
-						- getCanvasPosition().top);
-			}
+				function Diagram_mouseMoveClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseMove(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
 
-			function Diagram_mouseMoveClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseMove(event.pageX
-						- getCanvasPosition().left, event.pageY
-						- getCanvasPosition().top);
-			}
-
-			function Diagram_mouseUpClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseUp(event.pageX
-						- getCanvasPosition().left, event.pageY
-						- getCanvasPosition().top);
+				function Diagram_mouseUpClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseUp(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
 			}
 		});

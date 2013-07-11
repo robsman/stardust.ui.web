@@ -67,7 +67,7 @@ define(
 					m_utils.debug("Event");
 					m_utils.debug(element);
 
-					this.titleSpan = jQuery("#" + this.id + " #title");
+					this.titleSpan = m_utils.jQuerySelect("#" + this.id + " #title");
 					
 					m_utils.debug(this.titleSpan);
 					

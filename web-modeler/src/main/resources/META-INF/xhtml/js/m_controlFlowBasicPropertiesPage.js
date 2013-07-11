@@ -56,15 +56,16 @@ define(
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
-					this.conditionExpressionDiv = jQuery("#"
-							+ this.propertiesPanel.id
-							+ " #conditionExpressionDiv");
+					
+					this.conditionExpressionDiv = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #conditionExpressionDiv").get(0);
+					var rdmId = "expressionText" + Math.floor((Math.random()*100000) + 1) + "Div";
+					this.conditionExpressionDiv.id = "#" + this.propertiesPanel.id + " #" + rdmId;
 
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
 					var page = this;
-					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor("conditionExpressionDiv");
+					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor(this.conditionExpressionDiv.id);
 					this.conditionExpressionInputEditor.getEditor().on('blur', function(e){
 						var property = "conditionExpression";
 						if (!page.validate()) {
@@ -121,7 +122,7 @@ define(
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setTitle = function(title) {
 					if (title) {
-						jQuery("#controlFlowPropertiesPanel div.propertiesPanelTitle").text(title);
+						m_utils.jQuerySelect("#controlFlowPropertiesPanel div.propertiesPanelTitle").text(title);
 					}
 				};
 			}

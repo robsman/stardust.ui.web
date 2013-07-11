@@ -44,7 +44,7 @@ define(
 			var readAllModels = function(force) {
 				m_model.loadModels(force);
 
-				jQuery("#lastsave")
+				m_utils.jQuerySelect("#lastsave")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.outline.lastSavedMessage.title"));
@@ -55,7 +55,7 @@ define(
 										.getModels(), "name", true),
 								function(index, model) {
 
-									jQuery(displayScope + "#outline").jstree(
+									m_utils.jQuerySelect(displayScope + "#outline").jstree(
 											"create",
 											displayScope + "#outline", "first",
 											{
@@ -68,7 +68,7 @@ define(
 											}, null, true);
 
 									var modType = model.isReadonly() ? "lockedModel" : "model";
-									jQuery(displayScope + "#outline").jstree(
+									m_utils.jQuerySelect(displayScope + "#outline").jstree(
 											"set_type", modType,
 											"#" + model.uuid);
 
@@ -76,7 +76,7 @@ define(
 											.each(
 													model.processes,
 													function(index, process) {
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -100,7 +100,7 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -109,7 +109,7 @@ define(
 																				+ process.id);
 													});
 
-									jQuery(displayScope + "#outline")
+									m_utils.jQuerySelect(displayScope + "#outline")
 											.jstree(
 													"create",
 													"#" + model.uuid,
@@ -131,7 +131,7 @@ define(
 													function(index, participant) {
 														if (!participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 															if (!participant.parentUUID) {
-																jQuery(
+																m_utils.jQuerySelect(
 																		displayScope
 																				+ "#outline")
 																		.jstree(
@@ -160,7 +160,7 @@ define(
 																		model,
 																		participant);
 
-																jQuery(
+																m_utils.jQuerySelect(
 																		displayScope
 																				+ "#outline")
 																		.jstree(
@@ -170,13 +170,13 @@ define(
 															}
 														}
 													});
-									jQuery(displayScope + "#outline").jstree(
+									m_utils.jQuerySelect(displayScope + "#outline").jstree(
 											"close_node",
 											"#participants_" + model.uuid);
 
 									// Applications
 
-									jQuery(displayScope + "#outline")
+									m_utils.jQuerySelect(displayScope + "#outline")
 											.jstree(
 													"create",
 													"#" + model.uuid,
@@ -199,7 +199,7 @@ define(
 											.each(
 													model.applications,
 													function(index, application) {
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -227,7 +227,7 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -239,7 +239,7 @@ define(
 									// TODO - remove hard-coding for primitive
 									// data and add nodes of specific data types
 
-									jQuery(displayScope + "#outline")
+									m_utils.jQuerySelect(displayScope + "#outline")
 											.jstree(
 													"create",
 													"#" + model.uuid,
@@ -261,7 +261,7 @@ define(
 													model.dataItems,
 													function(index, data) {
 														if (!data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -284,7 +284,7 @@ define(
 																			},
 																			null,
 																			true);
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -296,7 +296,7 @@ define(
 
 									// Structured Data Types
 
-									jQuery(displayScope + "#outline")
+									m_utils.jQuerySelect(displayScope + "#outline")
 											.jstree(
 													"create",
 													"#" + model.uuid,
@@ -320,7 +320,7 @@ define(
 													model.typeDeclarations,
 													function(index,
 															typeDeclaration) {
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -344,7 +344,7 @@ define(
 																		},
 																		null,
 																		true);
-														jQuery(
+														m_utils.jQuerySelect(
 																displayScope
 																		+ "#outline")
 																.jstree(
@@ -353,20 +353,20 @@ define(
 																				+ model.uuid);
 													});
 
-									jQuery(displayScope + "#outline").jstree(
+									m_utils.jQuerySelect(displayScope + "#outline").jstree(
 											"close_node", "#" + model.uuid);
 								});
 				m_messageDisplay.markSaved();
 				m_modelsSaveStatus.setModelsSaved();
-				jQuery("#undoChange").addClass("toolDisabled");
-				jQuery("#redoChange").addClass("toolDisabled");
+				m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+				m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 			};
 
 			var loadChildParticipants = function(model, parentParticipant) {
 				if (parentParticipant.childParticipants) {
 					jQuery.each(parentParticipant.childParticipants, function(
 							index, participant) {
-						jQuery(displayScope + "#outline").jstree("create",
+						m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 								"#" + parentParticipant.uuid, "last", {
 									"attr" : {
 										"id" : participant.uuid,
@@ -381,7 +381,7 @@ define(
 									"data" : participant.name
 								}, null, true);
 						loadChildParticipants(model, participant);
-						jQuery(displayScope + "#outline").jstree("close_node",
+						m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
 								"#" + participant.uuid);
 					});
 				}
@@ -389,7 +389,7 @@ define(
 
 			var deployModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
-				var modeleDeployerLink = jQuery(
+				var modeleDeployerLink = m_utils.jQuerySelect(
 						"a[id $= 'model_deployer_link']",
 						m_utils.getOutlineWindowAndDocument().doc);
 				var modeleDeployerLinkId = modeleDeployerLink.attr('id');
@@ -426,7 +426,7 @@ define(
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -437,7 +437,7 @@ define(
 							}, null, true);
 				} else if (type == "subProcessActivity") {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -447,7 +447,7 @@ define(
 							}, null, true);
 				} else if (type == 'primitiveDataType') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -458,7 +458,7 @@ define(
 							}, null, true);
 				} else if (type == 'role') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -472,8 +472,8 @@ define(
 
 			var elementRenamingHandler = function(attrs) {
 				if (attrs.action == 'Rename') {
-					var rLink = jQuery("li#" + attrs.id + " a")[0];
-					var textElem = jQuery(rLink.childNodes[1])[0];
+					var rLink = m_utils.jQuerySelect("li#" + attrs.id + " a")[0];
+					var textElem = m_utils.jQuerySelect(rLink.childNodes[1])[0];
 					textElem.nodeValue = attrs.props.completetext;
 				}
 			};
@@ -587,7 +587,7 @@ define(
 				// state.
 				m_modelerUtils.closeAllModelerViews();
 
-				jQuery(displayScope + "#outline").empty();
+				m_utils.jQuerySelect(displayScope + "#outline").empty();
 				readAllModels(true);
 			};
 
@@ -618,7 +618,7 @@ define(
 						alert("Models have unsaved changes. Please save models before continuing.");
 					}
 				} else {
-					var link = jQuery(
+					var link = m_utils.jQuerySelect(
 							"a[id $= 'open_model_upload_dialog_link']",
 							m_utils.getOutlineWindowAndDocument().doc);
 					var linkId = link.attr('id');
@@ -641,15 +641,15 @@ define(
 						m_commandsController.broadcastCommandUndo(data);
 
 						if (null != data.pendingUndo) {
-							jQuery("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#undoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 						}
 
 						if (null != data.pendingRedo) {
-							jQuery("#redoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 					}
 				});
@@ -667,15 +667,15 @@ define(
 						m_commandsController.broadcastCommand(data);
 
 						if (null != data.pendingUndo) {
-							jQuery("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#undoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 						}
 
 						if (null != data.pendingRedo) {
-							jQuery("#redoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 					}
 				});
@@ -694,8 +694,8 @@ define(
 										success : function(data) {
 											m_messageDisplay.markSaved();
 											m_modelsSaveStatus.setModelsSaved();
-											jQuery("#undoChange").addClass("toolDisabled");
-											jQuery("#redoChange").addClass("toolDisabled");
+											m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+											m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {
@@ -723,7 +723,7 @@ define(
 
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
-				jQuery(document).bind('TOOL_CLICKED_EVENT',
+				m_utils.jQuerySelect(document).bind('TOOL_CLICKED_EVENT',
 						function(event, data) {
 							handleToolbarEvents(event, data);
 						});
@@ -759,7 +759,7 @@ define(
 
 				// Tree Node Selection
 
-				jQuery(displayScope + "#outline")
+				m_utils.jQuerySelect(displayScope + "#outline")
 						.bind(
 								"select_node.jstree",
 								function(event, data) {
@@ -1068,11 +1068,11 @@ define(
 												+ data.rslt.obj.attr('rel'));
 									}
 
-									jQuery("a")
+									m_utils.jQuerySelect("a")
 											.mousedown(
 													function(e) {
 
-														if (jQuery(this)
+														if (m_utils.jQuerySelect(this)
 																.parent()
 																.attr(
 																		'draggable')) {
@@ -1081,8 +1081,8 @@ define(
 																		.preventDefault();
 															}
 															var insElem = this.childNodes[0];
-															var textElem = jQuery(this.childNodes[1])[0];
-															var bgImage = jQuery(
+															var textElem = m_utils.jQuerySelect(this.childNodes[1])[0];
+															var bgImage = m_utils.jQuerySelect(
 																	insElem)
 																	.css(
 																			'background-image');
@@ -1102,14 +1102,14 @@ define(
 															// parent.iDnD.drawIframeAt(e,
 															// window.name);
 															var model = m_model
-																	.findModelByUuid(jQuery(
+																	.findModelByUuid(m_utils.jQuerySelect(
 																			insElem)
 																			.parent()
 																			.parent()
 																			.attr(
 																					"modelUUID"));
 															var element = model
-																	.findModelElementByUuid(jQuery(
+																	.findModelElementByUuid(m_utils.jQuerySelect(
 																			insElem)
 																			.parent()
 																			.parent()
@@ -1119,13 +1119,13 @@ define(
 																	.setDrag();
 															parent.iDnD.dragMode = true;
 															var transferObj = {
-																'elementType' : jQuery(
+																'elementType' : m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
 																		.attr(
 																				'rel'),
-																'elementId' : jQuery(
+																'elementId' : m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
@@ -1138,7 +1138,7 @@ define(
 															};
 
 															if (transferObj.elementType == "Plain_Java_Application") {
-																transferObj.attr.accessPoint = jQuery(
+																transferObj.attr.accessPoint = m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
@@ -1146,7 +1146,7 @@ define(
 																				'accessPoint');
 															}
 
-															transferObj.attr.fullId = jQuery(
+															transferObj.attr.fullId = m_utils.jQuerySelect(
 																	insElem)
 																	.parent()
 																	.parent()
@@ -1184,7 +1184,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1265,7 +1265,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1384,7 +1384,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1456,7 +1456,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1533,7 +1533,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1573,7 +1573,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1627,7 +1627,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -1665,7 +1665,7 @@ define(
 														"label" : m_i18nUtils
 																.getProperty("modeler.outline.contextMenu.rename"),
 														"action" : function(obj) {
-															jQuery(
+															m_utils.jQuerySelect(
 																	displayScope
 																			+ "#outline")
 																	.jstree(
@@ -2617,32 +2617,32 @@ define(
 			};
 
 			var i18nStaticLabels = function() {
-				jQuery("#createModel")
+				m_utils.jQuerySelect("#createModel")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.createModel"));
-				jQuery("#importModel")
+				m_utils.jQuerySelect("#importModel")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.importModel"));
-				jQuery("#undoChange")
+				m_utils.jQuerySelect("#undoChange")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.undo"));
-				jQuery("#redoChange")
+				m_utils.jQuerySelect("#redoChange")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.redo"));
-				jQuery("#saveAllModels")
+				m_utils.jQuerySelect("#saveAllModels")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.saveAllModel"));
-				jQuery("#refreshModels")
+				m_utils.jQuerySelect("#refreshModels")
 						.attr(
 								"title",
 								m_i18nUtils
@@ -2654,7 +2654,7 @@ define(
 
 			return {
 				init : function(newViewManager, newDisplayScope) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					if (newDisplayScope) {
@@ -2674,7 +2674,7 @@ define(
 					outline.initialize();
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
-					jQuery("#outlineDiv").css("visibility", "visible");
+					m_utils.jQuerySelect("#outlineDiv").css("visibility", "visible");
 
 					m_utils.hideWaitCursor();
 
@@ -2711,9 +2711,9 @@ define(
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
-						jQuery(displayScope + "#outline").jstree("select_node",
+						m_utils.jQuerySelect(displayScope + "#outline").jstree("select_node",
 								"#" + element.uuid);
-						jQuery(displayScope + "#outline")
+						m_utils.jQuerySelect(displayScope + "#outline")
 								.jstree("deselect_all");
 						// Delay of 1000ms is added to avoid issues of node
 						// getting out or rename mode if the view takes
@@ -2721,7 +2721,7 @@ define(
 						// first node creation after login,
 						if (!openView) {
 							window.setTimeout(function() {
-								jQuery(displayScope + "#outline").jstree(
+								m_utils.jQuerySelect(displayScope + "#outline").jstree(
 										"rename", "#" + element.uuid)
 							}, 1000);
 						}
@@ -2796,14 +2796,14 @@ define(
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 								var uuid = modelElement.uuid;
-								var link = jQuery("li#" + uuid + " a")[0];
-								var node = jQuery("li#" + uuid);
+								var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
+								var node = m_utils.jQuerySelect("li#" + uuid);
 
 								node.attr("elementId", modelElement.id);
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
-								var textElem = jQuery(link.childNodes[1])[0];
+								var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
 								m_utils.inheritFields(modelElement,
@@ -2877,14 +2877,14 @@ define(
 									.processPendingRedo(command.pendingRedoableChange);
 						} else {
 							this.processPendingUndo(command);
-							jQuery("#undoChange").removeClass("toolDisabled");
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 
 						if (command.commandId === "modelLockStatus.update") {
 							if (isModelLockCommand) {
-								jQuery("#undoChange").addClass("toolDisabled");
-								jQuery("#redoChange").addClass("toolDisabled");
+								m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+								m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 							}
 						} else {
 							m_messageDisplay.markModified();
@@ -2919,14 +2919,14 @@ define(
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#undoChange")
+						m_utils.jQuerySelect("#undoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.undo")
 												+ ": " + element + " " + action);
 					} else {
-						jQuery("#undoChange")
+						m_utils.jQuerySelect("#undoChange")
 								.attr(
 										"title",
 										m_i18nUtils
@@ -2957,14 +2957,14 @@ define(
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#redoChange")
+						m_utils.jQuerySelect("#redoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.redo")
 												+ ": " + element + " " + action);
 					} else {
-						jQuery("#redoChange")
+						m_utils.jQuerySelect("#redoChange")
 								.attr(
 										"title",
 										m_i18nUtils
@@ -3016,7 +3016,7 @@ define(
 					var model = m_model.createModel(data.id, data.name,
 							data.uuid);
 					m_utils.inheritFields(model, data);
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							"#outline", "last", {
 								"attr" : {
 									"elementId" : data.id,
@@ -3026,10 +3026,10 @@ define(
 								},
 								"data" : data.name
 							}, null, true);
-					jQuery(displayScope + "#outline").jstree("set_type",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("set_type",
 							"model", "#" + data.uuid);
 
-					jQuery(displayScope + "#outline")
+					m_utils.jQuerySelect(displayScope + "#outline")
 							.jstree(
 									"create",
 									"#" + data.uuid,
@@ -3045,7 +3045,7 @@ define(
 										"data" : m_i18nUtils
 												.getProperty("modeler.outline.structuredTypes.name")
 									}, null, true);
-					jQuery(displayScope + "#outline")
+					m_utils.jQuerySelect(displayScope + "#outline")
 							.jstree(
 									"create",
 									"#" + data.uuid,
@@ -3062,9 +3062,9 @@ define(
 					jQuery.each(data.dataItems, function(key, value) {
 						outlineObj.createData(value, true);
 					});
-					jQuery(displayScope + "#outline").jstree("close_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
 							"#" + "data_" + data.uuid);
-					jQuery(displayScope + "#outline")
+					m_utils.jQuerySelect(displayScope + "#outline")
 							.jstree(
 									"create",
 									"#" + data.uuid,
@@ -3079,7 +3079,7 @@ define(
 										"data" : m_i18nUtils
 												.getProperty("modeler.outline.applications.name")
 									}, null, true);
-					jQuery(displayScope + "#outline")
+					m_utils.jQuerySelect(displayScope + "#outline")
 							.jstree(
 									"create",
 									"#" + data.uuid,
@@ -3096,7 +3096,7 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
-					jQuery(displayScope + "#outline").jstree("close_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
 							"#" + "participants_" + data.uuid);
 
 					return model;
@@ -3107,9 +3107,9 @@ define(
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 				}
 
@@ -3117,9 +3117,9 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -3130,9 +3130,9 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -3143,9 +3143,9 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -3158,9 +3158,9 @@ define(
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -3172,9 +3172,9 @@ define(
 				 *
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
@@ -3190,7 +3190,7 @@ define(
 							transferObject);
 					var parentSelector = '#' + model.uuid;
 
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : process.uuid,
@@ -3217,7 +3217,7 @@ define(
 							transferObject);
 					var parentSelector = '#applications_' + model.uuid;
 
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"rel" : application.applicationType,
@@ -3244,7 +3244,7 @@ define(
 
 					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 						var parentSelector = '#data_' + model.uuid;
-						jQuery(displayScope + "#outline").jstree("create",
+						m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 								parentSelector, "last", {
 									"attr" : {
 										"rel" : data.dataType,
@@ -3272,7 +3272,7 @@ define(
 							model, transferObject);
 					var parentSelector = '#structuredTypes_' + model.uuid;
 
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"rel" : dataStructure.getType(),
@@ -3301,7 +3301,7 @@ define(
 					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
 						var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
 								: ("#participants_" + model.uuid));
-						jQuery(displayScope + "#outline")
+						m_utils.jQuerySelect(displayScope + "#outline")
 								.jstree(
 										"create",
 										parentSelector,

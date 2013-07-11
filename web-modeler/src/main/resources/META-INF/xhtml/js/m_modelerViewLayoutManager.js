@@ -20,10 +20,12 @@ define(
 			var HORIZONTAL_SCROLL_OFFSET = 30;
 
 			function initPropertiesPanelCollapseClickHandlers() {
-				$("#propertiesPanelShowControl").click(function() {
+				m_utils.jQuerySelect("#propertiesPanelShowControl").click(function() {
+					propertiesPaneVisible = false;
 					showPropertiesPane();
 				});
-				$("#propertiesPanelHideControl").click(function() {
+				m_utils.jQuerySelect("#propertiesPanelHideControl").click(function() {
+					propertiesPaneVisible = true;
 					hidePropertiesPane();
 				});
 			}
@@ -31,13 +33,13 @@ define(
 			function initialize() {
 				propertiesPaneVisible = false;
 				i18nProcessScreen();
-				$("#modelerDiagramPanelWrapper").css("overflow", "auto");
-				$("#modelerPropertiesPanelWrapper").css("width", "0px").css(
+				m_utils.jQuerySelect("#modelerDiagramPanelWrapper").css("overflow", "auto");
+				m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "0px").css(
 						"overflow", "hidden");
 
-				m_dialog.makeVisible($("#propertiesPanelShowControl"));
-				m_dialog.makeInvisible($("#propertiesPanelHideControl"));
-				m_dialog.makeInvisible($("#modelerPropertiesPanelWrapper"));
+				m_dialog.makeVisible(m_utils.jQuerySelect("#propertiesPanelShowControl"));
+				m_dialog.makeInvisible(m_utils.jQuerySelect("#propertiesPanelHideControl"));
+				m_dialog.makeInvisible(m_utils.jQuerySelect("#modelerPropertiesPanelWrapper"));
 
 				initPropertiesPanelCollapseClickHandlers();
 
@@ -57,171 +59,171 @@ define(
 			}
 
 			function i18nProcessScreen() {
-				jQuery("#basicPropertiesPage div.heading")
+				m_utils.jQuerySelect("#basicPropertiesPage div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.general.heading"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#nameInput")
+				m_utils.jQuerySelect("#nameInput")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				jQuery("#processPropertiesPanel div.propertiesPanelTitle")
+				m_utils.jQuerySelect("#processPropertiesPanel div.propertiesPanelTitle")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.processAttachments.titleHeader"));
-				jQuery("#processInterfacePropertiesPage div.heading")
+				m_utils.jQuerySelect("#processInterfacePropertiesPage div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.processInterface"));
-				jQuery("#providesProcessInterfacePanel div.heading")
+				m_utils.jQuerySelect("#providesProcessInterfacePanel div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.parameterDefinitions"));
-				jQuery("#dataPathPropertiesPage div.heading")
+				m_utils.jQuerySelect("#dataPathPropertiesPage div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.header"));
 
 				// alert(m_i18nUtils.getProperty("modeler.propertyView.processs.dataPath.deleteParameter.title"));
-				jQuery("#deleteParameterDefinitionButton")
+				m_utils.jQuerySelect("#deleteParameterDefinitionButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("#moveParameterDefinitionUpButton")
+				m_utils.jQuerySelect("#moveParameterDefinitionUpButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveUp"));
-				jQuery("#moveParameterDefinitionDownButton")
+				m_utils.jQuerySelect("#moveParameterDefinitionDownButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveDown"));
 
-				jQuery(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage input.addParameterDefinitionButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.addButton.title"));
 
-				$("label[for='defaultPriorityInput']")
+				m_utils.jQuerySelect("label[for='defaultPriorityInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.general.defaultPriority"));
 
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionNameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionDirectionSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionDescriptorInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.descriptor"));
 
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionKeyDescriptorInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.keyDescriptor"));
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionDataSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.data"));
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionPathInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.pathInput"));
 
-				$("#displayPropertiesPage label[for='auxiliaryProcessInput']")
+				m_utils.jQuerySelect("#displayPropertiesPage label[for='auxiliaryProcessInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.display.auxiliaryValue"));
-				jQuery("#displayPropertiesPage div.heading")
+				m_utils.jQuerySelect("#displayPropertiesPage div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyPages.commonProperties.display"));
-				jQuery("#addParameterDefinitionButton")
+				m_utils.jQuerySelect("#addParameterDefinitionButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.dataPath.addButton.title"));
 
-				jQuery("#participantdata")
+				m_utils.jQuerySelect("#participantdata")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.swimlane.properties.participant"));
-				jQuery("#datadesc")
+				m_utils.jQuerySelect("#datadesc")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.processs.processDefinition.description"));
 
-				$(
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='targetProcessingTimeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
 
-				$(
+				m_utils.jQuerySelect(
 				"#basicPropertiesPage label[for='nameInput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.name"));
 
 
-				$("#displayPropertiesPage label[for='auxiliaryActivityInput']").text(m_i18nUtils.getProperty("modeler.activity.propertyPages.display.isAuxiliaryActivity"));
+				m_utils.jQuerySelect("#displayPropertiesPage label[for='auxiliaryActivityInput']").text(m_i18nUtils.getProperty("modeler.activity.propertyPages.display.isAuxiliaryActivity"));
 
 
-				$("#datatableid")
+				m_utils.jQuerySelect("#datatableid")
 						.find(
 								"#primitiveDataTypeRow label[for='primitiveDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				$("#datatableid")
+				m_utils.jQuerySelect("#datatableid")
 						.find("#datatypeid label[for='dataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
-				$("#datatableid")
+				m_utils.jQuerySelect("#datatableid")
 						.find("#structuredDataTypeRow label[for='structuredDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.structuredType"));
 
-				$("#datatableid")
+				m_utils.jQuerySelect("#datatableid")
 						.find(
 								"#primitiveDefaultTextInputRow label[for='primitiveDefaultTextInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.dataTypeProperties.defaultValue"));
 
-				jQuery("#activityheading")
+				m_utils.jQuerySelect("#activityheading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.title"));
 
-				$("#activitydescription label[for='descriptionInput']")
+				m_utils.jQuerySelect("#activitydescription label[for='descriptionInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				var primitiveDataTypeSelect = $("#datatableid").find(
+				var primitiveDataTypeSelect = m_utils.jQuerySelect("#datatableid").find(
 						"#primitiveDataTypeRow").find(
 						"#primitiveDataTypeSelect");
 
@@ -261,67 +263,67 @@ define(
 				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
 						+ selectdata + "</option>");
 
-				$("#datapublicvisibility")
+				m_utils.jQuerySelect("#datapublicvisibility")
 						.find("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				$("#datadescription")
+				m_utils.jQuerySelect("#datadescription")
 						.find("label[for='descriptionInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("#dataname")
+				m_utils.jQuerySelect("#dataname")
 						.find("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				$("#dataopendataview")
+				m_utils.jQuerySelect("#dataopendataview")
 						.find("#viewLink")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.data.openDataView"));
 
-				$("#startEventPanel")
+				m_utils.jQuerySelect("#startEventPanel")
 						.find("label[for='eventTypeSelectInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.startEvent.eventType"));
-				$("#annotationdesc")
+				m_utils.jQuerySelect("#annotationdesc")
 						.find("label[for='descriptionInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("#annotationName")
+				m_utils.jQuerySelect("#annotationName")
 						.find("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
 				// TODO These queries are far to course grained; will hit a lot of elements
-//				jQuery("#event")
+//				m_utils.jQuerySelect("#event")
 //						.text(
 //								m_i18nUtils
 //										.getProperty("modeler.diagram.toolbar.tool.event.title"));
-				jQuery("#annotationheading")
+				m_utils.jQuerySelect("#annotationheading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.annotation.title"));
 
-				$("#gatewayName label[for='nameInput']")
+				m_utils.jQuerySelect("#gatewayName label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				$("#gatewayDesc label[for='descriptionInput']")
+				m_utils.jQuerySelect("#gatewayDesc label[for='descriptionInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("#gatewaytypeinputselect label[for='gatewayTypeInput']")
+				m_utils.jQuerySelect("#gatewaytypeinputselect label[for='gatewayTypeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.gateway.type"));
 
-				var gatewayTypeInputselect = jQuery("#gatewayTypeInput");
+				var gatewayTypeInputselect = m_utils.jQuerySelect("#gatewayTypeInput");
 
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.and");
 				gatewayTypeInputselect.append("<option value=\"and\">"+selectdata+"</option>" );
@@ -329,7 +331,7 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
 				gatewayTypeInputselect.append("<option value=\"xor\">"+selectdata+"</option>" );
 
-				var directionSelect = $("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");
+				var directionSelect = m_utils.jQuerySelect("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
 				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
@@ -340,7 +342,7 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
 				directionSelect.append("<option value=\"INOUT\">" + selectdata + "</option>");
 
-				directionSelect = $("#directionlistTable").find("#parameterDefinitionDirectionSelect");
+				directionSelect = m_utils.jQuerySelect("#directionlistTable").find("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
 				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
@@ -349,22 +351,22 @@ define(
 				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
 
 
-				jQuery("#gatewayid")
+				m_utils.jQuerySelect("#gatewayid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.gateway"));
 
-				jQuery("#dataid")
+				m_utils.jQuerySelect("#dataid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.data"));
 			}
 
 			function hidePropertiesPane() {
 				if (true == propertiesPaneVisible) {
 					propertiesPaneVisible = false;
-					$("#modelerPropertiesPanelWrapper").css("width", "0px")
+					m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "0px")
 							.css("overflow", "hidden");
 
-					m_dialog.makeVisible($("#propertiesPanelShowControl"));
-					m_dialog.makeInvisible($("#propertiesPanelHideControl"));
-					m_dialog.makeInvisible($("#modelerPropertiesPanelWrapper"));
+					m_dialog.makeVisible(m_utils.jQuerySelect("#propertiesPanelShowControl"));
+					m_dialog.makeInvisible(m_utils.jQuerySelect("#propertiesPanelHideControl"));
+					m_dialog.makeInvisible(m_utils.jQuerySelect("#modelerPropertiesPanelWrapper"));
 					adjustPanels();
 				}
 			}
@@ -377,72 +379,74 @@ define(
 			function adjustPanels() {
 				// Assign available horizontal width to innerWidth with a hardcoded offset of 10 pixels
 				// to avoid extra horizontal scrolls
-				innerWidth = document.body.scrollWidth - $("div.toolbar-section").first().offset().left - 10;
-				if ($("div.sg-footer-bar").length > 0) {
-					innerHeight = $("div.sg-footer-bar").first().offset().top - $("div.toolbar-section").first().offset().top - 10;
+				innerWidth = document.body.scrollWidth - m_utils.jQuerySelect("div.toolbar-section").first().offset().left - 10;
+				if (m_utils.jQuerySelect("div.sg-footer-bar").length > 0) {
+					innerHeight = m_utils.jQuerySelect("div.sg-footer-bar").first().offset().top - m_utils.jQuerySelect("div.toolbar-section").first().offset().top - 10;
 				} else {
-					innerHeight = document.body.scrollHeight - $("div.toolbar-section").first().offset().top - 50;
+					innerHeight = document.body.scrollHeight - m_utils.jQuerySelect("div.toolbar-section").first().offset().top - 50;
 				}
 
 				var diagWidth = innerWidth - HORIZONTAL_SCROLL_OFFSET;
 
 				if (true == propertiesPaneVisible) {
-					$("#modelerPropertiesPanelWrapper").css("width", "auto");
+					m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "auto");
 					diagWidth = diagWidth
-							- $("#modelerPropertiesPanelWrapper")[0].offsetWidth;
+							- m_utils.jQuerySelect("#modelerPropertiesPanelWrapper")[0].offsetWidth;
 				}
 
 				if (diagWidth < getToolbarWidth()) {
 					diagWidth = getToolbarWidth();
 				}
 
-				$("#modelerDiagramPanelWrapper").css("width", (diagWidth + 10) + "px");
-				$("#toolbar").css("width", (diagWidth) + "px");
-				$("#messagePanel").css("width", (diagWidth) + "px");
-				$("#scrollpane").css("width", (diagWidth) + "px");
-				$("#scrollpane").css("height", (innerHeight - getToolbarHeight() - 50) + "px");
+				m_utils.jQuerySelect("#modelerDiagramPanelWrapper").css("width", (diagWidth + 10) + "px");
+				m_utils.jQuerySelect("#toolbar").css("width", (diagWidth) + "px");
+				m_utils.jQuerySelect("#messagePanel").css("width", (diagWidth) + "px");
+				m_utils.jQuerySelect("#scrollpane").css("width", (diagWidth) + "px");
+				m_utils.jQuerySelect("#scrollpane").css("height", (innerHeight - getToolbarHeight() - 50) + "px");
 
 			}
 
 			function getToolbarWidth() {
-				return $("div.toolbar-section").last().offset().left + $("div.toolbar-section").last().width()
-							- $("div.toolbar-section").first().offset().left + 20;
+				return m_utils.jQuerySelect("div.toolbar-section").last().offset().left + m_utils.jQuerySelect("div.toolbar-section").last().width()
+							- m_utils.jQuerySelect("div.toolbar-section").first().offset().left + 20;
 			}
 
 			function getToolbarHeight() {
-				return $("div.toolbar-section").last().height();
+				return m_utils.jQuerySelect("div.toolbar-section").last().height();
 			}
 
 			function showPropertiesPane() {
 				if (false == propertiesPaneVisible) {
 					propertiesPaneVisible = true;
-					m_dialog.makeVisible($("#modelerPropertiesPanelWrapper"));
+					m_dialog.makeVisible(m_utils.jQuerySelect("#modelerPropertiesPanelWrapper"));
 					// Collapse properties panel
-					$("#modelerPropertiesPanelWrapper").css("width", "0px");
+					m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "0px");
 					// Expand properties panel using new values
-					$("#modelerPropertiesPanelWrapper").css("width", "auto").css("overflow", "auto");
-					m_dialog.makeVisible($("#propertiesPanelHideControl"));
-					m_dialog.makeInvisible($("#propertiesPanelShowControl"));
+					m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "auto").css("overflow", "auto");
+					m_dialog.makeVisible(m_utils.jQuerySelect("#propertiesPanelHideControl"));
+					m_dialog.makeInvisible(m_utils.jQuerySelect("#propertiesPanelShowControl"));
 					adjustPanels();
 				}
 			}
 
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					initialize();
-					m_modelerCanvasController.initialize(fullId, "canvas",
+					var newId = "canvas" + Math.floor((Math.random()*10000) + 1);
+					m_utils.jQuerySelect("#canvas").get(0).id = newId;
+					m_modelerCanvasController.initialize(fullId, newId,
 							5000, 1000, 'toolbar');
+					var process = m_model.findProcess(fullId);
 					m_propertiesPanel
 					.initializeProcessPropertiesPanel(m_processPropertiesPanel
-							.getInstance());
+							.getInstance(process));
 					this.showPropertiesPane();
 
 					m_utils.hideWaitCursor();
 
-					var process = m_model.findProcess(fullId);
 					if (process && process.isReadonly()) {
 						m_utils.markControlsReadonly();
 					}

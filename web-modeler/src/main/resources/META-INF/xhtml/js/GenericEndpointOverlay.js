@@ -45,10 +45,10 @@ define(
 
 
 					// configuration tab
-					this.camelContextInput = jQuery("#genericEndpointOverlay #camelContextInput");
-					this.additionalBeanSpecificationTextarea = jQuery("#genericEndpointOverlay #additionalBeanSpecificationTextarea");
+					this.camelContextInput = m_utils.jQuerySelect("#genericEndpointOverlay #camelContextInput");
+					this.additionalBeanSpecificationTextarea = m_utils.jQuerySelect("#genericEndpointOverlay #additionalBeanSpecificationTextarea");
 
-					this.invocationPatternInput = jQuery("#genericEndpointOverlay #invocationPatternInput");
+					this.invocationPatternInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationPatternInput");
 					this.invocationPatternInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
 						.getProperty("None") + "</option>");
 					this.invocationPatternInput.append("<option value=\"send\">" + m_i18nUtils
@@ -59,7 +59,7 @@ define(
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.receive") + "</option>");
 
 
-					this.invocationTypeInput = jQuery("#genericEndpointOverlay #invocationTypeInput");
+					this.invocationTypeInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationTypeInput");
 					this.invocationTypeInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
 						.getProperty("None") + "</option>");
 					this.invocationTypeInput.append("<option value=\"synchronous\">" + m_i18nUtils
@@ -68,17 +68,17 @@ define(
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationType.asynchronous") + "</option>");
 
 					// producer route tab
-					this.processContextHeadersInput = jQuery("#producerRouteTab #processContextHeadersInput");
-					this.producerRouteTextarea = jQuery("#producerRouteTab #producerRouteTextarea");
+					this.processContextHeadersInput = m_utils.jQuerySelect("#producerRouteTab #processContextHeadersInput");
+					this.producerRouteTextarea = m_utils.jQuerySelect("#producerRouteTab #producerRouteTextarea");
 
 					// consumer route tab
-					this.consumerRouteTextarea = jQuery("#consumerRouteTab #consumerRouteTextarea");
+					this.consumerRouteTextarea = m_utils.jQuerySelect("#consumerRouteTab #consumerRouteTextarea");
 
 					// parameters tab
-					this.requestDataInput = jQuery("#genericEndpointOverlay #requestDataInput");
-					this.responseDataInput = jQuery("#genericEndpointOverlay #responseDataInput");
-					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
+					this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
+					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({

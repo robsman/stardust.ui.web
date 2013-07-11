@@ -241,10 +241,10 @@ define(
 
 							this.tableBody.find("tr").each(
 									function(index) {
-										rowExpandedStatus[this.id] = $(this)
+										rowExpandedStatus[this.id] = m_utils.jQuerySelect(this)
 												.hasClass("expanded");
 									});
-							var selectedRowId = jQuery(
+							var selectedRowId = m_utils.jQuerySelect(
 									"table#fieldPropertiesTable tr.selected")
 									.first().attr('id');
 
@@ -256,7 +256,7 @@ define(
 									.each(
 											function(index) {
 												if (rowExpandedStatus[this.id]) {
-													jQuery(this).addClass(
+													m_utils.jQuerySelect(this).addClass(
 															"expanded");
 												}
 												for (id in rowExpandedStatus) {
@@ -265,7 +265,7 @@ define(
 													if (rowExpandedStatus[id]
 															&& this.classList
 																	.contains(parentClassId)) {
-														jQuery(this)
+														m_utils.jQuerySelect(this)
 																.removeClass(
 																		"ui-helper-hidden");
 													}
@@ -273,7 +273,7 @@ define(
 											});
 
 							// Restore the selected tree nodes
-							jQuery("#fieldPropertiesTable #" + selectedRowId)
+							m_utils.jQuerySelect("#fieldPropertiesTable #" + selectedRowId)
 									.addClass("selected");
 						},
 
@@ -287,8 +287,8 @@ define(
 							this.element = element;
 							this.view = view;
 
-							this.table = jQuery("#fieldPropertiesTable");
-							this.tableBody = jQuery("table#fieldPropertiesTable tbody");
+							this.table = m_utils.jQuerySelect("#fieldPropertiesTable");
+							this.tableBody = m_utils.jQuerySelect("table#fieldPropertiesTable tbody");
 
 							this.tableBody.empty();
 
@@ -408,46 +408,46 @@ define(
 							});
 							this.table.treeTable();
 
-							jQuery("table#fieldPropertiesTable tbody tr")
+							m_utils.jQuerySelect("table#fieldPropertiesTable tbody tr")
 									.mousedown(
 											function() {
-												jQuery(
+												m_utils.jQuerySelect(
 														"table#fieldPropertiesTable tbody tr.selected")
 														.removeClass("selected");
-												jQuery(this).addClass(
+												m_utils.jQuerySelect(this).addClass(
 														"selected");
 											});
 
 							var self = this;
-							jQuery(
+							m_utils.jQuerySelect(
 									"table#fieldPropertiesTable tbody tr input:text")
 									.on(
 											"change",
 											function(event) {
 												self.updateAnnotation(
-														this.name, jQuery(
+														this.name, m_utils.jQuerySelect(
 																event.target)
 																.val());
 											});
 
-							jQuery("table#fieldPropertiesTable tbody tr select")
+							m_utils.jQuerySelect("table#fieldPropertiesTable tbody tr select")
 									.on(
 											"change",
 											function(event) {
 												self.updateAnnotation(
-														this.name, jQuery(
+														this.name, m_utils.jQuerySelect(
 																event.target)
 																.val());
 											});
 
-							jQuery(
+							m_utils.jQuerySelect(
 									"table#fieldPropertiesTable tbody tr input:checkbox")
 									.change(
 											function(event) {
 												self
 														.updateAnnotation(
 																this.name,
-																jQuery(
+																m_utils.jQuerySelect(
 																		event.target)
 																		.is(
 																				":checked") ? true
@@ -462,8 +462,8 @@ define(
 														.isReadonly());
 							}
 
-							var width = jQuery("#fieldPropertiesTableDiv").find("#property").width();
-							jQuery("table#fieldPropertiesTable").find("tr > td:first").width(width + "px");
+							var width = m_utils.jQuerySelect("#fieldPropertiesTableDiv").find("#property").width();
+							m_utils.jQuerySelect("table#fieldPropertiesTable").find("tr > td:first").width(width + "px");
 						};
 			};
 		});

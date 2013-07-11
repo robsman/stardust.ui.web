@@ -46,16 +46,16 @@ define(
 											.getProperty("modeler.model.applicationOverlay.scripting.test.title"),
 									"plugins/bpm-modeler/images/icons/table.png");
 
-					this.scriptCodeHeading = jQuery("#scriptingIntegrationOverlay #scriptCodeHeading");
-					this.languageSelect = jQuery("#scriptingIntegrationOverlay #languageSelect");
+					this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
+					this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
 					this.codeEditor = m_codeEditorAce
 							.getJSCodeEditor("codeEditorDiv");
-					this.resetButton = jQuery("#testTab #resetButton");
-					this.runButton = jQuery("#testTab #runButton");
-					this.inputDataTextarea = jQuery("#testTab #inputDataTextarea");
-					this.outputDataTextarea = jQuery("#testTab #outputDataTextarea");
-					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
+					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
+					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
+					this.outputDataTextarea = m_utils.jQuerySelect("#testTab #outputDataTextarea");
+					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
 					this.scriptCodeHeading.empty();
 					this.scriptCodeHeading
@@ -64,7 +64,7 @@ define(
 
 					var self = this;
 
-					jQuery("a[href='#configurationTab']").click(function() {
+					m_utils.jQuerySelect("a[href='#configurationTab']").click(function() {
 						self.setGlobalVariables();
 					});
 
@@ -101,11 +101,11 @@ define(
 									"title",
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.scripting.test.runButton.title"));
-					jQuery("label[for='inputDataTextArea']")
+					m_utils.jQuerySelect("label[for='inputDataTextArea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.scripting.test.inputDataTextArea.label"));
-					jQuery("label[for='outputDataTextarea']")
+					m_utils.jQuerySelect("label[for='outputDataTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.scripting.test.outputDataTextArea.label"));

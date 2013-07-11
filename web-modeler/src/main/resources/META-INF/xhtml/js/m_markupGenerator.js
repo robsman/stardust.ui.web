@@ -178,11 +178,11 @@ define(
 					writeTag("require([ 'require', 'jquery', 'jquery-ui', 'json', 'jquery.url', 'angularjs',");
 					writeTag("   'xml2json', 'bpm.portal.Interaction', 'bpm.portal.GenericController' ], function(require, jquery, jqueryUi,");
 					writeTag("   json, jqueryUrl, angularjs, xml2json, stardustPortalInteraction, stardustGenericController) {");
-					writeTag("      jQuery(document).ready(");
+					writeTag("      m_utils.jQuerySelect(document).ready(");
 					writeTag("      function() {");
 					writeTag("         var interaction = new bpm.portal.Interaction();");
 					writeTag("         var controller = new bpm.portal.GenericController();");
-					writeTag("         jQuery('.structureTabs').tabs();");
+					writeTag("         m_utils.jQuerySelect('.structureTabs').tabs();");
 					writeTag("      interaction.bind().done(function(){");
 					writeTag("         controller.bind(angularjs, interaction);");
 					writeTag("         });");

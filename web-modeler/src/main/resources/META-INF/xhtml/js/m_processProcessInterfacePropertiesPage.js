@@ -69,7 +69,7 @@ define(
 							.mapInputId("parameterDefinitionsTable tbody");
 					this.processInterfaceFromDataCreationWizardLink = this
 							.mapInputId("processInterfaceFromDataCreationWizardLink");
-					this.processDataTableBody = jQuery("#processDataTable tbody"); // TODO
+					this.processDataTableBody = m_utils.jQuerySelect("#processDataTable tbody"); // TODO
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "processInterfacePropertiesPage",
@@ -108,22 +108,22 @@ define(
 					this.processInterfaceFromDataCreationWizardLink.click({
 						"callbackScope" : this
 					}, function(event) {
-						jQuery("#processInterfaceFromDataCreationWizard")
+						m_utils.jQuerySelect("#processInterfaceFromDataCreationWizard")
 								.dialog("open");
 					});
-					jQuery("#processInterfaceFromDataCreationWizard").dialog({
+					m_utils.jQuerySelect("#processInterfaceFromDataCreationWizard").dialog({
 						autoOpen : false,
 						draggable : true
 					});
-					jQuery(
+					m_utils.jQuerySelect(
 							"#processInterfaceFromDataCreationWizard #cancelButton")
 							.click(
 									function() {
-										jQuery(
+										m_utils.jQuerySelect(
 												"#processInterfaceFromDataCreationWizard")
 												.dialog("close");
 									});
-					jQuery(
+					m_utils.jQuerySelect(
 							"#processInterfaceFromDataCreationWizard #generateButton")
 							.click(
 									{
@@ -133,14 +133,14 @@ define(
 										event.data.page.parameterDefinitionsTableBody
 												.empty();
 
-										var rows = jQuery("#processDataTable tbody tr");
+										var rows = m_utils.jQuerySelect("#processDataTable tbody tr");
 
 										for ( var n = 0; n < rows.length; ++n) {
 											var row = rows[n];
 											var dataSymbol = jQuery.data(row,
 													"dataSymbol");
 
-											if (jQuery(
+											if (m_utils.jQuerySelect(
 													"#processDataTable tbody tr input:eq("
 															+ n + ")").is(
 													":checked")) {
@@ -175,11 +175,11 @@ define(
 												event.data.page.parameterDefinitionsTableBody
 														.append(content);
 
-												jQuery(
+												m_utils.jQuerySelect(
 														"#parameterDefinitionsTable tbody tr #parameterRow-"
 																+ n + " select")
 														.val(
-																jQuery(
+																m_utils.jQuerySelect(
 																		"#processDataTable tbody tr select:eq("
 																				+ n
 																				+ ")")
@@ -190,7 +190,7 @@ define(
 										event.data.page.parameterDefinitionsTableBody
 												.append("<tr id=\"newRow\"><td><a id=\"newLink\"><img src=\"plugins/bpm-modeler/images/icons/add.png\"/></a></td><td></td><td></td><td></td>");
 
-										jQuery(
+										m_utils.jQuerySelect(
 												"#processInterfaceFromDataCreationWizard")
 												.dialog("close");
 									});
@@ -221,7 +221,7 @@ define(
 
 					// TODO Ugly
 
-					jQuery("#processdefinitionselect").find("label[for='processInterfaceTypeSelectInput']")
+					m_utils.jQuerySelect("#processdefinitionselect").find("label[for='processInterfaceTypeSelectInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.type"));
@@ -256,7 +256,7 @@ define(
 
 						this.processDataTableBody.append(row);
 
-						jQuery("#processDataTable #data-" + dataSymbol.oid)
+						m_utils.jQuerySelect("#processDataTable #data-" + dataSymbol.oid)
 								.data("dataSymbol", dataSymbol);
 					}
 				};

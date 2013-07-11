@@ -11,8 +11,8 @@
 /**
  * @author shrikant.gangal
  */
-define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants" ], function(m_toolbarManager,
-		m_constants) {
+define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_utils" ], function(m_toolbarManager,
+		m_constants, m_utils) {
 	var currentSelection;
 	var toolSelectActions = {
 		createModelToolSelected : function(data) {
@@ -39,7 +39,7 @@ define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants" ], func
 	};
 
 	function fireToolSelectedEvent(data) {
-		jQuery(document).trigger("TOOL_CLICKED_EVENT", {
+		m_utils.jQuerySelect(document).trigger("TOOL_CLICKED_EVENT", {
 			"id" : data.toolId
 		});
 	}

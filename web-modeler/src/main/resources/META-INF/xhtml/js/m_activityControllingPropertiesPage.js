@@ -25,76 +25,76 @@ define(
 			};
 
 			function i18nactivity() {
-				$("label[for='measureInput']")
+				m_utils.jQuerySelect("label[for='measureInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.measure"));
-				$("label[for='targetMeasureQuantityInput']")
+				m_utils.jQuerySelect("label[for='targetMeasureQuantityInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetMeasureQuantity"));
-				$("label[for='difficultyInput']")
+				m_utils.jQuerySelect("label[for='difficultyInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.difficulty"));
-				$("label[for='targetProcessingTimeInput']")
+				m_utils.jQuerySelect("label[for='targetProcessingTimeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetProcessingTime"));
-				$("label[for='targetExecutionTimeInput']")
+				m_utils.jQuerySelect("label[for='targetExecutionTimeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetExecutionTimeInput")); // Execution
-				$("label[for='targetIdleTimeInput']")
+				m_utils.jQuerySelect("label[for='targetIdleTimeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetIdleTimeInput"));
-				$("label[for='targetWaitingTimeInput']")
+				m_utils.jQuerySelect("label[for='targetWaitingTimeInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetWaitingTimeInput"));
-				$("label[for='targetQueueDepthInput']")
+				m_utils.jQuerySelect("label[for='targetQueueDepthInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetQueueDepthInput"));
-				$("label[for='targetCostPerExecutionInput']")
+				m_utils.jQuerySelect("label[for='targetCostPerExecutionInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerExecutionInput"));
-				$("label[for='targetCostPerSecondInput']")
+				m_utils.jQuerySelect("label[for='targetCostPerSecondInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.targetCostPerSecondInput"));
-				$("label[for='resourcePerformanceCalculationSelect']")
+				m_utils.jQuerySelect("label[for='resourcePerformanceCalculationSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect"));
-				jQuery("#activityhours")
+				m_utils.jQuerySelect("#activityhours")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#activityhours2")
+				m_utils.jQuerySelect("#activityhours2")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#activityhours3")
+				m_utils.jQuerySelect("#activityhours3")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#activityhours4")
+				m_utils.jQuerySelect("#activityhours4")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#activitydollar")
+				m_utils.jQuerySelect("#activitydollar")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dollar"));
-				jQuery("#activityControling")
+				m_utils.jQuerySelect("#activityControling")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.controlling.header"));
 
-				this.resourcePerformanceCalculationSelect = jQuery("#resourcePerformanceCalculationSelect");
+				this.resourcePerformanceCalculationSelect = m_utils.jQuerySelect("#resourcePerformanceCalculationSelect");
 
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.included");

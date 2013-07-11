@@ -35,7 +35,7 @@ define(
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"drl", "DRL", "plugins/bpm-modeler/images/icons/bricks.png");
 
-					this.typeDeclarationsTextarea = jQuery("#rulesIntegrationOverlay #typeDeclarationsTextarea");
+					this.typeDeclarationsTextarea = m_utils.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
 					this.ruleSetEditor = m_codeEditorAce
 							.getDrlEditor("ruleSetEditorDiv");
 
@@ -46,7 +46,7 @@ define(
 					// supported in jquery ui 1.8.19
 					// Once we move to version 1.9+ we should be able to replace this with
 					// activate event handling.
-					this.configTab = jQuery("a[href='#configurationTab']");
+					this.configTab = m_utils.jQuerySelect("a[href='#configurationTab']");
 					this.configTab
 							.click(function() {
 								self.ruleSetEditor
@@ -60,7 +60,7 @@ define(
 						self.submitDrlChanges();
 					});
 
-					this.drlTextarea = jQuery("#drlTab #drlTextarea");
+					this.drlTextarea = m_utils.jQuerySelect("#drlTab #drlTextarea");
 
 					this.typeDeclarationsTextarea.prop("disabled", true);
 					this.drlTextarea.prop("disabled", true);

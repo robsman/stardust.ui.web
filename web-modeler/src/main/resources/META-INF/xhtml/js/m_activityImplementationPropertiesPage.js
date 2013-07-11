@@ -61,7 +61,7 @@ define(
 					this.heading
 							.append(m_i18nUtils
 									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
-					jQuery("label[for='applicationList']")
+					m_utils.jQuerySelect("label[for='applicationList']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertiesPage.activity.implementation.application"));

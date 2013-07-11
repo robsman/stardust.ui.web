@@ -18,7 +18,7 @@ define(
 
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var view = new WebServiceApplicationView();
@@ -35,113 +35,113 @@ define(
 
 			function i18webserviceproperties() {
 
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#application")
+				m_utils.jQuerySelect("#application")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.applicationName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				jQuery("#configuration")
+				m_utils.jQuerySelect("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
-				jQuery("#wsdlurl")
+				m_utils.jQuerySelect("#wsdlurl")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.wsdlURL"));
 
-				jQuery("#browseButton")
+				m_utils.jQuerySelect("#browseButton")
 						.val(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.load"));
-				jQuery("#service")
+				m_utils.jQuerySelect("#service")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.service"));
 
-				jQuery("#port")
+				m_utils.jQuerySelect("#port")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.port"));
-				jQuery("#operation")
+				m_utils.jQuerySelect("#operation")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.operation"));
-				jQuery("#style")
+				m_utils.jQuerySelect("#style")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.style"));
-				jQuery("#protocal")
+				m_utils.jQuerySelect("#protocal")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.protocal"));
-				jQuery("#use")
+				m_utils.jQuerySelect("#use")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.use"));
-				jQuery("#endpointLabel")
+				m_utils.jQuerySelect("#endpointLabel")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.endpoint"));
 
-				jQuery("#implementation")
+				m_utils.jQuerySelect("#implementation")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.implementation"));
-				jQuery("#includedAddressing")
+				m_utils.jQuerySelect("#includedAddressing")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.implementationProperties.includeAddressing"));
-				jQuery("#implementation1")
+				m_utils.jQuerySelect("#implementation1")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.implementation"));
 
-				jQuery("#security")
+				m_utils.jQuerySelect("#security")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.security"));
-				jQuery("#authenticationReq")
+				m_utils.jQuerySelect("#authenticationReq")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.securityProperties.authenticationRequired"));
-				jQuery("#mechanism")
+				m_utils.jQuerySelect("#mechanism")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.securityProperties.mechanism"));
-				jQuery("#variant")
+				m_utils.jQuerySelect("#variant")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.webService.securityProperties.variant"));
 
 				/* Comments Tab Changes */
-				jQuery("#comments")
+				m_utils.jQuerySelect("#comments")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.comments"));
-				jQuery("#comments")
+				m_utils.jQuerySelect("#comments")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.webservice.commentsProperties.comments"));
-				jQuery("#submitButton")
+				m_utils.jQuerySelect("#submitButton")
 						.attr(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.submit"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
@@ -166,25 +166,25 @@ define(
 						application) {
 					initializing = true;
 					this.id = "webServiceApplicationView";
-					this.view = jQuery("#" + this.id);
+					this.view = m_utils.jQuerySelect("#" + this.id);
 
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.wsdlUrlInput = jQuery("#wsdlUrlInput");
-					this.browseButton = jQuery("#browseButton");
-					this.serviceSelect = jQuery("#serviceSelect");
-					this.implementselect = jQuery("#implementationSelect");
-					this.portSelect = jQuery("#portSelect");
-					this.operationSelect = jQuery("#operationSelect");
-					this.styleOutput = jQuery("#styleOutput");
-					this.protocolOutput = jQuery("#protocolOutput");
-					this.useOutput = jQuery("#useOutput");
-					this.endpointLabel = jQuery("#endpointLabel");
-					this.endpoint = jQuery("#endpointInput");
-					this.addressingInput = jQuery("#addressingInput");
-					this.implementationSelect = jQuery("#implementationSelect");
-					this.authenticationInput = jQuery("#authenticationInput");
-					this.mechanismSelect = jQuery("#mechanismSelect");
-					this.variantSelect = jQuery("#variantSelect");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.wsdlUrlInput = m_utils.jQuerySelect("#wsdlUrlInput");
+					this.browseButton = m_utils.jQuerySelect("#browseButton");
+					this.serviceSelect = m_utils.jQuerySelect("#serviceSelect");
+					this.implementselect = m_utils.jQuerySelect("#implementationSelect");
+					this.portSelect = m_utils.jQuerySelect("#portSelect");
+					this.operationSelect = m_utils.jQuerySelect("#operationSelect");
+					this.styleOutput = m_utils.jQuerySelect("#styleOutput");
+					this.protocolOutput = m_utils.jQuerySelect("#protocolOutput");
+					this.useOutput = m_utils.jQuerySelect("#useOutput");
+					this.endpointLabel = m_utils.jQuerySelect("#endpointLabel");
+					this.endpoint = m_utils.jQuerySelect("#endpointInput");
+					this.addressingInput = m_utils.jQuerySelect("#addressingInput");
+					this.implementationSelect = m_utils.jQuerySelect("#implementationSelect");
+					this.authenticationInput = m_utils.jQuerySelect("#authenticationInput");
+					this.mechanismSelect = m_utils.jQuerySelect("#mechanismSelect");
+					this.variantSelect = m_utils.jQuerySelect("#variantSelect");
 
 					// values for implentationselect
 					var selectdata = null;
@@ -522,7 +522,7 @@ define(
 								callbackMethod : "setWebServiceStructure"
 							};
 
-							jQuery("body").css("cursor", "progress");
+							m_utils.jQuerySelect("body").css("cursor", "progress");
 							this.clearErrorMessages();
 							this.wsdlUrlInput.removeClass("error");
 
@@ -542,11 +542,11 @@ define(
 												"success" : function(serverData) {
 													successCallback.callbackScope[successCallback.callbackMethod]
 															(serverData);
-													jQuery("body")
+													m_utils.jQuerySelect("body")
 															.css("cursor", "auto");
 												},
 												"error" : function() {
-													jQuery("body")
+													m_utils.jQuerySelect("body")
 															.css("cursor", "auto");
 													if (structure == null) {
 														var errormessage = m_i18nUtils.getProperty("modeler.model.propertyView.webService.errorMessage")

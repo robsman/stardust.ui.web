@@ -40,11 +40,11 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
 				objectId) {
 			m_utils.showWaitCursor();
 			m_utils.debug("Open View");
-			m_utils.debug(jQuery(window));
-			m_utils.debug(jQuery(window.top));
-			m_utils.debug(jQuery(window.top.frames['ippPortalMain']));
+			m_utils.debug(m_utils.jQuerySelect(window));
+			m_utils.debug(m_utils.jQuerySelect(window.top));
+			m_utils.debug(m_utils.jQuerySelect(window.top.frames['ippPortalMain']));
 
-			var link = jQuery("a[id $= 'model_view_link']", m_utils.getOutlineWindowAndDocument().doc);
+			var link = m_utils.jQuerySelect("a[id $= 'model_view_link']", m_utils.getOutlineWindowAndDocument().doc);
 			var linkId = link.attr('id');
 			var form = link.parents('form:first');
 			var formId = form.attr('id');
@@ -57,7 +57,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
 		 */
 		JsfViewManager.prototype.updateView = function(viewId, queryString,
 				objectId) {
-			var link = jQuery("a[id $= 'view_updater_link']", m_utils.getOutlineWindowAndDocument().doc);
+			var link = m_utils.jQuerySelect("a[id $= 'view_updater_link']", m_utils.getOutlineWindowAndDocument().doc);
 			var linkId = link.attr('id');
 			var form = link.parents('form:first');
 			var formId = form.attr('id');
@@ -69,7 +69,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
 		 *
 		 */
 		JsfViewManager.prototype.closeViewsForElement = function(uuid) {
-			var link = jQuery("a[id $= 'views_close_link']", m_utils.getOutlineWindowAndDocument().doc);
+			var link = m_utils.jQuerySelect("a[id $= 'views_close_link']", m_utils.getOutlineWindowAndDocument().doc);
 			var linkId = link.attr('id');
 			var form = link.parents('form:first');
 			var formId = form.attr('id');

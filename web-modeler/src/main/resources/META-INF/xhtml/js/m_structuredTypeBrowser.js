@@ -52,13 +52,13 @@ define(
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {
 
 				var childPath = (parentPath || "") + "-" + element.name.replace(/[:<>]/g, "-");
-				var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+				var childRow = m_utils.jQuerySelect("<tr id='" + childPath + "'></tr>");
 
 				if (rowInitializer) {
 					rowInitializer(childRow, element, schemaType);
 				} else {
 
-					var nameColumn = jQuery("<td><span class='data-element'></span></td>");
+					var nameColumn = m_utils.jQuerySelect("<td><span class='data-element'></span></td>");
 					// set this way to ensure content is properly encoded
 					nameColumn.children("td span").text(element.name);
 					nameColumn.appendTo(childRow);
@@ -71,8 +71,8 @@ define(
 					}
 					var cardinalityLabel = getCardinalityLabel(element.cardinality);
 
-					jQuery("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
-					jQuery("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
+					m_utils.jQuerySelect("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
+					m_utils.jQuerySelect("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
 
 					if (schemaType && (schemaType.isStructure() || schemaType.isEnumeration())) {
 						if ( !jQuery.isArray(schemaType.getElements()) || (0 < schemaType.getElements().length)) {
@@ -141,7 +141,7 @@ define(
 			 */
 			function insertChildElementRowsEagerly(parentRows, rowInitializer) {
 				jQuery.each(parentRows, function() {
-					var parentRow = jQuery(this);
+					var parentRow = m_utils.jQuerySelect(this);
 
 					var parentPath = this.id;
 					var schemaType = parentRow.data("schemaType");
@@ -163,7 +163,7 @@ define(
 			 */
 			function insertChildElementRowsLazily(parentRows, rowInitializer) {
 				jQuery.each(parentRows, function() {
-					var parentRow = jQuery(this);
+					var parentRow = m_utils.jQuerySelect(this);
 					if ( !parentRow.data("elements-initialized")) {
 						var parentPath = this.id;
 						var schemaType = parentRow.data("schemaType");

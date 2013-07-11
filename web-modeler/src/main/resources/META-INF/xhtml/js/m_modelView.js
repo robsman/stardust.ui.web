@@ -18,7 +18,7 @@ define(
 				m_jsfViewManager, m_elementConfiguration) {
 			return {
 				initialize : function(modelId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var model = m_model.findModel(modelId);
@@ -34,68 +34,68 @@ define(
 			};
 
 			function i18modelview() {
-				jQuery("#accesscontrol")
+				m_utils.jQuerySelect("#accesscontrol")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.accessControl"));
-				jQuery("#problem")
+				m_utils.jQuerySelect("#problem")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.problem"));
-				jQuery("#modeltext1")
+				m_utils.jQuerySelect("#modeltext1")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.modelText"));
-				jQuery("#modeltex2")
+				m_utils.jQuerySelect("#modeltex2")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.modelText2"));
-				jQuery("#markreadonly")
+				m_utils.jQuerySelect("#markreadonly")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.markReadonlyLink"));
-				jQuery("#markwritable")
+				m_utils.jQuerySelect("#markwritable")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.markWritable"));
-				jQuery("#severity")
+				m_utils.jQuerySelect("#severity")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.severity"));
-				jQuery("#element")
+				m_utils.jQuerySelect("#element")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.element"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#refreshValidationButton")
+				m_utils.jQuerySelect("#refreshValidationButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.validationRefresh"));
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("label[for='lastModificationDateOutput']")
+				m_utils.jQuerySelect("label[for='lastModificationDateOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.lastModificationDate"));
-				$("label[for='creationDateOutput']")
+				m_utils.jQuerySelect("label[for='creationDateOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.creationDateOutput"));
-				$("label[for='nameInput']")
+				m_utils.jQuerySelect("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.name"));
-				$("label[for='validFromDate']")
+				m_utils.jQuerySelect("label[for='validFromDate']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.validFrom"));
-				$("#validFromDate").datepicker();
+				m_utils.jQuerySelect("#validFromDate").datepicker();
 
 			}
 			/**
@@ -114,17 +114,17 @@ define(
 				 */
 				ModelView.prototype.initialize = function(model) {
 					this.id = "modelView";
-					this.view = jQuery("#" + this.id);
-					this.versionTable = jQuery("#versionTable");
-					this.versionTableBody = jQuery("table#versionTable tbody");
-					this.problemsTable = jQuery("#problemsTable");
-					this.problemsTableBody = jQuery("table#problemsTable tbody");
-					this.refreshValidationButton = jQuery("#refreshValidationButton");
-					this.creationDateOutput = jQuery("#creationDateOutput");
-					this.lastModificationDateOutput = jQuery("#lastModificationDateOutput");
-					this.validFromDate = $("#validFromDate");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.versionTable = m_utils.jQuerySelect("#versionTable");
+					this.versionTableBody = m_utils.jQuerySelect("table#versionTable tbody");
+					this.problemsTable = m_utils.jQuerySelect("#problemsTable");
+					this.problemsTableBody = m_utils.jQuerySelect("table#problemsTable tbody");
+					this.refreshValidationButton = m_utils.jQuerySelect("#refreshValidationButton");
+					this.creationDateOutput = m_utils.jQuerySelect("#creationDateOutput");
+					this.lastModificationDateOutput = m_utils.jQuerySelect("#lastModificationDateOutput");
+					this.validFromDate = m_utils.jQuerySelect("#validFromDate");
 
-					jQuery("#modelTabs").tabs();
+					m_utils.jQuerySelect("#modelTabs").tabs();
 
 					this.versionTable.tableScroll({
 						height : 200
@@ -144,9 +144,9 @@ define(
 									function(event) {
 										var view = event.data.view;
 										var attribute = "carnot:engine:validFrom";
-										if ($(this).val()
-												&& "" != $(this).val()) {
-											var dt = $(this).datepicker(
+										if (m_utils.jQuerySelect(this).val()
+												&& "" != m_utils.jQuerySelect(this).val()) {
+											var dt = m_utils.jQuerySelect(this).datepicker(
 													"getDate");
 											var validFrom = dt.getFullYear()
 													+ "/" + (dt.getMonth() + 1)
@@ -336,7 +336,7 @@ define(
 												content += "</td>";
 												content += "</tr>";
 
-												jQuery(
+												m_utils.jQuerySelect(
 														"table#problemsTable tbody")
 														.append(content);
 
@@ -356,7 +356,7 @@ define(
 
 												if (model.applications[segments[1]] != null) {
 													var application = model.applications[segments[1]];
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.append(
@@ -364,7 +364,7 @@ define(
 																			+ model.name
 																			+ "/"
 																			+ application.name);
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.click(
@@ -399,7 +399,7 @@ define(
 																	});
 												} else if (model.processes[segments[1]] != null) {
 													var process = model.processes[segments[1]];
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.append(
@@ -407,7 +407,7 @@ define(
 																			+ model.name
 																			+ "/"
 																			+ process.name);
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.click(
@@ -432,13 +432,13 @@ define(
 																								.getFullId());
 																	});
 												} else {
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.append(
 																	"Model "
 																			+ model.name);
-													jQuery(
+													m_utils.jQuerySelect(
 															"table#problemsTable tbody a#issue"
 																	+ n)
 															.click(

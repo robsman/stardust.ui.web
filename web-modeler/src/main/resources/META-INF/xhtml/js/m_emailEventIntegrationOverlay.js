@@ -48,47 +48,47 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='protocolSelect']")
+					m_utils.jQuerySelect("label[for='protocolSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.protocol"));
-					jQuery("label[for='mailServerInput']")
+					m_utils.jQuerySelect("label[for='mailServerInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.mailServer"));
-					jQuery("label[for='portInput']")
+					m_utils.jQuerySelect("label[for='portInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.port"));
-					jQuery("label[for='accountInput']")
+					m_utils.jQuerySelect("label[for='accountInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.account"));
-					jQuery("label[for='passwordInput']")
+					m_utils.jQuerySelect("label[for='passwordInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.password"));
-					jQuery("label[for='connectionTimeoutInput']")
+					m_utils.jQuerySelect("label[for='connectionTimeoutInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.connectionTimeout"));
-					jQuery("label[for='initialDelayInput']")
+					m_utils.jQuerySelect("label[for='initialDelayInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.initialDelay"));
-				/*	jQuery("label[for='pollingDelayInput']")
+				/*	m_utils.jQuerySelect("label[for='pollingDelayInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.pollingDelay")); */
-					jQuery("label[for='unseenInput']")
+					m_utils.jQuerySelect("label[for='unseenInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.unseen"));
-					jQuery("label[for='deleteInput']")
+					m_utils.jQuerySelect("label[for='deleteInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.delete"));
-					/*	jQuery("label[for='copyToInput']")
+					/*	m_utils.jQuerySelect("label[for='copyToInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.copyTo")); */
@@ -263,8 +263,8 @@ define(
 				//	route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 					var protocolAndRest = uri.split("://");
 

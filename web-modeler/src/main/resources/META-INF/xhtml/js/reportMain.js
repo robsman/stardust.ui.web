@@ -54,7 +54,7 @@ define('reportMain',[
 		 "common-plugins",
 		 "reportControllers"
 ], function(reportApp, jQuery) {
-	jQuery(document).ready(function() {
+	m_utils.jQuerySelect(document).ready(function() {
 		reportApp.init();
 	});
 });

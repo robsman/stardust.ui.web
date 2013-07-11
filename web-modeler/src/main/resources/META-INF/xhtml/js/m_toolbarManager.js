@@ -12,7 +12,7 @@
  * @author Shrikant.Gangal
  */
 
-define(["bpm-modeler/js/m_constants"], function(m_constants) {
+define(["bpm-modeler/js/m_constants", "bpm-modeler/js/m_utils"], function(m_constants, m_utils) {
 	var _toolClickActionsMap;
 	return {
 		init: function(divId, toolClickActionsMap){
@@ -22,9 +22,9 @@ define(["bpm-modeler/js/m_constants"], function(m_constants) {
 	}
 
 	function addToolSpecificEventHandling(divId) {
-		jQuery('#' + divId).click(function(e) {
+		m_utils.jQuerySelect('#' + divId).click(function(e) {
 			//Invokes a function mapped to the tool id (e.target.id) in object _toolClickActionsMap.
-			if (false == jQuery(e.target).hasClass("toolDisabled")) {
+			if (false == m_utils.jQuerySelect(e.target).hasClass("toolDisabled")) {
 				var methodName = e.target.id + "ToolSelected";
 				if (typeof _toolClickActionsMap[methodName] == 'function')
 				{

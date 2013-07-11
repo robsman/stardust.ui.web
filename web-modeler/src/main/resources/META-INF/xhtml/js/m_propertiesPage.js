@@ -32,7 +32,7 @@ define(
 				this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
-				this.page = jQuery("#" + this.propertiesPanel.id + " #"
+				this.page = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
 						+ this.id);
 
 				if (imageUrl == null) {
@@ -44,7 +44,7 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.propertiesPanel.id + " #"
+					return m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
 							+ this.id + " #" + inputId);
 				};
 

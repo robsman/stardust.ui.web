@@ -49,25 +49,25 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='nameInput']")
+					m_utils.jQuerySelect("label[for='nameInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.name"));
-					jQuery("label[for='typeSelect']")
+					m_utils.jQuerySelect("label[for='typeSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.type"));
 
 
-					jQuery("label[for='preserveQoSInput']")
+					m_utils.jQuerySelect("label[for='preserveQoSInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.preserveQoS"));
-					jQuery("label[for='selector']")
+					m_utils.jQuerySelect("label[for='selector']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.selector"));
-					jQuery("label[for='transacted']")
+					m_utils.jQuerySelect("label[for='transacted']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
@@ -193,8 +193,8 @@ define(
 					//route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 
 					if (uri) {

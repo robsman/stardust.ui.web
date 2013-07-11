@@ -48,35 +48,35 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("configuration")
+					m_utils.jQuerySelect("configuration")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.configuration"));
-					jQuery("parameters")
+					m_utils.jQuerySelect("parameters")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.parameters"));
-					jQuery("label[for='directoryNameInput']")
+					m_utils.jQuerySelect("label[for='directoryNameInput']")
 					        .text(
 						           	m_i18nUtils
 						           			.getProperty("modeler.element.properties.fileEvent.directoryName"));
-			        jQuery("label[for='fileNameInput']")
+			        m_utils.jQuerySelect("label[for='fileNameInput']")
 			        		.text(
 			        				m_i18nUtils
 			        						.getProperty("modeler.element.properties.fileEvent.fileName"));
-					jQuery("label[for='recursiveInput']")
+					m_utils.jQuerySelect("label[for='recursiveInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.recursive"));
-					jQuery("label[for='initialIntervalInput']")
+					m_utils.jQuerySelect("label[for='initialIntervalInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.initialInterval"));
-					jQuery("label[for='postProcessingSelect']")
+					m_utils.jQuerySelect("label[for='postProcessingSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.postProcessing"));
-					jQuery("label[for='alwaysConsumeInput']")
+					m_utils.jQuerySelect("label[for='alwaysConsumeInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.alwaysConsume"));
@@ -254,8 +254,8 @@ define(
 
 					var xmlDoc = jQuery
 							.parseXML("<route>" + route + "</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 					var uri = uri.split("//");
 

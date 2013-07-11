@@ -83,32 +83,32 @@ define(
 											.getProperty("modeler.model.applicationOverlay.email.test.title"),
 									"plugins/bpm-modeler/images/icons/table.png");
 
-					this.scriptCodeHeading = jQuery("#mailIntegrationOverlay #scriptCodeHeading");
-					this.serverInput = jQuery("#mailIntegrationOverlay #serverInput");
-					this.userInput = jQuery("#mailIntegrationOverlay #userInput");
-					this.passwordInput = jQuery("#mailIntegrationOverlay #passwordInput");
-					this.mailFormatSelect = jQuery("#mailIntegrationOverlay #mailFormatSelect");
-					this.subjectInput = jQuery("#mailIntegrationOverlay #subjectInput");
-					this.toInput = jQuery("#mailIntegrationOverlay #toInput");
-					this.fromInput = jQuery("#mailIntegrationOverlay #fromInput");
-					this.ccInput = jQuery("#mailIntegrationOverlay #ccInput");
-					this.bccInput = jQuery("#mailIntegrationOverlay #bccInput");
-					this.identifierInSubjectInput = jQuery("#mailIntegrationOverlay #identifierInSubjectInput");
-					this.mailTemplateEditor = jQuery("#mailIntegrationOverlay #mailTemplateEditor");
-					this.responseTypeSelect = jQuery("#responseTab #responseTypeSelect");
-					this.responseOptionsTypeSelect = jQuery("#responseTab #responseOptionsTypeSelect");
-					this.responseHttpUrlInput = jQuery("#responseTab #responseHttpUrlInput");
+					this.scriptCodeHeading = m_utils.jQuerySelect("#mailIntegrationOverlay #scriptCodeHeading");
+					this.serverInput = m_utils.jQuerySelect("#mailIntegrationOverlay #serverInput");
+					this.userInput = m_utils.jQuerySelect("#mailIntegrationOverlay #userInput");
+					this.passwordInput = m_utils.jQuerySelect("#mailIntegrationOverlay #passwordInput");
+					this.mailFormatSelect = m_utils.jQuerySelect("#mailIntegrationOverlay #mailFormatSelect");
+					this.subjectInput = m_utils.jQuerySelect("#mailIntegrationOverlay #subjectInput");
+					this.toInput = m_utils.jQuerySelect("#mailIntegrationOverlay #toInput");
+					this.fromInput = m_utils.jQuerySelect("#mailIntegrationOverlay #fromInput");
+					this.ccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #ccInput");
+					this.bccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #bccInput");
+					this.identifierInSubjectInput = m_utils.jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
+					this.mailTemplateEditor = m_utils.jQuerySelect("#mailIntegrationOverlay #mailTemplateEditor");
+					this.responseTypeSelect = m_utils.jQuerySelect("#responseTab #responseTypeSelect");
+					this.responseOptionsTypeSelect = m_utils.jQuerySelect("#responseTab #responseOptionsTypeSelect");
+					this.responseHttpUrlInput = m_utils.jQuerySelect("#responseTab #responseHttpUrlInput");
 
 					CKEDITOR.replace("mailTemplateEditor", {
 						toolbarGroups : editorToolbarGroups
 					});
 
-					this.resetButton = jQuery("#testTab #resetButton");
-					this.runButton = jQuery("#testTab #runButton");
-					this.inputDataTextarea = jQuery("#testTab #inputDataTextarea");
-					this.outputDataTextarea = jQuery("#testTab #outputDataTextarea");
-					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
+					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
+					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
+					this.outputDataTextarea = m_utils.jQuerySelect("#testTab #outputDataTextarea");
+					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
 					this.scriptCodeHeading.empty();
 					this.scriptCodeHeading
@@ -125,101 +125,101 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.test.runButton.title"));
 
-					jQuery("label[for='inputDataTextArea']")
+					m_utils.jQuerySelect("label[for='inputDataTextArea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.test.inputDataTextArea.label"));
-					jQuery("label[for='outputDataTextarea']")
+					m_utils.jQuerySelect("label[for='outputDataTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.test.outputDataTextArea.label"));
 
-					jQuery("#defaultValueHintLabel")
+					m_utils.jQuerySelect("#defaultValueHintLabel")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.defaultValueHint.label"));
-					jQuery("label[for='serverInput']")
+					m_utils.jQuerySelect("label[for='serverInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.serverInput.label"));
-					jQuery("label[for='userInput']")
+					m_utils.jQuerySelect("label[for='userInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.userInput.label"));
-					jQuery("label[for='passwordInput']")
+					m_utils.jQuerySelect("label[for='passwordInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.passwordInput.label"));
-					jQuery("label[for='mailFormatSelect']")
+					m_utils.jQuerySelect("label[for='mailFormatSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.label"));
-					jQuery("#mailFormatSelect option[value='text/plain']")
+					m_utils.jQuerySelect("#mailFormatSelect option[value='text/plain']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.text.label"));
-					jQuery("#mailFormatSelect option[value='text/html']")
+					m_utils.jQuerySelect("#mailFormatSelect option[value='text/html']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.html.label"));
-					jQuery("label[for='subjectInput']")
+					m_utils.jQuerySelect("label[for='subjectInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.subjectInput.label"));
-					jQuery("label[for='toInput']")
+					m_utils.jQuerySelect("label[for='toInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.toInput.label"));
-					jQuery("label[for='fromInput']")
+					m_utils.jQuerySelect("label[for='fromInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.fromInput.label"));
-					jQuery("label[for='ccInput']")
+					m_utils.jQuerySelect("label[for='ccInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.ccInput.label"));
-					jQuery("label[for='bccInput']")
+					m_utils.jQuerySelect("label[for='bccInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
 
-					jQuery("label[for='identifierInSubjectInput']")
+					m_utils.jQuerySelect("label[for='identifierInSubjectInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.identifierInSubjectInput.label"));
-					jQuery("#mailTemplateHeading")
+					m_utils.jQuerySelect("#mailTemplateHeading")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.template.heading"));
-					jQuery("label[for='responseTypeSelect']")
+					m_utils.jQuerySelect("label[for='responseTypeSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.label"));
-					jQuery("#responseTypeSelect option[value='none']")
+					m_utils.jQuerySelect("#responseTypeSelect option[value='none']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.none.label"));
-					jQuery("#responseTypeSelect option[value='http']")
+					m_utils.jQuerySelect("#responseTypeSelect option[value='http']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.label"));
 
 					// response type select http
 
-					jQuery("#responseOptionsTypeHintLabel")
+					m_utils.jQuerySelect("#responseOptionsTypeHintLabel")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.typeHint.label"));
 
-					// jQuery("#label[for='responseOptionsTypeSelect']").text(m_i18nUtils
+					// m_utils.jQuerySelect("#label[for='responseOptionsTypeSelect']").text(m_i18nUtils
 					// .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.type.label"));
 
-					jQuery("#responseHttpUrlIHintLabel")
+					m_utils.jQuerySelect("#responseHttpUrlIHintLabel")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.urlHint.label"));
 
-					// jQuery("#label[for='responseHttpUrlInput']").text(m_i18nUtils
+					// m_utils.jQuerySelect("#label[for='responseHttpUrlInput']").text(m_i18nUtils
 					// .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.url.label"));
 
 					var self = this;
@@ -416,16 +416,16 @@ define(
 
 					this.responseTypeSelect.val(responseType);
 
-					jQuery("#emailResponseDiv").hide();
-					jQuery("#httpResponseDiv").hide();
-					jQuery("#parameterDefinitionDirectionOutOption").hide();
+					m_utils.jQuerySelect("#emailResponseDiv").hide();
+					m_utils.jQuerySelect("#httpResponseDiv").hide();
+					m_utils.jQuerySelect("#parameterDefinitionDirectionOutOption").hide();
 
 					if (responseType === "http") {
-						jQuery("#httpResponseDiv").show();
-						// jQuery("#parameterDefinitionDirectionOutOption").show();
+						m_utils.jQuerySelect("#httpResponseDiv").show();
+						// m_utils.jQuerySelect("#parameterDefinitionDirectionOutOption").show();
 					} else if (responseType === "eMail") {
-						jQuery("#emailResponseDiv").show();
-						// jQuery("#parameterDefinitionDirectionOutOption").show();
+						m_utils.jQuerySelect("#emailResponseDiv").show();
+						// m_utils.jQuerySelect("#parameterDefinitionDirectionOutOption").show();
 					}
 				};
 

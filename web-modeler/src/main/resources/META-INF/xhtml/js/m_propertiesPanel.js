@@ -76,17 +76,17 @@ define(
 			 */
 			function PropertiesPanel(id) {
 				this.id = id;
-				this.panel = jQuery("#" + this.id);
-				this.propertiesPageList = jQuery("#propertiesPageList");
-				this.applyButton = jQuery("#" + this.id + " #applyButton");
-				this.resetButton = jQuery("#" + this.id + " #resetButton");
-				this.errorMessagesRow = jQuery("#" + this.id
+				this.panel = m_utils.jQuerySelect("#" + this.id);
+				this.propertiesPageList = m_utils.jQuerySelect("#propertiesPageList");
+				this.applyButton = m_utils.jQuerySelect("#" + this.id + " #applyButton");
+				this.resetButton = m_utils.jQuerySelect("#" + this.id + " #resetButton");
+				this.errorMessagesRow = m_utils.jQuerySelect("#" + this.id
 						+ " #errorMessagesRow");
-				this.errorMessagesList = jQuery("#" + this.id
+				this.errorMessagesList = m_utils.jQuerySelect("#" + this.id
 						+ " #errorMessagesList");
 				this.propertiesPages = [];
 				this.errorMessages = [];
-				this.helpPanel = jQuery("#" + this.id + " #helpPanel");
+				this.helpPanel = m_utils.jQuerySelect("#" + this.id + " #helpPanel");
 				this.lastSelectedPageIndex = 0;
 
 				/**
@@ -127,7 +127,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+					return m_utils.jQuerySelect("#" + this.id + " #" + inputId);
 				};
 
 				/**
@@ -156,7 +156,7 @@ define(
 								&& extension.visibility == "preview") {
 
 							if (extension.pageHtmlUrl == null) {
-								m_dialog.makeInvisible(jQuery("#" + this.id
+								m_dialog.makeInvisible(m_utils.jQuerySelect("#" + this.id
 										+ " #" + extension.id));
 							}
 
@@ -167,11 +167,11 @@ define(
 								+ extension.id);
 
 						if (extension.pageHtmlUrl != null) {
-							var pageDiv = jQuery("<div id=\""
+							var pageDiv = m_utils.jQuerySelect("<div id=\""
 									+ extension.id
 									+ "\" class=\"propertiesPage\"></div>");
 
-							jQuery("#" + this.id + " #propertiesPagesCell")
+							m_utils.jQuerySelect("#" + this.id + " #propertiesPagesCell")
 									.append(pageDiv);
 
 							// TODO this variable may be overwritten in the
@@ -181,7 +181,7 @@ define(
 							var panel = this;
 
 							// TODO - review
-							// Replaced jQuery(<div>).load call with a synchronous ajax request as, the
+							// Replaced m_utils.jQuerySelect(<div>).load call with a synchronous ajax request as, the
 							// async load request caused the property page tabs to not get loaded in time,
 							// and in Chrome browser, these tabs didn't get displayed in the first instance.
 							m_communicationController
@@ -196,7 +196,7 @@ define(
 															+ " "
 															+ err.statusText;
 
-													jQuery(this).append(msg);
+													m_utils.jQuerySelect(this).append(msg);
 													m_utils.debug(msg);
 												},
 												success : function(data) {
@@ -261,7 +261,7 @@ define(
 								+ "\" class=\"toolbarButton noDataChange\" />" + "</td>"
 								+ "</tr>");
 
-						jQuery(
+						m_utils.jQuerySelect(
 								"#propertiesPageList #"
 										+ this.propertiesPages[n].id
 										+ "ListItem")
@@ -284,7 +284,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.disablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+					m_utils.jQuerySelect("#" + this.id + " #" + id + "ListItem").prop(
 							"disabled", true);
 				};
 
@@ -292,7 +292,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.enablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+					m_utils.jQuerySelect("#" + this.id + " #" + id + "ListItem").prop(
 							"disabled", false);
 				};
 

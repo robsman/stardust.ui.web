@@ -49,7 +49,7 @@ define(
 					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.descriptionInput.hide();
-					$("label[for='descriptionInput']").hide();
+					m_utils.jQuerySelect("label[for='descriptionInput']").hide();
 					this.inputDataPathInput = this
 							.mapInputId("inputDataPathInput");
 					this.outputDataPathInput = this
@@ -392,7 +392,7 @@ define(
 							continue;
 						}
 
-						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
 
 						this.inputAccessPointSelectInput.append(group);
 
@@ -461,7 +461,7 @@ define(
 							continue;
 						}
 
-						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
 
 						this.outputAccessPointSelectInput.append(group);
 

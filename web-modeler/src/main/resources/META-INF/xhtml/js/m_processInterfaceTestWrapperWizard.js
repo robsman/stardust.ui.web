@@ -36,15 +36,15 @@ define(
 			 * 
 			 */
 			function ProcessInterfaceTestWrapper() {
-				this.introLabel = jQuery("#introLabel");
-				this.modelInput = jQuery("#modelInput");
-				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
-				this.participantSelect = jQuery("#participantSelect");
-				this.dataInputActivityNameInput = jQuery("#dataInputActivityNameInput");
-				this.subprocessActivityNameInput = jQuery("#subprocessActivityNameInput");
-				this.dataOutputActivityNameInput = jQuery("#dataOutputActivityNameInput");
-				this.createButton = jQuery("#createButton");
-				this.cancelButton = jQuery("#cancelButton");
+				this.introLabel = m_utils.jQuerySelect("#introLabel");
+				this.modelInput = m_utils.jQuerySelect("#modelInput");
+				this.processDefinitionNameInput = m_utils.jQuerySelect("#processDefinitionNameInput");
+				this.participantSelect = m_utils.jQuerySelect("#participantSelect");
+				this.dataInputActivityNameInput = m_utils.jQuerySelect("#dataInputActivityNameInput");
+				this.subprocessActivityNameInput = m_utils.jQuerySelect("#subprocessActivityNameInput");
+				this.dataOutputActivityNameInput = m_utils.jQuerySelect("#dataOutputActivityNameInput");
+				this.createButton = m_utils.jQuerySelect("#createButton");
+				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
 
 				var self = this;
 

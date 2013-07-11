@@ -36,18 +36,18 @@ define(
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
 							"Test", "plugins/bpm-modeler/images/icons/table.png");
 
-					this.uriInput = jQuery("#restServiceOverlay #uriInput");
-					this.queryStringLabel = jQuery("#restServiceOverlay #queryStringLabel");
-					this.commandSelect = jQuery("#restServiceOverlay #commandSelect");
-					this.requestTypeSelect = jQuery("#restServiceOverlay #requestTypeSelect");
-					this.responseTypeSelect = jQuery("#restServiceOverlay #responseTypeSelect");
-					this.crossDomainInput = jQuery("#restServiceOverlay #crossDomainInput");
-					this.resetButton = jQuery("#testTab #resetButton");
-					this.runButton = jQuery("#testTab #runButton");
-					this.inputDataTextarea = jQuery("#testTab #inputDataTextarea");
-					this.outputDataTextarea = jQuery("#testTab #outputDataTextarea");
-					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.uriInput = m_utils.jQuerySelect("#restServiceOverlay #uriInput");
+					this.queryStringLabel = m_utils.jQuerySelect("#restServiceOverlay #queryStringLabel");
+					this.commandSelect = m_utils.jQuerySelect("#restServiceOverlay #commandSelect");
+					this.requestTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #requestTypeSelect");
+					this.responseTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #responseTypeSelect");
+					this.crossDomainInput = m_utils.jQuerySelect("#restServiceOverlay #crossDomainInput");
+					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
+					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
+					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
+					this.outputDataTextarea = m_utils.jQuerySelect("#testTab #outputDataTextarea");
+					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
 					this.resetButton
 							.prop(
@@ -59,11 +59,11 @@ define(
 									"title",
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.runButton.title"));
-					jQuery("label[for='inputDataTextArea']")
+					m_utils.jQuerySelect("label[for='inputDataTextArea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.inputDataTextArea.label"));
-					jQuery("label[for='outputDataTextarea']")
+					m_utils.jQuerySelect("label[for='outputDataTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.outputDataTextArea.label"));

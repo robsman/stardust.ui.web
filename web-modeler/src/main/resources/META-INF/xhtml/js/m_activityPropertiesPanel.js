@@ -57,7 +57,7 @@ define(
 				this.getModelingHelpLink.click({
 					"callbackScope" : this
 				}, function(event) {
-					var link = jQuery(
+					var link = m_utils.jQuerySelect(
 							"a[id $= 'modeling_work_assignment_view_link']",
 							window.parent.frames['ippPortalMain'].document);
 					var linkId = link.attr('id');

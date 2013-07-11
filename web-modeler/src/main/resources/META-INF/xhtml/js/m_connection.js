@@ -915,7 +915,7 @@ define(
 						// Remove the Marker
 						// attr(marker-start,marker-end)-commonId for all
 						// connection
-						jQuery(
+						m_utils.jQuerySelect(
 								"path[stroke='" + m_constants.DATA_FLOW_COLOR
 										+ "']").removeAttr("marker-end")
 								.removeAttr("marker-start");

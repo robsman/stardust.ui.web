@@ -30,86 +30,86 @@ define(
 			};
 
 			function i18modelelement() {
-				jQuery("#name")
+				m_utils.jQuerySelect("#name")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				jQuery("#dataStructName")
+				m_utils.jQuerySelect("#dataStructName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.dataStructureName"));
-				jQuery("#xsdtext")
+				m_utils.jQuerySelect("#xsdtext")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.textInfo"));
-				jQuery("#struct")
+				m_utils.jQuerySelect("#struct")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.structure"));
-				jQuery("#enum")
+				m_utils.jQuerySelect("#enum")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.enumeration"));
-				jQuery("#addElementButton")
+				m_utils.jQuerySelect("#addElementButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.add"));
-				jQuery("#deleteElementButton")
+				m_utils.jQuerySelect("#deleteElementButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("#moveElementUpButton")
+				m_utils.jQuerySelect("#moveElementUpButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveUp"));
-				jQuery("#moveElementDownButton")
+				m_utils.jQuerySelect("#moveElementDownButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveDown"));
-				jQuery("#moveElementDownButton")
+				m_utils.jQuerySelect("#moveElementDownButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveDown"));
-				jQuery("#elementColumn")
+				m_utils.jQuerySelect("#elementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.element.name"));
-				jQuery("#enumElementColumn")
+				m_utils.jQuerySelect("#enumElementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.enumElement.name"));
-				jQuery("#typeColumn")
+				m_utils.jQuerySelect("#typeColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.type.name"));
-				jQuery("#cardinalityColumn")
+				m_utils.jQuerySelect("#cardinalityColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.cardinality.name"));
-				jQuery("#fieldProp")
+				m_utils.jQuerySelect("#fieldProp")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.heading.filedProperties"));
-				jQuery("#prop")
+				m_utils.jQuerySelect("#prop")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.property"));
-				jQuery("#val")
+				m_utils.jQuerySelect("#val")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.value"));
-				jQuery("#configuration")
+				m_utils.jQuerySelect("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.tab"));
@@ -132,14 +132,14 @@ define(
 				 */
 				ModelElementView.prototype.initializeModelElementView = function(
 						modelElement) {
-					this.guidOutputRow = jQuery("#guidOutputRow");
-					this.idOutputRow = jQuery("#idOutputRow");
-					this.guidOutput = jQuery("#guidOutput");
-					this.idOutput = jQuery("#idOutput");
-					this.nameInput = jQuery("#nameInput");
-					this.descriptionTextarea = jQuery("#descriptionTextarea");
-					this.propertiesTabs = jQuery("#propertiesTabs");
-					this.propertiesTabsList = jQuery("#propertiesTabsList");
+					this.guidOutputRow = m_utils.jQuerySelect("#guidOutputRow");
+					this.idOutputRow = m_utils.jQuerySelect("#idOutputRow");
+					this.guidOutput = m_utils.jQuerySelect("#guidOutput");
+					this.idOutput = m_utils.jQuerySelect("#idOutput");
+					this.nameInput = m_utils.jQuerySelect("#nameInput");
+					this.descriptionTextarea = m_utils.jQuerySelect("#descriptionTextarea");
+					this.propertiesTabs = m_utils.jQuerySelect("#propertiesTabs");
+					this.propertiesTabsList = m_utils.jQuerySelect("#propertiesTabsList");
 
 					this.nameInput.change({
 						"view" : this
@@ -221,7 +221,7 @@ define(
 
 					this.propertiesTabsList.append(propertiesTabHeader);
 
-					var pageDiv = jQuery("<div id='" + extension.id
+					var pageDiv = m_utils.jQuerySelect("<div id='" + extension.id
 							+ "'></div>");
 
 					this.propertiesTabs.append(pageDiv);
@@ -239,11 +239,11 @@ define(
 								var msg = "Properties Page Load Error: "
 										+ xhr.status + " " + xhr.statusText;
 
-								jQuery(this).append(msg);
+								m_utils.jQuerySelect(this).append(msg);
 								view.loadPropertiesPage(modelElement,
 										propertiesPagesExtensions, ++n);
 							} else {
-								var extension = extensions[jQuery(this).attr(
+								var extension = extensions[m_utils.jQuerySelect(this).attr(
 										"id")];
 								var page = extension.provider.create(view,
 										extension.id);

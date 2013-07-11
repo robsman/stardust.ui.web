@@ -17,19 +17,20 @@ define(
 		function(m_utils, m_constants, m_commandsController, m_model,
 				m_propertiesPanel, m_propertiesPage) {
 
-			var processPropertiesPanel = null;
+			var processPropertiesPanelMap = {};
 
 			return {
-				initialize : function(diagram) {
-					processPropertiesPanel = new ProcessPropertiesPanel();
+				initialize : function(diagram, process) {
+					var processPropertiesPanel = new ProcessPropertiesPanel();
 
 					m_commandsController
 							.registerCommandHandler(processPropertiesPanel);
 
 					processPropertiesPanel.initialize(diagram);
+					processPropertiesPanelMap[process.uuid] = processPropertiesPanel;
 				},
-				getInstance : function() {
-					return processPropertiesPanel;
+				getInstance : function(process) {
+					return processPropertiesPanelMap[process.uuid];
 				}
 			};
 

@@ -34,7 +34,7 @@ define(
 				this.autoScrollCallback = autoScrollCallback;
 
 				var thisCallbackRef = this;
-				var scrollDiv = $("#" + divId);
+				var scrollDiv = m_utils.jQuerySelect("#" + divId);
 				var scrollRightEnabled = false;
 				var scrollLeftEnabled = false;
 				var scrollTopEnabled = false;
@@ -48,7 +48,7 @@ define(
 				};
 
 				AutoScrollManager.prototype.setupEventHandling = function() {
-					$(document).mousemove(function(event) {
+					m_utils.jQuerySelect(document).mousemove(function(event) {
 						pageX = event.pageX;
 						pageY = event.pageY;
 						mouseMoveEvent = event;

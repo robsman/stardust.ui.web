@@ -34,7 +34,7 @@ define(
 			};
 
 			function getScrollpaneScrollPosition() {
-				var scrollPane = document.getElementById(SCROLL_PANE_ID);
+				var scrollPane = m_utils.jQuerySelect("#" + SCROLL_PANE_ID).get(0);
 				if (scrollPane) {
 					return {
 						top : scrollPane.scrollTop,

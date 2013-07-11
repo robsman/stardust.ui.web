@@ -54,7 +54,8 @@ define(
 			 *
 			 */
 			function updateLastSavedLabel(label) {
-				$("#lastSaveDateDisplay").html(label);
+				if (m_utils.jQuerySelect("#lastSaveDateDisplay"))
+					m_utils.jQuerySelect("#lastSaveDateDisplay").html(label);
 			}
 
 			/**

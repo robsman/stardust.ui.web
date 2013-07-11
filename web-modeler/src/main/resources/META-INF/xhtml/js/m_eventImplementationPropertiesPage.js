@@ -76,7 +76,7 @@ define(
 							continue;
 						}
 
-						var pageDiv = jQuery("<div id=\"" + extension.id
+						var pageDiv = m_utils.jQuerySelect("<div id=\"" + extension.id
 								+ "\"></div>");
 
 						this.overlays[extension.id] = pageDiv;
@@ -99,13 +99,13 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(this).append(msg);
+												m_utils.jQuerySelect(this).append(msg);
 											} else {
-												var extension = page.extensions[jQuery(
+												var extension = page.extensions[m_utils.jQuerySelect(
 														this).attr("id")];
-												page.overlayControllers[jQuery(
+												page.overlayControllers[m_utils.jQuerySelect(
 														this).attr("id")] = extension.provider
-														.create(page, jQuery(
+														.create(page, m_utils.jQuerySelect(
 																this)
 																.attr("id"));
 												m_dialog

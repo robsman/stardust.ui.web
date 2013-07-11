@@ -92,14 +92,14 @@ define(["raphael"], function(Raphael){
 				connector.bg.remove();
 			};
 
-			/*jQuery(connector.line.node).click(function(e){
-				jQuery(document).trigger('CONNECTOR_SELECTED', {
+			/*m_utils.jQuerySelect(connector.line.node).click(function(e){
+				m_utils.jQuerySelect(document).trigger('CONNECTOR_SELECTED', {
 					element: connector
 				});
 			});
 
-			jQuery(connector.arrow.node).click(function(e){
-				jQuery(document).trigger('CONNECTOR_SELECTED', {
+			m_utils.jQuerySelect(connector.arrow.node).click(function(e){
+				m_utils.jQuerySelect(document).trigger('CONNECTOR_SELECTED', {
 					element: connector
 				});
 			});*/

@@ -27,7 +27,7 @@ define(
 			 */
 			function View() {
 				this.id = null;
-				this.errorMessagesList = jQuery("#errorMessagesList");
+				this.errorMessagesList = m_utils.jQuerySelect("#errorMessagesList");
 				this.errorMessages = [];
 
 				View.prototype.clearErrorMessages = function() {

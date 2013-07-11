@@ -48,20 +48,20 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='repeatIntervalInput']")
+					m_utils.jQuerySelect("label[for='repeatIntervalInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.repeatInterval"));
-					jQuery("label[for='repeatCountInput']")
+					m_utils.jQuerySelect("label[for='repeatCountInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.repeatCount"));
 
-					jQuery("label[for='fixedRateInput']")
+					m_utils.jQuerySelect("label[for='fixedRateInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.fixedRate"));
-					jQuery("label[for='delayTimerInput']")
+					m_utils.jQuerySelect("label[for='delayTimerInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent.delayTimer"));
@@ -209,8 +209,8 @@ define(
 
 					var xmlDoc = jQuery
 							.parseXML("<route>" + route + "</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 					var protocolAndRest = uri.split("://");
 

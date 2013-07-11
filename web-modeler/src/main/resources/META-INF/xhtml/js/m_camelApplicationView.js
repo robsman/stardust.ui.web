@@ -20,7 +20,7 @@ define(
 				m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var view = new CamelApplicationView();
@@ -36,42 +36,42 @@ define(
 			};
 
 			function i18camelrouteproperties() {
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#applicationName")
+				m_utils.jQuerySelect("#applicationName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.applicationName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#camelConfiguration")
+				m_utils.jQuerySelect("#camelConfiguration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.tab"));
-				jQuery("#camelContext")
+				m_utils.jQuerySelect("#camelContext")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.camelContext"));
 
-				jQuery("#addBeanSpec")
+				m_utils.jQuerySelect("#addBeanSpec")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.additionalBeanSpecification"));
-				jQuery("#direction")
+				m_utils.jQuerySelect("#direction")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
@@ -94,10 +94,10 @@ define(
 					this.id = "camelApplicationView";
 					this.application = application;
 
-					this.view = jQuery("#camelApplicationView");
+					this.view = m_utils.jQuerySelect("#camelApplicationView");
 
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.overlayAnchor = jQuery("#overlayAnchor");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.overlayAnchor = m_utils.jQuerySelect("#overlayAnchor");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -156,8 +156,8 @@ define(
 				 */
 				CamelApplicationView.prototype.insertPropertiesTab = function(
 						scope, id, name, icon) {
-					var propertiesTabs = jQuery("#propertiesTabs");
-					var propertiesTabsList = jQuery("#propertiesTabsList");
+					var propertiesTabs = m_utils.jQuerySelect("#propertiesTabs");
+					var propertiesTabsList = m_utils.jQuerySelect("#propertiesTabsList");
 					var lastListItem = propertiesTabsList.children().last();
 
 					// propertiesTabsList.append("<li><a href='#" + id
@@ -170,10 +170,10 @@ define(
 							+ "'></img><span class='tabLabel' id='" + id + "'>"
 							+ name + "</span> </a></li>");
 
-					var elem = jQuery("#" + scope + " #" + id + "Tab");
+					var elem = m_utils.jQuerySelect("#" + scope + " #" + id + "Tab")
 					var html = elem.html();
 
-					jQuery("#" + scope + " #" + id + "Tab").empty();
+					m_utils.jQuerySelect("#" + scope + " #" + id + "Tab").empty();
 					propertiesTabs.append("<div id='" + id + "Tab'>" + html
 							+ "</div>");
 					// After append remove old contents

@@ -28,7 +28,7 @@ define(
 
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var data = m_model.findData(fullId);
@@ -50,65 +50,65 @@ define(
 
 			function i18primitivedataproperties() {
 
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#dataName")
+				m_utils.jQuerySelect("#dataName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#publicVisibility")
+				m_utils.jQuerySelect("#publicVisibility")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				jQuery("#dataType")
+				m_utils.jQuerySelect("#dataType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
-				jQuery("#primitiveType")
+				m_utils.jQuerySelect("#primitiveType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				jQuery("[for='structuredDataTypeSelect']")
+				m_utils.jQuerySelect("[for='structuredDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.structuredType"));
-				jQuery("#dataStructure")
+				m_utils.jQuerySelect("#dataStructure")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataStructure"));
-				jQuery("#documentType")
+				m_utils.jQuerySelect("#documentType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.documentType"));
-				jQuery("#defaultValue")
+				m_utils.jQuerySelect("#defaultValue")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
-				jQuery("#defaultValue1")
+				m_utils.jQuerySelect("#defaultValue1")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
 
 
-				jQuery("#doubleInputTextError").text(
+				m_utils.jQuerySelect("#doubleInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#intInputTextError").text(
+				m_utils.jQuerySelect("#intInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#longInputTextError").text(
+				m_utils.jQuerySelect("#longInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#TimestampInputTextError").text(
+				m_utils.jQuerySelect("#TimestampInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 			}
 
@@ -127,8 +127,8 @@ define(
 				 */
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
-					this.view = jQuery("#" + this.id);
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
@@ -168,7 +168,7 @@ define(
 									});
 
 					// Timestamp handling
-					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText = m_utils.jQuerySelect("#TimestampInputText");
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
@@ -247,7 +247,7 @@ define(
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+						var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 
 						var self = this;
 						m_angularContextUtils.runInAngularContext(function($scope) {

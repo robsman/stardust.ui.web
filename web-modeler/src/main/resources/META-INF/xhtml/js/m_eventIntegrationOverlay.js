@@ -54,7 +54,7 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(this).append(msg);
+												m_utils.jQuerySelect(this).append(msg);
 											} else {
 												overlay.parameterMappingsPanel = m_parameterDefinitionsPanel
 														.create({
@@ -82,7 +82,7 @@ define(
 				 *
 				 */
 				EventIntegrationOverlay.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+					return m_utils.jQuerySelect("#" + this.id + " #" + inputId);
 				};
 
 				/**

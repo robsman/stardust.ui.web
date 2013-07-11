@@ -21,7 +21,7 @@ define(
 				m_jsfViewManager, m_elementConfiguration) {
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var view = new GenericApplicationView();
@@ -47,7 +47,7 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(GenericApplicationView.prototype, view);
 
-				this.unsupportedMessagePanel = jQuery("#unsupportedMessagePanel");
+				this.unsupportedMessagePanel = m_utils.jQuerySelect("#unsupportedMessagePanel");
 
 				/**
 				 *

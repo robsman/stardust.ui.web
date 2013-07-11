@@ -24,7 +24,7 @@ define(
 				m_codeEditorAce, m_i18nUtils, m_markupGenerator) {
 			return {
 				initialize : function(fullId) {
-					m_utils.initializeWaitCursor($("html"));
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
 					var view = new UiMashupApplicationView();
@@ -40,75 +40,75 @@ define(
 			};
 
 			function i18uimashupproperties() {
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#applicationName")
+				m_utils.jQuerySelect("#applicationName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.applicationName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				jQuery("#configuration")
+				m_utils.jQuerySelect("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
-				$("label[for='viaUriInput']")
+				m_utils.jQuerySelect("label[for='viaUriInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.viaUri"));
-				$("label[for='embeddedInput']")
+				m_utils.jQuerySelect("label[for='embeddedInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded"));
-				$("label[for='markupTexarea']")
+				m_utils.jQuerySelect("label[for='markupTexarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.markup"));
-				jQuery("#url")
+				m_utils.jQuerySelect("#url")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.url"));
-				jQuery("#paramDef")
+				m_utils.jQuerySelect("#paramDef")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.parameterDefinitions"));
-				jQuery("#name")
+				m_utils.jQuerySelect("#name")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				jQuery("#direction")
+				m_utils.jQuerySelect("#direction")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
-				jQuery("#dataType")
+				m_utils.jQuerySelect("#dataType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.datatType"));
-				jQuery("#primitiveType")
+				m_utils.jQuerySelect("#primitiveType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				jQuery("#deleteParameterDefinitionButton")
+				m_utils.jQuerySelect("#deleteParameterDefinitionButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
 
-				var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+				var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
 				primitiveDataTypeSelect.append("<option value=\"String\">"
@@ -145,12 +145,12 @@ define(
 				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
 						+ selectdata + "</option>");
 
-				$("label[for='primitiveDataTypeSelect']")
+				jQuery("label[for='primitiveDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
 
-				var parameterDefinitionDirectionSelect = jQuery("#parameterDefinitionDirectionSelect");
+				var parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils
 						.getProperty("modeler.element.properties.commonProperties.in");
@@ -187,23 +187,22 @@ define(
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 
-					this.view = jQuery("#" + this.id);
-					this.viaUriInput = jQuery("#viaUriInput");
-					this.embeddedInput = jQuery("#embeddedInput");
-					this.viaUriRow = jQuery("#viaUriRow");
-					this.embeddedRow = jQuery("#embeddedRow");
-					this.generateMarkupForAngularLink = jQuery("#generateMarkupForAngularLink");
-					this.markupTextarea = jQuery("#markupTextareaDiv");
-					this.urlInput = jQuery("#urlInput");
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.numberOfLabelInputPairsInput = jQuery("#numberOfLabelInputPairsInput");
-					this.generateCompleteButtonInput = jQuery("#generateCompleteButtonInput");
-					this.generateSuspendButtonInput = jQuery("#generateSuspendButtonInput");
-					this.generateAbortButtonInput = jQuery("#generateAbortButtonInput");
-					this.generateQaPassButtonInput = jQuery("#generateQaPassButtonInput");
-					this.generateQaFailButtonInput = jQuery("#generateQaFailButtonInput");
-					this.generateTabsForFirstLevelInput = jQuery("#generateTabsForFirstLevelInput");
-					this.generateTabsForFirstLevelTablesInput = jQuery("#generateTabsForFirstLevelTablesInput");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.viaUriInput = m_utils.jQuerySelect("#viaUriInput");
+					this.embeddedInput = m_utils.jQuerySelect("#embeddedInput");
+					this.viaUriRow = m_utils.jQuerySelect("#viaUriRow");
+					this.embeddedRow = m_utils.jQuerySelect("#embeddedRow");
+					this.generateMarkupForAngularLink = m_utils.jQuerySelect("#generateMarkupForAngularLink");
+					this.urlInput = m_utils.jQuerySelect("#urlInput");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.numberOfLabelInputPairsInput = m_utils.jQuerySelect("#numberOfLabelInputPairsInput");
+					this.generateCompleteButtonInput = m_utils.jQuerySelect("#generateCompleteButtonInput");
+					this.generateSuspendButtonInput = m_utils.jQuerySelect("#generateSuspendButtonInput");
+					this.generateAbortButtonInput = m_utils.jQuerySelect("#generateAbortButtonInput");
+					this.generateQaPassButtonInput = m_utils.jQuerySelect("#generateQaPassButtonInput");
+					this.generateQaFailButtonInput = m_utils.jQuerySelect("#generateQaFailButtonInput");
+					this.generateTabsForFirstLevelInput = m_utils.jQuerySelect("#generateTabsForFirstLevelInput");
+					this.generateTabsForFirstLevelTablesInput = m_utils.jQuerySelect("#generateTabsForFirstLevelTablesInput");
 
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -219,9 +218,14 @@ define(
 								typeColumnWidth : "200px"
 							});
 
+					var rdmNo = Math.floor((Math.random()*100000) + 1);
+					this.editorAnchor = m_utils.jQuerySelect("#markupTextareaDiv").get(0);
+					this.editorAnchor.id = "markupTextarea" + rdmNo + "Div";
+					this.editorTextArea = m_utils.jQuerySelect("#markupTextarea").get(0);
+					this.editorTextArea.id = "markupTextarea" + rdmNo;
 					var self = this;
 					this.embeddedHTMLEditor = m_codeEditorAce
-							.getCodeEditor("markupTextareaDiv");
+							.getCodeEditor(this.editorAnchor.id);
 					this.embeddedHTMLEditor.getEditor().on('blur', function(e) {
 						if (!self.validate()) {
 							return;
@@ -245,14 +249,8 @@ define(
 															.val()
 												});
 									});
-					/*
-					 * this.markupTextarea.change({ view : this },
-					 * function(event) { if (!event.data.view.validate()) {
-					 * return; } event.data.view.submitEmbeddedModeChanges();
-					 * });
-					 */
 
-					this.generateTable = jQuery("#generateTable");
+					this.generateTable = m_utils.jQuerySelect("#generateTable");
 
 					if (!m_session.getInstance().technologyPreview) {
 						m_dialog.makeInvisible(this.generateTable);
@@ -431,7 +429,6 @@ define(
 
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
-						// this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
 						this.embeddedHTMLEditor
 								.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
 					} else {

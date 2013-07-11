@@ -36,24 +36,24 @@ define(
 			 * 
 			 */
 			function ServiceWrapperWizard() {
-				this.unsupportedPanel = jQuery("#unsupportedPanel");
-				this.wizardPanel = jQuery("#wizardPanel");
-				this.introLabel = jQuery("#introLabel");
-				this.modelInput = jQuery("#modelInput");
-				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
-				this.requestDataTypeInput = jQuery("#requestDataTypeInput");
-				this.requestDataNameInput = jQuery("#requestDataNameInput");
-				this.responseDataTypeInput = jQuery("#responseDataTypeInput");
-				this.responseDataNameInput = jQuery("#responseDataNameInput");
-				this.serviceInvocationActivityNameInput = jQuery("#serviceInvocationActivityNameInput");
-				this.preprocessingRulesApplicationSelect = jQuery("#preprocessingRulesApplicationSelect");
-				this.postprocessingRulesApplicationSelect = jQuery("#postprocessingRulesApplicationSelect");
-				this.createWebServiceInput = jQuery("#createWebServiceInput");
-				this.createRestServiceInput = jQuery("#createRestServiceInput");
-				this.transientInput = jQuery("#transientInput");
-				this.createTestWrapperProcessInput = jQuery("#createTestWrapperProcessInput");
-				this.createButton = jQuery("#createButton");
-				this.cancelButton = jQuery("#cancelButton");
+				this.unsupportedPanel = m_utils.jQuerySelect("#unsupportedPanel");
+				this.wizardPanel = m_utils.jQuerySelect("#wizardPanel");
+				this.introLabel = m_utils.jQuerySelect("#introLabel");
+				this.modelInput = m_utils.jQuerySelect("#modelInput");
+				this.processDefinitionNameInput = m_utils.jQuerySelect("#processDefinitionNameInput");
+				this.requestDataTypeInput = m_utils.jQuerySelect("#requestDataTypeInput");
+				this.requestDataNameInput = m_utils.jQuerySelect("#requestDataNameInput");
+				this.responseDataTypeInput = m_utils.jQuerySelect("#responseDataTypeInput");
+				this.responseDataNameInput = m_utils.jQuerySelect("#responseDataNameInput");
+				this.serviceInvocationActivityNameInput = m_utils.jQuerySelect("#serviceInvocationActivityNameInput");
+				this.preprocessingRulesApplicationSelect = m_utils.jQuerySelect("#preprocessingRulesApplicationSelect");
+				this.postprocessingRulesApplicationSelect = m_utils.jQuerySelect("#postprocessingRulesApplicationSelect");
+				this.createWebServiceInput = m_utils.jQuerySelect("#createWebServiceInput");
+				this.createRestServiceInput = m_utils.jQuerySelect("#createRestServiceInput");
+				this.transientInput = m_utils.jQuerySelect("#transientInput");
+				this.createTestWrapperProcessInput = m_utils.jQuerySelect("#createTestWrapperProcessInput");
+				this.createButton = m_utils.jQuerySelect("#createButton");
+				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
 
 				var self = this;
 

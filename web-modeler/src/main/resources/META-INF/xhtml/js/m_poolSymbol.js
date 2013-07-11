@@ -413,7 +413,7 @@ define(
 				 */
 				PoolSymbol.prototype.sortLanes = function() {
 					this.laneSymbols.sort(function(a, b) {
-						return $(a)[0].oid > $(b)[0].oid;
+						return m_utils.jQuerySelect(a)[0].oid > m_utils.jQuerySelect(b)[0].oid;
 					});
 				};
 
