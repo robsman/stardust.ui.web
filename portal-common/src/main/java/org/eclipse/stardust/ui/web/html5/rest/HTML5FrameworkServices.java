@@ -46,7 +46,7 @@ public class HTML5FrameworkServices
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
 
       // TODO: Read from property bundle
-      contents = StringUtils.replace(contents, "PORTAL_TITLE", "Infinity Process Platfofrm");
+      contents = StringUtils.replace(contents, "PORTAL_TITLE", "Infinity Process Platform");
       contents = StringUtils.replace(contents, "LOCALE_ID", "en");
       contents = StringUtils.replace(contents, "SIDEBAR_LABEL", "Navigation");
 
