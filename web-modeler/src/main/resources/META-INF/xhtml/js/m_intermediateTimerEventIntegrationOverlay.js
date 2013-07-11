@@ -12,6 +12,12 @@
  * Timer Event overlay for Intermediate events
  *
  * @author Yogesh.Manware
+ *
+ * Note: don't remove the code around following elements - this is for future development
+ *  - Automatic Binding
+ *  - Consume On Match
+ *  - Event Action
+ *  - Delegate Activity
  */
 
 define(
@@ -56,18 +62,20 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='autoBindingInput']").text(
+					/*jQuery("label[for='autoBindingInput']").text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.autoBinding"));
+											.getProperty("modeler.element.properties.timerEvent_intermediate.autoBinding"));*/
+
 					jQuery("label[for='logHandlerInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
 
-					jQuery("label[for='consumeOnMatchInput']")
+					/*jQuery("label[for='consumeOnMatchInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));
+											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));*/
+
 					jQuery("label[for='interruptingInput']")
 							.text(
 									m_i18nUtils
@@ -93,7 +101,7 @@ define(
 							m_i18nUtils
 									.getProperty("modeler.element.properties.timerEvent_intermediate.eventTrigger.data.path"));
 
-					jQuery("label[for='eventActionSelect']")
+					/*jQuery("label[for='eventActionSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.eventAction"));
@@ -101,7 +109,7 @@ define(
 					jQuery("label[for='delegateToSelect']")
 					.text(
 							m_i18nUtils
-									.getProperty("modeler.element.properties.timerEvent_intermediate.delegateTo"));
+									.getProperty("modeler.element.properties.timerEvent_intermediate.delegateTo"));*/
 
 					this.configurationSpan = this.mapInputId("configuration");
 
@@ -114,9 +122,9 @@ define(
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 
-					this.autoBindingInput = this.mapInputId("autoBindingInput");
+					//this.autoBindingInput = this.mapInputId("autoBindingInput");
 					this.logHandlerInput = this.mapInputId("logHandlerInput");
-					this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
+					//this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
 					this.interruptingInput = this.mapInputId("interruptingInput");
 					this.interruptingSelect = this.mapInputId("interruptingSelect");
 					this.eventTriggerSelect = this.mapInputId("eventTriggerSelect");
@@ -130,25 +138,25 @@ define(
 					this.dataPathRow = this.mapInputId("dataPathRow");
 					this.dataPathInput = this.mapInputId("dataPathInput");
 
-					this.eventActionSelect = this.mapInputId("eventActionSelect");
-					this.delegateToSelect = this.mapInputId("delegateToSelect");
+					//this.eventActionSelect = this.mapInputId("eventActionSelect");
+					//this.delegateToSelect = this.mapInputId("delegateToSelect");
 
 					this.initializedelayTimerUnitSelect(this.delayTimerUnitSelect);
 					this.initializeInterruptingSelect(this.interruptingSelect);
 					this.initializeEventTriggerSelect(this.eventTriggerSelect);
 					this.initializeDataSelect(this.dataSelect);
-					this.initializeEventActionSelect(this.eventActionSelect);
-					this.initializeDelegateToSelect(this.delegateToSelect);
+					//this.initializeEventActionSelect(this.eventActionSelect);
+					//this.initializeDelegateToSelect(this.delegateToSelect);
 
-					this.registerForRouteChanges(this.autoBindingInput);
+					//this.registerForRouteChanges(this.autoBindingInput);
 					this.registerForRouteChanges(this.logHandlerInput);
-					this.registerForRouteChanges(this.consumeOnMatchInput);
+					//this.registerForRouteChanges(this.consumeOnMatchInput);
 					this.registerForRouteChanges(this.interruptingInput);
 					this.registerForRouteChanges(this.interruptingSelect);
 					this.registerForRouteChanges(this.eventTriggerSelect);
 					this.registerForRouteChanges(this.delayTimerInput);
 					this.registerForRouteChanges(this.delayTimerUnitSelect);
-					this.registerForRouteChanges(this.eventActionSelect);
+					//this.registerForRouteChanges(this.eventActionSelect);
 
 					this.eventTriggerSelect
 							.change(
@@ -169,20 +177,20 @@ define(
 //										});
 									});
 
-					this.eventActionSelect.change({
+					/*this.eventActionSelect.change({
 						"page" : this
 						}, function(event) {
 						var page = event.data.page;
 
 						var eventAction = page.eventActionSelect.val();
 						page.showHideEventActionFields(eventAction);
-					});
+					});*/
 
 					this.showHideEventTriggerFields();
-					this.showHideEventActionFields();
+					//this.showHideEventActionFields();
 				};
 
-				IntermediateTimerEventIntegrationOverlay.prototype.showHideEventActionFields = function(
+				/*IntermediateTimerEventIntegrationOverlay.prototype.showHideEventActionFields = function(
 						selectedVal) {
 					if ('delegateActivity' == selectedVal) {
 						jQuery("label[for='delegateToSelect']").removeClass(
@@ -193,7 +201,7 @@ define(
 								"invisible");
 						m_dialog.makeInvisible(this.delegateToSelect);
 					}
-				};
+				};*/
 
 
 				IntermediateTimerEventIntegrationOverlay.prototype.showHideEventTriggerFields = function(
@@ -293,7 +301,7 @@ define(
 					}
 				};
 
-				IntermediateTimerEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
+				/*IntermediateTimerEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
 						select) {
 					select
 							.append("<option value='exceptionFlow'>"
@@ -326,9 +334,9 @@ define(
 											.getProperty("modeler.element.properties.timerEvent_intermediate.eventAction.suspendActivity")
 									+ "</option>");
 
-				};
+				};*/
 
-				IntermediateTimerEventIntegrationOverlay.prototype.initializeDelegateToSelect = function(
+				/*IntermediateTimerEventIntegrationOverlay.prototype.initializeDelegateToSelect = function(
 						select) {
 					select
 							.append("<option value='default'>"
@@ -352,7 +360,7 @@ define(
 									+ "</option>");
 
 				};
-
+*/
 				/**
 				 *
 				 */
@@ -387,9 +395,9 @@ define(
 				IntermediateTimerEventIntegrationOverlay.prototype.update = function() {
 					// retrieve and populated stored values
 					// this.showHideEventTriggerFields('constant');
-					this.autoBindingInput.prop("checked", true);
+					/*this.autoBindingInput.prop("checked", true);
 					this.autoBindingInput.prop("disabled", true);
-					this.consumeOnMatchInput.prop("disabled", true);
+					this.consumeOnMatchInput.prop("disabled", true);*/
 
 					var route = null;
 					if (this.page.propertiesPanel.element.modelElement.attributes) {

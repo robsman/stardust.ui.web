@@ -239,10 +239,15 @@ define(
 						this.bindingInformation.empty();
 
 						this.interruptingSelect.show();
-						this.catchingInput.prop("checked", true);
-						this.throwingInput.prop("checked", false);
-						this.catchingInput.prop("disabled", true);
-						this.throwingInput.prop("disabled", true);
+//						this.catchingInput.prop("checked", true);
+//						this.throwingInput.prop("checked", false);
+//						this.catchingInput.prop("disabled", true);
+//						this.throwingInput.prop("disabled", true);
+
+						this.catchingInput.hide();
+						this.throwingInput.hide();
+						$("label[for='catchingInput']").hide();
+						$("label[for='throwingInput']").hide();
 
 						if (this.propertiesPanel.element.modelElement.eventClass == m_constants.ERROR_EVENT_CLASS) {
 							this.interruptingInput.prop("checked", true);

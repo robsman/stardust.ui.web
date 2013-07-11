@@ -12,6 +12,12 @@
  * Timer Event overlay for Intermediate events
  *
  * @author Yogesh.Manware
+ *
+ * Note: don't remove the code around following elements - this is for future development
+ *  - Automatic Binding
+ *  - Consume On Match
+ *  - Event Action
+ *
  */
 
 define(
@@ -56,19 +62,20 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='autoBindingInput']")
+					/*jQuery("label[for='autoBindingInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.autoBinding"));
+											.getProperty("modeler.element.properties.timerEvent_intermediate.autoBinding"));*/
 					jQuery("label[for='logHandlerInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
 
-					jQuery("label[for='consumeOnMatchInput']")
+					/*jQuery("label[for='consumeOnMatchInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));
+											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));*/
+
 					jQuery("label[for='interruptingInput']")
 							.text(
 									m_i18nUtils
@@ -94,15 +101,10 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.eventTrigger.data.path"));
 
-					jQuery("label[for='eventActionSelect']")
+					/*jQuery("label[for='eventActionSelect']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.eventAction"));
-
-					jQuery("label[for='delegateToSelect']")
-							.text(
-									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.delegateTo"));
+											.getProperty("modeler.element.properties.timerEvent_intermediate.eventAction"));*/
 
 					this.configurationSpan = this.mapInputId("configuration");
 
@@ -115,10 +117,9 @@ define(
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 
-					this.autoBindingInput = this.mapInputId("autoBindingInput");
+					// this.autoBindingInput = this.mapInputId("autoBindingInput");
 					this.logHandlerInput = this.mapInputId("logHandlerInput");
-					this.consumeOnMatchInput = this
-							.mapInputId("consumeOnMatchInput");
+					// this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
 
 					this.interruptingInput = this
 							.mapInputId("interruptingInput");
@@ -129,15 +130,14 @@ define(
 					this.eventTriggerInput = this
 							.mapInputId("eventTriggerInput");
 
-					this.eventActionSelect = this
-							.mapInputId("eventActionSelect");
+					// this.eventActionSelect = this.mapInputId("eventActionSelect");
 
 					this.initializeInterruptingSelect(this.interruptingSelect);
 
-					this.initializeEventActionSelect(this.eventActionSelect);
+					// this.initializeEventActionSelect(this.eventActionSelect);
 
 					this.registerForRouteChanges(this.logHandlerInput);
-					this.registerForRouteChanges(this.consumeOnMatchInput);
+					//this.registerForRouteChanges(this.consumeOnMatchInput);
 					this.registerForRouteChanges(this.interruptingSelect);
 					this.registerForRouteChanges(this.eventTriggerInput);
 				};
@@ -156,14 +156,14 @@ define(
 									+ "</option>");
 				};
 
-				IntermediateErrorEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
+				/*IntermediateErrorEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
 						select) {
 					select
 							.append("<option value='exceptionFlow'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.eventAction.exceptionFlow")
 									+ "</option>");
-				};
+				};*/
 
 				/**
 				 *
@@ -199,10 +199,14 @@ define(
 					// retrieve and populated stored values
 					// this.showHideEventTriggerFields('constant');
 
-					this.autoBindingInput.attr("disabled", "disabled");
+					loghandler
+					// this.autoBindingInput.attr("disabled", "disabled");
 					this.interruptingInput.attr("checked", "checked");
 					this.interruptingInput.attr("disabled", "disabled");
-					this.eventActionSelect.attr("disabled", "disabled");
+					// this.eventActionSelect.attr("disabled", "disabled");
+					interruptingAction
+					eventTrigger
+
 
 					var route = null;
 					if (this.page.propertiesPanel.element.modelElement.attributes) {
