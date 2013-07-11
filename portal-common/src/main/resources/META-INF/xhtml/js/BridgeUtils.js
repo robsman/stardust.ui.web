@@ -203,7 +203,7 @@ if (!window["BridgeUtils"].View) {
 				try {
 					$scope.close(viewId);
 				} catch(e) {
-					BridgeUtils.log("Failed in HTML5 Framework close() call: " + e);
+					BridgeUtils.log("Failed in HTML5 Framework close() call: " + e, "e");
 				}
 			});
 			BridgeUtils.log("View Closed = " + viewId);
@@ -680,7 +680,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					messages.push(message);
 				}
 			} catch (e) {
-				alert("Failed handling before unload event: " + e.message);
+	        		alert("Failed handling before unload event: " + e, "e");
 			}
 
 			if (currentBeforeUnload) {
@@ -705,7 +705,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			try {
 				onPageUnload(window, event, 'after');
 			} catch (e) {
-				alert("Failed handling after unload event: " + e.message);
+	        		alert("Failed handling after unload event: " + e, "e");
 			}
 
 			if (currentUnload) {
@@ -810,7 +810,7 @@ if (!window["BridgeUtils"].FrameManager) {
 							}
 						}
 					} catch(e) {
-						alert("Error in handling browser scroll - " + e.message);
+						alert("Error in handling browser scroll - " + e, "e");
 					}
 				}
 			});
@@ -1027,7 +1027,7 @@ if (!window["BridgeUtils"].FrameManager) {
 									activate(contentId, advanceArgs, --hiddenCounter);
 								}, 100);
 							} else {
-								BridgeUtils.log("Anchor not found while activating. Max tries exceeded for " + contentId);
+								BridgeUtils.log("Anchor not found while activating. Max tries exceeded for " + contentId, "e");
 								contentFrame.style.display = 'inline';
 							}
 						}
@@ -1181,7 +1181,7 @@ if (!window["BridgeUtils"].FrameManager) {
 						reposition(contentFrame, --hiddenCounter);
 					}, 50);
 				} else {
-					BridgeUtils.log("Anchor not found while repositioning. Max tries exceeded for " + contentId);
+					BridgeUtils.log("Anchor not found while repositioning. Max tries exceeded for " + contentId, "e");
 					contentFrame.style.display = 'inline';
 				}
 			}
