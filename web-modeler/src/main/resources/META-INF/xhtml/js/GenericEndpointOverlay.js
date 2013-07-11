@@ -257,7 +257,13 @@ define(
 								}
 							});
 							**/
-				};
+					this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
+					if ( this.camelContextInput.val() == '' && init =='true')
+					{
+						this.camelContextInput.val('defaultCamelContext');
+						self.view.submitModelElementAttributeChange( "carnot:engine:camel::camelContextId", self.camelContextInput.val());
+						}
+					};
 
 				/**
 				 * 
