@@ -50,36 +50,43 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void activeViewChanged(ValueChangeEvent event)
    {
-      PortalApplication portalApp = PortalApplication.getInstance();
-
-      String value = (String)event.getNewValue();
-      if (StringUtils.isNotEmpty(value))
+      try
       {
-         List<String> values = StringUtils.splitAndKeepOrder(value, ":");
-         String viewId = values.get(0);
-         String viewKey = (values.size() == 2) ? values.get(1) : null;
-
-         View view = portalApp.getPortalUiController().findView(viewId, viewKey);
-
-         View focusView = portalApp.getFocusView();
-         trace.info("Before:: Focus View: " + focusView);
-         if (focusView != view)
+         PortalApplication portalApp = PortalApplication.getInstance();
+   
+         String value = (String)event.getNewValue();
+         if (StringUtils.isNotEmpty(value))
          {
-            portalApp.setFocusView(view);
-
-            if (null != view)
+            List<String> values = StringUtils.splitAndKeepOrder(value, ":");
+            String viewId = values.get(0);
+            String viewKey = (values.size() == 2) ? values.get(1) : null;
+   
+            View view = portalApp.getPortalUiController().findView(viewId, viewKey);
+   
+            View focusView = portalApp.getFocusView();
+            trace.info("Before:: Focus View: " + focusView);
+            if (focusView != view)
             {
-               portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
-
-               String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
-               sessionId += view.getIdentityParams();
-               sessionId = Base64.encode(sessionId);
-               //SessionRendererHelper.render(sessionId);
+               portalApp.setFocusView(view);
+   
+               if (null != view)
+               {
+                  portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
+   
+                  String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
+                  sessionId += view.getIdentityParams();
+                  sessionId = Base64.encode(sessionId);
+                  //SessionRendererHelper.render(sessionId);
+               }
             }
+            trace.info("After:: Focus View: " + portalApp.getFocusView());
+   
+            printViews();
          }
-         trace.info("After:: Focus View: " + portalApp.getFocusView());
-
-         printViews();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
       }
    }
 
@@ -88,36 +95,43 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void viewClosed(ValueChangeEvent event)
    {
-      PortalApplication portalApp = PortalApplication.getInstance();
-
-      String value = (String)event.getNewValue();
-      trace.error("Closing view: " + value);
-
-      if (StringUtils.isNotEmpty(value))
+      try
       {
-         List<String> values = StringUtils.splitAndKeepOrder(value, ":");
-         String viewId = values.get(0);
-         String viewKey = (values.size() == 2) ? values.get(1) : null;
-
-         View view = portalApp.getPortalUiController().findView(viewId, viewKey);
-         if (null != view)
+         PortalApplication portalApp = PortalApplication.getInstance();
+   
+         String value = (String)event.getNewValue();
+         trace.error("Closing view: " + value);
+   
+         if (StringUtils.isNotEmpty(value))
          {
-            trace.info("Before:: View Count: " + portalApp.getOpenViewsSize());
-            view.getViewParams().put("skipViewCloseScript", "true");
-            portalApp.closeView(view, true);
-            trace.info("After:: View Count: " + portalApp.getOpenViewsSize() + ", View Closed: " + view);
+            List<String> values = StringUtils.splitAndKeepOrder(value, ":");
+            String viewId = values.get(0);
+            String viewKey = (values.size() == 2) ? values.get(1) : null;
+   
+            View view = portalApp.getPortalUiController().findView(viewId, viewKey);
+            if (null != view)
+            {
+               trace.info("Before:: View Count: " + portalApp.getOpenViewsSize());
+               view.getViewParams().put("skipViewCloseScript", "true");
+               portalApp.closeView(view, true);
+               trace.info("After:: View Count: " + portalApp.getOpenViewsSize() + ", View Closed: " + view);
+               
+               String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
+               sessionId += view.getIdentityParams();
+               sessionId = Base64.encode(sessionId);
+               //SessionRendererHelper.removeCurrentSession(sessionId);
+            }
+            else
+            {
+               trace.error("Could not close view: " + value);
+            }
 
-            String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
-            sessionId += view.getIdentityParams();
-            sessionId = Base64.encode(sessionId);
-            //SessionRendererHelper.removeCurrentSession(sessionId);
+            portalApp.printOpenViews();
          }
-         else
-         {
-            trace.error("Could not close view: " + value);
-         }
-
-         portalApp.printOpenViews();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
       }
    }
 
@@ -126,7 +140,7 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void launchPanelsSynced(ValueChangeEvent event)
    {
-      trace.info("********** Launch Panels Synced");
+      trace.info("Launch Panels Synced");
    }
 
    /**
@@ -134,20 +148,27 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void logout(ValueChangeEvent event)
    {
-      PortalApplication portalApp = PortalApplication.getInstance();
-      portalApp.closeAllViews();
-      
-      String script;
-      if (portalApp.getOpenViewsSize() == 0)
+      try
       {
-         script = "parent.BridgeUtils.logout(true);";
+         PortalApplication portalApp = PortalApplication.getInstance();
+         portalApp.closeAllViews();
+         
+         String script;
+         if (portalApp.getOpenViewsSize() == 0)
+         {
+            script = "parent.BridgeUtils.logout(true);";
+         }
+         else
+         {
+            script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
+            trace.warn("Not all Views got closed successully. Cannot logout...");
+         }
+         portalApp.addEventScript(script);
       }
-      else
+      catch (Exception e)
       {
-         script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
-         trace.warn("Not all Views got closed successully. Cannot logout...");
+         trace.error("", e);
       }
-      portalApp.addEventScript(script);
    }
 
    /**
@@ -155,8 +176,15 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void messageReceived(ValueChangeEvent event)
    {
-      PortalApplication portalApp = PortalApplication.getInstance();
-      portalApp.postMessage((String)event.getNewValue());
+      try
+      {
+         PortalApplication portalApp = PortalApplication.getInstance();
+         portalApp.postMessage((String)event.getNewValue());
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+      }
    }
 
    /**
