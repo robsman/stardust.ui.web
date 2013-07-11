@@ -6,44 +6,53 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-<ice:panelGroup>
-	<div class="toolbar">
-		<ice:form partialSubmit="false">
-			<table>
-				<tr>
-					<td style="width: 99%; text-align: right;">
-						<ice:menuBar styleClass="topMenuBar">
-							<pc:automationTag value="auto-FW-PerspectiveMenu" />
-							<ice:menuItem value="" icon="/plugins/common/images/icons/trigger-perspective.png">
-								<c:forEach items="#{ippPortalUi.perspectiveItems}" var="mnuItm">
-									<ice:menuItem value="#{mnuItm.value}" id="#{mnuItm.id}"
-										icon="#{ (mnuItm.title eq ippPortalUi.perspective.label) ? '/plugins/common/images/icons/ui-check-box.png' : '/plugins/common/images/icons/ui-check-box-uncheck.png'}"
-										title="#{mnuItm.title}"
-										actionListener="#{ippPortalUi.processPerspectiveMenuAction}">
-									</ice:menuItem>
-								</c:forEach>
-							</ice:menuItem>
-						</ice:menuBar>
-					</td>
-				</tr>
-			</table>
-		</ice:form>
-    </div>
-
-	<div class="content">
-		<c:forEach items="#{ippPortalUi.perspective.launchPanels}" var="launchPanel">
-			<ice:form partialSubmit="false">
-				<ice:panelGroup>
-					<ui:include src="portalUserDefinedInclude.xhtml">
-						<ui:param name="includeFilePath" value="#{launchPanel.include}" />
-					</ui:include>
-					<ice:panelGroup styleClass="clearing" />
-				</ice:panelGroup>
+	<ice:panelGroup>
+		<div class="topMenu" style="line-height:16px;">
+			<ice:form partialSubmit="true">
+				<table>
+					<tr>
+						<td class="topMenuTd">
+						<ice:panelGroup	styleClass="topMenuIframeBar">
+								<ice:panelGrid columns="2" styleClass="menuItm">
+									<ice:commandLink
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<ice:panelGroup style="padding-top: 1px; padding-right: 2px;">
+											<ice:graphicImage
+												value="/plugins/common/images/icons/trigger-perspective.png" />
+										</ice:panelGroup>
+									</ice:commandLink>
+									<ice:commandLink value="#{ippPortalUi.perspective.label}"
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<pc:automationTag value="auto-FW-PerspectiveMenu"
+											standAlone="false" />
+									</ice:commandLink>
+								</ice:panelGrid>
+								<!-- Anchor to include the Iframe -->
+								<div id="ippPerspectiveMenuAnchor"></div>
+							</ice:panelGroup>
+						</td>
+					</tr>
+				</table>
 			</ice:form>
-       </c:forEach>
-	</div>
+		</div>
 
-	<div id="ippPortalEndLP"></div>
-</ice:panelGroup>
+		<div class="content">
+			<c:forEach items="#{ippPortalUi.perspective.launchPanels}"
+				var="launchPanel">
+				<ice:form partialSubmit="false">
+					<ice:panelGroup>
+						<ui:include src="portalUserDefinedInclude.xhtml">
+							<ui:param name="includeFilePath" value="#{launchPanel.include}" />
+						</ui:include>
+						<ice:panelGroup styleClass="clearing" />
+					</ice:panelGroup>
+				</ice:form>
+			</c:forEach>
+		</div>
+
+		<div id="ippPortalEndLP"></div>
+	</ice:panelGroup>
 
 </f:view>

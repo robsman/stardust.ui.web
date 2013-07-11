@@ -65,7 +65,6 @@ public class PerspectiveMenuIframeHandler implements Serializable
                + getPopupArgs() + ");";
 
          PortalApplication.getInstance().addEventScript(script);
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
          open = true;
       }
    }
@@ -75,8 +74,9 @@ public class PerspectiveMenuIframeHandler implements Serializable
     */
    public String getPopupArgs()
    {
-      String advanceArgs = "{anchorId:'ippPerspectiveMenuAnchor', width:100, height:110,"
-            + "openOnRight:true, anchorXAdjustment:-3, anchorYAdjustment:18, zIndex:1000, border:'none', noUnloadWarning: 'true'}";
+      // For Panama, appended the parentIframe for Anchor name i.e parentIframe:AnchorName
+      String advanceArgs = "{anchorId:'modelerLaunchPanels:ippPerspectiveMenuAnchor', width:100, height:110,"
+            + "openOnRight:true, anchorXAdjustment:-3, anchorYAdjustment:27, zIndex:1000, border:'none', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 

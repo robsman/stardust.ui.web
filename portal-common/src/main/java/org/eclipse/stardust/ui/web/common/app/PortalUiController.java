@@ -414,23 +414,24 @@ public class PortalUiController
     */
    private void processPerspectiveChange(String perspectiveId) throws AbortProcessingException
    {
+      // Avoiding accessing PortalApplication statically in this class
+      // So using bean name and get bean from context directly
+      PortalApplication portalApplication = (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
+
       for (IPerspectiveDefinition perspective : perspectives.values())
       {
          if (areEqual(perspectiveId, perspective.getName()) && (currentPerspective != perspective))
          {
             setPerspective(perspective);
 
-            // Avoiding accessing PortalApplication statically in this class
-            // So using bean name and get bean from context directly
-            PortalApplication portalApplication = (PortalApplication)FacesUtils.getBeanFromContext("ippPortalApp");
             if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
             {
                broadcastNonVetoableViewEvent(portalApplication.getPinView(), ViewEventType.PERSPECTIVE_CHANGED);
             }
-            portalApplication.renderPortalSession();
             break;
          }
       }
+      portalApplication.renderPortalSession();
       perspectiveMenuIframeHandler.closeIframePopup();
    }
 

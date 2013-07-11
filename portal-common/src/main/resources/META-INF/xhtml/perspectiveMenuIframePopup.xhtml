@@ -36,16 +36,26 @@
 			advanceArgs.width = document.documentElement.scrollWidth;
 			advanceArgs.height = document.documentElement.scrollHeight+0.5;
 
-			if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+			var firefox = false;
+			if (parent.BridgeUtils)
 			{
-				advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 24;
+				firefox = parent.BridgeUtils.Util.isFF();
 			}
 			else
-				{
+			{
+				firefox = parent.ippPortalMain.InfinityBpm.Core.isFF();
+			}
+			
 				advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 24;
+	
+				if (parent.BridgeUtils)
+				{
+					parent.BridgeUtils.FrameManager.resizeAndReposition(iFrameId, advanceArgs);
 				}
-
-			parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+				else
+				{
+					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+				}
 		}
 	}
 
