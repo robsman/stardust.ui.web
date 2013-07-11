@@ -1,6 +1,6 @@
 {
     "main":[
-	    {
+	    {	    
 	        "label" : "Portal",
 	        "id" : "ippPortal",
 	        "children" : [

@@ -12,7 +12,7 @@
 	endpoints.config = endpoints.config.replace('/main.html/', '/');
 
 	sungard.initParams({
-		appStage: 'P', /* sungard.utils.getRequestParam('appStage') || 'P' */
+		appStage: sungard.utils.getRequestParam('appStage') || 'P',
 		configEndpoint: endpoints.config,
 		baseElement: document,
 		modules: ['bpm-ui']

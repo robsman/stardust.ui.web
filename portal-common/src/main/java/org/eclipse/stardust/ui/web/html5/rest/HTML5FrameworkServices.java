@@ -40,10 +40,15 @@ public class HTML5FrameworkServices
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("config")
-   public Response config(@Context UriInfo uriInfo)
+   public Response config(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
-      String contents = getCodeResource("bpm-ui/staticTest/config.json");
+      String contents = getCodeResource("bpm-ui/templates/config.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
+
+      // TODO: Read from property bundle
+      contents = StringUtils.replace(contents, "PORTAL_TITLE", "Infinity Process Platfofrm");
+      contents = StringUtils.replace(contents, "LOCALE_ID", "en");
+      contents = StringUtils.replace(contents, "SIDEBAR_LABEL", "Navigation");
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
@@ -53,7 +58,7 @@ public class HTML5FrameworkServices
    @Path("navigation")
    public Response navigation(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
-      String contents = getCodeResource("bpm-ui/staticTest/navigation-en.json");
+      String contents = getCodeResource("bpm-ui/templates/navigation.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
@@ -67,15 +72,7 @@ public class HTML5FrameworkServices
    @Path("messages/{locale}")
    public Response messages(@PathParam("locale") String locale)
    {
-      return Response.ok(getCodeResource("bpm-ui/staticTest/message-en.json")).build();
-   }
-
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("themes")
-   public Response themes(@QueryParam("appStage") String appStage)
-   {
-      return Response.ok(getCodeResource("bpm-ui/staticTest/themes.json"), MediaType.APPLICATION_JSON_TYPE).build();
+      return Response.ok(getCodeResource("bpm-ui/templates/message.json")).build();
    }
 
    @GET
@@ -83,7 +80,7 @@ public class HTML5FrameworkServices
    @Path("themes/current")
    public Response themesCurrent(@QueryParam("context") String context, @QueryParam("appStage") String appStage)
    {
-      String contents = getCodeResource("bpm-ui/staticTest/theme1.json");
+      String contents = getCodeResource("bpm-ui/templates/currentTheme.json");
 
       String stylesJson = "";
       ThemeProvider themeProvider = RestControllerUtils.resolveSpringBean(ThemeProvider.class, servletContext);
