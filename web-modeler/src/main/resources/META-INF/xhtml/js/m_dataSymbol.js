@@ -163,7 +163,7 @@ define(
 				 *
 				 */
 				DataSymbol.prototype.createPrimitives = function() {
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -175,7 +175,7 @@ define(
 					this.addToPrimitives(this.path);
 					this.addToEditableTextPrimitives(this.path);
 
-					this.text = m_canvasManager.drawTextNode(this.x + 15,
+					this.text = this.diagram.canvasManager.drawTextNode(this.x + 15,
 							this.y + 50, this.dataName).attr({
 						"text-anchor" : "middle",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,

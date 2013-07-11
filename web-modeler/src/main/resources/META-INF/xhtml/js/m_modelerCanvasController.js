@@ -27,337 +27,264 @@ define(
 				m_eventSymbol, m_gatewaySymbol, m_dataSymbol, m_model,
 				m_process, m_activity, m_data, m_elementConfiguration,
 				m_modelerUtils, m_i18nUtils, m_modelElementUtils) {
-//			var activityDefaultWidth = 180;
-//			var activityDefaultHeight = 50;
-//			var activityDefaultColour = '0-white-#DEE0E0';
-//			var activityDefaultOpacity = 0.9;
-//
-//			var annotationHighlighter = undefined;
-//			var currentEditableAnnotation;
-//			var currentRotationFactor = 0;
-//			var canvasWidth;
-//			var canvasHeight;
-//			var currentZoomLevel = 1;
-//			var currentImage;
-//			var currentRotationFactor = 0;
-//			var allAnnotationsList = [];
-
-//			var modelId = null;
-//			var processId = null;
-
-			/* Connector variables */
-
-//			var connections = [];
-//			var connectionEnds = [];
-//			var activityCounter = 0;
-//			var roleCounter = 0;
-//			var datatypeCounter = 0;
-//			var processDataTypeList = [];
-//			var processParticipantList = [];
-
-			/*
-			 * The following two variables capture the current (dx, dy) of an
-			 * image. This is an aggregation of all the panning that takes place
-			 * with the image. This is needed to calculate the exact position on
-			 * canvas of the text element of a sticky note.
-			 */
-//			var pannedByDXAggregated = 0;
-//			var pannedByDYAggregated = 0;
-
-//			var ElementUrlMap = {
-//				"activity" : "/activities",
-//				"subProcessActivity" : "/subProcessActivities",
-//				"applicationActivity" : "/applicationActivities",
-//				"connector" : "/connectors",
-//				"role" : "/roles",
-//				"roleassoc" : "/roleassociations",
-//				"startEvent" : "/events/start",
-//				"stopEvent" : "/events/end",
-//				"primitiveDataType" : "/primitiveDataTypes",
-//				"structuredDataType" : "/structuredDataTypes",
-//				"dataassoc" : "/dataassociations",
-//				"dataSymbol" : "/dataSymbols",
-//				"roleSymbol" : "/roleSymbols"
-//			};
-
-			var divIdVSDiagram = {};
-			
 			return {
 				initialize : function(fullId, divId, width, height, toolbarDiv) {
-					var diagram = null;
-
-//					function addImage() {
-//						if (undefined != parent.iDnD.imageToDrag) {
-//							m_utils.jQuerySelect('#addImgDiv').get(0).innerHTML = "<img src=\""
-//									+ parent.iDnD.imageToDrag
-//									+ "\" width=\"50px\" height=\"50px\" />"
-//							parent.iDnD.resetImageToDrag();
-//						}
-//					}
-
-					// ***
-
-//					canvasWidth = width;
-//					canvasHeight = height;
-					m_canvasManager.initialize(divId, width, height);
-
-//					currentImage = m_canvasManager.addImage(
-//							"plugins/bpm-modeler/images/white-bg.png", width, height);
-
-					diagram = m_diagram.createDiagram(divId);
-
-					diagram.initialize();
-
-					m_commandsController.init(true, false);
-					//setupEventHandling(this);
-
-					var process = m_model.findProcess(fullId);
-
-//					modelId = process.model.id;
-//					processId = process.id;
-//					m_utils.jQuerySelect("#saveModelForm").attr('action',
-//							getEndpointUrl() + "/models/" + modelId);
-					// toolActions.loadToolAction();
-					diagram.loadProcess();
-					divIdVSDiagram[divId] = diagram;
-					initDnD(divId);
-						// TODO Used temporarily to indicate the VIEW_LOADED event for the Process Definition View
-
-						window.parent.EventHub.events.publish("VIEW_LOADED", "");
-						m_utils.jQuerySelect("#processDefinitionView").css("visibility", "visible");
+					new ModelerCanvasController(fullId, divId, width, height, toolbarDiv);
 				}
 			};
 			
-			function initDnD(divId) {
-				var diagram = divIdVSDiagram[divId];
-				var IE = document.all ? true : false;
-				var canvasDiv = document.getElementById(divId);
-				if (!IE)
-					document.captureEvents(Event.MOUSEMOVE);
-				canvasDiv.onmousemove = function(e) {
-					// De-select any selected elements in the canvas
-					// to avoid they getting dragged inadvertently
-					if (parent.iDnD.dragMode) {
-						diagram.clearCurrentSelection();
-					}
+			function ModelerCanvasController(fullId, divId, width, height, toolbarDiv) {
+				// TODO delete
+				this.aTempId = Math.random(1000);
+				
+				var diagram = null;
 
-					if (e) {
-						parent.iDnD.setIframeXY(e, window.name);
-					} else {
-						parent.iDnD.setIframeXY(window.event, window.name);
-					}
-				};
+				var canvasManager = m_canvasManager.initialize(divId, width, height);
 
-				canvasDiv.onmouseup = dropElement;
+				diagram = m_diagram.createDiagram(divId, canvasManager);
 
-				/**
-				 * All Drag & Drop logic.
-				 */
-				function dropElement(e) {
-					var eve = e;
-					if (!eve) {
-						eve = window.event;
-					}
+				diagram.initialize();
 
-					parent.iDnD.dragMode = false;
+				m_commandsController.init(true, false);
 
-					if (diagram.process.isReadonly()) {
-						m_messageDisplay.clear();
-						m_messageDisplay.showErrorMessage("Process is marked as Read-only.");
-					}
+				var process = m_model.findProcess(fullId);
 
-					if (!diagram.process.isReadonly() && parent.iDnD.getTransferObject()) {
-						var clickCoordinates = parent.iDnD
-								.getMouseCoordinates(eve);
-						var scrollPos = m_modelerUtils
-								.getModelerScrollPosition();
-//						clickCoordinates.x += scrollPos.left;
-//						clickCoordinates.y += scrollPos.top;
-
-						var otherModelId = m_model.stripModelId(parent.iDnD.getTransferObject().attr.fullId);
-						if (otherModelId != diagram.modelId
-								&& m_model.isModelReferencedIn(diagram.modelId, otherModelId)) {
-							m_messageDisplay.clear();
-							m_messageDisplay.showMessage(m_i18nUtils
-									.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
-							parent.iDnD.hideIframe();
-							return;
+				diagram.loadProcess();
+				initDnD(divId);
+				// TODO Used temporarily to indicate the VIEW_LOADED event for the Process Definition View
+				window.parent.EventHub.events.publish("VIEW_LOADED", "");
+				m_utils.jQuerySelect("#processDefinitionView").css("visibility", "visible");
+				
+				function initDnD(divId) {
+					var IE = document.all ? true : false;
+					var canvasDiv = document.getElementById(divId);
+					if (!IE)
+						document.captureEvents(Event.MOUSEMOVE);
+					canvasDiv.onmousemove = function(e) {
+						// De-select any selected elements in the canvas
+						// to avoid they getting dragged inadvertently
+						if (parent.iDnD.dragMode) {
+							diagram.clearCurrentSelection();
 						}
 
-						// Check if there is any element in the model that
-						// has same id and type
-						// as that of the dragged element, if dragged
-						// element belongs to other model.
-						if (diagram.model.uuid != parent.iDnD
-								.getTransferObject().modelUUID) {
-							var matchingElems = diagram.model
-									.findModelElementsById(parent.iDnD
-											.getTransferObject().elementId);
-							if (matchingElems && matchingElems.length > 0) {
-								for ( var i in matchingElems) {
-									if (!matchingElems[i].externalReference
-											&& matchingElems[i].type === parent.iDnD
-													.getTransferObject().type) {
-										m_messageDisplay.clear();
-										m_messageDisplay
-												.showMessage(m_i18nUtils
-														.getProperty("modeler.propertyPages.commonProperties.errorMessage.elementWithSameIdExists"));
-										parent.iDnD.hideIframe();
-										return;
+						if (e) {
+							parent.iDnD.setIframeXY(e, window.name);
+						} else {
+							parent.iDnD.setIframeXY(window.event, window.name);
+						}
+					};
+
+					canvasDiv.onmouseup = dropElement;
+
+					/**
+					 * All Drag & Drop logic.
+					 */
+					function dropElement(e) {
+						var eve = e;
+						if (!eve) {
+							eve = window.event;
+						}
+
+						parent.iDnD.dragMode = false;
+
+						if (diagram.process.isReadonly()) {
+							m_messageDisplay.clear();
+							m_messageDisplay.showErrorMessage("Process is marked as Read-only.");
+						}
+
+						if (!diagram.process.isReadonly() && parent.iDnD.getTransferObject()) {
+							var clickCoordinates = parent.iDnD
+									.getMouseCoordinates(eve);
+							var scrollPos = m_modelerUtils
+									.getModelerScrollPosition();
+//							clickCoordinates.x += scrollPos.left;
+//							clickCoordinates.y += scrollPos.top;
+
+							var otherModelId = m_model.stripModelId(parent.iDnD.getTransferObject().attr.fullId);
+							if (otherModelId != diagram.modelId
+									&& m_model.isModelReferencedIn(diagram.modelId, otherModelId)) {
+								m_messageDisplay.clear();
+								m_messageDisplay.showMessage(m_i18nUtils
+										.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
+								parent.iDnD.hideIframe();
+								return;
+							}
+
+							// Check if there is any element in the model that
+							// has same id and type
+							// as that of the dragged element, if dragged
+							// element belongs to other model.
+							if (diagram.model.uuid != parent.iDnD
+									.getTransferObject().modelUUID) {
+								var matchingElems = diagram.model
+										.findModelElementsById(parent.iDnD
+												.getTransferObject().elementId);
+								if (matchingElems && matchingElems.length > 0) {
+									for ( var i in matchingElems) {
+										if (!matchingElems[i].externalReference
+												&& matchingElems[i].type === parent.iDnD
+														.getTransferObject().type) {
+											m_messageDisplay.clear();
+											m_messageDisplay
+													.showMessage(m_i18nUtils
+															.getProperty("modeler.propertyPages.commonProperties.errorMessage.elementWithSameIdExists"));
+											parent.iDnD.hideIframe();
+											return;
+										}
 									}
 								}
 							}
-						}
 
-						if (m_elementConfiguration
-								.isValidDataType(parent.iDnD
-										.getTransferObject().elementType)) {
-							// TODO other check required
-							var data = m_model.findData(parent.iDnD
-									.getTransferObject().attr.fullId);
+							if (m_elementConfiguration
+									.isValidDataType(parent.iDnD
+											.getTransferObject().elementType)) {
+								// TODO other check required
+								var data = m_model.findData(parent.iDnD
+										.getTransferObject().attr.fullId);
 
-							if (isElementExternalAndPrivate(data)) {
-								diaplayPrivateElementMessage();
-								return;
-							}
+								if (isElementExternalAndPrivate(data)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
 
-							var dataSymbol = m_dataSymbol
-									.createDataSymbolFromData(diagram,
-											data);
-
-							dataSymbol.initialize(clickCoordinates.x
-									- diagram.getCanvasPosition().left,
-									clickCoordinates.y
-											- diagram.getCanvasPosition().top);
-						} else if (m_constants.ROLE_PARTICIPANT_TYPE == parent.iDnD
-								.getTransferObject().elementType
-								|| m_constants.TEAM_LEADER_TYPE == parent.iDnD
-								.getTransferObject().elementType
-								|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parent.iDnD
-								.getTransferObject().elementType
-								|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == parent.iDnD
-								.getTransferObject().elementType) {
-							var participant = m_model
-									.findParticipant(parent.iDnD
-											.getTransferObject().attr.fullId);
-							if (isElementExternalAndPrivate(participant)) {
-								diaplayPrivateElementMessage();
-								return;
-							}
-							diagram.poolSymbol
-									.createSwimlaneSymbolFromParticipant(participant);
-						} else if ('structuredDataType' == parent.iDnD.getTransferObject().elementType
-									|| 'compositeStructuredDataType' == parent.iDnD.getTransferObject().elementType
-									|| 'enumStructuredDataType' == parent.iDnD.getTransferObject().elementType
-									|| 'importedStructuredDataType' == parent.iDnD.getTransferObject().elementType) {
-							var dataStructure = m_model.findTypeDeclaration(parent.iDnD
-											.getTransferObject().attr.fullId);
-							if (isElementExternalAndPrivate(dataStructure)) {
-								diaplayPrivateElementMessage();
-								return;
-							}
-
-							var data = m_data.createDataFromDataStructure(
-									diagram.model, dataStructure);
-
-							// Submit creation
-
-							data.submitCreation();
-
-							// TODO: this needs to be changed.
-							// we need some mechanism to associate newly create
-							// data with the data symbol to be created as now
-							// we don't generate ID on client side.
-							data = data.model.findModelElementByName(data.name);
-
-							if (data) {
 								var dataSymbol = m_dataSymbol
-								.createDataSymbolFromData(diagram, data);
+										.createDataSymbolFromData(diagram,
+												data);
 
 								dataSymbol.initialize(clickCoordinates.x
+										- diagram.getCanvasPosition().left,
+										clickCoordinates.y
+												- diagram.getCanvasPosition().top);
+							} else if (m_constants.ROLE_PARTICIPANT_TYPE == parent.iDnD
+									.getTransferObject().elementType
+									|| m_constants.TEAM_LEADER_TYPE == parent.iDnD
+									.getTransferObject().elementType
+									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parent.iDnD
+									.getTransferObject().elementType
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == parent.iDnD
+									.getTransferObject().elementType) {
+								var participant = m_model
+										.findParticipant(parent.iDnD
+												.getTransferObject().attr.fullId);
+								if (isElementExternalAndPrivate(participant)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
+								diagram.poolSymbol
+										.createSwimlaneSymbolFromParticipant(participant);
+							} else if ('structuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'compositeStructuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'enumStructuredDataType' == parent.iDnD.getTransferObject().elementType
+										|| 'importedStructuredDataType' == parent.iDnD.getTransferObject().elementType) {
+								var dataStructure = m_model.findTypeDeclaration(parent.iDnD
+												.getTransferObject().attr.fullId);
+								if (isElementExternalAndPrivate(dataStructure)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
+
+								var data = m_data.createDataFromDataStructure(
+										diagram.model, dataStructure);
+
+								// Submit creation
+
+								data.submitCreation();
+
+								// TODO: this needs to be changed.
+								// we need some mechanism to associate newly create
+								// data with the data symbol to be created as now
+								// we don't generate ID on client side.
+								data = data.model.findModelElementByName(data.name);
+
+								if (data) {
+									var dataSymbol = m_dataSymbol
+									.createDataSymbolFromData(diagram, data);
+
+									dataSymbol.initialize(clickCoordinates.x
+											- diagram.getCanvasPosition().left, clickCoordinates.y
+											- diagram.getCanvasPosition().top);
+									dataSymbol.refreshFromModelElement();
+								}
+							} else if ('process' == parent.iDnD
+									.getTransferObject().elementType) {
+								var process = m_model.findProcess(parent.iDnD
+										.getTransferObject().attr.fullId);
+
+								if (diagram.model.uuid != parent.iDnD
+										.getTransferObject().modelUUID
+										&& !(process.processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
+									parent.iDnD.hideIframe();
+									m_messageDisplay.clear();
+									m_messageDisplay
+											.showMessage(m_i18nUtils
+													.getProperty("modeler.diagram.message.noProcessInterfaceDnDNotAllowed"));
+									return;
+								}
+
+								var activitySymbol = m_activitySymbol
+										.createActivitySymbolFromProcess(
+												diagram, process);
+
+								activitySymbol.initialize(clickCoordinates.x
 										- diagram.getCanvasPosition().left, clickCoordinates.y
 										- diagram.getCanvasPosition().top);
-								dataSymbol.refreshFromModelElement();
-							}
-						} else if ('process' == parent.iDnD
-								.getTransferObject().elementType) {
-							var process = m_model.findProcess(parent.iDnD
-									.getTransferObject().attr.fullId);
+								activitySymbol.refreshFromModelElement();
+							} else if (m_elementConfiguration
+									.isValidAppType(parent.iDnD
+											.getTransferObject().elementType)) {
+								m_utils.debug("Dragged Application");
+								m_utils
+										.debug(parent.iDnD.getTransferObject().attr.fullId);
+								var application = m_model
+										.findApplication(parent.iDnD
+												.getTransferObject().attr.fullId);
 
+								m_utils.debug("Retrieved Application");
+								m_utils.debug(application);
+
+								if (isElementExternalAndPrivate(application)) {
+									diaplayPrivateElementMessage();
+									return;
+								}
+
+								var activitySymbol = m_activitySymbol
+										.createActivitySymbolFromApplication(
+												diagram, application);
+
+								activitySymbol.initialize(clickCoordinates.x
+										- diagram.getCanvasPosition().left, clickCoordinates.y
+										- diagram.getCanvasPosition().top);
+								activitySymbol.refreshFromModelElement();
+							} else {
+								m_messageDisplay
+										.showErrorMessage("Unsupported element type: "
+												+ parent.iDnD
+														.getTransferObject().elementType);
+							}
+						}
+
+						parent.iDnD.hideIframe();
+
+						function isElementExternalAndPrivate(modelElement) {
 							if (diagram.model.uuid != parent.iDnD
 									.getTransferObject().modelUUID
-									&& !(process.processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
-								parent.iDnD.hideIframe();
-								m_messageDisplay.clear();
-								m_messageDisplay
-										.showMessage(m_i18nUtils
-												.getProperty("modeler.diagram.message.noProcessInterfaceDnDNotAllowed"));
-								return;
+									&& !m_modelElementUtils.hasPublicVisibility(modelElement)) {
+								return true;
 							}
 
-							var activitySymbol = m_activitySymbol
-									.createActivitySymbolFromProcess(
-											diagram, process);
+							return false;
+						}
 
-							activitySymbol.initialize(clickCoordinates.x
-									- diagram.getCanvasPosition().left, clickCoordinates.y
-									- diagram.getCanvasPosition().top);
-							activitySymbol.refreshFromModelElement();
-						} else if (m_elementConfiguration
-								.isValidAppType(parent.iDnD
-										.getTransferObject().elementType)) {
-							m_utils.debug("Dragged Application");
-							m_utils
-									.debug(parent.iDnD.getTransferObject().attr.fullId);
-							var application = m_model
-									.findApplication(parent.iDnD
-											.getTransferObject().attr.fullId);
-
-							m_utils.debug("Retrieved Application");
-							m_utils.debug(application);
-
-							if (isElementExternalAndPrivate(application)) {
-								diaplayPrivateElementMessage();
-								return;
-							}
-
-							var activitySymbol = m_activitySymbol
-									.createActivitySymbolFromApplication(
-											diagram, application);
-
-							activitySymbol.initialize(clickCoordinates.x
-									- diagram.getCanvasPosition().left, clickCoordinates.y
-									- diagram.getCanvasPosition().top);
-							activitySymbol.refreshFromModelElement();
-						} else {
+						function diaplayPrivateElementMessage() {
+							parent.iDnD.hideIframe();
+							m_messageDisplay.clear();
 							m_messageDisplay
-									.showErrorMessage("Unsupported element type: "
-											+ parent.iDnD
-													.getTransferObject().elementType);
+									.showMessage(m_i18nUtils
+											.getProperty("modeler.diagram.message.privateElementDnDNotAllowed"));
+
 						}
-					}
-
-					parent.iDnD.hideIframe();
-
-					function isElementExternalAndPrivate(modelElement) {
-						if (diagram.model.uuid != parent.iDnD
-								.getTransferObject().modelUUID
-								&& !m_modelElementUtils.hasPublicVisibility(modelElement)) {
-							return true;
-						}
-
-						return false;
-					}
-
-					function diaplayPrivateElementMessage() {
-						parent.iDnD.hideIframe();
-						m_messageDisplay.clear();
-						m_messageDisplay
-								.showMessage(m_i18nUtils
-										.getProperty("modeler.diagram.message.privateElementDnDNotAllowed"));
-
-					}
-				}			
+					}			
+				}
 			}
 
 			// === LOAD PROCESS ===>
@@ -2329,30 +2256,30 @@ define(
 //			}
 //
 //			// Candidate utility function
-			function isElementPresent(elementList, compareProperty, property) {
-				var isPresent = false;
-				jQuery.each(elementList, function(i, val) {
-					if (getPropertyValue(val, compareProperty) == property) {
-						isPresent = true;
-					}
-				});
-
-				return isPresent;
-			}
-
-			// Candidate utility function
-			function getPropertyValue(obj, prop) {
-				var val = obj;
-				var props = prop.split(".");
-				for ( var p in props) {
-					if (val.hasOwnProperty(props[p])) {
-						val = val[props[p]];
-					} else {
-						val = undefined;
-						break;
-					}
-				}
-
-				return val;
-			}
+//			function isElementPresent(elementList, compareProperty, property) {
+//				var isPresent = false;
+//				jQuery.each(elementList, function(i, val) {
+//					if (getPropertyValue(val, compareProperty) == property) {
+//						isPresent = true;
+//					}
+//				});
+//
+//				return isPresent;
+//			}
+//
+//			// Candidate utility function
+//			function getPropertyValue(obj, prop) {
+//				var val = obj;
+//				var props = prop.split(".");
+//				for ( var p in props) {
+//					if (val.hasOwnProperty(props[p])) {
+//						val = val[props[p]];
+//					} else {
+//						val = undefined;
+//						break;
+//					}
+//				}
+//
+//				return val;
+//			}
 		});

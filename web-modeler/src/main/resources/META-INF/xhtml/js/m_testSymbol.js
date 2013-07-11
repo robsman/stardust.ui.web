@@ -134,7 +134,7 @@ define(
 				 *
 				 */
 				TestSymbol.prototype.createPrimitives = function() {
-					this.rect = m_canvasManager
+					this.rect = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -150,7 +150,7 @@ define(
 
 					this.addToPrimitives(this.rect);
 
-					this.image = m_canvasManager.drawImageAt(
+					this.image = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/camunda.gif", this.x
 									+ TEST_WIDTH - 0.5 * 16, this.y
 									+ TEST_HEIGHT - 0.5 * 16, 16, 16);

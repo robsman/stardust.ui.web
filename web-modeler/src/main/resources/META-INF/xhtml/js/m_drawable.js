@@ -450,7 +450,7 @@ define(
 
 				Drawable.prototype.createFlyOutMenuItem = function(imageUrl,
 						imageWidth, imageHeight, clickHandler) {
-					var item = m_canvasManager.drawImageAt(imageUrl, 0, 0,
+					var item = this.diagram.canvasManager.drawImageAt(imageUrl, 0, 0,
 							imageWidth, imageHeight);
 
 					item.attr({
@@ -552,7 +552,7 @@ define(
 				 *
 				 */
 				Drawable.prototype.showDashboard = function(dashboardContent) {
-					m_canvasManager.drawRectangle(
+					this.diagram.canvasManager.drawRectangle(
 							this.getDashboardX(), this.getDashboardY(), 220,
 							120, {
 								"stroke" : "#bbbbbb",
@@ -566,7 +566,7 @@ define(
 
 					for ( var contentItem in dashboardContent) {
 						if (dashboardContent[contentItem].type == "valueList") {
-							m_canvasManager
+							this.diagram.canvasManager
 									.drawTextNode(this.getDashboardX() + 10,
 											this.getDashboardY() + yOffset,
 											dashboardContent[contentItem].title)
@@ -582,7 +582,7 @@ define(
 
 							var attributes = dashboardContent[contentItem].attributes;
 							for ( var attribute in attributes) {
-								m_canvasManager
+								this.diagram.canvasManager
 										.drawTextNode(
 												this.getDashboardX() + 10,
 												this.getDashboardY() + yOffset,
@@ -594,7 +594,7 @@ define(
 													"font-weight" : "bold",
 													"font-size" : m_constants.DEFAULT_FONT_SIZE - 1
 												}).show();
-								m_canvasManager
+								this.diagram.canvasManager
 										.drawTextNode(
 												this.getDashboardX() + 160,
 												this.getDashboardY() + yOffset,
@@ -609,7 +609,7 @@ define(
 								yOffset += 20;
 							}
 						} else if (dashboardContent[contentItem].type == "plot") {
-							m_canvasManager
+							this.diagram.canvasManager
 									.drawTextNode(this.getDashboardX() + 10,
 											this.getDashboardY() + yOffset,
 											dashboardContent[contentItem].title)
@@ -630,7 +630,7 @@ define(
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset - 80);
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"arrow-end" : "block-wide-long",
 								"stroke" : "#333333",
 								"stroke-width" : 1.0
@@ -641,7 +641,7 @@ define(
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 210) + " " + (this.getDashboardY() + yOffset);
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"arrow-end" : "block-wide-long",
 								"stroke" : "#333333",
 								"stroke-width" : 1.0
@@ -659,7 +659,7 @@ define(
 								}
 							}
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"stroke" : "red",
 								"stroke-width" : 1.5
 							}).show();

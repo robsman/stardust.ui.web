@@ -108,7 +108,7 @@ define(
 				 *
 				 */
 				AnnotationSymbol.prototype.createPrimitives = function() {
-					this.rect = m_canvasManager
+					this.rect = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -123,7 +123,7 @@ define(
 					this.addToPrimitives(this.rect);
 					this.addToEditableTextPrimitives(this.rect);
 
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -132,7 +132,7 @@ define(
 									});
 					this.addToPrimitives(this.path);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x,
 							this.y, this.content).attr({
 						"text-anchor" : "start",

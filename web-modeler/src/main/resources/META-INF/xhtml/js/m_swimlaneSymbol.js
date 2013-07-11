@@ -301,7 +301,7 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.createPrimitives = function() {
-					this.borderRectangle = m_canvasManager
+					this.borderRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -314,7 +314,7 @@ define(
 
 					this.addToPrimitives(this.borderRectangle);
 
-					this.topRectangle = m_canvasManager
+					this.topRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -330,7 +330,7 @@ define(
 
 					this.addToPrimitives(this.topRectangle);
 
-					this.text = m_canvasManager
+					this.text = this.diagram.canvasManager
 							.drawTextNode(
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -351,7 +351,7 @@ define(
 					this.addToPrimitives(this.text);
 
 
-					this.minimizeIcon = m_canvasManager
+					this.minimizeIcon = this.diagram.canvasManager
 							.drawImageAt(
 									"plugins/bpm-modeler/images/icons/min.png",
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
@@ -368,7 +368,7 @@ define(
 
 					this.addToPrimitives(this.minimizeIcon);
 
-					this.maximizeIcon = m_canvasManager
+					this.maximizeIcon = this.diagram.canvasManager
 					.drawImageAt(
 							"plugins/bpm-modeler/images/icons/max.png",
 							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
@@ -497,7 +497,7 @@ define(
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenuBackground = function(
 						x, y, height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -662,7 +662,7 @@ define(
 									 "L" + (this.x + this.width - offset) + "," + (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT - offset) +
 									 "L" + (this.x + offset) + "," + (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT - offset) +
 									 "Z";
-					return m_canvasManager.drawPath(pathString, {
+					return this.diagram.canvasManager.drawPath(pathString, {
 						"stroke" : "white",
 						"stroke-width" : m_constants.PROXIMITY_SENSOR_MARGIN,
 						"opacity" : 0

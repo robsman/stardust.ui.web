@@ -194,7 +194,7 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.createPrimitives = function() {
-					this.circle = m_canvasManager.drawCircle(this.x
+					this.circle = this.diagram.canvasManager.drawCircle(this.x
 							+ m_constants.EVENT_DEFAULT_RADIUS, this.y
 							+ m_constants.EVENT_DEFAULT_RADIUS,
 							m_constants.EVENT_DEFAULT_RADIUS, {
@@ -205,7 +205,7 @@ define(
 					this.addToPrimitives(this.circle);
 					this.addToEditableTextPrimitives(this.circle);
 
-					this.innerCircle = m_canvasManager.drawCircle(this.x
+					this.innerCircle = this.diagram.canvasManager.drawCircle(this.x
 							+ m_constants.EVENT_DEFAULT_RADIUS, this.y
 							+ m_constants.EVENT_DEFAULT_RADIUS,
 							m_constants.EVENT_DEFAULT_RADIUS - 2, {
@@ -216,7 +216,7 @@ define(
 					this.addToPrimitives(this.innerCircle);
 					this.addToEditableTextPrimitives(this.innerCircle);
 
-					this.image = m_canvasManager.drawImageAt(
+					this.image = this.diagram.canvasManager.drawImageAt(
 							this.timerCatchingUrl, this.x
 									+ m_constants.EVENT_DEFAULT_RADIUS - 0.5
 									* m_constants.EVENT_ICON_WIDTH, this.y
@@ -228,7 +228,7 @@ define(
 					this.addToPrimitives(this.image);
 					this.addToEditableTextPrimitives(this.image);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + this.height + 1.2
 									* m_constants.DEFAULT_FONT_SIZE, "").attr({

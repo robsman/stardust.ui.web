@@ -160,7 +160,7 @@ define(
 				 *
 				 */
 				GatewaySymbol.prototype.createPrimitives = function() {
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -172,7 +172,7 @@ define(
 					this.addToPrimitives(this.path);
 					this.addToEditableTextPrimitives(this.path);
 
-					this.andPath = m_canvasManager
+					this.andPath = this.diagram.canvasManager
 							.drawPath(
 									this.getPlusPathSvgString(),
 									{
@@ -184,7 +184,7 @@ define(
 					this.addToPrimitives(this.andPath);
 					this.addToEditableTextPrimitives(this.andPath);
 
-					this.xorPath = m_canvasManager
+					this.xorPath = this.diagram.canvasManager
 							.drawPath(
 									this.getCrossPathSvgString(),
 									{
@@ -202,7 +202,7 @@ define(
 						this.xorPath.show();
 					}
 
-					this.orCircle = m_canvasManager
+					this.orCircle = this.diagram.canvasManager
 							.drawCircle(
 									this.x
 											+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
@@ -218,7 +218,7 @@ define(
 					this.addToPrimitives(this.orCircle);
 					this.addToEditableTextPrimitives(this.orCircle);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + this.height + 1.2
 									* m_constants.DEFAULT_FONT_SIZE, "").attr({

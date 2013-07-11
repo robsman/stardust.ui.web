@@ -55,20 +55,20 @@ define(
 			// Adjustments for Editable Text on Symbol
 
 			return {
-				createDiagram : function(divId) {
-					return new Diagram(divId);
+				createDiagram : function(divId, canvasManager) {
+					return new Diagram(divId, canvasManager);
 				}
 			};
 
-			var currentDiagram = null;
-			var panningIntervalId = null;
-			var symbolEditMode = false;
+//			var currentDiagram = null;
+//			var panningIntervalId = null;
+//			var symbolEditMode = false;
 
 			/**
 			 *
 			 */
-			function Diagram(newDivId) {
-				currentDiagram = this;
+			function Diagram(newDivId, canvasManager) {
+				//currentDiagram = this;
 
 				var canvasPos = m_utils.jQuerySelect("#" + newDivId).position();
 				//X_OFFSET = canvasPos.left; // Set fpr #panningSensor
@@ -79,6 +79,9 @@ define(
 				var SNAP_LINE_THRESHOLD = 15;
 
 				// Public constants
+				this.aTempId = Math.floor(Math.random() * 1000);
+
+				this.canvasManager = canvasManager;
 				this.oid = 0;
 				this.NORMAL_MODE = "NORMAL_MODE";
 				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
@@ -88,8 +91,8 @@ define(
 				this.CREATE_MODE = "CREATE_MODE";
 				//this.X_OFFSET = X_OFFSET;
 				//this.Y_OFFSET = Y_OFFSET;
-				this.width = m_canvasManager.getCanvasWidth();
-				this.height = m_canvasManager.getCanvasHeight();
+				this.width = this.canvasManager.getCanvasWidth();
+				this.height = this.canvasManager.getCanvasHeight();
 				this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
 				this.zoomFactor = 1;
 				this.divId = newDivId;
@@ -131,8 +134,8 @@ define(
 				this.animationEasing = null;
 				this.symbolGlow = true;
 
-				this.background = m_canvasManager.drawRectangle(0, 0,
-						m_canvasManager.getCanvasWidth(), m_canvasManager
+				this.background = this.canvasManager.drawRectangle(0, 0,
+						this.canvasManager.getCanvasWidth(), this.canvasManager
 								.getCanvasHeight(), {
 							"stroke-width" : 0,
 							"fill" : "white"
@@ -386,14 +389,14 @@ define(
 
 				this.horizontalSnapLinePosition = this.height * 0.5;
 				this.isHorizontalSnap = false;
-				this.horizontalSnapLine = m_canvasManager.drawPath("", {
+				this.horizontalSnapLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SNAP_LINE_COLOR,
 					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
 				});
 				this.verticalSnapLinePosition = this.width * 0.5;
 				this.isVerticalSnap = false;
-				this.verticalSnapLine = m_canvasManager.drawPath("", {
+				this.verticalSnapLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SNAP_LINE_COLOR,
 					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
@@ -406,18 +409,18 @@ define(
 				this.separatorDX = 0;
 				this.separatorDY = 0;
 				this.separatorList = [];
-				this.horizontalSeparatorLine = m_canvasManager.drawPath("", {
+				this.horizontalSeparatorLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
 					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
 				});
-				this.verticalSeparatorLine = m_canvasManager.drawPath("", {
+				this.verticalSeparatorLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
 					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
 				});
 
-				this.rubberBand = m_canvasManager.drawRectangle(0, 0, 0, 0, {
+				this.rubberBand = this.canvasManager.drawRectangle(0, 0, 0, 0, {
 					'stroke' : m_constants.RUBBERBAND_COLOR,
 					'fill' : m_constants.RUBBERBAND_COLOR,
 					'fill-opacity' : 0.1,
@@ -539,6 +542,7 @@ define(
 					m_swimlanePropertiesPanel.initialize(this);
 					m_controlFlowPropertiesPanel.initialize(this);
 					m_dataFlowPropertiesPanel.initialize(this);
+					var currentDiagram = this;
 					m_autoScrollManager
 							.initScrollManager(
 									"scrollpane",
@@ -2115,10 +2119,10 @@ define(
 					this.zoomFactor = Math.max(this.zoomFactor
 							- m_constants.ZOOM_INCREMENT, 1);
 
-					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+					this.canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
 
-					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
+					this.canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
@@ -2128,10 +2132,10 @@ define(
 					this.zoomFactor = this.zoomFactor
 							+ m_constants.ZOOM_INCREMENT;
 
-					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+					this.canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
 
-					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
+					this.canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
@@ -2229,7 +2233,7 @@ define(
 						"width" : (width / this.zoomFactor) * 1.25,
 						"height" : (height / this.zoomFactor) * 1.25
 					});
-					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
+					this.canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};
 
 				/**

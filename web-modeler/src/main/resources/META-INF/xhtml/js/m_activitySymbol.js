@@ -186,7 +186,7 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.createPrimitives = function() {
-					this.rectangle = m_canvasManager
+					this.rectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -203,7 +203,7 @@ define(
 					this.addToPrimitives(this.rectangle);
 					this.addToEditableTextPrimitives(this.rectangle);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + 0.5 * this.height, "").attr({
 						"text-anchor" : "middle",
@@ -214,49 +214,49 @@ define(
 					this.addToPrimitives(this.text);
 					this.addToEditableTextPrimitives(this.text);
 
-					this.manualTaskIcon = m_canvasManager.drawImageAt(
+					this.manualTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/manual-task.png", this.x + 5,
 							this.y + 5, 18, 13).hide();
 
 					this.addToPrimitives(this.manualTaskIcon);
 
-					this.receiveTaskIcon = m_canvasManager.drawImageAt(
+					this.receiveTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/receive-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.receiveTaskIcon);
 
-					this.ruleTaskIcon = m_canvasManager.drawImageAt(
+					this.ruleTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/rule-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.ruleTaskIcon);
 
-					this.scriptTaskIcon = m_canvasManager.drawImageAt(
+					this.scriptTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/script-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.scriptTaskIcon);
 
-					this.sendTaskIcon = m_canvasManager.drawImageAt(
+					this.sendTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/send-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.sendTaskIcon);
 
-					this.serviceTaskIcon = m_canvasManager.drawImageAt(
+					this.serviceTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/service-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.serviceTaskIcon);
 
-					this.userTaskIcon = m_canvasManager.drawImageAt(
+					this.userTaskIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/user-task.png", this.x + 5,
 							this.y + 5, 16, 18).hide();
 
 					this.addToPrimitives(this.userTaskIcon);
 
-					this.parallelMultiProcessingMarkerIcon = m_canvasManager
+					this.parallelMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
 									"plugins/bpm-modeler/images/icons/parallel-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
@@ -265,7 +265,7 @@ define(
 					this
 							.addToPrimitives(this.parallelMultiProcessingMarkerIcon);
 
-					this.sequentialMultiProcessingMarkerIcon = m_canvasManager
+					this.sequentialMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
 									"plugins/bpm-modeler/images/icons/sequential-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
@@ -274,7 +274,7 @@ define(
 					this
 							.addToPrimitives(this.sequentialMultiProcessingMarkerIcon);
 
-					this.subprocessMarkerIcon = m_canvasManager.drawImageAt(
+					this.subprocessMarkerIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/subprocess-marker.gif",
 							this.x + 0.5 * this.width - 8,
 							this.y + this.height - 16, 16, 16).hide();

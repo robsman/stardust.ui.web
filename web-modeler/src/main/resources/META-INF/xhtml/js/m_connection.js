@@ -674,7 +674,7 @@ define(
 				 */
 				Connection.prototype.setDummySecondAnchorPoint = function() {
 					this.setSecondAnchorPoint(this.fromAnchorPoint
-							.createFlippedClone());
+							.createFlippedClone(this.diagram));
 					m_messageDisplay
 							.showMessage("Select second anchor point for connection.");
 				};
@@ -726,7 +726,7 @@ define(
 				Connection.prototype.completeNoTransfer = function() {
 					this.register();
 
-					this.auxiliaryPickPath = m_canvasManager.drawPath("", {
+					this.auxiliaryPickPath = this.diagram.canvasManager.drawPath("", {
 						"stroke" : "white",
 						"stroke-width" : 4,
 						"opacity" : 0
@@ -770,7 +770,7 @@ define(
 				 *
 				 */
 				Connection.prototype.createPathPrimitives = function() {
-					this.path = m_canvasManager.drawPath("", {
+					this.path = this.diagram.canvasManager.drawPath("", {
 						"arrow-end" : "block-wide-long",
 						"arrow-start" : "none",
 						"stroke" : m_constants.UNKNOWN_FLOW_COLOR,
@@ -786,7 +786,7 @@ define(
 						callbackScope : this
 					};
 
-					this.conditionExpressionText = m_canvasManager
+					this.conditionExpressionText = this.diagram.canvasManager
 							.drawTextNode(
 									this.fromAnchorPoint.x,
 									this.fromAnchorPoint.y,
@@ -805,7 +805,7 @@ define(
 					//this.addToEditableTextPrimitives(this.conditionExpressionText);
 					this.conditionExpressionText.hide();
 
-					this.defaultIndicatorPath = m_canvasManager.drawPath("", {
+					this.defaultIndicatorPath = this.diagram.canvasManager.drawPath("", {
 						"stroke" : m_constants.CONTROL_FLOW_COLOR,
 						"stroke-width" : m_constants.CONNECTION_STROKE_WIDTH
 					});
@@ -849,7 +849,7 @@ define(
 				};
 
 				Connection.prototype.createProximitySensorPrimitive = function() {
-					return m_canvasManager.drawPath("", {
+					return this.diagram.canvasManager.drawPath("", {
 						"stroke" : "white",
 						"stroke-width" : m_constants.PROXIMITY_SENSOR_MARGIN,
 						"opacity" : 0
@@ -1983,7 +1983,7 @@ define(
 				 */
 				Connection.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,

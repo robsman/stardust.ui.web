@@ -388,7 +388,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.createCommentPrimitives = function() {
-					this.commentCountText = m_canvasManager.drawTextNode(
+					this.commentCountText = this.diagram.canvasManager.drawTextNode(
 							this.x + this.width - 20, this.y - 10, "").attr({
 						"text-anchor" : "start",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
@@ -398,7 +398,7 @@ define(
 
 					this.addToPrimitives(this.commentCountText);
 
-					this.commentCountIcon = m_canvasManager.drawImageAt(
+					this.commentCountIcon = this.diagram.canvasManager.drawImageAt(
 							"plugins/bpm-modeler/images/icons/comments.png",
 							this.x + this.width - 40, this.y - 12, 16, 16)
 							.hide();
@@ -850,7 +850,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.createProximitySensorPrimitive = function() {
-					return m_canvasManager.drawRectangle(this.x
+					return this.diagram.canvasManager.drawRectangle(this.x
 							- m_drawable.PROXIMITY_SENSOR_MARGIN, this.y
 							- m_drawable.PROXIMITY_SENSOR_MARGIN, this.width
 							+ 2 * m_drawable.PROXIMITY_SENSOR_MARGIN,
@@ -870,7 +870,7 @@ define(
 				Symbol.prototype.createSelectFrame = function() {
 					// Create hidden select frames, with thick width for ease to
 					// selection
-					this.leftSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.leftSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -889,7 +889,7 @@ define(
 
 					this.leftSelectHiddenFrame.hide();
 
-					this.topSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.topSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getTopSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -908,7 +908,7 @@ define(
 
 					this.topSelectHiddenFrame.hide();
 
-					this.rightSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.rightSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getRightSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -927,7 +927,7 @@ define(
 							Symbol_stretchStopClosure);
 					this.rightSelectHiddenFrame.hide();
 
-					this.bottomSelectHiddenFrame = m_canvasManager
+					this.bottomSelectHiddenFrame = this.diagram.canvasManager
 							.drawPath(
 									this.getBottomSelectFramePath(),
 									{
@@ -949,7 +949,7 @@ define(
 							Symbol_stretchStopClosure);
 					this.bottomSelectHiddenFrame.hide();
 
-					this.leftSelectFrame = m_canvasManager.drawPath(this
+					this.leftSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -961,7 +961,7 @@ define(
 
 					this.leftSelectFrame.hide();
 
-					this.topSelectFrame = m_canvasManager.drawPath(this
+					this.topSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getTopSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -973,7 +973,7 @@ define(
 
 					this.topSelectFrame.hide();
 
-					this.rightSelectFrame = m_canvasManager.drawPath(this
+					this.rightSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getRightSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -985,7 +985,7 @@ define(
 
 					this.rightSelectFrame.hide();
 
-					this.bottomSelectFrame = m_canvasManager.drawPath(this
+					this.bottomSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getBottomSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -1058,7 +1058,7 @@ define(
 				 */
 				Symbol.prototype.createFlyOutMenuBackground = function(x, y,
 						height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -2321,7 +2321,7 @@ define(
 				callbackScope.onCreate(data);
 			}
 
-			function AnchorPoint(symbol, orientation) {
+			function AnchorPoint(symbol, orientation, diagram) {
 				// Attributes
 
 				this.orientation = orientation;
@@ -2331,8 +2331,9 @@ define(
 				this.cacheOrientation = null;
 				this.cacheX = null;
 				this.cacheY = null;
+				this.diagram = this.symbol ? this.symbol.diagram : diagram;
 
-				this.graphics = m_canvasManager
+				this.graphics = this.diagram.canvasManager
 						.drawRectangle(
 								this.x,
 								this.y,
@@ -2717,9 +2718,9 @@ define(
 					this.graphics.remove();
 				};
 
-				AnchorPoint.prototype.createFlippedClone = function() {
+				AnchorPoint.prototype.createFlippedClone = function(diagram) {
 					var clone = new AnchorPoint(null,
-							(this.orientation + 2) % 4);
+							(this.orientation + 2) % 4, diagram);
 
 					clone.x = this.x;
 					clone.y = this.y;

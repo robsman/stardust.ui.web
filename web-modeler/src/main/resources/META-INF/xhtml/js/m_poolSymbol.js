@@ -156,7 +156,7 @@ define(
 				 *
 				 */
 				PoolSymbol.prototype.createPrimitives = function() {
-					this.borderRectangle = m_canvasManager
+					this.borderRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -169,7 +169,7 @@ define(
 
 					this.addToPrimitives(this.borderRectangle);
 
-					this.topRectangle = m_canvasManager
+					this.topRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -185,7 +185,7 @@ define(
 
 					this.addToPrimitives(this.topRectangle);
 
-					this.text = m_canvasManager
+					this.text = this.diagram.canvasManager
 							.drawTextNode(
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -818,7 +818,7 @@ define(
 				 */
 				PoolSymbol.prototype.createFlyOutMenuBackground = function(x,
 						y, height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -878,7 +878,7 @@ define(
 				 */
 				PoolSymbol.prototype.createProximitySensorPrimitive = function() {
 					var POOL_PROXIMITY_SENSOR_WIDTH = 3;
-					return m_canvasManager.drawRectangle(this.x, this.y
+					return this.diagram.canvasManager.drawRectangle(this.x, this.y
 							+ m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT,
 							this.width, POOL_PROXIMITY_SENSOR_WIDTH, {
 								"stroke" : "white",
