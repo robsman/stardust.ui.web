@@ -238,6 +238,7 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Processing View Close Intent Event = " + data);
 
 			var view = data.viewPanel;
+			BridgeUtils.log("Processing View Close Intent Event for View = " + view.path);
 			if (isPortalPath(view.path) && view.params) {
 				var iframeId = view.params["iframeId"];
 				var iframe = document.getElementById(iframeId);
