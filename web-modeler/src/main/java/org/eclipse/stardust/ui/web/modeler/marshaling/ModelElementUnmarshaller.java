@@ -20,6 +20,7 @@ import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContain
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
@@ -35,9 +36,9 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -1458,11 +1459,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       EventHandlerType eventHandler = null;
       //TODO: hasNotJsonNull required here?
-      if (hasNotJsonNull(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID)
-            && null != hostActivity)
+      if (hostActivity != null && hasNotJsonNull(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID))
       {
-         eventHandler = findIdentifiableElement(hostActivity.getEventHandler(),
-               extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID));
+         String eventHandlerId = extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
+         eventHandler = findIdentifiableElement(hostActivity.getEventHandler(), eventHandlerId);
       }
 
       if (eventJson.has(ModelerConstants.BINDING_ACTIVITY_UUID))
@@ -1477,8 +1477,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             if (hostActivity != newHostActivity)
             {
                if(null != hostActivity){
-                  EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
-                        null);
+                  EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, null);
                }
 
                if (null != hostActivity
@@ -1514,13 +1513,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       // store model element state
       if (null != hostActivity)
       {
+         String conditionTypeId = extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY);
          if (null != eventHandler)
          {
             // verify handler still matches the given event class
             String currentEventClass = EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType());
             if ((findContainingActivity(eventHandler) != hostActivity)
-                  || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !extractAsString(
-                        eventJson, ModelerConstants.EVENT_CLASS_PROPERTY).equals(
+                  || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !conditionTypeId.equals(
                         currentEventClass)))
             {
                // dispose current handler if it is out of sync, but carry over crucial
@@ -1543,18 +1542,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             // if possible, create an event handler defined by the event
             EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(
-                  extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY),
-                  findContainingModel(hostActivity));
+                  conditionTypeId, findContainingModel(hostActivity));
             if (null != conditionType)
             {
-               eventHandler = BpmPackageBuilder.F_CWM.createEventHandlerType();
-               eventHandler.setId(UUID.randomUUID().toString());
-               eventHandler.setType(conditionType);
+               eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
+               
                EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
                hostActivity.getEventHandler().add(eventHandler);
 
-               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID,
-                     eventHandler.getId());
+               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
             }
          }
 
@@ -1563,9 +1559,53 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             updateIdentifiableElement(eventHandler, eventJson);
             storeDescription(eventHandler, eventJson);
             storeAttributes(eventHandler, eventJson);
+            
+            // no bind or unbind actions supported.
+            eventHandler.getBindAction().clear();
+            eventHandler.getUnbindAction().clear();
+            Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
+            if (interrupting == null || interrupting) // null means default value which is "true"
+            {
+               // there should be exactly one abort action with scope sub hierarchy
+               boolean found = false;
+               for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+               {
+                  EventActionType action = i.next();
+                  if (found || action.getType() == null
+                        || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
+                  {
+                     i.remove();
+                  }
+                  else
+                  {
+                     found = true;
+                     String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+                     if (!AbortScope.SUB_HIERARCHY.equals(scope))
+                     {
+                        AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                     }
+                  }
+               }
+               if (!found)
+               {
+                  EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
+                        PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
+                  if (actionType != null)
+                  {
+                     EventActionType action = EventMarshallingUtils.newEventAction(actionType);
+                     action.setName("Abort Activity");
+                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                     eventHandler.getEventAction().add(action);
+                  }
+               }
+            }
+            else
+            {
+               // non-interrupting events have no actions.
+               eventHandler.getEventAction().clear();
+            }
 
-            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID,
-                  eventHandler.getId());
+            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
 
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
@@ -1577,12 +1617,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             mergeProperty(eventJson, hostingConfig, ModelerConstants.DESCRIPTION_PROPERTY);
             mergeProperty(eventJson, hostingConfig, ModelerConstants.EVENT_CLASS_PROPERTY);
             mergeProperty(eventJson, hostingConfig, ModelerConstants.THROWING_PROPERTY);
-            mergeProperty(eventJson, hostingConfig,
-                  ModelerConstants.INTERRUPTING_PROPERTY);
+            mergeProperty(eventJson, hostingConfig, ModelerConstants.INTERRUPTING_PROPERTY);
          }
 
-         EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
-               hostingConfig);
+         EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
       }
    }
 
