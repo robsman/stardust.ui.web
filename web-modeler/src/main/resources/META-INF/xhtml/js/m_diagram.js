@@ -435,6 +435,7 @@ define(
 				this.rubberBandWidth = 0;
 				this.rubberBandHeight = 0;
 
+				var self = this;
 				this.editableText = m_utils.jQuerySelect("#editable")
 						.editable(
 								function(value, settings) {
@@ -452,12 +453,10 @@ define(
 										// the
 										// text box and reset
 										// the value
-										jQuery.data(document, "diagram")
-												.cancelEditable();
+										self.cancelEditable();
 									},
 									onsubmit : function(settings, value) {
-										jQuery.data(document, "diagram")
-												.submitEditable(
+										self.submitEditable(
 														m_utils.jQuerySelect('input', this).val());
 									}
 								}).css("font-family",
@@ -480,18 +479,14 @@ define(
 								// the
 								// text box and reset
 								// the value
-								jQuery.data(document, "diagram")
-										.cancelEditableArea();
+								self.cancelEditableArea();
 							},
 							onsubmit : function(settings, value) {
-								jQuery.data(document, "diagram")
-										.submitEditableArea(
+								self.submitEditableArea(
 												m_utils.jQuerySelect('textarea', this).val());
 							}
 						}).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
 						.css("font-size", m_constants.DEFAULT_FONT_SIZE);
-
-				jQuery.data(document, "diagram", this);
 
 				this.currentTextPrimitive = null;
 				this.poolSymbol = null;
