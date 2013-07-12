@@ -6,15 +6,26 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 	'use strict';
 
 	/*
-	 * @class
-	 * @name bpm-ui.LoginController
-	 * @description controller for login and log out
-	 * @namespace controllers
+	 * 
 	 */
-	bpmUi.module.controller('bpm-ui.BpmUiController', ['$scope', function($scope) {
+	bpmUi.module.controller('bpm-ui.BpmUiCtrl', ['$scope', function($scope) {
 
 		/*
 		 *
+		 */
+		function doResizing(sizes) {
+        	if (window.BridgeUtils) {
+        		BridgeUtils.handleResize(sizes);
+        	} else {
+        		// Ugly Hack?
+        		window.setTimeout(function() {
+        			doResizing(sizes);
+        		}, 200);
+        	}			
+		}
+		
+		/*
+		 * 
 		 */
 		$scope.logout = function() {
 			BridgeUtils.logout();
@@ -23,11 +34,10 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		/*
 		 *
 		 */
-		$scope.openAllProcessMgmtViews = function() {
-			parent.BridgeUtils.openView(processOverviewView);
-			parent.BridgeUtils.openView(processSearch);
-		}
-
+		$scope.$watch('shell.sizes', function(sizes) {
+            if(sizes !== {}) {
+            	doResizing(sizes);
+            }
+        }, true);
 	}]);
-
 });

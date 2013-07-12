@@ -153,7 +153,7 @@
 		    "label":"Sign Out",
 		    "id":"signOut",
 		    "cls":"ng-hide: true",
-		    "actionController":"bpm-ui.BpmUiController",
+		    "actionController":"bpm-ui.BpmUiCtrl",
 		    "action":"logout()"
 		}
 	],
@@ -163,7 +163,7 @@
 	    {
 	        "id":"sidebarLaunchPanels",
 	        "module":"bpm-ui",
-	        "controller": "bpm-ui.BpmUiController",
+	        "controller": "bpm-ui.BpmUiCtrl",
 	        "partial":"bpm-ui/partials/sidebarLaunchPanels.html"
 	    }
     ]

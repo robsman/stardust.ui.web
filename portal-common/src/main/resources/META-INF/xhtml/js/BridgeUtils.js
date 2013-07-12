@@ -126,6 +126,34 @@ if (!window["BridgeUtils"]) {
 			alert(msg);
 		}
 
+		/*
+		 * Called from Angular Controller
+		 */
+		function handleResize(shellSizes) {
+			// Because it's called from Angular, wait for digest to get over. TODO: Find better solution
+			window.setTimeout(function() {
+				// Sidebar: Resize Launch Panels iFrame
+	            var elem = document.getElementById("modelerLaunchPanels");
+	            if (elem) {
+		            if(elem.offsetTop < shellSizes.windowHeight) {
+		            	var pos = BridgeUtils.FrameManager.findPosition(elem);
+		            	// Subtracting 16 because sometimes offset returns an incorrect value.
+		            	// Subtracting 20 more.
+		            	var height = shellSizes.windowHeight - pos.y - shellSizes.footerHeight - 16 - 20;
+		            	elem.style.height = height + "px";
+		            }
+	            } else {
+	            	// Ugly hack?
+	            	window.setTimeout(function() {
+	            		handleResize(shellSizes);
+	            	}, 200);
+	            }
+
+	            // Resize/Reposition iFrames
+	            BridgeUtils.FrameManager.resizeAndRepositionAllActive();
+			}, 100);
+		}
+
 		return {
 			log : log,
 			runInAngularContext : runInAngularContext,
@@ -135,7 +163,8 @@ if (!window["BridgeUtils"]) {
 			logout : logout,
 			getAbsoluteSize : getAbsoluteSize,
 			substituteParams : substituteParams,
-			showAlert : showAlert
+			showAlert : showAlert,
+			handleResize : handleResize
 		}
 	};
 } // !BridgeUtils
@@ -322,7 +351,7 @@ if (!window["BridgeUtils"].View) {
 
 			// Delay so that UI adjustments are done
 			window.setTimeout(function() {
-				BridgeUtils.FrameManager.repositionAllActive();
+				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
 			}, 100);
 		}
 
@@ -939,32 +968,51 @@ if (!window["BridgeUtils"].FrameManager) {
 		 */
 		function activate(contentId, advanceArgs, hiddenCounter) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
-			if (advanceArgs != undefined) {
-				var anchorId = advanceArgs.anchorId;
-				var width = advanceArgs.width;
-				var height = advanceArgs.height;
-				var openOnRight = advanceArgs.openOnRight;
-				var anchorXAdjustment = advanceArgs.anchorXAdjustment;
-				var anchorYAdjustment = advanceArgs.anchorYAdjustment;
-				var zIndex = advanceArgs.zIndex;
-				var border = advanceArgs.border;
-				var autoResize = advanceArgs.autoResize;
-			}
-
 			doWithContentFrame(
 					contentId,
 					function(contentFrame) {
-						var anchor = anchorId;
+						if (advanceArgs != undefined) {
+							var anchorId = advanceArgs.anchorId;
+							var width = advanceArgs.width;
+							var height = advanceArgs.height;
+							var openOnRight = advanceArgs.openOnRight;
+							var anchorXAdjustment = advanceArgs.anchorXAdjustment;
+							var anchorYAdjustment = advanceArgs.anchorYAdjustment;
+							var zIndex = advanceArgs.zIndex;
+							var border = advanceArgs.border;
+							var autoResize = advanceArgs.autoResize;
+							var widthAdjustment = advanceArgs.widthAdjustment;
+							var heightAdjustment = advanceArgs.heightAdjustment;
+							if (width != undefined || height != undefined) {
+								autoResize = false;
+							}
+						} else {
+							// Read From Frame Attributes
+							anchorId = getFrameAttribute(contentFrame, 'anchorId');
+							width = getFrameAttribute(contentFrame, 'width', 'Integer');
+							height = getFrameAttribute(contentFrame, 'height', 'Integer');
+							openOnRight = getFrameAttribute(contentFrame, 'openOnRight', 'Boolean');
+							anchorXAdjustment = getFrameAttribute(contentFrame, 'anchorXAdjustment', 'Integer');
+							anchorYAdjustment = getFrameAttribute(contentFrame, 'anchorYAdjustment', 'Integer');
+							autoResize = getFrameAttribute(contentFrame, 'autoResize', 'Boolean');
+							widthAdjustment = getFrameAttribute(contentFrame, 'widthAdjustment', 'Integer');
+							heightAdjustment = getFrameAttribute(contentFrame, 'heightAdjustment', 'Integer');
+						}
 
-						if (anchor == undefined && contentFrame.getAttribute('anchorId')) {
-							anchor = contentFrame.getAttribute('anchorId')
-						} else if (anchor == undefined) {
-							anchor = 'ippActivityPanelAnchor';
+						// Set Defaults
+						autoResize = autoResize != undefined ? autoResize : true;
+						widthAdjustment = widthAdjustment != undefined ? widthAdjustment : 0;
+						heightAdjustment = heightAdjustment != undefined ? heightAdjustment : 0;
+						openOnRight = openOnRight != undefined ? openOnRight : true;
+						anchorXAdjustment = anchorXAdjustment != undefined ? anchorXAdjustment : 0;
+						anchorYAdjustment = anchorYAdjustment != undefined ? anchorYAdjustment : 0;
+
+						if (anchorId == undefined) {
+							anchorId = 'ippActivityPanelAnchor';
 							autoResize = true;
 						}
 
-						var viewFrameData = getViewFrameDetails(anchor);
-
+						var viewFrameData = getViewFrameDetails(anchorId);
 						var contentPanelAnchor = viewFrameData.doc.getElementById(viewFrameData.anchor);
 						if (contentPanelAnchor) {
 							var pos = findPosition(contentPanelAnchor);
@@ -978,9 +1026,8 @@ if (!window["BridgeUtils"].FrameManager) {
 								iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
 							}
 
-							openOnRight = (openOnRight == undefined) ? true : openOnRight;
-							anchorXAdjustment = (anchorXAdjustment == undefined) ? 0 : anchorXAdjustment;
-							anchorYAdjustment = (anchorYAdjustment == undefined) ? 0 : anchorYAdjustment;
+							iFrameWith = iFrameWith + widthAdjustment;
+							iFrameHeight = iFrameHeight + heightAdjustment;
 
 							var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
 							posX += anchorXAdjustment;
@@ -993,15 +1040,6 @@ if (!window["BridgeUtils"].FrameManager) {
 							contentFrame.style.width = iFrameWith + 'px';
 							contentFrame.style.height = iFrameHeight + 'px';
 
-							// Save values for future use
-							contentFrame.setAttribute('anchorId', anchor);
-							contentFrame.setAttribute('autoResize', autoResize);
-							contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
-							contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
-							contentFrame.setAttribute('openOnRight', openOnRight);
-
-							contentFrame.style.display = 'inline';
-
 							if (border != undefined) {
 								contentFrame.style.border = border;
 							}
@@ -1009,6 +1047,22 @@ if (!window["BridgeUtils"].FrameManager) {
 							if (zIndex != undefined) {
 								contentFrame.style.zIndex = zIndex;
 							}
+
+							// Save values for future use
+							contentFrame.setAttribute('anchorId', anchorId);
+							if (!autoResize) {
+								contentFrame.setAttribute('width', iFrameWith);
+								contentFrame.setAttribute('height', iFrameHeight);
+							}
+							contentFrame.setAttribute('openOnRight', openOnRight);
+							contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
+							contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
+							contentFrame.setAttribute('autoResize', autoResize);							
+							contentFrame.setAttribute('widthAdjustment', widthAdjustment);
+							contentFrame.setAttribute('heightAdjustment', heightAdjustment);
+
+							// Finally make iFrame visible
+							contentFrame.style.display = 'inline';
 
 							addIframe(contentId, posX, posY);
 
@@ -1134,11 +1188,11 @@ if (!window["BridgeUtils"].FrameManager) {
 	    /*
 	     *
 	     */
-	    function repositionAllActive() {
-		BridgeUtils.log("About to reposition all active content frames");
+	    function resizeAndRepositionAllActive() {
+	    	BridgeUtils.log("About to resize & reposition all active content frames");
 		doWithContentFrame(null, function(contentFrame) {
 			if (contentFrame && contentFrame.style.display == 'inline') {
-				reposition(contentFrame);
+	    			activate(contentFrame.getAttribute('id'));
 			}
 		});
 	    }
@@ -1253,6 +1307,23 @@ if (!window["BridgeUtils"].FrameManager) {
 		}
 
 		/*
+		 * 
+		 */
+		function getFrameAttribute(contentFrame, attribute, type) {
+			var retValue = undefined;
+			if (contentFrame.getAttribute(attribute) != undefined) {
+				retValue = contentFrame.getAttribute(attribute);
+				if (type === "Integer") {
+					retValue = parseInt(retValue);
+				} else if (type === "Boolean") {
+					retValue = retValue === "true" ? true : false;
+				}
+			}
+
+			return retValue;
+		}
+		
+		/*
 		 *
 		 */
 		function addIframe(id, posX, posY) {
@@ -1285,9 +1356,10 @@ if (!window["BridgeUtils"].FrameManager) {
 			close : close,
 			closeAll : closeAll,
 			resizeAndReposition : resizeAndReposition,
-			repositionAllActive : repositionAllActive,
+			resizeAndRepositionAllActive : resizeAndRepositionAllActive,
 			getFrameContainer : getFrameContainer,
-			doWithContentFrame : doWithContentFrame
+			doWithContentFrame : doWithContentFrame,
+			findPosition : findPosition
 		}
 	};
 
