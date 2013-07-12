@@ -2320,6 +2320,10 @@ define(
 					return getCanvasPosition(this.divId);
 				}
 				
+				// TODO need not read position every time
+				// Can cache the position on view activation and on navigation panel
+				// collapse / expand event (nto sure if there exist evetns for navigation panel
+				// collapse / expand???)
 				function getCanvasPosition(divId) {
 					var canvasPos = m_utils.jQuerySelect("#" + divId).position();
 					return {
