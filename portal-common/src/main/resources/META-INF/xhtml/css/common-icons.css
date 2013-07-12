@@ -9,3 +9,7 @@
 .tabIcon-generic {
     background: url("../images/icons/tabIcon-generic.png") no-repeat;
 }
+
+.bell {
+    background: url("../images/icons/bell.png") no-repeat;
+}
