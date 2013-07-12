@@ -968,126 +968,124 @@ if (!window["BridgeUtils"].FrameManager) {
 		 */
 		function activate(contentId, advanceArgs, hiddenCounter) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
-			doWithContentFrame(
-					contentId,
-					function(contentFrame) {
-						if (advanceArgs != undefined) {
-							var anchorId = advanceArgs.anchorId;
-							var width = advanceArgs.width;
-							var height = advanceArgs.height;
-							var openOnRight = advanceArgs.openOnRight;
-							var anchorXAdjustment = advanceArgs.anchorXAdjustment;
-							var anchorYAdjustment = advanceArgs.anchorYAdjustment;
-							var zIndex = advanceArgs.zIndex;
-							var border = advanceArgs.border;
-							var autoResize = advanceArgs.autoResize;
-							var widthAdjustment = advanceArgs.widthAdjustment;
-							var heightAdjustment = advanceArgs.heightAdjustment;
-							if (width != undefined || height != undefined) {
-								autoResize = false;
-							}
-						} else {
-							// Read From Frame Attributes
-							anchorId = getFrameAttribute(contentFrame, 'anchorId');
-							width = getFrameAttribute(contentFrame, 'width', 'Integer');
-							height = getFrameAttribute(contentFrame, 'height', 'Integer');
-							openOnRight = getFrameAttribute(contentFrame, 'openOnRight', 'Boolean');
-							anchorXAdjustment = getFrameAttribute(contentFrame, 'anchorXAdjustment', 'Integer');
-							anchorYAdjustment = getFrameAttribute(contentFrame, 'anchorYAdjustment', 'Integer');
-							autoResize = getFrameAttribute(contentFrame, 'autoResize', 'Boolean');
-							widthAdjustment = getFrameAttribute(contentFrame, 'widthAdjustment', 'Integer');
-							heightAdjustment = getFrameAttribute(contentFrame, 'heightAdjustment', 'Integer');
-						}
+			doWithContentFrame( contentId, function(contentFrame) {
+				if (advanceArgs != undefined) {
+					var anchorId = advanceArgs.anchorId;
+					var width = advanceArgs.width;
+					var height = advanceArgs.height;
+					var openOnRight = advanceArgs.openOnRight;
+					var anchorXAdjustment = advanceArgs.anchorXAdjustment;
+					var anchorYAdjustment = advanceArgs.anchorYAdjustment;
+					var zIndex = advanceArgs.zIndex;
+					var border = advanceArgs.border;
+					var autoResize = advanceArgs.autoResize;
+					var widthAdjustment = advanceArgs.widthAdjustment;
+					var heightAdjustment = advanceArgs.heightAdjustment;
+					if (width != undefined || height != undefined) {
+						autoResize = false;
+					}
+				} else {
+					// Read From Frame Attributes
+					anchorId = getFrameAttribute(contentFrame, 'anchorId');
+					width = getFrameAttribute(contentFrame, 'width', 'Integer');
+					height = getFrameAttribute(contentFrame, 'height', 'Integer');
+					openOnRight = getFrameAttribute(contentFrame, 'openOnRight', 'Boolean');
+					anchorXAdjustment = getFrameAttribute(contentFrame, 'anchorXAdjustment', 'Integer');
+					anchorYAdjustment = getFrameAttribute(contentFrame, 'anchorYAdjustment', 'Integer');
+					autoResize = getFrameAttribute(contentFrame, 'autoResize', 'Boolean');
+					widthAdjustment = getFrameAttribute(contentFrame, 'widthAdjustment', 'Integer');
+					heightAdjustment = getFrameAttribute(contentFrame, 'heightAdjustment', 'Integer');
+				}
 
-						// Set Defaults
-						autoResize = autoResize != undefined ? autoResize : true;
-						widthAdjustment = widthAdjustment != undefined ? widthAdjustment : 0;
-						heightAdjustment = heightAdjustment != undefined ? heightAdjustment : 0;
-						openOnRight = openOnRight != undefined ? openOnRight : true;
-						anchorXAdjustment = anchorXAdjustment != undefined ? anchorXAdjustment : 0;
-						anchorYAdjustment = anchorYAdjustment != undefined ? anchorYAdjustment : 0;
+				// Set Defaults
+				autoResize = autoResize != undefined ? autoResize : true;
+				widthAdjustment = widthAdjustment != undefined ? widthAdjustment : 0;
+				heightAdjustment = heightAdjustment != undefined ? heightAdjustment : 0;
+				openOnRight = openOnRight != undefined ? openOnRight : true;
+				anchorXAdjustment = anchorXAdjustment != undefined ? anchorXAdjustment : 0;
+				anchorYAdjustment = anchorYAdjustment != undefined ? anchorYAdjustment : 0;
 
-						if (anchorId == undefined) {
-							anchorId = 'ippActivityPanelAnchor';
-							autoResize = true;
-						}
+				if (anchorId == undefined) {
+					anchorId = 'ippActivityPanelAnchor';
+					autoResize = true;
+				}
 
-						var viewFrameData = getViewFrameDetails(anchorId);
-						var contentPanelAnchor = viewFrameData.doc.getElementById(viewFrameData.anchor);
-						if (contentPanelAnchor) {
-							var pos = findPosition(contentPanelAnchor);
-							var posFrame = findPosition(viewFrameData.win);
-							pos.x += posFrame.x;
-							pos.y += posFrame.y;
+				var viewFrameData = getViewFrameDetails(anchorId);
+				var contentPanelAnchor = viewFrameData.doc.getElementById(viewFrameData.anchor);
+				if (contentPanelAnchor) {
+					var pos = findPosition(contentPanelAnchor);
+					var posFrame = findPosition(viewFrameData.win);
+					pos.x += posFrame.x;
+					pos.y += posFrame.y;
 
-							var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
-							var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
-							if (iFrameHeight == 0) {
-								iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
-							}
+					var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
+					var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
+					if (iFrameHeight == 0) {
+						iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
+					}
 
-							iFrameWith = iFrameWith + widthAdjustment;
-							iFrameHeight = iFrameHeight + heightAdjustment;
+					iFrameWith = iFrameWith + widthAdjustment;
+					iFrameHeight = iFrameHeight + heightAdjustment;
 
-							var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
-							posX += anchorXAdjustment;
+					var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
+					posX += anchorXAdjustment;
 
-							var posY = pos.y + anchorYAdjustment;
+					var posY = pos.y + anchorYAdjustment;
 
-							contentFrame.style.position = 'absolute';
-							contentFrame.style.left = posX + 'px';
-							contentFrame.style.top = posY + 'px';
-							contentFrame.style.width = iFrameWith + 'px';
-							contentFrame.style.height = iFrameHeight + 'px';
+					contentFrame.style.position = 'absolute';
+					contentFrame.style.left = posX + 'px';
+					contentFrame.style.top = posY + 'px';
+					contentFrame.style.width = iFrameWith + 'px';
+					contentFrame.style.height = iFrameHeight + 'px';
 
-							if (border != undefined) {
-								contentFrame.style.border = border;
-							}
+					if (border != undefined) {
+						contentFrame.style.border = border;
+					}
 
-							if (zIndex != undefined) {
-								contentFrame.style.zIndex = zIndex;
-							}
+					if (zIndex != undefined) {
+						contentFrame.style.zIndex = zIndex;
+					}
 
-							// Save values for future use
-							contentFrame.setAttribute('anchorId', anchorId);
-							if (!autoResize) {
-								contentFrame.setAttribute('width', iFrameWith);
-								contentFrame.setAttribute('height', iFrameHeight);
-							}
-							contentFrame.setAttribute('openOnRight', openOnRight);
-							contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
-							contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
-							contentFrame.setAttribute('autoResize', autoResize);							
-							contentFrame.setAttribute('widthAdjustment', widthAdjustment);
-							contentFrame.setAttribute('heightAdjustment', heightAdjustment);
+					// Save values for future use
+					contentFrame.setAttribute('anchorId', anchorId);
+					if (!autoResize) {
+						contentFrame.setAttribute('width', iFrameWith);
+						contentFrame.setAttribute('height', iFrameHeight);
+					}
+					contentFrame.setAttribute('openOnRight', openOnRight);
+					contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
+					contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
+					contentFrame.setAttribute('autoResize', autoResize);							
+					contentFrame.setAttribute('widthAdjustment', widthAdjustment);
+					contentFrame.setAttribute('heightAdjustment', heightAdjustment);
 
-							// Finally make iFrame visible
-							contentFrame.style.display = 'inline';
+					// Finally make iFrame visible
+					contentFrame.style.display = 'inline';
 
-							addIframe(contentId, posX, posY);
+					addIframe(contentId, posX, posY);
 
-							// This is needed because if page is scrolled at the time of iFrame activation
-							// Then it has to be readjusted for scroll position.
-							handleScroll();
+					// This is needed because if page is scrolled at the time of iFrame activation
+					// Then it has to be readjusted for scroll position.
+					handleScroll();
 
-							BridgeUtils.log("Frame Activated = " + contentId);
-						} else {
-							// Anchor is still loading. Delay activation
-							if (hiddenCounter == undefined) {
-								hiddenCounter = 35; // Max tries
-							}
+					BridgeUtils.log("Frame Activated = " + contentId);
+				} else {
+					// Anchor is still loading. Delay activation
+					if (hiddenCounter == undefined) {
+						hiddenCounter = 35; // Max tries
+					}
 
-							BridgeUtils.log("Anchor not found. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
-							if (hiddenCounter >= 0) {
-								window.setTimeout(function(){
-									activate(contentId, advanceArgs, --hiddenCounter);
-								}, 100);
-							} else {
-								BridgeUtils.log("Anchor not found while activating. Max tries exceeded for " + contentId, "e");
-								contentFrame.style.display = 'inline';
-							}
-						}
-					});
+					BridgeUtils.log("Anchor not found. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
+					if (hiddenCounter >= 0) {
+						window.setTimeout(function(){
+							activate(contentId, advanceArgs, --hiddenCounter);
+						}, 100);
+					} else {
+						BridgeUtils.log("Anchor not found while activating. Max tries exceeded for " + contentId, "e");
+						contentFrame.style.display = 'inline';
+					}
+				}
+			});
 		}
 
 		/*
