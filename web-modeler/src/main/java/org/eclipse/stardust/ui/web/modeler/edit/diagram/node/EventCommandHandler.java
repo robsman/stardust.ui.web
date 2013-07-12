@@ -27,30 +27,21 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
-import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Sidharth.Singh
@@ -68,25 +59,14 @@ public class EventCommandHandler
 
       synchronized (model)
       {
-         if (START_EVENT.equals(extractString(request,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         String eventType = extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY);
+         if (START_EVENT.equals(eventType))
          {
-            StartEventSymbol startEventSymbol = AbstractElementBuilder.F_CWM.createStartEventSymbol();
-            // TODO - Pass correct x,y co-ordinates rather than adjustment at server
-            startEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos());
-            startEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos());
-            startEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-            startEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+            StartEventSymbol startEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
+                  AbstractElementBuilder.F_CWM.createStartEventSymbol());
 
             // TODO evaluate other properties
-
-            processDefinition.getDiagram()
-                  .get(0)
-                  .getStartEventSymbols()
-                  .add(startEventSymbol);
-            parentLaneSymbol.getStartEventSymbols().add(startEventSymbol);
 
             //Add a manual trigger by default
             TriggerType manualTrigger = newManualTrigger(processDefinition) //
@@ -95,32 +75,19 @@ public class EventCommandHandler
             manualTrigger.setName("");
             startEventSymbol.setTrigger(manualTrigger);
          }
-         else if (ModelerConstants.INTERMEDIATE_EVENT.equals(extractString(request,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         else if (ModelerConstants.INTERMEDIATE_EVENT.equals(eventType))
          {
-            IntermediateEventSymbol eventSymbol = AbstractElementBuilder.F_CWM.createIntermediateEventSymbol();
-            // TODO - Pass correct x,y co-ordinates rather than adjustment at server
-            eventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos());
-            eventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos());
-            eventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-            eventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
-
-            processDefinition.getDiagram()
-                  .get(0)
-                  .getIntermediateEventSymbols()
-                  .add(eventSymbol);
-            parentLaneSymbol.getIntermediateEventSymbols().add(eventSymbol);
+            IntermediateEventSymbol eventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
+                  AbstractElementBuilder.F_CWM.createIntermediateEventSymbol());
 
             // add a host activity
             ActivityType hostActivity  = null;
-            JsonObject modelElement = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-            if (modelElement.has(ModelerConstants.BINDING_ACTIVITY_UUID))
+            JsonObject eventJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+            if (eventJson.has(ModelerConstants.BINDING_ACTIVITY_UUID))
             {
                hostActivity = ModelUtils.findIdentifiableElement(
                      processDefinition.getActivity(),
-                     extractAsString(modelElement, ModelerConstants.BINDING_ACTIVITY_UUID));
+                     extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             }
 
             if (null == hostActivity)
@@ -129,32 +96,26 @@ public class EventCommandHandler
                      .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
                      .build();
                processDefinition.getActivity().add(hostActivity);
+
+               EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
             }
 
-            EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
+            JsonObject hostingConfig = new JsonObject();
 
-            EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol,
-                  new JsonObject());
+            String eventClass = extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY);
+            EventHandlerType eventHandler = EventMarshallingUtils.createEventHandler(eventSymbol,
+                  hostActivity, hostingConfig, eventClass);
+            if (eventHandler != null)
+            {
+               ModelElementUnmarshaller.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
+            }
 
-            // TODO evaluate other properties
+            EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig );
          }
          else
          {
-            EndEventSymbol endEventSymbol = AbstractElementBuilder.F_CWM.createEndEventSymbol();
-
-            endEventSymbol.setXPos(extractInt(request, X_PROPERTY)
-                  - parentLaneSymbol.getXPos());
-            endEventSymbol.setYPos(extractInt(request, Y_PROPERTY)
-                  - parentLaneSymbol.getYPos());
-            endEventSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-            endEventSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
-
-            processDefinition.getDiagram()
-                  .get(0)
-                  .getEndEventSymbols()
-                  .add(endEventSymbol);
-
-            parentLaneSymbol.getEndEventSymbols().add(endEventSymbol);
+            EndEventSymbol endEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
+                  AbstractElementBuilder.F_CWM.createEndEventSymbol());
 
             //TODO: hasNotJsonNull required here?
             String eventName = request.getAsJsonObject(
@@ -178,6 +139,39 @@ public class EventCommandHandler
       }
    }
 
+   private <T extends AbstractEventSymbol> T updateAndAddSymbol(LaneSymbol parentLaneSymbol,
+         JsonObject request, T symbol)
+   {
+      // TODO - Pass correct x,y co-ordinates rather than adjustment at server
+      symbol.setXPos(extractInt(request, X_PROPERTY)
+            - parentLaneSymbol.getXPos());
+      symbol.setYPos(extractInt(request, Y_PROPERTY)
+            - parentLaneSymbol.getYPos());
+      symbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+      symbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+      
+      addSymbol(ModelUtils.findContainingProcess(parentLaneSymbol).getDiagram().get(0), symbol);
+      addSymbol(parentLaneSymbol, symbol);
+
+      return symbol;
+   }
+
+   private void addSymbol(ISymbolContainer container, AbstractEventSymbol symbol)
+   {
+      if (symbol instanceof StartEventSymbol)
+      {
+         container.getStartEventSymbols().add((StartEventSymbol) symbol);
+      }
+      else if (symbol instanceof IntermediateEventSymbol)
+      {
+         container.getIntermediateEventSymbols().add((IntermediateEventSymbol) symbol);
+      }
+      else if (symbol instanceof EndEventSymbol)
+      {
+         container.getEndEventSymbols().add((EndEventSymbol) symbol);
+      }
+   }
+   
    @OnCommand(commandId = "eventSymbol.delete")
    public void deleteEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -189,7 +183,7 @@ public class EventCommandHandler
          if (START_EVENT.equals(extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
          {
-            StartEventSymbol startEventSymbol = getModelBuilderFacade().findStartEventSymbol(
+            StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
                   parentLaneSymbol, eventOId);
 
             // Delete the associated trigger too, if it exists
@@ -240,11 +234,12 @@ public class EventCommandHandler
                parentLaneSymbol.getIntermediateEventSymbols().remove(intEventSymbol);
 
             }
-         }else
+         }
+         else
          {
-            EndEventSymbol endEventSymbol = getModelBuilderFacade().findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(parentLaneSymbol,
                   eventOId);
-            if(endEventSymbol != null)
+            if (endEventSymbol != null)
             {
                ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endEventSymbol);
                processDefinition.getDiagram()
@@ -260,9 +255,9 @@ public class EventCommandHandler
          }
       }
    }
-
+/*
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);
-   }
+   }*/
 }

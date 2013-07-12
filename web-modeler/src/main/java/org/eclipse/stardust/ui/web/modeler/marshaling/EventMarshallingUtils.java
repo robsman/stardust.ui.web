@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static java.util.Collections.emptyList;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 
 import java.util.List;
 import java.util.UUID;
@@ -254,26 +255,22 @@ public class EventMarshallingUtils
       }
    }
 
-   public static Boolean encodeIsInterruptingEvent(EventConditionTypeType conditionType)
+   public static Boolean encodeIsInterruptingEvent(EventHandlerType eventHandler)
    {
-      if (null == conditionType)
+      if (null == eventHandler)
       {
          return null;
       }
-
-      if (PredefinedConstants.TIMER_CONDITION.equals(conditionType.getId()))
+      
+      for (EventActionType action : eventHandler.getEventAction())
       {
-         return true;
+         EventActionTypeType type = action.getType();
+         if (type != null && PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(type.getId()))
+         {
+            return true;
+         }
       }
-      else if (PredefinedConstants.EXCEPTION_CONDITION.equals(conditionType.getId()))
-      {
-         return false;
-      }
-      else
-      {
-         // TODO more event types, ideally per pluggable SPI
-         return null;
-      }
+      return false;
    }
 
    public static EventConditionTypeType decodeEventHandlerType(String eventClass, ModelType model)
@@ -412,5 +409,23 @@ public class EventMarshallingUtils
    private EventMarshallingUtils()
    {
       // utility class
+   }
+
+   public static EventHandlerType createEventHandler(IntermediateEventSymbol eventSymbol, ActivityType hostActivity,
+         JsonObject hostingConfig, String eventClass)
+   {
+      EventHandlerType eventHandler = null;
+      EventConditionTypeType conditionType = decodeEventHandlerType(
+            eventClass, findContainingModel(hostActivity));
+      if (null != conditionType)
+      {
+         eventHandler = newEventHandler(conditionType);
+         
+         bindEvent(eventHandler, eventSymbol);
+         hostActivity.getEventHandler().add(eventHandler);
+   
+         hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
+      }
+      return eventHandler;
    }
 }

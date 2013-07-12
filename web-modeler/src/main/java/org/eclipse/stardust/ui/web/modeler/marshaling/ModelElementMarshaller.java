@@ -1313,7 +1313,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
                ModelerConstants.INTERMEDIATE_EVENT);
-         if ( !EventMarshallingUtils.isIntermediateEventHost(hostActivity))
+         if (!EventMarshallingUtils.isIntermediateEventHost(hostActivity))
          {
             // actually a boundary event
             eventJson.addProperty(ModelerConstants.BINDING_ACTIVITY_UUID,
@@ -1397,7 +1397,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
             EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
       eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
-            EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler.getType()));
+            EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
 
       JsonArray parameterMappingsJson = new JsonArray();
 

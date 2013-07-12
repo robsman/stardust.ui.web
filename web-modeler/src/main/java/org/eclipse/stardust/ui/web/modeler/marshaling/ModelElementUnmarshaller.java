@@ -745,7 +745,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param element
     * @param elementJson
     */
-   private void updateIdentifiableElement(IIdentifiableElement element,
+   public static void updateIdentifiableElement(IIdentifiableElement element,
          JsonObject elementJson)
    {
       updateElementNameAndId(element,
@@ -758,7 +758,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param element
     * @param elementJson
     */
-   private boolean updateElementNameAndId(EObject element, EStructuralFeature eFtrId,
+   private static boolean updateElementNameAndId(EObject element, EStructuralFeature eFtrId,
          EStructuralFeature eFtrName, JsonObject elementJson)
    {
       boolean wasModified = false;
@@ -1513,13 +1513,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       // store model element state
       if (null != hostActivity)
       {
-         String conditionTypeId = extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY);
+         String eventClass = extractAsString(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY);
          if (null != eventHandler)
          {
             // verify handler still matches the given event class
             String currentEventClass = EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType());
             if ((findContainingActivity(eventHandler) != hostActivity)
-                  || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !conditionTypeId.equals(
+                  || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !eventClass.equals(
                         currentEventClass)))
             {
                // dispose current handler if it is out of sync, but carry over crucial
@@ -1541,71 +1541,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (null == eventHandler)
          {
             // if possible, create an event handler defined by the event
-            EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(
-                  conditionTypeId, findContainingModel(hostActivity));
-            if (null != conditionType)
-            {
-               eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
-               
-               EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
-               hostActivity.getEventHandler().add(eventHandler);
-
-               hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
-            }
+            eventHandler = EventMarshallingUtils.createEventHandler(eventSymbol, hostActivity, hostingConfig, eventClass);
          }
 
          if (null != eventHandler)
          {
-            updateIdentifiableElement(eventHandler, eventJson);
-            storeDescription(eventHandler, eventJson);
-            storeAttributes(eventHandler, eventJson);
-            
-            // no bind or unbind actions supported.
-            eventHandler.getBindAction().clear();
-            eventHandler.getUnbindAction().clear();
-            Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
-            if (interrupting == null || interrupting) // null means default value which is "true"
-            {
-               // there should be exactly one abort action with scope sub hierarchy
-               boolean found = false;
-               for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
-               {
-                  EventActionType action = i.next();
-                  if (found || action.getType() == null
-                        || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
-                  {
-                     i.remove();
-                  }
-                  else
-                  {
-                     found = true;
-                     String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
-                     if (!AbortScope.SUB_HIERARCHY.equals(scope))
-                     {
-                        AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                     }
-                  }
-               }
-               if (!found)
-               {
-                  EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
-                        PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
-                  if (actionType != null)
-                  {
-                     EventActionType action = EventMarshallingUtils.newEventAction(actionType);
-                     action.setName("Abort Activity");
-                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                     eventHandler.getEventAction().add(action);
-                  }
-               }
-            }
-            else
-            {
-               // non-interrupting events have no actions.
-               eventHandler.getEventAction().clear();
-            }
+            updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
-            hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
+            storeAttributes(eventHandler, eventJson);
 
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
@@ -1622,6 +1565,60 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
       }
+   }
+
+   public static void updateEventHandler(EventHandlerType eventHandler, ActivityType hostActivity, JsonObject hostingConfig,
+         JsonObject eventJson)
+   {
+      updateIdentifiableElement(eventHandler, eventJson);
+      storeDescription(eventHandler, eventJson);
+      
+      // no bind or unbind actions supported.
+      eventHandler.getBindAction().clear();
+      eventHandler.getUnbindAction().clear();
+      Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
+      if (interrupting == null || interrupting) // null means default value which is "true"
+      {
+         // there should be exactly one abort action with scope sub hierarchy
+         boolean found = false;
+         for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+         {
+            EventActionType action = i.next();
+            if (found || action.getType() == null
+                  || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
+            {
+               i.remove();
+            }
+            else
+            {
+               found = true;
+               String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+               if (!AbortScope.SUB_HIERARCHY.equals(scope))
+               {
+                  AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+               }
+            }
+         }
+         if (!found)
+         {
+            EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
+                  PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
+            if (actionType != null)
+            {
+               EventActionType action = EventMarshallingUtils.newEventAction(actionType);
+               action.setName("Abort Activity");
+               AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+               eventHandler.getEventAction().add(action);
+            }
+         }
+      }
+      else
+      {
+         // non-interrupting events have no actions.
+         eventHandler.getEventAction().clear();
+      }
+
+      hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 
    private void mergeProperty(JsonObject source, JsonObject target, String propertyName)
@@ -2526,7 +2523,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param modelElementJson
     * @param element
     */
-   private void storeDescription(IIdentifiableModelElement element,
+   public static void storeDescription(IIdentifiableModelElement element,
          JsonObject modelElementJson)
    {
       String description = null;
