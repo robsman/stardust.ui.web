@@ -8,7 +8,7 @@
 
 <div style="border-bottom: 1px solid #DDDDDD;">
 <div id="ippViewToolbar" style="text-align: right;"> <!-- style="float: right;" --> <!-- style="position:absolute; visibility:hidden" -->
-	<table cellpadding="0" cellspacing="0" style="display:inline">
+	<table cellpadding="0" cellspacing="0" style="display:inline-block"> <!-- Added for Chrome, dispay:inline, does not display the table to right -->
 		<tr>
 			<td><span id="ippViewToolbarStart"></span></td>
 			<c:forEach items="#{ippPortalUi.toolbarSections}" var="toolbarSection">
