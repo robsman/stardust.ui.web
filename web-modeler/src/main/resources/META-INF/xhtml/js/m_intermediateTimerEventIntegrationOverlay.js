@@ -146,46 +146,101 @@ define(
 					//this.initializeEventActionSelect(this.eventActionSelect);
 					//this.initializeDelegateToSelect(this.delegateToSelect);
 
-					//this.registerForRouteChanges(this.autoBindingInput);
-					this.registerForRouteChanges(this.logHandlerInput);
-					//this.registerForRouteChanges(this.consumeOnMatchInput);
-					this.registerForRouteChanges(this.interruptingInput);
-					this.registerForRouteChanges(this.eventTriggerSelect);
-					this.registerForRouteChanges(this.delayTimerInput);
-					this.registerForRouteChanges(this.delayTimerUnitSelect);
-					//this.registerForRouteChanges(this.eventActionSelect);
+					this.logHandlerInput.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+						overlay.submitChanges({
+							modelElement : {
+								logHandler :  overlay.logHandlerInput.prop("checked")
+							}
+						});
+					});
 
-					this.eventTriggerSelect
-							.change(
-									{
-										"page" : this
-									},
-									function(event) {
-										var page = event.data.page;
 
-										var eventTrigger = page.eventTriggerSelect.val();
-										page.showHideEventTriggerFields(eventTrigger);
+					this.interruptingInput.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+						overlay.submitChanges({
+							modelElement : {
+								interrupting :  overlay.interruptingInput.prop("checked")
+							}
+						});
+					});
 
-//										page.getModelElement().eventTrigger = page.eventTriggerSelect
-//												.val();
-//										page.submitChanges({
-//											modelElement : page
-//													.getModelElement()
-//										});
-									});
+					this.eventTriggerSelect.change({
+						overlay : this
+					}, function(event) {
 
-					/*this.eventActionSelect.change({
-						"page" : this
-						}, function(event) {
-						var page = event.data.page;
+						var overlay = event.data.overlay;
+						var eventTrigger = overlay.eventTriggerSelect.val();
+						overlay.showHideEventTriggerFields(eventTrigger);
 
-						var eventAction = page.eventActionSelect.val();
-						page.showHideEventActionFields(eventAction);
-					});*/
+						if ('constant' == eventTrigger) {
+							overlay.updateConstant();
+						} else if ('data' == eventTrigger) {
+							overlay.updateData();
+						}
+					});
 
-					this.showHideEventTriggerFields();
+					this.dataSelect.change({
+						overlay : this
+					}, function(event) {
+						event.data.overlay.updateData();
+					});
+
+					this.dataPathInput.change({
+						overlay : this
+					}, function(event) {
+						event.data.overlay.updateData();
+					});
+
+					this.delayTimerInput.change({
+						overlay : this
+					}, function(event) {
+						event.data.overlay.updateConstant();
+					});
+
+					/*
+					 * this.eventActionSelect.change({ "page" : this },
+					 * function(event) { var page = event.data.page;
+					 *
+					 * var eventAction = page.eventActionSelect.val();
+					 * page.showHideEventActionFields(eventAction); });
+					 */
+
+
 					//this.showHideEventActionFields();
 				};
+
+				/**
+				 *
+				 */
+				IntermediateTimerEventIntegrationOverlay.prototype.updateData = function() {
+					this.submitChanges({
+						modelElement : {
+							attributes : {
+								"carnot:engine:data" : this.dataSelect.val(),
+								"carnot:engine:dataPath" : this.dataPathInput.val()
+							}
+						}
+					});
+				};
+
+				/**
+				 *
+				 */
+				IntermediateTimerEventIntegrationOverlay.prototype.updateConstant = function() {
+					this.submitChanges({
+						modelElement : {
+							attributes : {
+								"carnot:engine:delay" : this.delayTimerInput.val(),
+							}
+						}
+					});
+				};
+
 
 				/*IntermediateTimerEventIntegrationOverlay.prototype.showHideEventActionFields = function(
 						selectedVal) {
@@ -247,20 +302,6 @@ define(
 
 				};
 
-				IntermediateTimerEventIntegrationOverlay.prototype.initializeInterruptingSelect = function(
-						select) {
-					select
-							.append("<option value='abortActivity'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.abortActivity")
-									+ "</option>");
-					select
-							.append("<option value='completeActivity'>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.event.completeActivity")
-									+ "</option>");
-				};
-
 				IntermediateTimerEventIntegrationOverlay.prototype.initializeEventTriggerSelect = function(
 						select) {
 					select
@@ -296,6 +337,35 @@ define(
 								+ dataItems[m].getFullId() + "'>"
 								+ dataItems[m].name + "</option>");
 					}
+				};
+
+				/**
+				 * initialize data
+				 */
+				IntermediateTimerEventIntegrationOverlay.prototype.update = function() {
+					// retrieve and populated stored values
+					/*this.autoBindingInput.prop("checked", true);
+					this.autoBindingInput.prop("disabled", true);
+					this.consumeOnMatchInput.prop("disabled", true);*/
+
+					var modelElement = this.page.propertiesPanel.element.modelElement;
+					this.interruptingInput.prop("checked", modelElement.interrupting);
+					this.logHandlerInput.prop("checked", modelElement.logHandler);
+
+					if (modelElement.attributes) {
+						var data = modelElement.attributes["carnot:engine:data"];
+						if (null != data) {
+							this.eventTriggerSelect.val('data');
+							this.dataSelect.val(modelElement.attributes["carnot:engine:data"]);
+							this.dataPathInput.val(modelElement.attributes["carnot:engine:dataPath"]);
+						}
+						var constant = modelElement.attributes["carnot:engine:delay"];
+						if (null != data) {
+							this.eventTriggerSelect.val('constant');
+							this.delayTimerInput.val(modelElement.attributes["carnot:engine:delay"]);
+						}
+					}
+					this.showHideEventTriggerFields();
 				};
 
 				/*IntermediateTimerEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
@@ -362,49 +432,23 @@ define(
 				 *
 				 */
 				IntermediateTimerEventIntegrationOverlay.prototype.getEndpointUri = function() {
-					var uri = "timer://timerEndpoint";
-					var separator = "?";
-
-					return uri;
+					return "";
 				};
 
 				/**
 				 *
 				 */
 				IntermediateTimerEventIntegrationOverlay.prototype.activate = function() {
-					this.delayTimerInput.val(0);
-					var parameterMappings = [];
-
-					this.submitOverlayChanges(parameterMappings);
+					// It is invoked when there are multiple options in overlay
+					// dropdown, here we have only one option.
 				};
 
 				IntermediateTimerEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
-					return "<from uri=\"" + this.getEndpointUri() + "\"/>"
-							+ this.getAdditionalRouteDefinitions();
+					//not required in this case?
+					return "";
 				};
 
-				IntermediateTimerEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
-					return "<to uri=\"ipp:direct\"/>";
-				};
-				/**
-				 *
-				 */
-				IntermediateTimerEventIntegrationOverlay.prototype.update = function() {
-					// retrieve and populated stored values
-					// this.showHideEventTriggerFields('constant');
-					/*this.autoBindingInput.prop("checked", true);
-					this.autoBindingInput.prop("disabled", true);
-					this.consumeOnMatchInput.prop("disabled", true);*/
 
-					var route = null;
-					if (this.page.propertiesPanel.element.modelElement.attributes) {
-						route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
-					}
-
-					if (route == null) {
-						return;
-					}
-				};
 
 				/**
 				 *

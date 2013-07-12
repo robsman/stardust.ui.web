@@ -127,15 +127,63 @@ define(
 					this.eventTriggerInput = this
 							.mapInputId("eventTriggerInput");
 
-					// this.eventActionSelect = this.mapInputId("eventActionSelect");
-					// this.initializeEventActionSelect(this.eventActionSelect);
+					this.eventTriggerInput.change({
+						overlay : this
+						},
+						function(event) {
+							var overlay = event.data.overlay;
+							if (overlay.validate()) {
+								overlay
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:exceptionName" : overlay.eventTriggerInput
+															.val()
+											}
+									}
+								});
+							}
+						});
 
-					this.registerForRouteChanges(this.logHandlerInput);
-					//this.registerForRouteChanges(this.consumeOnMatchInput);
-					this.registerForRouteChanges(this.eventTriggerInput);
+					this.logHandlerInput.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+						overlay.submitChanges({
+							modelElement : {
+								logHandler :  overlay.logHandlerInput.prop("checked")
+							}
+						});
+					});
+
+
 				};
 
-				IntermediateErrorEventIntegrationOverlay.prototype.initializeInterruptingSelect = function(
+				/**
+				 * initialize data
+				 */
+				IntermediateErrorEventIntegrationOverlay.prototype.update = function() {
+					// retrieve and populated stored values
+					// this.showHideEventTriggerFields('constant');
+					// this.autoBindingInput.attr("disabled", "disabled");
+					// this.eventActionSelect.attr("disabled", "disabled");
+
+					var modelElement = this.page.propertiesPanel.element.modelElement;
+					this.interruptingInput.attr("checked", "checked");
+					this.interruptingInput.attr("disabled", "disabled");
+
+					this.logHandlerInput.prop("checked", modelElement.logHandler);
+
+					var exception = null;
+					if (modelElement.attributes) {
+						exception = modelElement.attributes["carnot:engine:exceptionName"];
+						if (null != exception) {
+							this.eventTriggerInput.val(exception);
+						}
+					}
+				};
+
+				/*IntermediateErrorEventIntegrationOverlay.prototype.initializeInterruptingSelect = function(
 						select) {
 					select
 							.append("<option value='abortActivity'>"
@@ -147,7 +195,7 @@ define(
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.event.completeActivity")
 									+ "</option>");
-				};
+				};*/
 
 				/*IntermediateErrorEventIntegrationOverlay.prototype.initializeEventActionSelect = function(
 						select) {
@@ -168,45 +216,17 @@ define(
 					return uri;
 				};
 
-				/**
-				 *
-				 */
 				IntermediateErrorEventIntegrationOverlay.prototype.activate = function() {
-					var parameterMappings = [];
-
-					this.submitOverlayChanges(parameterMappings);
+					// It is invoked when there are multiple options in overlay
+					// dropdown, here we have only one option.
 				};
 
 				IntermediateErrorEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
-					return "<from uri=\"" + this.getEndpointUri() + "\"/>"
-							+ this.getAdditionalRouteDefinitions();
+					//not required in this case?
+					return "";
 				};
 
-				IntermediateErrorEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
-					return "<to uri=\"ipp:direct\"/>";
-				};
 
-				/**
-				 *
-				 */
-				IntermediateErrorEventIntegrationOverlay.prototype.update = function() {
-					// retrieve and populated stored values
-					// this.showHideEventTriggerFields('constant');
-
-					// this.autoBindingInput.attr("disabled", "disabled");
-					this.interruptingInput.attr("checked", "checked");
-					this.interruptingInput.attr("disabled", "disabled");
-					// this.eventActionSelect.attr("disabled", "disabled");
-
-					var route = null;
-					if (this.page.propertiesPanel.element.modelElement.attributes) {
-						route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
-					}
-
-					if (route == null) {
-						return;
-					}
-				};
 
 				/**
 				 *
