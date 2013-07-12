@@ -1573,49 +1573,57 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       updateIdentifiableElement(eventHandler, eventJson);
       storeDescription(eventHandler, eventJson);
       
-      // no bind or unbind actions supported.
-      eventHandler.getBindAction().clear();
-      eventHandler.getUnbindAction().clear();
-      Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
-      if (interrupting == null || interrupting) // null means default value which is "true"
+      if (eventJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
       {
-         // there should be exactly one abort action with scope sub hierarchy
-         boolean found = false;
-         for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+         eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
+      }
+      
+      if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
+      {
+         // no bind or unbind actions supported.
+         eventHandler.getBindAction().clear();
+         eventHandler.getUnbindAction().clear();
+         Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
+         if (interrupting == null || interrupting) // null means default value which is "true"
          {
-            EventActionType action = i.next();
-            if (found || action.getType() == null
-                  || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
+            // there should be exactly one abort action with scope sub hierarchy
+            boolean found = false;
+            for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
             {
-               i.remove();
-            }
-            else
-            {
-               found = true;
-               String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
-               if (!AbortScope.SUB_HIERARCHY.equals(scope))
+               EventActionType action = i.next();
+               if (found || action.getType() == null
+                     || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
                {
+                  i.remove();
+               }
+               else
+               {
+                  found = true;
+                  String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+                  if (!AbortScope.SUB_HIERARCHY.equals(scope))
+                  {
+                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                  }
+               }
+            }
+            if (!found)
+            {
+               EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
+                     PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
+               if (actionType != null)
+               {
+                  EventActionType action = EventMarshallingUtils.newEventAction(actionType);
+                  action.setName("Abort Activity");
                   AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                  eventHandler.getEventAction().add(action);
                }
             }
          }
-         if (!found)
+         else
          {
-            EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
-                  PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
-            if (actionType != null)
-            {
-               EventActionType action = EventMarshallingUtils.newEventAction(actionType);
-               action.setName("Abort Activity");
-               AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-               eventHandler.getEventAction().add(action);
-            }
+            // non-interrupting events have no actions.
+            eventHandler.getEventAction().clear();
          }
-      }
-      else
-      {
-         // non-interrupting events have no actions.
-         eventHandler.getEventAction().clear();
       }
 
       hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
