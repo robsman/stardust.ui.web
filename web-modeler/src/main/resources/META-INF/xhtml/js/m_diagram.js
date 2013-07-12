@@ -504,7 +504,16 @@ define(
 				 */
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
-
+					var self = this;
+					
+					// Refresh properties panel on view activation
+					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
+						var processDefView = m_utils.jQuerySelect("#processDefinitionView");
+						if (params && params.length > 0 && params[0] === self.process.uuid) {
+							self.initializePropertiesPanels();
+						}						
+					})
+					
 					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");
 					this.processId = BridgeUtils.View.getActiveViewParams().param(
@@ -600,6 +609,21 @@ define(
 							+ new Date().getTime();
 				};
 
+				/**
+				 * 
+				 */
+				Diagram.prototype.initializePropertiesPanels = function() {
+					m_activityPropertiesPanel.initialize(this);
+					m_dataPropertiesPanel.initialize(this);
+					m_eventPropertiesPanel.initialize(this);
+					m_gatewayPropertiesPanel.initialize(this);
+					m_annotationPropertiesPanel.initialize(this);
+					m_swimlanePropertiesPanel.initialize(this);
+					m_controlFlowPropertiesPanel.initialize(this);
+					m_dataFlowPropertiesPanel.initialize(this);
+					m_propertiesPanel.initializeProcessPropertiesPanel(m_processPropertiesPanel.initialize(this, this.process));
+				};
+				
 				/**
 				 *
 				 */

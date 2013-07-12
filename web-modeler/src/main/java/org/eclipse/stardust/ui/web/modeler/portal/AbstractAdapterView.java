@@ -73,9 +73,10 @@ public class AbstractAdapterView implements ViewEventHandler {
 		String iframeId = "mf_" + event.getView().getIdentityParams();
 
 		switch (event.getType())
-		{
+		{		
 		case TO_BE_ACTIVATED:
 		    //PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
+			PortalApplicationEventScript.getInstance().addEventScript("parent.EventHub.events.publish('PEPPER_VIEW_ACTIVATED', '" + event.getView().getParamValue("uuid") + "');");
             break;
 
 		case TO_BE_DEACTIVATED:
