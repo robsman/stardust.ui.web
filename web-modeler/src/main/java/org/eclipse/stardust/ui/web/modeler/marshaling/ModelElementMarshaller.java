@@ -1396,8 +1396,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             eventHandler.isLogHandler());
       eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
             EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
-      eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
-            EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
+      //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
+      //      EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
       eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
             EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
 
