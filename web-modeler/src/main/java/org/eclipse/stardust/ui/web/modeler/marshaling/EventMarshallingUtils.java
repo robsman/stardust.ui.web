@@ -273,19 +273,8 @@ public class EventMarshallingUtils
       return false;
    }
 
-   public static EventConditionTypeType decodeEventHandlerType(String eventClass, ModelType model)
+   public static EventConditionTypeType decodeEventHandlerType(String conditionTypeId, ModelType model)
    {
-      String conditionTypeId = null;
-      if (ModelerConstants.TIMER_EVENT_CLASS_KEY.equals(eventClass))
-      {
-         conditionTypeId = PredefinedConstants.TIMER_CONDITION;
-      }
-      else if (ModelerConstants.ERROR_EVENT_CLASS_KEY.equals(eventClass))
-      {
-         conditionTypeId = PredefinedConstants.EXCEPTION_CONDITION;
-      }
-      // TODO more event types, ideally per pluggable SPI
-      
       if (conditionTypeId != null)
       {
          EventConditionTypeType conditionType = ModelUtils.findIdentifiableElement(
