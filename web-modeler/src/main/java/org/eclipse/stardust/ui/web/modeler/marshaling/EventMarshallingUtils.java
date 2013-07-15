@@ -213,24 +213,7 @@ public class EventMarshallingUtils
 
    public static String encodeEventHandlerType(EventConditionTypeType conditionType)
    {
-      if (null == conditionType)
-      {
-         return null;
-      }
-
-      if (PredefinedConstants.TIMER_CONDITION.equals(conditionType.getId()))
-      {
-         return ModelerConstants.TIMER_EVENT_CLASS_KEY;
-      }
-      else if (PredefinedConstants.EXCEPTION_CONDITION.equals(conditionType.getId()))
-      {
-         return ModelerConstants.ERROR_EVENT_CLASS_KEY;
-      }
-      else
-      {
-         // TODO more event types, ideally per pluggable SPI
-         return null;
-      }
+      return conditionType == null ? null : conditionType.getId();
    }
 
    public static Boolean encodeIsThrowingEvent(EventConditionTypeType conditionType)
