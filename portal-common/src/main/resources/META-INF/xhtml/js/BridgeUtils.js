@@ -1072,7 +1072,7 @@ if (!window["BridgeUtils"].FrameManager) {
 				} else {
 					// Anchor is still loading. Delay activation
 					if (hiddenCounter == undefined) {
-						hiddenCounter = 35; // Max tries
+						hiddenCounter = 50; // Max tries
 					}
 
 					BridgeUtils.log("Anchor not found. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
