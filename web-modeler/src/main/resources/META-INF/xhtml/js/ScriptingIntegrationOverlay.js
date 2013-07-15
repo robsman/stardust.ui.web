@@ -182,7 +182,7 @@ define(
 				 *
 				 */
 				ScriptingIntegrationOverlay.prototype.createParameterObjectString = function(
-						direction, initializePrimitives, singleVariables) {
+						direction, initializePrimitives, singleVariables, identifier) {
 					var otherDirection;
 					if (direction === m_constants.IN_ACCESS_POINT) {
 						otherDirection = m_constants.OUT_ACCESS_POINT;
@@ -214,7 +214,7 @@ define(
 						if (parameterDefinition.dataType == "primitive") {
 							if (initializePrimitives || singleVariables) {
 								if (singleVariables) {
-									parameterObjectString += "var ";
+									parameterObjectString += identifier;
 								}
 
 								parameterObjectString += parameterDefinition.id;
@@ -241,7 +241,7 @@ define(
 							var typeDeclaration = m_model
 									.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
 							if (singleVariables) {
-								parameterObjectString += "var ";
+								parameterObjectString += identifier;
 							}
 
 							parameterObjectString += parameterDefinition.id;
@@ -266,7 +266,7 @@ define(
 									.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
 
 							if (singleVariables) {
-								parameterObjectString += "var ";
+								parameterObjectString += identifier;
 							}
 
 							parameterObjectString += parameterDefinition.id;
@@ -353,36 +353,44 @@ define(
 				 */
 				ScriptingIntegrationOverlay.prototype.getRoute = function() {
 					var route = "";
+					if (this.languageSelect.val() === "JavaScript") {
 					var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
 							if (accessPoint.dataType == "primitive") {
-								code += "var "+ accessPoint.name+";\n";
-								code +="if(request.headers.get('"        + accessPoint.name + "')!=null){\n"
-								code += accessPoint.name+ " =  request.headers.get('"        + accessPoint.name + "');\n";
+								code += "var " + accessPoint.id + ";\n";
+								code += "if(request.headers.get('"
+										+ accessPoint.id + "')!=null){\n"
+								code += accessPoint.id
+										+ " =  request.headers.get('"
+										+ accessPoint.id + "');\n";
 								code += "}\n";
 
 							} else if (accessPoint.dataType == "struct") {
-								code += "var "+ accessPoint.name+";\n";
-								code +="if(request.headers.get('"+ accessPoint.name + "')!=null){\n"
-								code += accessPoint.name  + " =  eval('(' + request.headers.get('"+ accessPoint.name + "')+ ')');\n";
+								code += "var " + accessPoint.id + ";\n";
+								code += "if(request.headers.get('"
+										+ accessPoint.id + "')!=null){\n"
+								code += accessPoint.id
+										+ " =  eval('(' + request.headers.get('"
+										+ accessPoint.id + "')+ ')');\n";
 								code += "}\n";
 							}
 						}
 					}
 
 					code += this.createParameterObjectString(
-							m_constants.OUT_ACCESS_POINT, false, true);
-					code += this.codeEditor.getEditor().getSession().getValue();
+							m_constants.OUT_ACCESS_POINT, false, true,"var ");
+					code += this.codeEditor.getEditor().getSession()
+							.getValue();
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-							code += "\nsetOutHeader('" + accessPoint.id + "',"
-									+ accessPoint.id + ");";
+							code += "\nsetOutHeader('" + accessPoint.id
+									+ "'," + accessPoint.id + ");";
 						}
 					}
 					code = code.replace(/&/g, "&amp;");
@@ -390,16 +398,46 @@ define(
 					code = code.replace(/>/g, "&gt;");
 					// Determine language
 
-					if (this.languageSelect.val() === "JavaScript") {
-						route += "<to uri=\"bean:bpmTypeConverter?method=toNativeObject\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
-								+ code
-								+ "</constant></setHeader><to uri=\"language:rhino-nonjdk\" /><to uri=\"bean:bpmTypeConverter?method=fromNativeObject\" />\n";
+					route += "<to uri=\"bean:bpmTypeConverter?method=toNativeObject\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
+							+ code
+							+ "</constant></setHeader><to uri=\"language:rhino-nonjdk\" /><to uri=\"bean:bpmTypeConverter?method=fromNativeObject\" />\n";
 					} else if (this.languageSelect.val() === "Groovy") {
 						route += "<setHeader headerName=\"CamelLanguageScript\"><constant>"
 								+ code
 								+ "</constant></setHeader><to uri=\"language:groovy\" />\n";
 					} else {
-						route += "<setHeader headerName=\"CamelLanguageScript\"><constant>"
+						var code = "import json\nimport pprint\n";
+						for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+							var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+							if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
+								if (accessPoint.dataType == "primitive") {
+									code += accessPoint.id + "= exchange.getIn().getHeader('"+ accessPoint.id + "')\n";
+								} else if (accessPoint.dataType == "struct") {
+									code += accessPoint.id + "JSON= exchange.getIn().getHeader('"+ accessPoint.id + "')\n";
+									code += accessPoint.id + "=json.loads("+accessPoint.id + "JSON)\n";
+								}
+							}
+						}
+
+						code += this.createParameterObjectString(
+								m_constants.OUT_ACCESS_POINT, false, true,"");
+						code += this.codeEditor.getEditor().getSession()
+								.getValue();
+
+						for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+							var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								code += "\nexchange.getOut().setHeader('" + accessPoint.id + "'," + accessPoint.id + ");";
+							}
+						}
+						code = code.replace(/&/g, "&amp;");
+						code = code.replace(/</g, "&lt;");
+						code = code.replace(/>/g, "&gt;");
+
+						
+						
+						route += "<to uri=\"bean:bpmTypeConverter?method=toJSON\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
 								+ code
 								+ "</constant></setHeader><to uri=\"language:python\" />\n";
 					}
