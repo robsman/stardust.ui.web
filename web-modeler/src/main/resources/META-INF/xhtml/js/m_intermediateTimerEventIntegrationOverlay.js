@@ -175,7 +175,7 @@ define(
 
 						var overlay = event.data.overlay;
 						var eventTrigger = overlay.eventTriggerSelect.val();
-						overlay.showHideEventTriggerFields(eventTrigger);
+						overlay.showHideEventTriggerFields();
 
 						if ('constant' == eventTrigger) {
 							overlay.updateConstant();
@@ -221,6 +221,7 @@ define(
 					this.submitChanges({
 						modelElement : {
 							attributes : {
+								"carnot:engine:useData" : true,
 								"carnot:engine:data" : this.dataSelect.val(),
 								"carnot:engine:dataPath" : this.dataPathInput.val()
 							}
@@ -235,6 +236,7 @@ define(
 					this.submitChanges({
 						modelElement : {
 							attributes : {
+								"carnot:engine:useData" : false,
 								"carnot:engine:delay" : this.delayTimerInput.val(),
 							}
 						}
@@ -256,8 +258,8 @@ define(
 				};*/
 
 
-				IntermediateTimerEventIntegrationOverlay.prototype.showHideEventTriggerFields = function(
-						selectedVal) {
+				IntermediateTimerEventIntegrationOverlay.prototype.showHideEventTriggerFields = function() {
+					var selectedVal = this.eventTriggerSelect.val();
 					this.delayTimerRow.css("display", "none");
 					this.dataSelectRow.css("display", "none");
 					this.dataPathRow.css("display", "none");
@@ -327,7 +329,7 @@ define(
 					this.dataSelect.empty();
 
 					this.dataSelect.append("<option value='"
-							+ m_constants.TO_BE_DEFINED
+							+ null
 							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
 
 					var dataItems = this.page.propertiesPanel.getModel().dataItems;
@@ -350,21 +352,18 @@ define(
 
 					var modelElement = this.page.propertiesPanel.element.modelElement;
 					this.interruptingInput.prop("checked", modelElement.interrupting);
-					this.logHandlerInput.prop("checked", modelElement.logHandler);
-
-					if (modelElement.attributes) {
-						var data = modelElement.attributes["carnot:engine:data"];
-						if (null != data) {
-							this.eventTriggerSelect.val('data');
-							this.dataSelect.val(modelElement.attributes["carnot:engine:data"]);
-							this.dataPathInput.val(modelElement.attributes["carnot:engine:dataPath"]);
-						}
-						var constant = modelElement.attributes["carnot:engine:delay"];
-						if (null != data) {
-							this.eventTriggerSelect.val('constant');
-							this.delayTimerInput.val(modelElement.attributes["carnot:engine:delay"]);
-						}
+					this.logHandlerInput.prop("checked",
+							modelElement.logHandler);
+					var useData = modelElement.attributes["carnot:engine:useData"];
+					if (useData = true) {
+						this.eventTriggerSelect.val('data');
+						this.dataSelect.val(modelElement.attributes["carnot:engine:data"]);
+						this.dataPathInput.val(modelElement.attributes["carnot:engine:dataPath"]);
+					} else if (useData = false) {
+						this.eventTriggerSelect.val('constant');
+						this.delayTimerInput.val(modelElement.attributes["carnot:engine:delay"]);
 					}
+
 					this.showHideEventTriggerFields();
 				};
 

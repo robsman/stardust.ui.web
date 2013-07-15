@@ -475,18 +475,39 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.validateCreateConnection = function(conn) {
-					if (this.connections.length > 0
+					if (((m_constants.START_EVENT_TYPE == this.modelElement.eventType) ||
+							(m_constants.STOP_EVENT_TYPE == this.eventType))
+							&& this.connections.length > 0
 							&& this.connections[0].oid > 0
 							&& (this.connections[0].oid != conn.oid)) {
 						m_messageDisplay
 								.showMessage("No further connection allowed for this Event.");
 
 						return false;
+					} else if (conn && (m_constants.INTERMEDIATE_EVENT_TYPE == this.modelElement.eventType)) {
+						for ( var n in this.connections) {
+							var connection = this.connections[n];
+							if (connection.fromAnchorPoint.symbol.oid == this.oid
+									&& conn.fromAnchorPoint
+									&& conn.fromAnchorPoint.symbol
+									&& conn.fromAnchorPoint.symbol.oid == this.oid) {
+								m_messageDisplay
+										.showMessage("No further connection allowed for this Event.");
+								return false;
+							}
+							if (connection.toAnchorPoint.symbol.oid == this.oid
+									&& conn.toAnchorPoint
+									&& conn.toAnchorPoint.symbol
+									&& conn.toAnchorPoint.symbol.oid == this.oid) {
+								m_messageDisplay
+										.showMessage("No further connection allowed for this Event.");
+								return false;
+							}
+						}
 					}
 
 					return true;
 				};
-
 				/**
 				 *
 				 */
@@ -619,10 +640,10 @@ define(
 						};
 					} else if (this.bindingActivitySymbol != null) {
 						this.bindingActivitySymbol.removeBoundaryEvent(this);
-						if (m_constants.TIMER_EVENT_CLASS == this.modelElement.eventClass) {
+						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
 							return {
 								bindingActivityUuid : null,
-								eventClass : m_constants.ERROR_EVENT_CLASS
+								eventClass : m_constants.TIMER_EVENT_CLASS
 							};
 						} else {
 							return {
