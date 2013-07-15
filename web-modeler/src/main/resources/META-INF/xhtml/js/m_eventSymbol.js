@@ -475,8 +475,7 @@ define(
 				 *
 				 */
 				EventSymbol.prototype.validateCreateConnection = function(conn) {
-					if (((m_constants.START_EVENT_TYPE == this.modelElement.eventType) || (m_constants.STOP_EVENT_TYPE == this.eventType))
-							&& this.connections.length > 0
+					if (this.connections.length > 0
 							&& this.connections[0].oid > 0
 							&& (this.connections[0].oid != conn.oid)) {
 						m_messageDisplay

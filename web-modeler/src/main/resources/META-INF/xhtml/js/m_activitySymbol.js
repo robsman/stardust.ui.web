@@ -747,11 +747,36 @@ define(
 								.bindWithActivity(this.modelElement);
 					}
 
+					this.adjustWidth();
 					// Align all boundary events on the symbol boundary
 					this.realignBoundaryEvent();
-
 				};
 
+				/**
+				 * Adjust Activity Symbol Width
+				 */
+				ActivitySymbol.prototype.adjustWidth = function() {
+					if (this.boundaryEventSymbols) {
+						var requiredWidth = this.boundaryEventSymbols.length * 45;
+						requiredWidth = requiredWidth < m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH ? m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH
+								: requiredWidth;
+
+						if (this.width != requiredWidth) {
+							this.width = requiredWidth;
+							var changes = {
+								"width" : this.width
+							};
+							m_commandsController.submitCommand(m_command
+									.createUpdateModelElementCommand(
+											this.diagram.modelId, this.oid,
+											changes));
+						}
+					}
+				};
+
+				/**
+				 *
+				 */
 				ActivitySymbol.prototype.realignBoundaryEvent = function(){
 					var x = this.x + this.width;
 
@@ -776,6 +801,7 @@ define(
 					m_utils.removeItemFromArray(this.boundaryEventSymbols,
 							eventSymbol);
 
+					this.adjustWidth();
 					this.realignBoundaryEvent();
 
 					eventSymbol.bindingActivitySymbol = null;

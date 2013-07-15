@@ -505,15 +505,15 @@ define(
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
 					var self = this;
-					
+
 					// Refresh properties panel on view activation
 					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
 						var processDefView = m_utils.jQuerySelect("#processDefinitionView");
 						if (params && params.length > 0 && params[0] === self.process.uuid) {
 							self.initializePropertiesPanels();
-						}						
+						}
 					})
-					
+
 					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");
 					this.processId = BridgeUtils.View.getActiveViewParams().param(
@@ -610,7 +610,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Diagram.prototype.initializePropertiesPanels = function() {
 					m_activityPropertiesPanel.initialize(this);
@@ -623,7 +623,7 @@ define(
 					m_dataFlowPropertiesPanel.initialize(this);
 					m_propertiesPanel.initializeProcessPropertiesPanel(m_processPropertiesPanel.initialize(this, this.process));
 				};
-				
+
 				/**
 				 *
 				 */
@@ -1784,7 +1784,7 @@ define(
 						toAnchor = 0;
 						if (m_constants.INTERMEDIATE_EVENT_TYPE == startSymbol.modelElement.eventType) {
 							fromAnchor = 2;
-							toAnchor = 3;
+							toAnchor = 0;
 						}
 					} else {
 						x_adj = 200;
@@ -2319,17 +2319,26 @@ define(
 				Diagram.prototype.getCanvasPosition = function() {
 					return getCanvasPosition(this.divId);
 				}
-				
+
 				// TODO need not read position every time
 				// Can cache the position on view activation and on navigation panel
 				// collapse / expand event (nto sure if there exist evetns for navigation panel
 				// collapse / expand???)
 				function getCanvasPosition(divId) {
 					var canvasPos = m_utils.jQuerySelect("#" + divId).position();
-					return {
-						left : canvasPos.left,
-						top : canvasPos.top
-					};
+
+					if(canvasPos){
+						return {
+							left : canvasPos.left,
+							top : canvasPos.top
+						};
+					}
+					else{
+						return {
+							left : 0,
+							top : 0
+						};
+					}
 				}
 
 				function Diagram_clickClosure(event) {
