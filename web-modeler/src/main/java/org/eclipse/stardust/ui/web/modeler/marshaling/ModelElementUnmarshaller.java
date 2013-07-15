@@ -1805,6 +1805,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
                         trigger, id, name, direction);
+                  
+                  String structuredDataFullId = null;
+
+                  if (hasNotJsonNull(parameterMappingJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                  {
+                     structuredDataFullId = parameterMappingJson.get(
+                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                           .getAsString();
+
+                     if(!ModelerConstants.TO_BE_DEFINED.equals(structuredDataFullId))
+                     {                     
+                        TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                              structuredDataFullId);
+   
+                        if (typeDeclaration != null)
+                        {
+                           StructuredTypeUtils.setStructuredAccessPointAttributes(
+                                 accessPoint, typeDeclaration);
+                        }
+                     }
+                  }
                }
             }
 
