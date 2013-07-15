@@ -29,8 +29,8 @@
 		paths: pathsWithContext,
 		shim: sungard.shim(),
 		packages: packages,
-		urlArgs: sungard.cacheQueryParameter(),
-		waitSeconds: 120
+		waitSeconds: 0,
+		urlArgs: sungard.cacheQueryParameter()
 	});
 
 	// invoke initialization
