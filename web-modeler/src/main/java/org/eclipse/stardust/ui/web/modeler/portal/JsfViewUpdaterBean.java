@@ -32,6 +32,7 @@ public class JsfViewUpdaterBean
          updateViewImage(view, viewParams);
          view.getViewParams().putAll(viewParams);
          view.resolveLabelAndDescription();
+         PortalApplication.getInstance().updateViewTitle(view);
       }
    }
 
@@ -54,6 +55,7 @@ public class JsfViewUpdaterBean
                   || uuid.equals(viewParams.get("modelUUID")))
             {
                view.setIcon(iconURI);
+               PortalApplication.getInstance().updateViewIconClass(view);
             }
          }
       }
@@ -101,6 +103,7 @@ public class JsfViewUpdaterBean
       if (null != viewParams && null != viewParams.get(VIEW_ICON_PARAM_KEY))
       {
          view.setIcon((String) viewParams.get(VIEW_ICON_PARAM_KEY));
+         PortalApplication.getInstance().updateViewIconClass(view);
          viewParams.remove(VIEW_ICON_PARAM_KEY);
       }
    }
