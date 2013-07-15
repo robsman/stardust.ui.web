@@ -1446,7 +1446,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
       JsonObject hostingConfig = null;
-      if (null != hostActivity)
+      if (hostActivity != null)
       {
          hostingConfig = EventMarshallingUtils.getEventHostingConfig(
                hostActivity, eventSymbol, jsonIo);
