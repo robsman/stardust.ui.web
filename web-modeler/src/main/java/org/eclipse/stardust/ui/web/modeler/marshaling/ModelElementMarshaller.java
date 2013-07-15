@@ -4,7 +4,6 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingDiagram;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.ActivityMarshallingUtils.resolveSymbolAssociatedWithActivity;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
@@ -414,34 +413,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
       return type;
-   }
-
-   /**
-    * To resolve inconsistency between Access Point and
-    *
-    * TODO Review and move to Facade
-    *
-    * @param type
-    * @return
-    */
-   private String mapPrimitiveTypes(String type)
-   {
-      if (type.equals("STRING"))
-      {
-         return "string";
-      }
-      else if (type.equals("BOOLEAN"))
-      {
-         return "boolean";
-      }
-      else if (type.equals("INTEGER"))
-      {
-         return "int";
-      }
-      else
-      {
-         return "string";
-      }
    }
 
    /**
@@ -1202,7 +1173,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject eventSymbolJson = new JsonObject();
 
-      int laneOffsetX = 0;
+      /*int laneOffsetX = 0;
       int laneOffsetY = 0;
       ISwimlaneSymbol container = (endEventSymbol.eContainer() instanceof ISwimlaneSymbol)
             ? (ISwimlaneSymbol) endEventSymbol.eContainer()
@@ -1216,7 +1187,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          container = (container.eContainer() instanceof ISwimlaneSymbol)
                ? (ISwimlaneSymbol) container.eContainer()
                : null;
-      }
+      }*/
 
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
@@ -2398,6 +2369,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       connectionJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL);
 
+      IFlowObjectSymbol sourceActivitySymbol = transitionConnection.getSourceActivitySymbol();
+      IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
+      
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();
@@ -2413,8 +2387,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             connectionJson.addProperty(
                   ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                  resolveSymbolAssociatedWithActivity(transition.getFrom(),
-                        findContainingDiagram(transitionConnection)).getElementOid());
+                  /*resolveSymbolAssociatedWithActivity(transition.getFrom(), containingDiagram)*/
+                  sourceActivitySymbol.getElementOid());
          }
 
          // TODO Hack to identify gateways
@@ -2424,8 +2398,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
          }
-         else if (EventMarshallingUtils.isIntermediateEventHost(transition.getFrom())
-               || EventMarshallingUtils.isEndEventHost(transition.getFrom()))
+         else if (/*EventMarshallingUtils.isIntermediateEventHost(transition.getFrom())
+               || EventMarshallingUtils.isEndEventHost(transition.getFrom())*/
+               sourceActivitySymbol instanceof IntermediateEventSymbol
+               || sourceActivitySymbol instanceof EndEventSymbol)
          {
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.EVENT_KEY);
@@ -2441,8 +2417,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             connectionJson.addProperty(
                   ModelerConstants.TO_MODEL_ELEMENT_OID,
-                  resolveSymbolAssociatedWithActivity(transition.getTo(),
-                        containingDiagram).getElementOid());
+                  /*resolveSymbolAssociatedWithActivity(transition.getTo(), containingDiagram)*/
+                  targetActivitySymbol.getElementOid());
          }
 
          if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
@@ -2457,8 +2433,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
              * ModelerConstants.NORTH_KEY);
              */
          }
-         else if (EventMarshallingUtils.isIntermediateEventHost(transition.getTo())
-               || EventMarshallingUtils.isEndEventHost(transition.getTo()))
+         else if (/*EventMarshallingUtils.isIntermediateEventHost(transition.getTo())
+               || EventMarshallingUtils.isEndEventHost(transition.getTo())*/
+               targetActivitySymbol instanceof IntermediateEventSymbol
+               || targetActivitySymbol instanceof EndEventSymbol)
          {
             connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                   ModelerConstants.EVENT_KEY);
@@ -2471,10 +2449,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       }
       else if (transitionConnection.getSourceNode() instanceof StartEventSymbol
-            && null != transitionConnection.getTargetActivitySymbol())
+            && targetActivitySymbol instanceof ActivitySymbolType)
       {
          modelElementJson = new JsonObject();
-         String activityId = ((ActivitySymbolType) transitionConnection.getTargetActivitySymbol()).getActivity()
+         String activityId = ((ActivitySymbolType) targetActivitySymbol).getActivity()
                .getId();
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
 
@@ -2488,7 +2466,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                ModelerConstants.EVENT_KEY);
          connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-               transitionConnection.getTargetActivitySymbol().getElementOid());
+               targetActivitySymbol.getElementOid());
          // Added to identify the Gateway for target Symbol
          if (activityId.toLowerCase().startsWith("gateway"))
          {
@@ -2503,18 +2481,17 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       }
       else if (transitionConnection.getTargetNode() instanceof EndEventSymbol
-            && null != transitionConnection.getSourceActivitySymbol())
+            && sourceActivitySymbol instanceof ActivitySymbolType)
       {
          modelElementJson = new JsonObject();
-         String activityId = ((ActivitySymbolType) transitionConnection.getSourceActivitySymbol()).getActivity()
-               .getId();
+         String activityId = ((ActivitySymbolType) sourceActivitySymbol).getActivity().getId();
          connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, modelElementJson);
          modelElementJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                ModelerConstants.CONTROL_FLOW_LITERAL);
          modelElementJson.addProperty(ModelerConstants.ID_PROPERTY, activityId + "-"
                + String.valueOf(transitionConnection.getTargetNode().getElementOid()));
          connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-               transitionConnection.getSourceActivitySymbol().getElementOid());
+               sourceActivitySymbol.getElementOid());
          // Added to identify the Gateway for source Symbol
          if (activityId.toLowerCase().startsWith("gateway"))
          {
