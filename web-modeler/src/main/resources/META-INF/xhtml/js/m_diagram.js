@@ -613,6 +613,8 @@ define(
 				 *
 				 */
 				Diagram.prototype.initializePropertiesPanels = function() {
+					m_processPropertiesPanel.initialize(this, this.process);
+					m_propertiesPanel.initializeProcessPropertiesPanel(m_processPropertiesPanel.getInstance(this.process));
 					m_activityPropertiesPanel.initialize(this);
 					m_dataPropertiesPanel.initialize(this);
 					m_eventPropertiesPanel.initialize(this);
@@ -621,7 +623,6 @@ define(
 					m_swimlanePropertiesPanel.initialize(this);
 					m_controlFlowPropertiesPanel.initialize(this);
 					m_dataFlowPropertiesPanel.initialize(this);
-					m_propertiesPanel.initializeProcessPropertiesPanel(m_processPropertiesPanel.initialize(this, this.process));
 				};
 
 				/**
