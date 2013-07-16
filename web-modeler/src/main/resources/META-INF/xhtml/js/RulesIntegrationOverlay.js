@@ -250,9 +250,9 @@ define(
 					} else if (xsdType == "xsd:short") {
 						return "short";
 					} else if (xsdType == "xsd:int") {
-						return "int";
+						return "Integer";
 					} else if (xsdType == "xsd:long") {
-						return "long";
+						return "Long";
 					} else if (xsdType == "xsd:float") {
 						return "float";
 					} else if (xsdType == "xsd:double") {
@@ -357,8 +357,7 @@ define(
 						}
 					}
 
-					signatureJson.structures = m_typeDeclaration
-							.generateJsonRepresentation(typeDeclarations);
+					signatureJson.structures = this.generateJsonRepresentation(typeDeclarations,this);
 
 					m_utils.debug(signatureJson);
 					m_utils.debug(JSON.stringify(signatureJson, null, 3));
@@ -366,6 +365,76 @@ define(
 					return signatureJson;
 				};
 
+				/**
+				 *
+				 */
+				 RulesIntegrationOverlay.prototype.generateJsonRepresentation=function(typeDeclarations,overlay) {
+					var json = {};
+
+					for ( var n = 0; n < typeDeclarations.length; ++n) {
+						this.generateJsonRepresentationRecursively(json,
+								typeDeclarations[n],overlay);
+					}
+
+					return json;
+				}
+
+				/**
+				 *
+				 */
+				 RulesIntegrationOverlay.prototype.generateJsonRepresentationRecursively=function(
+						typeDeclarationsJson, typeDeclaration,overlay) {
+					if (typeDeclarationsJson[typeDeclaration.id]) {
+						return;
+					}
+
+					var typeDeclarationJson = {};
+
+					typeDeclarationsJson[typeDeclaration.id] = typeDeclarationJson;
+
+					jQuery
+							.each(
+									typeDeclaration.getElements(),
+									function(i, element) {
+										var type = element.type;
+
+										// Strip prefix
+
+										if (element.type.indexOf(':') !== -1) {
+											type = element.type.split(":")[1];
+										}
+
+										var childTypeDeclaration = typeDeclaration.model
+												.findTypeDeclarationBySchemaName(type);
+
+										if (childTypeDeclaration != null) {
+											if (childTypeDeclaration.isSequence()) {
+												typeDeclarationJson[element.name] = childTypeDeclaration.id;
+
+												overlay.generateJsonRepresentationRecursively(
+														typeDeclarationsJson,
+														childTypeDeclaration,overlay);
+											} else {
+												if (element.cardinality == "many") {
+													typeDeclarationJson[element.name] = [];
+													typeDeclarationJson[element.name]
+															.push(element.type);
+												} else {
+													typeDeclarationJson[element.name] = element.type;
+												}
+											}
+										} else {
+											if (element.cardinality == "many") {
+												typeDeclarationJson[element.name] = [];
+												typeDeclarationJson[element.name]
+														.push(element.type);
+											} else {
+												typeDeclarationJson[element.name] = overlay.mapXsdTypeToJava(element.type);
+											}
+										}
+									});
+				}
+				
 				/**
 				 *
 				 */
