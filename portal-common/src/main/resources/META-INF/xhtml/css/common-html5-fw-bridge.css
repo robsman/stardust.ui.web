@@ -3,6 +3,10 @@
 	z-index: 800;
 }
 
+.container-fluid {
+	padding-right: 0px;
+}
+
 .gray-out-header {
 	overflow: hidden;
 	border: none;
@@ -40,8 +44,4 @@
 	top: 90px;
 	height: 0px;
 	width: 41px;
-}
-
-.container-fluid {
-	padding-right: 0px;
 }
