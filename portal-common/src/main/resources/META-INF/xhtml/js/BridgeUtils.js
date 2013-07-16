@@ -968,6 +968,11 @@ if (!window["BridgeUtils"].FrameManager) {
 		 */
 		function activate(contentId, advanceArgs, hiddenCounter) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
+
+			if (hiddenCounter == undefined) {
+				hiddenCounter = 50; // Max tries
+			}
+
 			doWithContentFrame( contentId, function(contentFrame) {
 				if (advanceArgs != undefined) {
 					var anchorId = advanceArgs.anchorId;
@@ -1010,72 +1015,78 @@ if (!window["BridgeUtils"].FrameManager) {
 					autoResize = true;
 				}
 
+				var delayActivation = true;
 				var viewFrameData = getViewFrameDetails(anchorId);
 				var contentPanelAnchor = viewFrameData.doc.getElementById(viewFrameData.anchor);
 				if (contentPanelAnchor) {
 					var pos = findPosition(contentPanelAnchor);
 					var posFrame = findPosition(viewFrameData.win);
-					pos.x += posFrame.x;
-					pos.y += posFrame.y;
 
-					var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
-					var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
-					if (iFrameHeight == 0) {
-						iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
+					// Sometimes frame position comes as zero
+					// Add workaround i.e. delay activation. if last iteration then continue
+					if (hiddenCounter < 0 || !(posFrame.x == 0 && posFrame.y == 0)) {
+						delayActivation = false;
+
+						pos.x += posFrame.x;
+						pos.y += posFrame.y;
+	
+						var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
+						var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
+						if (iFrameHeight == 0) {
+							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
+						}
+	
+						iFrameWith = iFrameWith + widthAdjustment;
+						iFrameHeight = iFrameHeight + heightAdjustment;
+	
+						var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
+						posX += anchorXAdjustment;
+	
+						var posY = pos.y + anchorYAdjustment;
+	
+						contentFrame.style.position = 'absolute';
+						contentFrame.style.left = posX + 'px';
+						contentFrame.style.top = posY + 'px';
+						contentFrame.style.width = iFrameWith + 'px';
+						contentFrame.style.height = iFrameHeight + 'px';
+	
+						if (border != undefined) {
+							contentFrame.style.border = border;
+						}
+	
+						if (zIndex != undefined) {
+							contentFrame.style.zIndex = zIndex;
+						}
+	
+						// Save values for future use
+						contentFrame.setAttribute('anchorId', anchorId);
+						if (!autoResize) {
+							contentFrame.setAttribute('width', iFrameWith);
+							contentFrame.setAttribute('height', iFrameHeight);
+						}
+						contentFrame.setAttribute('openOnRight', openOnRight);
+						contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
+						contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
+						contentFrame.setAttribute('autoResize', autoResize);							
+						contentFrame.setAttribute('widthAdjustment', widthAdjustment);
+						contentFrame.setAttribute('heightAdjustment', heightAdjustment);
+	
+						// Finally make iFrame visible
+						contentFrame.style.display = 'inline';
+	
+						addIframe(contentId, posX, posY);
+	
+						// This is needed because if page is scrolled at the time of iFrame activation
+						// Then it has to be readjusted for scroll position.
+						handleScroll();
+	
+						BridgeUtils.log("Frame Activated = " + contentId);
 					}
-
-					iFrameWith = iFrameWith + widthAdjustment;
-					iFrameHeight = iFrameHeight + heightAdjustment;
-
-					var posX = openOnRight ? pos.x : (pos.x - iFrameWith);
-					posX += anchorXAdjustment;
-
-					var posY = pos.y + anchorYAdjustment;
-
-					contentFrame.style.position = 'absolute';
-					contentFrame.style.left = posX + 'px';
-					contentFrame.style.top = posY + 'px';
-					contentFrame.style.width = iFrameWith + 'px';
-					contentFrame.style.height = iFrameHeight + 'px';
-
-					if (border != undefined) {
-						contentFrame.style.border = border;
-					}
-
-					if (zIndex != undefined) {
-						contentFrame.style.zIndex = zIndex;
-					}
-
-					// Save values for future use
-					contentFrame.setAttribute('anchorId', anchorId);
-					if (!autoResize) {
-						contentFrame.setAttribute('width', iFrameWith);
-						contentFrame.setAttribute('height', iFrameHeight);
-					}
-					contentFrame.setAttribute('openOnRight', openOnRight);
-					contentFrame.setAttribute('anchorXAdjustment', anchorXAdjustment);
-					contentFrame.setAttribute('anchorYAdjustment', anchorYAdjustment);
-					contentFrame.setAttribute('autoResize', autoResize);							
-					contentFrame.setAttribute('widthAdjustment', widthAdjustment);
-					contentFrame.setAttribute('heightAdjustment', heightAdjustment);
-
-					// Finally make iFrame visible
-					contentFrame.style.display = 'inline';
-
-					addIframe(contentId, posX, posY);
-
-					// This is needed because if page is scrolled at the time of iFrame activation
-					// Then it has to be readjusted for scroll position.
-					handleScroll();
-
-					BridgeUtils.log("Frame Activated = " + contentId);
-				} else {
+				}
+				
+				if (delayActivation){
 					// Anchor is still loading. Delay activation
-					if (hiddenCounter == undefined) {
-						hiddenCounter = 50; // Max tries
-					}
-
-					BridgeUtils.log("Anchor not found. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
+					BridgeUtils.log("Something is not right. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
 					if (hiddenCounter >= 0) {
 						window.setTimeout(function(){
 							activate(contentId, advanceArgs, --hiddenCounter);

@@ -92,7 +92,8 @@ public class PortalApplicationEventScript implements Serializable
          for (int i = 0; i < cleanScripts.size(); ++i)
          {
             String script = cleanScripts.get(i).trim();
-            if (script.startsWith("InfinityBpm.ProcessPortal.closeContentFrame('"))
+            if (script.startsWith("InfinityBpm.ProcessPortal.closeContentFrame('") || 
+                  script.startsWith("InfinityBpm.ProcessPortal.deactivateContentFrame('"))
             {
                int idxOpeningQuote = script.indexOf("'");
                int idxClosingQuote = script.indexOf("'", idxOpeningQuote + 1);
