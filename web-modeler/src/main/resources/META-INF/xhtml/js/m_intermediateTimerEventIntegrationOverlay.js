@@ -355,13 +355,15 @@ define(
 					this.logHandlerInput.prop("checked",
 							modelElement.logHandler);
 					var useData = modelElement.attributes["carnot:engine:useData"];
-					if (useData = true) {
+					if (useData == true) {
 						this.eventTriggerSelect.val('data');
 						this.dataSelect.val(modelElement.attributes["carnot:engine:data"]);
 						this.dataPathInput.val(modelElement.attributes["carnot:engine:dataPath"]);
-					} else if (useData = false) {
+					} else if (useData == false) {
 						this.eventTriggerSelect.val('constant');
 						this.delayTimerInput.val(modelElement.attributes["carnot:engine:delay"]);
+					}else{
+						this.eventTriggerSelect.val('');
 					}
 
 					this.showHideEventTriggerFields();

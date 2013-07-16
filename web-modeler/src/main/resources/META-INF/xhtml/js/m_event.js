@@ -161,7 +161,7 @@ define(
 								m_constants.TIMER_EVENT_CLASS ];
 					}
 				} else if (eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-					if (interrupting) {
+					if (interrupting & boundary) {
 						return [m_constants.NONE_EVENT_CLASS,
 						        m_constants.TIMER_EVENT_CLASS,
 								m_constants.ERROR_EVENT_CLASS ];
