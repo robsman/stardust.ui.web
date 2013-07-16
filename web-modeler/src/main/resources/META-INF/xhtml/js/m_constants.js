@@ -128,7 +128,7 @@ define(function() {
 		EVENT_INTERMEDIATE_STROKE_WIDTH : 1.0,
 		EVENT_STOP_STROKE_WIDTH : 2.0,
 		EVENT_INTERRUPTING_STROKE_DASHARRAY	: "",
-		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: " -",
+		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: "-",
 		EVENT_ICON_WIDTH_EC : 110, //added to be able to see icons properly in Eclipse
 		EVENT_ICON_HEIGHT_EC : 50, //added to be able to see icons properly in Eclipse
 
