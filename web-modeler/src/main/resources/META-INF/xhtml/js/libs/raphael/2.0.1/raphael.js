@@ -3599,8 +3599,9 @@ window.Raphael.svg && function (R) {
                 o._.arrows = {};
             }
             if (type != "none") {
-                var pathId = "raphael-marker-" + type,
-                    markerId = "raphael-marker-" + se + type + w + h;
+            	var randSuffix = Math.random().toString(36).substring(7),
+            		pathId = "raphael-marker-" + type,
+                    markerId = "raphael-marker-" + se + type + w + h + randSuffix;
                 if (!R._g.doc.getElementById(pathId)) {
                     p.defs.appendChild($($("path"), {
                         "stroke-linecap": "round",
