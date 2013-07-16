@@ -14,7 +14,6 @@ import org.eclipse.stardust.engine.core.extensions.conditions.exception.Exceptio
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.*;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;

@@ -6,23 +6,25 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUti
 
 import java.util.Iterator;
 
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.stereotype.Component;
-
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.change.ChangeDescription;
+import org.eclipse.emf.ecore.change.FeatureChange;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
+import org.springframework.stereotype.Component;
 
 @Component
 public class IntermediateOrEndEventChangeFinalizer implements ChangePostprocessor
 {
+   private static final EStructuralFeature ID_FEATURE = CarnotWorkflowModelPackage.eINSTANCE.getIIdentifiableElement_Id();
+
    @Override
    public int getInspectionPhase()
    {
@@ -48,37 +50,82 @@ public class IntermediateOrEndEventChangeFinalizer implements ChangePostprocesso
       }
    }
 
-   private void inspectChange(Modification change, EObject candidate)
+   private void inspectChange(Modification modification, EObject candidate)
    {
       if (candidate instanceof ActivityType)
       {
-         processEventChange(change, (ActivityType) candidate);
+         processEventChange(modification, (ActivityType) candidate);
       }
       else if (candidate instanceof EventHandlerType)
       {
-         if (null != change.findContainer(candidate, ActivityType.class))
+         if (null != modification.findContainer(candidate, ActivityType.class))
          {
             EventHandlerType eventHandler = (EventHandlerType) candidate;
+            Object changedValue = getChangedValue(modification, eventHandler, ID_FEATURE);
+            if (changedValue != null && !changedValue.equals(eventHandler.getId()))
+            {
+               ActivityType activity = ModelUtils.findContainingActivity(eventHandler);
+               if (activity != null)
+               {
+                  String criteria = "ON_BOUNDARY_EVENT(" + changedValue + ')';
+                  for (TransitionType transition : activity.getOutTransitions())
+                  {
+                     FeatureMap mixedNode = transition.getExpression().getMixed();
+                     String expression = ModelUtils.getCDataString(mixedNode);
+                     if (criteria.equals(expression))
+                     {
+                        ModelUtils.setCDataString(mixedNode, "ON_BOUNDARY_EVENT(" + eventHandler.getId() + ')', true);
+                        for (TransitionConnectionType connection : transition.getTransitionConnections())
+                        {
+                           modification.markAlsoModified(connection);
+                        }
+                        break;
+                     }
+                  }
+               }
+               // TODO: update transition
+            }
             Long eventSymbolOid = EventMarshallingUtils.resolveHostedEvent(eventHandler);
             if (null != eventSymbolOid)
             {
-               ProcessDefinitionType containingProcess = change.findContainer(
+               ProcessDefinitionType containingProcess = modification.findContainer(
                      eventHandler, ProcessDefinitionType.class);
-               if (markEventSymbolModified(eventSymbolOid, containingProcess, change))
+               if (markEventSymbolModified(eventSymbolOid, containingProcess, modification))
                {
-                  change.markUnmodified(candidate);
+                  modification.markUnmodified(candidate);
                }
             }
          }
       }
       else
       {
-         AttributeType changedAttr = change.findContainer(candidate, AttributeType.class);
+         AttributeType changedAttr = modification.findContainer(candidate, AttributeType.class);
          if (null != changedAttr)
          {
-            processEventChange(change, changedAttr);
+            processEventChange(modification, changedAttr);
          }
       }
+   }
+
+   private Object getChangedValue(Modification modification, EObject candidate, EStructuralFeature feature)
+   {
+      ChangeDescription desc = modification.getChangeDescription();
+      EMap<EObject, EList<FeatureChange>> objectChanges = desc.getObjectChanges();
+      if (objectChanges != null)
+      {
+         EList<FeatureChange> changes = objectChanges.get(candidate);
+         if (changes != null)
+         {
+            for (FeatureChange change : changes)
+            {
+               if (feature.equals(change.getFeature()))
+               {
+                  return change.getValue();
+               }
+            }
+         }
+      }
+      return null;
    }
 
    private boolean processEventChange(Modification change, ActivityType hostActivity)

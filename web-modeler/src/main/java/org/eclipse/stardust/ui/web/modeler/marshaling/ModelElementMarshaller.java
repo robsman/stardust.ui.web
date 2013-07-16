@@ -2371,7 +2371,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       IFlowObjectSymbol sourceActivitySymbol = transitionConnection.getSourceActivitySymbol();
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
-
+      
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();
@@ -2540,18 +2540,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       if (null != transition.getCondition()
             && transition.getCondition().equals("CONDITION"))
       {
-         if (null != transition.getExpression()
-               && null != transition.getExpression().getMixed()
-               && transition.getExpression().getMixed().size() > 0)
+         String expression = transition.getExpression() == null ? null
+               : ModelUtils.getCDataString(transition.getExpression().getMixed());
+         // filter out boundary event conditions
+         if (expression != null && expression.trim().startsWith("ON_BOUNDARY_EVENT"))
          {
-            //TODO : dirty fix to stop sending unwanted data to client
-            String conditionExp = (String) transition.getExpression().getMixed().getValue(0);
-            if(!conditionExp.contains("ON_BOUNDARY_EVENT")){
-               controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY,
-                     (String) transition.getExpression().getMixed().getValue(0));
-            }
+            expression = null;
          }
          controlFlowJson.addProperty(ModelerConstants.OTHERWISE_PROPERTY, false);
+         controlFlowJson.addProperty(ModelerConstants.CONDITION_EXPRESSION_PROPERTY, expression == null ? "" : expression);
       }
       else
       {

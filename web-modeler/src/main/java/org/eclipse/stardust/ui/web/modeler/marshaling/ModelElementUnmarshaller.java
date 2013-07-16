@@ -283,7 +283,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (hasNotJsonNull(activityJson, ModelerConstants.TASK_TYPE))
          {
-            getModelBuilderFacade().setAttribute(activity, ModelerConstants.TASK_TYPE,
+            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
                   activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
 
             if (activityJson.get(ModelerConstants.TASK_TYPE)
@@ -1546,6 +1546,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (null != eventHandler)
          {
+            
             updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
             storeAttributes(eventHandler, eventJson);
@@ -1714,7 +1715,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(triggerJson, ModelerConstants.EVENT_CLASS_PROPERTY))
       {
-         getModelBuilderFacade().setAttribute(trigger, "eventClass",
+         ModelBuilderFacade.setAttribute(trigger, "eventClass",
                triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY).getAsString());
 
          if (triggerJson.get(ModelerConstants.EVENT_CLASS_PROPERTY)
@@ -1728,13 +1729,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(triggerJson, ModelerConstants.THROWING_PROPERTY))
       {
-         getModelBuilderFacade().setBooleanAttribute(trigger, "throwing",
+         ModelBuilderFacade.setBooleanAttribute(trigger, "throwing",
                triggerJson.get(ModelerConstants.THROWING_PROPERTY).getAsBoolean());
       }
 
       if (hasNotJsonNull(triggerJson, ModelerConstants.INTERRUPTING_PROPERTY))
       {
-         getModelBuilderFacade().setBooleanAttribute(trigger, "interrupting",
+         ModelBuilderFacade.setBooleanAttribute(trigger, "interrupting",
                triggerJson.get(ModelerConstants.INTERRUPTING_PROPERTY).getAsBoolean());
       }
 
@@ -2351,7 +2352,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // Reset default value attribute in case of a data type change / primitive type
          // change
          // as the previously set default may be invalid.
-         getModelBuilderFacade().setAttribute(data, "carnot:engine:defaultValue", "");
+         ModelBuilderFacade.setAttribute(data, "carnot:engine:defaultValue", "");
       }
    }
 
@@ -2487,7 +2488,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          holderJson.add(ModelerConstants.COMMENTS_PROPERTY, commentsJson);
 
-         getModelBuilderFacade().setAttribute(element, "documentation:comments",
+         ModelBuilderFacade.setAttribute(element, "documentation:comments",
                jsonIo.writeJsonObject(holderJson));
       }
 
@@ -2512,11 +2513,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             if (attributes.get(key).isJsonNull())
             {
                System.out.println("Setting extended attribute " + key + " to null.");
-               getModelBuilderFacade().setAttribute(element, key, null);
+               ModelBuilderFacade.setAttribute(element, key, null);
             }
             else if (attributes.get(key).getAsJsonPrimitive().isBoolean())
             {
-               getModelBuilderFacade().setBooleanAttribute(element, key,
+               ModelBuilderFacade.setBooleanAttribute(element, key,
                      attributes.get(key).getAsBoolean());
             }
             else
@@ -2526,20 +2527,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                if (key.equals("documentation:externalDocumentUrl")
                      && attributes.get(key).getAsString().equals("@CREATE"))
                {
-                  getModelBuilderFacade().setAttribute(element, key,
+                  ModelBuilderFacade.setAttribute(element, key,
                         createModelElementDocumentation(json));
                }
                else if (key.equals(PredefinedConstants.VALID_FROM_ATT))
                {
                   String stringValue = attributes.get(key).getAsString();
-                  getModelBuilderFacade().setTimestampAttribute(
+                  ModelBuilderFacade.setTimestampAttribute(
                         (IExtensibleElement) element, key, stringValue);
                }
                else
                {
                   System.out.println("Setting extended attribute " + key + " to "
                         + attributes.get(key).getAsString());
-                  getModelBuilderFacade().setAttribute(element, key,
+                  ModelBuilderFacade.setAttribute(element, key,
                         attributes.get(key).getAsString());
                }
             }
