@@ -485,23 +485,37 @@ define(
 
 						return false;
 					} else if (conn && (m_constants.INTERMEDIATE_EVENT_TYPE == this.modelElement.eventType)) {
+						var fromOid = null;
 						for ( var n in this.connections) {
 							var connection = this.connections[n];
 							if (connection.fromAnchorPoint.symbol.oid == this.oid
 									&& conn.fromAnchorPoint
 									&& conn.fromAnchorPoint.symbol
-									&& conn.fromAnchorPoint.symbol.oid == this.oid) {
+									&& conn.fromAnchorPoint.symbol.oid == this.oid
+									&& connection.oid != conn.oid) {
 								m_messageDisplay
 										.showMessage("No further connection allowed for this Event.");
 								return false;
 							}
-							if (connection.toAnchorPoint.symbol.oid == this.oid
+							if (connection.toAnchorPoint
+									&& connection.toAnchorPoint.symbol.oid == this.oid
 									&& conn.toAnchorPoint
 									&& conn.toAnchorPoint.symbol
-									&& conn.toAnchorPoint.symbol.oid == this.oid) {
+									&& conn.toAnchorPoint.symbol.oid == this.oid
+									&& connection.oid != conn.oid) {
 								m_messageDisplay
 										.showMessage("No further connection allowed for this Event.");
 								return false;
+							}
+
+							if (this.modelElement.isBoundaryEvent()) {
+								if ((connection.toAnchorPoint && connection.toAnchorPoint.symbol.oid == this.oid)
+										|| (conn.toAnchorPoint
+												&& conn.toAnchorPoint.symbol && conn.toAnchorPoint.symbol.oid == this.oid)) {
+									m_messageDisplay
+											.showMessage("Incomming connection not allowed for this Event.");
+									return false;
+								}
 							}
 						}
 					}
