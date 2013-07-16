@@ -32,6 +32,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -46,6 +47,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -69,6 +71,8 @@ import com.google.gson.JsonPrimitive;
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
+   private static final String ABORT_ACTIVITY_NAME = "Abort Activity";
+
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
@@ -1476,7 +1480,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             if (hostActivity != newHostActivity)
             {
-               if(null != hostActivity){
+               if (null != hostActivity)
+               {
                   EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, null);
                }
 
@@ -1484,8 +1489,27 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      && EventMarshallingUtils.isIntermediateEventHost(hostActivity)
                      && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                {
-                  // TODO reconnect transitions?
+                  // delete incoming transition connections
+                  List<TransitionConnectionType> connections = CollectionUtils.newList();
+                  for (TransitionType transition : hostActivity.getInTransitions())
+                  {
+                     for (TransitionConnectionType connection : transition.getTransitionConnections())
+                     {
+                        connections.add(connection);
+                     }
+                  }
+                  for (TransitionConnectionType connection : connections)
+                  {
+                     EObject container = connection.eContainer();
+                     if (container instanceof ISymbolContainer)
+                     {
+                        ((ISymbolContainer) container).getTransitionConnection().remove(connection);
+                     }
+                  }
 
+                  // delete incoming transitions
+                  containingProcess.getTransition().removeAll(hostActivity.getInTransitions());
+                  
                   // delete associated activity
                   if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                   {
@@ -1500,6 +1524,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                if (null != newHostActivity)
                {
+                  if (eventHandler != null)
+                  {
+                     newHostActivity.getEventHandler().add(eventHandler);
+                  }
+                  
+                  for (TransitionConnectionType connection : eventSymbol.getOutTransitions())
+                  {
+                     TransitionType transition = connection.getTransition();
+                     if (transition != null)
+                     {
+                        transition.setFrom(newHostActivity);
+                     }
+                  }
+                  
                   EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
                         eventSymbol, hostingConfig);
                }
@@ -1529,11 +1567,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                mergeUndefinedProperty(
                      ModelUtils.getDescriptionText(eventHandler.getDescription()),
                      eventJson, ModelerConstants.DESCRIPTION_PROPERTY);
+               
                // TODO attributes
 
                hostingConfig.remove(EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
-               findContainingActivity(eventHandler).getEventHandler()
-                     .remove(eventHandler);
+               findContainingActivity(eventHandler).getEventHandler().remove(eventHandler);
                eventHandler = null;
             }
          }
@@ -1614,7 +1652,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                if (actionType != null)
                {
                   EventActionType action = EventMarshallingUtils.newEventAction(actionType);
-                  action.setName("Abort Activity");
+                  action.setId(NameIdUtils.createIdFromName(ABORT_ACTIVITY_NAME));
+                  action.setName(ABORT_ACTIVITY_NAME);
                   AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
                   eventHandler.getEventAction().add(action);
                }
