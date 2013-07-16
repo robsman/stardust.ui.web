@@ -33,9 +33,11 @@ define(
 							"parameters", "Parameters",
 							"plugins/bpm-modeler/images/icons/mapping.gif");
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
-							"drl", "DRL", "plugins/bpm-modeler/images/icons/bricks.png");
+							"drl", "DRL",
+							"plugins/bpm-modeler/images/icons/bricks.png");
 
-					this.typeDeclarationsTextarea = m_utils.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
+					this.typeDeclarationsTextarea = m_utils
+							.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
 					this.ruleSetEditor = m_codeEditorAce
 							.getDrlEditor("ruleSetEditorDiv");
 
@@ -46,7 +48,8 @@ define(
 					// supported in jquery ui 1.8.19
 					// Once we move to version 1.9+ we should be able to replace this with
 					// activate event handling.
-					this.configTab = m_utils.jQuerySelect("a[href='#configurationTab']");
+					this.configTab = m_utils
+							.jQuerySelect("a[href='#configurationTab']");
 					this.configTab
 							.click(function() {
 								self.ruleSetEditor
@@ -60,7 +63,8 @@ define(
 						self.submitDrlChanges();
 					});
 
-					this.drlTextarea = m_utils.jQuerySelect("#drlTab #drlTextarea");
+					this.drlTextarea = m_utils
+							.jQuerySelect("#drlTab #drlTextarea");
 
 					this.typeDeclarationsTextarea.prop("disabled", true);
 					this.drlTextarea.prop("disabled", true);
@@ -107,7 +111,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>"
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>"
 								}
 							});
 				};
@@ -130,7 +134,7 @@ define(
 				RulesIntegrationOverlay.prototype.createTypeDeclarationsDrl = function() {
 					var typeDeclarations = {};
 					var drl = "";
-
+					var self = this;
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 
@@ -144,10 +148,46 @@ define(
 								.findTypeDeclaration(accessPoint.structuredDataTypeFullId)
 
 						typeDeclarations[accessPoint.structuredDataTypeFullId] = typeDeclaration;
-
-						drl += this.createTypeDeclarationDrl(typeDeclarations,
-								typeDeclaration);
+						var alreadyDeclaredTypes = {};
+						
+						this.createTypeDeclarationDrl(typeDeclarations,
+								typeDeclaration,alreadyDeclaredTypes);
 					}
+					// Create the type declaration itself
+					drl="";
+					jQuery.each(alreadyDeclaredTypes, function(i, elementDefinition) {
+							drl+="declare " + elementDefinition.id + "\n";
+
+							jQuery.each(elementDefinition.getElements(), function(i, element) {
+								var type = element.type;
+
+								// Strip prefix
+
+								if (element.type.indexOf(':') !== -1) {
+									type = element.type.split(":")[1];
+								}
+
+								var childTypeDeclaration = typeDeclaration.model
+										.findTypeDeclarationBySchemaName(type);
+
+								if (!childTypeDeclaration) {
+									drl += "   " + element.name + ": "
+											+ self.mapXsdTypeToJava(element.type)
+											+ ";\n";
+								} else {
+									if (element.cardinality == "many") {
+										drl += "   " + element.name
+												+ ": java.util.ArrayList;\n";
+									} else {
+										drl += "   " + element.name + ": "
+												+ childTypeDeclaration.id + ";\n";
+									}
+								}
+							});
+
+							drl += "end\n\n";
+					});
+						
 
 					return drl;
 				};
@@ -156,56 +196,20 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationDrl = function(
-						typeDeclarations, typeDeclaration) {
+						typeDeclarations, typeDeclaration,alreadyDeclaredTypes) {
 					var drl = "";
 					var self = this;
-
+					alreadyDeclaredTypes[typeDeclaration.modelId+":"+typeDeclaration.id] = typeDeclaration;
 					// Create DRL for dependent structures first
 
-					jQuery
-							.each(
-									typeDeclaration.getElements(),
-									function(i, element) {
-										var type = element.type;
-
-										// Strip prefix
-
-										if (element.type.indexOf(':') !== -1) {
-											type = element.type.split(":")[1];
-										}
-
-										var childTypeDeclaration = typeDeclaration.model
-												.findTypeDeclarationBySchemaName(type);
-
-										if (childTypeDeclaration != null) {
-											if (childTypeDeclaration
-													.isSequence()
-													&& !typeDeclarations[childTypeDeclaration
-															.getFullId()]) {
-
-												drl += self
-														.createTypeDeclarationDrl(
-																typeDeclarations,
-																childTypeDeclaration);
-											} else {
-												drl += "   "
-														+ element.name
-														+ ": "
-														+ self
-																.mapXsdTypeToJava("xsd:string")
-														+ ";\n";
-											}
-										}
-									});
-
-					// Create the type declaration itself
-
-					drl += "declare " + typeDeclaration.id + "\n";
-
-					jQuery.each(typeDeclaration.getElements(), function(i,
-							element) {
+					for ( var i = 0; i < typeDeclaration.getElementCount(); i++) {
+						//jQuery
+						//	.each(
+						//typeDeclaration.getElements(),
+						//function(i, element) {
+						var element = typeDeclaration.getElements()[i];
 						var type = element.type;
-
+						//if(alreadyDeclaredTypes.containstypeDeclaration.id)
 						// Strip prefix
 
 						if (element.type.indexOf(':') !== -1) {
@@ -215,19 +219,23 @@ define(
 						var childTypeDeclaration = typeDeclaration.model
 								.findTypeDeclarationBySchemaName(type);
 
-						if (!childTypeDeclaration) {
-							drl += "   " + element.name + ": "
-									+ self.mapXsdTypeToJava(element.type)
-									+ ";\n";
-						} else {
-							drl += "   " + element.name + ": "
-									+ childTypeDeclaration.id + ";\n";
+						if (childTypeDeclaration != null) {
+
+							if (childTypeDeclaration.isSequence()
+									&& !typeDeclarations[childTypeDeclaration
+											.getFullId()]) {
+
+								drl += self.createTypeDeclarationDrl(
+										typeDeclarations, childTypeDeclaration,alreadyDeclaredTypes);
+							} else {
+								drl += "   " + element.name + ": "
+										+ self.mapXsdTypeToJava("xsd:string")
+										+ ";\n";
+							}
 						}
-					});
-
-					drl += "end\n\n";
-
-					return drl;
+						//			});
+					}
+					
 				}
 
 				/**
@@ -283,17 +291,22 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.submitDrlChanges = function(
-						parameterDefinitionsChanges) {
+						changes) {
 					this.view
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
-											.getValue()
+											.getValue(),
+									"stardust:rulesOverlay::signatureDefinition" : JSON
+											.stringify(
+													this
+															.createSignatureJson(this.parameterDefinitionsPanel.parameterDefinitions),
+													null, 3)
 								}
 							});
 				};
@@ -368,7 +381,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
