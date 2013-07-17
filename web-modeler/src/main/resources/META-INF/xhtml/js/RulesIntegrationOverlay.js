@@ -155,6 +155,7 @@ define(
 					}
 					// Create the type declaration itself
 					drl="";
+					if(alreadyDeclaredTypes!=null){
 					jQuery.each(alreadyDeclaredTypes, function(i, elementDefinition) {
 							drl+="declare " + elementDefinition.id + "\n";
 
@@ -187,7 +188,7 @@ define(
 
 							drl += "end\n\n";
 					});
-						
+						}
 
 					return drl;
 				};
