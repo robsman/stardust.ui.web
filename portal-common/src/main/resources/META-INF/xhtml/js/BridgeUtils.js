@@ -154,6 +154,13 @@ if (!window["BridgeUtils"]) {
 			}, 100);
 		}
 
+		/*
+		 * 
+		 */
+		function getContextRoot() {
+			return location.href.substring(0, location.href.indexOf("/main.html"));
+		}
+
 		return {
 			log : log,
 			runInAngularContext : runInAngularContext,
@@ -164,7 +171,8 @@ if (!window["BridgeUtils"]) {
 			getAbsoluteSize : getAbsoluteSize,
 			substituteParams : substituteParams,
 			showAlert : showAlert,
-			handleResize : handleResize
+			handleResize : handleResize,
+			getContextRoot : getContextRoot
 		}
 	};
 } // !BridgeUtils
@@ -394,6 +402,8 @@ if (!window["BridgeUtils"].View) {
 				var form = iframe.contentDocument.getElementById(formId);
 				var field = iframe.contentDocument.getElementById(formId + ":" + fieldId);
 
+				BridgeUtils.log("doPartialSubmit: Existing Value = " + field.value + ", New value = " + fieldValue);
+				
 				field.value = fieldValue;
 				iframe.contentWindow.iceSubmitPartial(form, field);
 			} else {
@@ -422,12 +432,15 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 *
 		 */
-		function syncLaunchPanels() {
+		function syncLaunchPanels(value) {
 			// TODO: Check if sidebar is visible
 			BridgeUtils.log("Trying to sync launch panels.");
+			if (value == undefined) {
+				value = Math.floor(Math.random()*10000)+1;
+			}
 			window.setTimeout(function() {
 				BridgeUtils.log("Firring launch panels sync");
-				doPartialSubmit("modelerLaunchPanels", "viewFormLP", "launchPanelsSync", Math.floor(Math.random()*10000)+1);
+				doPartialSubmit("modelerLaunchPanels", "viewFormLP", "launchPanelsSync", value);
 				BridgeUtils.log("Firred launch panels sync");
 			}, 200);
 		}
@@ -456,7 +469,43 @@ if (!window["BridgeUtils"].View) {
 				if (view) {
 					view.setTitle(title);
 				}
-			});			
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function openSidebar() {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.$root.openSidebar();
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function closeSidebar() {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.$root.closeSidebar();
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function pinSidebar() {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.$root.pinSidebar();
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function unpinSidebar() {
+			BridgeUtils.runInAngularContext(function($scope) {
+				$scope.$root.unpinSidebar();
+			});
 		}
 
 		/*
@@ -515,7 +564,11 @@ if (!window["BridgeUtils"].View) {
 			syncActiveView : syncActiveView,
 			syncLaunchPanels : syncLaunchPanels,
 			setIcon : setIcon,
-			setTitle : setTitle
+			setTitle : setTitle,
+			openSidebar : openSidebar,
+			closeSidebar : closeSidebar,
+			pinSidebar : pinSidebar,
+			unpinSidebar : unpinSidebar
 		}
 	};
 
@@ -529,6 +582,10 @@ if (!window["BridgeUtils"].Dialog) {
 		var iframeForHeader;
 		var iframeForFooter;
 		var iframeForSidebar;
+		var iframeForSidebarAndView;
+
+		var invokedFromlaunchPanels;
+		var sidebarPinned;
 
 		/*
 		 *
@@ -541,6 +598,7 @@ if (!window["BridgeUtils"].Dialog) {
 			popupDialogDiv.innerHTML = '<iframe id="iframeForHeader" class="gray-out-header" src="about:blank"></iframe>';
 			popupDialogDiv.innerHTML += '<iframe id="iframeForFooter" class="gray-out-footer" src="about:blank"></iframe>';
 			popupDialogDiv.innerHTML += '<iframe id="iframeForSidebar" class="gray-out-sidebar" src="about:blank"></iframe>';
+			popupDialogDiv.innerHTML += '<iframe id="iframeForSidebarAndView" class="gray-out-sidebar-view" src="about:blank"></iframe>';
 
 			// Header
 			iframeForHeader = document.getElementById('iframeForHeader');
@@ -553,6 +611,10 @@ if (!window["BridgeUtils"].Dialog) {
 			// Sidebar
 			iframeForSidebar = document.getElementById('iframeForSidebar');
 			iframeForSidebar.style.visibility = "hidden";
+
+			// Sidebar + View
+			iframeForSidebarAndView = document.getElementById('iframeForSidebarAndView');
+			iframeForSidebarAndView.style.visibility = "hidden";
 		}
 
 		/*
@@ -562,6 +624,8 @@ if (!window["BridgeUtils"].Dialog) {
 			if (!popupDialogDiv) {
 				createDialog();
 			}
+
+			invokedFromlaunchPanels = fromlaunchPanels;
 
 			var scrollWidth = document.body.scrollWidth;
 
@@ -574,24 +638,40 @@ if (!window["BridgeUtils"].Dialog) {
 			iframeForFooter.style.width = scrollWidth + "px";
 
 			// Sidebar
+			var sidebar = document.getElementById("sidebar");
+			var left = BridgeUtils.getAbsoluteSize(sidebar.style.left);
+			sidebarPinned = left < 10; // Sidebar Pinned - TODO: Need HTML5 FW API to find out this
 			if (!fromlaunchPanels) {
-				var sidebar = document.getElementById("sidebar");
 				sidebar.style.display = "none";
 
 				var iframeWidth;
-				var left = BridgeUtils.getAbsoluteSize(sidebar.style.left);
 				if (left < 0) { // Sidebar not pinned but is hidden
 					iframeWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.paddingLeft) + 10;
-				} else if (left < 10) { // Sidebar Pinned - TODO: Need HTML5 FW API to find out this
+				} else if (sidebarPinned) {
 					iframeWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
 					sidebar.style.display = "inline-block";
 				} else {
 					iframeWidth = left;
 				}
 				iframeForSidebar.style.width = iframeWidth + "px";
-				iframeForSidebar.style.visibility = "visible";
-
 				iframeForSidebar.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				iframeForSidebar.style.visibility = "visible";
+			} else {
+				if (!sidebarPinned) {
+					BridgeUtils.View.pinSidebar();
+				}
+
+				var launchPanelsWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
+
+				var sidebar = document.getElementById("sidebar");
+				sidebar.style.display = "none";
+
+				var url = "/plugins/common/portalSingleViewLaunchPanelsOnly.iface?launchPanelsWidth=";
+				var fullUrl = BridgeUtils.getContextRoot() + url + launchPanelsWidth + "px";
+				iframeForSidebarAndView.setAttribute("src", fullUrl);
+				iframeForSidebarAndView.style.width = scrollWidth + "px";
+				iframeForSidebarAndView.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				iframeForSidebarAndView.style.visibility = "visible";
 			}
 		}
 
@@ -600,28 +680,63 @@ if (!window["BridgeUtils"].Dialog) {
 		 */
 		function close() {
 			if (popupDialogDiv) {
+				if (iframeForSidebarAndView.style.visibility == "visible") {
+					BridgeUtils.View.syncLaunchPanels("parent.BridgeUtils.Dialog.privateClose();");
+				} else {
+					privateClose();
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */		
+		function privateClose() {
+			if (popupDialogDiv) { // Preventive Check
 				// Header
 				iframeForHeader.style.visibility = "hidden";
-
+	
 				// Footer
 				iframeForFooter.style.visibility = "hidden";
-
+	
 				// Sidebar
 				iframeForSidebar.style.visibility = "hidden";
-
+	
+				// Sidebar And View
+				iframeForSidebarAndView.style.visibility = "hidden";
+				
 				// Remove Div & iFrames
-				popupDialogDiv.parentNode.removeChild(popupDialogDiv);
-				popupDialogDiv = undefined;
-
+				var delay = 0;
+				if (invokedFromlaunchPanels) {
+					iframeForSidebarAndView.src = "about:blank";
+					delay = 200;
+				}
+	
 				// Show Sidebar
 				var sidebar = document.getElementById("sidebar");
 				sidebar.style.display = "inline-block";
+	
+				if (!sidebarPinned) {
+					BridgeUtils.View.unpinSidebar();
+				}
+
+				invokedFromlaunchPanels = undefined;
+				sidebarPinned = undefined;
+
+				BridgeUtils.log("Dialog iframe removal delay = " + delay);
+				window.setTimeout(function() {
+					BridgeUtils.log("Removing Dialog iframe");
+					popupDialogDiv.parentNode.removeChild(popupDialogDiv);
+					popupDialogDiv = undefined;					
+				}, delay);
+				BridgeUtils.log("Dialog.privateClose() finished");
 			}
 		}
 
 		return {
 			open : open,
-			close : close
+			close : close,
+			privateClose : privateClose
 		}
 	};
 } // !BridgeUtils.Dialog

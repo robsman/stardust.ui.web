@@ -8,7 +8,7 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 	/*
 	 * 
 	 */
-	bpmUi.module.controller('bpm-ui.BpmUiCtrl', ['$scope', function($scope) {
+	bpmUi.module.controller('bpm-ui.BpmUiCtrl', ['$scope', 'sgPubSubService', function($scope, sgPubSubService) {
 
 		/*
 		 *
@@ -39,5 +39,11 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
             	doResizing(sizes);
             }
         }, true);
+
+		// BridgeUtils not loaded at this point, so save these handlers in root for later use
+		$scope.$root.openSidebar = $scope.openSidebar;
+		$scope.$root.closeSidebar = $scope.closeSidebar;
+		$scope.$root.pinSidebar = $scope.pinSidebar;
+		$scope.$root.unpinSidebar = $scope.unpinSidebar;
 	}]);
 });

@@ -2,7 +2,10 @@ package org.eclipse.stardust.ui.web.common.app;
 
 import java.util.List;
 
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -27,6 +30,22 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void afterPropertiesSet() throws Exception
    {
+   }
+
+   /**
+    * @return
+    */
+   public String getLaunchPanelsWidth(){
+      FacesContext facesContext = FacesContext.getCurrentInstance();
+      HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+
+      String launchPanelsWidth = request.getParameter("launchPanelsWidth");
+      if (StringUtils.isEmpty(launchPanelsWidth))
+      {
+         launchPanelsWidth = "auto";
+      }
+
+      return launchPanelsWidth;
    }
 
    /**
@@ -140,6 +159,11 @@ public class SingleViewLaunchPanels implements InitializingBean
     */
    public void launchPanelsSynced(ValueChangeEvent event)
    {
+      String value = (String)event.getNewValue();
+      if (StringUtils.isNotEmpty(value) && value.startsWith("parent.BridgeUtils."))
+      {
+         PortalApplication.getInstance().addEventScript(value);
+      }
       trace.info("Launch Panels Synced");
    }
 

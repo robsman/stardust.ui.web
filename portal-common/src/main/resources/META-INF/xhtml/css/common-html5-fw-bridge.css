@@ -45,3 +45,12 @@
 	height: 0px;
 	width: 41px;
 }
+
+.gray-out-sidebar-view {
+	overflow: hidden;
+	border: none;
+	z-index: 1000;
+	position: absolute;
+	left: 0;
+	top: 90px;
+}

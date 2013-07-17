@@ -30,7 +30,7 @@
 		}
 	</script>
 </head>
-<body onload="init();">
+<body onload="init();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
 	<ice:panelGroup
 		rendered="#{ippMessageDialog.fromlaunchPanels == 'true'}">
