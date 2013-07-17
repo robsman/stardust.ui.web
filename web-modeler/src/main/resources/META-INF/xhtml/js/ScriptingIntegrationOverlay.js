@@ -123,8 +123,12 @@ define(
 
 					this.runButton
 							.click(function() {
-								var functionBody = "var input = "
-										+ self.inputDataTextarea.val() + ";\n";
+								var functionBody = "";
+								if (self.inputDataTextarea.val()
+										&& self.inputDataTextarea.val().trim() != "") {
+									functionBody = "var input = "
+										+ self.inputDataTextarea.val() + ";\n";	
+								}
 
 								functionBody += "var output = "
 										+ self.createParameterObjectString(
@@ -162,7 +166,13 @@ define(
 
 								var mappingFunction = new Function(functionBody);
 
-								var result = mappingFunction();
+								var result = "";
+								
+								try {
+									result = mappingFunction();
+								} catch(e) {
+									result = "Error: " + e.message;
+								}
 
 								self.outputDataTextarea.val(JSON
 										.stringify(result));
