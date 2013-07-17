@@ -144,7 +144,8 @@ define(
 							}
 						}
 					}
-					if (facets.length == 0 && this.typeDeclaration.schema.types) {
+					if (facets.length == 0 && this.typeDeclaration
+							&& this.typeDeclaration.schema && this.typeDeclaration.schema.types) {
 						for (var i in this.typeDeclaration.schema.types) {
 							if (this.typeDeclaration.schema.types[i].facets) {
 								for (var j in this.typeDeclaration.schema.types[i].facets) {
