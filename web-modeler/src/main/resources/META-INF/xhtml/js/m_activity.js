@@ -57,7 +57,8 @@ define(
 						activity.taskType = m_constants.RECEIVE_TASK_TYPE;
 					} else if (application.applicationType == "mailBean") {
 						activity.taskType = m_constants.SEND_TASK_TYPE;
-					} else if (application.applicationType == "messageTransformationBean") {
+					} else if (application.applicationType == "messageTransformationBean"
+								|| application.applicationType === "camelSpringProducerApplication") {
 						activity.taskType = m_constants.SCRIPT_TASK_TYPE;
 					} else if (application.applicationType == "interactive") {
 						activity.taskType = m_constants.USER_TASK_TYPE;

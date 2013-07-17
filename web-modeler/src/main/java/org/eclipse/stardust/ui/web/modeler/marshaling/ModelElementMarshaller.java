@@ -917,7 +917,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             {
                ApplicationTypeType applicationType = application.getType();
                String typeId = applicationType.getId();
-               if (typeId.equals("messageTransformationBean"))
+               if (typeId.equals("messageTransformationBean")
+            		   || typeId.equals("camelSpringProducerApplication"))
                {
                   taskType = ModelerConstants.SCRIPT_TASK_KEY;
                }
