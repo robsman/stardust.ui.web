@@ -175,6 +175,7 @@ public class AuditTrailBean extends PopupUIComponentBean
       else
       {
          initViewsOpenConfirmationDialog();
+         errorDialog.setFromlaunchPanels(true);
          errorDialog.openPopup();
       }
    }
@@ -217,6 +218,7 @@ public class AuditTrailBean extends PopupUIComponentBean
       else
       {
          initViewsOpenConfirmationDialog();
+         errorDialog.setFromlaunchPanels(true);
          errorDialog.openPopup();
       }
    }
@@ -308,7 +310,6 @@ public class AuditTrailBean extends PopupUIComponentBean
       {
          errorDialog = new ConfirmationDialog(DialogContentType.ERROR, DialogActionType.OK_CANCEL, DialogType.ACCEPT_ONLY, null);
          errorDialog.setMessage(propsBean.getString("launchPanels.ippAdmAdministrativeActions.auditTrail.viewsOpen.errorMessage"));
-         errorDialog.setFromlaunchPanels(true);
       }
    }
 
