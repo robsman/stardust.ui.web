@@ -289,28 +289,31 @@ define(
 						typeDeclaration) {
 					var baseTypeDeclaration = null;
 
-					if (typeDeclaration && typeDeclaration.getTypeDeclaration()
-							&& typeDeclaration.getTypeDeclaration().base) {
-						baseTypeDeclaration = this
-								.resolveBaseType(typeDeclaration);
+					if (typeDeclaration
+							&& "enumStructuredDataType" !== typeDeclaration.getType()) {
+						if (typeDeclaration.getTypeDeclaration()
+								&& typeDeclaration.getTypeDeclaration().base) {
+							baseTypeDeclaration = this
+									.resolveBaseType(typeDeclaration);
 
-							if (baseTypeDeclaration == null) {
-								this.errorMessages.push(m_i18nUtils
-										.getProperty("modeler.model.propertyView.structuredTypes.parentStrTypeNotResolved")
-										+ " " + typeDeclaration.getTypeDeclaration().base);
+								if (baseTypeDeclaration == null) {
+									this.errorMessages.push(m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.parentStrTypeNotResolved")
+											+ " " + typeDeclaration.getTypeDeclaration().base);
 
-							if (this.baseTypeSelect.val() != 'pleaseSpecify') {
-								var optionsString = "<option value='pleaseSpecify'>"
-										+ m_i18nUtils.getProperty("modeler.general.toBeDefined")
-										+ "</option>";
-								this.baseTypeSelect.append(optionsString);
-								this.baseTypeSelect.val('pleaseSpecify');
+								if (this.baseTypeSelect.val() != 'pleaseSpecify') {
+									var optionsString = "<option value='pleaseSpecify'>"
+											+ m_i18nUtils.getProperty("modeler.general.toBeDefined")
+											+ "</option>";
+									this.baseTypeSelect.append(optionsString);
+									this.baseTypeSelect.val('pleaseSpecify');
+								}
+							} else {
+								this.baseTypeSelect.val(baseTypeDeclaration.uuid);
 							}
 						} else {
-							this.baseTypeSelect.val(baseTypeDeclaration.uuid);
-						}
-					} else {
-						this.baseTypeSelect.val("None");
+							this.baseTypeSelect.val("None");
+						}	
 					}
 				};
 
