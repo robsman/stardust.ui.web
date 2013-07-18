@@ -753,14 +753,6 @@ define(
 							handleToolbarEvents(event, data);
 						});
 
-				var IE = document.all ? true : false;
-				if (!IE) {
-					document.captureEvents(Event.MOUSEMOVE);
-				} else {
-					document.ondragstart = function() {
-						return false;
-					};
-				}
 				document.onmousemove = function(e) {
 					// TODO Make portable/modularize
 
@@ -773,7 +765,8 @@ define(
 					}
 				};
 
-				document.onmouseup = function() {
+				var outlineDiv = document.getElementById("outlineDiv");
+				outlineDiv.onmouseup = function() {
 					// TODO Make portable/modularize
 
 					if (parent != null && parent.iDnD != null) {

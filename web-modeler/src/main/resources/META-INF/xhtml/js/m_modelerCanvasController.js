@@ -58,8 +58,6 @@ define(
 				function initDnD(divId) {
 					var IE = document.all ? true : false;
 					var canvasDiv = document.getElementById(divId);
-					if (!IE)
-						document.captureEvents(Event.MOUSEMOVE);
 					canvasDiv.onmousemove = function(e) {
 						// De-select any selected elements in the canvas
 						// to avoid they getting dragged inadvertently
