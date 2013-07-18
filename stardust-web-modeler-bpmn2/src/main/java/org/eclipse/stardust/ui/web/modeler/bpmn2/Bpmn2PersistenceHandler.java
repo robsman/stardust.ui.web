@@ -117,7 +117,7 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
                   try
                   {
                      // test if current ID already is a UUID ...
-                     UUID.fromString(definitions.getId());
+                     UUID.fromString( !isEmpty(definitions.getId()) ? definitions.getId() : "");
                      modelUuid = definitions.getId();
                   }
                   catch (IllegalArgumentException iae)

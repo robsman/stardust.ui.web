@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsd_1="http://www.infinity.com/bpm/model/StructModel/SDT_ChildLevel" id="86e1442c-71ad-4110-a96e-e244a1d66c17" exporter="Eclipse Lightdust" exporterVersion="0.0.1" expressionLanguage="http://www.w3.org/1999/XPath" name="Simple BPMN2 Model" targetNamespace="http://eclipse.org/stardust/model/SIMPLE_BPMN2_MODEL" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="http://www.infinity.com/bpm/model/StructModel/SDT_ChildLevel#832b64ff-6a7a-474e-b0bd-cb0ada7e80b6" namespace="http://www.infinity.com/bpm/model/StructModel/SDT_ChildLevel"/>
+  <bpmn2:itemDefinition id="85d8854f-bbf1-469d-baa8-e3b3bc9c06c4" isCollection="false" itemKind="Information" structureRef="xsd_1:SDT_ChildLevel">
+    <bpmn2:extensionElements>
+      <xsd:schema id="832b64ff-6a7a-474e-b0bd-cb0ada7e80b6" xmlns:sdt="http://www.infinity.com/bpm/model/StructModel/SDT_ChildLevel" targetNamespace="http://www.infinity.com/bpm/model/StructModel/SDT_ChildLevel">
+        <xsd:complexType name="SDT_ChildLevel">
+          <xsd:sequence>
+             <xsd:element name="anInt" type="xsd:int"/>
+             <xsd:element name="aString" type="xsd:string"/>
+             <xsd:element maxOccurs="unbounded" minOccurs="0" name="anIntArray" type="xsd:int"/>
+             <xsd:element maxOccurs="unbounded" minOccurs="0" name="aStringArray" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+        <xsd:element name="SDT_ChildLevel" type="sdt:SDT_ChildLevel"/>
+      </xsd:schema>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+</bpmn2:definitions>
