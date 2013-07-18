@@ -172,7 +172,6 @@ define(
 					this.eventTriggerSelect.change({
 						overlay : this
 					}, function(event) {
-
 						var overlay = event.data.overlay;
 						var eventTrigger = overlay.eventTriggerSelect.val();
 						overlay.showHideEventTriggerFields();

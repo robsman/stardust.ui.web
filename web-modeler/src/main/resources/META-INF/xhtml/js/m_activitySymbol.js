@@ -735,7 +735,7 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.addBoundaryEvent = function(
-						eventSymbol) {
+						eventSymbol, bind) {
 
 					if (!m_utils.isItemInArray(this.boundaryEventSymbols,
 							eventSymbol)) {
@@ -743,8 +743,10 @@ define(
 
 						eventSymbol.bindingActivitySymbol = this;
 
-						eventSymbol.modelElement
-								.bindWithActivity(this.modelElement);
+						if(bind){
+							eventSymbol.modelElement
+							.bindWithActivity(this.modelElement);
+						}
 					}
 
 					this.adjustWidth();
@@ -797,7 +799,7 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.removeBoundaryEvent = function(
-						eventSymbol) {
+						eventSymbol, unbind) {
 					m_utils.removeItemFromArray(this.boundaryEventSymbols,
 							eventSymbol);
 
@@ -806,8 +808,10 @@ define(
 
 					eventSymbol.bindingActivitySymbol = null;
 
-					eventSymbol.modelElement
-							.unbindFromActivity(this.modelElement);
+					if (unbind) {
+						eventSymbol.modelElement
+								.unbindFromActivity(this.modelElement);
+					}
 				};
 
 				ActivitySymbol.prototype.showEditable = function() {

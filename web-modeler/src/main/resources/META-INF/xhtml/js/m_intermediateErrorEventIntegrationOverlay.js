@@ -124,8 +124,30 @@ define(
 					this.interruptingInput = this
 							.mapInputId("interruptingInput");
 
+					this.eventTriggerSelect = this
+					.mapInputId("eventTriggerSelect");
+
+					this.initializeEventTriggerSelect(this.eventTriggerSelect);
+
 					this.eventTriggerInput = this
 							.mapInputId("eventTriggerInput");
+
+
+					this.eventTriggerSelect.change({
+						overlay : this
+					}, function(event) {
+						var overlay = event.data.overlay;
+						var eventTrigger = overlay.eventTriggerSelect.val();
+
+						//show/hide text field
+						if ('other' == eventTrigger) {
+							overlay.eventTriggerInput.show();
+							overlay.submitEventTriggerChanges(overlay.eventTriggerSelect.val());
+						} else {
+							overlay.eventTriggerInput.hide();
+							overlay.submitEventTriggerChanges(overlay.eventTriggerSelect.val());
+						}
+					});
 
 					this.eventTriggerInput.change({
 						overlay : this
@@ -133,15 +155,7 @@ define(
 						function(event) {
 							var overlay = event.data.overlay;
 							if (overlay.validate()) {
-								overlay
-										.submitChanges({
-											modelElement : {
-												attributes : {
-													"carnot:engine:exceptionName" : overlay.eventTriggerInput
-															.val()
-											}
-									}
-								});
+								overlay.submitEventTriggerChanges(overlay.eventTriggerInput.val());
 							}
 						});
 
@@ -155,8 +169,53 @@ define(
 							}
 						});
 					});
+				};
 
+				/**
+				 *
+				 */
+				IntermediateErrorEventIntegrationOverlay.prototype.submitEventTriggerChanges = function(value) {
+					this.submitChanges({
+						modelElement : {
+							attributes : {
+								"carnot:engine:exceptionName" : value
+							}
+						}
+					});
+				};
 
+				/**
+				 *
+				 * @param select
+				 */
+				IntermediateErrorEventIntegrationOverlay.prototype.initializeEventTriggerSelect = function(
+						select) {
+					select
+							.append("<option value='general'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.general")
+									+ "</option>");
+
+					select
+							.append("<option value='network'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.network")
+									+ "</option>");
+					select
+							.append("<option value='runtime'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.runtime")
+									+ "</option>");
+					select
+							.append("<option value='webservice'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.webservice")
+									+ "</option>");
+					select
+							.append("<option value='other'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.other")
+									+ "</option>");
 				};
 
 				/**
@@ -174,11 +233,22 @@ define(
 
 					this.logHandlerInput.prop("checked", modelElement.logHandler);
 
+					this.eventTriggerSelect.val('general');
+					this.eventTriggerInput.hide();
 					var exception = null;
+
 					if (modelElement.attributes) {
 						exception = modelElement.attributes["carnot:engine:exceptionName"];
 						if (null != exception) {
-							this.eventTriggerInput.val(exception);
+							if ([ 'general', 'network', 'runtime', 'webservice' ]
+									.indexof(exception) == -1) {
+								this.eventTriggerInput.show();
+								this.eventTriggerSelect.val('other');
+								this.eventTriggerInput.val(exception);
+							} else {
+								this.eventTriggerInput.hide();
+								this.eventTriggerSelect.val(exception);
+							}
 						}
 					}
 				};

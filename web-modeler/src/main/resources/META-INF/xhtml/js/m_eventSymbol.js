@@ -556,7 +556,7 @@ define(
 						if (hitSymbol != null
 								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
 							m_utils.debug("Add boundary");
-							hitSymbol.addBoundaryEvent(this);
+							hitSymbol.addBoundaryEvent(this, true);
 							this.modelElement.interrupting = true;
 						} else {
 							this.modelElement.interrupting = false;
@@ -660,19 +660,25 @@ define(
 					if (hitSymbol != null
 							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
 
+						var bindUnbind = true;
 						// if intermediate event is dragged from one activity
 						// to other activity
 						if (this.bindingActivitySymbol != null) {
-							this.bindingActivitySymbol
-									.removeBoundaryEvent(this);
-						}
+							//dnd on same activity
+							if (hitSymbol.oid == this.bindingActivitySymbol.oid) {
+								bindUnbind = false;
+							}
 
-						hitSymbol.addBoundaryEvent(this);
-						return {
-							bindingActivityUuid : this.modelElement.bindingActivityUuid
-						};
+							this.bindingActivitySymbol.removeBoundaryEvent(this, bindUnbind);
+						}
+						hitSymbol.addBoundaryEvent(this, bindUnbind);
+						if (bindUnbind) {
+							return {
+								bindingActivityUuid : this.modelElement.bindingActivityUuid
+							};
+						}
 					} else if (this.bindingActivitySymbol != null) {
-						this.bindingActivitySymbol.removeBoundaryEvent(this);
+						this.bindingActivitySymbol.removeBoundaryEvent(this, true);
 						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
 							return {
 								bindingActivityUuid : null,
@@ -704,7 +710,7 @@ define(
 						this.resolveNonHierarchicalRelationships();
 						if (null != this.bindingActivitySymbol) {
 							this.bindingActivitySymbol
-									.removeBoundaryEvent(this);
+									.removeBoundaryEvent(this, true);
 						}
 					}
 					this.remove_();
