@@ -876,7 +876,7 @@ public final class XsdSchemaUtils
       }
    }
 
-   private static void updateElementDeclarations(XSDSchema schema, JsonArray json, JsonObject locations)
+   public static void updateElementDeclarations(XSDSchema schema, JsonArray json, JsonObject locations)
    {
       // (fh) create a map for easy retrieval of elements by name
       Map<String, XSDElementDeclaration> elementsIndex = newHashMap();
@@ -927,7 +927,7 @@ public final class XsdSchemaUtils
       }
    }
 
-   private static void updateXSDTypeDefinitions(XSDSchema schema, JsonArray json, JsonObject locations)
+   public static void updateXSDTypeDefinitions(XSDSchema schema, JsonArray json, JsonObject locations)
    {
       //Set<XSDTypeDefinition> updatedTypes = newHashSet();
 
