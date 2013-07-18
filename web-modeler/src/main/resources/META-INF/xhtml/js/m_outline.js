@@ -42,6 +42,8 @@ define(
 			}
 
 			var readAllModels = function(force) {
+				jQuery("div#outlineLoadingMsg").show();
+				jQuery("div#outlineLoadingMsg").html(m_i18nUtils.getProperty("modeler.outline.loading.message"));
 				m_model.loadModels(force);
 
 				m_utils.jQuerySelect("#lastsave")
@@ -356,12 +358,35 @@ define(
 									m_utils.jQuerySelect(displayScope + "#outline").jstree(
 											"close_node", "#" + model.uuid);
 								});
+				
+				jQuery("div#outlineLoadingMsg").hide();
+				runHasModelsCheck();
+				
 				m_messageDisplay.markSaved();
 				m_modelsSaveStatus.setModelsSaved();
 				m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 				m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 			};
 
+			/**
+			 *
+			 */
+			var runHasModelsCheck = function() {
+				var models = m_model.getModels();
+				var hasModels = false;
+				for (var mod in models) {
+					hasModels = true;
+					break;
+				}
+
+				if (!hasModels) {
+					jQuery("div#outlineMessageDiv").show();
+					jQuery("div#outlineMessageDiv").html(m_i18nUtils.getProperty("modeler.outline.noModelsFound.message"));
+				} else {
+					jQuery("div#outlineMessageDiv").hide();
+				}
+			}
+			
 			var loadChildParticipants = function(model, parentParticipant) {
 				if (parentParticipant.childParticipants) {
 					jQuery.each(parentParticipant.childParticipants, function(
@@ -3096,8 +3121,13 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
+					
 					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
 							"#" + "participants_" + data.uuid);
+					
+					jQuery("div#outlineMessageDiv").hide();
+					 
+					runHasModelsCheck();
 
 					return model;
 				}
@@ -3111,6 +3141,7 @@ define(
 							"#" + transferObject.uuid);
 					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
+					runHasModelsCheck();
 				}
 
 				/**
