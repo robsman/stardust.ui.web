@@ -163,22 +163,29 @@ public class FlowNodeCommandsHandler
             ActivityJto.class);
 
       // TODO find process
+      Lane containingLane = null;
       Process process = null;
       if ((context instanceof BPMNShape) && ((BPMNShape) context).getBpmnElement() instanceof Lane)
       {
-         process = Bpmn2Utils.findContainingProcess(((BPMNShape) context).getBpmnElement());
+         containingLane = (Lane) ((BPMNShape) context).getBpmnElement();
+         process = Bpmn2Utils.findContainingProcess(containingLane);
       }
 
       Bpmn2FlowNodeBuilder flowNodeBuilder = new Bpmn2FlowNodeBuilder();
-      Activity event = flowNodeBuilder.createActivity(model, jto);
-      flowNodeBuilder.attachFlowNode(process, event);
+      Activity activity = flowNodeBuilder.createActivity(model, jto);
+      flowNodeBuilder.attachFlowNode(process, activity);
       // TODO modelBinding.updateModelElement(event, details);
+
+      if (null != containingLane)
+      {
+         containingLane.getFlowNodeRefs().add(activity);
+      }
 
       // create event symbol
       ActivitySymbolJto symbolJto = jsonIo.gson().fromJson(details, ActivitySymbolJto.class);
 
       Bpmn2DiBuilder diBuilder = new Bpmn2DiBuilder();
-      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, event);
+      BPMNShape symbol = diBuilder.createNodeSymbol(model, symbolJto, activity);
       diBuilder.attachDiagramElement(context, symbol);
    }
 

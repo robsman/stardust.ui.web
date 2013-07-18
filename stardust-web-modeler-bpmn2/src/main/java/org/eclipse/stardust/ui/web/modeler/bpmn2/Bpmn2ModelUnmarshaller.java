@@ -7,7 +7,13 @@ import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainin
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.getModelUuid;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionAsJson;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionFromJson;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.ElementRefUtils.resolveElementIdFromReference;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.ElementRefUtils.resolveModelIdFromReference;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.JsonExtensionPropertyUtils.syncExtProperty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
+
+import java.util.Iterator;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
@@ -20,16 +26,21 @@ import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
+import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.Resource;
+import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
@@ -69,7 +80,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    {
       trace.info("Populate object " + modelElement + " from JSON " + json);
 
-      if (modelElement instanceof Process)
+      if (modelElement instanceof Resource)
+      {
+         updateProcessParticipant((Resource) modelElement, json);
+      }
+      else if (modelElement instanceof Process)
       {
          updateProcessDefinition((Process) modelElement, json);
       }
@@ -100,7 +115,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          trace.info("Shape: " + shape);
          trace.info("Json: " + json);
 
-         if (shape.getBpmnElement() instanceof Activity)
+         if (shape.getBpmnElement() instanceof Lane)
+         {
+            updateSwimlane((Lane) shape.getBpmnElement(), json);
+         }
+         else if (shape.getBpmnElement() instanceof Activity)
          {
             updateActivity((Activity) shape.getBpmnElement(),
                   json.get(ModelerConstants.MODEL_ELEMENT_PROPERTY).getAsJsonObject());
@@ -132,8 +151,48 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   private void updateProcessParticipant(Resource resource, JsonObject json)
+   {
+      trace.info("Updating Model Participant from JSON " + json.toString());
+
+      if (json.has(ModelerConstants.NAME_PROPERTY))
+      {
+         resource.setName(json.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      }
+
+      JsonObject extJson = getExtensionAsJson(resource, "core");
+
+      if (ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY.equals(extractString(extJson,
+            ModelerConstants.PARTICIPANT_TYPE_PROPERTY))
+            || ModelerConstants.TEAM_LEADER_TYPE_KEY.equals(extractString(extJson,
+                  ModelerConstants.PARTICIPANT_TYPE_PROPERTY)))
+      {
+         syncExtProperty(ModelerConstants.CARDINALITY, json, extJson);
+         syncExtProperty(ModelerConstants.PARENT_UUID_PROPERTY, json, extJson);
+      }
+      else if (ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY.equals(extractString(
+            extJson, ModelerConstants.PARTICIPANT_TYPE_PROPERTY)))
+      {
+         // TODO
+         syncExtProperty(ModelerConstants.PARENT_UUID_PROPERTY, json, extJson);
+         syncExtProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY, json, extJson);
+      }
+      else if (ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY.equals(extractString(
+            extJson, ModelerConstants.PARTICIPANT_TYPE_PROPERTY)))
+      {
+         // TODO
+         syncExtProperty(ModelerConstants.PARENT_UUID_PROPERTY, json, extJson);
+         syncExtProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, json, extJson);
+      }
+
+      setExtensionFromJson(resource, "core", extJson);
+
+      storeDescription(resource, json);
+      storeExtensions(resource, json);
+   }
+
    /**
-    * 
+    *
     * @param process
     * @param processJson
     */
@@ -150,8 +209,63 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       storeExtensions(process, processJson);
    }
 
+   private void updateSwimlane(Lane lane, JsonObject laneJson)
+   {
+      if (laneJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
+      {
+         // TODO resolve performer and associate with activities
+         String modelId = resolveModelIdFromReference(extractString(
+               laneJson, ModelerConstants.PARTICIPANT_FULL_ID));
+         Definitions model = (Definitions) bpmn2Binding.getModelingSession().modelRepository().findModel(modelId);
+         if (model != Bpmn2Utils.findContainingModel(lane))
+         {
+            // TODO cross model references
+            throw new UnsupportedOperationException("Cross model references are not yet supported.");
+         }
+
+         EObject performer = Bpmn2Navigator.findRootElement(
+               model,
+               resolveElementIdFromReference(extractString(laneJson,
+                     ModelerConstants.PARTICIPANT_FULL_ID)), Resource.class);
+         if (performer instanceof Resource)
+         {
+            // associate performer with lane's activities
+            for(FlowNode laneNode : lane.getFlowNodeRefs())
+            {
+               // TODO restrict to interactive activities
+               if (laneNode instanceof Activity)
+               {
+                  boolean hasRequestedPerformer = false;
+                  Activity activity = (Activity) laneNode;
+                  for (Iterator<ResourceRole> i = activity.getResources().iterator(); i.hasNext(); )
+                  {
+                     ResourceRole resourceRole = i.next();
+                     if (resourceRole instanceof Performer)
+                     {
+                        if (resourceRole.getResourceRef() == performer)
+                        {
+                           hasRequestedPerformer = true;
+                        }
+                        else
+                        {
+                           i.remove();
+                        }
+                     }
+                  }
+                  if ( !hasRequestedPerformer)
+                  {
+                     Performer performerSpec = Bpmn2Utils.bpmn2Factory().createPerformer();
+                     performerSpec.setResourceRef((Resource) performer);
+                     activity.getResources().add(performerSpec);
+                  }
+               }
+            }
+         }
+      }
+   }
+
    /**
-    * 
+    *
     * @param activity
     * @param activityJson
     */
@@ -327,7 +441,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param gateway
     * @param gatewayJson
     */
@@ -362,7 +476,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @param eventJson
     */
@@ -491,7 +605,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param dataStore
     * @param dataJson
     */
@@ -569,7 +683,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
@@ -593,7 +707,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
@@ -619,7 +733,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
@@ -632,7 +746,7 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    }
 
    /**
-    * 
+    *
     * @param current
     * @param newType
     * @return

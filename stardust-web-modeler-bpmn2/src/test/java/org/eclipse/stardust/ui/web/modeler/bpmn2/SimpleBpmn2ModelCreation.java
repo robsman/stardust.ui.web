@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ProcessType;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -51,6 +52,7 @@ public class SimpleBpmn2ModelCreation
 
    private Definitions model;
    private Interface testWebService;
+   private Resource testRole;
    private Process testProcess;
    private BPMNDiagram testProcessDiagram;
 
@@ -82,6 +84,18 @@ public class SimpleBpmn2ModelCreation
    }
 
    @Test
+   public void creatingARoleMustProperlyConfigureDefaultsAndAttachTheResource()
+   {
+      this.model = createModel();
+      this.testRole = Bpmn2TestUtils.createTestRole(model);
+
+      assertThat(testRole, is(notNullValue()));
+      assertThat(testRole.getId(), is(notNullValue()));
+      assertThat(testRole.getName(), is(Bpmn2TestUtils.ROLE_NAME));
+
+   }
+
+   @Test
    public void creatingAnEmptyProcessMustProperlyConfigureDefaultsAndAttachTheProcess()
    {
       this.model = createModel();
@@ -98,11 +112,31 @@ public class SimpleBpmn2ModelCreation
    }
 
    @Test
-   public void creatingAnXsdTypeReferenceMustProperlyConfigureDefaultsAndAttachTheItemDefinition()
+   public void creatingAnExternalXsdTypeReferenceMustProperlyConfigureDefaultsAndAttachTheItemDefinition()
    {
       this.model = createModel();
       TypeDeclarationJto jto = new TypeDeclarationJto();
       jto.typeDeclaration.type.classifier = "ExternalReference";
+      jto.typeDeclaration.type.location = "file:///E:/work/ipp/src.svn/pepper/web-modeler-omni-extensions/src/main/resources/META-INF/webapp/public/swift-2012/fin.202.COV.2012.xsd";
+      jto.typeDeclaration.type.xref = "{urn:swift:xsd:fin.202.COV.2012}MT202_COV_Type";
+      Bpmn2ItemDefinitionBuilder itemDefinitionBuilder = new Bpmn2ItemDefinitionBuilder(externalXmlSchemaManager);
+      ItemDefinition tdMt202CovType = itemDefinitionBuilder.createXsdReference(model, jto);
+      itemDefinitionBuilder.attachItemDefinition(model, tdMt202CovType);
+
+      assertThat(tdMt202CovType, is(notNullValue()));
+      assertThat(tdMt202CovType.getId(), is(notNullValue()));
+
+      assertThat(tdMt202CovType.getItemKind(), is(ItemKind.INFORMATION));
+
+//      assertThat(navigator.findProcess(model, Bpmn2TestUtils.PROCESS_ID), is(testProcess));
+   }
+
+   @Test
+   public void creatingAnInternalXsdTypeReferenceMustProperlyConfigureDefaultsAndAttachTheItemDefinition()
+   {
+      this.model = createModel();
+      TypeDeclarationJto jto = new TypeDeclarationJto();
+      jto.typeDeclaration.type.classifier = "SchemaType";
       jto.typeDeclaration.type.location = "file:///E:/work/ipp/src.svn/pepper/web-modeler-omni-extensions/src/main/resources/META-INF/webapp/public/swift-2012/fin.202.COV.2012.xsd";
       jto.typeDeclaration.type.xref = "{urn:swift:xsd:fin.202.COV.2012}MT202_COV_Type";
       Bpmn2ItemDefinitionBuilder itemDefinitionBuilder = new Bpmn2ItemDefinitionBuilder(externalXmlSchemaManager);
