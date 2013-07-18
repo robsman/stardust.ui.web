@@ -133,7 +133,6 @@ public abstract class PopupDialog implements Serializable
             // TODO trace
          }
       }
-
       addPopupCenteringScript();
       visible = true;
 
@@ -141,7 +140,6 @@ public abstract class PopupDialog implements Serializable
       if (modal)
       {
          String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
          PortalApplication.getInstance().addEventScript(popupScript);
       }
 
@@ -158,8 +156,7 @@ public abstract class PopupDialog implements Serializable
    {
       if (popupAutoCenter)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         String positionPopupScript = "resizeMessageDialog('" + getBeanId() + "');";
          PortalApplicationEventScript.getInstance().addEventScript(positionPopupScript);
       }
    }

@@ -116,7 +116,6 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
       // FOR PANAMA
       String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), popupScript);
       PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.DEACTIVATED))
@@ -133,7 +132,6 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       if (condition)
       {
          String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + divId + "');";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
          PortalApplication.getInstance().addEventScript(positionPopupScript);
       }
    }
