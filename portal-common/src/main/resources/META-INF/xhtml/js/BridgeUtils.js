@@ -65,7 +65,7 @@ if (!window["BridgeUtils"]) {
 		 */
 		function handleServerDisconnect(type) {
 		log("Handling Server Disconnect for " + type);
-		BridgeUtils.FrameManager.closeAll();
+	    	BridgeUtils.FrameManager.forceCloseAll();
 		runInAngularContext(function($scope) {
 	    		BridgeUtils.logout(true);
 			});
@@ -1299,7 +1299,7 @@ if (!window["BridgeUtils"].FrameManager) {
 		/*
 		 *
 		 */
-		function closeAll() {
+		function forceCloseAll() {
 			return kill(2);
 		}
 
@@ -1534,7 +1534,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			createOrActivate : createOrActivate,
 			deactivate : deactivate,
 			close : close,
-			closeAll : closeAll,
+			forceCloseAll : forceCloseAll,
 			resizeAndReposition : resizeAndReposition,
 			resizeAndRepositionAllActive : resizeAndRepositionAllActive,
 			getFrameContainer : getFrameContainer,
