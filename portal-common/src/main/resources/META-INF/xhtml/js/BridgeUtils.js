@@ -620,14 +620,16 @@ if (!window["BridgeUtils"].Dialog) {
 	BridgeUtils.Dialog = new function() {
 
 		var popupDialogDiv;
-		var iframeForHeader;
-		var iframeForFooter;
-		var iframeForSidebar;
-		var iframeForSidebarAndView;
-
 		var invokedFromlaunchPanels;
 		var sidebarPinned;
 
+		var iframeForHeader;
+		var iframeForFooter;
+		var iframeForSidebar;
+
+		var launchPanelIframe;
+		var launchPanelIframeOrgData;
+		
 		/*
 		 *
 		 */
@@ -639,7 +641,6 @@ if (!window["BridgeUtils"].Dialog) {
 			popupDialogDiv.innerHTML = '<iframe id="iframeForHeader" class="gray-out-header" src="about:blank"></iframe>';
 			popupDialogDiv.innerHTML += '<iframe id="iframeForFooter" class="gray-out-footer" src="about:blank"></iframe>';
 			popupDialogDiv.innerHTML += '<iframe id="iframeForSidebar" class="gray-out-sidebar" src="about:blank"></iframe>';
-			popupDialogDiv.innerHTML += '<iframe id="iframeForSidebarAndView" class="gray-out-sidebar-view" src="about:blank"></iframe>';
 
 			// Header
 			iframeForHeader = document.getElementById('iframeForHeader');
@@ -652,10 +653,9 @@ if (!window["BridgeUtils"].Dialog) {
 			// Sidebar
 			iframeForSidebar = document.getElementById('iframeForSidebar');
 			iframeForSidebar.style.visibility = "hidden";
-
+			
 			// Sidebar + View
-			iframeForSidebarAndView = document.getElementById('iframeForSidebarAndView');
-			iframeForSidebarAndView.style.visibility = "hidden";
+			launchPanelIframe = null;
 		}
 
 		/*
@@ -702,17 +702,29 @@ if (!window["BridgeUtils"].Dialog) {
 					BridgeUtils.View.pinSidebar();
 				}
 
-				var launchPanelsWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
+				var launchPanelsWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10 + "px";
+				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
+						launchPanelsWidth + "_" + Math.floor(Math.random() * 10000) + 1);
 
 				var sidebar = document.getElementById("sidebar");
 				sidebar.style.display = "none";
 
-				var url = "/plugins/common/portalSingleViewLaunchPanelsOnly.iface?launchPanelsWidth=";
-				var fullUrl = BridgeUtils.getContextRoot() + url + launchPanelsWidth + "px";
-				iframeForSidebarAndView.setAttribute("src", fullUrl);
-				iframeForSidebarAndView.style.width = scrollWidth + "px";
-				iframeForSidebarAndView.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
-				iframeForSidebarAndView.style.visibility = "visible";
+				launchPanelIframe = document.getElementById("modelerLaunchPanels");
+
+				launchPanelIframeOrgData = {};
+				launchPanelIframeOrgData.parent = launchPanelIframe.parentNode;
+				launchPanelIframeOrgData.clazz = launchPanelIframe.getAttribute("class");
+				launchPanelIframeOrgData.width = launchPanelIframe.style.width;
+				launchPanelIframeOrgData.height = launchPanelIframe.style.height;
+				launchPanelIframeOrgData.bodyWidth = launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width;
+				
+				popupDialogDiv.appendChild(launchPanelIframe);
+				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
+				launchPanelIframe.style.width = scrollWidth + "px";
+				launchPanelIframe.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width = launchPanelsWidth;
+
+				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
 			}
 		}
 
@@ -721,19 +733,6 @@ if (!window["BridgeUtils"].Dialog) {
 		 */
 		function close() {
 			if (popupDialogDiv) {
-				if (iframeForSidebarAndView.style.visibility == "visible") {
-					BridgeUtils.View.syncLaunchPanels("parent.BridgeUtils.Dialog.privateClose();");
-				} else {
-					privateClose();
-				}
-			}
-		}
-
-		/*
-		 * 
-		 */		
-		function privateClose() {
-			if (popupDialogDiv) { // Preventive Check
 				// Header
 				iframeForHeader.style.visibility = "hidden";
 	
@@ -744,15 +743,17 @@ if (!window["BridgeUtils"].Dialog) {
 				iframeForSidebar.style.visibility = "hidden";
 	
 				// Sidebar And View
-				iframeForSidebarAndView.style.visibility = "hidden";
-				
-				// Remove Div & iFrames
-				var delay = 0;
-				if (invokedFromlaunchPanels) {
-					iframeForSidebarAndView.src = "about:blank";
-					delay = 200;
+				if (launchPanelIframe) {
+					BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
+							"auto_" + Math.floor(Math.random() * 10000) + 1);
+
+					launchPanelIframe.setAttribute("class", launchPanelIframeOrgData.clazz);
+					launchPanelIframe.style.width = launchPanelIframeOrgData.width;
+					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
+					launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width = launchPanelIframeOrgData.bodyWidth;
+					launchPanelIframeOrgData.parent.appendChild(launchPanelIframe);
 				}
-	
+
 				// Show Sidebar
 				var sidebar = document.getElementById("sidebar");
 				sidebar.style.display = "inline-block";
@@ -763,21 +764,18 @@ if (!window["BridgeUtils"].Dialog) {
 
 				invokedFromlaunchPanels = undefined;
 				sidebarPinned = undefined;
+				launchPanelIframe = undefined;
 
-				BridgeUtils.log("Dialog iframe removal delay = " + delay);
-				window.setTimeout(function() {
-					BridgeUtils.log("Removing Dialog iframe");
-					popupDialogDiv.parentNode.removeChild(popupDialogDiv);
-					popupDialogDiv = undefined;					
-				}, delay);
-				BridgeUtils.log("Dialog.privateClose() finished");
+				popupDialogDiv.parentNode.removeChild(popupDialogDiv);
+				popupDialogDiv = undefined;
+
+				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
 			}
 		}
 
 		return {
 			open : open,
-			close : close,
-			privateClose : privateClose
+			close : close
 		}
 	};
 } // !BridgeUtils.Dialog

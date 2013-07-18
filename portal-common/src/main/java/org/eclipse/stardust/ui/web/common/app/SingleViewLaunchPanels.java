@@ -2,10 +2,7 @@ package org.eclipse.stardust.ui.web.common.app;
 
 import java.util.List;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
-import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -25,27 +22,13 @@ public class SingleViewLaunchPanels implements InitializingBean
 
    private PortalApplicationSingleViewEventScript singleViewEventScript;
 
+   private String launchPanelsWidth = "auto";
+
    /* (non-Javadoc)
     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
     */
    public void afterPropertiesSet() throws Exception
    {
-   }
-
-   /**
-    * @return
-    */
-   public String getLaunchPanelsWidth(){
-      FacesContext facesContext = FacesContext.getCurrentInstance();
-      HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-
-      String launchPanelsWidth = request.getParameter("launchPanelsWidth");
-      if (StringUtils.isEmpty(launchPanelsWidth))
-      {
-         launchPanelsWidth = "auto";
-      }
-
-      return launchPanelsWidth;
    }
 
    /**
@@ -170,6 +153,19 @@ public class SingleViewLaunchPanels implements InitializingBean
    /**
     * @param event
     */
+   public void updateLaunchPanelsWidth(ValueChangeEvent event)
+   {
+      String value = (String)event.getNewValue();
+      launchPanelsWidth = value.split("_")[0];
+      if (StringUtils.isEmpty(launchPanelsWidth))
+      {
+         launchPanelsWidth = "auto";
+      }
+   }
+
+   /**
+    * @param event
+    */
    public void logout(ValueChangeEvent event)
    {
       try
@@ -242,5 +238,10 @@ public class SingleViewLaunchPanels implements InitializingBean
    public void setEmptyString(String empty)
    {
       // IGNORE
+   }
+
+   public String getLaunchPanelsWidth()
+   {
+      return launchPanelsWidth;
    }
 }
