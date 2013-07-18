@@ -15,6 +15,8 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import java.util.Iterator;
 
+import javax.xml.XMLConstants;
+
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
@@ -59,8 +61,11 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.EObjectMorpher;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+import org.eclipse.xsd.XSDSchema;
 
 public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 {
@@ -80,7 +85,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
    {
       trace.info("Populate object " + modelElement + " from JSON " + json);
 
-      if (modelElement instanceof Resource)
+      if (modelElement instanceof ItemDefinition)
+      {
+         updateItemDefinition((ItemDefinition) modelElement, json);
+      }
+      else if (modelElement instanceof Resource)
       {
          updateProcessParticipant((Resource) modelElement, json);
       }
@@ -149,6 +158,49 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       {
          throw new UnsupportedOperationException("Not yet implemented: " + modelElement);
       }
+   }
+
+   private void updateItemDefinition(ItemDefinition itemDefinition, JsonObject json)
+   {
+      // TODO handle type rename
+
+      JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
+      JsonObject typeJson = (null != declarationJson)
+            ? declarationJson.getAsJsonObject("type")
+            : null;
+      if ((null != typeJson)
+            && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
+                  .getAsString()))
+      {
+         // TODO consolidate, see {@link XsdSchemaUtils#updateXsdSchemaType}
+         JsonObject schemaJson = declarationJson.getAsJsonObject("schema");
+
+         XSDSchema schema = (XSDSchema) Bpmn2ExtensionUtils.getExtensionElement(
+               itemDefinition, "schema", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+         if (schemaJson.has("targetNamespace"))
+         {
+            schema.setTargetNamespace(GsonUtils.safeGetAsString(schemaJson, "targetNamespace"));
+         }
+
+         JsonObject locations = GsonUtils.safeGetAsJsonObject(schemaJson, "locations");
+         if (locations != null)
+         {
+            // TODO
+            // XsdSchemaUtils.updateImports(facade, schema, locations);
+         }
+
+         if (schemaJson.has("types"))
+         {
+            XsdSchemaUtils.updateXSDTypeDefinitions(schema, GsonUtils.safeGetAsJsonArray(schemaJson, "types"), locations);
+         }
+
+         if (schemaJson.has("elements"))
+         {
+            XsdSchemaUtils.updateElementDeclarations(schema, GsonUtils.safeGetAsJsonArray(schemaJson, "elements"), locations);
+         }
+      }
+      // TODO handle reference types
    }
 
    private void updateProcessParticipant(Resource resource, JsonObject json)

@@ -150,6 +150,16 @@ public class ChangesetNormalizer implements ChangePostprocessor
       {
          return IGNORE;
       }
+      else if ( !isModelOrModelElement(element))
+      {
+         // report any change to a non-element sub-object as modification of the
+         // containing parent element
+         EObject changedElement = determineChangedElement(element);
+         if (element != changedElement)
+         {
+            return modifyInstead(changedElement);
+         }
+      }
 
       return ACCEPT;
    }
