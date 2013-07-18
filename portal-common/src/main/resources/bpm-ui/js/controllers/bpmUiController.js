@@ -34,6 +34,13 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		/*
 		 *
 		 */
+		$scope.showHideAlerts = function() {
+			BridgeUtils.showHideAlertNotifications();
+		}
+		
+		/*
+		 * 
+		 */
 		$scope.$watch('shell.sizes', function(sizes) {
             if(sizes !== {}) {
             	doResizing(sizes);

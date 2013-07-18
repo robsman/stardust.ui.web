@@ -144,7 +144,8 @@
 		    "label":"Alerts",
 		    "id":"link",
 		    "icon":"viewIconBase bell",
-		    "module":"bpm-ui"
+		    "actionController":"bpm-ui.BpmUiCtrl",
+		    "action":"showHideAlerts()"
 		},
 		{
 		    "label":"LOGGED_IN_USER_LABEL"

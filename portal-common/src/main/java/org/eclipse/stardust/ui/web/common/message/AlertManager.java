@@ -16,6 +16,7 @@ import java.util.List;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
@@ -83,6 +84,12 @@ public class AlertManager extends PopupUIComponentBean
     */
    public void toggleAlertsPanel()
    {
+      if (isVisible())
+      {
+         String script = "parent.BridgeUtils.hideAlertNotifications();";
+         PortalApplicationEventScript.getInstance().addEventScript(script);
+      }
+      
       setVisible(!isVisible());
       if (isVisible()) // If panel is visible
       {

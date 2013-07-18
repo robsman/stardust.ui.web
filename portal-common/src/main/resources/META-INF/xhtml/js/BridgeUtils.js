@@ -161,6 +161,49 @@ if (!window["BridgeUtils"]) {
 			return location.href.substring(0, location.href.indexOf("/main.html"));
 		}
 
+		/*
+		 * 
+		 */
+		function showHideAlertNotifications() {
+			var id = "alerts";
+			var found = false;
+
+			BridgeUtils.FrameManager.doWithContentFrame(id, function(contentFrame) {
+				found = true;
+			});
+
+			if (found) {
+				hideAlertNotifications();
+			} else {
+				showAlertNotifications();
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function showAlertNotifications() {
+			var id = "alerts";
+			var url = "/plugins/common/portalSingleViewAlerts.iface";
+			var fullUrl = BridgeUtils.getContextRoot() + url;
+			var advanceArgs = {
+					anchorId: 'jQuery_div.navbar-inner .sg-controls i.bell',
+					zIndex: 1000, width: 300, height: 200, openOnRight: false,
+					anchorXAdjustment: 50, anchorYAdjustment: 20,
+					noUnloadWarning: 'true', border: '1px solid black'
+			};
+
+			BridgeUtils.FrameManager.createOrActivate(id, fullUrl, advanceArgs);
+		}
+
+		/*
+		 * 
+		 */
+		function hideAlertNotifications() {
+			var id = "alerts";
+			BridgeUtils.FrameManager.close(id);
+		}
+
 		return {
 			log : log,
 			runInAngularContext : runInAngularContext,
@@ -172,7 +215,10 @@ if (!window["BridgeUtils"]) {
 			substituteParams : substituteParams,
 			showAlert : showAlert,
 			handleResize : handleResize,
-			getContextRoot : getContextRoot
+			getContextRoot : getContextRoot,
+			showHideAlertNotifications : showHideAlertNotifications,
+			showAlertNotifications : showAlertNotifications,
+			hideAlertNotifications : hideAlertNotifications
 		}
 	};
 } // !BridgeUtils
@@ -1056,7 +1102,15 @@ if (!window["BridgeUtils"].FrameManager) {
 			var viewFrame;
 			var viewFrameDoc;
 
-			if (anchor.indexOf(":") > -1) {
+			if (anchor.indexOf("jQuery_") == 0) {
+				var anchorElem = jQuery(anchor.substr(anchor.indexOf("jQuery_") + 7)).get(0);
+				if (!anchorElem.id) {
+					anchorElem.id = "id_" + Math.floor(Math.random()*100000)+1;
+				}
+				anchor = anchorElem.id;
+				viewFrame = window;
+				viewFrameDoc = document;
+			} else if (anchor.indexOf(":") > -1) {
 				var frame = anchor.substring(0, anchor.indexOf(":"));
 				anchor = anchor.substring(anchor.indexOf(":")+1);
 				viewFrame = document.getElementById(frame);
@@ -1142,6 +1196,9 @@ if (!window["BridgeUtils"].FrameManager) {
 					if (hiddenCounter < 0 || !(posFrame.x == 0 && posFrame.y == 0)) {
 						delayActivation = false;
 
+						posFrame.x = isNaN(posFrame.x) ? 0 : posFrame.x;
+						posFrame.y = isNaN(posFrame.y) ? 0 : posFrame.y;
+						
 						pos.x += posFrame.x;
 						pos.y += posFrame.y;
 	

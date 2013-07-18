@@ -28,6 +28,14 @@ public class PortalApplicationSingleViewEventScript implements Serializable
    }
 
    /**
+    * @return
+    */
+   public String getWrappedEventScripts()
+   {
+      return wrapIntoRunScript(getEventScripts(false));
+   }
+
+   /**
     * @param syncLPs
     * @return
     */
