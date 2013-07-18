@@ -17,7 +17,7 @@ if (!window["Messaging"]) {
 				if (win.postMessage) {
 				  if (win.addEventListener) {
 					  win.addEventListener("message", handlePostMessage, true);
-	              } else if (ippPortalWin.attachEvent) {
+	              } else if (win.attachEvent) {
 			  win.attachEvent("onmessage", handlePostMessage);
 	              } else {
 	                debug("This browser does not support safe cross iframe messaging.");
