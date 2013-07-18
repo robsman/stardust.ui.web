@@ -24,6 +24,7 @@ import javax.servlet.ServletContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -42,6 +43,8 @@ public class InviteParticipantsDialog extends PopupUIComponentBean
    private boolean notifyViaAlert;
 
    private List<String> selectedUserAccounts;
+   
+   private List<SelectItem> notInvitedUsers;
 
    public InviteParticipantsDialog()
    {
@@ -49,6 +52,18 @@ public class InviteParticipantsDialog extends PopupUIComponentBean
       initialize();
    }
 
+   @Override
+   public void openPopup()
+   {
+      List<User> userList = getModelService().getNotInvitedUsers();
+      notInvitedUsers = CollectionUtils.newArrayList();
+      for (User user : userList)
+      {
+         notInvitedUsers.add(new SelectItem(user.getAccount(), user.getFirstName() + " " + user.getLastName() + " ("
+               + user.getAccount() + ")"));
+      }
+      super.openPopup();
+   }
    public ModelService getModelService()
    {
       return modelService;
@@ -83,15 +98,7 @@ public class InviteParticipantsDialog extends PopupUIComponentBean
     */
    public List<SelectItem> getNotInvitedUsers()
    {
-      List<SelectItem> selectItemList = new ArrayList<SelectItem>();
-
-      for (User user : getModelService().getNotInvitedUsers())
-      {
-         selectItemList.add(new SelectItem(user.getAccount(), user.getFirstName() + " "
-               + user.getLastName() + " (" + user.getAccount() + ")"));
-      }
-
-      return selectItemList;
+     return notInvitedUsers;
    }
 
    /**
@@ -148,5 +155,6 @@ public class InviteParticipantsDialog extends PopupUIComponentBean
    public void initialize()
    {
       selectedUserAccounts = new ArrayList<String>();
+      notInvitedUsers = new ArrayList<SelectItem>();
    }
 }
