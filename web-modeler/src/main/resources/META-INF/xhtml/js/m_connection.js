@@ -2133,7 +2133,7 @@ define(
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
 							m_messageDisplay
-									.showErrorMessage("Only incomin sequence flow connections are allowed on End events.");
+									.showErrorMessage("Only incoming sequence flow connections are allowed on End events.");
 							return false;
 						}// Connection between Event and Data not supported
 						else if (null != toAnchorPoint
@@ -2222,9 +2222,6 @@ define(
 								return false;
 							} else if (!toAnchorPoint.symbol
 									.validateCreateConnection(this)) {
-								// End Event can have only one IN connection
-								m_messageDisplay
-										.showErrorMessage("No more connection allowed to this Event.");
 								return false;
 							}
 						} else if (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {

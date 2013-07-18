@@ -130,7 +130,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "plugins/bpm-modeler/images/icons/intermediate-event-toolbar.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "createIntermediateEvent",
-			visibility : "preview"
+			visibility : "always"
 		}, {
 			id : "endEventButton",
 			paletteId : "eventPalette",

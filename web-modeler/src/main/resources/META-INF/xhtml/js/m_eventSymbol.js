@@ -486,6 +486,31 @@ define(
 						return false;
 					} else if (conn && (m_constants.INTERMEDIATE_EVENT_TYPE == this.modelElement.eventType)) {
 						var fromOid = null;
+
+						// Boundary event does not allow incoming connections
+						if (this.modelElement.isBoundaryEvent()) {
+							if (conn.toAnchorPoint
+									&& conn.toAnchorPoint.symbol
+									&& conn.toAnchorPoint.symbol.oid == this.oid) {
+								m_messageDisplay
+										.showMessage("No Incoming connection allowed for this Event.");
+								return false;
+							}
+						}
+
+						// connection with activity/gateway/other intermediate event is allowed
+						if (conn.toAnchorPoint && conn.toAnchorPoint.symbol
+								&& conn.toAnchorPoint.symbol.oid == this.oid) {
+							if (conn.fromAnchorPoint
+									&& conn.fromAnchorPoint.symbol
+									&& (m_constants.START_EVENT_TYPE == this.modelElement.eventType)) {
+								m_messageDisplay
+										.showMessage("Invalid connection...");
+								return false;
+							}
+						}
+
+						//only one incoming and outgoing connection is permitted
 						for ( var n in this.connections) {
 							var connection = this.connections[n];
 							if (connection.fromAnchorPoint.symbol.oid == this.oid
@@ -497,6 +522,7 @@ define(
 										.showMessage("No further connection allowed for this Event.");
 								return false;
 							}
+
 							if (connection.toAnchorPoint
 									&& connection.toAnchorPoint.symbol.oid == this.oid
 									&& conn.toAnchorPoint
@@ -506,16 +532,6 @@ define(
 								m_messageDisplay
 										.showMessage("No further connection allowed for this Event.");
 								return false;
-							}
-
-							if (this.modelElement.isBoundaryEvent()) {
-								if ((connection.toAnchorPoint && connection.toAnchorPoint.symbol.oid == this.oid)
-										|| (conn.toAnchorPoint
-												&& conn.toAnchorPoint.symbol && conn.toAnchorPoint.symbol.oid == this.oid)) {
-									m_messageDisplay
-											.showMessage("Incomming connection not allowed for this Event.");
-									return false;
-								}
 							}
 						}
 					}
@@ -536,11 +552,14 @@ define(
 
 						m_utils.debug("Symbol hit");
 
+						//Boundary Intermediate event
 						if (hitSymbol != null
 								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
 							m_utils.debug("Add boundary");
 							hitSymbol.addBoundaryEvent(this);
-							// TODO Submit Change
+							this.modelElement.interrupting = true;
+						} else {
+							this.modelElement.interrupting = false;
 						}
 					}
 					//display warning message
@@ -657,11 +676,13 @@ define(
 						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
 							return {
 								bindingActivityUuid : null,
-								eventClass : m_constants.TIMER_EVENT_CLASS
+								eventClass : m_constants.TIMER_EVENT_CLASS,
+								interrupting : false
 							};
 						} else {
 							return {
 								bindingActivityUuid : null,
+								interrupting : false
 							};
 						}
 					}

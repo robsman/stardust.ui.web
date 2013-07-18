@@ -351,7 +351,15 @@ define(
 					this.consumeOnMatchInput.prop("disabled", true);*/
 
 					var modelElement = this.page.propertiesPanel.element.modelElement;
-					this.interruptingInput.prop("checked", modelElement.interrupting);
+					if (modelElement.isBoundaryEvent()) {
+						this.interruptingInput.prop("checked",
+								modelElement.interrupting);
+						this.interruptingInput.prop("disabled", false);
+					} else {
+						this.interruptingInput.prop("checked", false);
+						this.interruptingInput.prop("disabled", true);
+					}
+
 					this.logHandlerInput.prop("checked",
 							modelElement.logHandler);
 					var useData = modelElement.attributes["carnot:engine:useData"];

@@ -221,11 +221,16 @@ define(
 						$("label[for='catchingInput']").hide();
 						$("label[for='throwingInput']").hide();
 
-						if (this.propertiesPanel.element.modelElement.eventClass == m_constants.ERROR_EVENT_CLASS) {
+						if (this.getModelElement().eventClass == m_constants.ERROR_EVENT_CLASS) {
 							this.interruptingInput.prop("checked", true);
 							this.interruptingInput.prop("disabled", true);
 						} else {
-							this.interruptingInput.prop("disabled", false);
+							if (this.getModelElement().isBoundaryEvent()) {
+								this.interruptingInput.prop("disabled", false);
+							} else {
+								this.interruptingInput.prop("checked", false);
+								this.interruptingInput.prop("disabled", true);
+							}
 						}
 
 						// Display, whether event is bound
