@@ -2394,7 +2394,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          // TODO Hack to identify gateways
 
-         if (transition.getFrom().getId().toLowerCase().startsWith("gateway"))
+         if (isGatwayHost(transition.getFrom()))
          {
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
@@ -2422,7 +2422,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   targetActivitySymbol.getElementOid());
          }
 
-         if (transition.getTo().getId().toLowerCase().startsWith("gateway"))
+         if (isGatwayHost(transition.getTo()))
          {
             connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
@@ -2520,6 +2520,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                ModelerConstants.UNDEFINED_ORIENTATION_KEY);
       }
       return connectionJson;
+   }
+
+   private static boolean isGatwayHost(ActivityType activity)
+   {
+      return activity != null && activity.getId().toLowerCase().startsWith("gateway");
    }
 
    /**

@@ -3,20 +3,27 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import static java.util.Collections.emptyList;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.*;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 
 import com.google.gson.JsonObject;
 
@@ -398,5 +405,114 @@ public class EventMarshallingUtils
          hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
       }
       return eventHandler;
+   }
+
+   public static void updateEventHandler(EventHandlerType eventHandler, ActivityType hostActivity, JsonObject hostingConfig,
+         JsonObject eventJson)
+   {
+      ModelElementUnmarshaller.updateIdentifiableElement(eventHandler, eventJson);
+      ModelElementUnmarshaller.storeDescription(eventHandler, eventJson);
+      
+      if (eventJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      {
+         eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
+      }
+      
+      if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
+      {
+         // no bind or unbind actions supported.
+         eventHandler.getBindAction().clear();
+         eventHandler.getUnbindAction().clear();
+         Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
+         if (interrupting == null || interrupting) // null means default value which is "true"
+         {
+            // there should be exactly one abort action with scope sub hierarchy
+            boolean found = false;
+            for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+            {
+               EventActionType action = i.next();
+               if (found || action.getType() == null
+                     || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
+               {
+                  i.remove();
+               }
+               else
+               {
+                  found = true;
+                  String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+                  if (!AbortScope.SUB_HIERARCHY.equals(scope))
+                  {
+                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                  }
+               }
+            }
+            if (!found)
+            {
+               EventActionTypeType actionType = decodeEventActionType(
+                     PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
+               if (actionType != null)
+               {
+                  EventActionType action = newEventAction(actionType);
+                  action.setId(NameIdUtils.createIdFromName(ModelElementUnmarshaller.ABORT_ACTIVITY_NAME));
+                  action.setName(ModelElementUnmarshaller.ABORT_ACTIVITY_NAME);
+                  AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+                  eventHandler.getEventAction().add(action);
+               }
+            }
+         }
+         else
+         {
+            // non-interrupting events have no actions.
+            eventHandler.getEventAction().clear();
+         }
+      }
+   
+      hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
+   }
+
+   static void deleteTransitions(List<TransitionType> transitions)
+   {
+      for (TransitionType transition : transitions)
+      {
+         deleteConnections(transition.getTransitionConnections());
+
+         EObject container = transition.eContainer();
+         if (container instanceof ProcessDefinitionType)
+         {
+            // disconnect
+            transition.setFrom(null);
+            transition.setTo(null);
+            
+            ((ProcessDefinitionType) container).getTransition().remove(transition);
+         }
+      }
+   }
+
+   private static void deleteConnections(List<? extends IConnectionSymbol> connections)
+   {
+      for (IConnectionSymbol connection : connections)
+      {
+         EObject container = connection.eContainer();
+         if (container instanceof ISymbolContainer)
+         {
+            // disconnect
+            connection.setSourceNode(null);
+            connection.setTargetNode(null);
+            
+            @SuppressWarnings("unchecked")
+            List<? extends IConnectionSymbol> containingFeature = (List<? extends IConnectionSymbol>)
+               ((ISymbolContainer) container).eGet(connection.eContainingFeature());
+            containingFeature.remove(connection);
+         }
+      }
+   }
+
+   public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)
+   {
+      ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
+            .withIdAndName("event_" + UUID.randomUUID(), name)
+            .build();
+      processDefinition.getActivity().add(hostActivity);
+      return hostActivity;
    }
 }

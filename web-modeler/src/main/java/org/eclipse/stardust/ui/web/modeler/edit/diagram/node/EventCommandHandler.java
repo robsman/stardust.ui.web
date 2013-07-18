@@ -23,11 +23,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import java.util.UUID;
-
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -38,7 +35,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -92,11 +88,12 @@ public class EventCommandHandler
 
             if (null == hostActivity)
             {
-               hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
-                     .withIdAndName("event_" + UUID.randomUUID(), "Intermediate Event")
-                     .build();
-               processDefinition.getActivity().add(hostActivity);
-
+               String eventName = request.getAsJsonObject(
+                     ModelerConstants.MODEL_ELEMENT_PROPERTY).has(
+                     ModelerConstants.NAME_PROPERTY)
+                     ? extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+                           ModelerConstants.NAME_PROPERTY) : "Intermediate Event";
+               hostActivity = EventMarshallingUtils.createHostActivity(processDefinition, eventName);
                EventMarshallingUtils.tagAsIntermediateEventHost(hostActivity);
             }
 
@@ -107,10 +104,10 @@ public class EventCommandHandler
                   hostActivity, hostingConfig, eventClass);
             if (eventHandler != null)
             {
-               ModelElementUnmarshaller.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
+               EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
             }
 
-            EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig );
+            EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
          }
          else
          {
@@ -124,17 +121,13 @@ public class EventCommandHandler
                   ? extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
                         ModelerConstants.NAME_PROPERTY) : "End Event";
             // add a host activity
-            ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
-                  .withIdAndName("event_" + UUID.randomUUID(), eventName)
-                  .build();
+            ActivityType hostActivity = EventMarshallingUtils.createHostActivity(processDefinition, eventName);
             EventMarshallingUtils.tagAsEndEventHost(hostActivity);
 
-            processDefinition.getActivity().add(hostActivity);
+            // TODO evaluate other properties
 
             EventMarshallingUtils.updateEventHostingConfig(hostActivity, endEventSymbol,
                   new JsonObject());
-
-            // TODO evaluate other properties
          }
       }
    }

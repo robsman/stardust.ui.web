@@ -17,16 +17,17 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
-import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -37,7 +38,6 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
-import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -47,7 +47,6 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
-import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -71,7 +70,7 @@ import com.google.gson.JsonPrimitive;
  */
 public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
-   private static final String ABORT_ACTIVITY_NAME = "Abort Activity";
+   static final String ABORT_ACTIVITY_NAME = "Abort Activity";
 
    private Map<Class<? >, String[]> propertiesMap;
 
@@ -1093,7 +1092,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          String parentID = extractString(nodeSymbolJto,
                ModelerConstants.PARENT_SYMBOL_ID_PROPERTY);
          ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
-         if ( !(nodeSymbol instanceof LaneSymbol))
+         if (!(nodeSymbol instanceof LaneSymbol))
          {
             newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
                   processDefinition, parentID);
@@ -1480,67 +1479,72 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             if (hostActivity != newHostActivity)
             {
-               if (null != hostActivity)
+               if (hostActivity != null)
                {
                   EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, null);
-               }
 
-               if (null != hostActivity
-                     && EventMarshallingUtils.isIntermediateEventHost(hostActivity)
-                     && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
-               {
-                  // delete incoming transition connections
-                  List<TransitionConnectionType> connections = CollectionUtils.newList();
-                  for (TransitionType transition : hostActivity.getInTransitions())
+                  if (EventMarshallingUtils.isIntermediateEventHost(hostActivity)
+                       && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                   {
-                     for (TransitionConnectionType connection : transition.getTransitionConnections())
+                     // delete incoming transition connections
+                     EventMarshallingUtils.deleteTransitions(hostActivity.getInTransitions());
+                     
+                     // delete associated activity
+                     if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                      {
-                        connections.add(connection);
+                        if (newHostActivity != null)
+                        {
+                           EventMarshallingUtils.deleteTransitions(CollectionUtils.intersect(
+                                 hostActivity.getOutTransitions(), newHostActivity.getInTransitions()));
+                        }
+                        containingProcess.getActivity().remove(hostActivity);
+                     }
+                     else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
+                     {
+                        EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
+                        EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
                      }
                   }
-                  for (TransitionConnectionType connection : connections)
-                  {
-                     EObject container = connection.eContainer();
-                     if (container instanceof ISymbolContainer)
-                     {
-                        ((ISymbolContainer) container).getTransitionConnection().remove(connection);
-                     }
-                  }
-
-                  // delete incoming transitions
-                  containingProcess.getTransition().removeAll(hostActivity.getInTransitions());
-                  
-                  // delete associated activity
-                  if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
-                  {
-                     containingProcess.getActivity().remove(hostActivity);
-                  }
-                  else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
-                  {
-                     EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
-                     EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
-                  }
                }
-
-               if (null != newHostActivity)
+               
+               if (newHostActivity == null)
                {
                   if (eventHandler != null)
                   {
-                     newHostActivity.getEventHandler().add(eventHandler);
-                  }
-                  
-                  for (TransitionConnectionType connection : eventSymbol.getOutTransitions())
-                  {
-                     TransitionType transition = connection.getTransition();
-                     if (transition != null)
+                     // TODO: (fh) this block wouldn't be necessary if we reuse the event handler
+                     EventConditionTypeType type = eventHandler.getType();
+                     if (type != null && PredefinedConstants.EXCEPTION_CONDITION.equals(type.getId()))
                      {
-                        transition.setFrom(newHostActivity);
+                        // (fh) error events not allowed as intermediate, so reset to timer
+                        eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY, PredefinedConstants.TIMER_CONDITION);
+
+                        // (fh) preserve logHandler and interrupting properties
+                        eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY, eventHandler.isLogHandler());
+                        eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
+                              EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
                      }
                   }
                   
-                  EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
-                        eventSymbol, hostingConfig);
+                  newHostActivity = EventMarshallingUtils.createHostActivity(containingProcess, "Intermediate Event");
+                  EventMarshallingUtils.tagAsIntermediateEventHost(newHostActivity);
                }
+
+               if (eventHandler != null)
+               {
+                  newHostActivity.getEventHandler().add(eventHandler);
+               }
+               
+               for (TransitionConnectionType connection : eventSymbol.getOutTransitions())
+               {
+                  TransitionType transition = connection.getTransition();
+                  if (transition != null)
+                  {
+                     transition.setFrom(newHostActivity);
+                  }
+               }
+               
+               EventMarshallingUtils.updateEventHostingConfig(newHostActivity,
+                     eventSymbol, hostingConfig);
 
                hostActivity = newHostActivity;
             }
@@ -1560,6 +1564,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   || (hasNotJsonNull(eventJson, ModelerConstants.EVENT_CLASS_PROPERTY) && !eventClass.equals(
                         currentEventClass)))
             {
+               // TODO: (fh) try to reuse event handler instead of recreating
+               
                // dispose current handler if it is out of sync, but carry over crucial
                // attributes
                mergeUndefinedProperty(eventHandler.getName(), eventJson,
@@ -1585,7 +1591,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (null != eventHandler)
          {
             
-            updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
+            EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
             storeAttributes(eventHandler, eventJson);
 
@@ -1604,69 +1610,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
       }
-   }
-
-   public static void updateEventHandler(EventHandlerType eventHandler, ActivityType hostActivity, JsonObject hostingConfig,
-         JsonObject eventJson)
-   {
-      updateIdentifiableElement(eventHandler, eventJson);
-      storeDescription(eventHandler, eventJson);
-      
-      if (eventJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
-      {
-         eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
-      }
-      
-      if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
-      {
-         // no bind or unbind actions supported.
-         eventHandler.getBindAction().clear();
-         eventHandler.getUnbindAction().clear();
-         Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
-         if (interrupting == null || interrupting) // null means default value which is "true"
-         {
-            // there should be exactly one abort action with scope sub hierarchy
-            boolean found = false;
-            for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
-            {
-               EventActionType action = i.next();
-               if (found || action.getType() == null
-                     || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
-               {
-                  i.remove();
-               }
-               else
-               {
-                  found = true;
-                  String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
-                  if (!AbortScope.SUB_HIERARCHY.equals(scope))
-                  {
-                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                  }
-               }
-            }
-            if (!found)
-            {
-               EventActionTypeType actionType = EventMarshallingUtils.decodeEventActionType(
-                     PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
-               if (actionType != null)
-               {
-                  EventActionType action = EventMarshallingUtils.newEventAction(actionType);
-                  action.setId(NameIdUtils.createIdFromName(ABORT_ACTIVITY_NAME));
-                  action.setName(ABORT_ACTIVITY_NAME);
-                  AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                  eventHandler.getEventAction().add(action);
-               }
-            }
-         }
-         else
-         {
-            // non-interrupting events have no actions.
-            eventHandler.getEventAction().clear();
-         }
-      }
-
-      hostingConfig.addProperty(EventMarshallingUtils.PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 
    private void mergeProperty(JsonObject source, JsonObject target, String propertyName)
