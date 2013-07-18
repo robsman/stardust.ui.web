@@ -30,9 +30,9 @@ function restoreTiffIframe(iframeId, anchorId) {
 	if (document.getElementById('tiffViewerIframe')) {
 		try {
 			document.getElementById('tiffViewerIframe').style.width = docWidth;
-					+ 'px';
+			+'px';
 			document.getElementById('tiffViewerIframe').style.height = docHeight;
-					+ 'px';
+			+'px';
 			window.parent.EventHub.events.publish('CANVAS_RESIZED', docWidth,
 					docHeight);
 		} catch (e) {
@@ -58,6 +58,8 @@ function activateAndResizeIframe(iframeId, defaultPath) {
 			defaultPath, {
 				canvasWidth : docWidth,
 				canvasHeight : docHeight,
+				width : docWidth,
+				height : docHeight,
 				anchorId : anchorId
 			});
 

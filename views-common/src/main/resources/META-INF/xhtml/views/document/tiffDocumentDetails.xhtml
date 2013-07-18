@@ -276,6 +276,10 @@
 						</c:when>
 						<c:otherwise>
 							<div id="tiffViewerIframe" />
+							<ice:commandButton id="onExecuteActionButton"
+								actionListener="#{contentHandler.scriptExecuteActionListener}"
+								value="hiddenOnLoadButton" visible="false">
+							</ice:commandButton>
 						</c:otherwise>
 					</c:choose>
 				</ice:panelGroup>
@@ -283,14 +287,14 @@
 		</ice:panelGrid>
 	</ice:panelGroup>
 	<script id="tiffRepositionScripts" lang="javascript">
-		// Server side activation call and client side page load are not in syn on Iframe creation,
-		// manually activating Iframe on fist load
-		if ('loading' == window.document.readyState || 'complete' == window.document.readyState) {
-			var iframeId="tiff_frame#{contentHandler.tiffDocumentHolder.docId}";
-			var pagePath = "#{contentHandler.tiffDocumentHolder.defaultPagePath}" + '&amp;isEditable='
-			+ "#{contentHandler.documentInfo.contentEditable}";
-			activateAndResizeIframe(iframeId,pagePath);
-		}
+		if(#{contentHandler.executionScript == null || contentHandler.executionScript == 'undefined'}){
+			<!-- DO nothing -->
+		}else{
+				eval("#{contentHandler.executionScript}");
+				// Soft click required to prevent re-exectution of script on partial submit
+				parent.UiUtils.softClick(this.window,
+						'input', 'onExecuteActionButton');
+			}
 
 		//TODO - Crosscheck if below code is required
 		

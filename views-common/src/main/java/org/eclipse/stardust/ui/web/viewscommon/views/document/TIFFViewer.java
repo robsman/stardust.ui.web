@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -78,6 +79,8 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    private boolean poppedOut;
    
    private boolean descriptionChanged;
+   
+   private String executionScript;
    
    /*
     * (non-Javadoc)
@@ -311,6 +314,15 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          break;
       }
    }
+   
+   /**
+    * 
+    * @param event
+    */
+   public void scriptExecuteActionListener(ActionEvent event)
+   {
+      setExecutionScript(null);
+   }
 
    /**
     * 
@@ -336,12 +348,11 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          String activateScript = "activateAndResizeIframe('" + frameId + "','" + pagePath + "')";
          if (iframeDelay > 0)
          {
-            PortalApplication.getInstance().addEventScript(
-                  "window.setTimeout(function() {" + activateScript + "}," + iframeDelay + ");");
+            executionScript = "window.setTimeout(function() {" + activateScript + "}," + iframeDelay + ");";
          }
          else
          {
-            PortalApplication.getInstance().addEventScript(activateScript);
+            executionScript = activateScript;
          }
       }
    }
@@ -421,8 +432,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
       if (!isPoppedOut())
       {
          String anchor = "tiffViewerIframe";
-         String restoreTiffIframe = "restoreTiffIframe('" + frameId + "','" + anchor + "')";
-         PortalApplication.getInstance().addEventScript(restoreTiffIframe);
+         executionScript = "restoreTiffIframe('" + frameId + "','" + anchor + "')";
       }
    }
    
@@ -439,22 +449,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    /**
     * 
     */
-   private void calculateOptimalDivSize()
-   {
-      String calculateOptimalDivSizeJS = "var divObj = document.getElementById('tiffViewerIframe');"
-            + "var topValue= 0,leftValue= 0;" + "while(divObj) {" + "leftValue+= divObj.offsetLeft;"
-            + "topValue+= divObj.offsetTop;" + "divObj = divObj.offsetParent;" + "}"
-            + "var windowWidth = document.body.clientWidth, windowHeight = document.body.clientHeight;"
-            + "var docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;"
-            + "var docHeight = parseInt(docWidth * 1.4);";
-
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), calculateOptimalDivSizeJS);
-      PortalApplication.getInstance().addEventScript(calculateOptimalDivSizeJS);
-   }
-
-   /**
-    * 
-    */
    public void deActivateIframe()
    {
       String deActivateIframeJS = "this.window.parent.BridgeUtils.FrameManager.deactivate('" + frameId + "');";
@@ -464,7 +458,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    private void closeIframe()
    {
       String closeIframeJS = "parent.InfinityBpm.ProcessPortal.closeContentFrame('" + frameId + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), closeIframeJS);
       PortalApplication.getInstance().addEventScript(closeIframeJS);
    }
    
@@ -596,6 +589,16 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    public IDocumentContentInfo getDocumentInfo()
    {
       return documentInfo;
+   }
+   
+   public String getExecutionScript()
+   {
+      return executionScript;
+   }
+
+   public void setExecutionScript(String executionScript)
+   {
+      this.executionScript = executionScript;
    }
 
    public void setCustomSaveDialogOptions()
