@@ -335,12 +335,7 @@ if (!window["BridgeUtils"].View) {
 					var frameContainer = BridgeUtils.FrameManager.getFrameContainer();
 					frameContainer.appendChild(iframe);
 
-					BridgeUtils.log("Scheduling delayed iFrame Closing = " + iframeId);
-					window.setTimeout(function() {
-						BridgeUtils.log("Removing iFrame = " + iframeId);
-						iframe.parentNode.removeChild(iframe);
-						BridgeUtils.log("Removed iFrame = " + iframeId);
-					}, 200);
+					BridgeUtils.FrameManager.close(iframeId);
 				}
 
 				BridgeUtils.log("Processed View Close Intent Event = " + data);
@@ -1287,13 +1282,17 @@ if (!window["BridgeUtils"].FrameManager) {
 		 *
 		 */
 		function close(contentId) {
-			BridgeUtils.log("Trying to Close Frame = " + contentId);
+			BridgeUtils.log("Trying to Close iFrame = " + contentId);
 			doWithContentFrame(contentId, function(contentFrame) {
 				contentFrame.style.display = 'none';
-				if (contentFrame.parentNode) {
-					contentFrame.parentNode.removeChild(contentFrame);
-				}
-				BridgeUtils.log("Closed Frame = " + contentId);
+				BridgeUtils.log("Scheduling delayed iFrame Closing = " + contentId);
+				window.setTimeout(function() {
+					BridgeUtils.log("Removing iFrame = " + contentId);
+					if (contentFrame.parentNode) {
+						contentFrame.parentNode.removeChild(contentFrame);
+					}
+					BridgeUtils.log("Removed iFrame = " + contentId);
+				}, 200);
 			});
 		}
 
