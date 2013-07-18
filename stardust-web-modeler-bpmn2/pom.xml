@@ -42,10 +42,6 @@
             </exclusion>
             <exclusion>
                <groupId>com.infinity.bpm</groupId>
-               <artifactId>ipp-bpm-model</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>com.infinity.bpm</groupId>
                <artifactId>ipp-bpm-repository</artifactId>
             </exclusion>
             <exclusion>
@@ -63,6 +59,17 @@
             <exclusion>
                <groupId>org.eclipse.equinox</groupId>
                <artifactId>org-eclipse-equinox-registry</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-bpm-model</artifactId>
+         <version>${ipp.version}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>com.infinity.bpm</groupId>
+               <artifactId>carnot-engine</artifactId>
             </exclusion>
          </exclusions>
       </dependency>
