@@ -70,7 +70,12 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
          singleViewId = (String)viewRoot.getValueBinding("singleViewId").getValue(facesContext);
          singleViewKey = (String)viewRoot.getValueBinding("singleViewKey").getValue(facesContext);
       }
-    
+
+      if("null".equals(singleViewKey)) // Literal Null
+      {
+         singleViewKey = "";
+      }
+
       associateView(singleViewId, singleViewKey);
       setBreadcrumb();
       trace.info("Single View Context = " + singleViewId + ":" + singleViewKey);
