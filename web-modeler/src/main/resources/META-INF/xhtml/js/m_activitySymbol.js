@@ -719,16 +719,23 @@ define(
 					return true;
 				};
 
+
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.postMove = function(x, y, originalX,
-						originalY) {
-					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
-						this.boundaryEventSymbols[n].moveBy(x - originalX, y
-								- originalY);
-						this.boundaryEventSymbols[n].toFront();
+				ActivitySymbol.prototype.dragStart = function() {
+					if (!this.selected) {
+						// deselect other symbols before drag
+						this.diagram.deselectCurrentSelection();
+						this.diagram.currentSelection = [];
+						this.select();
 					}
+
+					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
+						this.boundaryEventSymbols[n].select();
+					}
+
+					this.diagram.selectedSymbolsDragStart();
 				};
 
 				/**

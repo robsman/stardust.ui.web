@@ -1078,10 +1078,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateNodeSymbol(INodeSymbol nodeSymbol, JsonObject nodeSymbolJto)
    {
+      LaneSymbol newParentSymbol = null;
+      String parentID = extractString(nodeSymbolJto,
+            ModelerConstants.PARENT_SYMBOL_ID_PROPERTY);
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
+      if ( !(nodeSymbol instanceof LaneSymbol) && parentID != null)
+      {
+         newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
+               processDefinition, parentID);
+      }
+      
       if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.X_PROPERTY)
             && hasNotJsonNull(nodeSymbolJto, ModelerConstants.Y_PROPERTY))
       {
-         LaneSymbol newParentSymbol = null;
          int x = extractInt(nodeSymbolJto, ModelerConstants.X_PROPERTY);
          int y = extractInt(nodeSymbolJto, ModelerConstants.Y_PROPERTY);
 
@@ -1089,9 +1098,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          int laneOffsetX = 0;
          int laneOffsetY = 0;
 
-         String parentID = extractString(nodeSymbolJto,
-               ModelerConstants.PARENT_SYMBOL_ID_PROPERTY);
-         ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
          if (!(nodeSymbol instanceof LaneSymbol))
          {
             newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
@@ -1107,108 +1113,107 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          nodeSymbol.setXPos(x - laneOffsetX);
          nodeSymbol.setYPos(y - laneOffsetY);
+      }
+      if (nodeSymbol instanceof LaneSymbol
+            && (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY) || hasNotJsonNull(
+                  nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY)))
+      {
+         int xOffset = 0, yOffset = 0;
+         int height = 0;
+         int heightOffset = 0;
+         PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
+         // Update the width of current Lane.
+         int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+         // Calculate widthOffset required to adjust other swimlanes
+         int widthOffset = width - nodeSymbol.getWidth();
+         nodeSymbol.setWidth(width);
 
-         if (nodeSymbol instanceof LaneSymbol
-               && (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY) || hasNotJsonNull(
-                     nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY)))
+         // Update the height of current Lane.
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
          {
-            int xOffset = 0, yOffset = 0;
-            int height = 0;
-            int heightOffset = 0;
-            PoolSymbol poolSymbol = (PoolSymbol) nodeSymbol.eContainer();
-            // Update the width of current Lane.
-            int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
-            // Calculate widthOffset required to adjust other swimlanes
-            int widthOffset = width - nodeSymbol.getWidth();
-            nodeSymbol.setWidth(width);
+            height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+            heightOffset = height - nodeSymbol.getHeight();
+            nodeSymbol.setHeight(height);
+         }
 
-            // Update the height of current Lane.
-            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
+         // Update the child symbol co-ordinates wrt parent(lane)
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.X_OFFSET))
+            xOffset = nodeSymbolJto.get(ModelerConstants.X_OFFSET).getAsInt();
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.Y_OFFSET))
+            yOffset = nodeSymbolJto.get(ModelerConstants.Y_OFFSET).getAsInt();
+
+         if (xOffset != 0)
+         {
+            updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, xOffset, 0);
+         }
+         if (yOffset != 0)
+         {
+            updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, 0, yOffset);
+         }
+
+         // Update other swimlane width/height
+         OrientationType orientation = getDiagramOrientationType(nodeSymbol);
+
+         for (LaneSymbol lane : poolSymbol.getLanes())
+         {
+            if (nodeSymbol.getElementOid() != lane.getElementOid())
             {
-               height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
-               heightOffset = height - nodeSymbol.getHeight();
-               nodeSymbol.setHeight(height);
-            }
-
-            // Update the child symbol co-ordinates wrt parent(lane)
-            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.X_OFFSET))
-               xOffset = nodeSymbolJto.get(ModelerConstants.X_OFFSET).getAsInt();
-            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.Y_OFFSET))
-               yOffset = nodeSymbolJto.get(ModelerConstants.Y_OFFSET).getAsInt();
-
-            if (xOffset != 0)
-            {
-               updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, xOffset, 0);
-            }
-            if (yOffset != 0)
-            {
-               updateChildSymbolCoordinates((LaneSymbol) nodeSymbol, 0, yOffset);
-            }
-
-            // Update other swimlane width/height
-            OrientationType orientation = getDiagramOrientationType(nodeSymbol);
-
-            for (LaneSymbol lane : poolSymbol.getLanes())
-            {
-               if (nodeSymbol.getElementOid() != lane.getElementOid())
+               if (orientation.equals(OrientationType.VERTICAL_LITERAL))
                {
-                  if (orientation.equals(OrientationType.VERTICAL_LITERAL))
+                  if (lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0)
                   {
-                     if (lane.getXPos() > nodeSymbol.getXPos() && widthOffset != 0)
-                     {
-                        lane.setXPos(lane.getXPos() + widthOffset);
-                     }
-                     if (heightOffset != 0)
-                     {
-                        lane.setHeight(height);
-                        // if symbol on currentLane(nodeSymbol) is moved , adjustment on
-                        // other lane symbol is required
-                        updateChildSymbolCoordinates(lane, 0, yOffset);
-                     }
+                     lane.setXPos(lane.getXPos() + widthOffset);
                   }
-                  else
+                  if (heightOffset != 0)
                   {
-                     if (lane.getYPos() > nodeSymbol.getYPos() && heightOffset != 0)
-                     {
-                        lane.setYPos(lane.getYPos() + heightOffset);
-                     }
-                     if (widthOffset != 0)
-                     {
-                        lane.setWidth(width);
-                        // if symbol on currentLane(nodeSymbol) is moved , adjustment on
-                        // other lane symbol is required
-                        updateChildSymbolCoordinates(lane, xOffset, 0);
-                     }
+                     lane.setHeight(height);
+                     // if symbol on currentLane(nodeSymbol) is moved , adjustment on
+                     // other lane symbol is required
+                     updateChildSymbolCoordinates(lane, 0, yOffset);
+                  }
+               }
+               else
+               {
+                  if (lane.getYPos() > nodeSymbol.getYPos() && heightOffset != 0)
+                  {
+                     lane.setYPos(lane.getYPos() + heightOffset);
+                  }
+                  if (widthOffset != 0)
+                  {
+                     lane.setWidth(width);
+                     // if symbol on currentLane(nodeSymbol) is moved , adjustment on
+                     // other lane symbol is required
+                     updateChildSymbolCoordinates(lane, xOffset, 0);
                   }
                }
             }
-            // Update pool dimensions
-            poolSymbol.setWidth(poolSymbol.getWidth() + widthOffset);
-            poolSymbol.setHeight(poolSymbol.getHeight() + heightOffset);
          }
-         else
+         // Update pool dimensions
+         poolSymbol.setWidth(poolSymbol.getWidth() + widthOffset);
+         poolSymbol.setHeight(poolSymbol.getHeight() + heightOffset);
+      }
+      else
+      {
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY))
          {
-            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY))
-            {
-               int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
-               nodeSymbol.setWidth(width);
-            }
-            if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
-            {
-               int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
-               nodeSymbol.setHeight(height);
-            }
+            int width = extractInt(nodeSymbolJto, ModelerConstants.WIDTH_PROPERTY);
+            nodeSymbol.setWidth(width);
          }
-         // Type property is used to identify the symbol type, used while changing
-         // parentSymbol on move from one lane to another.
-         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.TYPE_PROPERTY))
+         if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY))
          {
-            String symbolType = nodeSymbolJto.get(ModelerConstants.TYPE_PROPERTY)
-                  .getAsString();
-            if (null != symbolType)
-            {
-               updateParentSymbolForSymbol(nodeSymbol, newParentSymbol, symbolType);
-            }
+            int height = extractInt(nodeSymbolJto, ModelerConstants.HEIGHT_PROPERTY);
+            nodeSymbol.setHeight(height);
+         }
+      }
+      // Type property is used to identify the symbol type, used while changing
+      // parentSymbol on move from one lane to another.
+      if (hasNotJsonNull(nodeSymbolJto, ModelerConstants.TYPE_PROPERTY))
+      {
+         String symbolType = nodeSymbolJto.get(ModelerConstants.TYPE_PROPERTY)
+               .getAsString();
+         if (null != symbolType && null != newParentSymbol)
+         {
+            updateParentSymbolForSymbol(nodeSymbol, newParentSymbol, symbolType);
          }
       }
    }

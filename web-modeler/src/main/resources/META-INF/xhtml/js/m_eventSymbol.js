@@ -721,8 +721,11 @@ define(
 				 * separately was resulting into "Bad Request"
 				 */
 				EventSymbol.prototype.dragStop_ = function(multipleSymbols) {
-					var bindingChanges = this.getBindingChanges();
+					if(!multipleSymbols){
+						var bindingChanges = this.getBindingChanges();
+					}
 					var changeDesc = this.dragStopBase(multipleSymbols);
+					
 					if (null != bindingChanges) {
 						changeDesc.changes["modelElement"] = bindingChanges;
 					}
