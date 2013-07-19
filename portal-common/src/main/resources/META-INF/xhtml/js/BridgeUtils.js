@@ -722,7 +722,7 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframeOrgData.width = launchPanelIframe.style.width;
 				launchPanelIframeOrgData.height = launchPanelIframe.style.height;
 				
-				popupDialogDiv.appendChild(launchPanelIframe);
+				BridgeUtils.FrameManager.getFrameContainer().appendChild(launchPanelIframe);
 				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
 				launchPanelIframe.style.width = scrollWidth + "px";
 				launchPanelIframe.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
