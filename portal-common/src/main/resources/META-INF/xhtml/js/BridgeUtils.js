@@ -438,17 +438,22 @@ if (!window["BridgeUtils"].View) {
 		 *
 		 */
 		function doPartialSubmit(iframeId, formId, fieldId, fieldValue) {
+			BridgeUtils.log("doPartialSubmit: Values = " + iframeId + ":" + formId + ":" + fieldId + ":" + fieldValue);
 			var iframe = document.getElementById(iframeId);
 			if (iframe) {
 				var form = iframe.contentDocument.getElementById(formId);
 				var field = iframe.contentDocument.getElementById(formId + ":" + fieldId);
 
-				BridgeUtils.log("doPartialSubmit: Existing Value = " + field.value + ", New value = " + fieldValue);
-				
-				field.value = fieldValue;
-				iframe.contentWindow.iceSubmitPartial(form, field);
+				if (form != null && field != null) {
+					BridgeUtils.log("doPartialSubmit: Existing Value = " + field.value + ", New value = " + fieldValue);
+					
+					field.value = fieldValue;
+					iframe.contentWindow.iceSubmitPartial(form, field);
+				} else {
+					BridgeUtils.log("doPartialSubmit: form or field can not be NULL", "e");
+				}
 			} else {
-				BridgeUtils.log("Frame not Found = " + iframeId);
+				BridgeUtils.log("doPartialSubmit: Frame not Found = " + iframeId);
 			}
 		}
 
@@ -703,8 +708,8 @@ if (!window["BridgeUtils"].Dialog) {
 				}
 
 				var launchPanelsWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10 + "px";
-				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
-						launchPanelsWidth + "_" + Math.floor(Math.random() * 10000) + 1);
+//				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
+//						launchPanelsWidth + "_" + Math.floor(Math.random() * 10000) + 1);
 
 				var sidebar = document.getElementById("sidebar");
 				sidebar.style.display = "none";
@@ -716,7 +721,6 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframeOrgData.clazz = launchPanelIframe.getAttribute("class");
 				launchPanelIframeOrgData.width = launchPanelIframe.style.width;
 				launchPanelIframeOrgData.height = launchPanelIframe.style.height;
-				launchPanelIframeOrgData.bodyWidth = launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width;
 				
 				popupDialogDiv.appendChild(launchPanelIframe);
 				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
@@ -744,14 +748,10 @@ if (!window["BridgeUtils"].Dialog) {
 	
 				// Sidebar And View
 				if (launchPanelIframe) {
-					BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
-							"auto_" + Math.floor(Math.random() * 10000) + 1);
-
+					launchPanelIframeOrgData.parent.appendChild(launchPanelIframe);
 					launchPanelIframe.setAttribute("class", launchPanelIframeOrgData.clazz);
 					launchPanelIframe.style.width = launchPanelIframeOrgData.width;
 					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
-					launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width = launchPanelIframeOrgData.bodyWidth;
-					launchPanelIframeOrgData.parent.appendChild(launchPanelIframe);
 				}
 
 				// Show Sidebar
@@ -765,11 +765,15 @@ if (!window["BridgeUtils"].Dialog) {
 				invokedFromlaunchPanels = undefined;
 				sidebarPinned = undefined;
 				launchPanelIframe = undefined;
+				launchPanelIframeOrgData = undefined;
 
 				popupDialogDiv.parentNode.removeChild(popupDialogDiv);
 				popupDialogDiv = undefined;
 
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
+				
+//				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
+//						"auto_" + Math.floor(Math.random() * 10000) + 1);						
 			}
 		}
 
