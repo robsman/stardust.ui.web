@@ -21,7 +21,7 @@
 			-->
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{col.columnName == 'Name'}">
-			<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}" title="#{messages_admin['views.userGroupMgmt.userGroups.title']}">
+			<ice:commandLink actionListener="#{createOrModifyUserGroupBean.openUserGroupDialog}" title="#{messages_admin['views.userGroupMgmt.userGroups.title']}" onclick="Event.stop(event);">
 				 <pc:automationTag value="auto-ADM-UserGrpMgmt-DataTable-Name" standAlone="false"/>
 				 <ice:outputText value="#{row.name}"/>
 				 <f:attribute name="userGroup" value="#{row.userGroup}" />

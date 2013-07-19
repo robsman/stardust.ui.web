@@ -15,7 +15,7 @@
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 		<ice:panelGroup rendered="#{col.columnName == 'ActivityName'}">
 			<ice:commandLink value="#{row.activityName}"
-				action="#{ippPortalApp.openView}">
+				action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
 				<f:param name="viewId" value="activityInstanceDetailsView" />
 				<f:param name="nested" value="true" />
 				<f:param name="viewParams"
@@ -34,7 +34,7 @@
 				rendered="#{not row.resubmissionActivity}" />
 			<ice:panelGroup rendered="#{row.resubmissionActivity}">
 				<ice:commandLink value="#{messages_bcc['common.button.yes']}"
-					actionListener="#{processInstanceDetailsBean.prepareActivityNotesDialog}">
+					actionListener="#{processInstanceDetailsBean.prepareActivityNotesDialog}" onclick="Event.stop(event);">
 					<f:param name="selectedActivityInstance" value="#{row.activityOID}" />
 				</ice:commandLink>
 			</ice:panelGroup>

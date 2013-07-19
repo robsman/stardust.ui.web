@@ -19,7 +19,7 @@
 				<tr style="vertical-align: top;">
 					<td><h:graphicImage url="#{row.iconPath}" /></td>
 					<td><ice:commandLink value="#{row.documentName}"
-							action="#{documentSearchBean.openDocument}">
+							action="#{documentSearchBean.openDocument}" onclick="Event.stop(event);">
 							<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocName"
 								standAlone="false" />
 							<f:param name="documentId" value="#{row.documentId }" />
@@ -43,7 +43,7 @@
 			style="text-align: left;">
 			<ice:commandLink
 				actionListener="#{userDetailsBean.openUserDetailsDialog}"
-				rendered="#{row.user != null}">
+				rendered="#{row.user != null}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-Author"
 					standAlone="false" />
 				<ice:outputText value="#{row.authorFullName}" />
