@@ -1335,6 +1335,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          StartEventSymbol startSymbol = ModelBuilderFacade.findStartEventSymbol(
                parentLane, nodeSymbol.getElementOid());
+
+         EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(
+               parentLane, nodeSymbol.getElementOid());
+
+         IntermediateEventSymbol intermediateEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+               parentLane, nodeSymbol.getElementOid());
+
          if (null != startSymbol)
          {
             if (parentLane.getElementOid() != newParentSymbol.getElementOid())
@@ -1344,13 +1351,22 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                newParentSymbol.getStartEventSymbols().add((StartEventSymbol) nodeSymbol);
             }
          }
-         else
+         else if (endEventSymbol != null)
          {
             if (parentLane.getElementOid() != newParentSymbol.getElementOid())
             {
                parentLane.getEndEventSymbols().remove(nodeSymbol);
 
                newParentSymbol.getEndEventSymbols().add((EndEventSymbol) nodeSymbol);
+            }
+         }
+         else if (intermediateEventSymbol != null)
+         {
+            if (parentLane.getElementOid() != newParentSymbol.getElementOid())
+            {
+               parentLane.getIntermediateEventSymbols().remove(nodeSymbol);
+               newParentSymbol.getIntermediateEventSymbols().add(
+                     (IntermediateEventSymbol) nodeSymbol);
             }
          }
       }
