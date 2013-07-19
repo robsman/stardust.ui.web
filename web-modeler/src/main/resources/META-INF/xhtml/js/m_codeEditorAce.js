@@ -13,10 +13,9 @@ define([ "jquery" ], function(jquery) {
 	// Interface
 	return {
 		getCodeEditor : function(textArea) {
-			// TODO: Ace editor (HTML mode) not working in Panama
-			//return new CodeEditor(textArea, "ace/mode/html");
-			jQuery("#" + textArea).css("display", "none");
-			return new TextAreaEditor(textArea.substring(0, textArea.indexOf("Div")));
+			return new CodeEditor(textArea, "ace/mode/html");
+//			jQuery("#" + textArea).css("display", "none");
+//			return new TextAreaEditor(textArea.substring(0, textArea.indexOf("Div")));
 		},
 		getDrlEditor : function(textArea) {
 			return new CodeEditor(textArea, "ace/mode/drl");
@@ -28,62 +27,62 @@ define([ "jquery" ], function(jquery) {
 	
 	function CodeEditor(textArea, mode) {
 
-		var editor = null;
-		var disabled = false;
-		var globalVariables = null;
+		this.editor = null;
+		this.disabled = false;
+		this.globalVariables = null;
 
-		editor = ace.edit(textArea);
-		editor.getSession().setMode(mode);
-		editor.setTheme("ace/theme/chrome");
+		this.editor = ace.edit(textArea);
+		this.editor.getSession().setMode(mode);
+		this.editor.setTheme("ace/theme/chrome");
 
 		CodeEditor.prototype.getEditor = function() {
-			return editor;
+			return this.editor;
 		};
 
 		CodeEditor.prototype.getValue = function() {
-			return editor.getSession().getDocument().getValue();
+			return this.editor.getSession().getDocument().getValue();
 		};
 
 		CodeEditor.prototype.setValue = function(val) {
-			editor.getSession().getDocument().setValue(val);
+			this.editor.getSession().getDocument().setValue(val);
 		};
 
 		CodeEditor.prototype.disable = function() {
-			if (!disabled) {
-				editor.setReadOnly(true);
-				disabled = true;
+			if (!this.disabled) {
+				this.editor.setReadOnly(true);
+				this.disabled = true;
 			}
 		};
 
 		CodeEditor.prototype.enable = function() {
-			if (disabled) {
-				editor.setReadOnly(false);
-				disabled = false;
+			if (this.disabled) {
+				this.editor.setReadOnly(false);
+				this.disabled = false;
 			}
 		};
 
 		CodeEditor.prototype.resize = function() {
-			editor.resize(true);
+			this.editor.resize(true);
 		};
 
 		CodeEditor.prototype.showGutter = function() {
-			editor.renderer.setShowGutter(true);
+			this.editor.renderer.setShowGutter(true);
 		};
 
 		CodeEditor.prototype.hideGutter = function() {
-			editor.renderer.setShowGutter(false);
+			this.editor.renderer.setShowGutter(false);
 		};
 
 		CodeEditor.prototype.gotoLine = function(lineNo) {
-			editor.gotoLine(lineNo);
+			this.editor.gotoLine(lineNo);
 		};
 
 		CodeEditor.prototype.setGlobalVariables = function(data) {
-			globalVariables = data;
+			this.globalVariables = data;
 
 			// Bind the Model Data as top "window" level objects to be used for Code Editor auto-complete
-			for (var key in globalVariables) {
-				window[key] = globalVariables[key];
+			for (var key in this.globalVariables) {
+				window[key] = this.globalVariables[key];
 			}
 		};
 	}

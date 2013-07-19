@@ -961,7 +961,7 @@ var Mode = function() {
     var highlighter = new CssHighlightRules();
     this.$tokenizer = new Tokenizer(highlighter.getRules(), "i");
     this.$outdent = new MatchingBraceOutdent();
-    this.$behaviour = new CstyleBehaviour();
+    //this.$behaviour = new CstyleBehaviour();
     this.$keywordList = highlighter.$keywordList;
     this.foldingRules = new CStyleFoldMode();
 };

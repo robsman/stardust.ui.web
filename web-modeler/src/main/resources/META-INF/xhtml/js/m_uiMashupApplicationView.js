@@ -145,7 +145,7 @@ define(
 				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
 						+ selectdata + "</option>");
 
-				jQuery("label[for='primitiveDataTypeSelect']")
+				m_utils.jQuerySelect("label[for='primitiveDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
