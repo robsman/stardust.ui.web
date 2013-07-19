@@ -726,7 +726,6 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
 				launchPanelIframe.style.width = scrollWidth + "px";
 				launchPanelIframe.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
-				launchPanelIframe.contentDocument.getElementsByTagName("body")[0].style.width = launchPanelsWidth;
 
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
 			}
