@@ -131,7 +131,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    {
       if (condition)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + divId + "');";
+         String positionPopupScript = "resizeMessageDialog('" + divId + "');";
          PortalApplication.getInstance().addEventScript(positionPopupScript);
       }
    }
