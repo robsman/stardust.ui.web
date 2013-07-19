@@ -104,10 +104,16 @@ define(
 					}, function(event) {
 						var page =
 							event.data.page;
-
-						page
-								.getModelElement().eventClass = page.eventClassSelect.val();
-						page.submitChanges({modelElement: page.getModelElement()});
+						var eventClass = page.eventClassSelect.val();
+						var modelElement = page.getModelElement();
+						modelElement.eventClass = eventClass;
+						if (eventClass == m_constants.ERROR_EVENT_CLASS) {
+							if (!modelElement.attributes) {
+								modelElement.attributes = {};
+							}
+							modelElement.attributes["carnot:engine:exceptionName"] = "java.lang.Exception";
+						}
+						page.submitChanges({modelElement: modelElement});
 					});
 				};
 

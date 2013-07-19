@@ -140,7 +140,7 @@ define(
 						var eventTrigger = overlay.eventTriggerSelect.val();
 
 						//show/hide text field
-						if ('other' == eventTrigger) {
+						if ('' == eventTrigger) {
 							overlay.eventTriggerInput.show();
 							overlay.submitEventTriggerChanges(overlay.eventTriggerSelect.val());
 						} else {
@@ -191,28 +191,28 @@ define(
 				IntermediateErrorEventIntegrationOverlay.prototype.initializeEventTriggerSelect = function(
 						select) {
 					select
-							.append("<option value='general'>"
+							.append("<option value='java.lang.Exception'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.general")
 									+ "</option>");
 
 					select
-							.append("<option value='network'>"
+							.append("<option value='java.io.IOException'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.network")
 									+ "</option>");
 					select
-							.append("<option value='runtime'>"
+							.append("<option value='java.lang.RuntimeException'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.runtime")
 									+ "</option>");
 					select
-							.append("<option value='webservice'>"
+							.append("<option value='javax.xml.ws.soap'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.webservice")
 									+ "</option>");
 					select
-							.append("<option value='other'>"
+							.append("<option value=''>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.errorEvent_intermediate.eventTrigger.other")
 									+ "</option>");
@@ -233,22 +233,28 @@ define(
 
 					this.logHandlerInput.prop("checked", modelElement.logHandler);
 
-					this.eventTriggerSelect.val('general');
+					//this.eventTriggerSelect.val('java.lang.Exception');
 					this.eventTriggerInput.hide();
 					var exception = null;
 
 					if (modelElement.attributes) {
 						exception = modelElement.attributes["carnot:engine:exceptionName"];
 						if (null != exception) {
-							if ([ 'general', 'network', 'runtime', 'webservice' ]
-									.indexof(exception) == -1) {
-								this.eventTriggerInput.show();
-								this.eventTriggerSelect.val('other');
-								this.eventTriggerInput.val(exception);
-							} else {
+							if ("java.lang.Exception" === exception
+									|| "java.io.IOException" === exception
+									|| "java.lang.RuntimeException" === exception
+									|| "javax.xml.ws.soap" === exception) {
 								this.eventTriggerInput.hide();
 								this.eventTriggerSelect.val(exception);
+							} else {
+								this.eventTriggerInput.show();
+								this.eventTriggerSelect.val('');
+								this.eventTriggerInput.val(exception);
 							}
+						} else {
+							this.eventTriggerInput.show();
+							this.eventTriggerSelect.val('');
+							this.eventTriggerInput.val('');
 						}
 					}
 				};
