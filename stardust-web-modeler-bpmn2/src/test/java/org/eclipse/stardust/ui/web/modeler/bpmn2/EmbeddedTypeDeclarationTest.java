@@ -10,7 +10,6 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.xml.XMLConstants;
 
@@ -21,11 +20,10 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.stardust.model.bpmn2.extension.utils.Bpmn2ExtensionUtils;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler.ModelDescriptor;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.util.XSDConstants;
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,17 +122,13 @@ public class EmbeddedTypeDeclarationTest
       {
          XSDSchema schema = null;
 
-         List<EObject> embeddedSchemas = Bpmn2ExtensionUtils.getExtensionElements(
+         Object embeddedSchema = Bpmn2ExtensionUtils.getExtensionElement(
                itemDefinition, "schema", XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         for (EObject embeddedSchema : embeddedSchemas)
+         if (embeddedSchema instanceof XSDSchema)
          {
-            if (embeddedSchema instanceof XSDSchema)
+            if (schemaLocation.equals(((XSDSchema) embeddedSchema).getTargetNamespace()))
             {
-               if (schemaLocation.equals(((XSDSchema) embeddedSchema).getTargetNamespace()))
-               {
-                  schema = (XSDSchema) embeddedSchema;
-                  break;
-               }
+               schema = (XSDSchema) embeddedSchema;
             }
          }
 
