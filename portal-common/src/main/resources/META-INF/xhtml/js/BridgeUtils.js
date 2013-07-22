@@ -24,7 +24,7 @@ if (!window["BridgeUtils"]) {
 						console.error(str);
 					}
 				} else {
-					console.debug("* " + str);
+					console.log("* " + str);
 				}
 			}
 		}
@@ -232,27 +232,43 @@ if (!window["BridgeUtils"].View) {
 		 *
 		 */
 		function init() {
-			BridgeUtils.log("BridgeUtils.View Initializing");
+			var initialized = false;
+			try {
+				BridgeUtils.log("BridgeUtils.View Initializing");
+	
+				var sgPubSubService;
+				BridgeUtils.runInAngularContext(function($scope) {
+					sgPubSubService = $scope.$root.sgPubSubService;
+	
+					$scope.$root.$on('$destroy', function() {
+						BridgeUtils.View.destroy();
+			        });
+				});
+	
+				if(sgPubSubService) {
+					initialized = true;
 
-			var sgPubSubService;
-			BridgeUtils.runInAngularContext(function($scope) {
-				sgPubSubService = $scope.$root.sgPubSubService;
-
-				$scope.$root.$on('$destroy', function() {
-					BridgeUtils.View.destroy();
-		        });
-			});
-
-			BridgeUtils.log("Subscribing to View Events");
-			unsubscribers.push(sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged));
-			unsubscribers.push(sgPubSubService.subscribe('sgViewPanelCloseIntent', viewClosing));
-			unsubscribers.push(sgPubSubService.subscribe('sgViewPanelClosed', viewClosed));
-
-			BridgeUtils.log("Subscribing to Sidebar Events");
-			unsubscribers.push(sgPubSubService.subscribe('sgSidebarVisibilityChanged', sidebarVisibilityChanged));
-			unsubscribers.push(sgPubSubService.subscribe('sgSidebarPinStateChanged', sidebarPinStateChanged));
-
-			BridgeUtils.log("BridgeUtils.View Initialized Successfully");
+					BridgeUtils.log("Subscribing to View Events");
+					unsubscribers.push(sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged));
+					unsubscribers.push(sgPubSubService.subscribe('sgViewPanelCloseIntent', viewClosing));
+					unsubscribers.push(sgPubSubService.subscribe('sgViewPanelClosed', viewClosed));
+		
+					BridgeUtils.log("Subscribing to Sidebar Events");
+					unsubscribers.push(sgPubSubService.subscribe('sgSidebarVisibilityChanged', sidebarVisibilityChanged));
+					unsubscribers.push(sgPubSubService.subscribe('sgSidebarPinStateChanged', sidebarPinStateChanged));
+		
+					BridgeUtils.log("BridgeUtils.View Initialized Successfully");
+				}
+			} catch(e) {
+				BridgeUtils.log("BridgeUtils.View Initialization Failed. " + e, "e");
+			}
+			
+			if (!initialized){
+				BridgeUtils.log("BridgeUtils.View Initialization Delaying");
+				window.setTimeout(function(){
+					init();
+				}, 200);
+			}
 		}
 
 		/*
