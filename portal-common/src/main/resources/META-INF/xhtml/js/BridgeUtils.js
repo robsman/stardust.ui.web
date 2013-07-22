@@ -46,8 +46,12 @@ if (!window["BridgeUtils"]) {
 			// TODO: Set cursor to wait
 			log("## scriptRunning = " + scriptRunning, "w");
 
-			func();
-
+			try {
+				func();
+			} catch(ex) {
+				log("## Error while running script." + ex, "e");
+			}
+			
 			scriptRunning = false;
 			// TODO: Set cursor to normal
 			log("## scriptRunning = " + scriptRunning, "w");
