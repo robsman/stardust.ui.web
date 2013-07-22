@@ -290,6 +290,14 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Opening View = " + viewId);
 			BridgeUtils.runInAngularContext(function($scope) {
 				$scope.open(viewId, true, params);
+
+				// Set Icon
+				var view = $scope.activeViewPanel();
+				BridgeUtils.log("Setting Icon. Icon Base = " + view.iconBase);
+				if (view.iconBase && view.iconBase != "") {
+					BridgeUtils.log("Setting Icon = " + view.params);
+					view.setIcon(BridgeUtils.substituteParams(view.iconBase, view.params, true));
+				}
 			});
 			BridgeUtils.log("View Opened= " + viewId);
 		}
@@ -514,7 +522,7 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.runInAngularContext(function($scope) {
 				var view = $scope.activeViewPanel();
 				if (view) {
-					if (view.iconBase) {
+					if (view.iconBase && view.iconBase != "") {
 						icon = BridgeUtils.substituteParams(view.iconBase, {"icon": icon}, true);
 					}
 					view.setIcon(icon);

@@ -9,13 +9,11 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
      */
 	bpmUi.module.controller('bpm-ui.ExternalPageCtrl', ['$scope', function($scope) {
 		var view = $scope.activeViewPanel();
+		log("External Page Controller. View = " + view);
 		if (view) {
 			$scope.iframeUrl = view.externalURL;
 			if (view.params) {
 				$scope.iframeUrl = BridgeUtils.substituteParams($scope.iframeUrl, view.params, true);
-				if (view.iconBase && view.iconBase != "") {
-					$scope.setIcon(BridgeUtils.substituteParams(view.iconBase, view.params, true));
-				}
 			} else {
 				view.params = [];
 			}
@@ -25,9 +23,16 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 
 			$scope.label = view.label;
 		} else {
-			if (console) {
-				console.debug("View is null or it does not have Params. Something is incorrect. View = " + view);
-			}
+			log("View is null or it does not have Params. Something is incorrect. View = " + view);
 		}
 	}]);
+
+	/*
+	 * 
+	 */
+	function log(msg) {
+		if (window.BridgeUtils) {
+			window.BridgeUtils.log(msg);
+		}
+	}
 });
