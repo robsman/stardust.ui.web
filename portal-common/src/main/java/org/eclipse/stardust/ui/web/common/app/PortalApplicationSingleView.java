@@ -53,7 +53,8 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
       String singleViewKey = request.getParameter("singleViewKey");
 
       // First time - View just now opened
-      if (StringUtils.isNotEmpty(singleViewId))
+      boolean justOpened = StringUtils.isNotEmpty(singleViewId);
+      if (justOpened)
       {
          if (-1 != singleViewId.indexOf("::"))
          {
@@ -76,9 +77,14 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
          singleViewKey = "";
       }
 
+      trace.info("Single View Context = " + singleViewId + ":" + singleViewKey);
       associateView(singleViewId, singleViewKey);
       setBreadcrumb();
-      trace.info("Single View Context = " + singleViewId + ":" + singleViewKey);
+
+      if (justOpened)
+      {
+         PortalApplication.getInstance().printOpenViews();
+      }
    }
 
    /**

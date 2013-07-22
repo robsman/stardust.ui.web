@@ -83,7 +83,7 @@ public class SingleViewLaunchPanels implements InitializingBean
             }
             trace.info("After:: Focus View: " + portalApp.getFocusView());
    
-            printViews();
+            portalApp.printOpenViews();
          }
       }
       catch (Exception e)
@@ -204,19 +204,6 @@ public class SingleViewLaunchPanels implements InitializingBean
       catch (Exception e)
       {
          trace.error("", e);
-      }
-   }
-
-   /**
-    *
-    */
-   private void printViews()
-   {
-      trace.debug("All Views: ");
-      PortalApplication portalApp = PortalApplication.getInstance();
-      for (View view : portalApp.getOpenViews())
-      {
-         trace.debug("\t" + view);
       }
    }
 
