@@ -39,6 +39,8 @@
 				<td style="width:100%; height: 100%; vertical-align: top;">
 					<ice:panelGroup>
 						<ui:include src="portalSingleViewContent.xhtml" />
+					</ice:panelGroup>
+					<ice:panelGroup rendered="#{ippMessageDialog.fromlaunchPanels == 'false'}">
 						<ui:include src="portalMessageDialog.xhtml" />
 					</ice:panelGroup>
 				</td>
