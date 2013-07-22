@@ -168,6 +168,38 @@ public class ConnectionCommandHandler
                   }
                }
             }
+            else if (ModelerConstants.EVENT_KEY.equals(targetType))
+            {
+               AbstractEventSymbol fromEventSymbol = ModelBuilderFacade.findStartEventSymbol(
+                     diagram, fromSymbolOid);
+               
+               AbstractEventSymbol toEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+                     diagram, toSymbolOid);
+               
+               if (null == fromEventSymbol)
+               {
+                  fromEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+                        diagram, fromSymbolOid);
+
+                  //Intermediate event can connect to End event directly
+                  if (null == toEventSymbol && null != fromEventSymbol)
+                  {
+                     toEventSymbol = ModelBuilderFacade.findEndEventSymbol(diagram,
+                           toSymbolOid);
+                  }
+               }               
+               
+               if (null != fromEventSymbol && null != toEventSymbol)
+               {
+                  createControlFlowConnection(request, processDefinition,
+                        fromEventSymbol, toEventSymbol);
+               }
+               else
+               {
+                  throw new IllegalArgumentException("invalid source and/or target symbol type. "
+                        + "target type: " + targetType + " source type: " + sourceType);
+               }
+            }
             else
             {
                throw new IllegalArgumentException("Unknown target symbol type "
@@ -441,6 +473,46 @@ public class ConnectionCommandHandler
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
    }
 
+   /**
+    * @param connectionJson
+    * @param processDefinition
+    * @param sourceEventSymbol
+    * @param targetEventSymbol
+    */
+   private void createControlFlowConnection(JsonObject connectionJson,
+         ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
+         AbstractEventSymbol targetEventSymbol)
+   {
+      TransitionType transition = null;
+
+      ActivityType targetHostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
+      ActivityType sourceHostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
+
+      if (null != targetHostActivity && null != sourceHostActivity)
+      {
+         transition = getModelBuilderFacade().createTransition(
+               processDefinition,
+               sourceHostActivity,
+               targetHostActivity,
+               extractString(connectionJson, ModelerConstants.ID_PROPERTY),
+               extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
+               extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
+               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
+                     && extractBoolean(connectionJson,
+                           ModelerConstants.OTHERWISE_PROPERTY), "");
+         
+         getModelBuilderFacade().createTransitionSymbol(
+               processDefinition,
+               sourceEventSymbol,
+               targetEventSymbol,
+               transition,
+               mapAnchorOrientation(extractInt(connectionJson,
+                     ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+               mapAnchorOrientation(extractInt(connectionJson,
+                     ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      }
+   }
+   
    /**
     *
     * @param orientation
