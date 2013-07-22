@@ -184,6 +184,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
          jsResult.addProperty(ModelerConstants.TYPE_PROPERTY, modelElement.getClass()
                .getName());
+         
+         if (modelElement instanceof IExtensibleElement)
+         {
+            loadAttributes(modelElement, jsResult);
+         }
          jsResult.addProperty("moreContent", "TODO");
       }
 

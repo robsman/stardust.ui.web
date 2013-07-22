@@ -420,12 +420,15 @@ public class EventMarshallingUtils
       
       if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
       {
+         
          // no bind or unbind actions supported.
          eventHandler.getBindAction().clear();
          eventHandler.getUnbindAction().clear();
          Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
          if (interrupting == null || interrupting) // null means default value which is "true"
          {
+            AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", "Interrupting");
+            
             // there should be exactly one abort action with scope sub hierarchy
             boolean found = false;
             for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
@@ -462,6 +465,8 @@ public class EventMarshallingUtils
          }
          else
          {
+            AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", "Non-interrupting");
+            
             // non-interrupting events have no actions.
             eventHandler.getEventAction().clear();
          }
