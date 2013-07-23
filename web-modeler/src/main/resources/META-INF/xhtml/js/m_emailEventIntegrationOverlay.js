@@ -104,6 +104,61 @@ define(
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+								.create({
+									scope : "parametersTab",
+									submitHandler : this,
+									supportsOrdering : true,
+									supportsDataMappings : true,
+									supportsDescriptors : false,
+									supportsDataTypeSelection : true,
+									supportsDocumentTypes : true,
+									hideEnumerations:true
+								});
+
+						if (this.propertiesTabs != null) {
+							this.propertiesTabs.tabs();
+						}
+					
+						this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+						
+						this.outputBodyAccessPointInput.change(
+										{
+											panel : this
+										},
+										function(event) {
+									if (!event.data.panel.validate()) {
+										return;
+									}
+
+									if (event.data.panel.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+														event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : null
+										}
+									}
+								});
+									} else {
+										/*event.data.panel
+												.submitParameterDefinitionsChanges(
+														"carnot:engine:camel::outBodyAccessPoint",
+														event.data.panel.outputBodyAccessPointInput
+																.val());*/
+								event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
+																.val()
+										}
+									}
+								});
+									}
+								});
+					
+					
 					this.protocolSelect = this.mapInputId("protocolSelect");
 					this.mailServerInput = this.mapInputId("mailServerInput");
 					this.portInput = this.mapInputId("portInput");
@@ -232,11 +287,11 @@ define(
 							.getProperty("modeler.general.toBeDefined"));
 					this.portInput.val("30");
 
-					var parameterMappings = [];
+					/*var parameterMappings = [];
 
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
-									"message", "String"));
+									"message", "String"));*/
 					/*
 					 * parameterMappings.push(this
 					 * .createPrimitiveParameterMapping("Mail Body", "mailBody",
@@ -244,7 +299,7 @@ define(
 					 * .createPrimitiveParameterMapping( "Mail Attachments",
 					 * "mailAttachments", "String"));
 					 */
-
+					var parameterMappings = [];
 					this.submitOverlayChanges(parameterMappings);
 				};
 
@@ -252,6 +307,25 @@ define(
 				 * 
 				 */
 				EmailEventIntegrationOverlay.prototype.update = function() {
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "' selected>"
+							+ m_i18nUtils.getProperty("None") // TODO I18N
+							+ "</option>");
+
+					
+					
+					for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
+					{
+						var accessPoint = this.page.getEvent().parameterMappings[n];
+						//accessPoint.id=accessPoint.name;
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						this.outputBodyAccessPointInput
+								.append("<option value='" + accessPoint.id
+										+ "'>" + accessPoint.name + "</option>");
+					}
+					
+					
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -363,10 +437,19 @@ define(
 						} else if (name == "fetchSize") {
 						}*/
 					}
+					
+					this.outputBodyAccessPointInput
+					.val(this.page.getEvent().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.parameterDefinitionsPanel.setScopeModel(this.page
+							.getModel());
+					
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+					/*
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
-							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);*/
 				};
 
 				/**

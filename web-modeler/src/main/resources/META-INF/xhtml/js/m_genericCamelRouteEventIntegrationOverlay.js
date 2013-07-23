@@ -66,18 +66,13 @@ define(
 							.mapInputId("camelContextInput");
 					
 					this.configurationSpan = this.mapInputId("configuration");
-					this.configurationSpan
-							.text(m_i18nUtils
-									.getProperty("modeler.element.properties.event.configuration"));
+					this.configurationSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
-
-					this.parametersSpan
-							.text(m_i18nUtils
-									.getProperty("modeler.element.properties.event.parameters"));
-				this.parameterDefinitionsPanel = this
-							.mapInputId("parameterDefinitionsTable");
-				this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
-				this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+					this.parametersSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.parameters"));
+					
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "parametersTab",
 								submitHandler : this,

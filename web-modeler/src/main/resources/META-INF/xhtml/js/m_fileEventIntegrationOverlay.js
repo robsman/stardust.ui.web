@@ -105,6 +105,60 @@ define(
 					this.alwaysConsumeInput = this
 							.mapInputId("alwaysConsumeInput");
 
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+								.create({
+									scope : "parametersTab",
+									submitHandler : this,
+									supportsOrdering : true,
+									supportsDataMappings : true,
+									supportsDescriptors : false,
+									supportsDataTypeSelection : true,
+									supportsDocumentTypes : true,
+									hideEnumerations:true
+								});
+
+						if (this.propertiesTabs != null) {
+							this.propertiesTabs.tabs();
+						}
+					
+						this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+						
+						this.outputBodyAccessPointInput.change(
+										{
+											panel : this
+										},
+										function(event) {
+									if (!event.data.panel.validate()) {
+										return;
+									}
+
+									if (event.data.panel.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+														event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : null
+										}
+									}
+								});
+									} else {
+										/*event.data.panel
+												.submitParameterDefinitionsChanges(
+														"carnot:engine:camel::outBodyAccessPoint",
+														event.data.panel.outputBodyAccessPointInput
+																.val());*/
+								event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
+																.val()
+										}
+									}
+								});
+									}
+								});
+					
 					this.registerForRouteChanges(this.directoryNameInput);
 					this.registerForRouteChanges(this.fileNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
@@ -200,11 +254,11 @@ define(
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
 
-					var parameterMappings = [];
+				/*	var parameterMappings = [];
 
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
-									"message", "String"));
+									"message", "String"));*/
 					/*
 					 * parameterMappings.push(this
 					 * .createPrimitiveParameterMapping("File Name",
@@ -227,8 +281,9 @@ define(
 					 * .createPrimitiveParameterMapping( "Last Modified Date",
 					 * "CamelFileLastModified", "String"));
 					 */
-
+					var parameterMappings = [];
 					this.submitOverlayChanges(parameterMappings);
+					
 				};
 				FileEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
@@ -242,6 +297,25 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.update = function() {
+					
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "' selected>"
+							+ m_i18nUtils.getProperty("None") // TODO I18N
+							+ "</option>");
+
+					
+					
+					for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
+					{
+						var accessPoint = this.page.getEvent().parameterMappings[n];
+						//accessPoint.id=accessPoint.name;
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						this.outputBodyAccessPointInput
+								.append("<option value='" + accessPoint.id
+										+ "'>" + accessPoint.name + "</option>");
+					}
+					
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -320,10 +394,17 @@ define(
 						}
 					}
 
-					this.parameterMappingsPanel.setScopeModel(this.page
+					this.outputBodyAccessPointInput
+					.val(this.page.getEvent().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.parameterDefinitionsPanel.setScopeModel(this.page
+							.getModel());
+					
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+				/*	this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
-							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);*/
 				};
 
 				/**
