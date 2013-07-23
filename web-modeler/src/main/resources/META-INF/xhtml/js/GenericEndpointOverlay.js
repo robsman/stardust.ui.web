@@ -257,13 +257,15 @@ define(
 								}
 							});
 							**/
-					this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
-					if ( this.camelContextInput.val() == '' && init =='true')
-					{
+					if(this.getApplication().attributes["carnot:engine:camel::camelContextId"]==null)
+					    {
 						this.camelContextInput.val('defaultCamelContext');
-						self.view.submitModelElementAttributeChange( "carnot:engine:camel::camelContextId", self.camelContextInput.val());
-						}
-					};
+					    self.view.submitModelElementAttributeChange( "carnot:engine:camel::camelContextId", self.camelContextInput.val());
+					    }
+					 else{
+						this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
+					 }
+				};
 
 				/**
 				 * 
