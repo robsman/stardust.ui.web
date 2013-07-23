@@ -190,7 +190,7 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    {
       myTeamMemberList = new ArrayList<DeputyTableEntry>();
 
-      UserQuery userQuery = facade.getTeamQuery(false);
+      UserQuery userQuery = facade.getTeamQuery(false, true);
       userQuery.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
       userQuery.orderBy(UserQuery.LAST_NAME)
             .and(UserQuery.FIRST_NAME)

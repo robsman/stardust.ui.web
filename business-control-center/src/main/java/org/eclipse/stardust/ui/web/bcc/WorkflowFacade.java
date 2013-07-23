@@ -1167,10 +1167,27 @@ public class WorkflowFacade implements Resetable
 
    public UserQuery getTeamQuery(boolean includeTeamLeader)
    {
+      return getTeamQuery(includeTeamLeader, false);
+   }
+   
+   /**
+    * For deputy, if user is Admin, all users should be visible
+    * 
+    * @param includeTeamLeader
+    * @param excludeFilterForAdmin
+    * @return
+    */
+   public UserQuery getTeamQuery(boolean includeTeamLeader, boolean excludeFilterForAdmin)
+   {
       UserQuery query = UserQuery.findActive();
       User user = getLoginUser();
       if (user != null)
-      {        
+      {       
+         if (excludeFilterForAdmin && user.isAdministrator())
+         {
+            // Deputy- For Admin user, return all users
+            return query;
+         }
          FilterTerm filter = query.getFilter().addOrTerm();
          
          ModelParticipantInfo modelParticipantInfo;
