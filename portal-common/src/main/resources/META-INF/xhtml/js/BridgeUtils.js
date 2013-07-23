@@ -735,25 +735,35 @@ if (!window["BridgeUtils"].Dialog) {
 					BridgeUtils.View.pinSidebar();
 				}
 
-				var launchPanelsWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10 + "px";
-//				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
-//						launchPanelsWidth + "_" + Math.floor(Math.random() * 10000) + 1);
+				// Sidebar Title
+				jQuery(".sidebar-title").get(0).style.display = "none";
 
-				var sidebar = document.getElementById("sidebar");
-				sidebar.style.display = "none";
+				// New Size
+				var newWidth = scrollWidth + "px";
+				var newHeight = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
 
+				// Launch Panels iframe				
 				launchPanelIframe = document.getElementById("modelerLaunchPanels");
-
 				launchPanelIframeOrgData = {};
-				launchPanelIframeOrgData.parent = launchPanelIframe.parentNode;
 				launchPanelIframeOrgData.clazz = launchPanelIframe.getAttribute("class");
 				launchPanelIframeOrgData.width = launchPanelIframe.style.width;
 				launchPanelIframeOrgData.height = launchPanelIframe.style.height;
 				
-				BridgeUtils.FrameManager.getFrameContainer().appendChild(launchPanelIframe);
 				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
-				launchPanelIframe.style.width = scrollWidth + "px";
-				launchPanelIframe.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				launchPanelIframe.style.width = newWidth;
+				launchPanelIframe.style.height = newHeight;
+
+				// Sometimes ICE Modal frame retain old size. So resize that too
+				var iceModalFrame;
+				var iframes = launchPanelIframe.contentDocument.getElementsByTagName("iframe");
+				for (i in iframes) {
+					if (iframes[i].title == "Ice Modal Frame") {
+						iceModalFrame = iframes[i];
+						break;
+					}
+				}
+				iceModalFrame.style.width = newWidth;
+				iceModalFrame.style.height = newHeight;
 
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
 			}
@@ -775,15 +785,17 @@ if (!window["BridgeUtils"].Dialog) {
 	
 				// Sidebar And View
 				if (launchPanelIframe) {
-					launchPanelIframeOrgData.parent.appendChild(launchPanelIframe);
 					launchPanelIframe.setAttribute("class", launchPanelIframeOrgData.clazz);
 					launchPanelIframe.style.width = launchPanelIframeOrgData.width;
 					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
+					
+					// Sidebar Title
+					jQuery(".sidebar-title").get(0).style.display = "";
+				} else {
+					// Show Sidebar
+					var sidebar = document.getElementById("sidebar");
+					sidebar.style.display = "inline-block";
 				}
-
-				// Show Sidebar
-				var sidebar = document.getElementById("sidebar");
-				sidebar.style.display = "inline-block";
 	
 				if (!sidebarPinned) {
 					BridgeUtils.View.unpinSidebar();
@@ -798,9 +810,6 @@ if (!window["BridgeUtils"].Dialog) {
 				popupDialogDiv = undefined;
 
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
-				
-//				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "updateLaunchPanelsWidth",
-//						"auto_" + Math.floor(Math.random() * 10000) + 1);						
 			}
 		}
 
