@@ -18,21 +18,8 @@
 
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/thirdparty/json2.js" />
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/portalSingleViewUtils.js" />
-
-	<script lang="javascript">
-		/*
-		 *
-		 */
-		function init() {
-			parent.BridgeUtils.log("Listening for session expiry");
-			Ice.onSessionExpired('document:body', function() {
-			parent.BridgeUtils.handleServerDisconnect("SessionExpired");
-	        });
-		parent.BridgeUtils.log("Successfully listened for session expiry");
-		}
-	</script>
 </head>
-<body onload="init();">
+<body onload="parent.BridgeUtils.initIframe(window);">
 	<div style="width: 100%; height: 100%">
 		<table style="width:100%; height: 100%;" cellpadding="0" cellspacing="0">
 			<tr>

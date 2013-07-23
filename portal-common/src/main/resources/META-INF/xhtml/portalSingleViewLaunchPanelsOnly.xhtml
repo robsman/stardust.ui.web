@@ -16,20 +16,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/portalSingleViewUtils.js" />	
 	<ui:include src="portalStyleSheets.xhtml" />
-	<script lang="javascript">
-		/*
-		 *
-		 */
-		function init() {
-			parent.BridgeUtils.log("Listening for session expiry");
-			Ice.onSessionExpired('document:body', function() {
-			parent.BridgeUtils.handleServerDisconnect("SessionExpired");
-	        });
-		parent.BridgeUtils.log("Successfully listened for session expiry");
-		}
-	</script>
 </head>
-<body onload="init();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
+<body onload="parent.BridgeUtils.initIframe(window);" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
 	<ice:panelGroup
 		rendered="#{ippMessageDialog.fromlaunchPanels == 'true'}">

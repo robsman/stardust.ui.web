@@ -14,7 +14,8 @@
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 			<ui:include src="portalStyleSheets.xhtml" />
 		</head>
-		<body style="background: #FFFFFF; width: auto; height: auto; padding: 5px;">
+		<body onload="parent.BridgeUtils.initIframe(window);" 
+			style="background: #FFFFFF; width: auto; height: auto; padding: 5px;">
 			<ice:form partialSubmit="true">
 				<ui:include src="portalAlertsContent.xhtml" />
 			</ice:form>

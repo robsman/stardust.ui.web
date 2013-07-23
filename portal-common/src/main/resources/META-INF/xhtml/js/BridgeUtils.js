@@ -30,6 +30,28 @@ if (!window["BridgeUtils"]) {
 		}
 
 		/*
+		 * 
+		 */
+		function initIframe(win) {
+			log("Initializing iframe " + win.location);
+
+			log("Listening for session expiry");
+			win.Ice.onSessionExpired('document:body', function() {
+	        	parent.BridgeUtils.handleServerDisconnect("SessionExpired");
+	        });
+
+			log("Listening for Connection Trouble");
+			win.Ice.onConnectionTrouble('document:body', function() {
+	        	parent.BridgeUtils.handleServerDisconnect("ConnectionTrouble");
+	        });
+
+			log("Listening for Connection Lost");
+			win.Ice.onConnectionLost('document:body', function() {
+	        	parent.BridgeUtils.handleServerDisconnect("ConnectionLost");
+	        });
+		}
+
+		/*
 		 *
 		 */
 		function runInAngularContext(func) {
@@ -210,6 +232,7 @@ if (!window["BridgeUtils"]) {
 
 		return {
 			log : log,
+			initIframe : initIframe,
 			runInAngularContext : runInAngularContext,
 			runScript : runScript,
 			isScriptRunning : isScriptRunning,
