@@ -1166,7 +1166,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.START_EVENT);
-
+      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY, true);
+      
       return eventSymbolJson;
    }
 
@@ -1220,7 +1221,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.STOP_EVENT);
 
       eventJson.addProperty(ModelerConstants.THROWING_PROPERTY, true);
-      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY, false);
+      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY, true);
 
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(endEventSymbol);
       if (null != hostActivity)
