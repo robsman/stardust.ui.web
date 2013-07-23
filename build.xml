@@ -49,10 +49,8 @@
       <ant dir="portal-common" antfile="build.xml" target="${subtarget}" inheritall="false">
          <property name="build.lib" value="${build.lib}"/>
          <property name="build.deploy" value="${build.deploy}"/>
-			<property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-         <!-- given path is relativ to stardust/ui.web/portal-common -->
-         <property name="icefaces-conf.xml" value="./etc/icefaces-ee-ivy-conf.xml"/>
-		</ant>
+         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+      </ant>
    </target>  
    
 
@@ -136,11 +134,9 @@
    
    <target name="stardust-ui-form-jsf" depends="init">
       <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}" inheritall="false">
-			<property name="build.lib" value="${build.lib}"/>
+         <property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-         <!-- given path is relativ to stardust/ui.common/stardust-ui-form-jsf -->
-         <property name="icefaces-conf.xml" value="../../ui.web/portal-common/etc/icefaces-ee-ivy-conf.xml"/>
-		</ant>
+      </ant>
    </target>
 
 	<target name="package" depends="init, portal-common,portal-api, 
