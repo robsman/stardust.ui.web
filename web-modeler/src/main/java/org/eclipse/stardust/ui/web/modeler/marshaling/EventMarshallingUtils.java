@@ -5,6 +5,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -475,8 +476,17 @@ public class EventMarshallingUtils
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 
-   static void deleteTransitions(List<TransitionType> transitions)
+   /**
+    * @param originalTransitions
+    */
+   static void deleteTransitions(List<TransitionType> originalTransitions)
    {
+      List<TransitionType> transitions = new ArrayList<TransitionType>();
+      for (TransitionType transitionType : originalTransitions)
+      {
+         transitions.add(transitionType);
+      }
+      
       for (TransitionType transition : transitions)
       {
          deleteConnections(transition.getTransitionConnections());
@@ -487,7 +497,6 @@ public class EventMarshallingUtils
             // disconnect
             transition.setFrom(null);
             transition.setTo(null);
-            
             ((ProcessDefinitionType) container).getTransition().remove(transition);
          }
       }
