@@ -48,7 +48,8 @@ define(
 				this.flyOutMenuBackground = null;
 				this.leftFlyOutMenuItems = [];
 				this.rightFlyOutMenuItems = [];
-				this.bottomFlyOutMenuItems = [];
+				this.bottomFlyOutMenuItems = []; //botton right aligned (RA)
+				this.bottomRAFlyOutMenuItems = [];
 
 				/**
 				 *
@@ -294,7 +295,19 @@ define(
 
 						++n;
 					}
-				}
+					
+					n = this.bottomRAFlyOutMenuItems.length - 1;
+					while (n >= 0) {
+						this.bottomRAFlyOutMenuItems[n].attr({
+							x : x + width - FLY_OUT_MENU_EMPTY_MARGIN - n
+									* (16 + FLY_OUT_MENU_ITEM_MARGIN),
+							y : y + height
+									+ FLY_OUT_MENU_CONTENT_MARGIN
+									- FLY_OUT_MENU_ITEM_MARGIN - 16
+						});
+						--n;
+					}
+				};
 
 				/**
 				 *
@@ -349,6 +362,18 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+					var length = this.bottomRAFlyOutMenuItems.length;
+					while (n < length) {
+						this.bottomRAFlyOutMenuItems[n].show();
+						this.bottomRAFlyOutMenuItems[n].toFront();
+						this.bottomRAFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+
+						++n;
+					}
 				};
 
 				/**
@@ -392,6 +417,18 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+					var length = this.bottomRAFlyOutMenuItems.length; 
+					while (n < length) {
+						this.bottomRAFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+						this.bottomRAFlyOutMenuItems[n].hide();
+
+						++n;
+					}
+					
 					if (this.diagram.currentFlyOutSymbol
 							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
 						this.diagram.currentFlyOutSymbol = null;
@@ -403,7 +440,7 @@ define(
 				 *
 				 */
 				Drawable.prototype.addFlyOutMenuItems = function(left, right,
-						bottom) {
+						bottom, bottomRA) {
 
 					this.leftFlyOutMenuItems = new Array();
 
@@ -445,6 +482,22 @@ define(
 										bottom[n].clickHandler);
 
 						++n;
+					}
+					
+					this.bottomRAFlyOutMenuItems = new Array();
+
+					if (bottomRA) {
+						n = 0;
+						var length = bottomRA.length;
+						while (n < length) {
+							this.bottomRAFlyOutMenuItems[n] = this
+									.createFlyOutMenuItem(bottomRA[n].imageUrl,
+											bottomRA[n].imageWidth,
+											bottomRA[n].imageHeight,
+											bottomRA[n].clickHandler);
+
+							++n;
+						}
 					}
 				};
 
@@ -526,6 +579,15 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+
+					while (n < this.bottomRAFlyOutMenuItems.length) {
+						this.bottomRAFlyOutMenuItems[n].remove();
+
+						++n;
+					}
+					
 					if (this.diagram.currentFlyOutSymbol
 							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
 						this.diagram.currentFlyOutSymbol = null;

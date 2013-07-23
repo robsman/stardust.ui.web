@@ -1767,6 +1767,14 @@ define(
 					this.addAndConnectSymbol(symbol, m_eventSymbol
 							.createStopEventSymbol(this));
 				};
+				
+				/**
+				 *
+				 */
+				Diagram.prototype.connectToIntermediateEvent = function(symbol) {
+					this.addAndConnectSymbol(symbol, m_eventSymbol
+							.createIntermediateEventSymbol(this));
+				};
 
 				/**
 				 *

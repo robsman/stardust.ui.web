@@ -111,6 +111,7 @@ define(
 					transferObject.leftSelectHiddenFrame = null;
 					transferObject.flyOutMenuBackground = null;
 					transferObject.bottomFlyOutMenuItems = null;
+					transferObject.bottomRAFlyOutMenuItems = null;
 					transferObject.rightFlyOutMenuItems = null;
 					transferObject.primitives = null;
 					transferObject.editableTextPrimitives = null;

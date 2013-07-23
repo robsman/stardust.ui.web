@@ -524,7 +524,7 @@ define(
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToEndEventClosure
-											} ],
+											}],
 									[
 											{
 												imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
@@ -543,7 +543,16 @@ define(
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToManualActivityClosure
-											}*/ ]);
+											}*/ ],
+									[
+										{
+											imageUrl : "plugins/bpm-modeler/images/icons/intermediate-event-toolbar.png",
+											imageWidth : 16,
+											imageHeight : 16,
+											clickHandler : ActivitySymbol_connectToIntermediateEventClosure
+										}
+									 ]
+							);
 				};
 
 				/**
@@ -721,17 +730,17 @@ define(
 
 
 				/**
-				 *
+				 * overridden to consider boundary events as part of activity symbol 
 				 */
 				ActivitySymbol.prototype.dragStart = function() {
 					if (!this.selected) {
-						// deselect other symbols before drag
+						// de-select other symbols before drag
 						this.diagram.deselectCurrentSelection();
 						this.diagram.currentSelection = [];
 						this.select();
 					}
 
-					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
+					for ( var n = 0, length = this.boundaryEventSymbols.length; n < length; ++n) {
 						this.boundaryEventSymbols[n].select();
 					}
 
@@ -807,6 +816,7 @@ define(
 				 */
 				ActivitySymbol.prototype.removeBoundaryEvent = function(
 						eventSymbol, unbind) {
+					
 					m_utils.removeItemFromArray(this.boundaryEventSymbols,
 							eventSymbol);
 
@@ -902,6 +912,14 @@ define(
 						.connectToStopEvent(this.auxiliaryProperties.callbackScope);
 			}
 
+			/**
+			 *
+			 */
+			function ActivitySymbol_connectToIntermediateEventClosure() {
+				this.auxiliaryProperties.callbackScope.diagram
+						.connectToIntermediateEvent(this.auxiliaryProperties.callbackScope);
+			}
+			
 			/**
 			 *
 			 */
