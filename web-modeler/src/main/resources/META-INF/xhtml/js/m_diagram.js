@@ -1825,10 +1825,13 @@ define(
 						// validation fails
 						if (this.currentConnection) {
 							this.currentConnection.remove();
+							this.currentConnection = null;
 						}
-						this.newSymbol.remove();
-						this.newSymbol = null;
-						this.mode = this.NORMAL_MODE;
+						if (m_constants.INTERMEDIATE_EVENT_TYPE != this.newSymbol.modelElement.eventType) {
+							this.newSymbol.remove();
+							this.newSymbol = null;
+							this.mode = this.NORMAL_MODE;
+						}
 					}
 				};
 

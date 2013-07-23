@@ -873,6 +873,14 @@ define(
 				ActivitySymbol.prototype.click = function(x, y) {
 					if (this.diagram.CREATE_MODE == this.diagram.mode
 							&& m_constants.INTERMEDIATE_EVENT_TYPE == this.diagram.newSymbol.modelElement.eventType) {
+						// delete connection
+						if (this.diagram.currentConnection) {
+							if (this.diagram.currentConnection.fromModelElementOid != this.oid) {
+								return;
+							}
+							this.diagram.currentConnection.remove();
+							this.diagram.currentConnection = null;
+						}
 						this.diagram.onClick(x, y);
 					} else {
 						this.click_(x, y);
