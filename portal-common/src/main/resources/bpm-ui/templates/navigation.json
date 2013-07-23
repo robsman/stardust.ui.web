@@ -159,6 +159,9 @@
 		}
 	],
 	"footer":[
+	    {
+	        "label":"BUILD_INFO"
+	    }
 	],
     "sidebar":[
 	    {

@@ -20,6 +20,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.spi.env.RuntimeEnvironmentInfoProvider;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.springframework.core.io.ClassPathResource;
@@ -34,6 +37,8 @@ import org.springframework.core.io.ClassPathResource;
 @Path("/html5/api")
 public class HTML5FrameworkServices
 {
+   private static final Logger trace = LogManager.getLogger(HTML5FrameworkServices.class);
+
    @Context
    private ServletContext servletContext;
 
@@ -63,6 +68,19 @@ public class HTML5FrameworkServices
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
             RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
+      
+      String version = "";
+      try
+      {
+         RuntimeEnvironmentInfoProvider envInfoProvider = RestControllerUtils.resolveSpringBean(RuntimeEnvironmentInfoProvider.class, servletContext);
+         version = (null != envInfoProvider) ? envInfoProvider.getVersion().getCompleteString() : "";
+      }
+      catch (Exception e)
+      {
+         version = "dev";
+         trace.error("Could not retrieve Version Information", e);
+      }
+      contents = StringUtils.replace(contents, "BUILD_INFO", version);
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
