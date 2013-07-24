@@ -2482,9 +2482,9 @@ public class ActivityDetailsBean extends UIComponentBean
       if (processAttachmentsPopupOpened)
       {
          String iFrameId = getProcessAttachmentsIframePopupId();
-         String script = "parent.ippPortalMain.InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
    
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+         PortalApplication.getInstance().addEventScript(script);
          
          processAttachmentsPopupOpened = false;
       }

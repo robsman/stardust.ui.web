@@ -347,7 +347,6 @@ public class ActivityPanelController extends UIComponentBean
             propsBean.getParamString("common.uploadIntoFolder",
                   propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
       // Close the current Process Attachment Iframe.
-      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
       startFileUpload(documentUploadHelper);
       documentUploadHelper.uploadFile();
    }
@@ -389,6 +388,8 @@ public class ActivityPanelController extends UIComponentBean
          }
       });
       uploadHelper.uploadFile();
+      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
+      activityDetailsBean.renderSession();
    }
 
    /**
@@ -420,7 +421,6 @@ public class ActivityPanelController extends UIComponentBean
       if (DocumentUploadEventType.DIALOG_OPENED == eventType)
       {
          activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-         activityDetailsBean.renderSession();
       }
       if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
       {
