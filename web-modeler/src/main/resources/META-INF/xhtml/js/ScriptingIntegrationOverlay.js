@@ -410,7 +410,7 @@ define(
 
 					route += "<to uri=\"bean:bpmTypeConverter?method=toNativeObject\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
 							+ code
-							+ "</constant></setHeader><to uri=\"language:rhino-nonjdk\" /><to uri=\"bean:bpmTypeConverter?method=fromNativeObject\" />\n";
+							+ "</constant></setHeader><to uri=\"language:javascript\" /><to uri=\"bean:bpmTypeConverter?method=fromNativeObject\" />\n";
 					} else if (this.languageSelect.val() === "Groovy") {
 						route += "<setHeader headerName=\"CamelLanguageScript\"><constant>"
 								+ code
