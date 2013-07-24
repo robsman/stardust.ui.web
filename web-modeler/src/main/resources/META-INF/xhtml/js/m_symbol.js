@@ -2147,6 +2147,10 @@ define(
 						}
 					};
 				};
+
+				Symbol.prototype.supportSnapping = function(content) {
+					return true;
+				};
 			}
 
 			// Callback methods for closure trick

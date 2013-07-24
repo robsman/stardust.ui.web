@@ -1495,8 +1495,13 @@ define(
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
-
 					this.isVerticalSnap = false;
+					this.horizontalSnapLine.hide();
+					this.isHorizontalSnap = false;
+
+					if(!symbol.supportSnapping()){
+						return;
+					}
 
 					for ( var n in this.symbols) {
 						if (symbol == this.symbols[n]) {
@@ -1516,9 +1521,7 @@ define(
 						}
 					}
 
-					this.horizontalSnapLine.hide();
-
-					this.isHorizontalSnap = false;
+					
 
 					for ( var n in this.symbols) {
 						if (symbol == this.symbols[n]) {

@@ -731,6 +731,10 @@ define(
 					}
 					return changeDesc;
 				};
+
+				EventSymbol.prototype.supportSnapping = function(content) {
+					return !this.modelElement.isBoundaryEvent();
+				};
 			}
 
 			/**
