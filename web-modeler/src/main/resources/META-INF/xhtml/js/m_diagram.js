@@ -1827,11 +1827,11 @@ define(
 							this.currentConnection.remove();
 							this.currentConnection = null;
 						}
-						if (m_constants.INTERMEDIATE_EVENT_TYPE != this.newSymbol.modelElement.eventType) {
-							this.newSymbol.remove();
-							this.newSymbol = null;
-							this.mode = this.NORMAL_MODE;
-						}
+						
+						this.newSymbol.remove();
+						this.newSymbol = null;
+						this.mode = this.NORMAL_MODE;
+						
 					}
 				};
 
