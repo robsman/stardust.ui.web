@@ -2,72 +2,62 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Timer Event</title>
+<title>Error Event</title>
 </head>
 <body>
-	<div id="propertiesTabs" style="margin-top: 10px;">
-		<ul id="propertiesTabsList">
-			<li><a href="#configurationTab"><span class="tabLabel"
-					id="configuration">Configuration</span> </a>
-			</li>
-			<!--li><a href="#parametersTab"><span class="tabLabel"
-					id="parameters">Parameters</span> </a></li-->
-		</ul>
+	<div id="configurationTab">
+		<!-- intermediate event  -->
+		<table
+			style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
+			<!-- <tr>
+				<td style="width: 5%"><input id="autoBindingInput"
+					type="checkbox" /></td>
+				<td style="width: 95%"><label for="autoBindingInput">Automatic
+						Binding</label></td>
+			</tr> -->
+			<tr>
+				<td style="width: 5%"><input id="logHandlerInput" type="checkbox" /></td>
+				<td style="width: 95%"><label for="logHandlerInput">Log Handler</label></td>
+			</tr>
+			<!-- <tr>
+				<td><input id="consumeOnMatchInput" type="checkbox" /></td>
+				<td><label for="consumeOnMatchInput">Consume On Match</label>
+				</td>
+			</tr> -->
+			<tr>
+				<td><input id="interruptingInput" type="checkbox" /></td>
+				<td><label for="interruptingInput">Interrupting</label></td>
+			</tr>
+		</table>
+		<table
+			style="width: 100%; border-collapse: separate; border-spacing: 2px 10px">
+			<tr>
+				<td style="width: 30%;"><label for="eventTriggerSelect">Event
+						Trigger</label>
+				</td>
+				<td style="width: 70%;"><select id="eventTriggerSelect" style="width: 300px;">
+				</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td style="width: 70%;"><input id="eventTriggerInput" style="width: 300px;">
+				</input>
+				</td>
+			</tr>
+		</table>
 
-		<div id="configurationTab">
-			<!-- intermediate event  -->
-			<table
-				style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
-				<!-- <tr>
-					<td style="width: 5%"><input id="autoBindingInput"
-						type="checkbox" /></td>
-					<td style="width: 95%"><label for="autoBindingInput">Automatic
-							Binding</label></td>
-				</tr> -->
-				<tr>
-					<td style="width: 5%"><input id="logHandlerInput" type="checkbox" /></td>
-					<td style="width: 95%"><label for="logHandlerInput">Log Handler</label></td>
-				</tr>
-				<!-- <tr>
-					<td><input id="consumeOnMatchInput" type="checkbox" /></td>
-					<td><label for="consumeOnMatchInput">Consume On Match</label>
-					</td>
-				</tr> -->
-				<tr>
-					<td><input id="interruptingInput" type="checkbox" /></td>
-					<td><label for="interruptingInput">Interrupting</label></td>
-				</tr>
-			</table>
-			<table
-				style="width: 100%; border-collapse: separate; border-spacing: 2px 10px">
-				<tr>
-					<td style="width: 30%;"><label for="eventTriggerSelect">Event
-							Trigger</label>
-					</td>
-					<td style="width: 70%;"><select id="eventTriggerSelect" style="width: 200px;">
-					</select>
-					</td>
-				</tr>
-				<tr>
-					<td>
-					</td>
-					<td style="width: 70%;"><input id="eventTriggerInput" style="width: 200px;">
-					</input>
-					</td>
-				</tr>
-			</table>
-
-			<!-- <table
-				style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
-				<tr>
-					<td style="width: 30%;"><label for="eventActionSelect">Event Action</label>
-					</td>
-					<td style="width: 70%;"><select id="eventActionSelect" style="height: 22px; width: 150px;">
-					</select>
-					</td>
-				</tr>
-			</table> -->
-		</div>
+		<!-- <table
+			style="width: 100%; border-collapse: separate; border-spacing: 5px 5px">
+			<tr>
+				<td style="width: 30%;"><label for="eventActionSelect">Event Action</label>
+				</td>
+				<td style="width: 70%;"><select id="eventActionSelect" style="height: 22px; width: 150px;">
+				</select>
+				</td>
+			</tr>
+		</table> -->
 	</div>
 </body>
 </html>

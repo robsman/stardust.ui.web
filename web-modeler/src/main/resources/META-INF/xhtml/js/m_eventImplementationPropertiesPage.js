@@ -264,6 +264,9 @@ define(
 							} else if (this.getModelElement().eventClass == m_constants.ERROR_EVENT_CLASS) {
 								overlay = "errorEvent_intermediate";
 							}
+							this.eventIntegrationOverlaySelect.hide();
+							jQuery("label[for='eventIntegrationOverlaySelect']")
+									.addClass("invisible");
 						}
 
 						m_utils.debug("Overlay check");

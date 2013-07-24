@@ -216,7 +216,7 @@ define(
 					if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						m_dialog.makeVisible(this.intermediateEventPanel);
 						this.bindingInformation.empty();
-
+						this.participantOutput.hide();
 //						this.catchingInput.prop("checked", true);
 //						this.throwingInput.prop("checked", false);
 //						this.catchingInput.prop("disabled", true);
