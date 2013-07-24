@@ -133,6 +133,7 @@ define(
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationsDrl = function() {
 					var typeDeclarations = {};
+					var alreadyDeclaredTypes = {};
 					var drl = "";
 					var self = this;
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
@@ -148,8 +149,8 @@ define(
 								.findTypeDeclaration(accessPoint.structuredDataTypeFullId)
 
 						typeDeclarations[accessPoint.structuredDataTypeFullId] = typeDeclaration;
-						var alreadyDeclaredTypes = {};
 						
+						alreadyDeclaredTypes[typeDeclaration.modelId+":"+typeDeclaration.id] = typeDeclaration;
 						this.createTypeDeclarationDrl(typeDeclarations,
 								typeDeclaration,alreadyDeclaredTypes);
 					}
@@ -200,7 +201,7 @@ define(
 						typeDeclarations, typeDeclaration,alreadyDeclaredTypes) {
 					var drl = "";
 					var self = this;
-					alreadyDeclaredTypes[typeDeclaration.modelId+":"+typeDeclaration.id] = typeDeclaration;
+					
 					// Create DRL for dependent structures first
 
 					for ( var i = 0; i < typeDeclaration.getElementCount(); i++) {
@@ -225,7 +226,7 @@ define(
 							if (childTypeDeclaration.isSequence()
 									&& !typeDeclarations[childTypeDeclaration
 											.getFullId()]) {
-
+								alreadyDeclaredTypes[childTypeDeclaration.modelId+":"+childTypeDeclaration.id] = childTypeDeclaration ;
 								drl += self.createTypeDeclarationDrl(
 										typeDeclarations, childTypeDeclaration,alreadyDeclaredTypes);
 							} else {
