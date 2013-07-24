@@ -81,6 +81,9 @@ define(
 										});
 					}
 
+					// Adjust layout of the diagram area to accommodate the additional toolbar items.
+					require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
+					
 					decorationList
 							.change(
 									{
