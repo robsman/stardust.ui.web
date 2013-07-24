@@ -918,7 +918,7 @@ define(
 					route += "</setHeader>\n";
 
 					// execute java sript
-					route += "<to uri=\"language:rhino-nonjdk\"/>\n";
+					route += "<to uri=\"language:javascript\"/>\n";
 
 					// set content type
 					route += "<setHeader headerName=\"contentType\">\n";
