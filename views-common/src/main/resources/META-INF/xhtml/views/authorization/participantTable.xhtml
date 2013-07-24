@@ -7,10 +7,10 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	<ice:panelGroup>
 		<ice:panelBorder renderNorth="true" renderSouth="true"
-			style="width:100%">
+			style="width:auto;">
 			<f:facet name="north">
 				<ice:panelGroup style="overflow: auto;font-weight: normal;">
-					<ice:panelGroup style="text-align: right"
+					<ice:panelGroup style="text-align: right;min-width:450px;"
 						rendered="#{authorizationManagerBean.participantHelper.viewType == 'LIST'}">
 
 						<ice:commandLink
