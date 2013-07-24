@@ -523,10 +523,26 @@ define(
 
 									updateConnection.modelElement.inputDataMapping = {};
 									updateConnection.modelElement.outputDataMapping = {};
+									
+									if (updateConnection.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+										var tempFromAnchorPoint = updateConnection.fromAnchorPoint;
+										updateConnection.fromAnchorPoint = updateConnection.toAnchorPoint;
+										updateConnection.toAnchorPoint = tempFromAnchorPoint;
+										updateConnection.fromModelElementOid = updateConnection.fromAnchorPoint.symbol.oid;
+										updateConnection.toModelElementOid = updateConnection.toAnchorPoint.symbol.oid;
+										var tempFromOrientation = updateConnection.fromAnchorPointOrientation;
+										updateConnection.fromAnchorPointOrientation = updateConnection.toAnchorPointOrientation;
+										updateConnection.toAnchorPointOrientation = tempFromOrientation;
+									}
+									
 									// While update only mapping change are
 									// required
 									var changes = {
 										modelElement : {
+											fromAnchorPointOrientation : updateConnection.fromAnchorPointOrientation,
+											toAnchorPointOrientation : updateConnection.toAnchorPointOrientation,
+											toModelElementOid : updateConnection.toModelElementOid,
+											fromModelElementOid : updateConnection.fromModelElementOid,
 											inputDataMapping : updateConnection.modelElement.inputDataMapping,
 											outputDataMapping : updateConnection.modelElement.outputDataMapping,
 											id : updateConnection.modelElement.id,

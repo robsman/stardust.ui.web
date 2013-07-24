@@ -96,6 +96,28 @@ define(
 														page.outputInput
 																.is(":checked"));
 
+										if (page.inputInput.is(":checked") && page.outputInput.is(":checked")
+												&& page.propertiesPanel.element.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+											var tempFromAnchorPoint = page.propertiesPanel.element.fromAnchorPoint;
+											page.propertiesPanel.element.fromAnchorPoint = page.propertiesPanel.element.toAnchorPoint;
+											page.propertiesPanel.element.toAnchorPoint = tempFromAnchorPoint;
+											page.propertiesPanel.element.fromModelElementOid = page.propertiesPanel.element.fromAnchorPoint.symbol.oid;
+											page.propertiesPanel.element.toModelElementOid = page.propertiesPanel.element.toAnchorPoint.symbol.oid;
+											var tempFromOrientation = page.propertiesPanel.element.fromAnchorPointOrientation;
+											page.propertiesPanel.element.fromAnchorPointOrientation = page.propertiesPanel.element.toAnchorPointOrientation;
+											page.propertiesPanel.element.toAnchorPointOrientation = tempFromOrientation;
+										} else if (!page.inputInput.is(":checked") && page.outputInput.is(":checked")
+												&& page.propertiesPanel.element.fromAnchorPoint.symbol.type === m_constants.DATA_SYMBOL) {
+											var tempFromAnchorPoint = page.propertiesPanel.element.fromAnchorPoint;
+											page.propertiesPanel.element.fromAnchorPoint = page.propertiesPanel.element.toAnchorPoint;
+											page.propertiesPanel.element.toAnchorPoint = tempFromAnchorPoint;
+											page.propertiesPanel.element.fromModelElementOid = page.propertiesPanel.element.fromAnchorPoint.symbol.oid;
+											page.propertiesPanel.element.toModelElementOid = page.propertiesPanel.element.toAnchorPoint.symbol.oid;
+											var tempFromOrientation = page.propertiesPanel.element.fromAnchorPointOrientation;
+											page.propertiesPanel.element.fromAnchorPointOrientation = page.propertiesPanel.element.toAnchorPointOrientation;
+											page.propertiesPanel.element.toAnchorPointOrientation = tempFromOrientation;
+										}
+										
 										page
 												.submitChanges({
 													// TODO Usually, we are not
@@ -106,6 +128,10 @@ define(
 													modelElement : {
 														id : page.propertiesPanel.element.modelElement.id,
 														name : page.propertiesPanel.element.modelElement.name,
+														fromAnchorPointOrientation : page.propertiesPanel.element.fromAnchorPointOrientation,
+														toAnchorPointOrientation : page.propertiesPanel.element.toAnchorPointOrientation,
+														toModelElementOid : page.propertiesPanel.element.toModelElementOid,
+														fromModelElementOid : page.propertiesPanel.element.fromModelElementOid,
 														updateDataMapping : true,
 														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
 														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
