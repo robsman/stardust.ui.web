@@ -15,6 +15,12 @@
 	line-height: 1.5;
 } */
 
+.nativeHtmlViewPanel {
+	width: 100%;
+	overflow: auto;
+	margin: 10px;
+}
+ 
 label {
 	color: #4d4d4d;
 	margin-right: 10px;
