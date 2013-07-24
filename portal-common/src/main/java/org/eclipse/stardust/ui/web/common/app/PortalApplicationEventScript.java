@@ -128,10 +128,7 @@ public class PortalApplicationEventScript implements Serializable
    {
       onceRead = false;
 
-      if (!this.eventScripts.contains(eventScript))
-      {
-         this.eventScripts.add(eventScript);
-      }
+      this.eventScripts.add(eventScript);
    }
 
    /**

@@ -705,6 +705,10 @@ public class ActivityDetailsBean extends UIComponentBean
 
          // At the end the focus view should be this view
          PortalApplication.getInstance().setFocusView(view);
+         // Auto - operations(Notes, documents) change the currentView icon,label on UI,
+         // reset for AI active view
+         PortalApplication.getInstance().updateViewIconClass(view);
+         PortalApplication.getInstance().updateViewTitle(view);
          
          /*
           * If any message pop-up is set to be opened up, then fire a de-activate view
