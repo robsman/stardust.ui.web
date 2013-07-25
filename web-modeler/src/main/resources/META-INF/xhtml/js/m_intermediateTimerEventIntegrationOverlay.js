@@ -335,7 +335,7 @@ define(
 
 					for ( var m in dataItems) {
 						this.dataSelect.append("<option value='"
-								+ dataItems[m].getFullId() + "'>"
+								+ dataItems[m].id + "'>"
 								+ dataItems[m].name + "</option>");
 					}
 				};
