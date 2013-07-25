@@ -133,6 +133,10 @@ input[type=text].rightAligned {
 	padding-right: 3px;
 }
 
+input[type="checkbox"] {
+	margin: 0 0 2px 0 !important;
+}
+
 textarea {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
@@ -202,7 +206,7 @@ table.layoutTable tr {
 }
 
 table.layoutTable td {
-	padding: 0px;
+	padding: 2px;
 	margin: 0px;
 	vertical-align: top;
 }
