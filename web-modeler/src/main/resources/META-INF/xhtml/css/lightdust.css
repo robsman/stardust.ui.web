@@ -137,6 +137,10 @@ input[type="checkbox"] {
 	margin: 0 0 2px 0 !important;
 }
 
+input[type="radio"] {
+	margin: 0 0 3px 0 !important;
+}
+
 textarea {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
