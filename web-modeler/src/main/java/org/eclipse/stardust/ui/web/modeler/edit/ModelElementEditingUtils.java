@@ -11,15 +11,14 @@
 
 package org.eclipse.stardust.ui.web.modeler.edit;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 
 /**
  * @author Shrikant.Gangal
@@ -31,6 +30,7 @@ public class ModelElementEditingUtils
     * @param processDefinition
     * @param symbol
     */
+   // TODO: (fh) remove because it is incorrect
    public static void deleteTransitionConnectionsForSymbol(
          ProcessDefinitionType processDefinition, IFlowObjectSymbol symbol)
    {
@@ -51,6 +51,7 @@ public class ModelElementEditingUtils
     * @param processDefinition
     * @param connIter
     */
+   // TODO: (fh) remove because it is incorrect
    public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
          Iterator<TransitionConnectionType> connIter)
    {
@@ -65,6 +66,7 @@ public class ModelElementEditingUtils
     * @param processDefinition
     * @param transitionConnection
     */
+   // TODO: (fh) remove because it is incorrect
    public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
          TransitionConnectionType transitionConnection)
    {
@@ -136,5 +138,51 @@ public class ModelElementEditingUtils
             .get(0)
             .getDataMappingConnection()
             .remove(dataMappingConnection);
+   }
+
+   public static void deleteConnections(List<? extends IConnectionSymbol> connections)
+   {
+      for (IConnectionSymbol connection : connections)
+      {
+         EObject container = connection.eContainer();
+         if (container instanceof ISymbolContainer)
+         {
+            // disconnect
+            connection.setSourceNode(null);
+            connection.setTargetNode(null);
+            
+            @SuppressWarnings("unchecked")
+            Collection<? extends IConnectionSymbol> containingFeature =
+               (Collection<? extends IConnectionSymbol>)
+               ((ISymbolContainer) container).eGet(connection.eContainingFeature());
+            containingFeature.remove(connection);
+         }
+      }
+   }
+
+   /**
+    * @param originalTransitions
+    */
+   public static void deleteTransitions(List<TransitionType> originalTransitions)
+   {
+      List<TransitionType> transitions = new ArrayList<TransitionType>();
+      for (TransitionType transitionType : originalTransitions)
+      {
+         transitions.add(transitionType);
+      }
+      
+      for (TransitionType transition : transitions)
+      {
+         deleteConnections(transition.getTransitionConnections());
+   
+         EObject container = transition.eContainer();
+         if (container instanceof ProcessDefinitionType)
+         {
+            // disconnect
+            transition.setFrom(null);
+            transition.setTo(null);
+            ((ProcessDefinitionType) container).getTransition().remove(transition);
+         }
+      }
    }
 }

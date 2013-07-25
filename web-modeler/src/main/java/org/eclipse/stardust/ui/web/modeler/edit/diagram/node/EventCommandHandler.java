@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findIdentifiableElement;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
@@ -22,6 +23,8 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.START_EVE
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
+
+import java.util.Collections;
 
 import javax.annotation.Resource;
 
@@ -35,6 +38,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -47,6 +51,8 @@ public class EventCommandHandler
 {
    @Resource
    private ApplicationContext springContext;
+
+   private JsonMarshaller jsonIo = new JsonMarshaller();
 
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
@@ -171,10 +177,11 @@ public class EventCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       Long eventOId = extractLong(request, ModelerConstants.OID_PROPERTY);
+      String eventType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
+            EVENT_TYPE_PROPERTY);
       synchronized (model)
       {
-         if (START_EVENT.equals(extractString(request,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         if (START_EVENT.equals(eventType))
          {
             StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
                   parentLaneSymbol, eventOId);
@@ -194,38 +201,67 @@ public class EventCommandHandler
                   .remove(startEventSymbol);
             parentLaneSymbol.getStartEventSymbols().remove(startEventSymbol);
          }
-         if (ModelerConstants.INTERMEDIATE_EVENT.equals(extractString(request,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY)))
+         else if (ModelerConstants.INTERMEDIATE_EVENT.equals(eventType))
          {
-            IntermediateEventSymbol intEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+            IntermediateEventSymbol eventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
                   parentLaneSymbol, eventOId);
-            if(intEventSymbol != null)
+            if (eventSymbol != null)
             {
-               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, intEventSymbol);
-               processDefinition.getDiagram()
-                     .get(0)
-                     .getIntermediateEventSymbols()
-                     .remove(intEventSymbol);
-
-               ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(intEventSymbol);
-
-               //delete associated activity
-               if (null != hostActivity)
+               // TODO: (fh) refactor code, smells.
+               ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
+               
+               if (hostActivity != null && !EventMarshallingUtils.isIntermediateEventHost(hostActivity))
                {
-                  if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
+                  JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(
+                        hostActivity, eventSymbol, jsonIo);
+                  if (hostingConfig != null)
                   {
-                     processDefinition.getActivity().remove(hostActivity);
-                  }
-                  // unbind the event from activity
-                  else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
-                  {
-                     EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
-                     EventMarshallingUtils.deleteEventHostingConfig(hostActivity,
-                           intEventSymbol);
+                     String eventHandlerId = extractAsString(hostingConfig, EventMarshallingUtils.PRP_EVENT_HANDLER_ID);
+                     EventHandlerType eventHandler = findIdentifiableElement(hostActivity.getEventHandler(), eventHandlerId);
+                     if (eventHandler != null)
+                     {
+                        // delete matching transitions
+                        String match = "ON_BOUNDARY_EVENT(" + eventHandlerId + ")";
+                        for (TransitionType transition : hostActivity.getOutTransitions())
+                        {
+                           if (match.equals(transition.getCondition()))
+                           {
+                              // this deletes corresponding transition connections too
+                              ModelElementEditingUtils.deleteTransitions(
+                                    Collections.singletonList(transition));
+                              break;
+                           }
+                        }
+                        // now remove the event handler
+                        hostActivity.getEventHandler().remove(eventHandler);
+                     }
+                     EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
                   }
                }
-               parentLaneSymbol.getIntermediateEventSymbols().remove(intEventSymbol);
-
+               else
+               {
+                  ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, eventSymbol);
+                  processDefinition.getDiagram()
+                        .get(0)
+                        .getIntermediateEventSymbols()
+                        .remove(eventSymbol);
+   
+                     //delete associated activity
+                  if (null != hostActivity)
+                  {
+                     if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
+                     {
+                        processDefinition.getActivity().remove(hostActivity);
+                     }
+                     // unbind the event from activity
+                     else if (ActivityImplementationType.MANUAL_LITERAL.equals(hostActivity.getImplementation()))
+                     {
+                        EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
+                        EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
+                     }
+                  }
+               }
+               parentLaneSymbol.getIntermediateEventSymbols().remove(eventSymbol);
             }
          }
          else

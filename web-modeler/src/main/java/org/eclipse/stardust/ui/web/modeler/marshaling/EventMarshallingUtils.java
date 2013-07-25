@@ -5,12 +5,10 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
@@ -474,51 +472,6 @@ public class EventMarshallingUtils
       }
    
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
-   }
-
-   /**
-    * @param originalTransitions
-    */
-   static void deleteTransitions(List<TransitionType> originalTransitions)
-   {
-      List<TransitionType> transitions = new ArrayList<TransitionType>();
-      for (TransitionType transitionType : originalTransitions)
-      {
-         transitions.add(transitionType);
-      }
-      
-      for (TransitionType transition : transitions)
-      {
-         deleteConnections(transition.getTransitionConnections());
-
-         EObject container = transition.eContainer();
-         if (container instanceof ProcessDefinitionType)
-         {
-            // disconnect
-            transition.setFrom(null);
-            transition.setTo(null);
-            ((ProcessDefinitionType) container).getTransition().remove(transition);
-         }
-      }
-   }
-
-   private static void deleteConnections(List<? extends IConnectionSymbol> connections)
-   {
-      for (IConnectionSymbol connection : connections)
-      {
-         EObject container = connection.eContainer();
-         if (container instanceof ISymbolContainer)
-         {
-            // disconnect
-            connection.setSourceNode(null);
-            connection.setTargetNode(null);
-            
-            @SuppressWarnings("unchecked")
-            List<? extends IConnectionSymbol> containingFeature = (List<? extends IConnectionSymbol>)
-               ((ISymbolContainer) container).eGet(connection.eContainingFeature());
-            containingFeature.remove(connection);
-         }
-      }
    }
 
    public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)

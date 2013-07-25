@@ -51,6 +51,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -1508,14 +1509,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                        && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                   {
                      // delete incoming transition connections
-                     EventMarshallingUtils.deleteTransitions(hostActivity.getInTransitions());
+                     ModelElementEditingUtils.deleteTransitions(hostActivity.getInTransitions());
                      
                      // delete associated activity
                      if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                      {
                         if (newHostActivity != null)
                         {
-                           EventMarshallingUtils.deleteTransitions(CollectionUtils.intersect(
+                           ModelElementEditingUtils.deleteTransitions(CollectionUtils.intersect(
                                  hostActivity.getOutTransitions(), newHostActivity.getInTransitions()));
                         }
                         containingProcess.getActivity().remove(hostActivity);
