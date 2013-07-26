@@ -201,6 +201,12 @@ define(
 						event.data.overlay.updateConstant();
 					});
 
+					this.delayTimerUnitSelect.change({
+						overlay : this
+					}, function(event) {
+						event.data.overlay.updateConstant();
+					});
+					
 					/*
 					 * this.eventActionSelect.change({ "page" : this },
 					 * function(event) { var page = event.data.page;
@@ -235,8 +241,9 @@ define(
 					this.submitChanges({
 						modelElement : {
 							attributes : {
-								"carnot:engine:useData" : false,
+								"carnot:engine:useData" : false, 
 								"carnot:engine:delay" : this.delayTimerInput.val(),
+								"carnot:engine:delayUnit" : this.delayTimerUnitSelect.val(),
 							}
 						}
 					});
@@ -279,25 +286,22 @@ define(
 
 				IntermediateTimerEventIntegrationOverlay.prototype.initializedelayTimerUnitSelect = function(
 						select) {
-					select.append("<option value='1'>"
-									+ m_i18nUtils.getProperty("modeler.element.properties.event.milliseconds")
-									+ "</option>");
-					select.append("<option value='1000'>"
+					select.append("<option value='s'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.seconds")
 									+ "</option>");
-					select.append("<option value='60000'>"
+					select.append("<option value='m'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.minutes")
 									+ "</option>");
-					select.append("<option value='3600000'>"
+					select.append("<option value='h'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.hours")
 									+ "</option>");
-					select.append("<option value='86400000'>"
+					select.append("<option value='d'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.days")
 									+ "</option>");
-					select.append("<option value='2.63e+9'>"
+					select.append("<option value='m'>"
 							+ m_i18nUtils.getProperty("modeler.element.properties.event.months")
 							+ "</option>");
-					select.append("<option value='3.156e+10'>"
+					select.append("<option value='y'>"
 							+ m_i18nUtils.getProperty("modeler.element.properties.event.years")
 							+ "</option>");
 
@@ -369,8 +373,11 @@ define(
 					} else if (useData == false) {
 						this.eventTriggerSelect.val('constant');
 						this.delayTimerInput.val(modelElement.attributes["carnot:engine:delay"]);
+						this.delayTimerUnitSelect.val(modelElement.attributes["carnot:engine:delayUnit"]);
 					}else{
 						this.eventTriggerSelect.val('');
+						this.delayTimerInput.val("");
+						this.delayTimerUnitSelect.val("");
 					}
 
 					this.showHideEventTriggerFields();
