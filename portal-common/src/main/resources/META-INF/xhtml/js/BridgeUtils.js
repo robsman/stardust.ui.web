@@ -1373,6 +1373,10 @@ if (!window["BridgeUtils"].FrameManager) {
 			BridgeUtils.log("Trying to Close iFrame = " + contentId);
 			doWithContentFrame(contentId, function(contentFrame) {
 				contentFrame.style.display = 'none';
+				if (contentFrame.src != "about:blank") {
+					contentFrame.src = "about:blank";
+				}
+
 				BridgeUtils.log("Scheduling delayed iFrame Closing = " + contentId);
 				window.setTimeout(function() {
 					BridgeUtils.log("Removing iFrame = " + contentId);
