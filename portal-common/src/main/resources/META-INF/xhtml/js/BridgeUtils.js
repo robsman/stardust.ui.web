@@ -339,7 +339,7 @@ if (!window["BridgeUtils"].View) {
 					// Because of this callback function get called after entire script is run
 					// Due to this when callback function is called BridgeUtils.isScriptRunning() returns false
 					// Below hack is added to get around this 
-					var view = getViewPanel(viewId);
+					var view = getViewPanel($scope, viewId);
 					if (view) {
 						if (!view.params) {
 							view.params = {};
