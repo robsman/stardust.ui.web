@@ -1118,6 +1118,13 @@ public class PortalApplication
             trace.error("Other than Servlet Context is not Supported");
          }
       }
+      else // Comes here when view is opened from Mega Menu
+      {
+         // Currently only one "Portal Configuration"
+         // TODO
+         String html5FWViewId = "/ippPortal/configurationTreeView";
+         view.getViewParams().put("html5FWViewId", html5FWViewId);
+      }
    }
 
    /**
@@ -1210,9 +1217,9 @@ public class PortalApplication
     */
    private void handleViewClosePanama(View view)
    {
-      if (StringUtils.isEmpty(view.getParamValue("skipViewCloseScript")))
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
       {
-         String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
          String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
          addEventScript(script);
       }
