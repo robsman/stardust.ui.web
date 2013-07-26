@@ -18,7 +18,10 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Period;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 
 /**
  * @author Shrikant.Gangal
@@ -184,5 +187,43 @@ public class ModelElementEditingUtils
             ((ProcessDefinitionType) container).getTransition().remove(transition);
          }
       }
+   }
+
+   public static void setPeriodAttribute(IExtensibleElement element, String stringValue, String unit)
+   {
+      short Y = 0;
+      short M = 0;
+      short D = 0;
+      short h = 0;
+      short m = 0;
+      short s = 0;
+      
+      short value = 0;
+      try
+      {
+         value = Short.parseShort(stringValue);
+      }
+      catch (NumberFormatException ex)
+      {
+         // TODO: log ?
+      }
+      
+      if (!StringUtils.isEmpty(unit))
+      {
+         switch (unit.charAt(0))
+         {
+         case 'Y': Y = value; break;
+         case 'M': M = value; break;
+         case 'D': D = value; break;
+         case 'h': h = value; break;
+         case 'm': m = value; break;
+         case 's': s = value; break;
+         }
+      }
+      // TODO: else log ?
+         
+      Period period = new Period(Y, M, D, h, m, s);
+      AttributeUtil.setAttribute(element, "carnot:engine:period",
+            Period.class.getSimpleName(), period.toString());
    }
 }

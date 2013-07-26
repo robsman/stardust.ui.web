@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.reflect.Reflect;
@@ -3013,7 +3014,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject attributes;
 
-      if ( !hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
+      if (!hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
       {
          json.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes = new JsonObject());
       }
@@ -3024,65 +3025,88 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (Object attribute : getModelBuilderFacade().getAttributes(element))
       {
-         if (getModelBuilderFacade().getAttributeName(attribute).equals(
-               "documentation:comments"))
+         String attributeName = getModelBuilderFacade().getAttributeName(attribute);
+         String attributeValue = getModelBuilderFacade().getAttributeValue(attribute);
+         if (attributeName.equals(
+               "carnot:engine:period"))
          {
-            json.add(
-                  ModelerConstants.COMMENTS_PROPERTY,
-                  jsonIo.readJsonObject(
-                        getModelBuilderFacade().getAttributeValue(attribute))
-                        .get(ModelerConstants.COMMENTS_PROPERTY)
-                        .getAsJsonArray());
-         }
-         else if (getModelBuilderFacade().getAttributeName(attribute).equals(
-               "carnot:engine:type"))
-         {
-            // For Access Points
-
-            // TODO Very ugly storage
-
-            json.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
-                  getModelBuilderFacade().getAttributeValue(attribute));
-         }
-         else if (getModelBuilderFacade().getAttributeName(attribute).equals(
-               ModelerConstants.DATA_TYPE))
-         {
-            // For Access Points
-
-            // TODO Very ugly storage
-
-            String encodedId = getModelBuilderFacade().getAttributeValue(attribute);
-            String structuredDataFullId = null;
-
-            if (encodedId.indexOf("typeDeclaration") == 0)
+            Period period = new Period(attributeValue); 
+            String units = "YMDhms";
+            int delay = 0;
+            String unit = units.substring(Period.SECONDS);
+            for (int i = Period.YEARS; i <= Period.SECONDS; i++)
             {
-               String parts[] = encodedId.split("\\{")[1].split("\\}");
-
-               structuredDataFullId = parts[0] + ":" + parts[1];
-            }
-            else
-            {
-               ModelType model = ModelUtils.findContainingModel(element);
-               if (null != model)
+               delay = period.get(i);
+               if (delay > 0)
                {
-                  structuredDataFullId = model.getId() + ":" + encodedId;
+                  unit = units.substring(i, i + 1);
+                  break;
                }
             }
-
-            json.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
-                  structuredDataFullId);
-         }
-         else if (getModelBuilderFacade().isBooleanAttribute(attribute))
-         {
-            attributes.addProperty(
-                  getModelBuilderFacade().getAttributeName(attribute),
-                  Boolean.parseBoolean(getModelBuilderFacade().getAttributeValue(
-                        attribute)));
+            json.addProperty("carnot:engine:delay", delay);
+            json.addProperty("carnot:engine:delayUnit", unit);
          }
          else
          {
-            attributes.addProperty(getModelBuilderFacade().getAttributeName(attribute),
-                  getModelBuilderFacade().getAttributeValue(attribute));
+            if (attributeName.equals(
+                  "documentation:comments"))
+            {
+               json.add(
+                     ModelerConstants.COMMENTS_PROPERTY,
+                     jsonIo.readJsonObject(
+                           attributeValue)
+                           .get(ModelerConstants.COMMENTS_PROPERTY)
+                           .getAsJsonArray());
+            }
+            else if (attributeName.equals(
+                  "carnot:engine:type"))
+            {
+               // For Access Points
+
+               // TODO Very ugly storage
+
+               json.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+                     attributeValue);
+            }
+            else if (attributeName.equals(
+                  ModelerConstants.DATA_TYPE))
+            {
+               // For Access Points
+
+               // TODO Very ugly storage
+
+               String encodedId = attributeValue;
+               String structuredDataFullId = null;
+
+               if (encodedId.indexOf("typeDeclaration") == 0)
+               {
+                  String parts[] = encodedId.split("\\{")[1].split("\\}");
+
+                  structuredDataFullId = parts[0] + ":" + parts[1];
+               }
+               else
+               {
+                  ModelType model = ModelUtils.findContainingModel(element);
+                  if (null != model)
+                  {
+                     structuredDataFullId = model.getId() + ":" + encodedId;
+                  }
+               }
+
+               json.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
+                     structuredDataFullId);
+            }
+            else if (getModelBuilderFacade().isBooleanAttribute(attribute))
+            {
+               attributes.addProperty(
+                     attributeName,
+                     Boolean.parseBoolean(attributeValue));
+            }
+            else
+            {
+               attributes.addProperty(attributeName,
+                     attributeValue);
+            }
          }
       }
 

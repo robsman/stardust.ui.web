@@ -2506,6 +2506,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       if (attributes != null)
       {
          List<String> excluded = Arrays.asList(excludedKeys);
+         excluded.add("carnot:engine:delayUnit");
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
             String key = entry.getKey();
@@ -2513,39 +2514,44 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                continue;
             }
-
-            if (attributes.get(key).isJsonNull())
+            
+            JsonElement jsonValue = attributes.get(key);
+            if (jsonValue.isJsonNull())
             {
                System.out.println("Setting extended attribute " + key + " to null.");
                ModelBuilderFacade.setAttribute(element, key, null);
             }
-            else if (attributes.get(key).getAsJsonPrimitive().isBoolean())
+            else if (jsonValue.getAsJsonPrimitive().isBoolean())
             {
                ModelBuilderFacade.setBooleanAttribute(element, key,
-                     attributes.get(key).getAsBoolean());
+                     jsonValue.getAsBoolean());
             }
             else
             {
+               String stringValue = jsonValue.getAsString();
+
                // TODO Trick to create document
 
                if (key.equals("documentation:externalDocumentUrl")
-                     && attributes.get(key).getAsString().equals("@CREATE"))
+                     && jsonValue.getAsString().equals("@CREATE"))
                {
                   ModelBuilderFacade.setAttribute(element, key,
                         createModelElementDocumentation(json));
                }
+               else if (key.equals("carnot:engine:delay"))
+               {
+                  ModelElementEditingUtils.setPeriodAttribute((IExtensibleElement) element, stringValue,
+                        GsonUtils.safeGetAsString(attributes, "carnot:engine:delayUnit"));
+               }
                else if (key.equals(PredefinedConstants.VALID_FROM_ATT))
                {
-                  String stringValue = attributes.get(key).getAsString();
                   ModelBuilderFacade.setTimestampAttribute(
                         (IExtensibleElement) element, key, stringValue);
                }
                else
                {
-                  System.out.println("Setting extended attribute " + key + " to "
-                        + attributes.get(key).getAsString());
-                  ModelBuilderFacade.setAttribute(element, key,
-                        attributes.get(key).getAsString());
+                  System.out.println("Setting extended attribute " + key + " to " + stringValue);
+                  ModelBuilderFacade.setAttribute(element, key, stringValue);
                }
             }
          }
