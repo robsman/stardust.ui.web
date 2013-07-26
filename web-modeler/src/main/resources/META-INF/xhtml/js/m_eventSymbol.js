@@ -653,51 +653,6 @@ define(
 				/**
 				 *
 				 */
-				EventSymbol.prototype.getBindingChanges = function() {
-					var hitSymbol = this.diagram
-							.getSymbolOverlappingWithSymbol(this);
-
-					if (hitSymbol != null
-							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
-
-						var bindUnbind = true;
-						// if intermediate event is dragged from one activity
-						// to other activity
-						if (this.bindingActivitySymbol != null) {
-							//dnd on same activity
-							if (hitSymbol.oid == this.bindingActivitySymbol.oid) {
-								bindUnbind = false;
-							}
-
-							this.bindingActivitySymbol.removeBoundaryEvent(this, bindUnbind);
-						}
-						hitSymbol.addBoundaryEvent(this, bindUnbind);
-						if (bindUnbind) {
-							return {
-								bindingActivityUuid : this.modelElement.bindingActivityUuid
-							};
-						}
-					} else if (this.bindingActivitySymbol != null) {
-						this.bindingActivitySymbol.removeBoundaryEvent(this, true);
-						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
-							return {
-								bindingActivityUuid : null,
-								eventClass : m_constants.TIMER_EVENT_CLASS,
-								interrupting : false
-							};
-						} else {
-							return {
-								bindingActivityUuid : null,
-								interrupting : false
-							};
-						}
-					}
-					return null;
-				};
-
-				/**
-				 *
-				 */
 				EventSymbol.prototype.resolveNonHierarchicalRelationships = function() {
 					if (this.modelElement.isBoundaryEvent()) {
 						this.bindingActivitySymbol = this.diagram
@@ -721,9 +676,53 @@ define(
 				 * separately was resulting into "Bad Request"
 				 */
 				EventSymbol.prototype.dragStop_ = function(multipleSymbols) {
+					var bindingChanges = null;
+					var bindUnbind = true;
+
 					if(!multipleSymbols){
-						var bindingChanges = this.getBindingChanges();
+
+						var hitSymbol = this.diagram.getSymbolOverlappingWithSymbol(this);
+
+						if (hitSymbol != null
+								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+		
+							// if intermediate event is dragged from one activity
+							// to other activity
+							if (this.bindingActivitySymbol != null) {
+								//dnd on same activity
+								if (hitSymbol.oid == this.bindingActivitySymbol.oid) {
+									bindUnbind = false;
+									if(!((Math.abs(this.x - this.dragStartX) > 20) || (Math.abs(this.y - this.dragStartY) > 20))){
+										return null;
+									} 
+								}
+								this.bindingActivitySymbol.removeBoundaryEvent(this, bindUnbind);
+							}
+
+							hitSymbol.addBoundaryEvent(this, bindUnbind);
+							
+							if (bindUnbind) {
+								bindingChanges = {
+									bindingActivityUuid : this.modelElement.bindingActivityUuid
+								};
+							}
+						} else if (this.bindingActivitySymbol != null) {
+							this.bindingActivitySymbol.removeBoundaryEvent(this, true);
+							if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
+								bindingChanges = {
+									bindingActivityUuid : null,
+									eventClass : m_constants.TIMER_EVENT_CLASS,
+									interrupting : false
+								};
+							} else {
+								bindingChanges = {
+									bindingActivityUuid : null,
+									interrupting : false
+								};
+							}
+						}
 					}
+
 					var changeDesc = this.dragStopBase(multipleSymbols);
 					
 					if (null != bindingChanges) {
