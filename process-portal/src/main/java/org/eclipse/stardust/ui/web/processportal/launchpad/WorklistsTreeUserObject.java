@@ -50,6 +50,8 @@ public class WorklistsTreeUserObject extends IceUserObject
    
    private boolean refreshWorklistTable;
    
+   private String userParticipantId;
+   
    /**
     * @param wrapper
     */
@@ -75,7 +77,7 @@ public class WorklistsTreeUserObject extends IceUserObject
       if (!leafNode)
       {
          // Use Activity Instance Query for Unified worklist
-         query = ParticipantWorklistCacheManager.getInstance().getActivityInstanceQuery(participantInfo);
+         query = ParticipantWorklistCacheManager.getInstance().getActivityInstanceQuery(participantInfo, userParticipantId);
          FilterOrTerm or = query.getFilter().addOrTerm();
          User user = (User) ParticipantUtils.getParticipant(participantInfo);
          or.add(new PerformingUserFilter(user.getOID()));
@@ -92,10 +94,11 @@ public class WorklistsTreeUserObject extends IceUserObject
       }
       else
       {
-         query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo);
+         query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo, userParticipantId);
       }
       params.put(Query.class.getName(), query);
       params.put("participantInfo", participantInfo);
+      params.put("userParticipantId", userParticipantId);
       params.put("id", participant.getQualifiedId());
       ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
       params.put("name", label.getLabel());
@@ -136,13 +139,23 @@ public class WorklistsTreeUserObject extends IceUserObject
       return style;
    }
 
+   public String getUserParticipantId()
+   {
+      return userParticipantId;
+   }
+
+   public void setUserParticipantId(String userParticipantId)
+   {
+      this.userParticipantId = userParticipantId;
+   }
+
    public String getActivityCount()
    {
       if (this.isLeaf())
       {
-         Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo);
+         Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo, userParticipantId);
          Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
-               participantInfo);
+               participantInfo, userParticipantId);
          if (totalCount < Long.MAX_VALUE)
             return totalCount.toString();
          else

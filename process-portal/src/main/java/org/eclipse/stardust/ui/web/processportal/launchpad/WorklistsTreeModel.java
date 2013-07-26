@@ -166,14 +166,26 @@ public class WorklistsTreeModel extends DefaultTreeModel
 	 * @param rootNode
 	 * @return
 	 */
-   private DefaultMutableTreeNode addChild(ParticipantInfo participantInfo, boolean isLeaf,DefaultMutableTreeNode rootNode)
+   private DefaultMutableTreeNode addChild(ParticipantInfo participantInfo, boolean isLeaf,
+         DefaultMutableTreeNode rootNode)
    {
-      if (showEmptyWorklist || (ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo) > 0 || !isLeaf))
+      String userParticipantId =null;
+      if(isLeaf)
+      {
+         userParticipantId =((WorklistsTreeUserObject) rootNode.getUserObject()).getParticipantInfo().getId();   
+      }
+      else
+      {
+         userParticipantId = participantInfo.getId();
+      }
+      if (showEmptyWorklist
+            || (ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo, userParticipantId) > 0 || !isLeaf))
       {
          DefaultMutableTreeNode child = new DefaultMutableTreeNode();
          WorklistsTreeUserObject childUserObject = new WorklistsTreeUserObject(child);
          childUserObject.setModel(participantInfo);
          childUserObject.setLeaf(isLeaf);
+         childUserObject.setUserParticipantId(userParticipantId);
          child.setUserObject(childUserObject);
          rootNode.add(child);
          return child;

@@ -47,7 +47,6 @@ import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.query.RawQueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -180,6 +179,8 @@ public class WorklistTableBean extends UIComponentBean
 
    private ParticipantInfo participantInfo;
 
+   private String userParticipantId;
+   
    private String worklistId;
 
    private boolean filtersAddedToQuery;
@@ -424,7 +425,14 @@ public class WorklistTableBean extends UIComponentBean
       update();
    }
 
-   private QueryResult fetchQueryResult(Query query, ParticipantInfo participantInfo)
+   /**
+    * 
+    * @param query
+    * @param participantInfo
+    * @param userParticipantId
+    * @return
+    */
+   private QueryResult fetchQueryResult(Query query, ParticipantInfo participantInfo, String userParticipantId)
    {
       QueryResult queryResult = null;
       
@@ -433,13 +441,13 @@ public class WorklistTableBean extends UIComponentBean
          Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
             queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
             
-            if (!filtersAddedToQuery)
-            {
-               ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo,
-                     queryResult.getTotalCount());
-               ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo,
-                     queryResult.getTotalCountThreshold());
-            }
+         if (!filtersAddedToQuery)
+         {
+            ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, userParticipantId,
+                  queryResult.getTotalCount());
+            ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, userParticipantId,
+                  queryResult.getTotalCountThreshold());
+         }
       }
       else if (query instanceof ActivityInstanceQuery)
       {
@@ -488,7 +496,7 @@ public class WorklistTableBean extends UIComponentBean
       query = (Query) getParamFromView(Query.class.getName());
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
       processDefintion = (ProcessDefinition) getParamFromView("processDefinition");
-
+      userParticipantId = (String) getParamFromView("userParticipantId");
       if (null != processDefintion)
       {
          preferenceId = UserPreferencesEntries.P_WORKLIST_PROC_CONF;
@@ -533,7 +541,8 @@ public class WorklistTableBean extends UIComponentBean
                if (partInfo.getQualifiedId().equals(participantQId))
                {
                   participantInfo = partInfo;
-                  query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo);
+                  userParticipantId = entry.getKey();
+                  query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,entry.getKey());
                   view.getViewParams().put(Query.class.getName(), query);
 
                   ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
@@ -1054,7 +1063,7 @@ public class WorklistTableBean extends UIComponentBean
       @Override
       public QueryResult<Object> performSearch(Query query)
       {
-         QueryResult queryResult = fetchQueryResult(query, participantInfo);
+         QueryResult queryResult = fetchQueryResult(query, participantInfo, userParticipantId);
          processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(queryResult, true);
          return queryResult;
       }

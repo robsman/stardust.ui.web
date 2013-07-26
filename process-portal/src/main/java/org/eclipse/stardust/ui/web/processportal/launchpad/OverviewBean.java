@@ -25,6 +25,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
@@ -209,7 +210,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
 
       Map<String, Object> params = CollectionUtils.newTreeMap();
-      params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo));
+      params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,participantInfo.getId()));
       params.put("participantInfo", participantInfo);
       params.put("id", participantInfo.getId());
       String name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
@@ -302,10 +303,11 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
 
    public String getDirectUserWorkCount()
    {
+      User user=SessionContext.findSessionContext().getUser();
       Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(
-            SessionContext.findSessionContext().getUser());
+            user,user.getId());
       Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
-            SessionContext.findSessionContext().getUser());
+            user,user.getId());
       if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
