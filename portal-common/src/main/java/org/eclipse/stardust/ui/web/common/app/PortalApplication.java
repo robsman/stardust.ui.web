@@ -942,28 +942,25 @@ public class PortalApplication
    /**
     * @return
     */
-   public String logout()
+   public void logout()
    {
+      String script=null;
       // Close All Open Views
       closeAllViews();
-
       // If All Views are successfully closed, then fire logout
       if (getOpenViewsSize() == 0)
       {
          // don't directly logout, but redirect main page towards logout
-         String logoutScript = "InfinityBpm.Core.closeSession();";
+         String logoutScript = "parent.BridgeUtils.logout(true);";
          //JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), logoutScript);
          addEventScript(logoutScript); // This is required since addJavascriptCall does not work if JSF Page refresh is involved
          SessionRendererHelper.removeCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()));
       }
       else
       {
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Not all Views got closed successully. Cannot logout...");
-         }
+         script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
       }
-      return null;
+      addEventScript(script);
    }
 
    /**

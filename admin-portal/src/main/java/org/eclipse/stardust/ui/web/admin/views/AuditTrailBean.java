@@ -134,7 +134,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * @param event
     * @throws PortalException
     */
-   public String cleanupATMD()
+   public boolean cleanupATMD()
    {
 
       try
@@ -146,7 +146,7 @@ public class AuditTrailBean extends PopupUIComponentBean
             service.cleanupRuntimeAndModels();
             ModelCache.findModelCache().reset();
             SessionContext.findSessionContext().resetSession();
-            return "ippPortalLogout";
+            return true;
          }
       }
       // catch (AccessForbiddenException e)
@@ -154,7 +154,7 @@ public class AuditTrailBean extends PopupUIComponentBean
       {
          ExceptionHandler.handleException(e);
       }
-      return null;
+      return false;
    }
 
    /**
@@ -198,10 +198,10 @@ public class AuditTrailBean extends PopupUIComponentBean
             public boolean accept()
             {
                auditTrailAndModelCleanUpDialog = null;
-               String navigationRuleId = cleanupATMD();
-               if (StringUtils.isNotEmpty(navigationRuleId))
+               boolean navigationStatus = cleanupATMD();
+               if (navigationStatus)
                {
-                  FacesUtils.handleNavigation(navigationRuleId);
+                  PortalApplication.getInstance().logout();
                }
                return true;
             }
@@ -265,7 +265,7 @@ public class AuditTrailBean extends PopupUIComponentBean
     * 
     * @param event
     */
-   public String cleanupATD(boolean retainUsersAndDepts)
+   public boolean cleanupATD(boolean retainUsersAndDepts)
    {
       AdministrationService service = null;
       try
@@ -275,15 +275,15 @@ public class AuditTrailBean extends PopupUIComponentBean
          {
             service.cleanupRuntime(retainUsersAndDepts);
             SessionContext.findSessionContext().resetSession();
-            return "ippPortalLogout";
+            return true;
          }
-         return null;
+         return false;
       }
       catch (PublicException e)
       {
          ExceptionHandler.handleException(e);
       }
-      return null;
+      return false;
    }
 
    @Override
@@ -367,10 +367,10 @@ public class AuditTrailBean extends PopupUIComponentBean
       public boolean accept()
       {
          mappedConfirmationDialog = null;
-         String navigationRuleId = cleanupATD(retainUsersAndDepts);
-         if (StringUtils.isNotEmpty(navigationRuleId))
+         boolean navigationStatus = cleanupATD(retainUsersAndDepts);
+         if (navigationStatus)
          {
-            FacesUtils.handleNavigation(navigationRuleId);
+            PortalApplication.getInstance().logout();
          }
          return true;
       }
