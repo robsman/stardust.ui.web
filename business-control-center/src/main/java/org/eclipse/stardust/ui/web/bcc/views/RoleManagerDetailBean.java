@@ -68,11 +68,13 @@ import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.InfoPanelBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTableHelper;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -136,7 +138,10 @@ public class RoleManagerDetailBean extends UIComponentBean
    private WorkflowFacade facade;   
 
    private int selectedTabIndex = 0;
-
+   
+   private InfoPanelBean infoPanelBean;
+   
+   private boolean infoPanelVisible;
 
    private QualifiedModelParticipantInfo modelParticipantInfo;
    private View thisView;
@@ -159,6 +164,7 @@ public class RoleManagerDetailBean extends UIComponentBean
          this.thisView = event.getView();
          propsBean = MessagesBCCBean.getInstance();
          facade = WorkflowFacade.getWorkflowFacade(); 
+         infoPanelBean = new InfoPanelBean();
          createAssignedUsersTable();
          createAssignableUsersTable();
       }
@@ -179,6 +185,17 @@ public class RoleManagerDetailBean extends UIComponentBean
       }
    }
 
+   public void notifyRoleUpdate()
+   {
+      // If alert message is alread visible, no need to recreate the notify message
+      if (!infoPanelVisible)
+      {
+         infoPanelBean.setNotificationMsg(MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.toolbar.highlightUsers.alertMsg"));
+         infoPanelVisible = true;
+      }
+   }
+   
    /**
     * Used to Initialize the Role Assigned and Assignable Table
     */
@@ -568,13 +585,15 @@ public class RoleManagerDetailBean extends UIComponentBean
    {
       List<UserItem> users = CollectionUtils.newArrayList();
       List<RoleManagerDetailUserObject> rolesList = userAssignableTable.getList();
+      UserItem userItem = null;
 
       for (Iterator<RoleManagerDetailUserObject> iterator = rolesList.iterator(); iterator.hasNext();)
       {
          RoleManagerDetailUserObject roleManagerDetailUserObject = (RoleManagerDetailUserObject) iterator.next();
          if (roleManagerDetailUserObject.isSelect())
          {
-            users.add(facade.getUserItem(Long.parseLong(roleManagerDetailUserObject.getUserOid().toString())));
+            userItem = facade.getUserItem(Long.parseLong(roleManagerDetailUserObject.getUserOid().toString()));
+            users.add(userItem);
          }
 
       }
@@ -584,6 +603,10 @@ public class RoleManagerDetailBean extends UIComponentBean
          {
             items = Integer.toString(getAssignedUser().size());
             initialize();
+            if (userItem != null && UserUtils.isLoggedInUser(userItem.getUser()))
+            {
+               notifyRoleUpdate();
+            }
          }
       }
       catch (InvalidServiceException e)
@@ -616,8 +639,9 @@ public class RoleManagerDetailBean extends UIComponentBean
    {
       List<UserItem> users = CollectionUtils.newArrayList();
       UserItem userItem = null;
+      boolean showInfoDialog =false;
       List<RoleManagerDetailUserObject> rolesList = userAssignedTable.getList();
-
+      
       for (Iterator<RoleManagerDetailUserObject> iterator = rolesList.iterator(); iterator.hasNext();)
       {
          RoleManagerDetailUserObject roleManagerDetailUserObject = (RoleManagerDetailUserObject) iterator.next();
@@ -640,6 +664,7 @@ public class RoleManagerDetailBean extends UIComponentBean
       if (userItem != null)
       {
          users.add(userItem);
+         showInfoDialog = true;
       }
 
       try
@@ -648,6 +673,10 @@ public class RoleManagerDetailBean extends UIComponentBean
          {
             items = Integer.toString(getAssignedUser().size());
             initialize();
+            if (showInfoDialog && UserUtils.isLoggedInUser(userItem.getUser()))
+            {
+               notifyRoleUpdate();
+            }
          }
       }
       catch (InvalidServiceException e)
@@ -832,6 +861,11 @@ public class RoleManagerDetailBean extends UIComponentBean
    public ActivityTableHelper getActivityHelper()
    {
       return activityHelper;
+   }
+
+   public InfoPanelBean getInfoPanelBean()
+   {
+      return infoPanelBean;
    }
 
    /**

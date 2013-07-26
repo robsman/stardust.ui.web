@@ -6,7 +6,12 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-
+	<ice:panelGroup>
+		<ui:include src="/plugins/views-common/common/infoPanelView.xhtml">
+			<ui:param name="infoPanelBean"
+				value="#{userManagerDetail.infoPanelBean}" />
+		</ui:include>
+	</ice:panelGroup>
 	<ice:panelGroup width="100%">
 		<ice:panelGroup>
 			<ice:panelGroup styleClass="clearing" />

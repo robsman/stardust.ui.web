@@ -64,11 +64,13 @@ import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
 import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.InfoPanelBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTableHelper;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -128,7 +130,11 @@ public class UserManagerDetailBean extends UIComponentBean
    
    private Map<Long, ProcessInstance> processInstances;
    
+   private InfoPanelBean infoPanelBean;
+   
    private boolean canManageAuthorization = false;
+   
+   private boolean infoPanelVisible;
 
    /**
     * 
@@ -136,6 +142,7 @@ public class UserManagerDetailBean extends UIComponentBean
    public UserManagerDetailBean()
    {
       super(V_userManagerDetailView);
+      infoPanelBean = new InfoPanelBean();
    }
 
    /**
@@ -281,6 +288,17 @@ public class UserManagerDetailBean extends UIComponentBean
       refreshActivityTab();
    }
 
+   public void notifyUserRoleUpdate()
+   {
+      // If alert message is alread visible, no need to recreate the notify message
+      if (!infoPanelVisible)
+      {
+         infoPanelBean.setNotificationMsg(MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.toolbar.highlightUsers.alertMsg"));
+         infoPanelVisible = true;
+      }
+   }
+   
    /**
     * 
     */
@@ -512,6 +530,10 @@ public class UserManagerDetailBean extends UIComponentBean
                {
                   roleCount = Integer.toString(getAssignedRoles(user).size());
                   initialize();
+                  if (UserUtils.isLoggedInUser(user.getUser()))
+                  {
+                     notifyUserRoleUpdate();
+                  }
                }
             }
             else
@@ -523,6 +545,10 @@ public class UserManagerDetailBean extends UIComponentBean
                {
                   roleCount = Integer.toString(getAssignedRoles(user).size());
                   initialize();
+                  if (UserUtils.isLoggedInUser(user.getUser()))
+                  {
+                     notifyUserRoleUpdate();
+                  }
                }
             }
          }
@@ -562,6 +588,10 @@ public class UserManagerDetailBean extends UIComponentBean
                {
                   roleCount = Integer.toString(getAssignedRoles(user).size());
                   initialize();
+                  if (UserUtils.isLoggedInUser(user.getUser()))
+                  {
+                     notifyUserRoleUpdate();
+                  }
                }
             }
             else
@@ -573,6 +603,10 @@ public class UserManagerDetailBean extends UIComponentBean
                {
                   roleCount = Integer.toString(getAssignedRoles(user).size());
                   initialize();
+                  if (UserUtils.isLoggedInUser(user.getUser()))
+                  {
+                     notifyUserRoleUpdate();
+                  }
                }
             }
          }
@@ -810,6 +844,18 @@ public class UserManagerDetailBean extends UIComponentBean
       return (UserManagerRoleAssignmentUserObject)resultRow;
    }
    
+   public InfoPanelBean getInfoPanelBean()
+   {
+      return infoPanelBean;
+   }
+
+   public boolean isInfoPanelVisible()
+   {
+      return infoPanelVisible;
+   }
+
+
+
    /**
     * 
     * @author Vikas.Mishra

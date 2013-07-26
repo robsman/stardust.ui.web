@@ -827,7 +827,7 @@ public class ParticipantTree
       }
       participantUserObject.setExpanded(true);
       refreshParticipantNode(participantNode, NODE_TYPE.USER);
-      if(userGrantsChanged && isLoggedInUser(user))
+      if(userGrantsChanged && UserUtils.isLoggedInUser(user))
       {
          notifyParticipantTreeUpdate();
       }
@@ -912,7 +912,7 @@ public class ParticipantTree
             }
             refreshParticipantNode(parentNode, NODE_TYPE.USER);
             // If user is currently logged in User, notify to re-login
-            if (isLoggedInUser(user))
+            if (UserUtils.isLoggedInUser(user))
             {
                notifyParticipantTreeUpdate();
             }
@@ -920,20 +920,6 @@ public class ParticipantTree
       }
    }
 
-   /**
-    *
-    * @param user
-    * @return
-    */
-   private boolean isLoggedInUser(User user)
-   {
-      User loggedInUser = SessionContext.findSessionContext().getUser();
-      if (null != loggedInUser && user.getQualifiedId().equals(loggedInUser.getQualifiedId()))
-      {
-         return true;
-      }
-      return false;
-   }
    /**
     * @param user
     * @param qualifiedParticipantInfo

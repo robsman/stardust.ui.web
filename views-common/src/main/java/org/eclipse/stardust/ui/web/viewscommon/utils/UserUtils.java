@@ -552,6 +552,21 @@ public class UserUtils
    }
    
    /**
+    * 
+    * @param user
+    * @return
+    */
+   public static boolean isLoggedInUser(User user)
+   {
+      User loggedInUser = SessionContext.findSessionContext().getUser();
+      if (null != loggedInUser && user.getQualifiedId().equals(loggedInUser.getQualifiedId()))
+      {
+         return true;
+      }
+      return false;
+   }
+   
+   /**
     * @return
     */
    public static String getPartitionID()
