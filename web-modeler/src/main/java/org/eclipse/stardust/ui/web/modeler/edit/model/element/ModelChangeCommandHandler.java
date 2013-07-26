@@ -133,7 +133,7 @@ public class ModelChangeCommandHandler
          ModelManagementStrategy modelMgtStrategy = modelService(). getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
          JsonArray deleted = new JsonArray();
-         JsonObject deletedModel = modelService().modelElementMarshaller().toModelJson(model);
+         JsonObject deletedModel = modelService().modelElementMarshaller().toModelOnlyJson(model);
          deleted.add(deletedModel);
 
          return generateResponse(commandId, null, null, deleted);

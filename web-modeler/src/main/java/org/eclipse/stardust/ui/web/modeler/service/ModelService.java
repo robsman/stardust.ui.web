@@ -603,15 +603,31 @@ public class ModelService
          }
 
          modelsJson = new JsonObject();
+         JsonObject loaded = new JsonObject();
+         JsonArray failed = new JsonArray();
+         modelsJson.add("loaded", loaded);
+         modelsJson.add("failed", failed);
 
          ModelRepository modelRepository = currentSession().modelRepository();
          for (EObject model : modelRepository.getAllModels())
          {
-            JsonObject modelJson = modelRepository.getModelBinding(model)
-                  .getMarshaller()
-                  .toModelJson(model);
-            modelsJson.add(extractString(modelJson, ModelerConstants.ID_PROPERTY),
-                  modelJson);
+            try
+            {
+               JsonObject modelJson = modelRepository.getModelBinding(model)
+                     .getMarshaller()
+                     .toModelJson(model);
+               loaded.add(extractString(modelJson, ModelerConstants.ID_PROPERTY),
+                     modelJson);
+            }
+            catch (Exception e)
+            {
+               JsonObject failedModel = new JsonObject();
+               failedModel.addProperty("id", ((ModelType) model).getId());
+               failedModel.addProperty("uuid",  uuidMapper().getUUID(model));
+               failedModel.addProperty("error", e.getMessage());
+               failed.add(failedModel);
+               e.printStackTrace();
+            }
          }
 
          return modelsJson.toString();

@@ -359,6 +359,22 @@ define(
 											"close_node", "#" + model.uuid);
 								});
 				
+				jQuery.each(m_utils.convertToSortedArray(m_model
+								.getErroredModels(), "name", true),
+						function(index, model) {
+					m_utils.jQuerySelect(displayScope + "#outline").jstree(
+							"create",
+							displayScope + "#outline", "last",
+							{
+								"attr" : {
+									"id" : model.uuid,
+									"rel" : "erroredModel",
+									"elementId" : model.id
+								},
+								"data" : model.id
+							}, null, true);
+				});
+				
 				jQuery("div#outlineLoadingMsg").hide();
 				runHasModelsCheck();
 				
@@ -434,11 +450,20 @@ define(
 			var downloadModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
 
-				window.location = require("bpm-modeler/js/m_urlUtils")
+				if (!model) {
+					for (var i = 0; i < m_model.getErroredModels().length; i++) {
+						if (m_model.getErroredModels()[i].uuid === modelUUID) {
+							model = m_model.getErroredModels()[i];		
+						}
+					}						
+				}
+				if (model) {
+					window.location = require("bpm-modeler/js/m_urlUtils")
 						.getModelerEndpointUrl()
 						+ "/models/"
 						+ encodeURIComponent(model.id)
-						+ "/download";
+						+ "/download";	
+				}
 			}
 
 			var openModelReport = function(modelUUID) {
@@ -797,6 +822,31 @@ define(
 																+ "&uuid="
 																+ model.uuid,
 														model.uuid);
+									} else if (data.rslt.obj.attr('rel') == 'erroredModel') {
+										if (parent.iPopupDialog) {
+											parent.iPopupDialog
+													.openPopup({
+														attributes : {
+															width : "400px",
+															height : "200px",
+															src : m_urlUtils.getPlugsInRoot()
+																	+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
+														},
+														payload : {
+															title : m_i18nUtils
+																	.getProperty("modeler.messages.warning"),
+															message : m_i18nUtils
+																	.getProperty("modeler.outline.erroredModels.open.message"),
+															acceptButtonText : m_i18nUtils
+																	.getProperty("modeler.messages.confirm.close"),
+															acceptFunction : function() {
+																// Do nothing
+															}
+														}
+													});
+										} else {
+											alert(m_i18nUtils.getProperty("modeler.outline.erroredModels.open.message"));
+										}
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
 											|| data.rslt.obj.attr('rel') == "teamLeader") {
 										var model = m_model
@@ -1271,6 +1321,34 @@ define(
 													ctxMenu.deleteModel = false;
 													ctxMenu.deleteModel = false;
 													ctxMenu.createProcess = false;
+												}
+
+												return ctxMenu;
+											} else if ('erroredModel' == node.attr('rel')) {
+												var ctxMenu =  {
+													"ccp" : false,
+													"create" : false,
+													"rename" : false,
+													"deleteModel" : {
+														"label" : m_i18nUtils
+																.getProperty("modeler.element.properties.commonProperties.delete"),
+														"action" : function(obj) {
+															deleteElementAction(
+																	obj.context.lastChild.data,
+																	function() {
+																		deleteModel(obj
+																				.attr("elementId"));
+																	});
+														}
+													},
+													"download" : {
+														"label" : m_i18nUtils
+																.getProperty("modeler.outline.model.contextMenu.download"),
+														"action" : function(obj) {
+															downloadModel(obj
+																	.attr("id"));
+														}
+													}
 												}
 
 												return ctxMenu;
@@ -1766,6 +1844,14 @@ define(
 														"structuredTypes",
 														"data" ]
 											},
+											"erroredModel" : {
+												"icon" : {
+													"image" : m_urlUtils
+															.getPlugsInRoot()
+															+ "bpm-modeler/images/icons/model-error.png"
+												},
+												"valid_children" : []
+											},
 											"participants" : {
 												"icon" : {
 													"image" : m_urlUtils
@@ -2215,8 +2301,18 @@ define(
 				 */
 				function deleteModel(modelId) {
 					var model = m_model.findModel(modelId);
-					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, model.id, {}));
+					if (!model) {
+						for (var i = 0; i < m_model.getErroredModels().length; i++) {
+							if (m_model.getErroredModels()[i].id === modelId) {
+								model = m_model.getErroredModels()[i];		
+							}
+						}						
+					}
+					
+					if (model) {
+						m_commandsController.submitCommand(m_command
+								.createDeleteModelCommand(model.uuid, model.id, {}));	
+					}
 				}
 
 				/**

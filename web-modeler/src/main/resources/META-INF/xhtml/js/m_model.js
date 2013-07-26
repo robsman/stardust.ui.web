@@ -30,6 +30,8 @@ define(
 				loadModels : loadModels,
 
 				getModels : getModels,
+				
+				getErroredModels : getErroredModels,
 
 				createModel : function() {
 					return new Model();
@@ -477,6 +479,19 @@ define(
 
 				return window.top.models;
 			}
+			
+
+			/**
+			 * Singleton on DOM level.
+			 */
+			function getErroredModels() {
+				if (window.top.models) {
+					return window.top.erroredModels;
+				}
+				loadModels(true);
+
+				return window.top.erroredModels;
+			}
 
 			function findModel(id) {
 				return getModels()[id];
@@ -517,9 +532,11 @@ define(
 							+ "/models"
 				}, {
 					"success" : function(json) {
-						window.top.models = json;
-
-						bindModels();
+						if (json.loaded) {
+							window.top.models = json.loaded;
+							window.top.erroredModels = json.failed;
+							bindModels();
+						}
 					},
 					"error" : function() {
 						alert('Error occured while fetching models');

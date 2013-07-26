@@ -2612,50 +2612,63 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return dataMappingJson;
    }
 
+
+   /**
+    * Returns Models infromation only and skips info about its elements 
+    * @param model
+    * @return
+    */
+   public JsonObject toModelOnlyJson(ModelType model)
+   {
+	      JsonObject modelJson = new JsonObject();
+
+	      modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
+	      modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
+	      modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
+	            eObjectUUIDMapper().getUUID(model));
+	      modelJson.addProperty(ModelerConstants.FILE_NAME,
+	            getModelBuilderFacade().getModelManagementStrategy().getModelFileName(model));
+	      modelJson.addProperty(ModelerConstants.FILE_PATH,
+	            getModelBuilderFacade().getModelManagementStrategy().getModelFilePath(model));
+	      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
+	      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION,
+	            getModelBuilderFacade().convertDate(model.getCreated()));
+	      modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
+	            getModelBuilderFacade().getModified(model));
+
+	      // Model description
+	      if (null != model.getDescription() && model.getDescription().getMixed().size() > 0)
+	      {
+	         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+	               (String) model.getDescription().getMixed().get(0).getValue());
+	      }
+	      else
+	      {
+	         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+	      }
+
+	      loadAttributes(model, modelJson);
+
+	      if (model.getDescription() != null)
+	      {
+	         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
+	               (String) model.getDescription().getMixed().get(0).getValue());
+	      }
+	      else
+	      {
+	         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
+	      }
+	      
+	      return modelJson;
+   }
+   
    /**
     * @param model
     * @return
     */
    public JsonObject toModelJson(ModelType model)
    {
-      JsonObject modelJson = new JsonObject();
-
-      modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
-      modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
-      modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
-            eObjectUUIDMapper().getUUID(model));
-      modelJson.addProperty(ModelerConstants.FILE_NAME,
-            getModelBuilderFacade().getModelManagementStrategy().getModelFileName(model));
-      modelJson.addProperty(ModelerConstants.FILE_PATH,
-            getModelBuilderFacade().getModelManagementStrategy().getModelFilePath(model));
-      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
-      modelJson.addProperty(ModelerConstants.DATE_OF_CREATION,
-            getModelBuilderFacade().convertDate(model.getCreated()));
-      modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
-            getModelBuilderFacade().getModified(model));
-
-      // Model description
-      if (null != model.getDescription() && model.getDescription().getMixed().size() > 0)
-      {
-         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-               (String) model.getDescription().getMixed().get(0).getValue());
-      }
-      else
-      {
-         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
-      }
-
-      loadAttributes(model, modelJson);
-
-      if (model.getDescription() != null)
-      {
-         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-               (String) model.getDescription().getMixed().get(0).getValue());
-      }
-      else
-      {
-         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
-      }
+      JsonObject modelJson = toModelOnlyJson(model);
 
       JsonObject processesJson = new JsonObject();
 
