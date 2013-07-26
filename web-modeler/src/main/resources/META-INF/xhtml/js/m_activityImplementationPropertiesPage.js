@@ -161,12 +161,14 @@ define(
 					}
 
 					if (this.getModelElement().taskType == m_constants.SCRIPT_TASK_TYPE
-							&& application.applicationType != "messageTransformationBean") {
+							&& application.applicationType != "messageTransformationBean"
+							&& application.applicationType != "camelSpringProducerApplication") {
 						return false;
 					}
 
 					if (this.getModelElement().taskType != m_constants.SCRIPT_TASK_TYPE
-							&& application.applicationType == "messageTransformationBean") {
+							&& (application.applicationType == "messageTransformationBean"
+									|| application.applicationType == "camelSpringProducerApplication")) {
 						return false;
 					}
 
