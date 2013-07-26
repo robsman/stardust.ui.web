@@ -95,7 +95,7 @@ public class SingleViewLaunchPanels implements InitializingBean
    /**
     * @param event
     */
-   public void viewClosed(ValueChangeEvent event)
+   public void viewClosing(ValueChangeEvent event)
    {
       try
       {
@@ -103,7 +103,7 @@ public class SingleViewLaunchPanels implements InitializingBean
    
          String value = (String)event.getNewValue();
          trace.error("Closing view: " + value);
-   
+
          if (StringUtils.isNotEmpty(value))
          {
             List<String> values = StringUtils.splitAndKeepOrder(value, ":");
@@ -113,10 +113,10 @@ public class SingleViewLaunchPanels implements InitializingBean
             View view = portalApp.getPortalUiController().findView(viewId, viewKey);
             if (null != view)
             {
+               trace.info("Trying to Close View: " + view);
                trace.info("Before:: View Count: " + portalApp.getOpenViewsSize());
-               view.getViewParams().put("skipViewCloseScript", "true");
-               portalApp.closeView(view, true);
-               trace.info("After:: View Count: " + portalApp.getOpenViewsSize() + ", View Closed: " + view);
+               portalApp.closeView(view);
+               trace.info("After:: View Count: " + portalApp.getOpenViewsSize());
                
                String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
                sessionId += view.getIdentityParams();

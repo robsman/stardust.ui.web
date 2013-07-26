@@ -1053,6 +1053,8 @@ public class PortalUiController
       {
          if ( !force)
          {
+            String eventScript = "parent.BridgeUtils.View.syncActiveView(true);";
+            PortalApplicationEventScript.getInstance().addEventScript(eventScript);
             // close command was vetoed
             return false;
          }

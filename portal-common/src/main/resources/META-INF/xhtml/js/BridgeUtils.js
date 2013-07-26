@@ -278,7 +278,6 @@ if (!window["BridgeUtils"].View) {
 					BridgeUtils.log("Subscribing to View Events");
 					unsubscribers.push(sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged));
 					unsubscribers.push(sgPubSubService.subscribe('sgViewPanelCloseIntent', viewClosing));
-					unsubscribers.push(sgPubSubService.subscribe('sgViewPanelClosed', viewClosed));
 		
 					BridgeUtils.log("Subscribing to Sidebar Events");
 					unsubscribers.push(sgPubSubService.subscribe('sgSidebarVisibilityChanged', sidebarVisibilityChanged));
@@ -336,6 +335,18 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Closing View = " + viewId);
 			BridgeUtils.runInAngularContext(function($scope) {
 				try {
+					// HTML5 Framework uses timeout for publishing sgViewPanelCloseIntent and this is asynchronous
+					// Because of this callback function get called after entire script is run
+					// Due to this when callback function is called BridgeUtils.isScriptRunning() returns false
+					// Below hack is added to get around this 
+					var view = getViewPanel(viewId);
+					if (view) {
+						if (!view.params) {
+							view.params = {};
+						}
+						view.params["forceCloseView"] = true;
+					}
+					// Hack Ends
 					$scope.close(viewId);
 				} catch(e) {
 					BridgeUtils.log("Failed in HTML5 Framework close() call: " + e, "e");
@@ -344,6 +355,20 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("View Closed = " + viewId);
 		}
 
+		/*
+		 * 
+		 */
+		function getViewPanel($scope, viewId) {
+			var view;
+			var viewPanels = $scope.viewPanels();
+			for (i in viewPanels) {
+				if (viewPanels[i].path == viewId) {
+					view = viewPanels[i];
+					break;
+				}
+			}
+			return view;
+		}
 		/*
 		 *
 		 */
@@ -372,44 +397,36 @@ if (!window["BridgeUtils"].View) {
 		function viewClosing(data) {
 			BridgeUtils.log("Processing View Close Intent Event = " + data);
 
+			var ret = true;
 			var view = data.viewPanel;
 			BridgeUtils.log("Processing View Close Intent Event for View = " + view.path);
-			if (isPortalPath(view.path) && view.params) {
-				var iframeId = view.params["iframeId"];
-				var iframe = document.getElementById(iframeId);
-				BridgeUtils.log("iFrame to be removed = " + iframeId);
 
-				if (iframe) {
-					iframe.style.display = "none";
-					iframe.src = "about:blank"; // Must change url before relocating iFrame
+			if (isPortalPath(view.path)) {
+				if (BridgeUtils.isScriptRunning() || view.params["forceCloseView"]) {
+					var iframeId = view.params["iframeId"];
+					var iframe = document.getElementById(iframeId);
+					BridgeUtils.log("iFrame to be removed = " + iframeId);
+	
+					if (iframe) {
+						iframe.style.display = "none";
+						iframe.src = "about:blank"; // Must change url before relocating iFrame
+	
+						var frameContainer = BridgeUtils.FrameManager.getFrameContainer();
+						frameContainer.appendChild(iframe);
+	
+						BridgeUtils.FrameManager.close(iframeId);
+					}
+				} else {
+					ret = false;
 
-					var frameContainer = BridgeUtils.FrameManager.getFrameContainer();
-					frameContainer.appendChild(iframe);
-
-					BridgeUtils.FrameManager.close(iframeId);
+					var viewInfo = getViewInfoFromNavPath(view.path);
+					BridgeUtils.log("Firring viewClosed for = " + viewInfo.viewId + ":" + viewInfo.viewKey);
+					doPartialSubmit("modelerLaunchPanels", "viewFormLP", "viewClosing", viewInfo.viewId + ":" + viewInfo.viewKey);
 				}
-
-				BridgeUtils.log("Processed View Close Intent Event = " + data);
-			}
-			return true;
-		}
-
-		/*
-		 *
-		 */
-		function viewClosed(data) {
-			if (BridgeUtils.isScriptRunning()) {
-				return;
 			}
 
-			BridgeUtils.log("Processing View Closed Event = " + data);
-			var navPath = data.path;
-			if (isPortalPath(navPath)) {
-				var viewInfo = getViewInfoFromNavPath(navPath);
-				BridgeUtils.log("Firring viewClosed for = " + viewInfo.viewId + ":" + viewInfo.viewKey);
-				doPartialSubmit("modelerLaunchPanels", "viewFormLP", "viewClosed",
-						viewInfo.viewId + ":" + viewInfo.viewKey);
-			}
+			BridgeUtils.log("Processed View Close Intent Event returning = " + ret);
+			return ret;
 		}
 
 		/*
@@ -511,21 +528,31 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 *
 		 */
-		function syncActiveView() {
+		function syncActiveView(immediate) {
 			BridgeUtils.log("Trying to sync active view.");
 
-			window.setTimeout(function() {
-				var iframeId = getIframeIdForActiveView();
-				if (iframeId) {
-					BridgeUtils.log("Firring active view sync, for iframeId = " + iframeId);
-					doPartialSubmit(iframeId, "viewFormMain", "activeViewSync", Math.floor(Math.random()*10000)+1);
-					BridgeUtils.log("Firred active view sync, for iframeId = " + iframeId);
-				} else {
-					BridgeUtils.log("Could not sync active view, has no iframeId");
-				}
-			}, 200);
+			if (immediate != undefined && immediate == true) {
+				_syncActiveView();
+			} else {
+				window.setTimeout(function() {
+					_syncActiveView();
+				}, 200);
+			}
 		}
 
+		/*
+		 * 
+		 */
+		function _syncActiveView() {
+			var iframeId = getIframeIdForActiveView();
+			if (iframeId) {
+				BridgeUtils.log("Firring active view sync, for iframeId = " + iframeId);
+				doPartialSubmit(iframeId, "viewFormMain", "activeViewSync", Math.floor(Math.random()*10000)+1);
+				BridgeUtils.log("Firred active view sync, for iframeId = " + iframeId);
+			} else {
+				BridgeUtils.log("Could not sync active view, has no iframeId");
+			}
+		}
 		/*
 		 *
 		 */
