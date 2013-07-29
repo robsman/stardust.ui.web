@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -1616,7 +1615,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             
             EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
-            storeAttributes(eventHandler, eventJson);
+            storeAttributes(eventHandler, eventJson, "carnot:engine:delayUnit");
 
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
@@ -2506,10 +2505,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (attributes != null)
       {
-         //List<String> excluded = Arrays.asList(excludedKeys);
-         List<String> excluded = new ArrayList<String>();
-         Collections.addAll(excluded, excludedKeys);
-         excluded.add("carnot:engine:delayUnit");
+         List<String> excluded = Arrays.asList(excludedKeys);
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
             String key = entry.getKey();

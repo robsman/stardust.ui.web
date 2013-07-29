@@ -350,8 +350,9 @@ public class EventMarshallingUtils
       return actionType;
    }
 
-   private static EventConditionTypeType newConditionType(String id, String name, boolean isProcessCondition, boolean isActivityCondition,
-         ImplementationType engineLiteral, String[][] attributes)
+   private static EventConditionTypeType newConditionType(String id, String name,
+         boolean isProcessCondition, boolean isActivityCondition,
+         ImplementationType implementation, String[][] attributes)
    {
       EventConditionTypeType conditionType = BpmPackageBuilder.F_CWM.createEventConditionTypeType();
       conditionType.setId(id);
@@ -359,7 +360,7 @@ public class EventMarshallingUtils
       conditionType.setIsPredefined(true);
       conditionType.setProcessCondition(isProcessCondition);
       conditionType.setActivityCondition(isActivityCondition);
-      conditionType.setImplementation(ImplementationType.ENGINE_LITERAL);
+      conditionType.setImplementation(implementation);
       for (String[] attribute : attributes)
       {
          AttributeUtil.setAttribute(conditionType, attribute[0], attribute[1]);
@@ -397,6 +398,8 @@ public class EventMarshallingUtils
       if (null != conditionType)
       {
          eventHandler = newEventHandler(conditionType);
+         // (fh) enable automatic binding by default on all PULL events.
+         eventHandler.setAutoBind(ImplementationType.PULL_LITERAL == conditionType.getImplementation());
          
          bindEvent(eventHandler, eventSymbol);
          hostActivity.getEventHandler().add(eventHandler);
@@ -419,7 +422,6 @@ public class EventMarshallingUtils
       
       if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
       {
-         
          // no bind or unbind actions supported.
          eventHandler.getBindAction().clear();
          eventHandler.getUnbindAction().clear();
