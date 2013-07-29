@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -2505,7 +2506,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (attributes != null)
       {
-         List<String> excluded = Arrays.asList(excludedKeys);
+         //List<String> excluded = Arrays.asList(excludedKeys);
+         List<String> excluded = new ArrayList<String>();
+         Collections.addAll(excluded, excludedKeys);
          excluded.add("carnot:engine:delayUnit");
          for (Map.Entry<String, ? > entry : attributes.entrySet())
          {
