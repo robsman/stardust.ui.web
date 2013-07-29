@@ -509,7 +509,7 @@ define(
 					// Refresh properties panel on view activation
 					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
 						var processDefView = m_utils.jQuerySelect("#processDefinitionView");
-						if (params && params.length > 0 && params[0] === self.process.uuid) {
+						if (params && params === self.process.uuid) {
 							self.initializePropertiesPanels();
 						}
 					})
