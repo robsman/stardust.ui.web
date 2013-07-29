@@ -3043,8 +3043,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   break;
                }
             }
-            json.addProperty("carnot:engine:delay", delay);
-            json.addProperty("carnot:engine:delayUnit", unit);
+            attributes.addProperty("carnot:engine:delay", delay);
+            attributes.addProperty("carnot:engine:delayUnit", unit);
          }
          else
          {
