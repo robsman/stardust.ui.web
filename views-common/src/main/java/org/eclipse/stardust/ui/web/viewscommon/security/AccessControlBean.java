@@ -12,15 +12,18 @@ package org.eclipse.stardust.ui.web.viewscommon.security;
 
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
-
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 public class AccessControlBean extends DefaultRowModel
 {
    private static final long serialVersionUID = 6611664925943574939L;
 
    private Participant participant;
-
+   
    private boolean read;
 
    private boolean modify;
@@ -48,6 +51,8 @@ public class AccessControlBean extends DefaultRowModel
    private String readACLPolicyChangedValue;
 
    private String modifyACLPolicyChangedValue;
+   
+   private String modelLabel = null;
 
    public static final String ALLOW = "Allow";
 
@@ -106,6 +111,7 @@ public class AccessControlBean extends DefaultRowModel
    {
       super();
       this.participant = participant;
+      setModelLabel();
       setRead(false);
       setModify(false);
       setCreate(false);
@@ -120,6 +126,7 @@ public class AccessControlBean extends DefaultRowModel
    {
       super();
       this.participant = participant;
+      setModelLabel();
       setRead(read);
       setModify(modify);
       setCreate(create);
@@ -129,6 +136,16 @@ public class AccessControlBean extends DefaultRowModel
       setNewOrModified(true);
    }
 
+   private void setModelLabel()
+   {
+      if (StringUtils.isNotEmpty(this.participant.getModelId()))
+      {
+         Model model = ModelCache.findModelCache().getActiveModel(this.participant.getModelId());
+         this.modelLabel = null != model ? MessagesViewsCommonBean.getInstance().getParamString(
+               "views.myDocumentsTreeView.securityDialog.modelName.label", model.getName()) : null;
+      }
+   }
+   
    public boolean isReadAcl()
    {
       return readAcl;
@@ -320,6 +337,11 @@ public class AccessControlBean extends DefaultRowModel
       this.selectedRow = selectedRow;
    }
    
+   public String getModelLabel()
+   {
+      return modelLabel;
+   }
+
    public boolean equals(Object acb)
    {
       if (!(acb instanceof AccessControlBean))

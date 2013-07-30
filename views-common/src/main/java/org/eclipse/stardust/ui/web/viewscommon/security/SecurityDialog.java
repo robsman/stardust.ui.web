@@ -474,7 +474,7 @@ public class SecurityDialog extends PopupUIComponentBean
       }
       for (int i = 0; i < accessControlBean.size(); i++)
       {
-         if (accessControlBean.get(i).getParticipant().getName().equals(acb.getParticipant().getName()))
+         if (accessControlBean.get(i).getParticipant().getId().equals(acb.getParticipant().getId()))
          {
             accessControlBean.remove(i);
             accessControlBean.add(i, acb);

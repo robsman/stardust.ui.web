@@ -21,7 +21,7 @@
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{col.columnName == 'Participant'}"
 			style="text-align: left;">
-			<ice:outputText value="#{row.participant.name}" />
+			<ice:outputText value="#{row.participant.name}" title="#{row.modelLabel}"/>
 		</ice:panelGroup>
 
 		<ice:panelGroup

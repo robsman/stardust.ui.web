@@ -24,7 +24,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 public class Participant implements Comparable<Participant>
@@ -36,6 +35,7 @@ public class Participant implements Comparable<Participant>
    private String id;
    private String name;
    private boolean selected;
+   private String modelId;
 
    /**
     * @param modelParticipantInfo
@@ -50,12 +50,13 @@ public class Participant implements Comparable<Participant>
     */
    private void initialize(ModelParticipantInfo modelParticipantInfo)
    {
-      String modelId = ModelUtils.extractModelId(modelParticipantInfo.getQualifiedId());
+      modelId = ModelUtils.extractModelId(modelParticipantInfo.getQualifiedId());
       principal = new DmsPrincipal(modelParticipantInfo, modelId);
       id = principal.getName();
       if (modelParticipantInfo instanceof org.eclipse.stardust.engine.api.model.Participant)
       {
          name = I18nUtils.getParticipantName((org.eclipse.stardust.engine.api.model.Participant) modelParticipantInfo);
+         
       }
       else
       // scoped roles / departments
@@ -177,6 +178,12 @@ public class Participant implements Comparable<Participant>
    {
       return name;
    }
+   
+   public String getModelId()
+   {
+      return modelId;
+   }
+
    @Override
    public int hashCode()
    {
