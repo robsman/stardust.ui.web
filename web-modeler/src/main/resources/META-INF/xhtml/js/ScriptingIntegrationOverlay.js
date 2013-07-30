@@ -48,8 +48,11 @@ define(
 
 					this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
 					this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
+					this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
+					this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1) + "Div";
+					
 					this.codeEditor = m_codeEditorAce
-							.getJSCodeEditor("codeEditorDiv");
+							.getJSCodeEditor(this.editorAnchor.id);
 					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
 					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
 					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -75,13 +78,13 @@ define(
 
 								if (self.languageSelect.val() == "JavaScript") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor("codeEditorDiv");
+											.getJSCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Python") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor("codeEditorDiv");
+											.getJSCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Groovy") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor("codeEditorDiv");
+											.getJSCodeEditor(self.editorAnchor.id);
 								}
 
 								self.codeEditor.getEditor().getSession()
