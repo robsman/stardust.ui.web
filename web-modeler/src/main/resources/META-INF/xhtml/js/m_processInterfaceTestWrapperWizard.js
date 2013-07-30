@@ -45,6 +45,7 @@ define(
 				this.dataOutputActivityNameInput = m_utils.jQuerySelect("#dataOutputActivityNameInput");
 				this.createButton = m_utils.jQuerySelect("#createButton");
 				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
+				this.closeButton = m_utils.jQuerySelect("#dialogCloseIcon");
 
 				var self = this;
 
@@ -61,6 +62,10 @@ define(
 					closePopup();
 				});
 
+				this.closeButton.click(function(event) {
+					closePopup();
+				});
+				
 				/**
 				 * 
 				 */
