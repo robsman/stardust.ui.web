@@ -65,6 +65,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.message.MessageDialogHandler;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
@@ -135,7 +136,7 @@ import com.icesoft.faces.context.effects.JavascriptContext;
  */
 public class ActivityDetailsBean extends UIComponentBean
       implements ActivityEventObserver, NoteEventObserver, DocumentEventObserver, ViewEventHandler, DisposableBean,
-      Activator
+      Activator, MessageDialogHandler
 {
    private static final long serialVersionUID = 1L;
 
@@ -1787,7 +1788,15 @@ public class ActivityDetailsBean extends UIComponentBean
          
          skipViewEvents = true;
          int viewIndex = PortalApplication.getInstance().getViewIndex(getThisView());
-         PortalApplication.getInstance().closeView(thisView, true);
+         if (completionLog.isDelayViewClose())
+         {
+            //Current view will close on Popup Close
+            MessageDialog.getInstance().setCallbackHandler(this);
+         }
+         else
+         {
+            PortalApplication.getInstance().closeView(thisView, true);
+         }
 
          if (completionLog.isSuccess())
          {
@@ -3423,4 +3432,11 @@ public class ActivityDetailsBean extends UIComponentBean
          this.doNotShowMsgAgain = doNotShowMsgAgain;
       }
    }
+   
+   public boolean accept()
+   {
+      PortalApplication.getInstance().closeView(thisView, true);
+      return true;
+   }
+
 }

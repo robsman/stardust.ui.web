@@ -443,6 +443,7 @@ public class PPUtils
 
       boolean closeViewAndProceed = true;
       boolean success = false;
+      boolean delayViewClose = false;
 
       try
       {
@@ -476,11 +477,13 @@ public class PPUtils
       }
       catch (ConcurrencyException ce)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(ce,
                MessagePropertiesBean.getInstance().getString("views.activityPanel.concurrencyError"));
       }
       catch (AccessForbiddenException af)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(af,
                MessagePropertiesBean.getInstance().getString("views.activityPanel.acccessForbiddenError"));
       }
@@ -492,6 +495,7 @@ public class PPUtils
       }
       catch (InternalException ie)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(ie);
       }
       catch (Exception e)
@@ -500,7 +504,7 @@ public class PPUtils
          ExceptionHandler.handleException(e);
       }
 
-      return new WorkflowActivityCompletionLog(completedAi, newInstance, success, closeViewAndProceed);
+      return new WorkflowActivityCompletionLog(completedAi, newInstance, success, closeViewAndProceed, delayViewClose);
    }
 
    /**

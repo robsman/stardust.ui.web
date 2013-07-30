@@ -48,6 +48,7 @@ public class MessageDialog extends PopupDialog
    private Throwable exception;
 
    private PortalUiController portalUiController;
+   private MessageDialogHandler callbackHandler;
 
    /**
     * 
@@ -240,6 +241,10 @@ public class MessageDialog extends PopupDialog
    public void closePopup()
    {
       clearMessages();
+      if (null != callbackHandler)
+      {
+         callbackHandler.accept();
+      }
       super.closePopup();
    }
    
@@ -308,5 +313,17 @@ public class MessageDialog extends PopupDialog
    {
       return exception;
    }
+
+   public MessageDialogHandler getCallbackHandler()
+   {
+      return callbackHandler;
+   }
+
+   public void setCallbackHandler(MessageDialogHandler callbackHandler)
+   {
+      this.callbackHandler = callbackHandler;
+   }
+   
+   
    
 }
