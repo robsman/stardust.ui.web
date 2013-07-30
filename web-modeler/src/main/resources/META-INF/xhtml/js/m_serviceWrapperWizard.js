@@ -54,7 +54,8 @@ define(
 				this.createTestWrapperProcessInput = m_utils.jQuerySelect("#createTestWrapperProcessInput");
 				this.createButton = m_utils.jQuerySelect("#createButton");
 				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
-
+				this.closeButton = m_utils.jQuerySelect("#dialogCloseIcon");
+				
 				var self = this;
 
 				this.createButton.click({
@@ -71,6 +72,10 @@ define(
 					closePopup();
 				});
 
+				this.closeButton.click(function(event) {
+					closePopup();
+				});
+				
 				/**
 				 * 
 				 */
