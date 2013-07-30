@@ -23,6 +23,7 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -75,7 +76,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
             for (Worklist worklist : entry.getValue())
             {
                worklistOwner = worklist.getOwner();
-               if(entry.getKey().equals(worklistOwner.getQualifiedId()))
+               if(entry.getKey().equals(worklistOwner.getQualifiedId()) && (worklistOwner instanceof UserInfo))
                {
                   // Using the userParticipantId i.e entry.getKey() along with
                   // worklistOwner- ParticipantInfo
@@ -243,7 +244,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       if (null != oldAi) // oldAi can be null if AI is ACTIVATED
       {
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
-               .getCurrentPerformer(),oldAi.getCurrentPerformer().getId()));
+               .getCurrentPerformer(),oldAi.getCurrentPerformer().getQualifiedId()));
          if (null != oldEntry && (oldEntry.getCount() > 0 && oldEntry.getCount() < oldEntry.getTotalCountThreshold()))
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
@@ -253,10 +254,10 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       ActivityInstance newAi = event.getActivityInstance();
       if (null != newAi) // Safety Check
       {
-         String userParticipantId = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getId() : oldAi
-               .getCurrentPerformer().getId();
+         String userParticipantQualifierId = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getQualifiedId() : oldAi
+               .getCurrentPerformer().getQualifiedId();
          ParticipantWorklistCacheEntry newEntry = participantWorklists.get(new ParticipantInfoWrapper(newAi
-               .getCurrentPerformer(),userParticipantId));
+               .getCurrentPerformer(),userParticipantQualifierId));
          if (null != newEntry && newEntry.getCount() < Long.MAX_VALUE)
          {
             newEntry.setCount(newEntry.getCount() + 1);

@@ -82,7 +82,7 @@ public class WorklistsTreeUserObject extends IceUserObject
          User user = (User) ParticipantUtils.getParticipant(participantInfo);
          or.add(new PerformingUserFilter(user.getOID()));
          Set<ParticipantInfo> partInfo = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
-               .get(participantInfo.getId());
+               .get(participantInfo.getQualifiedId());
          for (ParticipantInfo participantInfo1 : partInfo)
          {
             if (!(participantInfo1 instanceof UserInfo))

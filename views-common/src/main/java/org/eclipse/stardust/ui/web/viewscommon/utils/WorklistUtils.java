@@ -345,7 +345,7 @@ public class WorklistUtils
       Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist(query);
       // Worklist map is used for maintaining relation of 'Worklist Owner-worklist Set', used while
       // creating worklist tree
-      worklistMap.put(worklist.getOwnerID(), worklists);
+      worklistMap.put(worklist.getOwner().getQualifiedId(), worklists);
       worklists.add(worklist);
       getSubWorklist(worklist, worklistMap,worklists);
       return worklistMap;
@@ -376,17 +376,17 @@ public class WorklistUtils
          if (!(subws.getOwner() instanceof UserInfo))
          {
             // For Participant worklist new <key,value> is not created,
-            worklists = worklistMap.get(worklist.getOwner().getId());
+            worklists = worklistMap.get(worklist.getOwner().getQualifiedId());
          }
          else
          {
             // For user worklist, create new map entry
-            worklists = worklistMap.get(subws.getOwnerID());
+            worklists = worklistMap.get(subws.getOwner().getQualifiedId());
          }
          if (CollectionUtils.isEmpty(worklists))
          {
             worklists = CollectionUtils.newArrayList();
-            worklistMap.put(subws.getOwnerID(), worklists);
+            worklistMap.put(subws.getOwner().getQualifiedId(), worklists);
          }
          worklists.add(subws);
          if (subws.getSubWorklists().hasNext()) // If additional Sub-Worklist are present

@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
@@ -113,13 +114,13 @@ public class WorklistsTreeModel extends DefaultTreeModel
             for (ParticipantInfo participantInfo : participants)
             {
                boolean assemblyNodeCreated = false;
-               if (participantInfo.getId().equals(entry.getKey()))
+               if (participantInfo.getQualifiedId().equals(entry.getKey()) && (participantInfo instanceof UserInfo))
                {
                   tempRootNode = addChild(participantInfo, false, root);
                }
                
                if (assemblyLineUserObject.isAssemblyLineMode()
-                     && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getId()))
+                     && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getQualifiedId()))
                {
                   if (!assemblyNodeCreated)
                   {
@@ -133,7 +134,7 @@ public class WorklistsTreeModel extends DefaultTreeModel
                {
                   continue;
                }
-               if(entry.getKey().equals(participantInfo.getId()))
+               if(entry.getKey().equals(participantInfo.getQualifiedId()) && (participantInfo instanceof UserInfo))
                {
                   ((WorklistsTreeUserObject)childNode.getUserObject()).setText(MessagePropertiesBean.getInstance().getString("launchPanels.worklists.personalWorklist")+ " :");
                }
@@ -172,11 +173,11 @@ public class WorklistsTreeModel extends DefaultTreeModel
       String userParticipantId =null;
       if(isLeaf)
       {
-         userParticipantId =((WorklistsTreeUserObject) rootNode.getUserObject()).getParticipantInfo().getId();   
+         userParticipantId =((WorklistsTreeUserObject) rootNode.getUserObject()).getParticipantInfo().getQualifiedId();   
       }
       else
       {
-         userParticipantId = participantInfo.getId();
+         userParticipantId = participantInfo.getQualifiedId();
       }
       if (showEmptyWorklist
             || (ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo, userParticipantId) > 0 || !isLeaf))

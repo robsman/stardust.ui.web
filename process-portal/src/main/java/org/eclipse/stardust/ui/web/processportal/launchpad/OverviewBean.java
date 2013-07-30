@@ -210,7 +210,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
 
       Map<String, Object> params = CollectionUtils.newTreeMap();
-      params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,participantInfo.getId()));
+      params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,participantInfo.getQualifiedId()));
       params.put("participantInfo", participantInfo);
       params.put("id", participantInfo.getId());
       String name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
@@ -305,9 +305,9 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    {
       User user=SessionContext.findSessionContext().getUser();
       Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(
-            user,user.getId());
+            user,user.getQualifiedId());
       Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
-            user,user.getId());
+            user,user.getQualifiedId());
       if (totalCount < Long.MAX_VALUE)
          return totalCount.toString();
       else
