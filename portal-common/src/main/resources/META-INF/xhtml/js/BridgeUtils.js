@@ -335,19 +335,22 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Closing View = " + viewId);
 			BridgeUtils.runInAngularContext(function($scope) {
 				try {
-					// HTML5 Framework uses timeout for publishing sgViewPanelCloseIntent and this is asynchronous
-					// Because of this callback function get called after entire script is run
-					// Due to this when callback function is called BridgeUtils.isScriptRunning() returns false
-					// Below hack is added to get around this 
 					var view = getViewPanel($scope, viewId);
 					if (view) {
-						if (!view.params) {
-							view.params = {};
+						if (!view.markedForClosing) {
+							// HTML5 Framework uses timeout for publishing sgViewPanelCloseIntent and this is asynchronous
+							// Because of this callback function get called after entire script is run
+							// Due to this when callback function is called BridgeUtils.isScriptRunning() returns false
+							// Below hack is added to get around this 
+
+							view.markedForClosing = true;
+							$scope.close(viewId);
+						} else {
+							BridgeUtils.log("View already marked for closing = " + viewId);
 						}
-						view.params["forceCloseView"] = true;
+					} else {
+						BridgeUtils.log("View already closed = " + viewId);
 					}
-					// Hack Ends
-					$scope.close(viewId);
 				} catch(e) {
 					BridgeUtils.log("Failed in HTML5 Framework close() call: " + e, "e");
 				}
@@ -402,7 +405,7 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Processing View Close Intent Event for View = " + view.path);
 
 			if (isPortalPath(view.path)) {
-				if (BridgeUtils.isScriptRunning() || view.params["forceCloseView"]) {
+				if (BridgeUtils.isScriptRunning() || view.markedForClosing) {
 					var iframeId = view.params["iframeId"];
 					var iframe = document.getElementById(iframeId);
 					BridgeUtils.log("iFrame to be removed = " + iframeId);
