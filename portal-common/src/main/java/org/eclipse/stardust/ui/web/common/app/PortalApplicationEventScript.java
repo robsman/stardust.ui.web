@@ -56,8 +56,10 @@ public class PortalApplicationEventScript implements Serializable
 
       for (String eventScript : getCleanedupScripts())
       {
+         es.append("try{");
          es.append("parent.BridgeUtils.log(\"" + StringUtils.replace(eventScript, "\"", "\\\"")+ "\", 'i');");
-         es.append("try{" + eventScript + "}catch(e){}");
+         es.append(eventScript);
+         es.append("}catch(e){}");
          es.append("\n");
       }
 
