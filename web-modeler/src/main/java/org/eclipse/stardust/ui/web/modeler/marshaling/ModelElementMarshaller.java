@@ -185,7 +185,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
          jsResult.addProperty(ModelerConstants.TYPE_PROPERTY, modelElement.getClass()
                .getName());
-         
+
          if (modelElement instanceof IExtensibleElement)
          {
             loadAttributes(modelElement, jsResult);
@@ -1168,7 +1168,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       eventJson.addProperty(ModelerConstants.EVENT_TYPE_PROPERTY,
             ModelerConstants.START_EVENT);
       eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY, true);
-      
+
       return eventSymbolJson;
    }
 
@@ -1547,11 +1547,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             if (accessPoint.getId().equals(parameterMapping.getParameter()))
             {
+               String fullID = getDataFullID(model, parameterMapping.getData());
                parameterMappingJson.addProperty(
                      ModelerConstants.DATA_FULL_ID_PROPERTY,
-                     getModelBuilderFacade().createFullId(
-                           ModelUtils.findContainingModel(parameterMapping.getData()),
-                           parameterMapping.getData()));
+                     fullID);
                parameterMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
                      parameterMapping.getDataPath());
 
@@ -2379,7 +2378,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       IFlowObjectSymbol sourceActivitySymbol = transitionConnection.getSourceActivitySymbol();
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
-      
+
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();
@@ -2615,7 +2614,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
 
    /**
-    * Returns Models infromation only and skips info about its elements 
+    * Returns Models infromation only and skips info about its elements
     * @param model
     * @return
     */
@@ -2659,10 +2658,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 	      {
 	         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
 	      }
-	      
+
 	      return modelJson;
    }
-   
+
    /**
     * @param model
     * @return
@@ -3030,7 +3029,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          if (attributeName.equals(
                "carnot:engine:period"))
          {
-            Period period = new Period(attributeValue); 
+            Period period = new Period(attributeValue);
             String units = "YMDhms";
             int delay = 0;
             String unit = units.substring(Period.SECONDS);
