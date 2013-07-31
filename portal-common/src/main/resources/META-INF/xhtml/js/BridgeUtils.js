@@ -69,6 +69,14 @@ if (!window["BridgeUtils"]) {
 			log("## scriptRunning = " + scriptRunning, "w");
 
 			try {
+				var scriptStr = func.toString();
+				scriptStr = scriptStr.replace(/try{/g, '\ntry{');
+				log("Run Script = " + scriptStr, "i");
+			} catch(e) {
+				log("## Error in logging Run Script Function." + e, "e");
+			}
+
+			try {
 				func();
 			} catch(ex) {
 				log("## Error while running script." + ex, "e");
