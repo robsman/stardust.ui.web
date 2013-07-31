@@ -508,9 +508,17 @@ define(
 
 					// Refresh properties panel on view activation
 					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
-						var processDefView = m_utils.jQuerySelect("#processDefinitionView");
 						if (params && params === self.process.uuid) {
-							self.initializePropertiesPanels();
+							// Executes a timeout loop with 50ms timeout and maximum 20 repetitions
+							// checks if the activated view has actually been dispalyed (display: block)
+							// before re-initializing the properties panel 
+							m_utils.executeTimeoutLoop(function() {
+								self.initializePropertiesPanels();
+							}, 20, 50, function() {
+								return "block" == self.canvas.parents("[ng-repeat='panel in panels']").css("display")	
+							});
+						} else {
+							this.lastSymbol = null;
 						}
 					})
 

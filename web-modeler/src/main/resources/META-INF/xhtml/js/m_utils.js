@@ -142,7 +142,26 @@ define(
 
 				getOutlineWindowAndDocument : getOutlineWindowAndDocument,
 
-				jQuerySelect : jQuerySelect
+				jQuerySelect : jQuerySelect,
+				
+				executeTimeoutLoop : executeTimeoutLoop
+			};
+			
+			/**
+			 * A utility function to execute a <fn> function, after a delay of
+			 * <delay> milliseconds, for a maximum of <reps> repetitions,
+			 * until <conditionFn> functions returns true.
+			 */
+			function executeTimeoutLoop(fn, reps, delay, conditionFn) {
+				if (reps > 0) {
+					setTimeout(function() {
+						if (conditionFn()) {
+							fn();	
+						} else {
+							timeoutLoop(fn, reps-1, delay, conditionFn);
+						}
+					}, delay);
+				}
 			};
 
 			/*

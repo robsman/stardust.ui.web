@@ -177,6 +177,8 @@ define(
 								this, this.annotationSymbols[n]);
 						this.annotationSymbols[n].updateServerSideCoordinates();
 					}
+					
+					this.diagram.lastSymbol = null;
 				};
 
 				/**
