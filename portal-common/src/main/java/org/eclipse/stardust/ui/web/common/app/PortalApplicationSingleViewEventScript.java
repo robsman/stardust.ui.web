@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.common.app;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -59,16 +60,16 @@ public class PortalApplicationSingleViewEventScript implements Serializable
          scripts = StringUtils.replace(scripts, "InfinityBpm.ProcessPortal.closeContentFrame",
                "parent.BridgeUtils.FrameManager.close");
 
-         StringBuffer iframeCreateScripts = new StringBuffer();
-         StringBuffer iframeCloseScripts = new StringBuffer();
+         ArrayList<String> iframeCreateScripts = new ArrayList<String>();
+         ArrayList<String> iframeCloseScripts = new ArrayList<String>();
 
-         StringBuffer openViewScripts = new StringBuffer();
-         StringBuffer closeViewScripts = new StringBuffer();
+         ArrayList<String> openViewScripts = new ArrayList<String>();
+         ArrayList<String> closeViewScripts = new ArrayList<String>();
          
-         StringBuffer openDialogScripts = new StringBuffer();
-         StringBuffer closeDialogScripts = new StringBuffer();
+         ArrayList<String> openDialogScripts = new ArrayList<String>();
+         ArrayList<String> closeDialogScripts = new ArrayList<String>();
          
-         StringBuffer restOfTheScripts = new StringBuffer();
+         ArrayList<String> restOfTheScripts = new ArrayList<String>();
 
          Iterator<String> it = StringUtils.split(scripts, "\n");
          while (it.hasNext())
@@ -76,47 +77,78 @@ public class PortalApplicationSingleViewEventScript implements Serializable
             String script = it.next();
             if (script.contains("parent.BridgeUtils.FrameManager.createOrActivate"))
             {
-               iframeCreateScripts.append(script).append("\n");
+               addScript(iframeCreateScripts, script);
             }
             else if (script.contains("parent.BridgeUtils.FrameManager.close"))
             {
-               iframeCloseScripts.append(script).append("\n");
+               addScript(iframeCloseScripts, script);
             }
             else if (script.contains("parent.BridgeUtils.View.openView"))
             {
-               openViewScripts.append(script).append("\n");
+               addScript(openViewScripts, script);
             }
             else if (script.contains("parent.BridgeUtils.View.closeView"))
             {
-               closeViewScripts.append(script).append("\n");
+               addScript(closeViewScripts, script);
             }
             else if (script.contains("parent.BridgeUtils.Dialog.open"))
             {
-               openDialogScripts.append(script).append("\n");
+               addScript(openDialogScripts, script);
             }
             else if (script.contains("parent.BridgeUtils.Dialog.close"))
             {
-               closeDialogScripts.append(script).append("\n");
+               addScript(closeDialogScripts, script);
             }
             else
             {
-               restOfTheScripts.append(script).append("\n");
+               addScript(restOfTheScripts, script);
             }
          }
 
          // Reorder
          StringBuffer allScripts = new StringBuffer();
-         allScripts.append(iframeCloseScripts);
-         allScripts.append(openViewScripts);
-         allScripts.append(iframeCreateScripts);
-         allScripts.append(closeDialogScripts);
-         allScripts.append(openDialogScripts);
-         allScripts.append(restOfTheScripts);
-         allScripts.append(closeViewScripts);
+         allScripts.append(toStringBuffer(iframeCloseScripts));
+         allScripts.append(toStringBuffer(openViewScripts));
+         allScripts.append(toStringBuffer(iframeCreateScripts));
+         allScripts.append(toStringBuffer(closeDialogScripts));
+         allScripts.append(toStringBuffer(openDialogScripts));
+         allScripts.append(toStringBuffer(restOfTheScripts));
+         allScripts.append(toStringBuffer(closeViewScripts));
 
          scripts = allScripts.toString();
       }
 
       return scripts;
+   }
+   
+   /**
+    * @param list
+    * @param script
+    */
+   private void addScript(ArrayList<String> list, String script)
+   {
+      if (list.size() >= 1)
+      {
+         if (list.get(list.size() - 1).equals(script))
+         {
+            return;
+         }
+      }
+
+      list.add(script);
+   }
+   
+   /**
+    * @param list
+    * @return
+    */
+   private StringBuffer toStringBuffer(ArrayList<String> list)
+   {
+      StringBuffer sb = new StringBuffer();
+      for (String str : list)
+      {
+         sb.append(str).append("\n");
+      }
+      return sb;
    }
 }
