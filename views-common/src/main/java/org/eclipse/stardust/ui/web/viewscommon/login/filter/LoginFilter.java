@@ -88,7 +88,8 @@ public class LoginFilter implements Filter
    protected final static Logger trace = LogManager.getLogger(LoginFilter.class);
    
    public final static String RETURN_URL_PARAM = "returnUrl";
-   
+   public final static String SINGLE_VIEW_PREFIX = "portalSingleView";
+
    public void destroy()
    {
       this.filterCfg = null;
@@ -245,7 +246,8 @@ public class LoginFilter implements Filter
                {
                   trace.info("Redirect to login, because session was not initialized.");
                   StringBuffer url = new StringBuffer(request.getContextPath());
-                  url.append("/").append(loginPage);
+                  url.append(logoutPage); // Always forward to logout, so that checks applied and cleanup happens properly, 
+                                          // before login page is displayed
                   
                   Map<String, String> urlParams = new LinkedHashMap<String, String>();
 
@@ -254,10 +256,14 @@ public class LoginFilter implements Filter
                   // redirected to main page after successful login 
                   if (!requestUri.endsWith(mainPage))
                   {
-                     //In Principal mode we have to go always through container managed security via the login proxy.
-                     if (!ApplicationContext.isPrincipalLogin())
+                     String fileName = requestUri.substring(requestUri.lastIndexOf("/") + 1);
+                     if (!fileName.startsWith(SINGLE_VIEW_PREFIX))
                      {
-                        urlParams.put(RETURN_URL_PARAM, requestUri);
+                        //In Principal mode we have to go always through container managed security via the login proxy.
+                        if (!ApplicationContext.isPrincipalLogin())
+                        {
+                           urlParams.put(RETURN_URL_PARAM, requestUri);
+                        }
                      }
                   }
 

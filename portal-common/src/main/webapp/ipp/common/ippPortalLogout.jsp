@@ -7,6 +7,12 @@
 				var href = window.location.href;
 				href = href.substr(0, href.indexOf("/ipp/common/ippPortalLogout.jsp"));
 				
+				var currentHref = window.location.href;
+				var params = "";
+				if (currentHref.indexOf("?") > -1) {
+					params = currentHref.substr(currentHref.indexOf("?"));
+				}
+				
 				var win = window;
 	
 				try {
@@ -23,6 +29,7 @@
 						
 						if ((href + "/main.html") == pHref) {
 							win = window.parent;
+							params = "";
 						}
 					}					
 				} catch (e) {
@@ -30,7 +37,7 @@
 				}
 	
 				if (href != "" && href != win.location.href) {
-					win.location.replace(href);
+					win.location.replace(href + params);
 				}
 			}
 		</script>
