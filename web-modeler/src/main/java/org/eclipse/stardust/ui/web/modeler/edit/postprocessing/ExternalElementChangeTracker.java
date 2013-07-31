@@ -17,8 +17,6 @@ import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
@@ -40,6 +38,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Barry.Grotjahn
@@ -155,6 +154,12 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                            model.getData().remove(element);
                            modified = true;
                         }
+                        else if (candidate instanceof DataType
+                              && element instanceof DataType)
+                        {
+                           model.getData().remove(element);
+                           modified = true;
+                        }
                         if (modified)
                         {
                            change.markAlsoModified(element);
@@ -178,7 +183,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
             {
                return true;
             }
-         }         
+         }
          else if (modelElement instanceof IExtensibleElement)
          {
             if (AttributeUtil.getAttributeValue((IExtensibleElement) modelElement,
