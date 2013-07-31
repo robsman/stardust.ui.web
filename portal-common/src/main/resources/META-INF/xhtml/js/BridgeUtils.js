@@ -575,9 +575,9 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 * 
 		 */
-		function setIcon(icon) {
+		function setIcon(icon, viewId) {
 			BridgeUtils.runInAngularContext(function($scope) {
-				var view = $scope.activeViewPanel();
+				var view = (viewId == undefined) ? $scope.activeViewPanel() : getViewPanel($scope, viewId);
 				if (view) {
 					if (view.iconBase && view.iconBase != "") {
 						icon = BridgeUtils.substituteParams(view.iconBase, {"icon": icon}, true);
@@ -590,9 +590,9 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 * 
 		 */
-		function setTitle(title) {
+		function setTitle(title, viewId) {
 			BridgeUtils.runInAngularContext(function($scope) {
-				var view = $scope.activeViewPanel();
+				var view = (viewId == undefined) ? $scope.activeViewPanel() : getViewPanel($scope, viewId);
 				if (view) {
 					view.setTitle(title);
 				}

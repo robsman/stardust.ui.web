@@ -1196,7 +1196,16 @@ public class PortalApplication
    {
       String iconClass = deriveIconClass(view.getIcon());
       // FOR PANAMA
-      String popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "');";
+      String popupScript;
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
+      {
+         popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "', '" + html5FWViewId + "');";
+      }
+      else
+      {
+         popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "');";
+      }
       addEventScript(popupScript);
    }
 
@@ -1208,7 +1217,17 @@ public class PortalApplication
    {
       String title = view.getLabel();
       // FOR PANAMA
-      String popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";
+      String popupScript;
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
+      {
+         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "', '" + html5FWViewId + "');";
+      }
+      else
+      {
+         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";   
+      }
+      
       addEventScript(popupScript);
    }
    
