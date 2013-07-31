@@ -68,7 +68,7 @@ if (!window["Messaging"]) {
 					} else {
 						// Backward compatible
 						// TODO Use - extenssionListeners
-						InfinityBpm.ProcessPortal.activityClosePanelCommand(message);
+						InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(message);
 					}
 				} else if (typeof message === 'object') {
 					postMessageReceived(message);
@@ -96,7 +96,7 @@ if (!window["Messaging"]) {
 			} catch(x) {}
 
 			if (proceed) {
-				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "messageData", message);
+				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "messageData", jsonStr);
 			} else {
 				//alert("Post Error");
 			}

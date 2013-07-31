@@ -36,42 +36,73 @@ function performIppAiClosePanelCommand()
 
 function confirmIppAiClosePanelCommand(commandId)
 {
-  // alert("Executing iFrame confirmIppAiClosePanelCommand(" + commandId + ")");
-  
   // Covering IPP for iFrame Scenario 
-  var mainIppFrame = parent ? parent.ippPortalMain : top;
+  // Adding case for HTML5 Framework Move
+  var mainIppFrame = parent ? (parent.ippPortalMain ? parent.ippPortalMain : parent) : top;
 
   if (mainIppFrame)
   {
-    if (mainIppFrame.InfinityBpm)
+    if (mainIppFrame.InfinityBpm && mainIppFrame.InfinityBpm.ProcessPortal)
     {
-      try
-      {
-        //disposeOnViewRemoval('ipp-embedded-activity-panel');  
-    	
-        if ('complete' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.completeActivity();
-        } else if ('qaPass' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.qaPassActivity();
-        } else if ('qaFail' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.qaFailActivity();
-        } else if ('suspendAndSave' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.suspendActivity(true);
-        } else if ('suspend' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.suspendActivity(false);
-        } else if ('abort' === commandId) {
-        	mainIppFrame.InfinityBpm.ProcessPortal.abortActivity();
-        }
-      }
-      catch (x)
-      {
-        // probably forbidden to access location, assuming other page
-        alert("Failed confirming close panel command: " + x.message);
-      }
+    	if (mainIppFrame.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp) 
+    	{
+    		mainIppFrame.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
+    	}
+    	else
+    	{
+    	      try
+    	      {
+    	        if ('complete' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.completeActivity();
+    	        } else if ('qaPass' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.qaPassActivity();
+    	        } else if ('qaFail' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.qaFailActivity();
+    	        } else if ('suspendAndSave' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.suspendActivity(true);
+    	        } else if ('suspend' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.suspendActivity(false);
+    	        } else if ('abort' === commandId) {
+    	        	mainIppFrame.InfinityBpm.ProcessPortal.abortActivity();
+    	        }
+    	      }
+    	      catch (x)
+    	      {
+    	        // probably forbidden to access location, assuming other page
+    	        alert("Failed confirming close panel command: " + x.message);
+    	      }
+    	}
     }
     else
     {
-      alert('Did not find InfinityBpm module in main process portal frame.');
+		// trying postMessage
+		try
+		{
+			if (mainIppFrame.postMessage)
+			{
+				sleep(2000);
+				mainIppFrame.postMessage(commandId, "*");
+				sleep(3000);
+			}
+			else
+			{
+				alert("postMessage is not supported by main window" + mainIppFrame);
+			}
+		}
+		catch (x2)
+		{
+		}
     }
+  }
+  else
+  {
+	  alert('Did not find BPM Main Frame.');  
+  }
+  
+  function sleep(ms)
+  {
+	var dt = new Date();
+	dt.setTime(dt.getTime() + ms);
+	while (new Date().getTime() < dt.getTime());
   }
 }

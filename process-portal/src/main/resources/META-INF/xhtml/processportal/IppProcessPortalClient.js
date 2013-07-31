@@ -42,21 +42,6 @@ if (!window["IppProcessPortalClient"]) {
 			}
 		}
 
-		function findIppWindow(win) {
-			if (!isThisIppWindow(win)) {
-				var frames = win.frames;
-				for ( var i = 0; i < frames.length; i++) {
-					var ippWindow = findIppWindow(frames[i]);
-					if (ippWindow != null) {
-						return ippWindow;
-					}
-				}
-				return null;
-			} else {
-				return win;
-			}
-		}
-
 	    function findIppWindowBottomUp(win){
 	        if (!isThisIppWindow(win)) {
 	        	if (win.parent != null && win.parent != win) {
@@ -76,7 +61,11 @@ if (!window["IppProcessPortalClient"]) {
 	    		}
 
 	    		if (null != ippWindow) {
-	    			return ippWindow["ippPortalMain"];
+	    			if (null != ippWindow["ippPortalMain"]) {
+	    				return ippWindow["ippPortalMain"]; // Pre HTML5
+	    			} else {
+	    				return ippWindow; // After HTML5 Move
+	    			}
 	    		} else {
 	    			// Assume parent or opener is IPP window, but there is no access to window object, due to access restriction
 	    			if (null != window.parent && window.parent != window) {

@@ -249,7 +249,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
 
          System.out.println("************************ HERE1 **********************");
          JavascriptContext.addJavascriptCall(facesContext,
-               "InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
+               "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
                      + getContentFrameId(ai) + "', '" + scenario.getId() + "');");
 
          // close panel asynchronously after ICEfaces page responds via JavaScript

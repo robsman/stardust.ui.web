@@ -221,7 +221,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          {
             System.out.println("************************ HERE2 **********************");
             JavascriptContext.addJavascriptCall(facesContext,
-                  "InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
+                  "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
                         + getContentFrameId(ai) + "', '" + scenario.getId() + "');");
          }
          else
