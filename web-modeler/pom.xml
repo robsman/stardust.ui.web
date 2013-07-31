@@ -3,10 +3,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
-      <groupId>org.eclipse.stardust</groupId>
+      <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
       <version>9.9.9-SNAPSHOT</version>
-      <relativePath>../../product/product-parent/pom.xml</relativePath>
+      <relativePath>../../../sungard/product/product-parent/pom.xml</relativePath>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
