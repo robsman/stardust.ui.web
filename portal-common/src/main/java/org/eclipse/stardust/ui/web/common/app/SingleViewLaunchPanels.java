@@ -126,6 +126,28 @@ public class SingleViewLaunchPanels implements InitializingBean
             else
             {
                trace.error("Could not close view: " + value);
+            
+               // Unexpected Situation! View is not open at IPP, but it's open on UI at HTML5 Framework.
+               // Fire JS for it's closing. It might be internal/native or external view
+               // TODO: Enhance?
+               if ("configurationTreeView".equals(viewId))
+               {
+                  String html5FWViewId = "/ippPortal/configurationTreeView";
+                  String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+                  portalApp.addEventScript(script);                  
+               }
+               else
+               {
+                  // For External
+                  String html5FWViewId = "/ippPortal/configurationTreeView/Ext/" + viewId + "/" + viewKey;
+                  String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+                  portalApp.addEventScript(script);
+   
+                  // For Internal/Native
+                  html5FWViewId = "/ippPortal/configurationTreeView/Int/" + viewId + "/" + viewKey;
+                  script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+                  portalApp.addEventScript(script);
+               }
             }
 
             portalApp.printOpenViews();
