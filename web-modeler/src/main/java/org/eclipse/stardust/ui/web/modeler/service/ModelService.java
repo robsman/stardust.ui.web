@@ -83,6 +83,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -1998,6 +1999,11 @@ public class ModelService
          {
             modelElemendId = modelId + "/" + modelId + "/"
                   + ((TypeDeclarationType) modelElement).getId();
+         }
+         else if (modelElement != null && modelElement instanceof ExternalPackage)
+         {
+            modelElemendId = modelId + "/" + modelId + "/"
+                  + ((ExternalPackage) modelElement).getId();
          }
 
          issueJson.addProperty("modelElement", modelElemendId);
