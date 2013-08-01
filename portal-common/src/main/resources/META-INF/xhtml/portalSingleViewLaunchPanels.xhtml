@@ -11,8 +11,8 @@
 			<ice:form partialSubmit="true">
 				<table>
 					<tr>
-						<td class="topMenuTd">
-						<ice:panelGroup	styleClass="topMenuIframeBar">
+						<td class="topMenuTd" style="width: 100%">
+							<ice:panelGroup	styleClass="topMenuIframeBar">
 								<ice:panelGrid columns="2" styleClass="menuItm">
 									<ice:commandLink
 										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
@@ -32,6 +32,20 @@
 								<!-- Anchor to include the Iframe -->
 								<div id="ippPerspectiveMenuAnchor"></div>
 							</ice:panelGroup>
+						</td>
+						<td class="topMenuTd">
+							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true">
+								<!-- HELP Menu Item -->
+								<c:if test="#{not empty ippPortalApp.helpDocPreference}">
+									<pc:automationTag value="auto-FW-HelpMenu" />
+									<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help']}">
+										<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help.documentation']}"
+											onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;"/>
+									</ice:menuItem>
+								</c:if>
+
+								<!-- TODO: Menu Sections from perspective definition -->
+							</ice:menuBar>
 						</td>
 					</tr>
 				</table>
