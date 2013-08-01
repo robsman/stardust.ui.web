@@ -38,8 +38,11 @@ define(
 
 					this.typeDeclarationsTextarea = m_utils
 							.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
+					
+					this.editorAnchor = m_utils.jQuerySelect("#ruleSetEditorDiv").get(0);
+					this.editorAnchor.id = "ruleSetEditorDiv" + Math.floor((Math.random()*100000) + 1);
 					this.ruleSetEditor = m_codeEditorAce
-							.getDrlEditor("ruleSetEditorDiv");
+							.getDrlEditor(this.editorAnchor.id);
 
 					var self = this;
 

@@ -49,7 +49,7 @@ define(
 					this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
 					this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
 					this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
-					this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1) + "Div";
+					this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
 					
 					this.codeEditor = m_codeEditorAce
 							.getJSCodeEditor(this.editorAnchor.id);
