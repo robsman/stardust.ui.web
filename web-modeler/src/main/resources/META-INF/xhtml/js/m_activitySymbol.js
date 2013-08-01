@@ -708,20 +708,23 @@ define(
 					// connections list
 					if (conn != null && conn.oid > 0) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
-							if (conn.fromAnchorPoint
-									&& conn.fromAnchorPoint.symbol) {
-								if (this.oid == conn.fromAnchorPoint.symbol.oid) {
-									return (-1 == jQuery.inArray(
-											conn.fromAnchorPoint.symbol.oid,
-											outMappingActivity))
+							if (conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL
+									&& conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+								if (conn.fromAnchorPoint
+										&& conn.fromAnchorPoint.symbol) {
+									if (this.oid == conn.fromAnchorPoint.symbol.oid) {
+										return (-1 == jQuery.inArray(
+												conn.fromAnchorPoint.symbol.oid,
+												outMappingActivity))
+									}
 								}
-							}
-							if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
-								if (this.oid == conn.toAnchorPoint.symbol.oid) {
-									return (-1 == jQuery.inArray(
-											conn.toAnchorPoint.symbol.oid,
-											inMappingActivity))
-								}
+								if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
+									if (this.oid == conn.toAnchorPoint.symbol.oid) {
+										return (-1 == jQuery.inArray(
+												conn.toAnchorPoint.symbol.oid,
+												inMappingActivity))
+									}
+								}	
 							}
 						}
 					}
