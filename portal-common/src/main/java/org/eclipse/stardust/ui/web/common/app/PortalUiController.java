@@ -32,6 +32,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
 
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
@@ -403,9 +404,9 @@ public class PortalUiController
     * @param ae
     * @throws AbortProcessingException
     */
-   public void perspectiveChangeActionListener(ActionEvent ae) throws AbortProcessingException
+   public void perspectiveChangeActionListener(ValueChangeEvent ae) throws AbortProcessingException
    {
-      String perspectiveId = FacesUtils.getRequestParameter("perspectiveId");
+      String perspectiveId = (String)ae.getNewValue();
       processPerspectiveChange(perspectiveId);
    }
 
@@ -425,15 +426,15 @@ public class PortalUiController
          {
             setPerspective(perspective);
 
-            if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
+           if (portalApplication.isPinViewOpened() && null != portalApplication.getPinView())
             {
                broadcastNonVetoableViewEvent(portalApplication.getPinView(), ViewEventType.PERSPECTIVE_CHANGED);
             }
             break;
          }
       }
-      portalApplication.renderPortalSession();
       perspectiveMenuIframeHandler.closeIframePopup();
+      
    }
 
    /**

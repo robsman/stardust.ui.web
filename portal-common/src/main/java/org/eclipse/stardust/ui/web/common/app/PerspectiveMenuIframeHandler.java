@@ -24,6 +24,13 @@ public class PerspectiveMenuIframeHandler implements Serializable
 
    private boolean open = false;
 
+   public PerspectiveMenuIframeHandler()
+   {
+      String script = "parent.EventHub.events.subscribe('PERSPECTIVE_CHANGED', function() {InfinityBpm.ProcessPortal.closeContentFrame("
+            + IFRAME_ID + ");});";
+      PortalApplicationEventScript.getInstance().addEventScript(script);
+   }
+   
    public void togglePopup()
    {
       if (isOpen())
@@ -48,8 +55,8 @@ public class PerspectiveMenuIframeHandler implements Serializable
 
          JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
          PortalApplicationEventScript.getInstance().addEventScript(script);
-         open = false;
       }
+      open = false;
    }
 
    /**
