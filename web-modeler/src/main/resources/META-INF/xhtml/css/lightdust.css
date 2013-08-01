@@ -673,3 +673,10 @@ td.mapping {
 tr.locked {
 	background-color: #F2F2F2 !important;
 }
+
+/* Overlays */
+
+.overlaysDefaultTextArea {
+	width: 400px;
+	height: 200px;
+}
