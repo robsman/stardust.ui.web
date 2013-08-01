@@ -28,7 +28,9 @@
    <property name="stardust.home" location="../"/>
    <property name="ui.common.home" location="${stardust.home}/ui.common"/>
 
-   <target name="init" depends="initBuildDirectories"/>
+   <target name="init" depends="initBuildDirectories">
+      <init-ivy />
+   </target>
 
    <target name="initBuild">
       <property name="nirvana.build.dir" location="${nirvana.project.dir}/build"/>
@@ -44,67 +46,64 @@
    <!-- - - - - - - - - - -->
    <!-- Nirvana projects  -->
    <!-- - - - - - - - - - -->
-
+   <macrodef name="invoke-subproject">
+      <attribute name="subproject" />
+      <element name="additional-properties" optional="true" />
+      <sequential>
+         <ant dir="@{subproject}" antfile="build.xml" target="${subtarget}" inheritall="false">
+           <property name="build.lib" value="${build.lib}"/>
+           <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
+           <property name="common.ivy.version" value="${common.ivy.version}" />
+           <additional-properties />
+         </ant>
+      </sequential>
+   </macrodef>
+   
    <target name="portal-common" depends="init">
-      <ant dir="portal-common" antfile="build.xml" target="${subtarget}">
-         <property name="build.lib" value="${build.lib}"/>
-         <property name="build.deploy" value="${build.deploy}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-      </ant>
+      <invoke-subproject subproject="portal-common">
+         <additional-properties>
+            <property name="build.deploy" value="${build.deploy}"/>
+         </additional-properties>
+      </invoke-subproject>
    </target>  
    
 
    <target name="portal-api" depends="init">
-      <ant dir="portal-api" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="portal-api" />
    </target>
    
    <target name="graphics-common" depends="init">
-      <ant dir="graphics-common" antfile="build.xml" target="${subtarget}">
-         <property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-      </ant>
+      <invoke-subproject subproject="graphics-common" />
    </target>
    
    <target name="views-common" depends="init">
-      <ant dir="views-common" antfile="build.xml" target="${subtarget}">
-         <property name="build.lib" value="${build.lib}"/>
-         <property name="copyright.message" value="${copyright.message}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-         <property name="views-common-menu-context.xmlfile" value="${views-common-menu-context.xmlfile}" />
-      </ant>
+      <invoke-subproject subproject="views-common">
+         <additional-properties>
+            <property name="copyright.message" value="${copyright.message}"/>
+            <property name="views-common-menu-context.xmlfile" value="${views-common-menu-context.xmlfile}" />
+         </additional-properties>
+      </invoke-subproject>
    </target>
 
    <target name="business-control-center" depends="init">
-      <ant dir="business-control-center" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="business-control-center" />
    </target>
 
    <target name="admin-portal" depends="init">
-      <ant dir="admin-portal" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="admin-portal" />
    </target>
 
    <target name="process-portal" depends="init">
-      <ant dir="process-portal" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="process-portal" />
    </target> 
 
    <target name="end-user-doc" depends="init">
-      <ant dir="end-user-doc" antfile="build.xml" target="${subtarget}">
-         <property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-         <property name="product.properties.file" value="${product.properties.file}"/>
-         <property name="styles.dir" location="${styles.dir}"/>
-      </ant>
+      <invoke-subproject subproject="end-user-doc">
+         <additional-properties>
+            <property name="product.properties.file" value="${product.properties.file}"/>
+            <property name="styles.dir" location="${styles.dir}"/>
+         </additional-properties>
+      </invoke-subproject>
    </target> 
 
    <!-- - - - - - - - - - -->
@@ -112,31 +111,19 @@
    <!-- - - - - - - - - - -->
    
    <target name="stardust-common-introspection" depends="init">
-      <ant dir="${ui.common.home}/stardust-common-introspection" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="${ui.common.home}/stardust-common-introspection" />
    </target>
    
    <target name="stardust-common-introspection-xsd" depends="init">
-      <ant dir="${ui.common.home}/stardust-common-introspection-xsd" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="${ui.common.home}/stardust-common-introspection-xsd" />
    </target>
    
    <target name="stardust-ui-form" depends="init">
-      <ant dir="${ui.common.home}/stardust-ui-form" antfile="build.xml" target="${subtarget}">
-			<property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-		</ant>
+      <invoke-subproject subproject="${ui.common.home}/stardust-ui-form" />
    </target>
    
    <target name="stardust-ui-form-jsf" depends="init">
-      <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}">
-         <property name="build.lib" value="${build.lib}"/>
-         <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
-      </ant>
+      <invoke-subproject subproject="${ui.common.home}/stardust-ui-form-jsf" />
    </target>
 
 	<target name="package" depends="init, portal-common,portal-api, 
