@@ -514,13 +514,18 @@ define(
 							// before re-initializing the properties panel 
 							m_utils.executeTimeoutLoop(function() {
 								self.initializePropertiesPanels();
+								require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
 							}, 20, 50, function() {
 								return "block" == self.canvas.parents("[ng-repeat='panel in panels']").css("display")	
 							});
 						} else {
 							this.lastSymbol = null;
 						}
-					})
+					});
+					
+					EventHub.events.subscribe("SIDEBAR_PINNED", function(pinned) {
+						require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
+					});
 
 					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");

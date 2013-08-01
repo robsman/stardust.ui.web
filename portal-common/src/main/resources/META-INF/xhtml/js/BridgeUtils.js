@@ -477,6 +477,8 @@ if (!window["BridgeUtils"].View) {
 		function sidebarPinStateChanged(data) {
 			BridgeUtils.log("Sidebar Pin State Changed = " + data.oldValue + ":" + data.newValue);
 
+			EventHub.events.publish("SIDEBAR_PINNED", data.newValue);
+			
 			// Delay so that UI adjustments are done
 			window.setTimeout(function() {
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
