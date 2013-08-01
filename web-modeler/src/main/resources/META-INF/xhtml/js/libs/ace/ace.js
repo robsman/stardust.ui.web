@@ -10055,6 +10055,11 @@ var Autocomplete = function() {
     };
 
     this.openPopup = function(editor) {
+    	if ("none" == jQuery("#" + editor.container.id).parents("[ng-repeat='panel in panels']").css("display")
+    			|| undefined == jQuery("#" + editor.container.id).parents("[ng-repeat='panel in panels']").css("display")) {
+    		return;
+    	}
+    	
         if (!this.popup)
             this.$init();
 
