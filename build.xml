@@ -46,7 +46,7 @@
    <!-- - - - - - - - - - -->
 
    <target name="portal-common" depends="init">
-      <ant dir="portal-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="portal-common" antfile="build.xml" target="${subtarget}">
          <property name="build.lib" value="${build.lib}"/>
          <property name="build.deploy" value="${build.deploy}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
@@ -55,21 +55,21 @@
    
 
    <target name="portal-api" depends="init">
-      <ant dir="portal-api" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="portal-api" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
    
    <target name="graphics-common" depends="init">
-      <ant dir="graphics-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="graphics-common" antfile="build.xml" target="${subtarget}">
          <property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
       </ant>
    </target>
    
    <target name="views-common" depends="init">
-      <ant dir="views-common" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="views-common" antfile="build.xml" target="${subtarget}">
          <property name="build.lib" value="${build.lib}"/>
          <property name="copyright.message" value="${copyright.message}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
@@ -78,28 +78,28 @@
    </target>
 
    <target name="business-control-center" depends="init">
-      <ant dir="business-control-center" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="business-control-center" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
 
    <target name="admin-portal" depends="init">
-      <ant dir="admin-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="admin-portal" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
 
    <target name="process-portal" depends="init">
-      <ant dir="process-portal" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="process-portal" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target> 
 
    <target name="end-user-doc" depends="init">
-      <ant dir="end-user-doc" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="end-user-doc" antfile="build.xml" target="${subtarget}">
          <property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
          <property name="product.properties.file" value="${product.properties.file}"/>
@@ -112,28 +112,28 @@
    <!-- - - - - - - - - - -->
    
    <target name="stardust-common-introspection" depends="init">
-      <ant dir="${ui.common.home}/stardust-common-introspection" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="${ui.common.home}/stardust-common-introspection" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
    
    <target name="stardust-common-introspection-xsd" depends="init">
-      <ant dir="${ui.common.home}/stardust-common-introspection-xsd" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="${ui.common.home}/stardust-common-introspection-xsd" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
    
    <target name="stardust-ui-form" depends="init">
-      <ant dir="${ui.common.home}/stardust-ui-form" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="${ui.common.home}/stardust-ui-form" antfile="build.xml" target="${subtarget}">
 			<property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
 		</ant>
    </target>
    
    <target name="stardust-ui-form-jsf" depends="init">
-      <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}" inheritall="false">
+      <ant dir="${ui.common.home}/stardust-ui-form-jsf" antfile="build.xml" target="${subtarget}">
          <property name="build.lib" value="${build.lib}"/>
          <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
       </ant>
