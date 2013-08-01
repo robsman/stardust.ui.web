@@ -18,12 +18,12 @@
 
 <project name="nirvana archives" default="deploy" basedir=".">
 
-   <property name="project.dir" value="${basedir}" />
-   <property name="project.etc" value="${project.dir}/etc" />
-   <property file="${project.etc}/private.properties"/>
-   <property name="views-common-menu-context.xmlfile" value="${project.dir}/views-common/src/main/resources/META-INF/spring/views-common-menu-context.xml" />
+   <property name="nirvana.project.dir" location="${basedir}" />
+   <property name="nirvana.project.etc" location="${nirvana.project.dir}/etc" />
+   <property file="${nirvana.project.etc}/private.properties"/>
+   <property name="views-common-menu-context.xmlfile" location="${nirvana.project.dir}/views-common/src/main/resources/META-INF/spring/views-common-menu-context.xml" />
    
-   <import file="${project.dir}/../../buildtools/ipp-build.xml" />
+   <import file="${nirvana.project.dir}/../../buildtools/ipp-build.xml" />
    
    <property name="stardust.home" location="../"/>
    <property name="ui.common.home" location="${stardust.home}/ui.common"/>
@@ -31,15 +31,15 @@
    <target name="init" depends="initBuildDirectories"/>
 
    <target name="initBuild">
-      <property name="nirvana.build.dir" location="${project.dir}/build"/>
+      <property name="nirvana.build.dir" location="${nirvana.project.dir}/build"/>
       <property name="build.lib" location="${nirvana.build.dir}/lib"/>
       <property name="build.deploy" location="${nirvana.build.dir}/deploy"/>
    </target>
 
 	<target name="initBuildDirectories" depends="initBuild">
-		<mkdir dir="${nirvana.build.dir}"/>
-		<mkdir dir="${build.lib}"/>
-	</target>
+      <mkdir dir="${nirvana.build.dir}"/>
+      <mkdir dir="${build.lib}"/>
+   </target>
 
    <!-- - - - - - - - - - -->
    <!-- Nirvana projects  -->
