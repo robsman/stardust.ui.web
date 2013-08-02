@@ -39,17 +39,17 @@ import org.eclipse.stardust.modeling.validation.ValidationConstants;
 */
 public class ValidationExtensionRegistry implements IValidationExtensionRegistry
 {
-   private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();   
+   private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
    private static IValidationExtensionRegistry valdationExtensionRegistry;
    private static final IConfigurationElement[] EMPTY_VALIDATORS = new IConfigurationElement[0];
-   private static final String[] EXCLUDE_VALIDATION_IDS = 
+   private static final String[] EXCLUDE_VALIDATION_IDS =
    {
       "org.eclipse.stardust.modeling.validation.serializableData",
       "org.eclipse.stardust.modeling.validation.transition",
       "org.eclipse.stardust.modeling.transformation.modelElementValidator",
       "MessageSerializationApplicationValidator",
       "org.eclipse.stardust.modeling.transformation.application.validation.MessageTransformationApplicationValidator",
-      "externalWebAppValidator",      
+      "externalWebAppValidator",
       "org.eclipse.stardust.modeling.validation.trigger",
       "org.eclipse.stardust.modeling.validation.conditionalPerformer",
       "org.eclipse.stardust.modeling.validation.dataMapping",
@@ -67,17 +67,18 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       "org.eclipse.stardust.modeling.validation.entity30BeanData",
       "org.eclipse.stardust.modeling.validation.jmsApplication",
       "org.eclipse.stardust.modeling.validation.plainJavaApplication",
-      "org.eclipse.stardust.modeling.validation.jfcContext"
+      "org.eclipse.stardust.modeling.validation.jfcContext",
+      "org.eclipse.stardust.modeling.validation.exceptionEventCondition"
    };
-      
+
    ValidationExtensionRegistry()
    {
-   }   
-   
+   }
+
    public IConfigurationElement[] filterElements(String extensionPointId_) throws IOException
-   {      
+   {
       List<IConfigurationElement> result = CollectionUtils.newList();
-      
+
       Enumeration<URL> resources = classLoader.getResources("plugin.xml");
       while (resources.hasMoreElements())
       {
@@ -92,7 +93,7 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
                for(Extension extension : extensions)
                {
                   String extensionPointId = extension.extensionPointId;
-                  
+
                   if(extensionPointId.equals(extensionPointId_))
                   {
                      if(extensionPointId_.equals(ValidationConstants.MODEL_VALIDATOR_EXTENSION_POINT))
@@ -117,14 +118,14 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
                            for(ModelElementValidator validator : validators)
                            {
                               if(!excludeValidation(validator.id))
-                              {                              
-                                 Class<?> validatorClass = validator.validatorClass;                              
-                                 
+                              {
+                                 Class<?> validatorClass = validator.validatorClass;
+
                                  ServerConfigurationElement configurationElement = new ServerConfigurationElement();
                                  configurationElement.setTheClass(validatorClass);
                                  configurationElement.addAttribute(ValidationConstants.EP_ATTR_TARGET_TYPE, validator.targetType);
                                  configurationElement.addAttribute("pageContributor", "disabled");
-                                 
+
                                  List<Filter> filters = validator.filters;
                                  List<IConfigurationElement> children = new ArrayList<IConfigurationElement>();
                                  if(filters != null)
@@ -138,25 +139,25 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
                                     }
                                  }
                                  configurationElement.addChildren("filter", children.isEmpty() ? EMPTY_VALIDATORS : children.toArray(new IConfigurationElement[children.size()]));
-                                 
+
                                  result.add(configurationElement);
                               }
                            }
-                        }                        
+                        }
                      }
                   }
                }
-               
+
             }
          }
          catch (JAXBException e)
          {
-         }         
+         }
       }
-      
-      return result.isEmpty() ? EMPTY_VALIDATORS : result.toArray(new IConfigurationElement[result.size()]);      
+
+      return result.isEmpty() ? EMPTY_VALIDATORS : result.toArray(new IConfigurationElement[result.size()]);
    }
-   
+
    private boolean excludeValidation(String validationId)
    {
       for(String excludeId :EXCLUDE_VALIDATION_IDS)
@@ -166,10 +167,10 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
             return true;
          }
       }
-      
+
       return false;
    }
-   
+
    public IConfigurationElement[] getConfigurationElementsFor(String extensionPointId)
    {
       try
@@ -179,22 +180,22 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       catch (IOException e)
       {
       }
-      
+
       return EMPTY_VALIDATORS;
    }
-      
+
    public static IValidationExtensionRegistry getInstance()
    {
       if (null == valdationExtensionRegistry)
       {
          valdationExtensionRegistry = new ValidationExtensionRegistry();
       }
-      
+
       return valdationExtensionRegistry;
-   }   
-   
+   }
+
    private static JAXBContext context;
-   
+
    private static JAXBContext getContext() throws JAXBException
    {
       if (context == null)
@@ -203,39 +204,39 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       }
       return context;
    }
-   
+
    public static Plugin read(InputStream stream) throws JAXBException
    {
       JAXBContext context = getContext();
       Unmarshaller u = context.createUnmarshaller();
       return (Plugin) u.unmarshal(stream);
    }
-   
+
    @XmlRootElement(name = "plugin")
    static class Plugin
    {
       @XmlElement(name = "extension")
       List<Extension> extensions;
    }
-   
+
    static class Extension
    {
       @XmlAttribute(name = "point")
       String extensionPointId;
-      
+
       @XmlElement(name = "modelValidator")
       List<ModelValidator> modelValidators;
-      
+
       @XmlElement(name = "modelElementValidator")
-      List<ModelElementValidator> modelElementValidators;      
+      List<ModelElementValidator> modelElementValidators;
    }
 
    static class ModelValidator
    {
       @XmlAttribute(name = "class")
       Class<?> validatorClass;
-   }   
-   
+   }
+
    static class ModelElementValidator
    {
       @XmlAttribute(name = "class")
@@ -243,20 +244,20 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
 
       @XmlAttribute(name = "id")
       String id;
-      
+
       @XmlAttribute(name = "targetType")
       String targetType;
-      
+
       @XmlElement(name = "filter")
-      List<Filter> filters;            
-   }      
-   
+      List<Filter> filters;
+   }
+
    static class Filter
    {
       @XmlAttribute(name = "name")
       String name;
 
       @XmlAttribute(name = "value")
-      String value;      
+      String value;
    }
 }
