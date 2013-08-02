@@ -49,6 +49,13 @@ if (!window["BridgeUtils"]) {
 			win.Ice.onConnectionLost('document:body', function() {
 	        	parent.BridgeUtils.handleServerDisconnect("ConnectionLost");
 	        });
+
+			// Main View
+			if (win.location.href.indexOf("/plugins/common/portalSingleViewMain.") > -1) {
+				win.onscroll = function(event){
+					BridgeUtils.FrameManager.handleViewScroll(event.currentTarget);
+				};
+			}
 		}
 
 		/*
@@ -1105,6 +1112,102 @@ if (!window["BridgeUtils"].FrameManager) {
 		}
 
 		/*
+		 * Adjusts relavent active iFrames as per current view's browser scroll position
+		 */
+		function handleViewScroll(currWindow, frame) {
+			var currDoc = currWindow.document ? currWindow.document : currWindow.contentDocument;
+			currWindow = currWindow.contentWindow ? currWindow.contentWindow : currWindow;
+
+			if (frame == undefined) {
+				doWithContentFrame(null, function(contentFrame) {
+					if (contentFrame.style.display == 'inline') {
+						var anchor = currDoc.getElementById(contentFrame.getAttribute('anchorId'));
+						if (anchor) {
+							_handleViewScroll(currWindow, contentFrame);
+						}
+					}
+				});
+			} else {
+				_handleViewScroll(currWindow, frame);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function _handleViewScroll(currWindow, contentFrame) {
+			try {
+				var scrollPos = getScrollPosition(currWindow);
+
+				var iFrame = getIframe(contentFrame.getAttribute('name'));
+				if (iFrame != null) {
+					var newX = iFrame.posX - scrollPos.x;
+					var newY = iFrame.posY - scrollPos.y;
+
+					// Hide the content frame, so that the right scroll position can be retrieved 
+					contentFrame.style.display = "none";
+
+					var scrollWidth = document.body.scrollWidth;
+					var scrollHeight = document.body.scrollHeight;
+					
+					var right = newX + BridgeUtils.getAbsoluteSize(contentFrame.width);
+					var bottom = newY + BridgeUtils.getAbsoluteSize(contentFrame.height);
+					
+					if (right > scrollWidth){
+						newX -= (right - scrollWidth) + 25; // Buffer for scrollbar
+					}
+					if (bottom > scrollHeight){
+						newY -= (bottom - scrollHeight) + 25; // Buffer for scrollbar
+					}
+
+					var diffX = BridgeUtils.getAbsoluteSize(contentFrame.style.left) - newX;
+					if (diffX < 0) {
+						diffX = -diffX;
+					}
+
+					var diffY = BridgeUtils.getAbsoluteSize(contentFrame.style.top) - newY;
+					if (diffY < 0) {
+						diffY = -diffY;
+					}
+
+					// It's observed that sometimes scrollPos.x/scrollPos.y is 1 when there is no scroll on UI.
+					// Also, 1px is very small, can be ignored. So check if it's greater than 1
+					if (diffX > 1 || diffY > 1) {
+						BridgeUtils.log("Repositioning iFrame '" + contentFrame.getAttribute('name') + "' to [" + newX + ", " + newY + "]");
+
+						contentFrame.style.left = newX + "px";
+						contentFrame.style.top = newY + "px";
+					}
+
+					// Show back the frame
+					contentFrame.style.display = "inline";
+				}
+			} catch(e) {
+				alert("Error in handling browser scroll - " + e, "e");
+			}
+		}
+		
+		/*
+		 * 
+		 */
+		function getScrollPosition(win) {
+			var scrollX = 0;
+			var scrollY = 0;
+			if (navigator.appName == 'Netscape') {
+				scrollX = win.pageXOffset;
+				scrollY = win.pageYOffset;
+			} else if (navigator.appName == 'Microsoft Internet Explorer') {
+				scrollX = win.document.documentElement.scrollLeft;
+				scrollY = win.document.documentElement.scrollTop;
+			}
+			
+			return {
+				x : scrollX,
+				y : scrollY
+			}
+		}
+
+		/*
 		 *
 		 */
 		function init() {
@@ -1347,6 +1450,7 @@ if (!window["BridgeUtils"].FrameManager) {
 						// This is needed because if page is scrolled at the time of iFrame activation
 						// Then it has to be readjusted for scroll position.
 						handleScroll();
+						handleViewScroll(viewFrameData.win, contentFrame);
 	
 						BridgeUtils.log("Frame Activated = " + contentId);
 					}
@@ -1650,7 +1754,8 @@ if (!window["BridgeUtils"].FrameManager) {
 			resizeAndRepositionAllActive : resizeAndRepositionAllActive,
 			getFrameContainer : getFrameContainer,
 			doWithContentFrame : doWithContentFrame,
-			findPosition : findPosition
+			findPosition : findPosition,
+			handleViewScroll : handleViewScroll
 		}
 	};
 
