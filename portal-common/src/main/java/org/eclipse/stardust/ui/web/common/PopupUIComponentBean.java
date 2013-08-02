@@ -45,6 +45,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    protected boolean firePerspectiveEvents = true;
   
    protected boolean fromlaunchPanels;
+   protected View fromView;
 
    /**
     * 
@@ -115,7 +116,12 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       visible = true;
 
       // FOR PANAMA
-      String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
+      
+      String htmlFWViewId = "";
+      if (null != fromView) {
+         htmlFWViewId = (String)fromView.getParamValue("html5FWViewId");   
+      }
+      String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ", '" + htmlFWViewId + "');";
       PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.DEACTIVATED))
@@ -153,6 +159,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void addPopupCenteringScript()
    {
       addPopupCenteringScript(popupAutoCenter, getBeanId());
+   }
+
+   public void setFromView(View view)
+   {
+      fromView = view;
    }
 
    public boolean isVisible()

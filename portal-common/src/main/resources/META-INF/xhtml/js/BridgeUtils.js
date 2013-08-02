@@ -378,11 +378,22 @@ if (!window["BridgeUtils"].View) {
 		 */
 		function getViewPanel($scope, viewId) {
 			var view;
-			var viewPanels = $scope.viewPanels();
-			for (i in viewPanels) {
-				if (viewPanels[i].path == viewId) {
-					view = viewPanels[i];
-					break;
+			var viewPanels;
+			
+			if ($scope != null) {
+				viewPanels = $scope.viewPanels();
+			} else {
+				BridgeUtils.runInAngularContext(function($scope){
+					viewPanels = $scope.viewPanels();
+				});
+			}
+
+			if (viewPanels) {
+				for (i in viewPanels) {
+					if (viewPanels[i].path == viewId) {
+						view = viewPanels[i];
+						break;
+					}
 				}
 			}
 			return view;
@@ -704,6 +715,7 @@ if (!window["BridgeUtils"].View) {
 			getActiveViewParams : getActiveViewParams,
 			getActiveView : getActiveView,
 			getIframeIdForActiveView : getIframeIdForActiveView,
+			getViewPanel : getViewPanel,
 			doPartialSubmit : doPartialSubmit,
 			syncActiveView : syncActiveView,
 			syncLaunchPanels : syncLaunchPanels,
@@ -764,7 +776,7 @@ if (!window["BridgeUtils"].Dialog) {
 		/*
 		 *
 		 */
-		function open(fromlaunchPanels) {
+		function open(fromlaunchPanels, fromViewId) {
 			if (!popupDialogDiv) {
 				createDialog();
 			}
@@ -800,6 +812,15 @@ if (!window["BridgeUtils"].Dialog) {
 				iframeForSidebar.style.width = iframeWidth + "px";
 				iframeForSidebar.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
 				iframeForSidebar.style.visibility = "visible";
+				
+				// Activate the View, if fromView is not visible
+				if (fromViewId != undefined && fromViewId != null && fromViewId != "") {
+					var activeView = BridgeUtils.View.getActiveView();
+					var view = BridgeUtils.View.getViewPanel(null, fromViewId);
+					if (activeView != null && view != null && activeView.path != view.path) {
+						BridgeUtils.View.openView(view.path, false, view.params);
+					}
+				}
 			} else {
 				if (!sidebarPinned) {
 					BridgeUtils.View.pinSidebar();

@@ -169,6 +169,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
             event.setVetoed(true);
             confirmationPopup.setViewCloseRequested(true);
             confirmationPopup.setChatView(event.getView());
+            confirmationPopup.setFromView(event.getView());
             confirmationPopup.openPopup();
 
          }
