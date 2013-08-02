@@ -48,8 +48,6 @@ define(
 					this.inputInput = this.mapInputId("inputInput");
 					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
-					this.descriptionInput.hide();
-					m_utils.jQuerySelect("label[for='descriptionInput']").hide();
 					this.inputDataPathInput = this
 							.mapInputId("inputDataPathInput");
 					this.outputDataPathInput = this
@@ -518,6 +516,10 @@ define(
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 
+					//disable description section
+					this.descriptionInput.hide();
+					m_utils.jQuerySelect("label[for='descriptionInput']").hide();
+					
 					m_utils.debug("===> Data Flow");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 

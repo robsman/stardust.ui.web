@@ -105,6 +105,10 @@ define(
 				 *
 				 */
 				BasicPropertiesPage.prototype.setModelElement = function() {
+					//enable description section
+					this.descriptionInput.show();
+					m_utils.jQuerySelect("label[for='descriptionInput']").show();
+					
 					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
 						m_dialog.makeInvisible(this.guidOutputRow);
 						m_dialog.makeInvisible(this.idOutputRow);
