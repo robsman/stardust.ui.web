@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
+import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
@@ -328,6 +329,13 @@ public class EventMarshallingUtils
             {"carnot:engine:action", AbortActivityEventAction.class.getName()}
          });
       }
+      else if (PredefinedConstants.COMPLETE_ACTIVITY_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Complete Activity", false, true,
+            "timer, exception", "bind", new String[][] {
+            {"carnot:engine:action", CompleteActivityEventAction.class.getName()}
+         });
+      }
       model.getEventActionType().add(actionType);
       return actionType;
    }
@@ -425,55 +433,78 @@ public class EventMarshallingUtils
          // no bind or unbind actions supported.
          eventHandler.getBindAction().clear();
          eventHandler.getUnbindAction().clear();
+
+         String eventType = null;
+
          Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
          if (interrupting == null || interrupting) // null means default value which is "true"
          {
-            AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", "Interrupting");
+            eventType = "Interrupting";
             
             // there should be exactly one abort action with scope sub hierarchy
-            boolean found = false;
-            for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+            EventActionType action = setEventAction(eventHandler,
+                  PredefinedConstants.ABORT_ACTIVITY_ACTION,
+                  ModelElementUnmarshaller.ABORT_ACTIVITY_NAME);
+
+            String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+            if (!AbortScope.SUB_HIERARCHY.equals(scope))
             {
-               EventActionType action = i.next();
-               if (found || action.getType() == null
-                     || !PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(action.getType().getId()))
-               {
-                  i.remove();
-               }
-               else
-               {
-                  found = true;
-                  String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
-                  if (!AbortScope.SUB_HIERARCHY.equals(scope))
-                  {
-                     AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                  }
-               }
-            }
-            if (!found)
-            {
-               EventActionTypeType actionType = decodeEventActionType(
-                     PredefinedConstants.ABORT_ACTIVITY_ACTION, findContainingModel(hostActivity));
-               if (actionType != null)
-               {
-                  EventActionType action = newEventAction(actionType);
-                  action.setId(NameIdUtils.createIdFromName(ModelElementUnmarshaller.ABORT_ACTIVITY_NAME));
-                  action.setName(ModelElementUnmarshaller.ABORT_ACTIVITY_NAME);
-                  AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
-                  eventHandler.getEventAction().add(action);
-               }
+               AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
             }
          }
          else
          {
-            AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", "Non-interrupting");
-            
-            // non-interrupting events have no actions.
-            eventHandler.getEventAction().clear();
+            if (EventMarshallingUtils.isIntermediateEventHost(hostActivity))
+            {
+               // non-interrupting non-boundary events have just one complete action.
+               setEventAction(eventHandler,
+                     PredefinedConstants.COMPLETE_ACTIVITY_ACTION,
+                     ModelElementUnmarshaller.COMPLETE_ACTIVITY_NAME);
+            }
+            else
+            {
+               eventType = "Non-interrupting";
+               
+               // non-interrupting boundary events have no actions.
+               eventHandler.getEventAction().clear();
+            }
          }
+
+         AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", eventType);
       }
    
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
+   }
+
+   private static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName)
+   {
+      EventActionType action = null;
+      
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+      {
+         EventActionType a = i.next();
+         if (action != null || a.getType() == null || !typeId.equals(a.getType().getId()))
+         {
+            i.remove();
+         }
+         else
+         {
+            action = a;
+         }
+      }
+      
+      if (action == null)
+      {
+         EventActionTypeType actionType = decodeEventActionType(typeId, findContainingModel(eventHandler));
+         if (actionType != null)
+         {
+            action = newEventAction(actionType);
+            action.setId(NameIdUtils.createIdFromName(defaultName));
+            action.setName(defaultName);
+            eventHandler.getEventAction().add(action);
+         }
+      }
+      return action;
    }
 
    public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)

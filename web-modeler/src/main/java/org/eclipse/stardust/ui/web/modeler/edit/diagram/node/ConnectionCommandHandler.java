@@ -394,7 +394,8 @@ public class ConnectionCommandHandler
       if (hostActivity != null)
       {
          String condition = "";
-         if (sourceEventSymbol instanceof IntermediateEventSymbol)
+         if (sourceEventSymbol instanceof IntermediateEventSymbol &&
+               !EventMarshallingUtils.isIntermediateEventHost(hostActivity))
          {
             JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(
                   hostActivity, (IntermediateEventSymbol) sourceEventSymbol, jsonIo);

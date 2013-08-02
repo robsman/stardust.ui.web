@@ -73,6 +73,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 {
    static final String ABORT_ACTIVITY_NAME = "Abort Activity";
 
+   static final String COMPLETE_ACTIVITY_NAME = "Complete Activity";
+
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
