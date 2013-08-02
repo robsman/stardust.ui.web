@@ -525,7 +525,7 @@ define(
 				ModelElementView.prototype.setViewDivSize = function() {				
 					// Set available height to window height - y coordinate of outline div and an additional margin of 5px
 					var viewContainerDiv = m_utils.jQuerySelect("#" + this.id);
-					if (viewContainerDiv.isNotEmpty()) {
+					if (viewContainerDiv && viewContainerDiv.length !== 0) {
 						var availableHeight = m_utils.jQuerySelect(window).height() - (viewContainerDiv.offset().top + jQuery(".sg-footer-bar").height() + 20);
 						var availableWidth = m_utils.jQuerySelect(window).width() - (viewContainerDiv.offset().left + 0);
 						viewContainerDiv.height(availableHeight);
