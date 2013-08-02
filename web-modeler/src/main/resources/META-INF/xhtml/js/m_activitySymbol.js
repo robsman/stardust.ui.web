@@ -628,10 +628,18 @@ define(
 							.findProcess(this.modelElement.subprocessFullId);
 
 					this.viewManager.openView("processDefinitionView",
-							"processId=" + process.id + "&modelId=" + model.id
-									+ "&processName=" + process.name
-									+ "&fullId=" + process.getFullId(), process
-									.getFullId());
+							"processId=" + encodeURIComponent(process.id)
+									+ "&modelId="
+									+ encodeURIComponent(model.id)
+									+ "&processName="
+									+ encodeURIComponent(process.name)
+									+ "&fullId="
+									+ encodeURIComponent(process.getFullId())
+									+ "&uuid="
+									+ process.uuid
+									+ "&modelUUID="
+									+ model.uuid,
+							process.uuid);
 				};
 
 				/**
