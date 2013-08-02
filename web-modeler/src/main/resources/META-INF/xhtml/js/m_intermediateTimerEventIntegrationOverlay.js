@@ -295,13 +295,13 @@ define(
 					select.append("<option value='h'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.hours")
 									+ "</option>");
-					select.append("<option value='d'>"
+					select.append("<option value='D'>"
 									+ m_i18nUtils.getProperty("modeler.element.properties.event.days")
 									+ "</option>");
-					select.append("<option value='m'>"
+					select.append("<option value='M'>"
 							+ m_i18nUtils.getProperty("modeler.element.properties.event.months")
 							+ "</option>");
-					select.append("<option value='y'>"
+					select.append("<option value='Y'>"
 							+ m_i18nUtils.getProperty("modeler.element.properties.event.years")
 							+ "</option>");
 
