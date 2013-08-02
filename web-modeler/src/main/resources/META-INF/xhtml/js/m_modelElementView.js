@@ -168,6 +168,11 @@ define(
 						this.setModelElement(modelElement);
 						this.checkAndMarkIfReadonly();
 					}
+					
+					// Set up event handling to adapt view size
+					this.initializeViewSizeEventHandling();
+					// Set initial view size
+					this.setViewDivSize();
 				};
 
 				/**
@@ -498,6 +503,34 @@ define(
 				 */
 				ModelElementView.prototype.postProcessCommand = function(
 						command) {
+				};
+				
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.initializeViewSizeEventHandling = function() {
+					var self = this;
+					jQuery(window).resize(function() {
+						self.setViewDivSize();
+					});
+					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
+						self.setViewDivSize();
+					});
+					
+					EventHub.events.subscribe("SIDEBAR_PINNED", function(pinned) {
+						self.setViewDivSize();
+					});
+				};
+				
+				ModelElementView.prototype.setViewDivSize = function() {				
+					// Set available height to window height - y coordinate of outline div and an additional margin of 5px
+					var viewContainerDiv = m_utils.jQuerySelect("#" + this.id);
+					if (viewContainerDiv.isNotEmpty()) {
+						var availableHeight = m_utils.jQuerySelect(window).height() - (viewContainerDiv.offset().top + jQuery(".sg-footer-bar").height() + 20);
+						var availableWidth = m_utils.jQuerySelect(window).width() - (viewContainerDiv.offset().left + 0);
+						viewContainerDiv.height(availableHeight);
+						viewContainerDiv.width(availableWidth);	
+					}
 				};
 			}
 		});
