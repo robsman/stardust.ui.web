@@ -342,6 +342,11 @@ define(
 					} else {
 						this.image.hide();
 					}
+					
+					if (this.bindingActivitySymbol == null) {
+						this.resolveNonHierarchicalRelationships();
+						this.bindActivity(this.bindingActivitySymbol);
+					}
 				};
 
 				/**
@@ -546,7 +551,8 @@ define(
 
 					m_utils.debug("EventSymbol.onComplete");
 
-					if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+					if (this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE 
+							&& this.diagram.mode == this.diagram.CREATE_MODE) {
 						var hitSymbol = this.diagram
 								.getSymbolOverlappingWithSymbol(this);
 
@@ -556,12 +562,28 @@ define(
 						if (hitSymbol != null
 								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
 							m_utils.debug("Add boundary");
-							hitSymbol.addBoundaryEvent(this, true);
+							var coordinates = hitSymbol.getNextAvailableSlot();
+							
+							if (coordinates.x < 20) {
+								this.state = m_constants.SYMBOL_PREPARED_STATE;
+								m_messageDisplay
+										.showErrorMessage("Activity symbol needs to be repositioned.");
+								this.diagram.hideSnapLines(this);
+								this.remove();
+								this.diagram.mode = this.diagram.NORMAL_MODE
+								return;
+							}
+
+							this.x = coordinates.x;
+							this.y = coordinates.y;
+							
+							this.bindActivity(hitSymbol);
 							this.modelElement.interrupting = true;
 						} else {
 							this.modelElement.interrupting = false;
 						}
 					}
+					
 					//display warning message
 					if (this.modelElement.participantFullId) {
 						var participant = m_model.findParticipant(this.modelElement.participantFullId);
@@ -606,6 +628,9 @@ define(
 				};
 
 				EventSymbol.prototype.postComplete = function() {
+					if (this.bindingActivitySymbol) {
+						this.bindingActivitySymbol.adjustWidth(false, true);
+					}
 					this.select();
 					this.diagram.showEditable(this.text);
 				};
@@ -653,51 +678,6 @@ define(
 				/**
 				 *
 				 */
-				EventSymbol.prototype.getBindingChanges = function() {
-					var hitSymbol = this.diagram
-							.getSymbolOverlappingWithSymbol(this);
-
-					if (hitSymbol != null
-							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
-
-						var bindUnbind = true;
-						// if intermediate event is dragged from one activity
-						// to other activity
-						if (this.bindingActivitySymbol != null) {
-							//dnd on same activity
-							if (hitSymbol.oid == this.bindingActivitySymbol.oid) {
-								bindUnbind = false;
-							}
-
-							this.bindingActivitySymbol.removeBoundaryEvent(this, bindUnbind);
-						}
-						hitSymbol.addBoundaryEvent(this, bindUnbind);
-						if (bindUnbind) {
-							return {
-								bindingActivityUuid : this.modelElement.bindingActivityUuid
-							};
-						}
-					} else if (this.bindingActivitySymbol != null) {
-						this.bindingActivitySymbol.removeBoundaryEvent(this, true);
-						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
-							return {
-								bindingActivityUuid : null,
-								eventClass : m_constants.TIMER_EVENT_CLASS,
-								interrupting : false
-							};
-						} else {
-							return {
-								bindingActivityUuid : null,
-								interrupting : false
-							};
-						}
-					}
-					return null;
-				};
-
-				/**
-				 *
-				 */
 				EventSymbol.prototype.resolveNonHierarchicalRelationships = function() {
 					if (this.modelElement.isBoundaryEvent()) {
 						this.bindingActivitySymbol = this.diagram
@@ -709,8 +689,28 @@ define(
 					if (this.modelElement.isBoundaryEvent()) {
 						this.resolveNonHierarchicalRelationships();
 						if (null != this.bindingActivitySymbol) {
-							this.bindingActivitySymbol
-									.removeBoundaryEvent(this, true);
+							var currentBindingActSymbol = this.bindingActivitySymbol;
+							var wasExtremeLeftSymbol = this.unbindActivity(currentBindingActSymbol);
+
+							var changesDesc = [];
+							if (!wasExtremeLeftSymbol) {
+								changesDesc = currentBindingActSymbol.realignBoundaryEvent();
+							}
+							
+							var activityWidthChange = currentBindingActSymbol.adjustWidth(true, false);
+							
+							if(activityWidthChange){
+								changesDesc.push(activityWidthChange);	
+							}
+
+							if (changesDesc.length > 0) {
+								var command = m_command
+										.createUpdateDiagramCommand(
+												this.diagram.model.id,
+												changesDesc);
+								command.sync = true;
+								m_commandsController.submitCommand(command);
+							}
 						}
 					}
 					this.remove_();
@@ -721,22 +721,268 @@ define(
 				 * separately was resulting into "Bad Request"
 				 */
 				EventSymbol.prototype.dragStop_ = function(multipleSymbols) {
-					if(!multipleSymbols){
-						var bindingChanges = this.getBindingChanges();
-					}
-					var changeDesc = this.dragStopBase(multipleSymbols);
+					var changeDesc = null;
 					
-					if (null != bindingChanges) {
-						changeDesc.changes["modelElement"] = bindingChanges;
+					if (!multipleSymbols
+							&& this.modelElement.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+						changeDesc = this.handleIntermediateEvent();
+						// return consolidated changes
+					} else {
+						changeDesc = this.dragStopBase(multipleSymbols);
 					}
 					return changeDesc;
 				};
+				
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.handleIntermediateEvent = function() {
+					this.resolveNonHierarchicalRelationships();
+					
+					var action = this.identifyAction();
+					var hitSymbol = this.diagram.getSymbolOverlappingWithSymbol(this);
+					
+					var changeDescriptions = [];
+					
+					switch(action)
+					{
+					case "NORMAL_DRAG":
+						changeDescriptions.push(this.dragStopBase(false));
+						break;
 
+					case "REORDER":
+						m_utils
+								.removeItemFromArray(
+										this.bindingActivitySymbol.boundaryEventSymbols,
+										this);
+						this.bindingActivitySymbol.boundaryEventSymbols
+								.push(this);
+
+						changeDescriptions = this.bindingActivitySymbol
+								.realignBoundaryEvent();
+						break;
+
+					case "BIND":
+						var coordinates = hitSymbol.getNextAvailableSlot();
+
+						if (!this.checkPosition(coordinates)) {
+							return null;
+						}
+
+						this.bindActivity(hitSymbol);
+						this.x = coordinates.x;
+						this.y = coordinates.y;
+						this.moveTo(this.x - this.clientSideAdjX, this.y);
+
+						var changesDesc = {
+							oid : this.oid,
+							changes : {
+								"x" : this.x + this.parentSymbol.symbolXOffset,
+								"y" : this.y,
+								"parentSymbolId" : this.parentSymbol.id,
+								"modelElement" : {
+									bindingActivityUuid : this.modelElement.bindingActivityUuid
+								}
+							}
+						};
+
+						changeDescriptions.push(changesDesc);
+
+						var activityWidthChange = this.bindingActivitySymbol
+								.adjustWidth(true, true);
+						if (activityWidthChange) {
+							changeDescriptions.push(activityWidthChange);
+						}
+						break;
+
+					case "UNBIND":
+						var unbindingChangesDesc = this.dragStopBase(false);
+						if (unbindingChangesDesc == null) {
+							return null;
+						}
+
+						var currentBindingActSymbol = this.bindingActivitySymbol;
+
+						var wasExtremeLeftSymbol = this
+								.unbindActivity(currentBindingActSymbol);
+						if (!wasExtremeLeftSymbol) {
+							changeDescriptions = currentBindingActSymbol
+									.realignBoundaryEvent();
+						}
+
+						var unbindingChanges;
+
+						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
+							unbindingChanges = {
+								bindingActivityUuid : null,
+								eventClass : m_constants.TIMER_EVENT_CLASS,
+								interrupting : false
+							};
+						} else {
+							unbindingChanges = {
+								bindingActivityUuid : null,
+								interrupting : false
+							};
+						}
+
+						unbindingChangesDesc.changes["modelElement"] = unbindingChanges;
+						changeDescriptions.push(unbindingChangesDesc);
+
+						var activityWidthChange = currentBindingActSymbol
+								.adjustWidth(true, false);
+						if (activityWidthChange) {
+							changeDescriptions.push(activityWidthChange);
+						}
+						break;
+
+					case "UNBIND_BIND":
+						var currentBindingActSymbol = this.bindingActivitySymbol;
+						var coordinates = hitSymbol.getNextAvailableSlot();
+
+						if (!this.checkPosition(coordinates)) {
+							return null;
+						}
+
+						// unbinding
+						var wasExtremeLeftSymbol = this
+								.unbindActivity(currentBindingActSymbol);
+						if (!wasExtremeLeftSymbol) {
+							changeDescriptions = currentBindingActSymbol
+									.realignBoundaryEvent();
+						}
+
+						// binding
+						this.x = coordinates.x;
+						this.y = coordinates.y;
+
+						this.bindActivity(hitSymbol);
+
+						this.moveTo(this.x - this.clientSideAdjX, this.y);
+
+						var bindingChanges = {
+							oid : this.oid,
+							changes : {
+								"x" : this.x + this.parentSymbol.symbolXOffset,
+								"y" : this.y,
+								"parentSymbolId" : this.parentSymbol.id,
+								"modelElement" : {
+									bindingActivityUuid : this.modelElement.bindingActivityUuid
+								}
+							}
+						};
+
+						changeDescriptions.push(bindingChanges);
+
+						var unbindingActWidth = currentBindingActSymbol
+								.adjustWidth(true, false);
+						if (unbindingActWidth) {
+							changeDescriptions.push(unbindingActWidth);
+						}
+
+						var bindingActWidth = this.bindingActivitySymbol
+								.adjustWidth(true, true);
+						if (bindingActWidth) {
+							changeDescriptions.push(bindingActWidth);
+						}
+						break;
+
+					default:
+						break;
+					}
+
+					if (changeDescriptions.length > 0) {
+						return changeDescriptions;
+					} else {
+						return null;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.checkPosition = function(coordinates){
+					if (coordinates.x < 20) {
+						m_messageDisplay
+								.showErrorMessage("Activity symbol needs to be repositioned.");
+						return false;
+					}	
+					return true;
+				};
+				
+
+				/**
+				 * identify user action in case intermediate
+				 * event
+				 */
+				EventSymbol.prototype.identifyAction = function() {
+					var action = "NORMAL_DRAG";
+					var hitSymbol = this.diagram.getSymbolOverlappingWithSymbol(this);
+					if (this.bindingActivitySymbol == null && hitSymbol == null) {
+						action = "NORMAL_DRAG";
+					} else if (hitSymbol != null
+							&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
+						if (this.bindingActivitySymbol != null) {
+							// reorder
+							if (hitSymbol.oid == this.bindingActivitySymbol.oid) {
+								action = "REORDER";
+							} else {
+								action = "UNBIND_BIND";
+							}
+						} else {
+							action = "BIND";
+						}
+					} else if (hitSymbol == null
+							&& this.bindingActivitySymbol != null) {
+						action = "UNBIND";
+					}
+					return action;
+				};
+				
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.bindActivity = function(bindingActivitySymbol) {
+					if (!m_utils.isItemInArray(
+							bindingActivitySymbol.boundaryEventSymbols, this)) {
+
+						bindingActivitySymbol.boundaryEventSymbols.push(this);
+
+						this.bindingActivitySymbol = bindingActivitySymbol;
+
+						this.modelElement
+								.bindWithActivity(bindingActivitySymbol.modelElement);
+					}
+				};
+				
+				/**
+				 * 
+				 */
+				EventSymbol.prototype.unbindActivity = function(bindingActivitySymbol) {
+					// unbind the event from existing activity
+					var index = bindingActivitySymbol.boundaryEventSymbols
+							.indexOf(this);
+					var wasExtremeLeftSymbol = false;
+					if ((bindingActivitySymbol.boundaryEventSymbols.length - 1) == index) {
+						wasExtremeLeftSymbol = true;
+					}
+
+					m_utils.removeItemFromArray(
+							bindingActivitySymbol.boundaryEventSymbols, this);
+
+					this.bindingActivitySymbol = null;
+
+					this.modelElement
+							.unbindFromActivity(bindingActivitySymbol.modelElement);
+
+					return wasExtremeLeftSymbol;
+				};
+				
 				EventSymbol.prototype.supportSnapping = function(content) {
 					return !this.modelElement.isBoundaryEvent();
 				};
 			}
 
+			
 			/**
 			 *
 			 */

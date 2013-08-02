@@ -758,90 +758,100 @@ define(
 					this.diagram.selectedSymbolsDragStart();
 				};
 
-				/**
-				 *
-				 */
-				ActivitySymbol.prototype.addBoundaryEvent = function(
-						eventSymbol, bind) {
-
-					if (!m_utils.isItemInArray(this.boundaryEventSymbols,
-							eventSymbol)) {
-						this.boundaryEventSymbols.push(eventSymbol);
-
-						eventSymbol.bindingActivitySymbol = this;
-
-						if(bind){
-							eventSymbol.modelElement
-							.bindWithActivity(this.modelElement);
-						}
-					}
-
-					this.adjustWidth();
-					// Align all boundary events on the symbol boundary
-					this.realignBoundaryEvent();
-				};
-
+				
 				/**
 				 * Adjust Activity Symbol Width
 				 */
-				ActivitySymbol.prototype.adjustWidth = function() {
+				ActivitySymbol.prototype.adjustWidth = function(returnChanges, add) {
 					if (this.boundaryEventSymbols) {
 						var requiredWidth = this.boundaryEventSymbols.length * 45;
 						requiredWidth = requiredWidth < m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH ? m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH
 								: requiredWidth;
 
-						if (this.width != requiredWidth) {
+						if ((add && this.width < requiredWidth) || (!add && this.width > requiredWidth)) {
+							var difference = requiredWidth - this.width;
+							this.x = this.x - difference; 
 							this.width = requiredWidth;
 							var changes = {
+								"x" : this.x,
+								"y" : this.y,
+								"parentSymbolId" : this.parentSymbol.id,
 								"width" : this.width
 							};
-							m_commandsController.submitCommand(m_command
-									.createUpdateModelElementCommand(
-											this.diagram.modelId, this.oid,
-											changes));
+							
+							if (!returnChanges) {
+								m_commandsController.submitCommand(m_command
+										.createUpdateModelElementCommand(
+												this.diagram.modelId, this.oid,
+												changes));
+							}
+ 							else {
+								return {
+									oid : this.oid,
+									changes : changes,
+								};
+							}
 						}
 					}
+					return null;
 				};
 
 				/**
 				 *
 				 */
 				ActivitySymbol.prototype.realignBoundaryEvent = function(){
-					var x = this.x + this.width;
-
+					var x = this.x + this.width - m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 					var eventSymbol;
+					var changeDesc;
+					var changeDescriptions = [];
+					var newGeometry;
+					
+					var y = this.y + this.height - m_constants.EVENT_DEFAULT_RADIUS;
+
 					for ( var i = 0; i < this.boundaryEventSymbols.length; ++i) {
 						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 						eventSymbol = this.boundaryEventSymbols[i];
+						
+						eventSymbol.moveTo(x, y);	
+						
+						newGeometry = {
+							"x" : x - eventSymbol.clientSideAdjX
+									+ eventSymbol.parentSymbol.symbolXOffset,
+							"y" : y,
+							"parentSymbolId" : eventSymbol.parentSymbol.id,
+						};
 
-						eventSymbol.moveTo(x - 0.5 * eventSymbol.width, this.y
-								+ this.height - 0.5 * eventSymbol.height);
+						changeDesc = {
+							oid : eventSymbol.oid,
+							changes : newGeometry
+						};
 
+						changeDescriptions.push(changeDesc);
+					
 						x -= eventSymbol.width;
 					}
-				};
-
-
-				/**
-				 *
-				 */
-				ActivitySymbol.prototype.removeBoundaryEvent = function(
-						eventSymbol, unbind) {
 					
-					m_utils.removeItemFromArray(this.boundaryEventSymbols,
-							eventSymbol);
-
-					this.adjustWidth();
-					this.realignBoundaryEvent();
-
-					eventSymbol.bindingActivitySymbol = null;
-
-					if (unbind) {
-						eventSymbol.modelElement
-								.unbindFromActivity(this.modelElement);
-					}
+					return changeDescriptions;
 				};
 
+				
+				ActivitySymbol.prototype.getNextAvailableSlot = function() {
+					var length = this.boundaryEventSymbols.length + 1;
+					
+					var x = this.x + this.width + 10;
+					x -= (m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET * length);
+					x -= (2 * m_constants.EVENT_DEFAULT_RADIUS * length);
+					
+					var y = this.y + this.height
+							- (m_constants.EVENT_DEFAULT_RADIUS);
+
+					return {
+						"x" : x,
+						"y" : y
+					};
+				};
+
+				
 				ActivitySymbol.prototype.showEditable = function() {
 					this.text.hide();
 					var editableText = this.diagram.editableText;

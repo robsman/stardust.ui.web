@@ -2004,14 +2004,28 @@ define(
 				Diagram.prototype.selectedSymbolsDragStop = function() {
 					var changeDescriptionsDiagram = [];
 					var failed = false;
-					for ( var n in this.currentSelection) {
-						var changes = this.currentSelection[n].dragStop_(this.currentSelection.length > 1);
-						if (null == changes) {
-							failed = true;
-							this.revertDrag();
-							break;
+					
+					if (this.currentSelection.length == 1) {
+						if (m_constants.INTERMEDIATE_EVENT_TYPE == this.currentSelection[0].modelElement.eventType) {
+							changeDescriptionsDiagram = this.currentSelection[0].dragStop_(false);
+							if(null == changeDescriptionsDiagram){
+								failed = true;
+								this.revertDrag();
+							}
 						}
-						changeDescriptionsDiagram.push(changes);
+					}
+					
+					if (changeDescriptionsDiagram && changeDescriptionsDiagram.length == 0) {
+						for ( var n in this.currentSelection) {
+							var changes = this.currentSelection[n]
+									.dragStop_(this.currentSelection.length > 1);
+							if (null == changes) {
+								failed = true;
+								this.revertDrag();
+								break;
+							}
+							changeDescriptionsDiagram.push(changes);
+						}
 					}
 
 					if (!failed) {
@@ -2021,19 +2035,23 @@ define(
 						command.sync = true;
 						m_commandsController.submitCommand(command);
 
-						//Adjust Lanes to fit the symbols
-						var adjustedLanes = [];
-						for ( var n in this.currentSelection) {
-							var swimlane = this.currentSelection[n].parentSymbol;
-							if (-1 == adjustedLanes.indexOf(swimlane)) {
-								swimlane.adjustToSymbolBoundaries();
-								adjustedLanes.push(swimlane);
-							}
-						}
+						this.adjustLanes();
 					}
 					this.clearCurrentSelection();
 				};
 
+				Diagram.prototype.adjustLanes = function(){
+					//Adjust Lanes to fit the symbols
+					var adjustedLanes = [];
+					for ( var n in this.currentSelection) {
+						var swimlane = this.currentSelection[n].parentSymbol;
+						if (-1 == adjustedLanes.indexOf(swimlane)) {
+							swimlane.adjustToSymbolBoundaries();
+							adjustedLanes.push(swimlane);
+						}
+					}
+				};
+				
 				Diagram.prototype.revertDrag = function() {
 					for ( var n in this.currentSelection) {
 						this.currentSelection[n].revertDrag_();
