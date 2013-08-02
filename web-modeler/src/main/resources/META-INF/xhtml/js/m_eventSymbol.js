@@ -345,7 +345,9 @@ define(
 					
 					if (this.bindingActivitySymbol == null) {
 						this.resolveNonHierarchicalRelationships();
-						this.bindActivity(this.bindingActivitySymbol);
+						if (this.bindingActivitySymbol != null){
+							this.bindActivity(this.bindingActivitySymbol);	
+						}
 					}
 				};
 
