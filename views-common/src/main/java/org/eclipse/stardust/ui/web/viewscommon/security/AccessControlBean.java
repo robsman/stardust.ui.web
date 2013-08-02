@@ -24,17 +24,17 @@ public class AccessControlBean extends DefaultRowModel
 
    private Participant participant;
    
-   private boolean read;
+   private String read;
 
-   private boolean modify;
+   private String modify;
 
-   private boolean create;
+   private String create;
 
-   private boolean delete;
+   private String delete;
 
-   private boolean readAcl;
+   private String readAcl;
 
-   private boolean modifyAcl;
+   private String modifyAcl;
 
    private boolean edit;
 
@@ -57,6 +57,8 @@ public class AccessControlBean extends DefaultRowModel
    public static final String ALLOW = "Allow";
 
    public static final String DENY = "Deny";
+   
+   public static final String INHERIT = "Inherit";
 
    public static final String CREATE = "Create";
 
@@ -87,22 +89,22 @@ public class AccessControlBean extends DefaultRowModel
       return participant;
    }
 
-   public boolean isRead()
+   public String getRead()
    {
       return read;
    }
 
-   public boolean isModify()
+   public String getModify()
    {
       return modify;
    }
 
-   public boolean isCreate()
+   public String getCreate()
    {
       return create;
    }
 
-   public boolean isDelete()
+   public String getDelete()
    {
       return delete;
    }
@@ -112,17 +114,16 @@ public class AccessControlBean extends DefaultRowModel
       super();
       this.participant = participant;
       setModelLabel();
-      setRead(false);
-      setModify(false);
-      setCreate(false);
-      setDelete(false);
-      setReadAcl(false);
-      setModifyAcl(false);
-      setNewOrModified(true);
+      setRead(INHERIT);
+      setModify(INHERIT);
+      setCreate(INHERIT);
+      setDelete(INHERIT);
+      setReadAcl(INHERIT);
+      setModifyAcl(INHERIT);
    }
 
-   public AccessControlBean(Participant participant, boolean read, boolean modify,
-         boolean create, boolean delete, boolean readAcl, boolean modifyAcl)
+   public AccessControlBean(Participant participant, String read, String modify,
+         String create, String delete, String readAcl, String modifyAcl)
    {
       super();
       this.participant = participant;
@@ -133,7 +134,6 @@ public class AccessControlBean extends DefaultRowModel
       setDelete(delete);
       setReadAcl(readAcl);
       setModifyAcl(modifyAcl);
-      setNewOrModified(true);
    }
 
    private void setModelLabel()
@@ -146,12 +146,12 @@ public class AccessControlBean extends DefaultRowModel
       }
    }
    
-   public boolean isReadAcl()
+   public String getReadAcl()
    {
       return readAcl;
    }
 
-   public boolean isModifyAcl()
+   public String getModifyAcl()
    {
       return modifyAcl;
    }
@@ -169,92 +169,50 @@ public class AccessControlBean extends DefaultRowModel
       this.participant = participant;
    }
 
-   public void setRead(boolean read)
+   public void setRead(String read)
    {
       this.read = read;
-      if (this.read)
-      {
-         this.readPolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.readPolicyChangedValue = DENY;
-      }
+       this.readPolicyChangedValue = read;
    }
 
-   public void setModify(boolean modify)
+   public void setModify(String modify)
    {
       this.modify = modify;
-      if (this.modify)
-      {
-         this.modifyPolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.modifyPolicyChangedValue = DENY;
-      }
+      this.modifyPolicyChangedValue = modify;
    }
 
-   public void setCreate(boolean create)
+   public void setCreate(String create)
    {
       this.create = create;
-      if (this.create)
-      {
-         this.createPolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.createPolicyChangedValue = DENY;
-      }
+      this.createPolicyChangedValue = create;
    }
 
-   public void setDelete(boolean delete)
+   public void setDelete(String delete)
    {
       this.delete = delete;
-      if (this.delete)
-      {
-         this.deletePolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.deletePolicyChangedValue = DENY;
-      }
+      this.deletePolicyChangedValue = delete;
    }
 
-   public void setReadAcl(boolean readAcl)
+   public void setReadAcl(String readAcl)
    {
       this.readAcl = readAcl;
-      if (this.readAcl)
-      {
-         this.readACLPolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.readACLPolicyChangedValue = DENY;
-      }
+      this.readACLPolicyChangedValue = readAcl;
    }
 
-   public void setModifyAcl(boolean modifyAcl)
+   public void setModifyAcl(String modifyAcl)
    {
       this.modifyAcl = modifyAcl;
-      if (this.modifyAcl)
-      {
-         this.modifyACLPolicyChangedValue = ALLOW;
-      }
-      else
-      {
-         this.modifyACLPolicyChangedValue = DENY;
-      }
+      this.modifyACLPolicyChangedValue = modifyAcl;
    }
 
    public void setAllPrivilege()
    {
-      setRead(true);
-      setModify(true);
-      setCreate(true);
-      setDelete(true);
-      setReadAcl(true);
-      setModifyAcl(true);
+      setRead(ALLOW);
+      setModify(ALLOW);
+      setCreate(ALLOW);
+      setDelete(ALLOW);
+      setReadAcl(ALLOW);
+      setModifyAcl(ALLOW);
    }
 
    public boolean isNewOrModified()

@@ -25,6 +25,7 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AccessControlEntry;
+import org.eclipse.stardust.engine.api.runtime.AccessControlEntry.EntryType;
 import org.eclipse.stardust.engine.api.runtime.AccessControlPolicy;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Privilege;
@@ -43,10 +44,12 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -66,12 +69,15 @@ public class SecurityDialog extends PopupUIComponentBean
    private SortableTable<AccessControlBean> securityDialogInheritedTable;
    private boolean expanded;
    private boolean policyChanged = false;
+   private boolean allInheritPolicy = true;
    private Map<String, QualifiedModelParticipantInfo> allParticipants;
+   private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
  
    
    public List<SelectItem> getPermission()
    {
       List<SelectItem> list = new ArrayList<SelectItem>();
+      list.add(new SelectItem(AccessControlBean.INHERIT,getMessages().getString("securityDialog.columnValue.inherit")));
       list.add(new SelectItem(AccessControlBean.ALLOW,getMessages().getString("securityDialog.columnValue.allow")));
       list.add(new SelectItem(AccessControlBean.DENY,getMessages().getString("securityDialog.columnValue.deny")));
       return list;
@@ -187,7 +193,9 @@ public class SecurityDialog extends PopupUIComponentBean
     */
    protected void addParticipant(Participant selectedParticipant)
    {
-      AccessControlBean acb = new AccessControlBean(selectedParticipant, true, true, true, true, true, true);
+      AccessControlBean acb = new AccessControlBean(selectedParticipant, AccessControlBean.INHERIT,
+            AccessControlBean.INHERIT, AccessControlBean.INHERIT, AccessControlBean.INHERIT, AccessControlBean.INHERIT,
+            AccessControlBean.INHERIT);
       if (!getAccessControlBean().contains(acb))
       {
          acb.setEdit(true);
@@ -223,8 +231,11 @@ public class SecurityDialog extends PopupUIComponentBean
 
    public List<AccessControlBean> generateACBList(Set<AccessControlPolicy> policies, boolean inheritedList)
    {
+      Map<String,AccessControlBean> participantAccessControlMap = CollectionUtils.newHashMap();
       List<AccessControlBean> acbs = new ArrayList<AccessControlBean>();
       Iterator<AccessControlPolicy> effectivePoliciesIter = policies.iterator();
+      AccessControlBean acb = null;
+      boolean updateACBList = true;
       while (effectivePoliciesIter.hasNext())
       {
          AccessControlPolicy acp = effectivePoliciesIter.next();
@@ -232,11 +243,19 @@ public class SecurityDialog extends PopupUIComponentBean
          while (aceIter.hasNext())
          {
             AccessControlEntry ace = aceIter.next();
-            AccessControlBean acb = null;
             try
             {
-               acb = new AccessControlBean(new Participant(ace.getPrincipal(), allParticipants.get(ace.getPrincipal()
-                     .getName())));
+               if (null != acb && participantAccessControlMap.containsKey(ace.getPrincipal().getName()))
+               {
+                  acb = participantAccessControlMap.get(ace.getPrincipal().getName());
+                  updateACBList = false;
+               }
+               else
+               {
+                  acb = new AccessControlBean(new Participant(ace.getPrincipal(), allParticipants.get(ace
+                        .getPrincipal().getName())));
+                  participantAccessControlMap.put(acb.getParticipant().getPrincipal().getName(),acb);
+               }
             }
             catch (Exception e)
             {
@@ -257,43 +276,58 @@ public class SecurityDialog extends PopupUIComponentBean
                {
                   if (privilege.equals(DmsPrivilege.CREATE_PRIVILEGE))
                   {
-                     acb.setCreate(true);
+                     acb.setCreate(true == ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                   if (privilege.equals(DmsPrivilege.DELETE_PRIVILEGE))
                   {
-                     acb.setDelete(true);
+                     acb.setDelete(ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                   if (privilege.equals(DmsPrivilege.MODIFY_PRIVILEGE))
                   {
-                     acb.setModify(true);
+                     acb.setModify(ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                   if (privilege.equals(DmsPrivilege.READ_PRIVILEGE))
                   {
-                     acb.setRead(true);
+                     acb.setRead(ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                   if (privilege.equals(DmsPrivilege.READ_ACL_PRIVILEGE))
                   {
-                     acb.setReadAcl(true);
+                     acb.setReadAcl(ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                   if (privilege.equals(DmsPrivilege.MODIFY_ACL_PRIVILEGE))
                   {
-                     acb.setModifyAcl(true);
+                     acb.setModifyAcl(ace.getType().toString().equals(AccessControlBean.ALLOW.toUpperCase())
+                           ? AccessControlBean.ALLOW
+                           : AccessControlBean.DENY);
                   }
                }
             }
             acb.setEdit(false);
             if (inheritedList)
             {
-               if (!checkIfInherited(acb))
+               if (!checkIfInherited(acb) && updateACBList)
                {
                   acbs.add(acb);
                }
             }
             else
             {
-               acbs.add(acb);
+               if (updateACBList)
+               {
+                  acbs.add(acb);
+               }
             }
-     }
+         }
       }
       return acbs;
    }
@@ -314,6 +348,23 @@ public class SecurityDialog extends PopupUIComponentBean
       return false;
    }
 
+   private boolean checkAllRolesInherit(AccessControlBean acb)
+   {
+      if (!isLeaf && AccessControlBean.INHERIT.equals(acb.getCreate()))
+         return false;
+      else if (!AccessControlBean.INHERIT.equals(acb.getModify()))
+         return false;
+      else if (!AccessControlBean.INHERIT.equals(acb.getModify()))
+         return false;
+      else if (!AccessControlBean.INHERIT.equals(acb.getDelete()))
+         return false;
+      else if (!AccessControlBean.INHERIT.equals(acb.getReadAcl()))
+         return false;
+      else if (!AccessControlBean.INHERIT.equals(acb.getModifyAcl()))
+         return false;
+      return true;
+   }
+   
    public void save()
    {
       apply();
@@ -322,6 +373,15 @@ public class SecurityDialog extends PopupUIComponentBean
 
    public void apply()
    {
+      for (int i = 0; i < accessControlBean.size(); i++)
+      {
+         AccessControlBean objAcb = accessControlBean.get(i);
+         if (checkAllRolesInherit(objAcb))
+         {
+            allInheritPolicy = true;
+            return;
+         }
+      }
       DocumentManagementService dms = ContextPortalServices.getDocumentManagementService();
       // TODO Delete the print line after perfecting the functionality
       // printDmsSecurity(dms, getResourceId());
@@ -349,6 +409,7 @@ public class SecurityDialog extends PopupUIComponentBean
          trace.error(e);
       }
       next.removeAllAccessControlEntries();
+
       for (AccessControlBean acb : accessControlBean)
       {
          if (CommonProperties.ADMINISTRATOR.equals(acb.getParticipant().getId()))
@@ -361,37 +422,44 @@ public class SecurityDialog extends PopupUIComponentBean
          {
             acb.setEdit(false);
             acb.setNewOrModified(false);
-            if (acb.isCreate())
+            if (!acb.getCreate().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.CREATE_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.CREATE_PRIVILEGE),
+                     acb.getCreate().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
-            if (acb.isDelete())
+            if (!acb.getDelete().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_PRIVILEGE),
+                     acb.getDelete().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_CHILDREN_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_CHILDREN_PRIVILEGE),
+                     acb.getDelete().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
-            if (acb.isModify())
+            if (!acb.getModify().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_PRIVILEGE),
+                     acb.getModify().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
-            if (acb.isRead())
+            if (!acb.getRead().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.READ_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.READ_PRIVILEGE),
+                     acb.getRead().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
-            if (acb.isReadAcl())
+            if (!acb.getReadAcl().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.READ_ACL_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.READ_ACL_PRIVILEGE),
+                     acb.getReadAcl().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
-            if (acb.isModifyAcl())
+            if (!acb.getModifyAcl().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_ACL_PRIVILEGE));
+                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_ACL_PRIVILEGE),
+                     acb.getModifyAcl().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
          }
       }
@@ -437,15 +505,7 @@ public class SecurityDialog extends PopupUIComponentBean
       }
       if (!(((String) event.getNewValue()).equals((String) event.getOldValue())))
       {
-         boolean newValue = false;
-         if (((String) event.getNewValue()).equals(AccessControlBean.ALLOW))
-         {
-            newValue = true;
-         }
-         else if (((String) event.getNewValue()).equals(AccessControlBean.DENY))
-         {
-            newValue = false;
-         }
+         String newValue = (String) event.getNewValue();
          if (property.equals(AccessControlBean.CREATE))
          {
             acb.setCreate(newValue);
@@ -474,10 +534,12 @@ public class SecurityDialog extends PopupUIComponentBean
       }
       for (int i = 0; i < accessControlBean.size(); i++)
       {
-         if (accessControlBean.get(i).getParticipant().getId().equals(acb.getParticipant().getId()))
+        AccessControlBean objAcb = accessControlBean.get(i);
+         if (objAcb.getParticipant().getId().equals(acb.getParticipant().getId()))
          {
             accessControlBean.remove(i);
             accessControlBean.add(i, acb);
+            allInheritPolicy = checkAllRolesInherit(acb);
          }
       }
       securityDialogTable.setList(accessControlBean);
@@ -745,4 +807,11 @@ public class SecurityDialog extends PopupUIComponentBean
    {
       return isModifyACL() && getSelectedRowCount() > 0;
    }
+
+   public boolean isAllInheritPolicy()
+   {
+      return allInheritPolicy;
+   }
+   
+   
 }
