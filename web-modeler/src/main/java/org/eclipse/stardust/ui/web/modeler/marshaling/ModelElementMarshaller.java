@@ -10,6 +10,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJso
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -2115,15 +2116,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       // Retrieve implicit Java Access Points
 
-      if (application.getType() != null
-            && (application.getType()
-                  .getId()
-                  .equals(PredefinedConstants.PLAINJAVA_APPLICATION)
-                  || application.getType()
-                        .getId()
-                        .equals(PredefinedConstants.SESSIONBEAN_APPLICATION) || application.getType()
-                  .getId()
-                  .equals(PredefinedConstants.SPRINGBEAN_APPLICATION)))
+      if (isSupportedJavaApplicationType(application))
       {
          if (hasNotJsonNull(contextsJson, ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
          {
@@ -2142,6 +2135,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             applicationContextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY,
                   accessPointsJson);
          }
+         
+         // TODO: (fh) constructor ?
 
          String methodName = getModelBuilderFacade().getAttributeValue(
                getModelBuilderFacade().getAttribute(application,
@@ -2173,6 +2168,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       }
       return applicationJson;
+   }
+
+   private static List<String> pojoTypes = Arrays.asList(new String[] {
+         PredefinedConstants.PLAINJAVA_APPLICATION,
+         PredefinedConstants.SESSIONBEAN_APPLICATION,
+         PredefinedConstants.SPRINGBEAN_APPLICATION
+   });
+   
+   private boolean isSupportedJavaApplicationType(ApplicationType application)
+   {
+      ApplicationTypeType type = application.getType();
+      return type != null && pojoTypes.contains(type.getId());
    }
 
    /**

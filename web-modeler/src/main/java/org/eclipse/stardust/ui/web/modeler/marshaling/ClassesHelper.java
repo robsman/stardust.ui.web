@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -8,13 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
+import org.eclipse.stardust.common.annotations.ParameterName;
+import org.eclipse.stardust.common.annotations.ParameterNames;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public final class ClassesHelper
 {
@@ -177,6 +179,7 @@ public final class ClassesHelper
 
    public static void addParameterAccessPoints(JsonArray accessPointsJson, Method method)
    {
+      ParameterName[] values = getParameterLabels(method);
       JsonObject accessPointJson;
       for (int n = 0; n < method.getParameterTypes().length; ++n)
       {
@@ -187,10 +190,12 @@ public final class ClassesHelper
                DirectionType.IN_LITERAL.toString());
 
          Class<? > parameterType = method.getParameterTypes()[n];
-         String humanName = parameterType.getSimpleName();
-         String paramName = humanName.toLowerCase().charAt(0) + "Param" + (n + 1);
-         accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, paramName);
-         accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, paramName);
+         String paramName = parameterType.getSimpleName();
+         String paramId = paramName.toLowerCase().charAt(0) + "Param" + (n + 1);
+         String paramLabel = getParameterLabel(method, n, values, paramId);
+
+         accessPointJson.addProperty(ModelerConstants.ID_PROPERTY, paramId);
+         accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, paramLabel);
          accessPointJson.addProperty(ModelerConstants.DATA_TYPE_SIMPLENAME,
                parameterType.getSimpleName());
 
@@ -209,6 +214,42 @@ public final class ClassesHelper
                   method.getParameterTypes()[n].getName());
          }
       }
+   }
+
+   private static ParameterName[] getParameterLabels(Method method)
+   {
+      for (Annotation a : method.getAnnotations())
+      {
+         if (a instanceof ParameterNames)
+         {
+            return ((ParameterNames) a).value();
+         }
+      }
+      return null;
+   }
+
+   private static String getParameterLabel(Method method, int n, ParameterName[] values, String paramId)
+   {
+      ParameterName nameAnnotation = findParameterName(method, n);
+      String paramLabel = nameAnnotation == null ? null : nameAnnotation.value();
+      if (StringUtils.isEmpty(paramLabel) && values != null && n < values.length)
+      {
+         paramLabel = values[n].value();
+      }
+      return StringUtils.isEmpty(paramLabel) ? paramId : paramLabel;
+   }
+
+   private static ParameterName findParameterName(Method method, int parameterIndex)
+   {
+      Annotation[] paramAnnotations = method.getParameterAnnotations()[parameterIndex];
+      for (Annotation annotation : paramAnnotations)
+      {
+         if (annotation instanceof ParameterName)
+         {
+            return (ParameterName) annotation;
+         }
+      }
+      return null;
    }
 
    public static Method getMethodBySignature(ClassLoader classLoader, String className,
