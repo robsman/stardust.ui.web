@@ -327,17 +327,24 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 *
 		 */
-		function openView(viewId, params) {
+		function openView(force, html5FWViewId, viewId, params) {
 			BridgeUtils.log("Opening View = " + viewId);
 			BridgeUtils.runInAngularContext(function($scope) {
-				$scope.open(viewId, true, params);
-
-				// Set Icon
-				var view = $scope.activeViewPanel();
-				BridgeUtils.log("Setting Icon. Icon Base = " + view.iconBase);
-				if (view.iconBase && view.iconBase != "") {
-					BridgeUtils.log("Setting Icon = " + view.params);
-					view.setIcon(BridgeUtils.substituteParams(view.iconBase, view.params, true));
+				
+				var view = getViewPanel($scope, html5FWViewId);
+				
+				// If View not there, create it. If exists then open it if force = true
+				if (!view || force) {
+					$scope.open(viewId, true, params);
+					// Set Icon
+					var view = $scope.activeViewPanel();
+					BridgeUtils.log("Setting Icon. Icon Base = " + view.iconBase);
+					if (view.iconBase && view.iconBase != "") {
+						BridgeUtils.log("Setting Icon = " + view.params);
+						view.setIcon(BridgeUtils.substituteParams(view.iconBase, view.params, true));
+					}
+				} else {
+					BridgeUtils.log("Skipping Open View. It's already created and not forced. = " + viewId);
 				}
 			});
 			BridgeUtils.log("View Opened= " + viewId);

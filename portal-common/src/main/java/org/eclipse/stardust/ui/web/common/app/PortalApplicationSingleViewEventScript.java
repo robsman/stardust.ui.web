@@ -105,6 +105,24 @@ public class PortalApplicationSingleViewEventScript implements Serializable
             }
          }
 
+         // Optimize openView() Calls - Pass extra parameters to BridgeUtils
+         for (int i = 0; i < openViewScripts.size(); i++)
+         {
+            String script = openViewScripts.get(i);
+
+            // Last openView() call
+            if ((i + 1) == openViewScripts.size())
+            {
+               script = script.replace("parent.BridgeUtils.View.openView(", "parent.BridgeUtils.View.openView(true, ");               
+            }
+            else
+            {
+               script = script.replace("parent.BridgeUtils.View.openView(", "parent.BridgeUtils.View.openView(false, ");
+            }
+
+            openViewScripts.set(i, script);
+         }
+         
          // Reorder
          StringBuffer allScripts = new StringBuffer();
          allScripts.append(toStringBuffer(iframeCloseScripts));

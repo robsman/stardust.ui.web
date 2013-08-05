@@ -1158,7 +1158,7 @@ public class PortalApplication
       html5FWViewId = StringUtils.replace(html5FWViewId, ":id", id);
       view.getViewParams().put("html5FWViewId", html5FWViewId);
 
-      String script = "parent.BridgeUtils.View.openView('" + viewId
+      String script = "parent.BridgeUtils.View.openView('" + html5FWViewId + "', '" + viewId
             + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
       script = StringUtils.replace(script, "_TYPE_", typeId);
       script = StringUtils.replace(script, "_ID_", id);
