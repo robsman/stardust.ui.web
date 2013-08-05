@@ -212,9 +212,10 @@ public class EventMarshallingUtils
    public static void deleteEventHostingConfig(IExtensibleElement activity,
          AbstractEventSymbol eventSymbol)
    {
-      String ids[] = new String[] {PREFIX_HOSTED_EVENT + ":"
-            + Long.toString(eventSymbol.getElementOid())};
-      AttributeUtil.clearExcept(activity, ids);
+      String id = PREFIX_HOSTED_EVENT + ":"
+            + Long.toString(eventSymbol.getElementOid());
+
+      AttributeUtil.setAttribute(activity, id, null);
    }
 
    public static String encodeEventHandlerType(EventConditionTypeType conditionType)
