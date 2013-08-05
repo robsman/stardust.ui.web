@@ -242,13 +242,13 @@ define(
 						// Display, whether event is bound
 
 						if (this.getModelElement().isBoundaryEvent()) {
+							var hostActivityName = this.getElement().bindingActivitySymbol.modelElement.name;
 							this.bindingInformation
 									.append(m_i18nUtils
 											.getProperty(
 													"modeler.eventPropertiesPanel.basicPropertiesPage.boundMessage")
 											.replace(
-													"{0}",
-													this.getModelElement().bindingActivityUuid));
+													"{0}", hostActivityName));
 						} else {
 							this.bindingInformation
 									.append(m_i18nUtils
