@@ -16,12 +16,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 
 /**
  * @author Shrikant.Gangal
@@ -29,6 +32,25 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
  */
 public class ModelElementEditingUtils
 {
+   /**
+    * @param activity
+    * @param symbol oids
+    */
+   public static void deleteEventSymbols(ActivityType activity, LaneSymbol parentLaneSymbol)
+   {
+      ProcessDefinitionType process = ModelUtils.findContainingProcess(activity);
+      EList<IntermediateEventSymbol> symbols = parentLaneSymbol.getIntermediateEventSymbols();
+      for (long eventSymbolOid : EventMarshallingUtils.resolveHostedEvents(activity))
+      {
+         IModelElement eventSymbol = ModelUtils.findElementByOid(symbols, eventSymbolOid);
+         if(eventSymbol != null)
+         {
+            parentLaneSymbol.getIntermediateEventSymbols().remove(eventSymbol);       
+            ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(process, (IFlowObjectSymbol) eventSymbol);            
+         }
+      }
+   }
+   
    /**
     * @param processDefinition
     * @param symbol
