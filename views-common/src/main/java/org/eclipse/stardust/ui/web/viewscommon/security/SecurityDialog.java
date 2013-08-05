@@ -49,7 +49,6 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -71,7 +70,6 @@ public class SecurityDialog extends PopupUIComponentBean
    private boolean policyChanged = false;
    private boolean allInheritPolicy = true;
    private Map<String, QualifiedModelParticipantInfo> allParticipants;
-   private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
  
    
    public List<SelectItem> getPermission()
@@ -199,7 +197,6 @@ public class SecurityDialog extends PopupUIComponentBean
       if (!getAccessControlBean().contains(acb))
       {
          acb.setEdit(true);
-         acb.setNewOrModified(true);
          getAccessControlBean().add(acb);
          securityDialogTable.setList(accessControlBean);
          securityDialogTable.initialize();
@@ -348,11 +345,17 @@ public class SecurityDialog extends PopupUIComponentBean
       return false;
    }
 
+   /**
+    * When all the permission's are Inherit, no need to show APPLY btn
+    * 
+    * @param acb
+    * @return
+    */
    private boolean checkAllRolesInherit(AccessControlBean acb)
    {
-      if (!isLeaf && AccessControlBean.INHERIT.equals(acb.getCreate()))
+      if (!isLeaf() && !(AccessControlBean.INHERIT.equals(acb.getCreate())))
          return false;
-      else if (!AccessControlBean.INHERIT.equals(acb.getModify()))
+      else if (!AccessControlBean.INHERIT.equals(acb.getRead()))
          return false;
       else if (!AccessControlBean.INHERIT.equals(acb.getModify()))
          return false;
@@ -415,13 +418,11 @@ public class SecurityDialog extends PopupUIComponentBean
          if (CommonProperties.ADMINISTRATOR.equals(acb.getParticipant().getId()))
          {
             acb.setEdit(false);
-            acb.setNewOrModified(false);
             continue;
          }
          if (next != null)
          {
             acb.setEdit(false);
-            acb.setNewOrModified(false);
             if (!acb.getCreate().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
@@ -530,7 +531,6 @@ public class SecurityDialog extends PopupUIComponentBean
          {
             acb.setModifyAcl(newValue);
          }
-         acb.setNewOrModified(true);
       }
       for (int i = 0; i < accessControlBean.size(); i++)
       {
@@ -715,6 +715,11 @@ public class SecurityDialog extends PopupUIComponentBean
             policyChanged = true;
             break;
          }
+      }
+      // When all roles are removed, do not show Apply btn
+      if (accessControlBean.size() == 0)
+      {
+         allInheritPolicy = true;
       }
       securityDialogTable.setList(accessControlBean);
       securityDialogTable.initialize();

@@ -159,10 +159,7 @@ public class AccessControlBean extends DefaultRowModel
    public void editClicked(ActionEvent ae)
    {
       setEdit(true);
-      setNewOrModified(true);
    }
-
-   
 
    public void setParticipant(Participant participant)
    {
@@ -220,19 +217,9 @@ public class AccessControlBean extends DefaultRowModel
       return newOrModified;
    }
 
-   public void setNewOrModified(boolean newOrModified)
-   {
-   // this.newOrModified = newOrModified;
-   }
-
    public String getCreatePolicyChangedValue()
    {
       return createPolicyChangedValue;
-   }
-
-   public void setCreatePolicyChangedValue(String createPolicyChangedValue)
-   {
-   // this.createPolicyChangedValue = createPolicyChangedValue;
    }
 
    public String getReadPolicyChangedValue()
@@ -240,19 +227,9 @@ public class AccessControlBean extends DefaultRowModel
       return readPolicyChangedValue;
    }
 
-   public void setReadPolicyChangedValue(String readPolicyChangedValue)
-   {
-   // this.readPolicyChangedValue = readPolicyChangedValue;
-   }
-
    public String getModifyPolicyChangedValue()
    {
       return modifyPolicyChangedValue;
-   }
-
-   public void setModifyPolicyChangedValue(String modifyPolicyChangedValue)
-   {
-   // this.modifyPolicyChangedValue = modifyPolicyChangedValue;
    }
 
    public String getDeletePolicyChangedValue()
@@ -260,29 +237,15 @@ public class AccessControlBean extends DefaultRowModel
       return deletePolicyChangedValue;
    }
 
-   public void setDeletePolicyChangedValue(String deletePolicyChangedValue)
-   {
-   // this.deletePolicyChangedValue = deletePolicyChangedValue;
-   }
 
    public String getReadACLPolicyChangedValue()
    {
       return readACLPolicyChangedValue;
    }
 
-   public void setReadACLPolicyChangedValue(String readACLPolicyChangedValue)
-   {
-   // this.readACLPolicyChangedValue = readACLPolicyChangedValue;
-   }
-
    public String getModifyACLPolicyChangedValue()
    {
       return modifyACLPolicyChangedValue;
-   }
-
-   public void setModifyACLPolicyChangedValue(String modifyACLPolicyChangedValue)
-   {
-   // this.modifyACLPolicyChangedValue = modifyACLPolicyChangedValue;
    }
 
    public boolean isSelectedRow()

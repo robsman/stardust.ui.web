@@ -238,11 +238,11 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 			<ice:commandLink value="#{views_common_msgPropsBean['common.edit']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
-				actionListener="#{row.editClicked}" style="padding-right:15px;" >
+				actionListener="#{row.editClicked}" style="padding-right:15px;" onclick="Event.stop(event);" partialSubmit="true" immediate="true">
 				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsEdit" standAlone="false"/>
 			</ice:commandLink>	
 			<ice:commandLink value="#{views_common_msgPropsBean['common.remove']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
-				actionListener="#{securityDialog.removeRole}" style="padding-right:15px;" >
+				actionListener="#{securityDialog.removeRole}" style="padding-right:15px;" onclick="Event.stop(event);" partialSubmit="true" immediate="true">
 				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsRemove" standAlone="false"/>
 				<f:attribute name="acb" value="#{row}" />
 			</ice:commandLink>	
