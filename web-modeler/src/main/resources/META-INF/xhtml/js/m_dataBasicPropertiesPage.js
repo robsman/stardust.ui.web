@@ -260,7 +260,10 @@ define(
 						try {
 							var dateValue = view.timestampInputText.val();
 							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
-							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj);
+							if (!m_utils.isEmptyString(dateFomat)) {
+								dateFomat += ' 00:00:00:000';
+							}
 							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
 							$scope.timestampInputTextError = false;
 						} catch(e){
