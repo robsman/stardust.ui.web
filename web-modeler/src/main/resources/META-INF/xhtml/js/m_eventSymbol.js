@@ -563,10 +563,11 @@ define(
 						//Boundary Intermediate event
 						if (hitSymbol != null
 								&& hitSymbol.type == m_constants.ACTIVITY_SYMBOL) {
-							m_utils.debug("Add boundary");
+							m_utils.debug("Add boundary event");
+							
 							var coordinates = hitSymbol.getNextAvailableSlot();
 							
-							if (coordinates.x < 20) {
+							if (coordinates.x < 50) {
 								this.state = m_constants.SYMBOL_PREPARED_STATE;
 								m_messageDisplay
 										.showErrorMessage("Activity symbol needs to be repositioned.");
@@ -575,9 +576,6 @@ define(
 								this.diagram.mode = this.diagram.NORMAL_MODE
 								return;
 							}
-
-							this.x = coordinates.x;
-							this.y = coordinates.y;
 							
 							this.bindActivity(hitSymbol);
 							this.modelElement.interrupting = true;
@@ -630,8 +628,21 @@ define(
 				};
 
 				EventSymbol.prototype.postComplete = function() {
+					//binding adjustments
 					if (this.bindingActivitySymbol) {
-						this.bindingActivitySymbol.adjustWidth(false, true);
+						var changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent();
+						var activityWidthChange = this.bindingActivitySymbol.adjustWidth(false, true);
+						
+						if (activityWidthChange) {
+							changeDescriptions.push(activityWidthChange);
+						}
+						
+						if (changeDescriptions.length > 0) {
+							var command = m_command.createUpdateDiagramCommand(
+									this.diagram.model.id, changeDescriptions);
+							command.sync = true;
+							m_commandsController.submitCommand(command);
+						}
 					}
 					this.select();
 					this.diagram.showEditable(this.text);
@@ -689,12 +700,12 @@ define(
 
 				EventSymbol.prototype.remove = function() {
 					if (this.modelElement.isBoundaryEvent()) {
-						this.resolveNonHierarchicalRelationships();
 						if (null != this.bindingActivitySymbol) {
 							var currentBindingActSymbol = this.bindingActivitySymbol;
 							var wasExtremeLeftSymbol = this.unbindActivity(currentBindingActSymbol);
 
 							var changesDesc = [];
+							
 							if (!wasExtremeLeftSymbol) {
 								changesDesc = currentBindingActSymbol.realignBoundaryEvent();
 							}
@@ -739,8 +750,6 @@ define(
 				 * 
 				 */
 				EventSymbol.prototype.handleIntermediateEvent = function() {
-					this.resolveNonHierarchicalRelationships();
-					
 					var action = this.identifyAction();
 					var hitSymbol = this.diagram.getSymbolOverlappingWithSymbol(this);
 					
@@ -749,71 +758,49 @@ define(
 					switch(action)
 					{
 					case "NORMAL_DRAG":
+						m_utils.debug("normal drag....");
 						changeDescriptions.push(this.dragStopBase(false));
 						break;
 
 					case "REORDER":
-						m_utils
-								.removeItemFromArray(
-										this.bindingActivitySymbol.boundaryEventSymbols,
-										this);
-						this.bindingActivitySymbol.boundaryEventSymbols
-								.push(this);
-
-						changeDescriptions = this.bindingActivitySymbol
-								.realignBoundaryEvent();
+						m_utils.debug("reordering intermediate events....");
+						this.unbindActivity(this.bindingActivitySymbol);
+						this.bindActivity(hitSymbol);
+						changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent();
 						break;
 
 					case "BIND":
+						m_utils.debug("binding intermediate events....");
 						var coordinates = hitSymbol.getNextAvailableSlot();
-
 						if (!this.checkPosition(coordinates)) {
 							return null;
 						}
-
+						
+						// bind activity
 						this.bindActivity(hitSymbol);
-						this.x = coordinates.x;
-						this.y = coordinates.y;
-						this.moveTo(this.x - this.clientSideAdjX, this.y);
-
-						var changesDesc = {
-							oid : this.oid,
-							changes : {
-								"x" : this.x + this.parentSymbol.symbolXOffset,
-								"y" : this.y,
-								"parentSymbolId" : this.parentSymbol.id,
-								"modelElement" : {
-									bindingActivityUuid : this.modelElement.bindingActivityUuid
-								}
-							}
-						};
-
-						changeDescriptions.push(changesDesc);
-
-						var activityWidthChange = this.bindingActivitySymbol
-								.adjustWidth(true, true);
+						changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent(this);
+						
+						// adjust activity width
+						var activityWidthChange = this.bindingActivitySymbol.adjustWidth(true, true);
 						if (activityWidthChange) {
 							changeDescriptions.push(activityWidthChange);
 						}
 						break;
 
 					case "UNBIND":
+						m_utils.debug("unbinding intermediate events....");
 						var unbindingChangesDesc = this.dragStopBase(false);
 						if (unbindingChangesDesc == null) {
 							return null;
 						}
 
 						var currentBindingActSymbol = this.bindingActivitySymbol;
-
-						var wasExtremeLeftSymbol = this
-								.unbindActivity(currentBindingActSymbol);
+						// unbind activity
+						var wasExtremeLeftSymbol = this.unbindActivity(currentBindingActSymbol);
 						if (!wasExtremeLeftSymbol) {
-							changeDescriptions = currentBindingActSymbol
-									.realignBoundaryEvent();
+							changeDescriptions = currentBindingActSymbol.realignBoundaryEvent();
 						}
-
 						var unbindingChanges;
-
 						if (m_constants.ERROR_EVENT_CLASS == this.modelElement.eventClass) {
 							unbindingChanges = {
 								bindingActivityUuid : null,
@@ -830,62 +817,48 @@ define(
 						unbindingChangesDesc.changes["modelElement"] = unbindingChanges;
 						changeDescriptions.push(unbindingChangesDesc);
 
-						var activityWidthChange = currentBindingActSymbol
-								.adjustWidth(true, false);
+						// adjust activity width
+						var activityWidthChange = currentBindingActSymbol.adjustWidth(true, false);
 						if (activityWidthChange) {
 							changeDescriptions.push(activityWidthChange);
 						}
 						break;
 
 					case "UNBIND_BIND":
-						var currentBindingActSymbol = this.bindingActivitySymbol;
+						m_utils.debug("unbinding intermediate events....");
 						var coordinates = hitSymbol.getNextAvailableSlot();
-
 						if (!this.checkPosition(coordinates)) {
 							return null;
 						}
+						
+						var currentBindingActSymbol = this.bindingActivitySymbol;
 
 						// unbinding
-						var wasExtremeLeftSymbol = this
-								.unbindActivity(currentBindingActSymbol);
+						var wasExtremeLeftSymbol = this.unbindActivity(currentBindingActSymbol);
 						if (!wasExtremeLeftSymbol) {
-							changeDescriptions = currentBindingActSymbol
-									.realignBoundaryEvent();
+							// realign boundary Events
+							changeDescriptions = currentBindingActSymbol.realignBoundaryEvent();
 						}
-
-						// binding
-						this.x = coordinates.x;
-						this.y = coordinates.y;
-
-						this.bindActivity(hitSymbol);
-
-						this.moveTo(this.x - this.clientSideAdjX, this.y);
-
-						var bindingChanges = {
-							oid : this.oid,
-							changes : {
-								"x" : this.x + this.parentSymbol.symbolXOffset,
-								"y" : this.y,
-								"parentSymbolId" : this.parentSymbol.id,
-								"modelElement" : {
-									bindingActivityUuid : this.modelElement.bindingActivityUuid
-								}
-							}
-						};
-
-						changeDescriptions.push(bindingChanges);
-
-						var unbindingActWidth = currentBindingActSymbol
-								.adjustWidth(true, false);
+						
+						// adjust activity width
+						var unbindingActWidth = currentBindingActSymbol.adjustWidth(true, false);
 						if (unbindingActWidth) {
 							changeDescriptions.push(unbindingActWidth);
 						}
 
-						var bindingActWidth = this.bindingActivitySymbol
-								.adjustWidth(true, true);
+						// binding
+						m_utils.debug("binding intermediate events....");
+						this.bindActivity(hitSymbol);
+						
+						// realign boundary events
+						changeDescriptions = changeDescriptions.concat(hitSymbol.realignBoundaryEvent(this));
+
+						// adjust activity width
+						var bindingActWidth = this.bindingActivitySymbol.adjustWidth(true, true);
 						if (bindingActWidth) {
 							changeDescriptions.push(bindingActWidth);
 						}
+						
 						break;
 
 					default:
@@ -898,12 +871,12 @@ define(
 						return null;
 					}
 				};
-
+				
 				/**
 				 * 
 				 */
 				EventSymbol.prototype.checkPosition = function(coordinates){
-					if (coordinates.x < 20) {
+					if (coordinates.x < 50) {
 						m_messageDisplay
 								.showErrorMessage("Activity symbol needs to be repositioned.");
 						return false;
@@ -911,7 +884,6 @@ define(
 					return true;
 				};
 				
-
 				/**
 				 * identify user action in case intermediate
 				 * event
@@ -941,44 +913,32 @@ define(
 				};
 				
 				/**
-				 * 
+				 *  bind the event to activity
 				 */
 				EventSymbol.prototype.bindActivity = function(bindingActivitySymbol) {
-					if (!m_utils.isItemInArray(
-							bindingActivitySymbol.boundaryEventSymbols, this)) {
-
-						bindingActivitySymbol.boundaryEventSymbols.push(this);
-
-						this.bindingActivitySymbol = bindingActivitySymbol;
-
-						this.modelElement
-								.bindWithActivity(bindingActivitySymbol.modelElement);
+					this.bindingActivitySymbol = bindingActivitySymbol;
+					this.modelElement.bindWithActivity(bindingActivitySymbol.modelElement);
+					bindingActivitySymbol.insertBoundaryEvent(this);
+				};
+				
+				/**
+				 * unbind the event to an activity
+				 */
+				EventSymbol.prototype.unbindActivity = function(bindingActivitySymbol) {
+					var index = bindingActivitySymbol.boundaryEventSymbols.indexOf(this);
+					var wasExtremeLeftSymbol = false;
+					if ((bindingActivitySymbol.boundaryEventSymbols.length - 1) == index) {
+						wasExtremeLeftSymbol = true;
 					}
+					m_utils.removeItemFromArray(bindingActivitySymbol.boundaryEventSymbols, this);
+					this.bindingActivitySymbol = null;
+					this.modelElement.unbindFromActivity(bindingActivitySymbol.modelElement);
+					return wasExtremeLeftSymbol;
 				};
 				
 				/**
 				 * 
 				 */
-				EventSymbol.prototype.unbindActivity = function(bindingActivitySymbol) {
-					// unbind the event from existing activity
-					var index = bindingActivitySymbol.boundaryEventSymbols
-							.indexOf(this);
-					var wasExtremeLeftSymbol = false;
-					if ((bindingActivitySymbol.boundaryEventSymbols.length - 1) == index) {
-						wasExtremeLeftSymbol = true;
-					}
-
-					m_utils.removeItemFromArray(
-							bindingActivitySymbol.boundaryEventSymbols, this);
-
-					this.bindingActivitySymbol = null;
-
-					this.modelElement
-							.unbindFromActivity(bindingActivitySymbol.modelElement);
-
-					return wasExtremeLeftSymbol;
-				};
-				
 				EventSymbol.prototype.supportSnapping = function(content) {
 					return !this.modelElement.isBoundaryEvent();
 				};

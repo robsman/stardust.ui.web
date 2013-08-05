@@ -361,10 +361,6 @@ define(
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
-
-//					for ( var n = 0, length = this.boundaryEventSymbols.length; n < length; ++n) {
-//						this.boundaryEventSymbols[n].bindActivity(this);
-//					}
 				};
 
 				/**
@@ -767,7 +763,7 @@ define(
 				 */
 				ActivitySymbol.prototype.adjustWidth = function(returnChanges, add) {
 					if (this.boundaryEventSymbols) {
-						var requiredWidth = this.boundaryEventSymbols.length * 45;
+						var requiredWidth = (this.boundaryEventSymbols.length + 1) * 45;
 						requiredWidth = requiredWidth < m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH ? m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH
 								: requiredWidth;
 
@@ -800,14 +796,40 @@ define(
 				};
 
 				/**
+				 * insert Boundary event into an boundaryEventSymbols considering the x attribute
+				 */
+				ActivitySymbol.prototype.insertBoundaryEvent = function(
+						symbolTobeInserted) {
+					
+					if (m_utils.isItemInArray(this.boundaryEventSymbols, symbolTobeInserted)) {
+						return boundaryEventSymbols.indexOf(symbolTobeInserted);
+					}
+					
+					this.boundaryEventSymbols.push(symbolTobeInserted);
+					
+					var length = this.boundaryEventSymbols.length;
+					
+					for (var i=0; i < length; i++) {
+				        var eventSymbol = this.boundaryEventSymbols[i];
+				        
+						for ( var j = i - 1; j > -1 && this.boundaryEventSymbols[j].x < eventSymbol.x; j--) {
+				        	this.boundaryEventSymbols[j+1] = this.boundaryEventSymbols[j];
+				        }
+						
+				        this.boundaryEventSymbols[j+1] = eventSymbol;
+				    }
+					return this.boundaryEventSymbols.indexOf(symbolTobeInserted);
+				};
+				
+				/**
 				 *
 				 */
-				ActivitySymbol.prototype.realignBoundaryEvent = function(){
+				ActivitySymbol.prototype.realignBoundaryEvent = function(bindingEventSymbol){
 					var x = this.x + this.width - m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 					var eventSymbol;
 					var changeDesc;
 					var changeDescriptions = [];
-					var newGeometry;
+					var changes;
 					
 					var y = this.y + this.height - m_constants.EVENT_DEFAULT_RADIUS;
 
@@ -817,16 +839,22 @@ define(
 						
 						eventSymbol.moveTo(x, y);	
 						
-						newGeometry = {
+						changes = {
 							"x" : x - eventSymbol.clientSideAdjX
 									+ eventSymbol.parentSymbol.symbolXOffset,
 							"y" : y,
 							"parentSymbolId" : eventSymbol.parentSymbol.id,
 						};
 
+						if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {
+							changes["modelElement"] = {
+								bindingActivityUuid : this.modelElement.id
+							};
+						}
+
 						changeDesc = {
 							oid : eventSymbol.oid,
-							changes : newGeometry
+							changes : changes
 						};
 
 						changeDescriptions.push(changeDesc);
