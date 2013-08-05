@@ -126,7 +126,7 @@ if (!window["BridgeUtils"]) {
 					var href = window.location.href.substr(0, window.location.href.indexOf('/main.html'));
 					href += '/ipp/common/ippPortalLogout.jsp';
 					window.location.replace(href);
-				}, 300);
+				}, 800);
 			}
 		}
 
@@ -1528,8 +1528,6 @@ if (!window["BridgeUtils"].FrameManager) {
 					if (contentFrame.src != "about:blank") {
 						contentFrame.src = "about:blank";
 					}
-
-					contentFrame.setAttribute("isClosing", "true");
 
 					BridgeUtils.log("Scheduling delayed iFrame Closing = " + contentId);
 					window.setTimeout(function() {
