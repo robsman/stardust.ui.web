@@ -163,7 +163,7 @@ define(
 					transferObject.subprocessMarkerIcon = null;
 					transferObject.boundaryEvents = null;
 					transferObject.viewManager = null;
-
+					transferObject.boundaryEventSymbols = null;
 					return transferObject;
 				};
 
@@ -362,6 +362,9 @@ define(
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
 
+//					for ( var n = 0, length = this.boundaryEventSymbols.length; n < length; ++n) {
+//						this.boundaryEventSymbols[n].bindActivity(this);
+//					}
 				};
 
 				/**
