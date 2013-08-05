@@ -17,7 +17,6 @@ var docWidth = 0, docHeight = 0;
 function restoreTiffIframe(iframeId, anchorId) {
 	var divObj = document.getElementById('tiffViewerIframe');
 	var topValue = 0, leftValue = 0;
-
 	while (divObj) {
 		leftValue += divObj.offsetLeft;
 		topValue += divObj.offsetTop;
@@ -39,7 +38,11 @@ function restoreTiffIframe(iframeId, anchorId) {
 		}
 		this.parent.window.BridgeUtils.FrameManager.resizeAndReposition(
 				iframeId, {
-					anchorId : anchorId
+					anchorId : anchorId,
+					canvasWidth : docWidth,
+					canvasHeight : docHeight,
+					width : docWidth,
+					height : docHeight
 				});
 	}
 }
