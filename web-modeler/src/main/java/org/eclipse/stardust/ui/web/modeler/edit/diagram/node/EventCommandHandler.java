@@ -261,6 +261,7 @@ public class EventCommandHandler
                      }
                   }
                }
+               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, eventSymbol);
                parentLaneSymbol.getIntermediateEventSymbols().remove(eventSymbol);
             }
          }
