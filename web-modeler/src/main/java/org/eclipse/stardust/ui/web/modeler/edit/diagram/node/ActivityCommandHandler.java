@@ -37,6 +37,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
@@ -112,6 +113,8 @@ public class ActivityCommandHandler
 
       synchronized (model)
       {
+         ModelElementEditingUtils.deleteEventSymbols(activity, parentLaneSymbol);
+         
          ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
                activitySymbol);
          ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
@@ -122,12 +125,10 @@ public class ActivityCommandHandler
 
          parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
       }
-
    }
 
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
-
 }
