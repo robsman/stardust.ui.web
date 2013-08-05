@@ -70,6 +70,7 @@ public class PortalApplicationSingleViewEventScript implements Serializable
          ArrayList<String> closeDialogScripts = new ArrayList<String>();
          
          ArrayList<String> restOfTheScripts = new ArrayList<String>();
+         ArrayList<String> endScripts = new ArrayList<String>();
 
          Iterator<String> it = StringUtils.split(scripts, "\n");
          while (it.hasNext())
@@ -98,6 +99,11 @@ public class PortalApplicationSingleViewEventScript implements Serializable
             else if (script.contains("parent.BridgeUtils.Dialog.close"))
             {
                addScript(closeDialogScripts, script);
+            }
+            else if (script.contains("parent.BridgeUtils.showAlert") || script.contains("parent.BridgeUtils.logout")
+                  || !script.contains("parent.BridgeUtils."))
+            {
+               addScript(endScripts, script);
             }
             else
             {
@@ -132,6 +138,7 @@ public class PortalApplicationSingleViewEventScript implements Serializable
          allScripts.append(toStringBuffer(openDialogScripts));
          allScripts.append(toStringBuffer(restOfTheScripts));
          allScripts.append(toStringBuffer(closeViewScripts));
+         allScripts.append(toStringBuffer(endScripts));
 
          scripts = allScripts.toString();
       }

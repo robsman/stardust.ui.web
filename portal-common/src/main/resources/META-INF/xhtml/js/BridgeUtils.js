@@ -121,9 +121,12 @@ if (!window["BridgeUtils"]) {
 			if (force == undefined || !force) {
 				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "logout", Math.floor(Math.random()*10000)+1);
 			} else {
-				var href = window.location.href.substr(0, window.location.href.indexOf('/main.html'));
-				href += '/ipp/common/ippPortalLogout.jsp';
-				window.location.replace(href);
+				// Wait for some time so that iFrame will be removed
+				window.setTimeout(function(){
+					var href = window.location.href.substr(0, window.location.href.indexOf('/main.html'));
+					href += '/ipp/common/ippPortalLogout.jsp';
+					window.location.replace(href);
+				}, 300);
 			}
 		}
 
@@ -1045,7 +1048,8 @@ if (!window["BridgeUtils"].FrameManager) {
 
 			var openContentFrames = new Array();
 		    doWithContentFrame(null, function(contentFrame) {
-			if ('true' != contentFrame.getAttribute('noUnloadWarning')) {
+		    	if ('true' != contentFrame.getAttribute('noUnloadWarning') ||
+		    			'true' != contentFrame.getAttribute('isClosing')) {
 				openContentFrames.push(contentFrame.getAttribute('name'));
 			}
 		    });
@@ -1524,6 +1528,8 @@ if (!window["BridgeUtils"].FrameManager) {
 					if (contentFrame.src != "about:blank") {
 						contentFrame.src = "about:blank";
 					}
+
+					contentFrame.setAttribute("isClosing", "true");
 
 					BridgeUtils.log("Scheduling delayed iFrame Closing = " + contentId);
 					window.setTimeout(function() {

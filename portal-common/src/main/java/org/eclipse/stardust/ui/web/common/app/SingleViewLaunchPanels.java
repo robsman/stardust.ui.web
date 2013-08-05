@@ -202,6 +202,8 @@ public class SingleViewLaunchPanels implements InitializingBean
          }
          else
          {
+            portalApp.printOpenViews();
+
             script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
             trace.warn("Not all Views got closed successully. Cannot logout...");
          }
