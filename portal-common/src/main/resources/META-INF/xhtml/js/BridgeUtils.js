@@ -1048,8 +1048,10 @@ if (!window["BridgeUtils"].FrameManager) {
 
 			var openContentFrames = new Array();
 		    doWithContentFrame(null, function(contentFrame) {
-		    	if ('true' != contentFrame.getAttribute('noUnloadWarning') ||
-		    			'true' != contentFrame.getAttribute('isClosing')) {
+		    	if ('true' == contentFrame.getAttribute('noUnloadWarning') ||
+		    			'true' == contentFrame.getAttribute('isClosing')) {
+		    		// Ignore frame
+		    	} else {
 				openContentFrames.push(contentFrame.getAttribute('name'));
 			}
 		    });
