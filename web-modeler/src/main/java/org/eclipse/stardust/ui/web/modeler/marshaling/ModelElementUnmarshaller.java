@@ -43,10 +43,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
-import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -289,18 +286,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (hasNotJsonNull(activityJson, ModelerConstants.TASK_TYPE))
          {
-            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
-                  activityJson.get(ModelerConstants.TASK_TYPE).getAsString());
+            String taskType = activityJson.get(ModelerConstants.TASK_TYPE).getAsString();
+            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE, taskType);
 
-            if (activityJson.get(ModelerConstants.TASK_TYPE)
-                  .getAsString()
-                  .equals(ModelerConstants.NONE_TASK_KEY))
+            if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
             {
                activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
             }
-            else if (activityJson.get(ModelerConstants.TASK_TYPE)
-                  .getAsString()
-                  .equals(ModelerConstants.MANUAL_TASK_KEY))
+            else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
             {
                activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
             }
@@ -308,17 +301,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
             }
-         }
-
-         if (hasNotJsonNull(activityJson, ModelerConstants.PARTICIPANT_FULL_ID))
-         {
-            String participantFullId = extractString(activityJson,
-                  ModelerConstants.PARTICIPANT_FULL_ID);
-
-            IModelParticipant performer = getModelBuilderFacade().findParticipant(
-                  participantFullId);
-
-            activity.setPerformer(performer);
          }
 
          if (hasNotJsonNull(activityJson, ModelerConstants.APPLICATION_FULL_ID_PROPERTY))
@@ -333,7 +315,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.ACTIVITY_TYPE)))
          {
             activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
-            activity.setPerformer(null);
 
             if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_ID))
             {
@@ -363,6 +344,21 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                      activity.setSubProcessMode(SubProcessModeType.SYNC_SHARED_LITERAL);
                   }
                }
+            }
+         }
+         
+         JsonElement participantIdJson = activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID);
+         if (participantIdJson != null)
+         {
+            if (participantIdJson.isJsonNull())
+            {
+               activity.setPerformer(null);
+            }
+            else if (participantIdJson.isJsonPrimitive() && participantIdJson.getAsJsonPrimitive().isString())
+            {
+               String participantFullId = participantIdJson.getAsString();
+               IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
+               activity.setPerformer(performer);
             }
          }
       }
