@@ -802,14 +802,14 @@ define(
 
 					for ( var tableRow in tableRows) {
 						var rowId = tableRows[tableRow].path
-								.replace(/\./g, "-");
+								.replace(/[:<>\.]/g, "-");
 
 						var content = "<tr id=\""
 								+ rowId
 								+ "\" "
 								+ (tableRows[tableRow].parentPath != null ? ("class=\"child-of-"
 										+ tableRows[tableRow].parentPath
-												.replace(/\./g, "-") + "\"")
+												.replace(/[:<>\.]/g, "-") + "\"")
 										: "") + ">";
 
 						content += "<td class='elementCell'>";
@@ -1026,7 +1026,7 @@ define(
 							m_utils.jQuerySelect(
 									"#targetTable #"
 											+ this.outputTableRows[n].path
-													.replace(/\./g, "-")
+													.replace(/[:<>\.]/g, "-")
 											+ " .data-element").addClass(
 									"highlighted");
 						}
@@ -1059,7 +1059,7 @@ define(
 							m_utils.jQuerySelect(
 									"#sourceTable #"
 											+ this.inputTableRows[n].path
-													.replace(/\./g, "-")
+													.replace(/[:<>\.]/g, "-")
 											+ " .data-element").addClass(
 									"highlighted");
 						}
@@ -1215,7 +1215,7 @@ define(
 				MessageTransformationApplicationView.prototype.populateMappingCell = function(outputTableRow) {
 					var maxLength = 35;
 
-					var rowId = outputTableRow.path.replace(/\./g, "-");
+					var rowId = outputTableRow.path.replace(/[:<>\.]/g, "-");
 					var mappingCell = m_utils.jQuerySelect("#targetTable tr#" + rowId + " .mappingCell");
 					var trimmedString = (outputTableRow.mappingExpression != null && outputTableRow.mappingExpression.length) > maxLength ?
 											outputTableRow.mappingExpression.substring(0, maxLength - 3) + "..." :
@@ -1240,7 +1240,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.showMappingError = function(
 						path, errors) {
-					var rowId = path.replace(/\./g, "-");
+					var rowId = path.replace(/[:<>\.]/g, "-");
 					var problemCell = m_utils.jQuerySelect("#targetTable tr#" + rowId + " .problemCell");
 					var mappingCell = m_utils.jQuerySelect("#targetTable tr#" + rowId + " .mappingCell");
 
@@ -1373,11 +1373,11 @@ define(
 					tableBody.empty();
 
 					for (var tableRow in tableRows) {
-						var rowId = tableRows[tableRow].path.replace(/\./g, "-");
+						var rowId = tableRows[tableRow].path.replace(/[:<>\.]/g, "-");
 
 						var content = '<tr id="' + rowId + '" '
 								+ (tableRows[tableRow].parentPath != null ?
-										('class="child-of-' + tableRows[tableRow].parentPath .replace(/\./g, "-") + '"') : '')
+										('class="child-of-' + tableRows[tableRow].parentPath .replace(/[:<>\.]/g, "-") + '"') : '')
 								+ '>';
 
 						content += '<td>';
