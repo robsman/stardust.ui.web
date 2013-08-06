@@ -169,6 +169,7 @@ define(
 
 					// Timestamp handling
 					this.timestampInputText = m_utils.jQuerySelect("#TimestampInputText");
+					this.timestampInputText.get(0).id = "TimestampInputText" + Math.floor((Math.random()*10000) + 1);
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 

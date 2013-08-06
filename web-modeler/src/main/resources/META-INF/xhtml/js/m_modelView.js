@@ -94,8 +94,7 @@ define(
 				m_utils.jQuerySelect("label[for='validFromDate']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.modelView.validFrom"));
-				m_utils.jQuerySelect("#validFromDate").datepicker();
+										.getProperty("modeler.propertyView.modelView.validFrom"));				
 
 			}
 			/**
@@ -123,6 +122,8 @@ define(
 					this.creationDateOutput = m_utils.jQuerySelect("#creationDateOutput");
 					this.lastModificationDateOutput = m_utils.jQuerySelect("#lastModificationDateOutput");
 					this.validFromDate = m_utils.jQuerySelect("#validFromDate");
+					this.validFromDate.get(0).id = "validFromDate" + Math.floor((Math.random()*10000) + 1);
+					this.validFromDate.datepicker();
 
 					m_utils.jQuerySelect("#modelTabs").tabs();
 
