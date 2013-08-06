@@ -49,9 +49,9 @@ define(
 					this.additionalBeanSpecificationTextarea = m_utils.jQuerySelect("#genericEndpointOverlay #additionalBeanSpecificationTextarea");
 
 					this.invocationPatternInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationPatternInput");
-					this.invocationPatternInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
-						.getProperty("None") + "</option>");
-					this.invocationPatternInput.append("<option value=\"send\">" + m_i18nUtils
+				//	this.invocationPatternInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
+				//		.getProperty("None") + "</option>");
+					this.invocationPatternInput.append("<option value=\"send\" selected>" + m_i18nUtils
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.send") + "</option>");
 					this.invocationPatternInput.append("<option value=\"sendReceive\">" + m_i18nUtils
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.sendReceive") + "</option>");
