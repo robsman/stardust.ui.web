@@ -32,7 +32,7 @@ import org.eclipse.stardust.modeling.validation.IModelElementValidator;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationException;
 
-import com.infinity.bpm.thirdparty.emf.common.util.URI;
+import org.eclipse.emf.common.util.URI;
 
 public class StructuredDataValidator implements IModelElementValidator
 {
