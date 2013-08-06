@@ -2248,7 +2248,7 @@ define(
 								return false;
 							}
 						} else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
-							if ((fromAnchorPoint.symbol.type != m_constants.DATA_SYMBOL && fromAnchorPoint.symbol.type != m_constants.EVENT_SYMBOL)
+							if ((fromAnchorPoint.symbol.type != m_constants.DATA_SYMBOL)
 									&& !toAnchorPoint.symbol
 											.validateCreateConnection(this)) {
 								m_messageDisplay

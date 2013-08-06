@@ -710,31 +710,34 @@ define(
 							}
 						}
 					}
+					
+					//to keep single incoming and outgoing connection to/from an activity
 					// When rerouting happens, connection is not present in
 					// this.connections, check the validation rules with symbol
 					// connections list
-					if (conn != null && conn.oid > 0) {
+					if (conn != null) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
-							if (conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL
-									&& conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL
+									&& conn.toAnchorPoint && conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
 								if (conn.fromAnchorPoint
 										&& conn.fromAnchorPoint.symbol) {
 									if (this.oid == conn.fromAnchorPoint.symbol.oid) {
 										return (-1 == jQuery.inArray(
 												conn.fromAnchorPoint.symbol.oid,
-												outMappingActivity))
+												outMappingActivity));
 									}
 								}
 								if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
 									if (this.oid == conn.toAnchorPoint.symbol.oid) {
 										return (-1 == jQuery.inArray(
 												conn.toAnchorPoint.symbol.oid,
-												inMappingActivity))
+												inMappingActivity));
 									}
 								}	
 							}
 						}
 					}
+					
 					return true;
 				};
 
