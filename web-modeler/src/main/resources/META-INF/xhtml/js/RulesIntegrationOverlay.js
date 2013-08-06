@@ -176,9 +176,15 @@ define(
 										.findTypeDeclarationBySchemaName(type);
 
 								if (!childTypeDeclaration) {
+									if (element.cardinality == "many") {
+										drl += "   " + element.name
+										+ ": java.util.ArrayList;\n";
+									}
+									else{
 									drl += "   " + element.name + ": "
 											+ self.mapXsdTypeToJava(element.type)
 											+ ";\n";
+									}
 								} else {
 									if (element.cardinality == "many") {
 										drl += "   " + element.name
