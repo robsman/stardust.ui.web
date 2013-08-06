@@ -134,8 +134,16 @@ public class PortalApplicationSingleViewEventScript implements Serializable
          allScripts.append(toStringBuffer(iframeCloseScripts));
          allScripts.append(toStringBuffer(openViewScripts));
          allScripts.append(toStringBuffer(iframeCreateScripts));
-         allScripts.append(toStringBuffer(closeDialogScripts));
-         allScripts.append(toStringBuffer(openDialogScripts));
+         if (!closeDialogScripts.isEmpty() && !openDialogScripts.isEmpty())
+         {
+            // Prevent closing and re-creating launchPanel iframe when one dialog closes
+            // and other opens
+         }
+         else
+         {
+            allScripts.append(toStringBuffer(closeDialogScripts));
+            allScripts.append(toStringBuffer(openDialogScripts));
+         }
          allScripts.append(toStringBuffer(restOfTheScripts));
          allScripts.append(toStringBuffer(closeViewScripts));
          allScripts.append(toStringBuffer(endScripts));

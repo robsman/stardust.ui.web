@@ -883,7 +883,7 @@ if (!window["BridgeUtils"].Dialog) {
 	
 				// Sidebar
 				iframeForSidebar.style.visibility = "hidden";
-	
+				var currLaunchPanelIframe = null;
 				// Sidebar And View
 				if (launchPanelIframe) {
 					launchPanelIframe.setAttribute("class", launchPanelIframeOrgData.clazz);
@@ -892,6 +892,9 @@ if (!window["BridgeUtils"].Dialog) {
 					
 					// Sidebar Title
 					jQuery(".sidebar-title").get(0).style.display = "";
+					// store the launchPanel iframe for refresh after closing popup
+					currLaunchPanelIframe = launchPanelIframe;
+					
 				} else {
 					// Show Sidebar
 					var sidebar = document.getElementById("sidebar");
@@ -901,7 +904,7 @@ if (!window["BridgeUtils"].Dialog) {
 				if (!sidebarPinned) {
 					BridgeUtils.View.unpinSidebar();
 				}
-
+				
 				invokedFromlaunchPanels = undefined;
 				sidebarPinned = undefined;
 				launchPanelIframe = undefined;
@@ -909,8 +912,25 @@ if (!window["BridgeUtils"].Dialog) {
 
 				popupDialogDiv.parentNode.removeChild(popupDialogDiv);
 				popupDialogDiv = undefined;
-
+				
 				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
+				// TODO - Review if this is the ideal approach when multiple
+				// Popups open from launchPanel in sequence
+				if(currLaunchPanelIframe){
+					// When new popup opens on action of existing popup from
+					// LaunchPanel, portalSingleViewLaunchPanelsOnly.iface needs
+					// to be reloaded
+					var launchSrc=currLaunchPanelIframe.getAttribute("src");
+					currLaunchPanelIframe.setAttribute("src",'about:blank');
+					window.setTimeout(function(){
+						if(launchSrc.indexOf('?') > 0){
+							launchSrc = launchSrc.substr(0,launchSrc.indexOf('?'));	
+							}
+						
+						launchSrc += '?random=' + Math.floor(Math.random() * 100000) + 1;
+						currLaunchPanelIframe.setAttribute("src",launchSrc);
+					},200);	
+				}
 			}
 		}
 
