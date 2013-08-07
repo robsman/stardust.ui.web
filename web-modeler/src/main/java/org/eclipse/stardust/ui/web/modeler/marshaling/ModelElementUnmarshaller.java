@@ -1507,14 +1507,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                        && EventMarshallingUtils.resolveHostedEvents(hostActivity).isEmpty())
                   {
                      // delete incoming transition connections
-                     ModelElementEditingUtils.deleteTransitions(hostActivity.getInTransitions());
+                     ModelElementEditingUtils.deleteIdentifiables(hostActivity.getInTransitions());
                      
                      // delete associated activity
                      if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                      {
                         if (newHostActivity != null)
                         {
-                           ModelElementEditingUtils.deleteTransitions(CollectionUtils.intersect(
+                           ModelElementEditingUtils.deleteIdentifiables(CollectionUtils.intersect(
                                  hostActivity.getOutTransitions(), newHostActivity.getInTransitions()));
                         }
                         containingProcess.getActivity().remove(hostActivity);

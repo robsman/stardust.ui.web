@@ -111,8 +111,7 @@ public class DataCommandHandler
       {
          if(dataSymbol != null)
          {
-            ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-                  dataSymbol.getDataMappings().iterator());
+            ModelElementEditingUtils.deleteDataMappingConnection(dataSymbol.getDataMappings());
             data.getDataSymbols().remove(dataSymbol);
             processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
             parentLaneSymbol.getDataSymbol().remove(dataSymbol);

@@ -30,7 +30,6 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -296,16 +295,13 @@ public class DataChangeCommandHandler
             {
                for (LaneSymbol childLaneSymbol : poolSymbol.getChildLanes())
                {
-                  Iterator<DataSymbolType> iter = childLaneSymbol.getDataSymbol()
-                        .iterator();
+                  Iterator<DataSymbolType> iter = childLaneSymbol.getDataSymbol().iterator();
                   while (iter.hasNext())
                   {
                      DataSymbolType dataSymbol = iter.next();
                      if (dataId.equals(dataSymbol.getData().getId()))
                      {
-                        ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(dataSymbol);
-                        ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-                              dataSymbol.getDataMappings().iterator());
+                        ModelElementEditingUtils.deleteDataMappingConnection(dataSymbol.getDataMappings());
                         iter.remove();
                      }
                   }

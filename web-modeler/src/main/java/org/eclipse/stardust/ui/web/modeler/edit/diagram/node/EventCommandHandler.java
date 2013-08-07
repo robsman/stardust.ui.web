@@ -24,8 +24,6 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
-import java.util.Collections;
-
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -194,7 +192,7 @@ public class EventCommandHandler
                processDefinition.getTrigger().remove(trigger);
             }
 
-            ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, startEventSymbol);
+            ModelElementEditingUtils.deleteTransitionConnections(startEventSymbol);
             processDefinition.getDiagram()
                   .get(0)
                   .getStartEventSymbols()
@@ -227,8 +225,7 @@ public class EventCommandHandler
                            if (match.equals(transition.getCondition()))
                            {
                               // this deletes corresponding transition connections too
-                              ModelElementEditingUtils.deleteTransitions(
-                                    Collections.singletonList(transition));
+                              ModelElementEditingUtils.deleteIdentifiable(transition);
                               break;
                            }
                         }
@@ -240,7 +237,7 @@ public class EventCommandHandler
                }
                else
                {
-                  ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, eventSymbol);
+                  ModelElementEditingUtils.deleteTransitionConnections(eventSymbol);
                   processDefinition.getDiagram()
                         .get(0)
                         .getIntermediateEventSymbols()
@@ -261,7 +258,7 @@ public class EventCommandHandler
                      }
                   }
                }
-               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, eventSymbol);
+               ModelElementEditingUtils.deleteTransitionConnections(eventSymbol);
                parentLaneSymbol.getIntermediateEventSymbols().remove(eventSymbol);
             }
          }
@@ -271,7 +268,7 @@ public class EventCommandHandler
                   eventOId);
             if (endEventSymbol != null)
             {
-               ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endEventSymbol);
+               ModelElementEditingUtils.deleteTransitionConnections(endEventSymbol);
                processDefinition.getDiagram()
                      .get(0)
                      .getEndEventSymbols()

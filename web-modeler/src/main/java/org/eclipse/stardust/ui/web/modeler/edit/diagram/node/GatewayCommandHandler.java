@@ -95,8 +95,7 @@ public class GatewayCommandHandler
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {
-         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition,
-               gatewaySymbol);
+         ModelElementEditingUtils.deleteTransitionConnections(gatewaySymbol);
 
          processDefinition.getActivity().remove(gateway);
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(gatewaySymbol);

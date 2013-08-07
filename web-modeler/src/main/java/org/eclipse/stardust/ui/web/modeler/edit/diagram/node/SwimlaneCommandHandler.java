@@ -22,26 +22,18 @@ import java.util.Iterator;
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -72,7 +64,7 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         LaneSymbol laneSymbol = getModelBuilderFacade().createLane(model,
+         getModelBuilderFacade().createLane(model,
                processDefinition, participantFullID, null, laneName, orientation, xPos, yPos,
                width, height, parentSymbol);
 
@@ -151,9 +143,8 @@ public class SwimlaneCommandHandler
       while (actIter.hasNext())
       {
          ActivitySymbolType activitySymbol = actIter.next();
-         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, activitySymbol);
-         ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-               activitySymbol.getDataMappings().iterator());
+         ModelElementEditingUtils.deleteTransitionConnections(activitySymbol);
+         ModelElementEditingUtils.deleteDataMappingConnection(activitySymbol.getDataMappings());
          processDefinition.getActivity().remove(activitySymbol.getModelElement());
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
          actIter.remove();
@@ -163,7 +154,7 @@ public class SwimlaneCommandHandler
       while (endIter.hasNext())
       {
          EndEventSymbol endSymbol = endIter.next();
-         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, endSymbol);
+         ModelElementEditingUtils.deleteTransitionConnections(endSymbol);
          processDefinition.getDiagram().get(0).getEndEventSymbols().remove(endSymbol);
          endIter.remove();
       }
@@ -172,7 +163,7 @@ public class SwimlaneCommandHandler
       while (startIter.hasNext())
       {
          StartEventSymbol startSymbol = startIter.next();
-         ModelElementEditingUtils.deleteTransitionConnectionsForSymbol(processDefinition, startSymbol);
+         ModelElementEditingUtils.deleteTransitionConnections(startSymbol);
          processDefinition.getDiagram().get(0).getStartEventSymbols().remove(startSymbol);
          startIter.remove();
       }
