@@ -82,7 +82,7 @@ define(
 					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 								.create({
-									scope : "parametersTab",
+									scope : "messageEvent",
 									submitHandler : this,
 									supportsOrdering : true,
 									supportsDataMappings : true,

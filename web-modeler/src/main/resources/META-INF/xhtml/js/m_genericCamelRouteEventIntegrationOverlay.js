@@ -74,7 +74,7 @@ define(
 					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
-								scope : "parametersTab",
+								scope : "genericCamelRouteEvent",
 								submitHandler : this,
 								supportsOrdering : true,
 								supportsDataMappings : true,
