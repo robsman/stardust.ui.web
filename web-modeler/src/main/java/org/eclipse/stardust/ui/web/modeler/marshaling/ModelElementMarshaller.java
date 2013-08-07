@@ -916,27 +916,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             break;
          case APPLICATION_LITERAL:
             ApplicationType application = getApplication(activity);
-            if (application.isInteractive())
+            if (application != null)
             {
-               taskType = ModelerConstants.USER_TASK_KEY;
-            }
-            else
-            {
-               ApplicationTypeType applicationType = application.getType();
-               String typeId = applicationType.getId();
-               if (typeId.equals("messageTransformationBean")
-            		   || typeId.equals("camelSpringProducerApplication"))
+               if (application.isInteractive())
                {
-                  taskType = ModelerConstants.SCRIPT_TASK_KEY;
+                  taskType = ModelerConstants.USER_TASK_KEY;
                }
-               else if (typeId.equals("rulesEngineBean"))
+               else
                {
-                  taskType = ModelerConstants.RULE_TASK_KEY;
-               }
-               else if (typeId.equals("jms")
-                     && !applicationType.isSynchronous())
-               {
-                  taskType = ModelerConstants.RECEIVE_TASK_KEY;
+                  ApplicationTypeType applicationType = application.getType();
+                  String typeId = applicationType.getId();
+                  if (typeId.equals("messageTransformationBean")
+               		   || typeId.equals("camelSpringProducerApplication"))
+                  {
+                     taskType = ModelerConstants.SCRIPT_TASK_KEY;
+                  }
+                  else if (typeId.equals("rulesEngineBean"))
+                  {
+                     taskType = ModelerConstants.RULE_TASK_KEY;
+                  }
+                  else if (typeId.equals("jms")
+                        && !applicationType.isSynchronous())
+                  {
+                     taskType = ModelerConstants.RECEIVE_TASK_KEY;
+                  }
                }
             }
             break;
