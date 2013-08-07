@@ -86,7 +86,9 @@ define(
 									});
 
 					// Timestamp handling
-					this.timestampInputText = m_utils.jQuerySelect("#TimestampInputText");
+					// ** like query is used in the jquery selector as the id gets updated and
+					// properties panels are re-initialized on tab change. **
+					this.timestampInputText = m_utils.jQuerySelect("[id^='TimestampInputText']");
 					this.timestampInputText.get(0).id = "TimestampInputText" + Math.floor((Math.random()*10000) + 1);
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
