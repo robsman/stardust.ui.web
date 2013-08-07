@@ -210,6 +210,7 @@ define(
 				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.internationalizeLabels = function() {
+					this.processInterfaceTypeSelectInput.empty();
 					this.processInterfaceTypeSelectInput.append("<option value='" + m_constants.NO_PROCESS_INTERFACE_KEY + "'>" + m_i18nUtils.getProperty("modeler.processdefinition.propertyPages.processInterface.type.noProcessInterface") + "</option>" );
 					this.processInterfaceTypeSelectInput.append("<option value='" + m_constants.PROVIDES_PROCESS_INTERFACE_KEY + "'>"
 									+ m_i18nUtils

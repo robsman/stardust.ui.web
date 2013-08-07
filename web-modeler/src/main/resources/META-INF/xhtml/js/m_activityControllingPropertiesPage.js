@@ -95,15 +95,15 @@ define(
 										.getProperty("modeler.activity.propertyPages.controlling.header"));
 
 				this.resourcePerformanceCalculationSelect = m_utils.jQuerySelect("#resourcePerformanceCalculationSelect");
-
+				this.resourcePerformanceCalculationSelect.empty();
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.included");
-				resourcePerformanceCalculationSelect
+				this.resourcePerformanceCalculationSelect
 						.append("<option value=\"included\">" + selectdata
 								+ "</option>");
 				selectdata = m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.resourcePerformanceCalculationSelect.notIncluded");
-				resourcePerformanceCalculationSelect
+				this.resourcePerformanceCalculationSelect
 						.append("<option value=\"notIncluded\">" + selectdata
 								+ "</option>");
 			}

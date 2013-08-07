@@ -110,6 +110,8 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.activity.propertyPages.general.task"));
+					
+					this.taskTypeList.empty();
 					this.taskTypeList
 							.append("<option value='none'>"
 									+ m_i18nUtils

@@ -160,6 +160,7 @@ define(
 				 */
 				EventIntegrationOverlay.prototype.initializeIntervalUnitSelect = function(
 						select) {
+					select.empty();
 					select
 							.append("<option value='1'>"
 									+ m_i18nUtils
