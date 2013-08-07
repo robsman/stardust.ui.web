@@ -49,11 +49,13 @@ public class EventMarshallingUtils
    public static void tagAsIntermediateEventHost(ActivityType activity)
    {
       AttributeUtil.setBooleanAttribute(activity, TAG_INTERMEDIATE_EVENT_HOST, true);
+      activity.setHibernateOnCreation(true);
    }
 
    public static void unTagAsIntermediateEventHost(ActivityType activity)
    {
       AttributeUtil.clearExcept(activity, new String[]{TAG_INTERMEDIATE_EVENT_HOST});
+      activity.setHibernateOnCreation(false);      
    }
 
    /**
