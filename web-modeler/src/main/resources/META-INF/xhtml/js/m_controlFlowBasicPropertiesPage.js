@@ -29,18 +29,18 @@ define(
 			 *
 			 */
 			function ControlFlowBasicPropertiesPage(propertiesPanel) {
-				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
+				this.propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPage);
+				m_utils.inheritFields(this, this.propertiesPage);
 				m_utils.inheritMethods(
 						ControlFlowBasicPropertiesPage.prototype,
-						propertiesPage);
+						this.propertiesPage);
 
 				/**
 				 * Override base class PropertiesPage#show() method so that codeEditor.refresh() can be called
 				 */
 				ControlFlowBasicPropertiesPage.prototype.show = function() {
-					propertiesPage.show();
+					this.propertiesPage.show();
 
 					// TODO - ace code editor doesn't have refresh at present
 					//this.conditionExpressionInputEditor.refresh();
@@ -57,9 +57,8 @@ define(
 					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
 					
-					this.conditionExpressionDiv = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #conditionExpressionDiv").get(0);
-					var rdmId = "expressionText" + Math.floor((Math.random()*100000) + 1) + "Div";
-					this.conditionExpressionDiv.id = "#" + this.propertiesPanel.id + " #" + rdmId;
+					this.conditionExpressionDiv = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " [id^='conditionExpressionDiv']").get(0);
+					this.conditionExpressionDiv.id = "conditionExpressionDiv" + Math.floor((Math.random()*100000) + 1);
 
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
