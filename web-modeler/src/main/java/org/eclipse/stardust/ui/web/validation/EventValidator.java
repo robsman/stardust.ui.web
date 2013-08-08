@@ -21,6 +21,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.modeling.validation.IModelElementValidator;
@@ -70,7 +71,8 @@ public class EventValidator implements IModelElementValidator
       String condition = TransitionBean.ON_BOUNDARY_EVENT_PREDICATE + "(" + eventHandlerId + ")";
       for (TransitionType t : outTransitions)
       {
-         if (condition.equals(t.getCondition()))
+         String expression = getExpression(t);
+         if (expression != null && condition.equals(expression))
          {
             return t;
          }
@@ -78,6 +80,13 @@ public class EventValidator implements IModelElementValidator
       return null;
    }
    
+   private String getExpression(TransitionType transition)
+   {
+      XmlTextNode type = transition.getExpression();
+      String expression = type == null ? null : ModelUtils.getCDataString(transition.getExpression().getMixed());
+      return expression;
+   }
+      
    private void checkBoundaryEventsConsistency(List<EventHandlerType> eventHandlers, final List<Issue> issues)
    {
       ActivityType activity = null;
