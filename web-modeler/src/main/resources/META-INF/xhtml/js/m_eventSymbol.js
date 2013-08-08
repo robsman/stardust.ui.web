@@ -510,7 +510,7 @@ define(
 								&& conn.toAnchorPoint.symbol.oid == this.oid) {
 							if (conn.fromAnchorPoint
 									&& conn.fromAnchorPoint.symbol
-									&& (m_constants.START_EVENT_TYPE == this.modelElement.eventType)) {
+									&& (m_constants.START_EVENT_TYPE == conn.fromAnchorPoint.symbol.modelElement.eventType)) {
 								m_messageDisplay
 										.showMessage("Invalid connection...");
 								return false;

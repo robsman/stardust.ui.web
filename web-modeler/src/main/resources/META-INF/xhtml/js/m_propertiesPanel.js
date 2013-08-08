@@ -146,7 +146,9 @@ define(
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
 					var extensions = {};
-
+					
+					var propertiesPanel = m_utils.jQuerySelect("#" + this.id + " #propertiesPagesCell");
+					
 					for ( var n = 0; n < propertiesPages.length; n++) {
 						var extension = propertiesPages[n];
 
@@ -171,8 +173,7 @@ define(
 									+ extension.id
 									+ "\" class=\"propertiesPage\"></div>");
 
-							m_utils.jQuerySelect("#" + this.id + " #propertiesPagesCell")
-									.append(pageDiv);
+							propertiesPanel.append(pageDiv);
 
 							// TODO this variable may be overwritten in the
 							// loop, find mechanism to pass data to load

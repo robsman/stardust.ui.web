@@ -513,7 +513,7 @@ define(
 							// checks if the activated view has actually been dispalyed (display: block)
 							// before re-initializing the properties panel 
 							m_utils.executeTimeoutLoop(function() {
-								self.initializePropertiesPanels();
+								self.clearCurrentSelection();
 								require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
 							}, 20, 50, function() {
 								return "block" == self.canvas.parents("[ng-repeat='panel in panels']").css("display")	
