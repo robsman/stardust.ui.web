@@ -804,7 +804,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       if(refreshViewer)
       {
          fireRefreshViewerInvoked();
-         PortalApplication.getInstance().updateViewKey(thisView, "documentOID=" + documentContentInfo.getId());
+         // Refresh the view to update the view params for FileSystem resource
+         PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
       }
    }
 
