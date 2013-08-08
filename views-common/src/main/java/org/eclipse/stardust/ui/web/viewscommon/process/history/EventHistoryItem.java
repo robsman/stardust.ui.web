@@ -11,13 +11,15 @@
 package org.eclipse.stardust.ui.web.viewscommon.process.history;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.dto.EventActionDetails;
+import org.eclipse.stardust.engine.api.dto.EventHandlerDetails;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionDelegation;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionStateChange;
@@ -26,7 +28,9 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 
 public class EventHistoryItem extends AbstractProcessHistoryTableEntry
@@ -38,6 +42,8 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
     */
    public static final String DELEGATION_TYPE = "Delegate";
    public static final String EXCEPTION_TYPE = "Exception";
+   public static final String EVENT_EXCEPTION_TYPE = "EventException";
+   public static final String EVENT_TIMER_TYPE = "EventTimer";
    public static final String NOTE_TYPE = "Note";
    public static final String RESUBMISSION_TYPE = "Resubmission";
    public static final String ACTIVITY_ACTIVE_TYPE = "ActivityActive";
@@ -88,6 +94,46 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          name = Localizer.getString(LocalizerKey.PH_EXCEPTION_TYPE);
          fullDetail = (String) event.getDetails();
          break;
+         
+      case HistoricalEventType.EVENT_EXECUTION:
+         EventHandlerDetails ehd = (EventHandlerDetails) event.getDetails();
+         StringBuffer detailsB = new StringBuffer();
+
+         // Event details
+         detailsB.append("Event Handler: " + I18nUtils.getLabel(ehd, ehd.getName()));
+         
+         //actions
+         @SuppressWarnings("rawtypes")
+         List actions = ehd.getAllEventActions();
+         String actionstr = "";
+         MessagesViewsCommonBean msb = MessagesViewsCommonBean.getInstance();
+         for (Object obj : actions)
+         {
+            EventActionDetails ead = (EventActionDetails) obj;
+            actionstr += msb.getString("processHistory.activityTable.eventExecution."+ ead.getId()) + ", ";
+         }
+         if (StringUtils.isNotEmpty(actionstr))
+         {
+            actionstr = actionstr.substring(0, actionstr.length() - 2);
+            detailsB.append("<BR>Actions: " + actionstr);
+         }
+         
+         //exception if applicable
+         @SuppressWarnings("rawtypes")
+         Map attributes = ehd.getAllAttributes();
+         if (attributes != null && attributes.containsKey("carnot:engine:exceptionName"))
+         {
+            detailsB.append("<BR>Exception: " + attributes.get("carnot:engine:exceptionName"));
+            type = EVENT_EXCEPTION_TYPE;
+            name = Localizer.getString(LocalizerKey.PH_EVENT_EXCEPTION_TYPE);
+         }
+         else
+         {
+            type = EVENT_TIMER_TYPE;
+            name = Localizer.getString(LocalizerKey.PH_EVENT_TIMER_TYPE);
+         }
+         fullDetail = detailsB.toString();
+         break;   
 
       case HistoricalEventType.NOTE:
          type = NOTE_TYPE;
@@ -141,7 +187,8 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          break;
       }
 
-      if (fullDetail != null && fullDetail.length() > 30)
+      if (fullDetail != null && fullDetail.length() > 100
+            && eventType.getValue() != HistoricalEventType.EVENT_EXECUTION)
       {
          detail = fullDetail.substring(0, 29) + " ... ";
       }

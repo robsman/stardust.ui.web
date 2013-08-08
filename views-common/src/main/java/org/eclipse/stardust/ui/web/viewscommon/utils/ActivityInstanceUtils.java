@@ -82,6 +82,8 @@ public class ActivityInstanceUtils
       iconMap.put("Auxiliary", "activity_auxiliary.png");
       iconMap.put("Delegate", "delegate.png");
       iconMap.put("Exception", "exception.png");
+      iconMap.put("EventException", "event_exception.png");
+      iconMap.put("EventTimer", "clock.png");
       iconMap.put("ActivityCompleted", "activity_completed.png");
       iconMap.put("StateChange", "activity_state.png");
       iconMap.put("ProcessInstance", "processrootblue.png");
