@@ -1629,6 +1629,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          EventMarshallingUtils.updateEventHostingConfig(hostActivity, eventSymbol, hostingConfig);
+         if (null != eventHandler)
+         {         
+            EventMarshallingUtils.bindEvent(eventHandler, eventSymbol);
+         }         
       }
    }
 
