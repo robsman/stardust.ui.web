@@ -858,21 +858,24 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    private void renderJsfActivitySession()
    {
-      try
+      if (thisView.getViewState() != ViewState.CLOSED)
       {
-         Object beanObject = getBackingBeanForJsfActivity();
-         if (null != beanObject)
+         try
          {
-            String sessionRendererId = (String)ReflectionUtils.invokeMethod(beanObject, "getSessionRendererId");
-            if (StringUtils.isNotEmpty(sessionRendererId))
+            Object beanObject = getBackingBeanForJsfActivity();
+            if (null != beanObject)
             {
-               SessionRendererHelper.render(sessionRendererId);
+               String sessionRendererId = (String)ReflectionUtils.invokeMethod(beanObject, "getSessionRendererId");
+               if (StringUtils.isNotEmpty(sessionRendererId))
+               {
+                  SessionRendererHelper.render(sessionRendererId);
+               }
             }
          }
-      }
-      catch (Exception e)
-      {
-         trace.error("Error in rendering JSF Activity session", e);
+         catch (Exception e)
+         {
+            trace.error("Error in rendering JSF Activity session", e);
+         }
       }
    }
 
@@ -3103,7 +3106,10 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void renderSession()
    {
-      PortalApplication.getInstance().renderPortalSession();
+      if (thisView.getViewState() != ViewState.CLOSED)
+      {
+         PortalApplication.getInstance().renderPortalSession();
+      }
    }
 
    public static String getDocumentIcon(String fileName, String contentType)
