@@ -178,6 +178,21 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
     */
    public String getEventScripts()
    {
+      // If request is a partial submit then ignore
+      try
+      {
+         String partialSubmit = (String) FacesContext.getCurrentInstance().getExternalContext()
+               .getRequestParameterMap().get("ice.submit.partial");
+         if (syncLaunchPanels && "true".equals(partialSubmit))
+         {
+            syncLaunchPanels = false;
+         }
+      }
+      catch (Exception e)
+      {
+         // Ignore
+      }
+
       String scripts = singleViewEventScript.getEventScripts(syncLaunchPanels);
       scripts = PortalApplicationSingleViewEventScript.wrapIntoRunScript(scripts);
       trace.info("SingleApp_View:getEventScripts():\n" + scripts);
