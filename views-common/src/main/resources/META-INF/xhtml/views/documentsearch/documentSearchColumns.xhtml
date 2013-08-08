@@ -103,7 +103,7 @@
 				<ice:commandButton
 					image="/plugins/views-common/images/icons/page_attach.png"
 					actionListener="#{documentSearchBean.attachDocumentsToProcess}"
-					title="#{documentSearchBean.messages['documentSearchTable.attachToProcess']}">
+					title="#{documentSearchBean.messages['documentSearchTable.attachToProcess']}" onclick="Event.stop(event);">
 					<pc:automationTag
 						value="auto-COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc" standAlone="false" />
 					<f:attribute name="row" value="#{row}" />
@@ -113,7 +113,7 @@
 					<ice:commandButton
 						image="/plugins/views-common/images/icons/page_white_put.png"
 						actionListener="#{documentSearchBean.downloadDocument}"
-						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.downloadFile']}">
+						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.downloadFile']}" onclick="Event.stop(event);">
 						<pc:automationTag
 							value="auto-COM-SrchDoc-DocSrchTbl-ActionsDownload"
 							standAlone="false" />
@@ -123,7 +123,7 @@
 					<ice:commandButton
 						image="/plugins/views-common/images/icons/book_open.png"
 						actionListener="#{documentSearchBean.documentVersionHistory}"
-						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.versionHistory']}">
+						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.versionHistory']}" onclick="Event.stop(event);">
 						<pc:automationTag
 							value="auto-COM-SrchDoc-DocSrchTbl-ActionsVersionHistory"
 							standAlone="false" />
