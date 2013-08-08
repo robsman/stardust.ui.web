@@ -24,9 +24,13 @@
       
       <conf name="ipp-business-control-center-sources" description="Business Control Center - Sources" />
 
-      <conf name="compile" extends="ipp-business-control-center-compile,ipp-business-control-center-provided" visibility="private" description="Business Control Center" />
-            
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-business-control-center-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-business-control-center-compile" />
+      <conf name="runtime" visibility="private" extends="ipp-business-control-center-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
 
       <conf name="pom" description="Business Control Center POMs" />
    </configurations>
@@ -55,13 +59,10 @@
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="ipp-business-control-center-provided->jsf-api-module-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-business-control-center-provided->default" />
       <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-business-control-center-provided->default" />
-
-      <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
-
-      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
-      <override org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
-      <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
-      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
+      <!-- test -->
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
    </dependencies>
 </ivy-module>

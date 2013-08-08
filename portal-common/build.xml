@@ -93,7 +93,7 @@
       <ivy:resolve file="${icefaces-conf.xml}" conf="*" keep="true"/>
       <ivy:deliver deliverpattern="${build.lib}/icefaces-ivy-conf.xml" />
       <ivy:publish srcivypattern="${icefaces-conf.xml}" conf="*" resolver="buildenv" merge="false"
-         organisation="com.infinity.bpm" module="icefaces-impl" overwrite="true" haltonmissing="true"/>
+         organisation="org.eclipse.stardust.ui.web" module="icefaces-impl" overwrite="true" haltonmissing="true"/>
    </target>
    
    <target name="initClasspath" depends="init.ivy, publish.icefaces"
@@ -203,7 +203,7 @@
       <delete file="${build.lib}/${ipp-portal.warfile}"/>
    </target>
 
-   <target name="deploy" depends="build" />
+   <target name="deploy" depends="build, dependencies:report" />
 
    <target name="initMoonglowHome" unless="moonglow.home">
       <property name="moonglow.home" value="${project.dir}/../../../moonglow" />
@@ -252,4 +252,10 @@
          </fileset>
       </copy>
    </target>
+
+   <target name="dependencies:report" depends="init,init.ivy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
 </project>

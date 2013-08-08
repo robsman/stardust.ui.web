@@ -24,9 +24,13 @@
       
       <conf name="ipp-workflow-perspective-sources" description="Process Portal - Sources" />
       
-      <conf name="compile" extends="ipp-workflow-perspective-compile,ipp-workflow-perspective-provided" visibility="private" description="Process Portal" />
-
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-workflow-perspective-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-workflow-perspective-compile" />
+      <conf name="runtime" visibility="private" extends="ipp-workflow-perspective-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
       
       <conf name="pom" description="Process Portal POMs" />
    </configurations>
@@ -64,11 +68,10 @@
       <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-workflow-perspective-provided->default" />
    
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
 
-      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
-      <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
-      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
-      <conflict org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
    </dependencies>
 </ivy-module>

@@ -19,7 +19,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true">
 		<ippui:preferences>
 			<ippui:preferencePage name="helpDocumentation"
-				include="/plugins/doc/handbooks/execution-clients/pp_renovated/process-portal.html" />
+				include="/plugins/doc/portal/handbooks/execution-clients/pp_renovated/process-portal.html" />
 			<ippui:preferencePage name="configuration" include="/plugins/processportal/workflowExecutionConfiguration.xhtml" />
 		</ippui:preferences>
 

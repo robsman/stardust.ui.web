@@ -140,6 +140,8 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
       if (StringUtils.isNotEmpty(messenger.getContent().trim()))
       {
          String content = cleanMessage(messenger.getContent());
+         // Replace with <br/>, to maintain multiline msg entered on TextArea
+         content = content.replaceAll("(\r\n|\n)", "<br />");
          ChatMessage cMsg = new ChatMessage(UserUtils.getUserDisplayLabel(user), chatRoom.getUsersIndex(user), content);
          chatRoom.addChatMessages(cMsg);
          messenger.setContent("");
@@ -285,8 +287,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
 
       // Check for string with only '\n'
       String checkString = chatEntry.replaceAll("<br />", "");
-      checkString = chatEntry.replaceAll("\r", "");
-      checkString = checkString.replaceAll("\n", "");
+      
       checkString = checkString.replaceAll("&nbsp;", " ");
 
       if (checkString.trim().length() != 0)

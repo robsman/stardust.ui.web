@@ -20,9 +20,12 @@
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
       <conf name="stardust-web-modeler-runtime" extends="stardust-web-modeler-compile" description="Web Modeler - Runtime Scope" />
 
-      <conf name="compile" extends="stardust-web-modeler-compile" visibility="private" description="Compile Time Dependencies" />
-
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="compile" visibility="private" extends="stardust-web-modeler-compile" />
+      <conf name="runtime" visibility="private" extends="stardust-web-modeler-runtime" />
+      <conf name="all" visibility="private" extends="compile, runtime, test" />
 
       <conf name="pom" description="PDL Modeler - POMs" />
    </configurations>
@@ -60,18 +63,20 @@
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-views-common-compile"/>
 
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}" conf="stardust-web-modeler-compile->default">
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
          <exclude org="commons-lang" module="commons-lang" />
          <exclude org="commons-digester" module="commons-digester"/>
          <exclude org="commons-logging" module="commons-logging"/>
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
+      <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="stardust-web-modeler-compile->default"/>
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-compile->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-compile->default"/>
       <!-->dependency org="org.apache.httpcomponents" name="httpclient" rev="${commons-httpclient.version}" conf="stardust-web-modeler-compile->default"/-->
-      <dependency org="org.atmosphere" name="atmosphere-runtime" rev="${atmosphere-runtime.version}" conf="stardust-web-modeler-compile->default">
-         <exclude org="org.slf4j" module="slf4j-api"/>
-      </dependency>
 
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default"/>
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
    </dependencies>
 </ivy-module>

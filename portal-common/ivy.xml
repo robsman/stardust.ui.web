@@ -39,6 +39,12 @@
       <conf name="compile" extends="ipp-portal-common-compile, ipp-portal-common-provided" visibility="private" description="IPP Portal Common" />
    
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="all-provided" visibility="private" extends="ipp-portal-common-provided" />
+      <conf name="all-compile" visibility="private" extends="all-provided,ipp-portal-common-compile,jsf-api-module-compile,jsf-myfaces-module-compile" />
+      <conf name="all-runtime" visibility="private" extends="ipp-portal-common-runtime,ipp-portal-base-lib-module-runtime,jsf-myfaces-module-runtime" />
+      <conf name="all" visibility="private" extends="all-provided, all-compile, all-runtime, test" />
       
       <conf name="pom" description="IPP Portal Common POMs" />
       <conf name="module-pom" description="Nirvana Module JSF POMs" />
@@ -69,9 +75,15 @@
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />
       <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->spring-module-runtime" />
       <dependency org="backport-util-concurrent" name="backport-util-concurrent" rev="${backport-util-concurrent.version}" conf="ipp-portal-common-runtime->default" />
-      <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-common-runtime->default" />
+      <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-common-runtime->default">
+         <exclude org="commons-logging" module="commons-logging" />
+      </dependency>
       <dependency org="commons-collections" name="commons-collections" rev="${commons-collections.version}" conf="ipp-portal-common-runtime->default" />
-      <dependency org="commons-digester" name="commons-digester" rev="${commons-digester.version}" conf="ipp-portal-common-runtime->default" />
+      <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="ipp-portal-common-runtime->default" />
+      <dependency org="commons-digester" name="commons-digester" rev="${commons-digester.version}" conf="ipp-portal-common-runtime->default">
+         <exclude org="commons-beanutils" module="commons-beanutils" />
+         <exclude org="commons-logging" module="commons-logging" />
+      </dependency>
       <dependency org="commons-lang" name="commons-lang" rev="${commons-lang.version}" conf="ipp-portal-common-runtime->default" />
       <!-- spring-webmvc contains the DispatcherServlet which is necessary for spring remoting -->
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-common-runtime->default"/>
@@ -84,30 +96,60 @@
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}" conf="ipp-portal-common-provided, jsf-api-module-compile, jsf-myfaces-module-compile->default">
          <exclude org="commons-lang" module="commons-lang"/>
          <exclude org="commons-digester" module="commons-digester"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
          <exclude org="commons-logging" module="commons-logging"/>
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
       <!-- force latest revision in jsf-api-module and jsf-myfaces-module -->
+      <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-common-provided, jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       <dependency org="commons-lang" name="commons-lang" rev="${commons-lang.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
-      <dependency org="commons-digester" name="commons-digester" rev="${commons-digester.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
+      <dependency org="commons-digester" name="commons-digester" rev="${commons-digester.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default">
+         <exclude org="commons-logging" module="commons-logging"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+      </dependency>
       <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       <dependency org="javax.servlet" name="jstl" rev="${jstl.version}" conf="jsf-api-module-compile, jsf-myfaces-module-compile->default"/>
       
       <!-- jsf-myfaces-module-runtime -->
       <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="${myfaces-impl.version}" conf="jsf-myfaces-module-runtime->default">
          <exclude org="commons-collections" module="commons-collections"/>
+         <exclude org="commons-el" module="commons-el"/>
+         <exclude org="commons-logging" module="commons-logging"/>
       </dependency>
       <!-- force correct revision in module POM --> 
       <dependency org="commons-collections" name="commons-collections" rev="${commons-collections.version}" conf="jsf-myfaces-module-runtime->default"/>
+      <dependency org="commons-el" name="commons-el" rev="${commons-el.version}" conf="jsf-myfaces-module-runtime->default">
+         <exclude org="commons-logging" module="commons-logging"/>
+      </dependency>
+      <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="jsf-myfaces-module-runtime->default"/>
+         
       <dependency org="com.sun.el" name="el-ri" rev="${el-ri.version}" conf="jsf-myfaces-module-runtime->default" />
       
       <!-- ipp-portal-base-lib-module-runtime: any modification results in a change of the WEB-INF/lib folder and therefore configure must be adjusted -->      
       <dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.servlet" module="jstl"/>
+         <exclude org="commons-logging" module="commons-logging"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+         <exclude org="commons-digester" module="commons-digester"/>
+         <exclude org="commons-lang" module="commons-lang"/>
       </dependency>
       <dependency org="org.apache.myfaces.core" name="myfaces-impl" rev="${myfaces-impl.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="commons-codec" module="commons-codec"/>
+         <exclude org="commons-el" module="commons-el"/>
+         <exclude org="commons-collections" module="commons-collections"/>
+         <exclude org="commons-logging" module="commons-logging"/>
       </dependency>      
+      <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="commons-collections" name="commons-collections" rev="${commons-collections.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="commons-lang" name="commons-lang" rev="${commons-lang.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="commons-digester" name="commons-digester" rev="${commons-digester.version}" conf="ipp-portal-base-lib-module-runtime->default">
+         <exclude org="commons-logging" module="commons-logging"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+      </dependency>
+      <dependency org="commons-el" name="commons-el" rev="${commons-el.version}" conf="ipp-portal-base-lib-module-runtime->default">
+         <exclude org="commons-logging" module="commons-logging"/>
+      </dependency>
       
       <dependency org="org.icepdf" name="icepdf-core" rev="${icepdf-core.version}" transitive="false" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-base-lib-module-runtime->jcr-vfs-module-runtime">
@@ -128,25 +170,26 @@
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.springframework" name="spring-web" transitive="false" rev="${spring-web.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="org.apache.geronimo.specs" name="geronimo-ejb_2.1_spec" transitive="false" rev="${geronimo-ejb_2.1_spec.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="commons-discovery" name="commons-discovery" rev="${commons-discovery.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
-      <dependency org="javax.media" name="jai_imageio-infinity01" rev="${jai_imageio.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
+      <dependency org="commons-discovery" name="commons-discovery" rev="${commons-discovery.version}" conf="ipp-portal-base-lib-module-runtime->default">
+         <exclude org="commons-logging" module="commons-logging"/>
+      </dependency>
+      
+      <dependency org="com.sun.media" name="jai_imageio" rev="${jai_imageio.version}" conf="ipp-portal-base-lib-module-runtime->default">
+         <exclude org="javax.media" module="jai_core" />
+      </dependency>
       <dependency org="net.sourceforge.htmlcleaner" name="htmlcleaner" rev="${htmlcleaner.version}" conf="ipp-portal-base-lib-module-runtime->default" />      
       <dependency org="backport-util-concurrent" name="backport-util-concurrent" rev="${backport-util-concurrent.version}" conf="ipp-portal-base-lib-module-runtime->default" />
       
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
       <dependency org="org.springframework" name="spring-test" transitive="false" rev="${spring-test.version}" conf="test->default" />
 
       <exclude org="commons-fileupload" module="commons-fileupload" conf="ipp-portal-base-lib-module-runtime"/>
       <exclude org="commons-httpclient" module="commons-httpclient" conf="ipp-portal-base-lib-module-runtime"/>
       <exclude org="commons-codec" module="commons-codec" conf="ipp-portal-base-lib-module-runtime"/>
-      
-      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
-      <override org="commons-digester" module="commons-digester" rev="${commons-digester.version}" />
-      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
-      <override org="commons-lang" module="commons-lang" rev="${commons-lang.version}" />
-      <override org="commons-collections" module="commons-collections" rev="${commons-collections.version}" />
-      <override org="backport-util-concurrent" module="backport-util-concurrent" rev="${backport-util-concurrent.version}"/>
       
    </dependencies>   
 </ivy-module>

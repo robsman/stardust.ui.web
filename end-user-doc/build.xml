@@ -1,0 +1,191 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter 
+    (e.g. antit.bat -Djava.home=C:/Programme/Java16) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+-->
+
+<project name="end-user-doc" default="deploy" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+	<property name="project.dir" location="." />
+	<property name="project.res" location="${project.dir}/src/main/resources" />
+   <property name="styles.dir" location="${project.res}/META-INF/doc/styles" />
+
+   <property name="project.etc" location="${project.dir}/etc" />
+	<property file="${project.etc}/private.properties"/>
+   
+   <property name="artifactId" value="ipp-end-user-doc" />
+
+
+   <import file="../../build.tools/commons-build.xml" />
+
+   <property name="documentation.dir" location="../../documentation" />
+
+	<target name="init">
+		<property name="build.dir" location="${project.dir}/build"/>
+	</target>
+
+	<target name="clean" depends="init" description="removes all build results">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="initBuild" depends="init">
+		<property name="build.lib" location="${build.dir}/lib" />
+		<property name="build.src" location="${build.dir}/src" />
+		<property name="build.src.bpmdoc" location="${build.src}/META-INF/doc/bpm" />
+		<property name="build.src.portaldoc" location="${build.src}/META-INF/doc/portal" />
+
+      <property name="enduser.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.enduser"/>
+      <property name="bpm.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.analyst"/>
+
+		<property name="end.user.doc.jarfile" value="${artifactId}.jar" />
+		<property name="end.user.doc.jar" location="${build.lib}/${end.user.doc.jarfile}" />
+	</target>
+
+	<target name="initBuildDirectories" depends="initBuild">
+		<mkdir dir="${build.lib}"/>
+		<mkdir dir="${build.src}"/>
+		<mkdir dir="${build.src.bpmdoc}"/>
+		<mkdir dir="${build.src.portaldoc}"/>
+	</target>
+
+	<target name="prepareSources" depends="initBuildDirectories">
+
+      <filterset id="filter.product">
+         <filter token="productname" value="${product.productname}" />
+         <filter token="productnameshort" value="${product.productnameshort}" />
+         <filter token="productnameonly" value="${product.productnameonly}" />
+         <filter token="article" value="${product.article}" />
+         <filter token="artup" value="${product.artup}" />
+      </filterset>
+
+      <copy todir="${build.src}/" overwrite="true">
+         <fileset dir="${project.res}">
+            <exclude name="**/styles/**"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+
+      <!-- copy business process modeler doc -->
+      <copy todir="${build.src.bpmdoc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}">
+            <include name="**/*.css"/>
+            <include name="**/*.js"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+      <copy todir="${build.src.bpmdoc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}" includes="images/**"/>
+      </copy>
+      <copy todir="${build.src.bpmdoc}" >
+         <fileset dir="${bpm.doc.path}/html">
+            <include name="**/*.html"/>
+            <include name="**/*.htm"/>
+            <exclude name="**/styles/**"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+      <copy todir="${build.src.bpmdoc}" >
+         <fileset dir="${bpm.doc.path}/html">
+            <include name="**/*.png"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+            <exclude name="**/styles/**"/>
+         </fileset>
+      </copy>
+
+      <!-- copy end user doc -->
+      <copy todir="${build.src.portaldoc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}">
+            <include name="**/*.css"/>
+            <include name="**/*.js"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+      <copy todir="${build.src.portaldoc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}" includes="images/**"/>
+      </copy>
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html">
+            <include name="**/*.html"/>
+            <include name="**/*.htm"/>
+            <exclude name="**/styles/**"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+      <copy todir="${build.src.portaldoc}" >
+         <fileset dir="${enduser.doc.path}/html">
+            <include name="**/*.png"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+            <exclude name="**/styles/**"/>
+         </fileset>
+      </copy>
+	</target>
+
+   <target name="init.ivy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+	<target name="jar" depends="prepareSources">
+		<ipp:jar jarfile="${end.user.doc.jar}" implementationTitle="Infinity Process Engine - End User Documenation">
+			<fileset dir="${build.src}">
+				<include name="**/*.*" />
+			</fileset>
+		</ipp:jar>
+	</target>
+
+   <target name="initPortalWstPluginDir" unless="portal.wst.plugin.dir">
+      <property name="portal.wst.plugin.dir" value="${project.dir}/../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal"/>
+      <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
+   </target>
+   	
+	<target name="build" depends="init.ivy, jar" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${project.dir}/ivy.xml" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
+   </target>
+
+	<target name="dist" depends="build, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
+		<copy todir="${portal.wst.plugin.dir}/lib">
+			<fileset dir="${build.lib}">
+				<include name="${end.user.doc.jarfile}" />
+			</fileset>
+		</copy>
+	</target>
+
+   <target name="deploy" depends="build, dependencies:report"/>
+   
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${end.user.doc.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+      <ipp:mvn-deploy file="${end.user.doc.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <target name="dependencies:report" depends="init,init.ivy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
+</project>
+

@@ -24,8 +24,14 @@
       
       <conf name="ipp-graphics-common-sources" description="Graphics Common - Sources" />
       
-      <conf name="compile" extends="ipp-graphics-common-compile, ipp-graphics-common-provided" visibility="private" description="Graphics Common" />
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-graphics-common-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-graphics-common-compile" />
+      <conf name="runtime" visibility="private" extends="ipp-graphics-common-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
+
       <conf name="pom" description="Graphics Common POMs" />
    </configurations>
 
@@ -52,21 +58,22 @@
          <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
       </dependency>
       <dependency org="org.apache.cxf" name="cxf-rt-core" rev="${cxf-rt-core.version}" conf="ipp-graphics-common-runtime->default" >
+         <exclude org="org.apache.cxf" module="cxf-api" />
          <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
       </dependency>
-      <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-graphics-common-runtime->default" />
+      <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-graphics-common-runtime->default">
+         <exclude org="org.apache.cxf" module="cxf-api" />
+         <exclude org="javax.ws.rs" module="jsr311-api" />
+      </dependency>
       
       <!-- ipp-graphics-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-graphics-common-provided->default" />
       
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
-      
-      <override org="commons-beanutils" module="commons-beanutils" rev="${commons-beanutils.version}" />
-      <override org="commons-logging" module="commons-logging" rev="${commons-logging.version}" />
-      <override org="javax.ws.rs" module="jsr311-api" rev="${jsr311-api.version}" />
-      <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
-      <override org="org.apache.cxf" module="cxf-api" rev="${cxf-api.version}" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />      
    </dependencies>
    
 </ivy-module>

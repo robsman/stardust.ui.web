@@ -19,12 +19,15 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractIn
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
-import static org.eclipse.stardust.ui.web.modeler.service.streaming.JointModellingSessionsController.lookupInviteBroadcaster;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.Future;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -33,7 +36,6 @@ import javax.wsdl.*;
 import javax.wsdl.Service;
 import javax.xml.namespace.QName;
 
-import org.atmosphere.cpr.Broadcaster;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -57,7 +59,31 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.util.*;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -519,114 +545,6 @@ public class ModelService
 
    }
 
-   /**
-    * Invite Mechanism works the following:
-    * 
-    * When the user is logged in any messages can be broadcasted directly to him. The user
-    * recives a broadcast about a notification that he was in invited. He can decide now
-    * if he really wants to join the session or not. It broadcasts a JsonObject to every
-    * user online directly.
-    * 
-    * @param userAccountList
-    *           A list of all invited users provided by the icefaces backing bean
-    * @param sessionOwnerId
-    *           The user who invited everyone in userAccountList
-    */
-   public void requestInvite(List<String> userAccountList, String sessionOwnerId)
-   {
-      JsonObject requestJoinJson = new JsonObject();
-      UserService userService = getUserService();
-      User sessionOwner = userService.getUser(sessionOwnerId);
-      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-
-      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
-
-      requestJoinJson.addProperty("account", sessionOwnerId);
-      requestJoinJson.addProperty("timestamp", System.currentTimeMillis());
-      requestJoinJson.addProperty("path", "/users");
-      requestJoinJson.addProperty("operation", "requestJoin");
-
-      for (String inviteeId : userAccountList)
-      {
-         User invitee = userService.getUser(inviteeId);
-         JsonObject oldObject = new JsonObject();
-         String inviteeUniqueId = ModelingSessionManager.getUniqueId(invitee);
-         if ( !currentSession.participantContainsUser(invitee)
-               && !currentSession.prospectContainsUser(invitee)
-               && !currentSession.isOwner(inviteeUniqueId))
-         {
-            requestJoinJson.addProperty(TYPE_PROPERTY, "REQUEST_JOIN_COMMAND");
-
-            oldObject.addProperty("account", invitee.getAccount());
-            oldObject.addProperty("sessionId", currentSession.getId());
-            oldObject.addProperty("firstName", invitee.getFirstName());
-            oldObject.addProperty("lastName", invitee.getLastName());
-            oldObject.addProperty("email", invitee.getEMail());
-            oldObject.addProperty("imageUrl", "");
-            // newJson.addProperty("modelSession",
-            // sessionManager.currentSession(account).getId());
-            JsonObject newObject = new JsonObject();
-
-            requestJoinJson.add("newObject", newObject);
-            requestJoinJson.add("oldObject", oldObject);
-
-            trace.info(">>>>>>>Created Join Json Object the following way: "
-                  + requestJoinJson.toString());
-
-            Broadcaster inviteBroadcaster = lookupInviteBroadcaster(inviteeId);
-            if ((null != inviteBroadcaster) && (inviteeId != sessionOwnerId))
-            {
-               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to invitee "
-                     + inviteeId);
-               inviteBroadcaster.broadcast(requestJoinJson.toString());
-            }
-            currentSession.inviteUser(invitee);
-
-         }
-         else if ( !currentSession.participantContainsUser(invitee)
-               && currentSession.prospectContainsUser(invitee))
-         {
-            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty(
-                  "errormessage",
-                  "You are trying to invite a user already invited. Please confirm the pending invite or decline it");
-            requestJoinJson.add("newObject", new JsonObject());
-            requestJoinJson.add("oldObject", oldObject);
-
-         }
-         else if (currentSession.participantContainsUser(invitee)
-               && !currentSession.prospectContainsUser(invitee))
-         {
-            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty("errormessage",
-                  "You are trying to invite a user who has already joined the session.");
-            requestJoinJson.add("newObject", new JsonObject());
-            requestJoinJson.add("oldObject", oldObject);
-
-         }
-         else if (currentSession.isOwner(inviteeUniqueId))
-         {
-            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty("errormessage", "You are trying to invite yourself.");
-            requestJoinJson.add("newObject", new JsonObject());
-            requestJoinJson.add("oldObject", oldObject);
-         }
-         else
-         {
-            requestJoinJson.addProperty(TYPE_PROPERTY, "ERROR");
-            oldObject.addProperty("errormessage", "An unknown error occured.");
-            requestJoinJson.add("newObject", new JsonObject());
-            requestJoinJson.add("oldObject", oldObject);
-         }
-
-         Broadcaster ownerBroadcaster = lookupInviteBroadcaster(sessionOwnerId);
-         trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to session owner "
-               + sessionOwnerId);
-         ownerBroadcaster.broadcast(requestJoinJson.toString());
-      }
-
-   }
-
    public String getLoggedInUser(ServletContext context)
    {
       PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(context)
@@ -654,63 +572,6 @@ public class ModelService
       return currentUserJson.toString();
    }
 
-   /**
-    * Uses the ModelingSessionManager to check whether a given user was invited to session
-    * while he was offline. Broadcasts a REQUEST_JOIN_JSON Object back to the requester
-    * specified through the username.
-    * 
-    * @param username
-    * 
-    */
-   public void getOfflineInvites(String username)
-   {
-      UserService us = getUserService();
-      User currentUser = us.getUser(username);
-      List<String> sessionOwners = sessionManager.getUserInvitedToSession(currentUser);
-
-      JsonObject offlineInvite = new JsonObject();
-      JsonObject oldObject = new JsonObject();
-      JsonObject newObject = new JsonObject();
-
-      oldObject.addProperty("account", currentUser.getAccount());
-      oldObject.addProperty("firstName", currentUser.getFirstName());
-      oldObject.addProperty("lastName", currentUser.getLastName());
-      oldObject.addProperty("email", currentUser.getEMail());
-      oldObject.addProperty("imageUrl", "");
-      if ( !sessionOwners.isEmpty())
-      {
-         for (String owner : sessionOwners)
-         {
-            String ownername = unwrapUsername(owner);
-            User sessionOwner = us.getUser(ownername);
-            trace.info(">>>>>>>>>>>>> Session owner " + ownername);
-            offlineInvite.addProperty(TYPE_PROPERTY, "REQUEST_JOIN_COMMAND");
-            offlineInvite.addProperty("account", sessionOwner.getAccount());
-            offlineInvite.addProperty("timestamp", System.currentTimeMillis());
-            offlineInvite.addProperty("path", "/users");
-            offlineInvite.addProperty("operation", "requestJoin");
-            offlineInvite.add("oldObject", oldObject);
-            offlineInvite.add("newObject", newObject);
-
-            Broadcaster b = lookupInviteBroadcaster(username);
-            if (null != b)
-            {
-               trace.info(">>>>>>>>>>>>> Broadcasting Message REQUEST_JOIN_COMMAND to "
-                     + username);
-               Future<String> myFuture = b.broadcast(offlineInvite.toString());
-            }
-            else
-            {
-               trace.info(">>>>>>>>>>>>> Broadcaster null for " + username);
-            }
-         }
-      }
-      else
-      {
-         trace.info(">>>>>>>>>>>>> No current Session found where user" + username
-               + " was invited");
-      }
-   }
 
    private String unwrapUsername(String owner)
    {

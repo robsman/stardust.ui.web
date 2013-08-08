@@ -8,7 +8,7 @@
       <version>9.9.9-SNAPSHOT</version>
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
-   
+
    <groupId>org.eclipse.stardust.ui.web</groupId>
    <artifactId>stardust-web-modeler</artifactId>
    <version>0.0.1-SNAPSHOT</version>
@@ -25,7 +25,7 @@
 -->
 
    <properties>
-      <ipp.version>0.7.1-NIGHTLY-SNAPSHOT</ipp.version>
+      <ipp.version>1.0.0-NIGHTLY-SNAPSHOT</ipp.version>
    </properties>
 
    <dependencyManagement>
@@ -149,21 +149,6 @@
          <scope>test</scope>
       </dependency>
 
-      <dependency>
-         <groupId>org.atmosphere</groupId>
-         <artifactId>atmosphere-runtime</artifactId>
-         <version>${atmosphere-runtime.version}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.slf4j</groupId>
-               <artifactId>slf4j-api</artifactId>
-            </exclusion>
-            <!-- <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat7</artifactId> 
-               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-tomcat</artifactId> 
-               </exclusion> <exclusion> <groupId>org.atmosphere</groupId> <artifactId>atmosphere-compat-jbossweb</artifactId> 
-               </exclusion> -->
-         </exclusions>
-      </dependency>
       <!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
          <version>1.7.4</version> </dependency> -->
 

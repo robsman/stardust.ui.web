@@ -11,14 +11,14 @@
 	 -->
 	<ice:panelGroup>
 		<f:subview>
-			<ice:panelGroup dropTarget="false" style="height: 615px;">
-				<ice:inputRichText language="#{ippPortalApp.localeObject.language}" saveOnSubmit="true" height="500px" skin="silver"
-					toolbar="IppToolbar" immediate="true"
-					customConfigPath="/plugins/views-common/contentmgmt/views/richText/richTextEditor.js"
-					value="#{contentHandler.content}"
+			<ice:panelGroup dropTarget="false">
+				<ice:inputTextarea lang="#{ippPortalApp.localeObject.language}"
+					partialSubmit="true" immediate="true"
+					value="#{contentHandler.content}" style="width:97%;border-color: #AAAAAA;" rows="20"
 					styleClass="content-area">
-					<pc:automationTag value="auto-COM-DocView-RickTextEditor" standAlone="false"/>
-				</ice:inputRichText>
+					<pc:automationTag value="auto-COM-DocView-RickTextEditor"
+						standAlone="false" />
+				</ice:inputTextarea>
 			</ice:panelGroup>
 		</f:subview>
 	</ice:panelGroup>

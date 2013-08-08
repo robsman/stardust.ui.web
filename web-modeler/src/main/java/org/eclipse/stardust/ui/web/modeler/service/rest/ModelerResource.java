@@ -190,7 +190,7 @@ public class ModelerResource
     * Used to push models loaded on the client (e.g. from Orion) into a server-side cache.
     * Switches the model management strategy to <code>clientModelManagementStrategy</code>
     * .
-    * 
+    *
     * @param modelId
     * @param postedData
     * @return
@@ -226,7 +226,7 @@ public class ModelerResource
    /**
     * Temporary, auxiliary service to load a text file. Used to provide access to Orion
     * files from this URL domain.
-    * 
+    *
     * @param path
     * @return
     */
@@ -253,7 +253,7 @@ public class ModelerResource
 
    /**
     * Used by the auxiliary method above only.
-    * 
+    *
     * @param path
     * @return
     */
@@ -368,25 +368,6 @@ public class ModelerResource
       {
          String result = getModelService().getLoggedInUser(servletContext);
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @HEAD
-   @Path("users/getOfflineInvites")
-   public Response getOfflineInvites()
-   {
-      try
-      {
-         PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(
-               servletContext).getBean(PortalApplication.class);
-         org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
-         getModelService().getOfflineInvites(currentUser.getLoginName());
-         return Response.ok().build();
       }
       catch (Exception e)
       {
@@ -878,7 +859,7 @@ public class ModelerResource
    }
 
    /**
-    * 
+    *
     * @return
     */
    private JsonObject getInteractionDataObject()
@@ -1022,7 +1003,7 @@ public class ModelerResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("interactions/{interactionId}/outData")
    /**
-    * This method is not part of the Interaction Protocol, but used to retrieve output data submitted via the protocol from the 
+    * This method is not part of the Interaction Protocol, but used to retrieve output data submitted via the protocol from the
     * server-side state to display those.
     */
    public Response getInteractionOutputData(
@@ -1319,7 +1300,7 @@ public class ModelerResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/parseDrl")
    /**
-    * 
+    *
     */
    public Response parseDrlFile(String fileContent)
    {

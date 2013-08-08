@@ -25,9 +25,13 @@
       
       <conf name="ipp-portal-api-sources" description="IPP Portal API - Sources" />
    
-      <conf name="compile" extends="ipp-portal-api-compile, ipp-portal-api-compile-optional" visibility="private" description="IPP Portal API" />
-      
       <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" visibility="private" extends="ipp-portal-api-provided" />
+      <conf name="compile" visibility="private" extends="provided,ipp-portal-api-compile,ipp-portal-api-compile-optional" />
+      <conf name="runtime" visibility="private" extends="ipp-portal-api-runtime" />
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
       
       <conf name="pom" description="IPP Portal API POMs" />
    </configurations>
@@ -51,6 +55,9 @@
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-api-provided, compile->default" />
 
       <!-- test -->
-      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default" />
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
    </dependencies>
 </ivy-module>
