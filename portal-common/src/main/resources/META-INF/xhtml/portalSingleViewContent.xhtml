@@ -6,7 +6,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-<c:if test="#{not empty ippPortalAppSingleView.view}">
+<c:if test="#{(not empty ippPortalAppSingleView.view) and (ippPortalAppSingleView.view.viewState != 'CLOSED')}">
 	<ice:panelGroup styleClass="contentContainer">
 		<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height: 100%">
 			<tr>
