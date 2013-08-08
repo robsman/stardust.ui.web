@@ -1,8 +1,12 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
+import java.io.StringWriter;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonWriter;
 
 public class GsonUtils
 {
@@ -150,5 +154,17 @@ public class GsonUtils
          }
       }
       return null;
+   }
+   
+   public static String toPrettyString(JsonElement json)
+   {
+      Gson gson = new Gson();
+      StringWriter writer = new StringWriter();
+      JsonWriter jsonWriter = new JsonWriter(writer);
+      jsonWriter.setIndent("  ");
+      // jsonWriter.setHtmlSafe(false); commented out because it's ignored.
+      jsonWriter.setLenient(true);
+      gson.toJson(json, jsonWriter);
+      return writer.toString();
    }
 }
