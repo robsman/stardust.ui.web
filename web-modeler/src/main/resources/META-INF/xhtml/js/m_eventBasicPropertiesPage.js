@@ -108,6 +108,7 @@ define(
 						var modelElement = page.getModelElement();
 						modelElement.eventClass = eventClass;
 						if (eventClass == m_constants.ERROR_EVENT_CLASS) {
+							modelElement.interrupting = true;
 							if (!modelElement.attributes) {
 								modelElement.attributes = {};
 							}
