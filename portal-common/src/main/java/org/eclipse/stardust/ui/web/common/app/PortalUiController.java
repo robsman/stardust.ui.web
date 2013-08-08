@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -127,9 +126,9 @@ public class PortalUiController
    
    public PortalUiController()
    {
-      this.views = new Hashtable<String, View>();
+      this.views = new HashMap<String, View>();
       this.openViews = new ArrayList<View>();
-      this.recreatableViews = new Hashtable<String, View>();
+      this.recreatableViews = new HashMap<String, View>();
       this.viewDataEventHandlers = new HashMap<View, List<ViewDataEventHandler>>();
       this.perspectiveMenuIframeHandler = new PerspectiveMenuIframeHandler();
    }
