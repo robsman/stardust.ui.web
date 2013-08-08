@@ -24,23 +24,27 @@ function restoreTiffIframe(iframeId, anchorId) {
 	}
 	var windowWidth = document.body.clientWidth;
 	var windowHeight = document.body.clientHeight;
+	
 	docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;
-	docHeight = parseInt(docWidth * 1.2);
+	docHeight = parseInt(docWidth * 1.2) + 60;
+	var canvasHeight = docHeight;
+	var canvasWidth = docWidth;
+	
+	docHeight -= topValue;
+	
 	if (document.getElementById('tiffViewerIframe')) {
-		try {
-			document.getElementById('tiffViewerIframe').style.width = docWidth;
+			document.getElementById('tiffViewerIframe').style.width = canvasWidth;
 			+'px';
 			document.getElementById('tiffViewerIframe').style.height = docHeight;
 			+'px';
+
 			window.parent.EventHub.events.publish('CANVAS_RESIZED', docWidth,
 					docHeight);
-		} catch (e) {
-		}
 		this.parent.window.BridgeUtils.FrameManager.resizeAndReposition(
 				iframeId, {
 					anchorId : anchorId,
-					canvasWidth : docWidth,
-					canvasHeight : docHeight,
+					canvasWidth : canvasWidth,
+					canvasHeight : canvasHeight,
 					width : docWidth,
 					height : docHeight
 				});
