@@ -50,11 +50,18 @@ public class TypeDeclarationValidator implements IModelValidator
       for (Iterator<TypeDeclarationType> t = allDeclarations.iterator(); t.hasNext();)
       {
          TypeDeclarationType declaration = t.next();
+         validateElements(model, result, declaration);
          validateNestedReferences(model, result, declaration);
          validateParentReferences(model, result, declaration);
       }
 
       return result.toArray(ISSUE_ARRAY);
+   }
+
+   private void validateElements(ModelType model, List<Issue> result,
+         TypeDeclarationType declaration)
+   {
+      result.addAll(ElementValidator.validateElements(declaration));
    }
 
    private void validateNestedReferences(ModelType model, List<Issue> result,
@@ -81,11 +88,9 @@ public class TypeDeclarationValidator implements IModelValidator
                   TypeDeclarationsType referedDeclarations = model.getTypeDeclarations();
                   if (referedDeclarations.getTypeDeclaration(qname.getLocalPart()) == null)
                   {
-                     result.add(Issue.error(
-                           declaration,
-                           MessageFormat.format(
-                                 "TypeDeclaration ''{0}'': referenced type ''{1}'' not found.", //$NON-NLS-1$
-                                 declaration.getId(), typeId)));
+                     result.add(Issue.error(declaration, MessageFormat.format(
+                           "TypeDeclaration ''{0}'': referenced type ''{1}'' not found.", //$NON-NLS-1$
+                           declaration.getId(), typeId)));
                   }
                }
             }
@@ -105,8 +110,8 @@ public class TypeDeclarationValidator implements IModelValidator
          String baseTypeNameSpace = baseType.getTargetNamespace();
          if (baseTypeNameSpace != null)
          {
-            XSDImport baseTypeImport = this.getImportByNamespace(
-                  declaration.getSchema(), baseTypeNameSpace);
+            XSDImport baseTypeImport = this.getImportByNamespace(declaration.getSchema(),
+                  baseTypeNameSpace);
             if (baseTypeImport != null)
             {
                String location = ((XSDImport) baseTypeImport).getSchemaLocation();
