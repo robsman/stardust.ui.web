@@ -814,7 +814,7 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = this.parameterDefinitions.length;
+					var n = this.getNextIdIndex();
 
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
@@ -869,6 +869,27 @@ define(
 
 					this.submitChanges();
 				};
+				
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.getNextIdIndex = function() {
+					var n = 0;
+					var idExists = true;
+					while (idExists) {
+						n++;
+						var newId = "New_" + n;
+						var idExists = false;
+						for (var i = 0; i < this.parameterDefinitions.length; i++) {
+							if (this.parameterDefinitions[i].id === newId) {
+								idExists = true;
+								break;
+							}
+						}
+					}
+					
+					return n;
+				}
 
 				/**
 				 *
