@@ -175,6 +175,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          // Do nothing, handled via Application/Activity
       }
+      else if (modelElement instanceof EventHandlerType)
+      {
+         jsResult = toEventJson((EventHandlerType) modelElement, new JsonObject());         
+      }
 
       if (null == jsResult)
       {
@@ -1356,7 +1360,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return eventSymbolJson;
    }
 
-   public void toEventJson(EventHandlerType eventHandler, JsonObject eventJson)
+   public JsonObject toEventJson(EventHandlerType eventHandler, JsonObject eventJson)
    {
       eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
 
@@ -1412,6 +1416,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          loadAttributes(accessPoint, parameterMappingJson);
       }
+      
+      return eventJson;
    }
 
    /**
