@@ -1619,10 +1619,10 @@ define(
 						// If the symbol was created with a connection traversal
 						// the connection needs to be completed, too
 						if (null != this.currentConnection) {
-							var status = this.placeNewSymbol(x - this.getCanvasPosition().left,
+							var newSymbol = this.placeNewSymbol(x - this.getCanvasPosition().left,
 									y - this.getCanvasPosition().top, true);
-							if (status) {
-								this.currentConnection.toModelElementOid = this.lastSymbol.oid;
+							if (newSymbol) {
+								this.currentConnection.toModelElementOid = newSymbol.oid;
 								this.currentConnection.updateAnchorPointForSymbol();
 								this.currentConnection.complete();
 							}
@@ -1677,9 +1677,9 @@ define(
 
 					this.snapSymbol(this.newSymbol);
 
-					this.lastSymbol = this.newSymbol;
+					var lastSymbol = this.newSymbol;
 					this.newSymbol = null;
-					return true;
+					return lastSymbol;
 				};
 
 				/**
