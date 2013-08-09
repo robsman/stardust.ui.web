@@ -24,6 +24,9 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PRO
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -222,7 +225,8 @@ public class EventCommandHandler
                         String match = "ON_BOUNDARY_EVENT(" + eventHandlerId + ")";
                         for (TransitionType transition : hostActivity.getOutTransitions())
                         {
-                           if (match.equals(transition.getCondition()))
+                           String expression = getExpression(transition);
+                           if (expression != null && match.equals(expression))
                            {
                               // this deletes corresponding transition connections too
                               ModelElementEditingUtils.deleteIdentifiable(transition);
@@ -246,6 +250,20 @@ public class EventCommandHandler
                      //delete associated activity
                   if (null != hostActivity)
                   {
+                     List<TransitionType> delete = new ArrayList<TransitionType>();
+                     for (TransitionType transition : hostActivity.getOutTransitions())
+                     {
+                        delete.add(transition);
+                     }
+                     for (TransitionType transition : hostActivity.getInTransitions())
+                     {
+                        delete.add(transition);
+                     }
+                     for (TransitionType transition : delete)
+                     {                     
+                        ModelElementEditingUtils.deleteIdentifiable(transition);
+                     }
+                     
                      if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                      {
                         processDefinition.getActivity().remove(hostActivity);
@@ -282,9 +300,11 @@ public class EventCommandHandler
          }
       }
    }
-/*
-   private ModelBuilderFacade getModelBuilderFacade()
+      
+   private String getExpression(TransitionType transition)
    {
-      return CommandHandlerUtils.getModelBuilderFacade(springContext);
-   }*/
+      XmlTextNode type = transition.getExpression();
+      String expression = type == null ? null : ModelUtils.getCDataString(transition.getExpression().getMixed());
+      return expression;
+   }
 }
