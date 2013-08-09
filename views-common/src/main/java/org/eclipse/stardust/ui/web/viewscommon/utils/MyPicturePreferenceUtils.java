@@ -11,12 +11,16 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.net.URL;
+import java.util.List;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames;
 import org.eclipse.stardust.engine.core.repository.DocumentRepositoryUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -128,12 +132,25 @@ public class MyPicturePreferenceUtils
 
       if (user != null)
       {
-         String picturePreference = (String) user.getAttribute(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_TYPE));
+         String picturePreference = (String) user
+               .getAttribute(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_TYPE));
+         if (null == picturePreference)
+         {
+            if (UserUtils.isLoggedInUser(user))
+            {
+               picturePreference = getLoggedInUsersImagePreference();
+            }
+            else
+            {
+               picturePreference = getPicturePreferenceForUser(user);
+            }
+         }
          if (F_MY_PICTURE_TYPE_HTTP_URL.equals(picturePreference)
                || F_MY_PICTURE_TYPE_MONSTER_ID.equals(picturePreference))
          {
 
-            String prefURLStr = (String) user.getAttribute(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL));
+            String prefURLStr = (String) user
+                  .getAttribute(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL));
             if (StringUtils.isNotEmpty(prefURLStr))
             {
                imageURI = prefURLStr;
@@ -153,6 +170,18 @@ public class MyPicturePreferenceUtils
       return imageURI;
    }
 
+   public static String getPicturePreferenceForUser(final User user)
+   {
+      String picturePreference = null;
+      QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
+      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user
+            .getRealm().getId(), user.getId(), UserPreferencesEntries.M_VIEWS_COMMON, REFERENCE_ID));
+      for (Preferences userPref : prefs)
+      {
+         picturePreference = (String) userPref.getPreferences().get(getPreferencesId(UserPreferencesEntries.F_MY_PICTURE_TYPE));
+      }
+      return picturePreference;
+   }
    /**
     * Utility method to get the profile image's JCR folder path.
     * 
