@@ -223,8 +223,12 @@ public class ModelCache implements Resetable, Serializable
                }
 
             }
-            //4)clear old modelDescriptions and add newly fetched data 
-            modelDescriptions.clear();
+            // 4)clear old modelDescriptions and add newly fetched data
+            if (modelDescriptions.size() > 0)
+            {
+               modelDescriptions.clear();
+               trace.debug("ModelCache.reset ::Model descriptor cleaned ");
+            }
             modelDescriptions.addAll(models);
 
             if (CollectionUtils.isNotEmpty(updatedModels) || CollectionUtils.isNotEmpty(unusedModels))
