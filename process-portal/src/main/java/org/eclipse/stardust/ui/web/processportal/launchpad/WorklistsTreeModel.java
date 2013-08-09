@@ -120,7 +120,7 @@ public class WorklistsTreeModel extends DefaultTreeModel
                }
                
                if (assemblyLineUserObject.isAssemblyLineMode()
-                     && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getQualifiedId()))
+                     && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getId()))
                {
                   if (!assemblyNodeCreated)
                   {
