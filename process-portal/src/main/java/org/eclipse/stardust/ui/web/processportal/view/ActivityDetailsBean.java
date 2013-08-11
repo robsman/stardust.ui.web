@@ -798,8 +798,6 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             docInputCtrl.closeDocument();
          }
-
-         renderJsfActivitySession();
       }
    }
 
@@ -856,26 +854,42 @@ public class ActivityDetailsBean extends UIComponentBean
    /**
     * @return
     */
+   private boolean isJSFActivity()
+   {
+      Activity activity = activityInstance.getActivity();
+      IActivityInteractionController interactionController = getInteractionController(activity);
+      if (null != interactionController)
+      {
+         String contextId = interactionController.getContextId(activityInstance);
+         if (PredefinedConstants.JSF_CONTEXT.equals(contextId))
+         {
+            return true;
+         }
+      }
+      
+      return false;
+   }
+
+   /**
+    * @return
+    */
    private void renderJsfActivitySession()
    {
-      if (thisView.getViewState() != ViewState.CLOSED)
+      try
       {
-         try
+         Object beanObject = getBackingBeanForJsfActivity();
+         if (null != beanObject)
          {
-            Object beanObject = getBackingBeanForJsfActivity();
-            if (null != beanObject)
+            String sessionRendererId = (String)ReflectionUtils.invokeMethod(beanObject, "getSessionRendererId");
+            if (StringUtils.isNotEmpty(sessionRendererId))
             {
-               String sessionRendererId = (String)ReflectionUtils.invokeMethod(beanObject, "getSessionRendererId");
-               if (StringUtils.isNotEmpty(sessionRendererId))
-               {
-                  SessionRendererHelper.render(sessionRendererId);
-               }
+               SessionRendererHelper.render(sessionRendererId);
             }
          }
-         catch (Exception e)
-         {
-            trace.error("Error in rendering JSF Activity session", e);
-         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Error in rendering JSF Activity session", e);
       }
    }
 
@@ -3106,7 +3120,7 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void renderSession()
    {
-      if (thisView.getViewState() != ViewState.CLOSED)
+      if (!isJSFActivity() && thisView.getViewState() != ViewState.CLOSED)
       {
          PortalApplication.getInstance().renderPortalSession();
       }
