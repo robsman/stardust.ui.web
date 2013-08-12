@@ -1,7 +1,13 @@
 package org.eclipse.stardust.ui.web.html5;
 
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 import javax.servlet.Filter;
@@ -27,7 +33,19 @@ public class EnhancedJarResourceFilter implements Filter
 {
    private static final Logger trace = LogManager.getLogger(EnhancedJarResourceFilter.class);
 
+   private static enum CompareType
+   {
+      STARTS_WITH,
+      ENDS_WITH,
+      CONTAINS,
+      REG_EX
+   }
+
    private String replacePattern = "/";
+
+   private List<String> skipPaths;
+   private List<String> skipExtenssions;
+   private List<String> restrictLibs;
 
    /* (non-Javadoc)
     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
@@ -35,6 +53,20 @@ public class EnhancedJarResourceFilter implements Filter
    public void init(FilterConfig cfg) throws ServletException
    {
       replacePattern = getInitParameter(cfg, "replacePattern", replacePattern);
+
+      String skipPath = getInitParameter(cfg, "skipPaths", "");
+      skipPaths = prepareList(skipPath);
+
+      String skipExtenssion = getInitParameter(cfg, "skipExtenssions", "");
+      skipExtenssions = prepareList(skipExtenssion);
+
+      String restrictLib = getInitParameter(cfg, "restrictLibs", "");
+      restrictLibs = prepareList(restrictLib);
+
+      trace.info("EnhancedJarResourceFilter configured with");
+      trace.info("\tskipPaths = " + skipPaths);
+      trace.info("\tskipExtenssions = " + skipExtenssions);
+      trace.info("\trestrictLibs = " + restrictLibs);
    }
 
    /* (non-Javadoc)
@@ -49,6 +81,10 @@ public class EnhancedJarResourceFilter implements Filter
       try
       {
          String path = getResourcePath(request);
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Looking for Resource Path: " + path);
+         }
 
          if (path != null && path.startsWith(replacePattern))
          {
@@ -62,13 +98,34 @@ public class EnhancedJarResourceFilter implements Filter
 
          if (StringUtils.isNotEmpty(path))
          {
-            InputStream in = getClass().getClassLoader().getResourceAsStream(path);
-            if (in != null)
+            if (!compare(skipPaths, "/" + path, CompareType.STARTS_WITH)
+                  && !compare(skipExtenssions, stripUrlParams("/" + path), CompareType.ENDS_WITH))
             {
-               determineContentType(path, response);
-               IOUtils.copy(in, response.getOutputStream());
-               return;
+               URL resource = getClass().getClassLoader().getResource(path);
+   
+               // TODO: To use RegEx
+               if (null != resource
+                     && (isEmpty(restrictLibs) || compare(restrictLibs, resource.getPath(), CompareType.CONTAINS)))
+               {
+                  InputStream in = getClass().getClassLoader().getResourceAsStream(path);
+                  if (in != null)
+                  {
+                     determineContentType(path, response);
+                     IOUtils.copy(in, response.getOutputStream());
+                     
+                     if (trace.isDebugEnabled())
+                     {
+                        trace.debug("\tFound Resource Path: " + path);
+                     }
+                     return;
+                  }
+               }
             }
+         }
+
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("\tSkipped Resource Path: " + path);
          }
       }
       catch (Exception ex)
@@ -77,6 +134,30 @@ public class EnhancedJarResourceFilter implements Filter
       }
 
       chain.doFilter(req, res);
+   }
+
+   /**
+    * @param list
+    * @param value
+    */
+   private List<String> prepareList(String value)
+   {
+      List<String> list = new ArrayList<String>();
+      
+      if (StringUtils.isNotEmpty(value))
+      {
+         Iterator<String> it = StringUtils.split(value, ",");
+         while (it.hasNext())
+         {
+            String part = it.next();
+            if (StringUtils.isNotEmpty(part))
+            {
+               list.add(part.trim());
+            }
+         }
+      }
+
+      return list;
    }
 
    /**
@@ -94,13 +175,63 @@ public class EnhancedJarResourceFilter implements Filter
       {
          path += request.getPathInfo();
       }
-      
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("ResourcePath: " + path);
-      }
-      
       return path;
+   }
+
+   /**
+    * Iterate over list to compare value as per type
+    * @param list
+    * @param value
+    * @return
+    */
+   private boolean compare(List<String> list, String value, CompareType type)
+   {
+      for (String str : list)
+      {
+         switch(type)
+         {
+         case STARTS_WITH:
+            if (value.startsWith(str))
+            {
+               return true;
+            }
+            break;
+         case ENDS_WITH:
+            if (value.endsWith(str))
+            {
+               return true;
+            }
+            break;
+         case CONTAINS:
+         default:
+            if (value.contains(str))
+            {
+               return true;
+            }
+            break;
+         }
+      }
+      return false;
+   }
+
+   /**
+    * @param value
+    * @return
+    */
+   private String stripUrlParams(String value)
+   {
+      if (StringUtils.isNotEmpty(value))
+      {
+         if (value.indexOf("?") > -1)
+         {
+            value = value.substring(0, value.indexOf("?"));
+         }
+         if (value.indexOf("#") > -1)
+         {
+            value = value.substring(0, value.indexOf("#"));
+         }
+      }      
+      return value;
    }
 
    /* (non-Javadoc)
@@ -113,7 +244,7 @@ public class EnhancedJarResourceFilter implements Filter
     * @param path
     * @param response
     */
-   private void determineContentType(String path, HttpServletResponse response) throws OperationNotSupportedException
+   private void determineContentType(String path, HttpServletResponse response)
    {
       // TODO: find content-type from config
       if (path.endsWith(".js") || path.endsWith(".json"))
@@ -123,10 +254,6 @@ public class EnhancedJarResourceFilter implements Filter
       else if (path.endsWith(".css") || path.endsWith(".less"))
       {
          response.setContentType("text/css");
-      }
-      else if (path.endsWith(".jsp")) // Adding this as temporary fix
-      {
-         throw new OperationNotSupportedException();
       }
       else
       {
