@@ -1322,6 +1322,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   skipViewEvents = true;
                   // TODO move to controller?
                   PortalApplication.getInstance().closeView(thisView, true);
+                  // When view close is auto-operation, sync view is required to update focus view
+                  PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                   skipViewEvents = false;
                }
             }
@@ -1411,6 +1413,7 @@ public class ActivityDetailsBean extends UIComponentBean
          skipViewEvents = true;
          // TODO move to controller?
          PortalApplication.getInstance().closeView(thisView, true);
+         PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
          skipViewEvents = false;
       }
    }
@@ -1813,6 +1816,10 @@ public class ActivityDetailsBean extends UIComponentBean
          else
          {
             PortalApplication.getInstance().closeView(thisView, true);
+            if(null == nextActivityObject)
+            {
+               PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");               
+            }
          }
 
          if (completionLog.isSuccess())

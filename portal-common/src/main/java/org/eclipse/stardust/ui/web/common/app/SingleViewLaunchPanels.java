@@ -102,7 +102,7 @@ public class SingleViewLaunchPanels implements InitializingBean
          PortalApplication portalApp = PortalApplication.getInstance();
    
          String value = (String)event.getNewValue();
-         trace.error("Closing view: " + value);
+         trace.info("Closing view: " + value);
 
          if (StringUtils.isNotEmpty(value))
          {
@@ -117,6 +117,8 @@ public class SingleViewLaunchPanels implements InitializingBean
                trace.info("Before:: View Count: " + portalApp.getOpenViewsSize());
                portalApp.closeView(view);
                trace.info("After:: View Count: " + portalApp.getOpenViewsSize());
+               // After succesfull view close, sync active view
+               portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
                
                String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
                sessionId += view.getIdentityParams();
@@ -125,7 +127,7 @@ public class SingleViewLaunchPanels implements InitializingBean
             }
             else
             {
-               trace.error("Could not close view: " + value);
+               trace.info("Could not close view: " + value);
             
                // Unexpected Situation! View is not open at IPP, but it's open on UI at HTML5 Framework.
                // Fire JS for it's closing. It might be internal/native or external view
