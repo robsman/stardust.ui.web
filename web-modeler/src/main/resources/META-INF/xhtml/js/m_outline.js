@@ -2720,6 +2720,9 @@ define(
 					outline = new Outline();
 
 					outline.initialize();
+					
+					m_messageDisplay.updateLastSavedLabel(m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title"));
+					
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
 					m_utils.jQuerySelect("#outlineDiv").css("visibility", "visible");
