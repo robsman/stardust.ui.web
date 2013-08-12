@@ -63,6 +63,7 @@ public class EnhancedJarResourceFilter implements Filter
       restrictLibs = prepareList(restrictLib);
 
       trace.info("EnhancedJarResourceFilter configured with");
+      trace.info("\treplacePattern = " + replacePattern);
       trace.info("\tskipPaths = " + skipPaths);
       trace.info("\tskipExtenssions = " + skipExtenssions);
       trace.info("\trestrictLibs = " + restrictLibs);
