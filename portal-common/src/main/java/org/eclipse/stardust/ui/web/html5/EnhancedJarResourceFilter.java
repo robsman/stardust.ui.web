@@ -2,6 +2,8 @@ package org.eclipse.stardust.ui.web.html5;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.naming.OperationNotSupportedException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -10,8 +12,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 
 /**
  * @author HTML5.TEAM
@@ -20,6 +25,8 @@ import org.eclipse.stardust.common.StringUtils;
  */
 public class EnhancedJarResourceFilter implements Filter
 {
+   private static final Logger trace = LogManager.getLogger(EnhancedJarResourceFilter.class);
+
    private String replacePattern = "/";
 
    /* (non-Javadoc)
@@ -41,7 +48,7 @@ public class EnhancedJarResourceFilter implements Filter
 
       try
       {
-         String path = request.getServletPath();
+         String path = getResourcePath(request);
 
          if (path != null && path.startsWith(replacePattern))
          {
@@ -72,6 +79,30 @@ public class EnhancedJarResourceFilter implements Filter
       chain.doFilter(req, res);
    }
 
+   /**
+    * @param request
+    * @return
+    */
+   private String getResourcePath(HttpServletRequest request)
+   {
+      String path = "";
+      if (null != request.getServletPath())
+      {
+         path = request.getServletPath();
+      }
+      if (null != request.getPathInfo())
+      {
+         path += request.getPathInfo();
+      }
+      
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("ResourcePath: " + path);
+      }
+      
+      return path;
+   }
+
    /* (non-Javadoc)
     * @see javax.servlet.Filter#destroy()
     */
@@ -82,7 +113,7 @@ public class EnhancedJarResourceFilter implements Filter
     * @param path
     * @param response
     */
-   private void determineContentType(String path, HttpServletResponse response)
+   private void determineContentType(String path, HttpServletResponse response) throws OperationNotSupportedException
    {
       // TODO: find content-type from config
       if (path.endsWith(".js") || path.endsWith(".json"))
@@ -92,6 +123,10 @@ public class EnhancedJarResourceFilter implements Filter
       else if (path.endsWith(".css") || path.endsWith(".less"))
       {
          response.setContentType("text/css");
+      }
+      else if (path.endsWith(".jsp")) // Adding this as temporary fix
+      {
+         throw new OperationNotSupportedException();
       }
       else
       {
