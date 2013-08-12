@@ -71,7 +71,7 @@ define(
 					this.parametersSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.parameters"));
 					
 					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = jQuery("#genericCamelRouteEvent #parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "genericCamelRouteEvent",

@@ -105,7 +105,7 @@ define(
 									.getProperty("modeler.element.properties.event.parameters"));
 
 					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = jQuery("#emailEvent #parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 								.create({
 									scope : "emailEvent",

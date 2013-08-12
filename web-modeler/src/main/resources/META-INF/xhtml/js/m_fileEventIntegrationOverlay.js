@@ -106,7 +106,7 @@ define(
 							.mapInputId("alwaysConsumeInput");
 
 					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = jQuery("#fileEvent #parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 								.create({
 									scope : "fileEvent",
