@@ -1174,7 +1174,14 @@ public class ProcessInstanceUtils
          if (event.getEventType().equals(HistoricalEventType.StateChange)
                && event.getDetails().equals(ProcessInstanceState.Aborted))
          {
-            abortedUser = "   (" + event.getUser().getId() + ")";
+            if (event.getUser() != null)
+            {
+               abortedUser = "   (" + event.getUser().getId() + ")";
+            }
+            else
+            {
+               abortedUser = "";
+            }
             break;
          }
       }
