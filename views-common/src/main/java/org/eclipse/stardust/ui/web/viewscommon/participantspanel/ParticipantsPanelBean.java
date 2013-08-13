@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.ActivityInstanceHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.EventHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.IProcessHistoryTableEntry;
+import org.eclipse.stardust.ui.web.viewscommon.process.history.ProcessInstanceHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 
 
@@ -291,14 +292,18 @@ public class ParticipantsPanelBean extends UIViewComponentBean
                   List events = activityHistoryItem.getChildren();
                   for (Object eventHistoryItemObj : events)
                   {
-                     eventHistoryItem = (EventHistoryItem) eventHistoryItemObj;
-                     if (!eventHistoryItem.isNodePathToActivityInstance())
+                     if (eventHistoryItemObj instanceof EventHistoryItem)
                      {
-                        User user = eventHistoryItem.getUser();
-                        if (eventHistoryItem.getUser() != null && !userOids.contains(user.getOID()))
+                        eventHistoryItem = (EventHistoryItem) eventHistoryItemObj;
+                        if ( !eventHistoryItem.isNodePathToActivityInstance())
                         {
-                           eventPerformers.add(user);
-                           userOids.add(user.getOID());
+                           User user = eventHistoryItem.getUser();
+                           if (eventHistoryItem.getUser() != null
+                                 && !userOids.contains(user.getOID()))
+                           {
+                              eventPerformers.add(user);
+                              userOids.add(user.getOID());
+                           }
                         }
                      }
                   }
