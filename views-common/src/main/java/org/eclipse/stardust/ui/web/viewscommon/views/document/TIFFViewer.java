@@ -342,9 +342,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          String pagePath = docHolder.getDefaultPagePath();
          pagePath += "&isEditable=" + documentInfo.isContentEditable();
          
-         restoreTiffIframe();
-         String anchor = "tiffViewerIframe";
-         
          String activateScript = "activateAndResizeIframe('" + frameId + "','" + pagePath + "')";
          if (iframeDelay > 0)
          {

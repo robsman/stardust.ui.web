@@ -26,14 +26,12 @@ function restoreTiffIframe(iframeId, anchorId) {
 	var windowHeight = document.body.clientHeight;
 	
 	docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;
-	docHeight = parseInt(docWidth * 1.2) + 60;
-	var canvasHeight = docHeight;
-	var canvasWidth = docWidth;
+	docHeight = parseInt(docWidth * 1.2)+70;
 	
 	docHeight -= topValue;
 	
 	if (document.getElementById('tiffViewerIframe')) {
-			document.getElementById('tiffViewerIframe').style.width = canvasWidth;
+			document.getElementById('tiffViewerIframe').style.width = docWidth;
 			+'px';
 			document.getElementById('tiffViewerIframe').style.height = docHeight;
 			+'px';
@@ -43,8 +41,8 @@ function restoreTiffIframe(iframeId, anchorId) {
 		this.parent.window.BridgeUtils.FrameManager.resizeAndReposition(
 				iframeId, {
 					anchorId : anchorId,
-					canvasWidth : canvasWidth,
-					canvasHeight : canvasHeight,
+					canvasWidth : docWidth,
+					canvasHeight : docHeight,
 					width : docWidth,
 					height : docHeight
 				});
