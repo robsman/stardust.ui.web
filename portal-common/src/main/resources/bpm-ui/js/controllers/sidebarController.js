@@ -29,5 +29,14 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		$scope.$watch('sidebar.position', function(newValue) {
 			disableSidebarResizing();
 		}, true);
+
+		// Open and Pin Sidebar upon initialization.
+		// More delay is required between Open and Pin
+		window.setTimeout(function(){
+			$scope.openSidebar();
+			window.setTimeout(function(){
+				$scope.pinSidebar();
+			}, 900);
+		}, 100);
 	}]);
 });
