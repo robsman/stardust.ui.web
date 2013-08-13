@@ -1012,6 +1012,15 @@ define(
 						} else {
 							// TODO validate against enum pattern, if any
 						}
+						
+						// Check for duplicates.
+						for (var i in this.getModelElement().getElements()) {
+							if (this.getModelElement().getElements()[i].name === nameInput.val()) {
+								this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.duplicateName"));
+								break;
+							}
+						}
 					}
 
 					if (this.errorMessages.length > 0) {
