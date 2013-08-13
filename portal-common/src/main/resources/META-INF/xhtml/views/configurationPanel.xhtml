@@ -80,7 +80,7 @@
 						styleClass="label-form" />
 				</td>
 				<td>
-					<ice:inputText id="maxTabsDisplay" value="#{ippPortalConfigPanel.maxTabsDisplay}" partialSubmit="true" maxlength="1" immediate="true">
+					<ice:inputText id="maxTabsDisplay" value="#{ippPortalConfigPanel.maxTabsDisplay}" partialSubmit="true" maxlength="1" immediate="true" disabled="true">
 						<pc:automationTag value="auto-FW-PortConf-MaxTabDisp" standAlone="false"/>
 						<f:validateLongRange 
 							minimum="#{ippPortalConfigPanel.configurationConstants.LOWER_LIMIT_MAX_TAB_DISPLAY}"
