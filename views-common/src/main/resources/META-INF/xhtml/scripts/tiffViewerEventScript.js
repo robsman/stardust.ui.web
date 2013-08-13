@@ -26,7 +26,7 @@ function restoreTiffIframe(iframeId, anchorId) {
 	var windowHeight = document.body.clientHeight;
 	
 	docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;
-	docHeight = parseInt(docWidth * 1.2)+70;
+	docHeight = parseInt(windowHeight)+55;
 	
 	docHeight -= topValue;
 	
