@@ -515,7 +515,12 @@ define(
 					};
 
 					if (!this.diagram.process.isReadonly()) {
-						item.click(clickHandler);
+						var self = this;
+						item.click(function() {
+							if (self.diagram.mode === self.diagram.NORMAL_MODE) {
+								clickHandler.call(this);								
+							}
+						});
 						item.hover(Drawable_hoverInFlyMenuItemClosure,
 								Drawable_hoverOutFlyMenuItemClosure);
 						item.hover(Drawable_hoverInFlyMenuItemClosure,
