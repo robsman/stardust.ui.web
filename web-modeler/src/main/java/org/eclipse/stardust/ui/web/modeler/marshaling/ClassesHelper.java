@@ -306,7 +306,7 @@ public final class ClassesHelper
    {
       signature = signature.replace("[", "#");
       signature = signature.replace("]", "&");
-      signature = signature.replaceAll("<[^\\(]*\\>", "");
+      signature = signature.replaceAll("<[^\\<]*\\>", "");
       signature = signature.replace("&", "]");
       signature = signature.replace("#", "[");
       return signature;
