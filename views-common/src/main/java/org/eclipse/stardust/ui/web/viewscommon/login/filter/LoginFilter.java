@@ -242,7 +242,7 @@ public class LoginFilter implements Filter
             }
             if(!sessionContext.isSessionInitialized())
             {
-               if(!requestUri.endsWith(loginPage))
+               if(!requestUri.contains(loginPage))
                {
                   trace.info("Redirect to login, because session was not initialized.");
                   StringBuffer url = new StringBuffer(request.getContextPath());
