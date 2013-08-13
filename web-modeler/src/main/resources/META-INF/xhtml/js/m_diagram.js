@@ -144,6 +144,17 @@ define(
 				this.background.auxiliaryProperties = {
 					diagram : this
 				};
+				
+				//All Properties pages pertaining to this instance
+				this.processPropertiesPanel = null;
+				this.activityPropertiesPanel = null;
+				this.dataPropertiesPanel = null;
+				this.eventPropertiesPanel = null;
+				this.gatewayPropertiesPanel = null;
+				this.annotationPropertiesPanel = null;
+				this.swimlanePropertiesPanel = null;
+				this.controlFlowPropertiesPanel = null;
+				this.dataFlowPropertiesPanel = null;
 
 				// Exclude Click from readonly check to show properties panel
 				this.background.click(Diagram_clickClosure);
@@ -547,18 +558,9 @@ define(
 					this.process.diagram = this;
 
 					// Initialize Properties Panels
-
-					// TODO Should be done via extension mechanism
-
-					m_processPropertiesPanel.initialize(this, this.process);
-					m_activityPropertiesPanel.initialize(this);
-					m_dataPropertiesPanel.initialize(this);
-					m_eventPropertiesPanel.initialize(this);
-					m_gatewayPropertiesPanel.initialize(this);
-					m_annotationPropertiesPanel.initialize(this);
-					m_swimlanePropertiesPanel.initialize(this);
-					m_controlFlowPropertiesPanel.initialize(this);
-					m_dataFlowPropertiesPanel.initialize(this);
+					this.initializePropertiesPanels();
+					this.showProcessPropertiesPanel();
+					
 					var currentDiagram = this;
 					m_autoScrollManager
 							.initScrollManager(
@@ -626,16 +628,15 @@ define(
 				 *
 				 */
 				Diagram.prototype.initializePropertiesPanels = function() {
-					m_processPropertiesPanel.initialize(this, this.process);
-					m_propertiesPanel.initializeProcessPropertiesPanel(m_processPropertiesPanel.getInstance(this.process));
-					m_activityPropertiesPanel.initialize(this);
-					m_dataPropertiesPanel.initialize(this);
-					m_eventPropertiesPanel.initialize(this);
-					m_gatewayPropertiesPanel.initialize(this);
-					m_annotationPropertiesPanel.initialize(this);
-					m_swimlanePropertiesPanel.initialize(this);
-					m_controlFlowPropertiesPanel.initialize(this);
-					m_dataFlowPropertiesPanel.initialize(this);
+					this.processPropertiesPanel = m_processPropertiesPanel.initialize(this, this.process);
+					this.activityPropertiesPanel = m_activityPropertiesPanel.initialize(this);
+					this.dataPropertiesPanel = m_dataPropertiesPanel.initialize(this);
+					this.eventPropertiesPanel = m_eventPropertiesPanel.initialize(this);
+					this.gatewayPropertiesPanel = m_gatewayPropertiesPanel.initialize(this);
+					this.annotationPropertiesPanel = m_annotationPropertiesPanel.initialize(this);
+					this.swimlanePropertiesPanel = m_swimlanePropertiesPanel.initialize(this);
+					this.controlFlowPropertiesPanel = m_controlFlowPropertiesPanel.initialize(this);
+					this.dataFlowPropertiesPanel = m_dataFlowPropertiesPanel.initialize(this);
 				};
 
 				/**
@@ -1965,16 +1966,10 @@ define(
 				 *
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
-
 					m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
-
-					m_processPropertiesPanel.getInstance(this.process).setElement(
-							this.process);
-
-					m_propertiesPanel
-							.initializeProcessPropertiesPanel(m_processPropertiesPanel
-									.getInstance(this.process));
-				}
+					this.processPropertiesPanel.setElement(this.process);
+					m_propertiesPanel.initializeProcessPropertiesPanel(this.processPropertiesPanel);
+				};
 
 				/**
 				 *
@@ -2284,8 +2279,7 @@ define(
 						this.symbols[n].resolveNonHierarchicalRelationships();
 					}
 
-					m_processPropertiesPanel.getInstance(this.process).setElement(
-							this.process);
+					this.processPropertiesPanel.setElement(this.process);
 				};
 
 				/**

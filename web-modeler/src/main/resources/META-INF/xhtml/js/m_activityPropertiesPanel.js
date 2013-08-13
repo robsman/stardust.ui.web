@@ -16,17 +16,11 @@ define(
 				m_commandsController, m_model, m_propertiesPanel,
 				m_propertiesPage, m_jsfViewManagerHelper) {
 
-			var activityPropertiesPanel = null;
-
 			return {
 				initialize : function(diagram) {
-					activityPropertiesPanel = new ActivityPropertiesPanel();
-
+					var activityPropertiesPanel = new ActivityPropertiesPanel();
 					m_commandsController.registerCommandHandler(activityPropertiesPanel);
-
 					activityPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function() {
 					return activityPropertiesPanel;
 				}
 			};

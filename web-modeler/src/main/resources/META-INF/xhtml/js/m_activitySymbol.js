@@ -14,13 +14,12 @@ define(
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager",
 				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_gatewaySymbol",
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_eventSymbol",
-				"bpm-modeler/js/m_activityPropertiesPanel",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_activity",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
-				m_session, m_activityPropertiesPanel, m_model, m_activity,
+				m_session, m_model, m_activity,
 				m_commandsController, m_command, m_modelerUtils) {
 
 			return {
@@ -102,8 +101,7 @@ define(
 
 					this.diagram.lastSymbol = this;
 
-					this.propertiesPanel = m_activityPropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.activityPropertiesPanel;
 
 					this.rectangle = null;
 					this.text = null;

@@ -13,17 +13,14 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		m_constants, m_commandsController, m_command, m_extensionManager, m_model, m_propertiesPanel,
 		m_propertiesPage) {
 
-	var dataPropertiesPanel = null;
-
 	return {
 		initialize : function(diagram) {
-			dataPropertiesPanel = new DataPropertiesPanel();
+			var dataPropertiesPanel = new DataPropertiesPanel();
 
 			m_commandsController.registerCommandHandler(dataPropertiesPanel);
 
 			dataPropertiesPanel.initialize(diagram);
-		},
-		getInstance : function(element) {
+			
 			return dataPropertiesPanel;
 		}
 	};

@@ -15,17 +15,11 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_propertiesPage"],
 		function(m_utils, m_constants, m_commandsController, m_model, m_propertiesPanel, m_propertiesPage) {
 
-			var annotationPropertiesPanel = null;
-
 			return {
 				initialize : function(diagram) {
-					annotationPropertiesPanel = new AnnotationPropertiesPanel();
-				
+					var annotationPropertiesPanel = new AnnotationPropertiesPanel();
 					m_commandsController.registerCommandHandler(annotationPropertiesPanel);					
-					
 					annotationPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function(element) {
 					return annotationPropertiesPanel;
 				}
 			};

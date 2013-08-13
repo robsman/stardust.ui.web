@@ -10,9 +10,9 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_annotationPropertiesPanel", "bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_command, m_messageDisplay,
-				m_canvasManager, m_symbol, m_annotationPropertiesPanel, m_modelerUtils) {
+				m_canvasManager, m_symbol, m_modelerUtils) {
 			return {
 				create : function(diagram) {
 					var annotationSymbol = new AnnotationSymbol();
@@ -57,8 +57,7 @@ define(
 					this.type = m_constants.ANNOTATION_SYMBOL;
 					this.diagram = diagram;
 					this.diagram.lastSymbol = this;
-					this.propertiesPanel = m_annotationPropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.annotationPropertiesPanel;
 					this.rect = null;
 					this.image = null;
 					this.width = m_constants.ANNOTATION_SYMBOL_DEFAULT_WIDTH;

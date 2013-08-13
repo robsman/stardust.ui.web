@@ -17,14 +17,13 @@ define(
 		  "bpm-modeler/js/m_canvasManager",
 		  "bpm-modeler/js/m_symbol",
 		  "bpm-modeler/js/m_gatewaySymbol",
-		  "bpm-modeler/js/m_eventPropertiesPanel",
 		  "bpm-modeler/js/m_event",
 		  "bpm-modeler/js/m_modelerUtils",
 		  "bpm-modeler/js/m_model",
 		  "bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_messageDisplay, m_canvasManager, m_symbol, m_gatewaySymbol,
-				m_eventPropertiesPanel, m_event, m_modelerUtils, m_model,
+				m_messageDisplay, m_canvasManager, m_symbol, m_gatewaySymbol, 
+				m_event, m_modelerUtils, m_model,
 				m_i18nUtils) {
 
 			return {
@@ -90,7 +89,7 @@ define(
 					this.diagram.lastSymbol = this;
 					this.bindingActivitySymbol = null;
 
-					this.propertiesPanel = m_eventPropertiesPanel.getInstance();
+					this.propertiesPanel = this.diagram.eventPropertiesPanel;
 					this.circle = null;
 					this.innerCircle = null;
 					this.image = null;

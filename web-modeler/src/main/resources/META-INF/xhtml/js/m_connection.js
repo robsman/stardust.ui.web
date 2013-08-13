@@ -17,8 +17,6 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_controlFlow",
 				"bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_dataFlowPropertiesPanel",
-				"bpm-modeler/js/m_controlFlowPropertiesPanel",
 				"bpm-modeler/js/m_activitySymbol",
 				"bpm-modeler/js/m_gatewaySymbol",
 				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_controlFlow",
@@ -27,8 +25,7 @@ define(
 				"bpm-modeler/js/libs/jsPlumb/jquery.jsPlumb-1.4.1-all-min" ],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
-				m_propertiesPanel, m_dataFlowPropertiesPanel,
-				m_controlFlowPropertiesPanel, m_activitySymbol,
+				m_propertiesPanel, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
 				m_modelerUtils, m_messageDisplay, jquery_jsPlumb) {
 
@@ -55,7 +52,7 @@ define(
 
 					json.bind(diagram);
 
-					json.initializeFromJson();
+					json.initializeFromJson(diagram);
 
 					return json;
 				}
@@ -113,7 +110,7 @@ define(
 				 * TODO Check whether this method can be implemented with more
 				 * reuse.
 				 */
-				Connection.prototype.initializeFromJson = function() {
+				Connection.prototype.initializeFromJson = function(diagram) {
 					// Adjust anchor orientation
 					var orientation = this.determineOrientation();
 					if (orientation) {
@@ -152,16 +149,14 @@ define(
 						if (this.isDataFlow()) {
 							m_dataFlow.initializeFromJson(this.diagram.process,
 									this.modelElement);
-							this.propertiesPanel = m_dataFlowPropertiesPanel
-									.getInstance();
+							this.propertiesPanel = this.diagram.dataFlowPropertiesPanel;
 						} else {
 							if (!this.modelElement.prototype) {
 								this.modelElement.prototype = {};
 							}
 							m_utils.inheritMethods(this.modelElement.prototype,
 									m_controlFlow.prototype);
-							this.propertiesPanel = m_controlFlowPropertiesPanel
-									.getInstance();
+							this.propertiesPanel = diagram.controlFlowPropertiesPanel;
 
 							this.adjustConditionExpressionText();
 
@@ -458,8 +453,8 @@ define(
 								this.modelElement.outputDataMapping = {};
 							}
 
-							this.propertiesPanel = m_dataFlowPropertiesPanel
-									.getInstance();
+							this.propertiesPanel = this.diagram.dataFlowPropertiesPanel;
+							
 						} else {
 							this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
 
@@ -480,8 +475,7 @@ define(
 
 							this.modelElement = m_controlFlow
 									.createControlFlow(this.diagram.process);
-							this.propertiesPanel = m_controlFlowPropertiesPanel
-									.getInstance();
+							this.propertiesPanel = this.diagram.controlFlowPropertiesPanel;
 						}
 
 						this.refreshFromModelElement();

@@ -440,9 +440,7 @@ define(
 					m_modelerCanvasController.initialize(fullId, newId,
 							5000, 1000, 'toolbar');
 					var process = m_model.findProcess(fullId);
-					m_propertiesPanel
-					.initializeProcessPropertiesPanel(m_processPropertiesPanel
-							.getInstance(process));
+
 					this.showPropertiesPane();
 
 					m_utils.hideWaitCursor();
