@@ -167,7 +167,7 @@
 	    {
 	        "id":"sidebarLaunchPanels",
 	        "module":"bpm-ui",
-	        "controller": "bpm-ui.BpmUiCtrl",
+	        "controller": "bpm-ui.SidebarCtrl",
 	        "partial":"bpm-ui/partials/sidebarLaunchPanels.html"
 	    }
     ]
