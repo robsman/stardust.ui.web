@@ -1311,6 +1311,7 @@ public class ModelService
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
+      uuidMapper().map(processDefinition);
 
       // TODO Correct flags
 
@@ -1632,6 +1633,7 @@ public class ModelService
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
+      uuidMapper().map(processDefinition);
       ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
             extractString(json, "processFullId"));
 
