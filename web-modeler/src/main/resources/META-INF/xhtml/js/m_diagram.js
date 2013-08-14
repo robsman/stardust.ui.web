@@ -1808,7 +1808,7 @@ define(
 						y_adj = 100;
 						fromAnchor = 2;
 						toAnchor = 0;
-						if (m_constants.INTERMEDIATE_EVENT_TYPE == startSymbol.modelElement.eventType) {
+						if (m_utils.isIntermediateEvent(startSymbol)) {
 							fromAnchor = 2;
 							toAnchor = 0;
 						}
@@ -1817,7 +1817,7 @@ define(
 						y_adj = 0;
 						fromAnchor = 1;
 						toAnchor = 3;
-						if (m_constants.INTERMEDIATE_EVENT_TYPE == startSymbol.modelElement.eventType) {
+						if (m_utils.isIntermediateEvent(startSymbol)) {
 							fromAnchor = 1;
 							toAnchor = 0;
 						}
@@ -2001,7 +2001,7 @@ define(
 					var failed = false;
 					
 					if (this.currentSelection.length == 1) {
-						if (m_constants.INTERMEDIATE_EVENT_TYPE == this.currentSelection[0].modelElement.eventType) {
+						if (m_utils.isIntermediateEvent(this.currentSelection[0])) {
 							changeDescriptionsDiagram = this.currentSelection[0].dragStop_(false);
 							if(null == changeDescriptionsDiagram){
 								failed = true;

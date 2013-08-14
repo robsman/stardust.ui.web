@@ -1030,4 +1030,15 @@ define(
 				var regex = ".{1," + maxLength + "}(\\s|$)";
 				return content.match(RegExp(regex, "g")).join(brk);
 			}
+			
+			/**
+			 * checks if the symbol is of type Intermediate Event
+			 */
+			function isIntermediateEvent(symbol) {
+				if (symbol.modelElement
+						&& (m_constants.INTERMEDIATE_EVENT_TYPE == symbol.modelElement.eventType)) {
+					return true;
+				}
+				return false;
+			}
 		});
