@@ -973,8 +973,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyDataType"));
 						this.nameInput.addClass("error");
@@ -994,7 +993,7 @@ define(
 
 					nameInput.removeClass("error");
 
-					if ((nameInput.val() == null) || (this.nameInput.val() === "")) {
+					if (m_utils.isEmptyString(nameInput.val())) {
 						this.errorMessages
 								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyName"));
 						nameInput.addClass("error");

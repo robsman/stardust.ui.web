@@ -1043,8 +1043,7 @@ define(
 					this.userInput.removeClass("error");
 					this.passwordInput.removeClass("error");
 
-					if (this.serverInput.val() == null
-							|| this.serverInput.val() == "") {
+					if (m_utils.isEmptyString(this.serverInput.val())) {
 						this.view.errorMessages
 								.push("Mail server must be defined."); // TODO
 						// I18N
@@ -1053,8 +1052,7 @@ define(
 						valid = false;
 					}
 
-					if (this.userInput.val() == null
-							|| this.userInput.val() == "") {
+					if (m_utils.isEmptyString(this.userInput.val())) {
 						this.view.errorMessages.push("User must be defined."); // TODO
 						// I18N
 						this.userInput.addClass("error");
@@ -1062,8 +1060,7 @@ define(
 						valid = false;
 					}
 
-					if (this.passwordInput.val() == null
-							|| this.passwordInput.val() == "") {
+					if (m_utils.isEmptyString(this.passwordInput.val())) {
 						this.view.errorMessages
 								.push("Password must be defined."); // TODO
 						// I18N

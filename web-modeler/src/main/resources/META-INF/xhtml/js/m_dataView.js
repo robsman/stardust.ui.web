@@ -227,8 +227,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages.push("Data name must not be empty.");
 						this.nameInput.addClass("error");
 					}

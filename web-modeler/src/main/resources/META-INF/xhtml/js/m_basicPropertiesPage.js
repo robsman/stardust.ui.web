@@ -154,8 +154,7 @@ define(
 					this.propertiesPanel.clearErrorMessages();
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.propertiesPanel.errorMessages
 								.push("Name must not be empty.");
 						this.nameInput.addClass("error");

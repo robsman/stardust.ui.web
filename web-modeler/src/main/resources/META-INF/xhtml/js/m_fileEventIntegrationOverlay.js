@@ -414,8 +414,7 @@ define(
 					this.directoryNameInput.removeClass("error");
 					this.page.propertiesPanel.errorMessages=[];
 
-					if (this.directoryNameInput.val() == null
-							|| this.directoryNameInput.val() == "") {
+					if (m_utils.isEmptyString(this.directoryNameInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Directory name must not be empty.");
 						this.directoryNameInput.addClass("error");

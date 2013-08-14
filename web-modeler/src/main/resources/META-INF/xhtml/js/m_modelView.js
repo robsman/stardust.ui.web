@@ -254,8 +254,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Model name must not be empty.");
 						this.nameInput.addClass("error");
@@ -274,6 +273,9 @@ define(
 				 * Overridden
 				 */
 				ModelView.prototype.submitChanges = function(changes) {
+					if (!this.validate()) {
+						return;
+					}
 					// Generic attributes
 					// TODO Is this really needed?
 

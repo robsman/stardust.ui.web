@@ -112,8 +112,7 @@ define(
 					this.nameInput.removeClass("error");
 					this.camelContextInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Application name must not be empty.");
 						this.nameInput.addClass("error");

@@ -594,7 +594,7 @@ define(
 
 					this.uriInput.removeClass("error");
 
-					if (this.uriInput.val() == null || this.uriInput.val() == "")
+					if (m_utils.isEmptyString(this.uriInput.val())) 
 					{
 						this.view.errorMessages.push("URI must not be empty."); // TODO I18N
 						this.uriInput.addClass("error");

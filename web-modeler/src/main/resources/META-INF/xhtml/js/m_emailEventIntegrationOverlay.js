@@ -465,8 +465,7 @@ define(
 					this.page.propertiesPanel.errorMessages=[];
 																
 
-					if (this.mailServerInput.val() == null
-							|| this.mailServerInput.val() == "") {
+					if (m_utils.isEmptyString(this.mailServerInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Mail server name must not be empty.");
 						this.mailServerInput.addClass("error");
@@ -474,8 +473,7 @@ define(
 										
 					}
 
-					if (this.accountInput.val() == null
-							|| this.accountInput.val() == "") {
+					if (m_utils.isEmptyString(this.accountInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Mail account must not be empty.");
 						this.accountInput.addClass("error");
@@ -484,8 +482,7 @@ define(
 					}
 					
 
-					if (this.passwordInput.val() == null
-							|| this.passwordInput.val() == ""){
+					if (m_utils.isEmptyString(this.passwordInput.val())){
 						this.page.propertiesPanel.errorMessages
 								.push("Password must not be empty.");
 						this.passwordInput.addClass("error");
@@ -493,8 +490,7 @@ define(
 					
 					}
 					
-					if (this.portInput.val() == null
-							|| this.portInput.val() == "" || isNaN(this.portInput.val())) {
+					if (m_utils.isEmptyString(this.portInput.val()) || isNaN(this.portInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Port must be a Number.");
 						this.portInput.addClass("error");
@@ -502,8 +498,7 @@ define(
 					
 					}
 					
-					if (this.connectionTimeoutInput.val() == null
-							|| this.connectionTimeoutInput.val() == "" || isNaN(this.connectionTimeoutInput.val())) {
+					if (m_utils.isEmptyString(this.connectionTimeoutInput.val()) || isNaN(this.connectionTimeoutInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("ConnectionTimeout must be a Number.");
 						this.connectionTimeoutInput.addClass("error");
@@ -511,8 +506,7 @@ define(
 					
 					}
 					
-					if (this.initialDelayInput.val() == null
-							|| this.initialDelayInput.val() == "" || isNaN(this.initialDelayInput.val())) {
+					if (m_utils.isEmptyString(this.initialDelayInput.val()) || isNaN(this.initialDelayInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("InitialDelay must be a Number.");
 						this.initialDelayInput.addClass("error");

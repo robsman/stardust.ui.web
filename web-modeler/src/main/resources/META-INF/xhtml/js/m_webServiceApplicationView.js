@@ -251,8 +251,7 @@ define(
 						view : this
 					}, function(event) {
 						var endpointVal = null;
-						if (event.data.view.endpoint.val()
-								&& event.data.view.endpoint.val().trim() !== "") {
+						if (m_utils.isEmptyString(event.data.view.endpoint.val())) {
 							endpointVal = event.data.view.endpoint.val();
 						}
 						event.data.view.submitChanges({
@@ -492,8 +491,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Application name must not be empty.");
 						this.nameInput.addClass("error");

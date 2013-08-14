@@ -403,8 +403,7 @@ define(
 				GenericEndpointOverlay.prototype.validate = function() {
 					this.camelContextInput.removeClass("error");
 
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
+					if (m_utils.isEmptyString(this.camelContextInput.val())) {
 						this.view.errorMessages
 								.push("Camel Context must not be empty."); // TODO
 						// I18N
