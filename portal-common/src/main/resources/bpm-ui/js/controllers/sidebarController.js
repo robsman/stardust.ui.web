@@ -20,6 +20,26 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 			}
 		}
 
+		/*
+		 * 
+		 */
+		function resizeAndRepositionAllActive(hiddenCounter) {
+			if (window.BridgeUtils) {
+				BridgeUtils.FrameManager.resizeAndRepositionAllActive();
+			} else {
+				if (hiddenCounter == undefined) {
+					hiddenCounter = 4; // Max Iteration Count
+				}
+				
+				if (hiddenCounter > 0) {
+					// BridgeUtils is somehow not loaded. Very unlikely situation. But then wait.
+					window.setTimeout(function(){
+						resizeAndRepositionAllActive(--hiddenCounter);
+					}, 100);
+				}
+			}
+		}
+
 		// BridgeUtils not loaded at this point, so save these handlers in root for later use
 		$scope.$root.openSidebar = $scope.openSidebar;
 		$scope.$root.closeSidebar = $scope.closeSidebar;
@@ -36,6 +56,10 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 			$scope.openSidebar();
 			window.setTimeout(function(){
 				$scope.pinSidebar();
+				// Ideally this would not be needed, and should be covered by sidebar events
+				// But somehow 'sidebar pinned' event does not reach BridgeUtils listener
+				// So as a workaround fire resize iframe explicitly
+				resizeAndRepositionAllActive();
 			}, 900);
 		}, 100);
 	}]);
