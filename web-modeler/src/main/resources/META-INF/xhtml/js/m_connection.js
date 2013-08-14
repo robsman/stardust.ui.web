@@ -2141,7 +2141,7 @@ define(
 					m_messageDisplay.clearErrorMessages();
 					if (fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 						// Check for OUT connections on End Event
-						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
+						if (m_utils.isIntermediateEvent(fromAnchorPoint.symbol)) {
 							m_messageDisplay
 									.showErrorMessage("Only incoming sequence flow connections are allowed on End events.");
 							return false;
@@ -2226,7 +2226,7 @@ define(
 							return false;
 						} else if (toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
 							// Check for IN connections on Start Event
-							if (toAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) {
+							if (m_utils.isIntermediateEvent(toAnchorPoint.symbol)) {
 								m_messageDisplay
 										.showErrorMessage("Only outgoing sequence flow connections are allowed on Start events.");
 								return false;

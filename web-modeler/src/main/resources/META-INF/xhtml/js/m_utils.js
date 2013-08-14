@@ -144,7 +144,9 @@ define(
 
 				jQuerySelect : jQuerySelect,
 				
-				executeTimeoutLoop : executeTimeoutLoop
+				executeTimeoutLoop : executeTimeoutLoop,
+				
+				isIntermediateEvent : isIntermediateEvent
 			};
 			
 			/**
