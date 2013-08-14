@@ -319,18 +319,19 @@ define(
 				 */
 				TypeDeclaration.prototype.switchToComplexType = function() {
 					if (!this.isSequence() && this.getTypeDeclaration()) {
-						var td = this.getTypeDeclaration();
-						delete td.facets;
-						delete td.base;
-						delete td.method;
-
-						td.body = [{
-							name : "<sequence>",
-							icon : "XSDModelGroupSequence.gif",
-							classifier : "sequence",
-							body : []
-						}];
-						td.icon = "XSDComplexTypeDefinition.gif";
+						delete this.typeDeclaration.schema.elements;
+						var types = [];
+						types[0] = {
+							name: this.getTypeDeclaration().name,
+							classifier: "complexType",
+							body: [{
+								name : "<sequence>",
+								icon : "XSDModelGroupSequence.gif",
+								classifier : "sequence",
+								body : []
+							}]							
+						};
+						this.typeDeclaration.schema.types = types;
 					}
 				};
 
