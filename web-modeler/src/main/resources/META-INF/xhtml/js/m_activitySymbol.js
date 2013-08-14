@@ -685,9 +685,7 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
-								// do nothing
-							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
 								if (connection.toAnchorPoint.symbol.modelElement
 										&& connection.fromAnchorPoint.symbol.modelElement.id in dataMapping) {
