@@ -184,7 +184,7 @@ public class ParticipantUtils
             {
                modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
             }
-            for (DeployedModel model : ModelUtils.getAllModels())
+            for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
             {
                if (model.getId().equals(modelId))
                {

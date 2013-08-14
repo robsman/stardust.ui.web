@@ -663,7 +663,7 @@ public class WorklistTableBean extends UIComponentBean
    private void initColumnModel()
    {
       ColumnPreference activityNameCol = new ColumnPreference(Constants.COL_ACTIVITY_NAME,
-            "activityName", this.getMessages().getString("column.overview"),
+            "processName", this.getMessages().getString("column.overview"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
 
       activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
@@ -1487,11 +1487,7 @@ public class WorklistTableBean extends UIComponentBean
       public Object handleCellExport(ExportType exportType, ColumnPreference column, WorklistTableEntry row,
             Object value)
       {
-         if (Constants.COL_ACTIVITY_NAME.equals(column.getColumnName()))
-         {
-            return row.getProcessName();
-         }
-         else if (Constants.COL_PRIORITY.equals(column.getColumnName()))
+         if (Constants.COL_PRIORITY.equals(column.getColumnName()))
          {
             return ProcessInstanceUtils.getPriorityLabel(row.getProcessPriority());
          }
