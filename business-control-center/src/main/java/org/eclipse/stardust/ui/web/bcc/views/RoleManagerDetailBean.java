@@ -329,12 +329,12 @@ public class RoleManagerDetailBean extends UIComponentBean
    {
       try
       {
-         this.roleName = roleItem.getRoleName().toString() != "" ? roleItem.getRoleName().toString() : roleName;
-         this.roleId = roleItem.getRole().getId() != "" ? roleItem.getRole().getId() : roleId;
-         this.items = Long.toString(roleItem.getWorklistCount()) != ""
+         this.roleName = (!roleItem.getRoleName().toString().equals("")) ? roleItem.getRoleName().toString() : roleName;
+         this.roleId = (!roleItem.getRole().getId().equals("")) ? roleItem.getRole().getId() : roleId;
+         this.items = (!Long.toString(roleItem.getWorklistCount()).equals(""))
                ? Long.toString(roleItem.getWorklistCount())
                : items;
-         this.account = Long.toString(roleItem.getUserCount()) != "" ? Long.toString(roleItem.getUserCount()) : account;
+         this.account = (!Long.toString(roleItem.getUserCount()).equals("")) ? Long.toString(roleItem.getUserCount()) : account;
          this.itemsPerUser = Long.toString(roleItem.getEntriesPerUser()) != null ? Long.toString(roleItem
                .getEntriesPerUser()) : itemsPerUser;
          setRoleModifiable(canUserModifyRole());

@@ -134,7 +134,7 @@ public class StartableProcessBean extends AbstractLaunchPanel implements Initial
 
                               if (grant.getDepartment() != null)
                               {
-                                 if (grant.getDepartment().getName() != Department.DEFAULT.getName())
+                                 if (!grant.getDepartment().getName().equals(Department.DEFAULT.getName()))
                                  {
                                     mapData.get(modelparticipant1).add(grant.getDepartment());
                                     deptList.add(grant.getDepartment());

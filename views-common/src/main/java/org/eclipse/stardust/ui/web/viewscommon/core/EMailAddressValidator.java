@@ -96,7 +96,7 @@ public class EMailAddressValidator implements Validator
    {
       String mailAddress = (String) value;
 
-      if (mailAddress != "" && !validateEmailAddress(mailAddress))
+      if ((!mailAddress.equals("")) && !validateEmailAddress(mailAddress))
       {
          FacesMessage message = new FacesMessage();
          String msg= viewsCommonMessage.getString("common.invalidFormat.error" );

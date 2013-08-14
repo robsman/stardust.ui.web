@@ -250,7 +250,7 @@ public final class WebServiceApplicationUtils
                   WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.toString());
             // (fh) client is sending unqualified name
             QName qname = QName.valueOf(portName);
-            if (XMLConstants.NULL_NS_URI == qname.getNamespaceURI())
+            if (XMLConstants.NULL_NS_URI.equals(qname.getNamespaceURI()))
             {
                String tns = definition.getTargetNamespace();
                if (tns != null && tns.length() > 0)
@@ -553,7 +553,7 @@ public final class WebServiceApplicationUtils
    private static Service findService(Definition definition, String newService)
    {
       QName serviceName = QName.valueOf(newService);
-      if (serviceName.getNamespaceURI() == XMLConstants.NULL_NS_URI)
+      if (serviceName.getNamespaceURI().equals(XMLConstants.NULL_NS_URI))
       {
          @SuppressWarnings("unchecked")
          Map<?, Service> services = definition.getServices();
