@@ -1213,11 +1213,13 @@ public class WorkflowFacade implements Resetable
                   modelParticipantInfo = role;
                }
 
-               String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
-               if (teamleadRoles.containsKey(participantKey))
+               if (null != modelParticipantInfo)
                {
-                  filter.add(ParticipantAssociationFilter
-                        .forTeamLeader((RoleInfo) modelParticipantInfo));
+                  String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+                  if (teamleadRoles.containsKey(participantKey))
+                  {
+                     filter.add(ParticipantAssociationFilter.forTeamLeader((RoleInfo) modelParticipantInfo));
+                  }
                }
             }
          }
