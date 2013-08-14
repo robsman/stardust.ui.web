@@ -326,7 +326,6 @@ define(
 				 *
 				 */
 				DataView.prototype.submitDataChanges = function(dataChanges) {
-					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
 				};
 
