@@ -1195,7 +1195,7 @@ public class PortalApplication
    public void updateViewIconClass(View view)
    {
       String iconClass = deriveIconClass(view.getIcon());
-      // FOR PANAMA
+
       String popupScript;
       String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
       if (StringUtils.isNotEmpty(html5FWViewId))
@@ -1215,8 +1215,8 @@ public class PortalApplication
     */
    public void updateViewTitle(View view)
    {
-      String title = view.getLabel();
-      // FOR PANAMA
+      String title = view.getFullLabel();
+
       String popupScript;
       String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
       if (StringUtils.isNotEmpty(html5FWViewId))
