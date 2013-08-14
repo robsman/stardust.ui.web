@@ -26,14 +26,6 @@
    	    <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
     </lifecycle>
 
-	<managed-bean>
-		<managed-bean-name>common_msgPropsBean</managed-bean-name>
-		<managed-bean-class>
-			org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean
-		</managed-bean-class>
-		<managed-bean-scope>session</managed-bean-scope>
-	</managed-bean>
-
    <navigation-rule>
       <navigation-case>
          <from-outcome>ippPortalLogout</from-outcome>

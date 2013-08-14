@@ -90,5 +90,5 @@
 		<property name="navigationProvider" ref="navigationProvider" />
 		<property name="preferenceProvider" ref="preferenceProvider"/>
 	</bean>
-   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"      scope="session" />
+   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"      scope="session" />          <bean name="common_msgPropsBean"		class="org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean"		scope="session" />  
 </beans>

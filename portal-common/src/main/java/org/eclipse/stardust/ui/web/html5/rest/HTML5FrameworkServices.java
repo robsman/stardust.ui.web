@@ -19,13 +19,15 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.env.RuntimeEnvironmentInfoProvider;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
-import org.springframework.core.io.ClassPathResource;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 
 
 /**
@@ -47,13 +49,17 @@ public class HTML5FrameworkServices
    @Path("config")
    public Response config(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
+      System.out.println("##########################LOCALE1: "+ locale);
       String contents = getCodeResource("bpm-ui/templates/config.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
 
-      // TODO: Read from property bundle
-      contents = StringUtils.replace(contents, "PORTAL_TITLE", "Infinity Process Platform");
-      contents = StringUtils.replace(contents, "LOCALE_ID", "en");
-      contents = StringUtils.replace(contents, "SIDEBAR_LABEL", "Navigation");
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+
+      contents = StringUtils.replace(contents, "PORTAL_TITLE",
+            messageBean.getString("portalFramework.config.PORTAL_TITLE"));
+      contents = StringUtils.replace(contents, "SIDEBAR_LABEL",
+            messageBean.getString("portalFramework.config.SIDEBAR_LABEL"));
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
@@ -70,6 +76,18 @@ public class HTML5FrameworkServices
             RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
       
       String version = "";
+    
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+      
+      contents = StringUtils.replace(contents, "PORTAL_LABEL",
+            messageBean.getString("portalFramework.navigation.PORTAL_LABEL"));
+      contents = StringUtils.replace(contents, "CONFIGURATION_LABEL",
+            messageBean.getString("portalFramework.navigation.CONFIGURATION_LABEL"));
+      contents = StringUtils.replace(contents, "ALERTS_LABEL",
+            messageBean.getString("portalFramework.navigation.ALERTS_LABEL"));
+      contents = StringUtils.replace(contents, "SIGN_OUT_LABEL",
+            messageBean.getString("portalFramework.navigation.SIGN_OUT_LABEL"));
       try
       {
          RuntimeEnvironmentInfoProvider envInfoProvider = RestControllerUtils.resolveSpringBean(RuntimeEnvironmentInfoProvider.class, servletContext);

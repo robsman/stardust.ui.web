@@ -2,7 +2,6 @@
 	"windowTitle": "PORTAL_TITLE",
 	"appId": "ipp",
 	"appTitle": "PORTAL_TITLE",
-	"locale": "LOCALE_ID",
 	"sidebar": {
 	    "title": "SIDEBAR_LABEL",
 	    "name": "main",
