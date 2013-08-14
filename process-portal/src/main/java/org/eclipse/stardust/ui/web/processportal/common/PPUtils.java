@@ -54,6 +54,8 @@ import org.eclipse.stardust.engine.api.runtime.ActivityCompletionLog;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.client.model.ProcessFilter;
 import org.eclipse.stardust.ui.client.model.ProcessFilters;
@@ -61,6 +63,7 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.WorklistSelectionEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IFilterProvider;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -73,6 +76,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
 
@@ -681,7 +685,16 @@ public class PPUtils
          break;
 
       case USER:
-         iconPath = MyPicturePreferenceUtils.getLoggedInUsersImageURI();
+         if(participantInfo.getQualifiedId().equals(SessionContext.findSessionContext().getUser().getQualifiedId()))
+         {
+            iconPath = MyPicturePreferenceUtils.getLoggedInUsersImageURI();            
+         }
+         else
+         {
+            UserInfo userInfo = (UserInfo) participantInfo;
+            User user = UserUtils.getUser(userInfo.getId());
+            iconPath = MyPicturePreferenceUtils.getUsersImageURI(user);   
+         }
          break;
 
       case USERGROUP:
