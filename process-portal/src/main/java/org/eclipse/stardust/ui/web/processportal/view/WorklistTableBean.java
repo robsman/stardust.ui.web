@@ -52,6 +52,7 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -252,7 +253,21 @@ public class WorklistTableBean extends UIComponentBean
          showAllWorklist = (Boolean) getParamFromView("showAllWorklist");
          if (StringUtils.isNotEmpty(wrappedLabel))
          {
+            if (showAllWorklist)
+            {
+               this.view.setLabel(getMessages().getString("label.unifiedWorklist") + " "
+                     + getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            else if (participantInfo instanceof UserInfo)
+            {
+               this.view.setLabel(getMessages().getString("label.personalWorklist") + " "
+                     + getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            else
+            {
                this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            PortalApplication.getInstance().updateViewTitle(this.view);
          }
          
          break;
