@@ -12,6 +12,7 @@
 	border: none;
 	background-color: black;
 	opacity: 0.3;
+	opacity: 0.2 \0/; /* For IE9 and IE8 */
 	z-index: 1000;
 	position: fixed;
 	left: 0;
@@ -25,6 +26,7 @@
 	border: none;
 	background-color: black;
 	opacity: 0.5;
+	opacity: 0.3 \0/; /* For IE9 and IE8 */
 	z-index: 1000;
 	position: fixed;
 	left: 0;
@@ -38,6 +40,7 @@
 	border: none;
 	background-color: black;
 	opacity: 0.5;
+	opacity: 0.25 \0/; /* For IE9 and IE8 */
 	z-index: 1000;
 	position: fixed;
 	left: 0;
