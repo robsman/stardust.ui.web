@@ -311,9 +311,13 @@ public class ModelUtils
       DocumentType result = null;
       int modelOid = model.getModelOID();
 
-      if (data.getModelOID() == modelOid && null != model.getData(data.getId())
-            && DocumentTypeUtils.isDmsDocumentData(data.getTypeId()))
+      if (DocumentTypeUtils.isDmsDocumentData(data.getTypeId()))
       {
+         if(data.getModelOID() != modelOid && null != model.getData(data.getId()))
+         {
+            model = getModel(data.getModelOID());
+         }         
+         
          String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(data);
          Reference ref = data.getReference();
          if (ref != null)
