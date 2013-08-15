@@ -38,7 +38,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
-import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -805,89 +804,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                               ModelUtils.findContainingModel(application), application));
                }
             }
-
-            String[] contexts = new String[] {
-                  PredefinedConstants.DEFAULT_CONTEXT,
-                  PredefinedConstants.APPLICATION_CONTEXT,
-                  PredefinedConstants.PROCESSINTERFACE_CONTEXT,
-                  PredefinedConstants.ENGINE_CONTEXT};
-
-            JsonObject contextsJson = new JsonObject();
-
-            activityJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
-
-            for (String context : contexts)
-            {
-               JsonObject contextJson = new JsonObject();
-
-               contextsJson.add(context, contextJson);
-
-               JsonArray accessPointsJson = new JsonArray();
-
-               contextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY, accessPointsJson);
-
-               // Activity has no model as parent --> it has been deleted from the model
-               if (ModelUtils.findContainingModel(activity) != null)
-               {
-                  for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
-                        activity, true, context))
-                  {
-                     JsonObject accessPointJson = new JsonObject();
-
-                     accessPointsJson.add(accessPointJson);
-                     accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                           accessPoint.getId());
-                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                           accessPoint.getName());
-                     accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                           accessPoint.getDirection().getLiteral());
-
-                     if (accessPoint.getType() != null)
-                     {
-                        accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                              accessPoint.getType().getId());
-                     }
-
-                     loadAttributes(accessPoint, accessPointJson);
-                     loadDescription(accessPointJson, accessPoint);
-                  }
-
-                  for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
-                        activity, false, context))
-                  {
-                     if (DirectionType.INOUT_LITERAL == accessPoint.getDirection())
-                     {
-                        // skip INOUT access points since they were already added for IN
-                        // direction.
-                        continue;
-                     }
-                     JsonObject accessPointJson = new JsonObject();
-
-                     accessPointsJson.add(accessPointJson);
-                     accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                           accessPoint.getId());
-                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                           accessPoint.getName());
-                     accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                           accessPoint.getDirection().getLiteral());
-
-                     if (accessPoint.getType() != null)
-                     {
-                        accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                              accessPoint.getType().getId());
-                     }
-
-                     loadAttributes(accessPoint, accessPointJson);
-                     loadDescription(accessPointJson, accessPoint);
-                  }
-               }
-            }
-
-            /*
-             * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
-             * activity.getPerformer().getId()); }
-             */
-
          }
       }
       return activityJson;
