@@ -60,8 +60,8 @@ define(
 
 
 					this.invocationTypeInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationTypeInput");
-					this.invocationTypeInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
-						.getProperty("None") + "</option>");
+				//	this.invocationTypeInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
+					//	.getProperty("None") + "</option>");
 					this.invocationTypeInput.append("<option value=\"synchronous\">" + m_i18nUtils
 						.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationType.synchronous") + "</option>");
 					this.invocationTypeInput.append("<option value=\"asynchronous\">" + m_i18nUtils
