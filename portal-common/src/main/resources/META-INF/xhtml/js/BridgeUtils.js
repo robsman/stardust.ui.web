@@ -1193,7 +1193,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					var newX = iFrame.posX - scrollPos.x;
 					var newY = iFrame.posY - scrollPos.y;
 
-					// Hide the content frame, so that the right scroll position can be retrieved 
+					// Hide the content frame, so that the right scroll position can be retrieved
 					contentFrame.style.display = "none";
 
 					var scrollWidth = document.body.scrollWidth;
@@ -1205,7 +1205,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					if (right > scrollWidth){
 						newX -= (right - scrollWidth) + 25; // Buffer for scrollbar
 					}
-					if (bottom > scrollHeight){
+					if (bottom > scrollHeight && contentFrame.style.position != 'fixed') {
 						newY -= (bottom - scrollHeight) + 25; // Buffer for scrollbar
 					}
 
@@ -1406,6 +1406,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					if (width != undefined || height != undefined) {
 						autoResize = false;
 					}
+					var positionType = advanceArgs.positionType;
 				} else {
 					// Read From Frame Attributes
 					anchorId = getFrameAttribute(contentFrame, 'anchorId');
@@ -1418,7 +1419,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					widthAdjustment = getFrameAttribute(contentFrame, 'widthAdjustment', 'Integer');
 					heightAdjustment = getFrameAttribute(contentFrame, 'heightAdjustment', 'Integer');
 				}
-
+				
 				// Set Defaults
 				autoResize = autoResize != undefined ? autoResize : true;
 				widthAdjustment = widthAdjustment != undefined ? widthAdjustment : 0;
@@ -1426,7 +1427,8 @@ if (!window["BridgeUtils"].FrameManager) {
 				openOnRight = openOnRight != undefined ? openOnRight : true;
 				anchorXAdjustment = anchorXAdjustment != undefined ? anchorXAdjustment : 0;
 				anchorYAdjustment = anchorYAdjustment != undefined ? anchorYAdjustment : 0;
-
+				positionType = positionType == undefined ? getFrameAttribute(contentFrame, 'positionType') : positionType;
+				
 				if (anchorId == undefined) {
 					anchorId = 'ippActivityPanelAnchor';
 					autoResize = true;
@@ -1463,13 +1465,17 @@ if (!window["BridgeUtils"].FrameManager) {
 						posX += anchorXAdjustment;
 	
 						var posY = pos.y + anchorYAdjustment;
-	
-						contentFrame.style.position = 'absolute';
+						
+						if(positionType){
+							contentFrame.style.position = positionType;
+						}else{
+							contentFrame.style.position = 'absolute';	
+						}
 						contentFrame.style.left = posX + 'px';
 						contentFrame.style.top = posY + 'px';
 						contentFrame.style.width = iFrameWith + 'px';
 						contentFrame.style.height = iFrameHeight + 'px';
-	
+						
 						if (border != undefined) {
 							contentFrame.style.border = border;
 						}
@@ -1490,17 +1496,17 @@ if (!window["BridgeUtils"].FrameManager) {
 						contentFrame.setAttribute('autoResize', autoResize);							
 						contentFrame.setAttribute('widthAdjustment', widthAdjustment);
 						contentFrame.setAttribute('heightAdjustment', heightAdjustment);
-	
+						contentFrame.setAttribute('positionType', positionType);
+						
 						// Finally make iFrame visible
 						contentFrame.style.display = 'inline';
 	
 						addIframe(contentId, posX, posY);
-	
+						
 						// This is needed because if page is scrolled at the time of iFrame activation
 						// Then it has to be readjusted for scroll position.
 						handleScroll();
 						handleViewScroll(viewFrameData.win, contentFrame);
-	
 						BridgeUtils.log("Frame Activated = " + contentId);
 					}
 				}

@@ -26,15 +26,13 @@ function restoreTiffIframe(iframeId, anchorId) {
 	var windowHeight = document.body.clientHeight;
 	
 	docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;
-	docHeight = parseInt(windowHeight)+55;
-	
-	docHeight -= topValue;
+	docHeight = parseInt(windowHeight);
+
+	docHeight -= (topValue/6);
 	
 	if (document.getElementById('tiffViewerIframe')) {
-			document.getElementById('tiffViewerIframe').style.width = docWidth;
-			+'px';
-			document.getElementById('tiffViewerIframe').style.height = docHeight;
-			+'px';
+			document.getElementById('tiffViewerIframe').style.width = docWidth +'px';
+			document.getElementById('tiffViewerIframe').style.height = docHeight +'px';
 
 			window.parent.EventHub.events.publish('CANVAS_RESIZED', docWidth,
 					docHeight);
@@ -65,7 +63,8 @@ function activateAndResizeIframe(iframeId, defaultPath) {
 				canvasHeight : docHeight,
 				width : docWidth,
 				height : docHeight,
-				anchorId : anchorId
+				anchorId : anchorId,
+				positionType : 'fixed'
 			});
 
 }
