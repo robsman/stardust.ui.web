@@ -169,6 +169,14 @@ define(
 						}
 					}
 
+					// Return true if activity is a sub-process activity with copyAllData disabled,
+					// as in this case engine context access points are generated on the fly
+					if (this.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.subprocessMode !== "synchShared"
+							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
+						return true;
+					}
+					
 					return false;
 				};
 
@@ -187,6 +195,14 @@ define(
 						}
 					}
 
+					// Return true if activity is a sub-process activity with copyAllData disabled,
+					// as in this case engine context access points are generated on the fly
+					if (this.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.subprocessMode !== "synchShared"
+							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
+						return true;
+					}
+					
 					return false;
 				};
 			}

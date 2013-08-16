@@ -439,6 +439,7 @@ define(
 							group.append(option);
 						}
 					}
+					this.populateEngineAccessPoints(this.inputAccessPointSelectInput);
 				};
 
 				/**
@@ -508,8 +509,37 @@ define(
 							group.append(option);
 						}
 					}
+					this.populateEngineAccessPoints(this.outputAccessPointSelectInput);
 				};
 
+				/**
+				 *
+				 */
+				DataFlowBasicPropertiesPage.prototype.populateEngineAccessPoints = function(inputElement) {
+					// Generate engine context access points for all data in the model,
+					// for sub-process activities with where copyAllData is disabled.
+					if (this.getModelElement()
+							&& this.getModelElement().activity
+							&& this.getModelElement().activity.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.getModelElement().activity.subprocessMode !== "synchShared"
+							&& (this.getModelElement().activity.attributes 
+									&& !this.getModelElement().activity.attributes["carnot:engine:subprocess:copyAllData"])) {
+						
+						var group = m_utils.jQuerySelect("<optgroup label='engine'/>"); // I18N
+						inputElement.append(group);
+						for (var i in this.getModel().dataItems) {
+							var d = this.getModel().dataItems[i];
+							var option = "<option value='engine:";
+							option += d.id;
+							option += "'>";
+							option += d.name;
+							option += "</option>";
+
+							group.append(option);
+						}	
+					}
+				};
+				
 				/**
 				 *
 				 */
