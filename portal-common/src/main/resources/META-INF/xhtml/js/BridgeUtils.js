@@ -363,11 +363,6 @@ if (!window["BridgeUtils"].View) {
 					var view = getViewPanel($scope, viewId);
 					if (view) {
 						if (!view.markedForClosing) {
-							// HTML5 Framework uses timeout for publishing sgViewPanelCloseIntent and this is asynchronous
-							// Because of this callback function get called after entire script is run
-							// Due to this when callback function is called BridgeUtils.isScriptRunning() returns false
-							// Below hack is added to get around this 
-
 							view.markedForClosing = true;
 							$scope.close(viewId);
 						} else {
@@ -441,7 +436,7 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.log("Processing View Close Intent Event for View = " + view.path);
 
 			if (isPortalPath(view.path)) {
-				if (BridgeUtils.isScriptRunning() || view.markedForClosing) {
+				if (BridgeUtils.isScriptRunning()) {
 					var iframeId = view.params["iframeId"];
 					var iframe = document.getElementById(iframeId);
 					BridgeUtils.log("iFrame to be removed = " + iframeId);
