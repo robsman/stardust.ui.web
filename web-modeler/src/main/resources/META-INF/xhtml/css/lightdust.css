@@ -685,7 +685,7 @@ tr.locked {
 .modelerTooltip {
 	visibility: hidden;
 	position: absolute;
-	background: url("plugins/views-common/images/notes-background.png") top
+	background: url("../images/tooltip-background.png") top
 		repeat-x #ffffe0;;
 	min-width: 250px;
 	min-height: 100px;
