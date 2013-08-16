@@ -139,6 +139,13 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				Activity.prototype.isApplicationActivity = function() {
+					return ((this.activityType == m_constants.TASK_ACTIVITY_TYPE) && (this.taskType != m_constants.MANUAL_TASK_TYPE));
+				};
+				
+				/**
 				 *
 				 */
 				Activity.prototype.getContexts = function() {

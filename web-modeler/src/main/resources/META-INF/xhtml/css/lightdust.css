@@ -680,3 +680,32 @@ tr.locked {
 	width: 400px;
 	height: 200px;
 }
+
+/* Modeler Tooltip */
+.modelerTooltip {
+	visibility: hidden;
+	position: absolute;
+	background: url("plugins/views-common/images/notes-background.png") top
+		repeat-x #ffffe0;;
+	min-width: 250px;
+	min-height: 100px;
+	border: 1px solid #999;
+	color: #c99400;
+	z-index: 10000
+}
+
+.modelerTooltipHeader {
+	min-height: 15px;
+	padding-left: 10px;
+	padding-top: 10px;
+	font-weight: bold;
+	color: black;
+}
+
+.modelerTooltipBody {
+	padding-top: 5px;
+	padding-left: 10px;
+	border-top: 1px dotted #999;
+	margin: 10px;
+	color: #CC6600 !important
+}

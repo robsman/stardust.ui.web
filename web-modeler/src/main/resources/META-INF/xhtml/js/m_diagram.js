@@ -155,6 +155,9 @@ define(
 				this.swimlanePropertiesPanel = null;
 				this.controlFlowPropertiesPanel = null;
 				this.dataFlowPropertiesPanel = null;
+				
+				//Tooltip
+				this.applicationActivityTooltip = m_utils.jQuerySelect("#applicationActivityTooltip");
 
 				// Exclude Click from readonly check to show properties panel
 				this.background.click(Diagram_clickClosure);
@@ -267,7 +270,7 @@ define(
 				}
 
 				var selectModeButton = m_utils.jQuerySelect("#selectModeButton");
-
+				
 				selectModeButton.click({
 					"diagram" : this
 				}, function(event) {

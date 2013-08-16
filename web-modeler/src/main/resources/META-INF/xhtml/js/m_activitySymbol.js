@@ -162,6 +162,7 @@ define(
 					transferObject.boundaryEvents = null;
 					transferObject.viewManager = null;
 					transferObject.boundaryEventSymbols = null;
+					transferObject.applicationActivitiesIcon = null;
 					return transferObject;
 				};
 
@@ -278,16 +279,69 @@ define(
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
+					
+					this.applicationActivitiesIcon = this.diagram.canvasManager.getNewSet();
+					this.applicationActivitiesIcon.push(this.receiveTaskIcon);
+					this.applicationActivitiesIcon.push(this.ruleTaskIcon);
+					this.applicationActivitiesIcon.push(this.scriptTaskIcon);
+					this.applicationActivitiesIcon.push(this.sendTaskIcon);
+					this.applicationActivitiesIcon.push(this.serviceTaskIcon);
+					this.applicationActivitiesIcon.push(this.userTaskIcon);
+					this.applicationActivitiesIcon.push(this.parallelMultiProcessingMarkerIcon);
+					this.applicationActivitiesIcon.push(this.sequentialMultiProcessingMarkerIcon);
 				};
 
 				/**
 				 *
 				 */
 				ActivitySymbol.prototype.initializeEventHandling = function() {
-					this.subprocessMarkerIcon
-							.mousemove(ActivitySymbol_subprocessMarkerIconMouseMoveClosure);
-					this.subprocessMarkerIcon
-							.click(ActivitySymbol_subprocessMarkerIconClickClosure);
+					//Subprocess activity
+					this.subprocessMarkerIcon.mouseover(ActivitySymbol_subprocessMarkerIconMouseOverClosure);
+					
+					this.subprocessMarkerIcon.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
+					
+					this.subprocessMarkerIcon.click(ActivitySymbol_subprocessMarkerIconClickClosure);
+					
+					if (this.modelElement.isApplicationActivity()) {
+						//MouseHover event
+						this.applicationActivitiesIcon
+								.mouseover(ActivitySymbol_applicationActivityIconMouseOverClosure);
+					
+						//MouseOut event
+						this.applicationActivitiesIcon
+								.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
+						
+						//Click event
+						if(!this.modelElement.applicationFullId){
+							m_utils.debug("Application Full Id not defined for " + this.modelElement.name);
+							return;
+						}
+						
+						var application = m_model
+								.findApplication(this.modelElement.applicationFullId);
+
+						var model = m_model
+								.findModel(m_model
+										.stripModelId(this.modelElement.applicationFullId));
+
+						var applicationeMD = this.getApplicationMD(application);
+
+						var self = this;
+
+						this.applicationActivitiesIcon.click(function(e) {
+							/* e.preventDefault(); */
+							self.viewManager.openView(
+									applicationeMD.applicationViewName,
+									"applicationId=" + application.id
+											+ "&modelId=" + model.id
+											+ "&applicationName="
+											+ application.name + "&fullId="
+											+ application.getFullId(),
+									application.getFullId());
+							return false;
+						});
+					}
+					
 				};
 
 				/**
@@ -611,8 +665,48 @@ define(
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.onSubprocessMarkerIconMouseMove = function() {
+				ActivitySymbol.prototype.onSubprocessMarkerIconMouseOver = function() {
 					this.showPointerCursor();
+
+					var model = m_model.findModel(m_model
+							.stripModelId(this.modelElement.subprocessFullId));
+					var process = m_model
+							.findProcess(this.modelElement.subprocessFullId);
+
+					// HTML encode newline and other characters
+					var description = process.description
+							.replace(/&/g, '&amp;').replace(/>/g, '&gt;')
+							.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+
+					// Fill in the Application Name and Description
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.find("#name").html(process.name);
+					applicationActivityTooltip.find("#description").html(
+							description);
+
+					// Set the Application Icon
+					applicationActivityTooltip.find("#icon").attr("src",
+							"plugins/bpm-modeler/images/icons/process.png");
+
+					// Fade out the tooltip on mouse click
+					applicationActivityTooltip.click(function() {
+						applicationActivityTooltip.fadeOut("slow");
+					});
+
+					// Position the tooltip to the left of the Activity so as to
+					// have minimum overlap with it
+					var toolTipX = this.x
+							+ this.diagram.getCanvasPosition().left
+							- applicationActivityTooltip.width() + 55;
+					var toolTipY = this.y
+							+ this.diagram.getCanvasPosition().top + 35;
+
+					// Fade in the tooltip
+					applicationActivityTooltip.css("visibility", "visible")
+							.moveDiv({
+								"x" : toolTipX,
+								"y" : toolTipY
+							}).hide().fadeIn("slow");
 				};
 
 				/**
@@ -639,6 +733,106 @@ define(
 							process.uuid);
 				};
 
+				ActivitySymbol.prototype.onApplicationActivityIconMouseOut = function() {
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.fadeOut("slow");
+				};
+				
+				/**
+				 *
+				 */
+				ActivitySymbol.prototype.onApplicationActivityIconMouseOver = function() {
+					this.showPointerCursor();
+
+					var model = m_model.findModel(m_model
+							.stripModelId(this.modelElement.applicationFullId));
+					var application = m_model
+							.findApplication(this.modelElement.applicationFullId);
+
+					// HTML encode newline and other characters
+					var description = application.description.replace(/&/g,
+							'&amp;').replace(/>/g, '&gt;')
+							.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+
+					// Fill in the Application Name and Description
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.find("#name").html(
+							application.name);
+					applicationActivityTooltip.find("#description").html(
+							description);
+
+					// Determine the View name and Icon name based on the
+					// Application Type
+					var applicationMD = this.getApplicationMD(application);
+
+					// Set the Application Icon
+					applicationActivityTooltip.find("#icon").attr("src",
+							applicationMD.applicationIcon);
+
+					// Fade out the tooltip on mouse click
+					applicationActivityTooltip.click(function() {
+						applicationActivityTooltip.fadeOut("slow");
+					});
+
+					// Position the tooltip to the left of the Activity so as to
+					// have minimum overlap with it
+					var toolTipX = this.x
+							+ this.diagram.getCanvasPosition().left
+							- applicationActivityTooltip.width() + 15;
+					var toolTipY = this.y
+							+ this.diagram.getCanvasPosition().top + 30;
+
+					// Fade in the tooltip
+					applicationActivityTooltip.css("visibility", "visible")
+							.moveDiv({
+								"x" : toolTipX,
+								"y" : toolTipY
+							}).hide().fadeIn("slow");
+
+				};
+
+				/**
+				 * return Applicatio Type Metadata
+				 */
+				ActivitySymbol.prototype.getApplicationMD = function(
+						application) {
+					var applicationMD = new Object();
+					var applicationIcon, applicationType, applicationViewName;
+					switch (application.applicationType) {
+					case "webservice":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-web-service.png";
+						applicationMD.applicationType = "Web Service Application"
+						applicationMD.applicationViewName = "webServiceApplicationView";
+						break;
+
+					case "messageTransformationBean":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-message-trans.png";
+						applicationMD.applicationType = "Message Transformation Application"
+						applicationMD.applicationViewName = "messageTransformationApplicationView";
+						break;
+
+					case "camelSpringProducerApplication":
+					case "camelConsumerApplication":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-camel.png";
+						applicationMD.applicationType = "Camel Application"
+						applicationMD.applicationViewName = "camelApplicationView";
+						break;
+
+					case "interactive":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-c-ext-web.png";
+						applicationMD.applicationType = "UI Mashup Application"
+						applicationMD.applicationViewName = "uiMashupApplicationView";
+						break;
+
+					default:
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/applications-blue.png";
+						applicationMD.applicationType = "Unknown Application"
+						applicationMD.applicationViewName = "genericApplicationView";
+					}
+					return applicationMD;
+				};
+				
+				
 				/**
 				 * Update the modelElement
 				 */
@@ -1013,11 +1207,11 @@ define(
 			/**
 			 *
 			 */
-			function ActivitySymbol_subprocessMarkerIconMouseMoveClosure() {
+			function ActivitySymbol_subprocessMarkerIconMouseOverClosure() {
 				this.auxiliaryProperties.callbackScope
-						.onSubprocessMarkerIconMouseMove();
+						.onSubprocessMarkerIconMouseOver();
 			}
-
+			
 			/**
 			 *
 			 */
@@ -1026,6 +1220,18 @@ define(
 						.onSubprocessMarkerIconClick();
 			}
 
+			/**
+			 *
+			 */
+			function ActivitySymbol_applicationActivityIconMouseOverClosure() {
+				this.auxiliaryProperties.callbackScope
+						.onApplicationActivityIconMouseOver();
+			}
+
+			function ActivitySymbol_applicationActivityIconMouseOutClosure() {
+				this.auxiliaryProperties.callbackScope
+						.onApplicationActivityIconMouseOut();
+			}
 			/**
 			 *
 			 */
