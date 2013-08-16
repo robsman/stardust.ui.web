@@ -164,7 +164,7 @@
         </init-param>
      	<init-param>
             <param-name>skipExtenssions</param-name>
-            <param-value>.xhtml,.jsp</param-value>
+            <param-value>.xhtml,.jsp,.class,.xml,.properties</param-value>
         </init-param>
      	<init-param>
             <param-name>restrictLibs</param-name>
