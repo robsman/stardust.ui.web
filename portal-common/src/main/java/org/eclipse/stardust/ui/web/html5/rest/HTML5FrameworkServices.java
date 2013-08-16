@@ -49,7 +49,6 @@ public class HTML5FrameworkServices
    @Path("config")
    public Response config(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
-      System.out.println("##########################LOCALE1: "+ locale);
       String contents = getCodeResource("bpm-ui/templates/config.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
 
