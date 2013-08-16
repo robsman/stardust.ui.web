@@ -1942,7 +1942,7 @@ public class ModelService
 
    public ModelType refreshAndFindModel(String modelId)
    {
-      return getModelManagementStrategy().getModels(true).get(modelId);
+      return getModelManagementStrategy().loadModel(modelId + ".xpdl");
    }
 
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
