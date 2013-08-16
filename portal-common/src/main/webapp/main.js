@@ -7,7 +7,7 @@
 (function(requirejs, sungard) {
 	'use strict';
 
-	var endpoints = sungard.prefixContext({'config' : '/services/rest/common/html5/api/config'});
+	var endpoints = sungard.prefixContext({'config' : '/services/rest/common/html5/api/config?random=' + Math.floor(Math.random()*10000)+1});
 	// sungard.prefixContext has bug to evaluate correct Context. Hence do this
 	endpoints.config = endpoints.config.replace('/main.html/', '/');
 

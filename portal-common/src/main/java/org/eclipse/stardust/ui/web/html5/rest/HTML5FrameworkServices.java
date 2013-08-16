@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -49,8 +50,11 @@ public class HTML5FrameworkServices
    @Path("config")
    public Response config(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
+      trace.debug("Retrieving config");
+
       String contents = getCodeResource("bpm-ui/templates/config.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
+      contents = StringUtils.replace(contents, "RANDOM_VALUE", getRandomValue());
 
       MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
             MessagePropertiesBean.class, servletContext);
@@ -68,6 +72,8 @@ public class HTML5FrameworkServices
    @Path("navigation")
    public Response navigation(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
+      trace.debug("Retrieving navigation");
+
       String contents = getCodeResource("bpm-ui/templates/navigation.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
@@ -191,5 +197,14 @@ public class HTML5FrameworkServices
       }
 
       return toReturn;
+   }
+
+   /**
+    * @return
+    */
+   private String getRandomValue()
+   {
+      Random random = new Random();
+      return String.valueOf(random.nextInt(10000));
    }
 }
