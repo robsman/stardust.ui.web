@@ -1,12 +1,12 @@
 {
     "main":[
 	    {	    
-	        "label" : "Portal",
+	        "label" : "PORTAL_LABEL",
 	        "id" : "ippPortal",
 	        "children" : [
 	            {
-	                "label": "Configuration",
-	                "title": "Configuration",
+	                "label": "CONFIGURATION_LABEL",
+	                "title": "CONFIGURATION_LABEL",
 	                "id": "configurationTreeView",
 	                "icon":"viewIconBase tabIcon-generic",
 	                "module": "bpm-ui",
@@ -141,7 +141,7 @@
 	],
 	"utility":[
 		{
-		    "label":"Alerts",
+		    "label":"ALERTS_LABEL",
 		    "id":"link",
 		    "icon":"viewIconBase bell",
 		    "actionController":"bpm-ui.BpmUiCtrl",
@@ -151,7 +151,7 @@
 		    "label":"LOGGED_IN_USER_LABEL"
 		},
 		{
-		    "label":"Sign Out",
+		    "label":"SIGN_OUT_LABEL",
 		    "id":"signOut",
 		    "cls":"ng-hide: true",
 		    "actionController":"bpm-ui.BpmUiCtrl",
