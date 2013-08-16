@@ -14,8 +14,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_i18nUtils"],
-		function(m_i18nUtils) {
+		[ "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants"],
+		function(m_i18nUtils, m_constants) {
 
 			return {
 				removeFromArray : function(array, from, to) {
