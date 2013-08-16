@@ -742,6 +742,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
          else
          {
+            boolean isSubProcess = false;
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ACTIVITY_KEY);
 
@@ -754,6 +755,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             }
             else
             {
+               isSubProcess = true;
                activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                      activity.getImplementation().getLiteral());
             }
@@ -809,7 +811,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             String[] contexts = new String[] {
                   PredefinedConstants.DEFAULT_CONTEXT,
                   PredefinedConstants.APPLICATION_CONTEXT,
-                  PredefinedConstants.PROCESSINTERFACE_CONTEXT};
+                  PredefinedConstants.PROCESSINTERFACE_CONTEXT,
+                  PredefinedConstants.ENGINE_CONTEXT};            
+            if(isSubProcess)
+            {
+               contexts = new String[] {
+                     PredefinedConstants.DEFAULT_CONTEXT,
+                     PredefinedConstants.APPLICATION_CONTEXT,
+                     PredefinedConstants.PROCESSINTERFACE_CONTEXT};               
+            }            
 
             JsonObject contextsJson = new JsonObject();
 
