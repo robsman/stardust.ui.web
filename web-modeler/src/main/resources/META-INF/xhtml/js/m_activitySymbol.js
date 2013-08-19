@@ -332,12 +332,19 @@ define(
 							/* e.preventDefault(); */
 							self.viewManager.openView(
 									applicationeMD.applicationViewName,
-									"applicationId=" + application.id
-											+ "&modelId=" + model.id
-											+ "&applicationName="
-											+ application.name + "&fullId="
-											+ application.getFullId(),
-									application.getFullId());
+													"applicationId="
+															+ encodeURIComponent(application.id)
+															+ "&modelId="
+															+ encodeURIComponent(model.id)
+															+ "&applicationName="
+															+ encodeURIComponent(application.name)
+															+ "&fullId="
+															+ encodeURIComponent(application.getFullId())
+															+ "&uuid="
+															+ application.uuid
+															+ "&modelUUID="
+															+ model.uuid,
+													application.uuid);
 							return false;
 						});
 					}
