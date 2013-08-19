@@ -19,7 +19,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		messageBundles="admin-portal-messages" requiredRoles="Administrator">
 		<ippui:preferences>
 			<ippui:preferencePage name="helpDocumentation"
-				include="/plugins/doc/portal/handbooks/execution-clients/admin-portal/admin-portal.html" />
+				include="/plugins/doc/portal/handbooks/execution-clients/carnot-clients.html" />
 		</ippui:preferences>
 
 		<!--  MENU -->
