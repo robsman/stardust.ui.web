@@ -267,6 +267,10 @@ define(
 							this.eventIntegrationOverlaySelect.hide();
 							jQuery("label[for='eventIntegrationOverlaySelect']")
 									.addClass("invisible");
+						}else{
+							this.eventIntegrationOverlaySelect.show();
+							jQuery("label[for='eventIntegrationOverlaySelect']")
+									.removeClass("invisible");
 						}
 
 						m_utils.debug("Overlay check");
