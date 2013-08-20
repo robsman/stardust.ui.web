@@ -47,7 +47,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 public class ConnectionCommandHandler
 {
    private static final JsonMarshaller jsonIo = new JsonMarshaller();
-   
+
    @Resource
    private ApplicationContext springContext;
 
@@ -172,10 +172,10 @@ public class ConnectionCommandHandler
             {
                AbstractEventSymbol fromEventSymbol = ModelBuilderFacade.findStartEventSymbol(
                      diagram, fromSymbolOid);
-               
+
                AbstractEventSymbol toEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
                      diagram, toSymbolOid);
-               
+
                if (null == fromEventSymbol)
                {
                   fromEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
@@ -187,8 +187,8 @@ public class ConnectionCommandHandler
                      toEventSymbol = ModelBuilderFacade.findEndEventSymbol(diagram,
                            toSymbolOid);
                   }
-               }               
-               
+               }
+
                if (null != fromEventSymbol && null != toEventSymbol)
                {
                   createControlFlowConnection(request, processDefinition,
@@ -277,7 +277,7 @@ public class ConnectionCommandHandler
          String typeInRequest, long oidInRequest)
    {
       // TODO: refactor, makes no sense (fh)
-      
+
       INodeSymbol nodeSymbol = null;
 
       if (ModelerConstants.ACTIVITY_KEY.equals(typeInRequest))
@@ -333,8 +333,10 @@ public class ConnectionCommandHandler
 
             if (transitionConnection.getTransition() != null)
             {
-               processDefinition.getTransition().remove(
-                     transitionConnection.getTransition());
+               TransitionType transitionType = transitionConnection.getTransition();
+               processDefinition.getTransition().remove(transitionType);
+               transitionType.getFrom().getOutTransitions().remove(transitionType);
+               transitionType.getTo().getInTransitions().remove(transitionType);
             }
          }
          catch (ObjectNotFoundException x)
@@ -501,7 +503,7 @@ public class ConnectionCommandHandler
                hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
-         
+
          getModelBuilderFacade().createTransitionSymbol(
                processDefinition,
                sourceEventSymbol,
@@ -513,7 +515,7 @@ public class ConnectionCommandHandler
                      ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
    }
-   
+
    /**
     *
     * @param orientation
