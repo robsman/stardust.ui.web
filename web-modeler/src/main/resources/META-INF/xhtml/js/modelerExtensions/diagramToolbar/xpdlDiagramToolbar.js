@@ -63,7 +63,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "plugins/bpm-modeler/images/icons/separator.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "setSeparatorMode",
-			visibility : "always"
+			visibility : "preview"
 		}, {
 			id : "zoomInButton",
 			paletteId : "drawingPalette",
@@ -89,7 +89,7 @@ define([ 'bpm-modeler/js/m_defaultPaletteHandler', 'bpm-modeler/js/m_decorationP
 			iconUrl : "plugins/bpm-modeler/images/icons/horizontal-flip.png",
 			provider : m_defaultPaletteHandler,
 			handlerMethod: "flipOrientation",
-			visibility : "always"
+			visibility : "preview"
 		}, {
 			id : "printButton",
 			paletteId : "drawingPalette",
