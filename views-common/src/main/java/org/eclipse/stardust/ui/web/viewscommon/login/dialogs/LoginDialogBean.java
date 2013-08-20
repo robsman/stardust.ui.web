@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
+import org.eclipse.stardust.ui.web.viewscommon.login.util.LoginUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -294,17 +295,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
             else
             {
                sessionCtx.initInternalSession();
-               // User display name preference are not fetched with UserService.getUser()
-               UserUtils.loadDisplayPreferenceForUser(sessionCtx.getUser());
-               
-               // Touch UserProvider > User, so that bean is fully initialized
-               // and can be accessed from REST calls (without FacesContext)
-               UserProvider userProvider = (UserProvider)FacesUtils.getBeanFromContext("userProvider");
-               userProvider.getUser().getDisplayName();
-
-               // Completely Initialize Application,
-               // so that it and can be accessed from REST calls (without FacesContext)
-               PortalApplication.getInstance();
+               LoginUtils.initialize();
             }
          }
 
