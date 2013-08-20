@@ -100,7 +100,22 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          StringBuffer detailsB = new StringBuffer();
 
          // Event details
-         detailsB.append("Event Handler: " + I18nUtils.getLabel(ehd, ehd.getName()));
+         detailsB.append(I18nUtils.getLabel(ehd, ehd.getName()));
+         
+         //exception if applicable
+         @SuppressWarnings("rawtypes")
+         Map attributes = ehd.getAllAttributes();
+         if (attributes != null && attributes.containsKey("carnot:engine:exceptionName"))
+         {
+            detailsB.append(" --> ").append(attributes.get("carnot:engine:exceptionName"));
+            type = EVENT_EXCEPTION_TYPE;
+            name = Localizer.getString(LocalizerKey.PH_EVENT_EXCEPTION_TYPE);
+         }
+         else
+         {
+            type = EVENT_TIMER_TYPE;
+            name = Localizer.getString(LocalizerKey.PH_EVENT_TIMER_TYPE);
+         }
          
          //actions
          @SuppressWarnings("rawtypes")
@@ -110,28 +125,17 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          for (Object obj : actions)
          {
             EventActionDetails ead = (EventActionDetails) obj;
-            actionstr += msb.getString("processHistory.activityTable.eventExecution."+ ead.getId()) + ", ";
+            if (!"CompleteActivity".equalsIgnoreCase(ead.getId()))
+            {
+               actionstr += msb.getString("processHistory.activityTable.eventExecution."+ ead.getId()) + ", ";
+            }
          }
          if (StringUtils.isNotEmpty(actionstr))
          {
             actionstr = actionstr.substring(0, actionstr.length() - 2);
-            detailsB.append("<BR>Actions: " + actionstr);
+            detailsB.append(" --> ").append(actionstr);
          }
          
-         //exception if applicable
-         @SuppressWarnings("rawtypes")
-         Map attributes = ehd.getAllAttributes();
-         if (attributes != null && attributes.containsKey("carnot:engine:exceptionName"))
-         {
-            detailsB.append("<BR>Exception: " + attributes.get("carnot:engine:exceptionName"));
-            type = EVENT_EXCEPTION_TYPE;
-            name = Localizer.getString(LocalizerKey.PH_EVENT_EXCEPTION_TYPE);
-         }
-         else
-         {
-            type = EVENT_TIMER_TYPE;
-            name = Localizer.getString(LocalizerKey.PH_EVENT_TIMER_TYPE);
-         }
          fullDetail = detailsB.toString();
          break;   
 
