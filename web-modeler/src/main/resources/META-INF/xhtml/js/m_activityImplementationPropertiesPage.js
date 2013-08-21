@@ -150,39 +150,11 @@ define(
 				 */
 				ActivityImplementationPropertiesPage.prototype.checkCompatibility = function(
 						application) {
-					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
-							&& !application.interactive) {
-						return false;
+					if (this.getModelElement().taskType === application.getCompatibleActivityTaskType()) {
+						return true
 					}
 
-					if (this.getModelElement().taskType != m_constants.USER_TASK_TYPE
-							&& application.interactive) {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.SCRIPT_TASK_TYPE
-							&& application.applicationType != "messageTransformationBean"
-							&& application.applicationType != "camelSpringProducerApplication") {
-						return false;
-					}
-
-					if (this.getModelElement().taskType != m_constants.SCRIPT_TASK_TYPE
-							&& (application.applicationType == "messageTransformationBean"
-									|| application.applicationType == "camelSpringProducerApplication")) {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.SEND_TASK_TYPE
-							&& !(application.applicationType == "jms" || application.applicationType == "mailBean")) {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.RECEIVE_TASK_TYPE
-							&& application.applicationType != "jms") {
-						return false;
-					}
-
-					return true;
+					return false;
 				}
 
 				/**

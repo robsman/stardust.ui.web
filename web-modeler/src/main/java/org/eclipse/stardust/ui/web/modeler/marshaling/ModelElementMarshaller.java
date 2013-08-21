@@ -910,7 +910,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    public void mapTaskType(ActivityType activity, JsonObject activityJson)
    {
       ModelBuilderFacade builder = getModelBuilderFacade();
-      Object taskTypeAttribute = builder.getAttribute(activity, ModelerConstants.TASK_TYPE);
+      Object taskTypeAttribute = builder.getAttribute(activity,
+            ModelerConstants.TASK_TYPE);
       String taskType = builder.getAttributeValue(taskTypeAttribute);
 
       if (taskType == null)
@@ -939,8 +940,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                {
                   ApplicationTypeType applicationType = application.getType();
                   String typeId = applicationType.getId();
-                  if (typeId.equals("messageTransformationBean")
-               		   || typeId.equals("camelSpringProducerApplication"))
+
+                  // TODO check if it's ok to set task type as service task if none of the
+                  // consitions
+                  // below are satisfied.
+                  taskType = ModelerConstants.SERVICE_TASK_KEY;
+                  if (typeId.equals("webservice"))
+                  {
+                     taskType = ModelerConstants.SERVICE_TASK_KEY;
+                  }
+                  else if (typeId.equals("messageTransformationBean"))
                   {
                      taskType = ModelerConstants.SCRIPT_TASK_KEY;
                   }
@@ -948,10 +957,34 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   {
                      taskType = ModelerConstants.RULE_TASK_KEY;
                   }
-                  else if (typeId.equals("jms")
-                        && !applicationType.isSynchronous())
+                  else if (typeId.equals("jms") && !applicationType.isSynchronous())
                   {
                      taskType = ModelerConstants.RECEIVE_TASK_KEY;
+                  }
+                  else if (typeId.equals("mailBean"))
+                  {
+                     taskType = ModelerConstants.SEND_TASK_KEY;
+                  }
+                  else if (typeId.equals("camelSpringProducerApplication"))
+                  {
+                     String camelAppType = getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(
+                           application,
+                           "carnot:engine:camel::applicationIntegrationOverlay"));
+                     
+                     if ("restServiceOverlay".equals(camelAppType)
+                           || "mailIntegrationOverlay".equals(camelAppType))
+                     {
+                        taskType = ModelerConstants.SERVICE_TASK_KEY;
+                     }
+                     else if ("genericEndpointOverlay".equals(camelAppType)
+                           || "scriptingIntegrationOverlay".equals(camelAppType))
+                     {
+                        taskType = ModelerConstants.SCRIPT_TASK_KEY;
+                     }
+                     else if ("rulesIntegrationOverlay".equals(camelAppType))
+                     {
+                        taskType = ModelerConstants.RULE_TASK_KEY;
+                     }
                   }
                }
             }

@@ -51,20 +51,7 @@ define(
 					activity.initialize(application.name + index,
 							m_constants.TASK_ACTIVITY_TYPE);
 
-					// TODO Put at a central place
-
-					if (application.applicationType == "jms") {
-						activity.taskType = m_constants.RECEIVE_TASK_TYPE;
-					} else if (application.applicationType == "mailBean") {
-						activity.taskType = m_constants.SEND_TASK_TYPE;
-					} else if (application.applicationType == "messageTransformationBean"
-								|| application.applicationType === "camelSpringProducerApplication") {
-						activity.taskType = m_constants.SCRIPT_TASK_TYPE;
-					} else if (application.applicationType == "interactive") {
-						activity.taskType = m_constants.USER_TASK_TYPE;
-					} else {
-						activity.taskType = m_constants.SERVICE_TASK_TYPE;
-					}
+					activity.taskType = application.getCompatibleActivityTaskType();
 
 					activity.applicationFullId = application.getFullId();
 
