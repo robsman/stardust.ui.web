@@ -695,17 +695,18 @@ tr.locked {
 }
 
 .modelerTooltipHeader {
+	font-size: 12px
 	min-height: 15px;
-	padding-left: 10px;
-	padding-top: 10px;
+	padding-left: 5px;
+	padding-top: 5px;
 	font-weight: bold;
 	color: black;
 }
 
 .modelerTooltipBody {
 	padding-top: 5px;
-	padding-left: 10px;
-	border-top: 1px dotted #999;
-	margin: 10px;
+	border-top: 1px dotted #FFCC00;
+	margin-left: 5px;
+	margin-right: 5px;
 	color: #CC6600 !important
 }
