@@ -18,7 +18,7 @@
 .nativeHtmlViewPanel {
 	width: 100%;
 	overflow: auto;
-	margin: 10px;
+	margin-left: 10px;
 }
  
 label {
