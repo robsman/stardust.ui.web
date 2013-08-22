@@ -858,7 +858,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                               accessPoint.getType().getId());
                      }
 
-                     addStructDataToAccessPoint(activity, accessPoint, accessPointJson);
+                     addDataToAccessPoint(activity, accessPoint, accessPointJson);
 
                      loadAttributes(accessPoint, accessPointJson);
                      loadDescription(accessPointJson, accessPoint);
@@ -889,7 +889,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                               accessPoint.getType().getId());
                      }
 
-                     addStructDataToAccessPoint(activity, accessPoint, accessPointJson);
+                     addDataToAccessPoint(activity, accessPoint, accessPointJson);
 
                      loadAttributes(accessPoint, accessPointJson);
                      loadDescription(accessPointJson, accessPoint);
@@ -907,7 +907,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return activityJson;
    }
 
-   private void addStructDataToAccessPoint(ActivityType activity,
+   private void addDataToAccessPoint(ActivityType activity,
          AccessPointType accessPoint, JsonObject accessPointJson)
    {
       String dataTypeFullID = null;
