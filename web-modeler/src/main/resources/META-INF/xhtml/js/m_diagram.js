@@ -1749,7 +1749,7 @@ define(
 				 *
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
-					m_utils.jQuerySelect("#canvas").jqprint();
+					m_utils.jQuerySelect("#" + this.divId).jqprint();
 				};
 
 				/**
