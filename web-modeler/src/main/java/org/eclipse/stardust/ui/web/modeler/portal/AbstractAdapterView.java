@@ -88,6 +88,7 @@ public class AbstractAdapterView implements ViewEventHandler {
 			break;
 
 		case CLOSED:
+		   PortalApplicationEventScript.getInstance().addEventScript("parent.EventHub.events.publish('PEPPER_VIEW_CLOSED', '" + event.getView().getParamValue("uuid") + "');");
 			//PortalApplication.getInstance().addEventScript(
 			//		"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
 			break;

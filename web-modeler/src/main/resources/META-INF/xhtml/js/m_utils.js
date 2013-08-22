@@ -160,7 +160,7 @@ define(
 						if (conditionFn()) {
 							fn();	
 						} else {
-							timeoutLoop(fn, reps-1, delay, conditionFn);
+							executeTimeoutLoop(fn, reps-1, delay, conditionFn);
 						}
 					}, delay);
 				}

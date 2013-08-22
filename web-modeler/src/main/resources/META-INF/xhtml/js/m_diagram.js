@@ -521,25 +521,36 @@ define(
 					var self = this;
 
 					// Refresh properties panel on view activation
-					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
+					this.onViewActivate = function(params) {
 						if (params && params === self.process.uuid) {
 							// Executes a timeout loop with 50ms timeout and maximum 20 repetitions
 							// checks if the activated view has actually been dispalyed (display: block)
 							// before re-initializing the properties panel 
 							m_utils.executeTimeoutLoop(function() {
 								self.clearCurrentSelection();
-								require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
 							}, 20, 50, function() {
 								return "block" == self.canvas.parents("[ng-repeat='panel in panels']").css("display")	
 							});
 						} else {
 							this.lastSymbol = null;
 						}
-					});
+					};
 					
-					EventHub.events.subscribe("SIDEBAR_PINNED", function(pinned) {
+					this.onViewPinned = function(pinned) {
 						require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
-					});
+					};
+					
+					this.onViewClose = function(params) {
+						if (params && params === self.process.uuid) {
+							EventHub.events.unsubscribe("PEPPER_VIEW_ACTIVATED", self.onViewActivate);
+							EventHub.events.unsubscribe("PEPPER_VIEW_CLOSED", self.onViewClose);
+							EventHub.events.unsubscribe("SIDEBAR_PINNED", self.onViewPinned);
+						}						
+					};
+					
+					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", self.onViewActivate);
+					EventHub.events.subscribe("PEPPER_VIEW_CLOSED", self.onViewClose);					
+					EventHub.events.subscribe("SIDEBAR_PINNED", self.onViewPinned);
 
 					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");
