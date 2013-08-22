@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -177,7 +178,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else if (modelElement instanceof EventHandlerType)
       {
-         jsResult = toEventJson((EventHandlerType) modelElement, new JsonObject());         
+         jsResult = toEventJson((EventHandlerType) modelElement, new JsonObject());
       }
 
       if (null == jsResult)
@@ -812,14 +813,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   PredefinedConstants.DEFAULT_CONTEXT,
                   PredefinedConstants.APPLICATION_CONTEXT,
                   PredefinedConstants.PROCESSINTERFACE_CONTEXT,
-                  PredefinedConstants.ENGINE_CONTEXT};            
+                  PredefinedConstants.ENGINE_CONTEXT};
             if(isSubProcess)
             {
                contexts = new String[] {
                      PredefinedConstants.DEFAULT_CONTEXT,
                      PredefinedConstants.APPLICATION_CONTEXT,
-                     PredefinedConstants.PROCESSINTERFACE_CONTEXT};               
-            }            
+                     PredefinedConstants.PROCESSINTERFACE_CONTEXT};
+            }
 
             JsonObject contextsJson = new JsonObject();
 
@@ -857,6 +858,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                               accessPoint.getType().getId());
                      }
 
+                     addStructDataToAccessPoint(activity, accessPoint, accessPointJson);
+
                      loadAttributes(accessPoint, accessPointJson);
                      loadDescription(accessPointJson, accessPoint);
                   }
@@ -886,6 +889,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                               accessPoint.getType().getId());
                      }
 
+                     addStructDataToAccessPoint(activity, accessPoint, accessPointJson);
+
                      loadAttributes(accessPoint, accessPointJson);
                      loadDescription(accessPointJson, accessPoint);
                   }
@@ -900,6 +905,38 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
       }
       return activityJson;
+   }
+
+   private void addStructDataToAccessPoint(ActivityType activity,
+         AccessPointType accessPoint, JsonObject accessPointJson)
+   {
+      String dataTypeFullID = null;
+      for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i.hasNext();)
+      {
+         DataMappingType dataMappingType = i.next();
+         if (dataMappingType.getId().equals(accessPoint.getId()))
+         {
+            if (dataMappingType.getData() != null)
+            {
+               ModelType model = ModelUtils.findContainingModel(dataMappingType.getData());
+               if (model != null)
+               {
+                  dataTypeFullID = getDataFullID(model, dataMappingType.getData());
+                  JsonObject dataJson = this.toDataJson(dataMappingType.getData());
+                  accessPointJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                        dataTypeFullID);
+                  if (dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY) != null)
+                  {
+                     accessPointJson.addProperty(
+                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
+                           dataJson.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString());
+                  }
+               }
+            }
+         }
+      }
    }
 
    /**
@@ -970,7 +1007,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                      String camelAppType = getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(
                            application,
                            "carnot:engine:camel::applicationIntegrationOverlay"));
-                     
+
                      if ("restServiceOverlay".equals(camelAppType)
                            || "mailIntegrationOverlay".equals(camelAppType))
                      {
@@ -1458,7 +1495,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          loadAttributes(accessPoint, parameterMappingJson);
       }
-      
+
       return eventJson;
    }
 
@@ -2186,7 +2223,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             applicationContextJson.add(ModelerConstants.ACCESS_POINTS_PROPERTY,
                   accessPointsJson);
          }
-         
+
          // TODO: (fh) constructor ?
 
          String methodName = getModelBuilderFacade().getAttributeValue(
@@ -2226,7 +2263,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          PredefinedConstants.SESSIONBEAN_APPLICATION,
          PredefinedConstants.SPRINGBEAN_APPLICATION
    });
-   
+
    private boolean isSupportedJavaApplicationType(ApplicationType application)
    {
       ApplicationTypeType type = application.getType();
@@ -2638,6 +2675,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    @Override
    public JsonObject toModelJson(EObject model)
    {
+      System.out.println(toModelJson((ModelType) model));
       return toModelJson((ModelType) model);
    }
 
