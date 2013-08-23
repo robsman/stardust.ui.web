@@ -886,7 +886,11 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
+							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
+									&& !m_utils
+											.isIntermediateEvent(connection.fromAnchorPoint.symbol)) {
+								//do nothing
+							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
 								if (connection.toAnchorPoint.symbol.modelElement
 										&& connection.fromAnchorPoint.symbol.modelElement.id in dataMapping) {
@@ -914,7 +918,8 @@ define(
 					// connections list
 					if (conn != null) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
-							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL
+							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL 
+									&& conn.fromAnchorPoint.symbol.modelElement.eventType !== m_constants.START_EVENT_TYPE
 									&& conn.toAnchorPoint && conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
 								if (conn.fromAnchorPoint
 										&& conn.fromAnchorPoint.symbol) {
