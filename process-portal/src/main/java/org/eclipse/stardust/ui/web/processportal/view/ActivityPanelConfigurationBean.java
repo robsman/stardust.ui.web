@@ -265,12 +265,12 @@ public class ActivityPanelConfigurationBean extends UIComponentBean implements U
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_DISPLAY_MAPPED_DOCS, String.valueOf(displayMappedDocuments));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_DISPLAY_NOTES, String.valueOf(displayNotes));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_DISPLAY_PROCESS_DETAILS, String.valueOf(displayProcessDetails));
-      userPrefsHelper.setString(V_ACTIVITY_PANEL, F_MINIMIZE_LAUNCH_PANELS, String.valueOf(minimizeLaunchPanels));
-      userPrefsHelper.setString(V_ACTIVITY_PANEL, F_MAXIMIZE_VIEW, String.valueOf(maximizeView));
+      //userPrefsHelper.setString(V_ACTIVITY_PANEL, F_MINIMIZE_LAUNCH_PANELS, String.valueOf(minimizeLaunchPanels));
+      //userPrefsHelper.setString(V_ACTIVITY_PANEL, F_MAXIMIZE_VIEW, String.valueOf(maximizeView));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_CLOSE_RELATED_VIEWS, String.valueOf(closeRelatedViews));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_DOCUMENTS_DISPLAY_MODE, documentDisplayMode);
-      userPrefsHelper.setString(V_ACTIVITY_PANEL, F_PIN_ACTIVITY_VIEW, String.valueOf(pinActivityView));
-      userPrefsHelper.setString(V_ACTIVITY_PANEL, F_PIN_ACTIVITY_VIEW_TYPE, pinActivityViewType);
+      //userPrefsHelper.setString(V_ACTIVITY_PANEL, F_PIN_ACTIVITY_VIEW, String.valueOf(pinActivityView));
+      //userPrefsHelper.setString(V_ACTIVITY_PANEL, F_PIN_ACTIVITY_VIEW_TYPE, pinActivityViewType);
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_SHOW_MAPPED_DOC_WARNING, String.valueOf(showMappedDocumentWarning));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_COLUMN_LAYOUT, String.valueOf(noOfColumnsInColumnLayout));
       userPrefsHelper.setString(V_ACTIVITY_PANEL, F_NO_OF_COLUMNS_IN_TABLE, String.valueOf(noOfColumnsInTable));
