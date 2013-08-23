@@ -267,6 +267,7 @@ public class WorklistTableBean extends UIComponentBean
             {
                this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
             }
+            this.view.setFullLabel(this.view.getLabel());
             PortalApplication.getInstance().updateViewTitle(this.view);
          }
          
