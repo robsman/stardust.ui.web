@@ -62,6 +62,11 @@
 					}
 				}
 			}
+			
+			function closeIframe()
+			{
+				window.setTimeout(function(){parent.BridgeUtils.View.syncActiveView();parent.BridgeUtils.View.syncLaunchPanels();},200);
+			}
 		</script>
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
@@ -69,7 +74,7 @@
 			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" style="background-color: #EAEAEA;">
 				<ice:panelGrid columns="1" > <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
-						action="#{ippActivityPanelController.uploadProcessAttachment}">
+						action="#{ippActivityPanelController.uploadProcessAttachment}" immediate="true" onclick="closeIframe();">
 						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarUpload" />
 						<ice:panelGrid columns="2">
 							<ice:graphicImage value="/plugins/views-common/images/icons/page_white_get.png" />
@@ -78,7 +83,7 @@
 						</ice:panelGrid>
 					</ice:commandLink>
 					<ice:commandLink styleClass="action-link"
-						action="#{ippActivityPanelController.createDocument}">
+						action="#{ippActivityPanelController.createDocument}" immediate="true" partialSubmit="true" onclick="closeIframe();">
 						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarCreate"/>
 						<f:param name="folderId"
 							value="#{ippActivityPanelController.processAttachmentsFolderId}" />
@@ -96,7 +101,7 @@
 					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
-							actionListener="#{ippActivityPanelController.openDocument}">
+							actionListener="#{ippActivityPanelController.openDocument}" immediate="true" onclick="closeIframe();">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 							<ice:panelGrid columns="2">
@@ -111,7 +116,7 @@
 					value="#{ippActivityPanelController.processAttachments}" var="processAttachment">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
-							actionListener="#{ippActivityPanelController.openDocument}">
+							actionListener="#{ippActivityPanelController.openDocument}" immediate="true" onclick="closeIframe();">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
 							<f:attribute name="documentInfo" value="#{processAttachment}" />
 							<ice:panelGrid columns="2">
@@ -121,7 +126,6 @@
 						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>
-				
 			</ice:panelGroup>
 		</ice:form>
 	</body>

@@ -1072,7 +1072,6 @@ public class ActivityDetailsBean extends UIComponentBean
       params.put("noteIndex", noteIndex);
       openNotesView(params);
       closeNotesIframePopupSelf();
-      renderSession();
    }
 
    /**
@@ -1227,7 +1226,6 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSuspendActivityIframePopup();
       processActivityInstance(WorkflowAction.SUSPEND_TO_USER_WORKLIST);
-      renderSession();
    }
 
    /**
@@ -1237,7 +1235,6 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSuspendActivityIframePopup();
       processActivityInstance(WorkflowAction.SUSPEND_TO_DEFAULT_PERFORMER);
-      renderSession();
    }
 
    /**
@@ -3024,7 +3021,6 @@ public class ActivityDetailsBean extends UIComponentBean
       createCaseDialog.setSourceProcessInstances(selectedProcesses);
       createCaseDialog.openPopup();
       closeCaseIframePopup();
-      renderSession();
 
    }
    
@@ -3048,8 +3044,6 @@ public class ActivityDetailsBean extends UIComponentBean
       attachToCaseDialog.setSourceProcessInstances(selectedProcesses);
       attachToCaseDialog.openPopup();
       closeCaseIframePopup();
-
-      renderSession();
    }
    
    /**
@@ -3076,8 +3070,6 @@ public class ActivityDetailsBean extends UIComponentBean
             }
          }
       });
-
-      renderSession();
    }
    
    /**
@@ -3103,7 +3095,6 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       });
 
-      renderSession();
    }
    
    public boolean isEnableJoinProcess()

@@ -323,7 +323,6 @@ public class ActivityPanelController extends UIComponentBean
          DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
 
          activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-         activityDetailsBean.renderSession();
       }
       else
       {
@@ -389,7 +388,6 @@ public class ActivityPanelController extends UIComponentBean
       });
       uploadHelper.uploadFile();
       activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-      activityDetailsBean.renderSession();
    }
 
    /**
@@ -406,8 +404,8 @@ public class ActivityPanelController extends UIComponentBean
       //update document in process instance
       DMSHelper.addAndSaveProcessAttachment(processInstance, document);
       DocumentViewUtil.openJCRDocument(document.getId());
-
-      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
+      
+      activityDetailsBean.closeProcessAttachmentsIframePopup();
       activityDetailsBean.renderSession();
    }
    
@@ -579,7 +577,7 @@ public class ActivityPanelController extends UIComponentBean
          ProcessInstance fromProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
                PredefinedProcessInstanceLinkTypes.SWITCH);
          ProcessInstance joinProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
-        		 PredefinedProcessInstanceLinkTypes.JOIN);
+                 PredefinedProcessInstanceLinkTypes.JOIN);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
          linkedProcess.setJoinLinkedProcess(joinProcessLink);
