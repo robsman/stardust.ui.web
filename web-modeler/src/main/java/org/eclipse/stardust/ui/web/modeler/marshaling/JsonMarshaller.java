@@ -35,11 +35,13 @@ public class JsonMarshaller
    private final Gson gson = new GsonBuilder() //
       .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
       .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
+      .registerTypeAdapter(JsonPrimitive.class, new JsonPrimitiveSerializationHandler())
       .create();
 
    private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
          .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
          .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
+         .registerTypeAdapter(JsonPrimitive.class, new JsonPrimitiveSerializationHandler())
          .create();
 
    private final JsonParser jsonParser = new JsonParser();
@@ -219,6 +221,33 @@ public class JsonMarshaller
          else
          {
             return new JsonArray();
+         }
+      }
+   }
+
+   private static class JsonPrimitiveSerializationHandler
+         implements JsonSerializer<JsonPrimitive>, JsonDeserializer<JsonPrimitive>
+   {
+      @Override
+      public JsonPrimitive serialize(JsonPrimitive src, Type typeOfSrc,
+            JsonSerializationContext context)
+      {
+         // just use the object as is
+         return src;
+      }
+
+      @Override
+      public JsonPrimitive deserialize(JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException
+      {
+         if (json.isJsonPrimitive() && JsonPrimitive.class.equals(typeOfT))
+         {
+            // just use the object as is
+            return json.getAsJsonPrimitive();
+         }
+         else
+         {
+            return new JsonPrimitive(json.toString());
          }
       }
    }
