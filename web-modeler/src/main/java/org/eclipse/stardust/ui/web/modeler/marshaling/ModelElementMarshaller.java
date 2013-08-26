@@ -95,6 +95,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          jsResult = toProcessDefinitionJson((ProcessDefinitionType) modelElement);
       }
+      else if (modelElement instanceof DiagramType)
+      {
+         jsResult = toProcessDiagramJson((DiagramType) modelElement);
+      }
       else if (modelElement instanceof LaneSymbol)
       {
          jsResult = toLaneTypeJson((LaneSymbol) modelElement);
@@ -482,6 +486,16 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toProcessDefinitionDiagram(ProcessDefinitionType processDefinition)
    {
+      DiagramType processDiagram = processDefinition.getDiagram().get(0);
+
+      return toProcessDiagramJson(processDiagram);
+   }
+
+   /**
+    * @return
+    */
+   public JsonObject toProcessDiagramJson(DiagramType processDiagram)
+   {
       JsonObject diagramJson = new JsonObject();
 
       // Pools and Lanes
@@ -490,12 +504,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       diagramJson.add(ModelerConstants.POOL_SYMBOLS, poolSymbolsJson);
 
       diagramJson.addProperty(ModelerConstants.OID_PROPERTY,
-            processDefinition.getDiagram().get(0).getElementOid());
+            processDiagram.getElementOid());
 
-      if (processDefinition.getDiagram()
-            .get(0)
-            .getOrientation()
-            .equals(OrientationType.HORIZONTAL_LITERAL))
+      if (processDiagram.getOrientation().equals(OrientationType.HORIZONTAL_LITERAL))
       {
          diagramJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,
                ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL);
@@ -506,7 +517,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL);
       }
 
-      for (PoolSymbol poolSymbol : processDefinition.getDiagram().get(0).getPoolSymbols())
+      for (PoolSymbol poolSymbol : processDiagram.getPoolSymbols())
       {
          JsonObject poolSymbolJson = new JsonObject();
          poolSymbolsJson.add(poolSymbol.getId(), poolSymbolJson);
