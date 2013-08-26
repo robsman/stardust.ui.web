@@ -53,7 +53,7 @@ public class CommandHandlerRegistry
       if (null == handlers)
       {
          handlers = newArrayList();
-         handlerRegistry.put(commandId, handlers);
+         this.handlerRegistry.put(commandId, handlers);
       }
 
       handlers.add(new HandlerRegistration(beanFactory, beanName, handlerMethod));
@@ -135,15 +135,15 @@ public class CommandHandlerRegistry
          }
          catch (IllegalArgumentException iae)
          {
-            trace.error("Failed invoking handler for '" + commandId + "' command.", iae);
+            trace.error("Failed invoking handler for command '" + commandId + "'.", iae);
          }
          catch (IllegalAccessException iae)
          {
-            trace.error("Failed invoking handler for '" + commandId + "' command.", iae);
+            trace.error("Failed invoking handler for command '" + commandId + "'.", iae);
          }
          catch (InvocationTargetException ite)
          {
-            trace.error("Failed invoking handler for '" + commandId + "' command.",
+            trace.error("Failed invoking handler for command '" + commandId + "'.",
                   ite.getTargetException());
 
             if (ite.getTargetException() instanceof RuntimeException)
