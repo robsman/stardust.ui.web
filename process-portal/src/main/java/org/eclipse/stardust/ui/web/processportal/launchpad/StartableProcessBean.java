@@ -321,6 +321,10 @@ public class StartableProcessBean extends AbstractLaunchPanel implements Initial
     */
    private boolean isAuthorized(ModelParticipant modelparticipant, ModelParticipant modelparticipant1)
    {
+      if(null == modelparticipant1)
+      {
+         return false;
+      }
       if (modelparticipant == modelparticipant1)
       {
          return true;
