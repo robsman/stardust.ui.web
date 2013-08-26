@@ -390,6 +390,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (null != processPoolShape)
       {
          mainPoolJto = newShapeJto(processPoolShape, new PoolSymbolJto());
+         if (processPoolShape.isIsHorizontal())
+         {
+            mainPoolJto.orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
+         }
 
          if (processPoolShape.getBpmnElement() instanceof Participant)
          {
@@ -479,6 +483,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          defaultLane.y = mainPoolJto.y + 10;
          defaultLane.width = mainPoolJto.width - 20;
          defaultLane.height = mainPoolJto.height - 20;
+
+         defaultLane.orientation = mainPoolJto.orientation;
 
          mainPoolJto.laneSymbols.add(defaultLane);
       }
