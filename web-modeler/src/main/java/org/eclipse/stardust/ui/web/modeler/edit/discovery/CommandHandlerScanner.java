@@ -81,13 +81,13 @@ public class CommandHandlerScanner implements BeanFactoryPostProcessor
                registry.registerCommandHandler(onCmdAnnotation.commandId(), bf, beanName,
                      candidateMethod);
 
-               trace.info("Discovered handler for '" + onCmdAnnotation.commandId()
-                     + "' command: " + beanName + "[" + candidateMethod + "]");
+               trace.info("Discovered handler for command '" + onCmdAnnotation.commandId()
+                     + "': " + beanName + "[" + candidateMethod + "]");
             }
             else
             {
-               trace.error("Ignoring handler for '" + onCmdAnnotation.commandId()
-                     + "' command: " + beanName + "[" + candidateMethod
+               trace.error("Ignoring handler for command '" + onCmdAnnotation.commandId()
+                     + "': " + beanName + "[" + candidateMethod
                      + "]: incompatible argument list.");
             }
          }
