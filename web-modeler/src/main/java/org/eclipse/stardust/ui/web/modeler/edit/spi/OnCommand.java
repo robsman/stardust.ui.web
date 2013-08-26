@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
  * </pre>
  *
  * @author robert.sauer
- * @see @CommandHandler
+ * @see CommandHandler
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCommand

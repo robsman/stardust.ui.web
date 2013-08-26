@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * This annotation must be used to enable automatic discovery of command handlers.
  *
  * @author robert.sauer
- * @see @OnCommand
+ * @see OnCommand
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Component
