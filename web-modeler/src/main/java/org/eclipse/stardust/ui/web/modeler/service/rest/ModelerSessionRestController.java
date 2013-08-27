@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.emf.ecore.EObject;
 import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -56,17 +57,31 @@ public class ModelerSessionRestController
 {
    private static final Logger trace = LogManager.getLogger(ModelerSessionRestController.class);
 
-   @Context
-   private ServletContext servletContext;
+   @Resource
+   private ApplicationContext springContext;
 
    @Context
    private UriInfo uriInfo;
+
+   @Resource
+   private JsonMarshaller jsonIo;
+
+   @Resource
+   private ModelService modelService;
 
    private static CommandJto CommandJto;
 
    public static CommandJto getCommandJto()
    {
       return CommandJto;
+   }
+
+   public ModelerSessionRestController()
+   {}
+
+   public ModelerSessionRestController(UriInfo uriInfo)
+   {
+      this.uriInfo = uriInfo;
    }
 
    public String toChangeUri(Modification change)
@@ -97,17 +112,17 @@ public class ModelerSessionRestController
       ModelMarshaller marshaller;
       if ( !isEmpty(jto.modelId))
       {
-         EObject model = modelService().currentSession()
+         EObject model = modelService.currentSession()
                .modelRepository()
                .findModel(jto.modelId);
-         marshaller = modelService().currentSession()
+         marshaller = modelService.currentSession()
                .modelRepository()
                .getModelBinding(model)
                .getMarshaller();
       }
       else
       {
-         marshaller = modelService().modelElementMarshaller();
+         marshaller = modelService.modelElementMarshaller();
       }
 
       for (EObject changedObject : change.getModifiedElements())
@@ -138,7 +153,7 @@ public class ModelerSessionRestController
 
    public JsonObject toJson(ChangeJto changeJto)
    {
-      return jsonIo().gson().toJsonTree(changeJto).getAsJsonObject();
+      return jsonIo.gson().toJsonTree(changeJto).getAsJsonObject();
    }
 
    @GET
@@ -165,7 +180,7 @@ public class ModelerSessionRestController
 
    public StreamingOutput getCurrentModelState(String modelId, final ModelFormat modelFormat)
    {
-      ModelRepository modelRepository = modelService().currentSession().modelRepository();
+      ModelRepository modelRepository = modelService.currentSession().modelRepository();
 
       final EObject model = modelRepository.findModel(modelId);
       if (null != model)
@@ -216,7 +231,7 @@ public class ModelerSessionRestController
    public String showCurrentChange()
    {
       JsonObject result = new JsonObject();
-      EditingSession editingSession = modelService().currentSession().getSession();
+      EditingSession editingSession = modelService.currentSession().getSession();
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
@@ -231,7 +246,7 @@ public class ModelerSessionRestController
          result = toJson(toJto(pendingUndo));
       }
 
-      return jsonIo().writeJsonObject(result);
+      return jsonIo.writeJsonObject(result);
    }
 
    @POST
@@ -241,7 +256,7 @@ public class ModelerSessionRestController
       if ("undoMostCurrent".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = modelService().currentSession().getSession();
+         EditingSession editingSession = modelService.currentSession().getSession();
          if (editingSession.canUndo())
          {
             Modification undoneChange = editingSession.undoLast();
@@ -268,7 +283,7 @@ public class ModelerSessionRestController
 
             commandHandlingMediator().broadcastChange(undoneChange.getSession(), result);
 
-            return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+            return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
          else
          {
@@ -280,7 +295,7 @@ public class ModelerSessionRestController
       else if ("redoLastUndo".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = modelService().currentSession().getSession();
+         EditingSession editingSession = modelService.currentSession().getSession();
          if (editingSession.canRedo())
          {
             Modification redoneChange = editingSession.redoNext();
@@ -307,7 +322,7 @@ public class ModelerSessionRestController
 
             commandHandlingMediator().broadcastChange(redoneChange.getSession(), result);
 
-            return Response.ok(jsonIo().writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+            return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
          else
          {
@@ -331,7 +346,7 @@ public class ModelerSessionRestController
       System.out.println("postedData ==============> " + postedData);
       try
       {
-         CommandJto commandJto = jsonIo().gson().fromJson(postedData, CommandJto.class);
+         CommandJto commandJto = jsonIo.gson().fromJson(postedData, CommandJto.class);
          Response outcome = applyChange(commandJto);
 
          return outcome;
@@ -343,14 +358,14 @@ public class ModelerSessionRestController
       }
    }
 
-   private Response applyChange(CommandJto commandJto)
+   public Response applyChange(CommandJto commandJto)
    {
       String commandId = commandJto.commandId;
       String modelId = commandJto.modelId;
 
-      EObject model = modelService().currentSession().modelRepository().findModel(modelId);
+      EObject model = modelService.currentSession().modelRepository().findModel(modelId);
 
-      if (commandId.indexOf("model.") >= 0 && !modelService().getModelBuilderFacade().isReadOnly(model))
+      if (commandId.indexOf("model.") >= 0 && !modelService.getModelBuilderFacade().isReadOnly(model))
       {
          return applyGlobalChange(commandId, commandJto);
       }
@@ -381,11 +396,11 @@ public class ModelerSessionRestController
             EObject targetElement = null;
             if (null != changeDescrJto.uuid) {
                String uuid = changeDescrJto.uuid;
-               targetElement = modelService().uuidMapper().getEObject(uuid);
+               targetElement = modelService.uuidMapper().getEObject(uuid);
             }
 
             JsonElement changeJson = changeDescrJto.changes;
-            ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, servletContext);
+            ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, springContext);
             // TODO make this a regular modification
             JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
             if (null != response) {
@@ -403,7 +418,7 @@ public class ModelerSessionRestController
       List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
 
       // pre-process change descriptions
-      ModelBinding<EObject> modelBinding = modelService().currentSession().modelRepository().getModelBinding(model);
+      ModelBinding<EObject> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
       try
       {
          for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
@@ -422,7 +437,7 @@ public class ModelerSessionRestController
       ModelerSessionRestController.CommandJto = commandJto;
 
       // dispatch to actual command handler
-      EditingSession editingSession = modelService().currentSession().getSession(model);
+      EditingSession editingSession = modelService.currentSession().getSession(model);
       Modification change = commandHandlingMediator().handleCommand(editingSession,
             commandId, changeDescriptors);
       if (null != change)
@@ -446,7 +461,7 @@ public class ModelerSessionRestController
          ModelerSessionRestController.CommandJto = null;
 
          return Response.created(URI.create(toChangeUri(change))) //
-               .entity(jsonIo().writeJsonObject(changeJto))
+               .entity(jsonIo.writeJsonObject(changeJto))
                .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
@@ -468,7 +483,7 @@ public class ModelerSessionRestController
       }
       else
       {
-         ModelBinding<EObject> modelBinding = modelService().currentSession().modelRepository().getModelBinding(model);
+         ModelBinding<EObject> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
          ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
          if ( !isEmpty(changeDescrJto.uuid))
          {
@@ -501,7 +516,7 @@ public class ModelerSessionRestController
       if (null != changeDescrJto.uuid)
       {
          String uuid = changeDescrJto.uuid;
-         targetElement = modelService().uuidMapper().getEObject(uuid);
+         targetElement = modelService.uuidMapper().getEObject(uuid);
 
          if (null == targetElement)
          {
@@ -558,26 +573,16 @@ public class ModelerSessionRestController
    private void postprocessChange(Modification change)
    {
       ChangesetPostprocessingService postprocessingService = resolveSpringBean(
-            ChangesetPostprocessingService.class, servletContext);
+            ChangesetPostprocessingService.class, springContext);
 
       postprocessingService.postprocessChangeset(change);
-   }
-
-   private ModelService modelService()
-   {
-      return resolveSpringBean(ModelService.class, servletContext);
-   }
-
-   private JsonMarshaller jsonIo()
-   {
-      return resolveSpringBean(JsonMarshaller.class, servletContext);
    }
 
    private CommandHandlingMediator commandHandlingMediator()
    {
       try
       {
-         CommandHandlingMediator twophaseMediator = resolveSpringBean(CommandHandlingMediator.class, servletContext);
+         CommandHandlingMediator twophaseMediator = resolveSpringBean(CommandHandlingMediator.class, springContext);
          if (null != twophaseMediator)
          {
             trace.info("Using two-phase command handling.");
@@ -589,7 +594,7 @@ public class ModelerSessionRestController
          // failed resolving twophase mediator, fall back to simple mediator
       }
 
-      final SimpleCommandHandlingMediator mediator = resolveSpringBean(SimpleCommandHandlingMediator.class, servletContext);
+      final SimpleCommandHandlingMediator mediator = resolveSpringBean(SimpleCommandHandlingMediator.class, springContext);
       return new CommandHandlingMediator()
       {
          @Override

@@ -17,6 +17,11 @@ public class TouchedElementsCollector
 {
    private Set<EObject> touchedElements;
 
+   public void dispose()
+   {
+      this.touchedElements = null;
+   }
+
    public void touchElement(EObject element)
    {
       if (null == touchedElements)

@@ -1,15 +1,11 @@
 package org.eclipse.stardust.ui.web.modeler.service.rest;
 
-import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
-
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -20,18 +16,15 @@ public class ModelingUiExtensionsController
 {
    private static final Logger trace = LogManager.getLogger(ModelingUiExtensionsController.class);
 
-   @Context
-   private ServletContext servletContext;
-
-   @Context
-   private UriInfo uriInfo;
+   @Resource
+   private UiExtensionsRegistry uiExtensionsRegistry;
 
    @GET
    @Path("/plugins/modeler-plugins.js")
    @Produces("application/x-javascript")
    public String listModelerPlugins()
    {
-      UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
+      UiExtensionsRegistry registry = uiExtensionsRegistry;
 
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
@@ -80,7 +73,7 @@ public class ModelingUiExtensionsController
    @Produces("application/x-javascript")
    public String listOutlinePlugins()
    {
-      UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
+      UiExtensionsRegistry registry = uiExtensionsRegistry;
 
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
@@ -121,7 +114,7 @@ public class ModelingUiExtensionsController
    @Produces("application/x-javascript")
    public String listCommonPlugins()
    {
-      UiExtensionsRegistry registry = resolveUiExtensionsRegistry();
+      UiExtensionsRegistry registry = uiExtensionsRegistry;
 
       StringBuilder buffer = new StringBuilder();
       buffer.append("define([ 'bpm-modeler/js/m_extensionManager',\n");
@@ -182,10 +175,5 @@ public class ModelingUiExtensionsController
       }
 
       return moduleUri;
-   }
-
-   private UiExtensionsRegistry resolveUiExtensionsRegistry()
-   {
-      return resolveSpringBean(UiExtensionsRegistry.class, servletContext);
    }
 }

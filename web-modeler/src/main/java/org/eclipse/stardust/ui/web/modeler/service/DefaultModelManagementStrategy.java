@@ -37,7 +37,7 @@ public class DefaultModelManagementStrategy extends
 
    private static final Logger trace = LogManager.getLogger(DefaultModelManagementStrategy.class);
 
-	private static final String MODELS_DIR = "/process-models/";
+	public static final String MODELS_DIR = "/process-models/";
 
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;
@@ -183,7 +183,7 @@ public class DefaultModelManagementStrategy extends
          {
             DocumentInfo docInfo = DmsUtils.createDocumentInfo(persistenceService.generateDefaultFileName(nativeModel));
 
-            docInfo.setOwner(getServiceFactory().getWorkflowService()
+            docInfo.setOwner(getServiceFactory().getUserService()
                   .getUser()
                   .getAccount());
             docInfo.setContentType(MimeTypesHelper.XML.getType());
@@ -191,9 +191,13 @@ public class DefaultModelManagementStrategy extends
             modelDocument = getDocumentManagementService().createDocument(MODELS_DIR,
                   docInfo, baos.toByteArray(), null);
 
-            // create initial version
-            getDocumentManagementService().versionDocument(modelDocument.getId(), null);
-            mapModelFileName(model);
+            if (null != modelDocument)
+            {
+               // create initial version
+               getDocumentManagementService()
+                     .versionDocument(modelDocument.getId(), null);
+               mapModelFileName(model, modelDocument.getName());
+            }
          }
          else
          {
@@ -249,7 +253,7 @@ public class DefaultModelManagementStrategy extends
       {
          DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
 
-         docInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
+         docInfo.setOwner(getServiceFactory().getUserService().getUser().getAccount());
          docInfo.setContentType(MimeTypesHelper.XML.getType());
 
          getDocumentManagementService().createDocument(MODELS_DIR, docInfo, fileContent,
@@ -317,15 +321,6 @@ public class DefaultModelManagementStrategy extends
 		return getDocumentManagementService().retrieveDocumentContent(
 				modelDocument.getId());
 	}
-
-   /**
-    * @param model
-    */
-   private void mapModelFileName(ModelType model)
-   {
-      mapModelFileName(model, model.getId() + ".xpdl");
-
-   }
 
    /**
     * @param model

@@ -27,6 +27,8 @@ public class TouchedElementsPrapagator implements ChangePostprocessor
       {
          change.markAlsoModified(element);
       }
+
+      collector.dispose();
    }
 
 }
