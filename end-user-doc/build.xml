@@ -70,7 +70,7 @@
 
       <copy todir="${build.src}/" overwrite="true">
          <fileset dir="${project.res}">
-            <exclude name="**/styles/**"/>
+<!--            <exclude name="**/styles/**"/> -->
          </fileset>
          <filterset refid="filter.product" />
       </copy>
@@ -119,6 +119,7 @@
             <include name="**/*.html"/>
             <include name="**/*.htm"/>
             <exclude name="**/styles/**"/>
+         	<exclude name="toc.html" />
          </fileset>
          <filterset refid="filter.product" />
       </copy>
