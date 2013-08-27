@@ -542,8 +542,6 @@ public class ActivityPanelController extends UIComponentBean
       linkedProcess.openProcessDetial();
       // Close the current Iframe
       activityDetailsBean.closeLinkedProcessIframePopup();
-      activityDetailsBean.renderSession();
-
    }
    /**
     * 

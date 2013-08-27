@@ -441,7 +441,6 @@ public class PortalApplication
          closeOverflowTabIframePopup();
       }
 
-      renderPortalSession();
    }
 
    /**
