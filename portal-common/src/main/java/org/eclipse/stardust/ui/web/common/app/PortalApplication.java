@@ -1520,6 +1520,10 @@ public class PortalApplication
    private void handleViewClose(View closedView, View focusView, boolean forceClose)
    {
       resetWindowWidth();
+      // Closing current View trigger's call to setFocusView(nextOpenView), which will
+      // try to open next child views, closing child views first will setFocusView(null)
+      // as child views will be already closed
+      closeChildViews(closedView, forceClose);
       removeFromDisplayedViews(closedView);
 
       if(focusView == closedView)
@@ -1537,7 +1541,6 @@ public class PortalApplication
       handleViewClosePanama(closedView);
       //handleViewOpenPanama(focusView);
 
-      closeChildViews(closedView, forceClose);
    }
 
    /**
