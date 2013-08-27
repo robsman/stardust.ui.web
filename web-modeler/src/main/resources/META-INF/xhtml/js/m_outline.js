@@ -54,7 +54,7 @@ define(
 										.getProperty("modeler.outline.lastSavedMessage.title"));
 
 				console.time("###################################### Tree formation");
-				
+
 				var ul = createULElement();
 				jQuery
 						.each(
@@ -66,27 +66,27 @@ define(
 										"rel": model.isReadonly() ? "lockedModel" : "model",
 										"elementId": model.id
 									});
-									
+
 									var a = document.createElement('a');
 									a.href = "#";
 									a.innerHTML = model.name;
 									li.appendChild(a);
-									
+
 									var mul = createULElement();
 									li.appendChild(mul);
-									
+
 									// Structured Data Types
 									var structsLi = createLIElement({
 										"id": "structuredTypes_" + model.uuid,
 										"rel": "structuredTypes",
 										"modelUUID": model.uuid
 									});
-									
+
 									var pa = document.createElement('a');
 									pa.href = "#";
 									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.structuredTypes.name");
 									structsLi.appendChild(pa);
-									
+
 									mul.appendChild(structsLi);
 									var structsUl = createULElement();
 									structsLi.appendChild(structsUl);
@@ -105,26 +105,26 @@ define(
 															"modelUUID": model.uuid,
 															"fullId": typeDeclaration.getFullId()
 														});
-														
+
 														var pa = document.createElement('a');
 														pa.href = "#";
 														pa.innerHTML = typeDeclaration.name;
 														structLi.appendChild(pa);
 														structsUl.appendChild(structLi);
 													});
-									
+
 									// Data
 									var datasLi = createLIElement({
 										"id": "data_" + model.uuid,
 										"rel": "data",
 										"modelUUID": model.uuid
 									});
-									
+
 									var pa = document.createElement('a');
 									pa.href = "#";
 									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.data.name");
 									datasLi.appendChild(pa);
-									
+
 									mul.appendChild(datasLi);
 									var datasUl = createULElement();
 									datasLi.appendChild(datasUl);
@@ -143,7 +143,7 @@ define(
 																"modelUUID": model.uuid,
 																"fullId": data.getFullId()
 															});
-																
+
 															var pa = document.createElement('a');
 															pa.href = "#";
 															pa.innerHTML = data.name;
@@ -158,12 +158,12 @@ define(
 										"rel": "applications",
 										"modelUUID": model.uuid
 									});
-										
+
 									var pa = document.createElement('a');
 									pa.href = "#";
 									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.applications.name");
 									appsLi.appendChild(pa);
-									
+
 									mul.appendChild(appsLi);
 									var appsUl = createULElement();
 									appsLi.appendChild(appsUl);
@@ -185,25 +185,25 @@ define(
 														pa.href = "#";
 														pa.innerHTML = application.name;
 														appLi.appendChild(pa);
-														appsUl.appendChild(appLi);														
+														appsUl.appendChild(appLi);
 													});
-									
+
 									// Participants
 									var partsLi = createLIElement({
 										"id": "participants_" + model.uuid,
 										"rel": "participants",
 										"modelUUID": model.uuid
 									});
-										
+
 									var pa = document.createElement('a');
 									pa.href = "#";
 									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.participants.name");
 									partsLi.appendChild(pa);
-									
+
 									mul.appendChild(partsLi);
 									var partiUl = createULElement();
 									partsLi.appendChild(partiUl);
-									
+
 									jQuery
 											.each(
 													model.participants,
@@ -219,18 +219,18 @@ define(
 																	"modelUUID": model.uuid,
 																	"fullId": participant.getFullId()
 																});
-																
+
 																var pa = document.createElement('a');
 																pa.href = "#";
 																pa.innerHTML = participant.name;
 																partiLi.appendChild(pa);
 																partiUl.appendChild(partiLi);
-																
-																loadChildParticipants(model, participant, partiLi);																
+
+																loadChildParticipants(model, participant, partiLi);
 															}
 														}
 													});
-									
+
 
 									jQuery
 											.each(
@@ -246,12 +246,12 @@ define(
 																"modelUUID": model.uuid,
 																"fullId": process.getFullId()
 															});
-														
+
 														var pa = document.createElement('a');
 														pa.href = "#";
 														pa.innerHTML = process.name;
 														pli.appendChild(pa);
-														mul.appendChild(pli);														
+														mul.appendChild(pli);
 													});
 
 									ul.appendChild(li);
@@ -266,24 +266,24 @@ define(
 						"rel": "erroredModel",
 						"elementId": model.id
 					});
-					
+
 					var a = document.createElement('a');
 					a.href = "#";
 					a.innerHTML = model.id;
 					li.appendChild(a);
-					
+
 					var mul = createULElement();
 					li.appendChild(mul);
 					ul.appendChild(li);
 				});
 
 				jQuery(displayScope + "#outline").get(0).appendChild(ul);
-				
+
 				console.timeEnd("###################################### Tree formation");
-				
+
 				jQuery("div#outlineLoadingMsg").hide();
 				runHasModelsCheck();
-				
+
 				m_messageDisplay.markSaved();
 				m_modelsSaveStatus.setModelsSaved();
 				m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
@@ -308,7 +308,7 @@ define(
 					jQuery("div#outlineMessageDiv").hide();
 				}
 			}
-			
+
 			var loadChildParticipants = function(model, participant, participantLi) {
 				if (participant.childParticipants) {
 					var cPartiUl = createULElement();
@@ -325,7 +325,7 @@ define(
 							"parentUUID": participant.uuid,
 							"fullId": cParticipant.getFullId()
 						});
-						
+
 						var pa = document.createElement('a');
 						pa.href = "#";
 						pa.innerHTML = cParticipant.name;
@@ -335,17 +335,17 @@ define(
 					});
 				}
 			}
-			
+
 			var createULElement = function() {
 				return document.createElement('ul');
 			};
-			
+
 			var createLIElement = function(attributes) {
 				var li = document.createElement('li');
 				for (var attr in attributes) {
 					li.setAttribute(attr, attributes[attr]);
 				}
-				
+
 				return li;
 			};
 
@@ -374,16 +374,16 @@ define(
 				if (!model) {
 					for (var i = 0; i < m_model.getErroredModels().length; i++) {
 						if (m_model.getErroredModels()[i].uuid === modelUUID) {
-							model = m_model.getErroredModels()[i];		
+							model = m_model.getErroredModels()[i];
 						}
-					}						
+					}
 				}
 				if (model) {
 					window.location = require("bpm-modeler/js/m_urlUtils")
 						.getModelerEndpointUrl()
 						+ "/models/"
 						+ encodeURIComponent(model.id)
-						+ "/download";	
+						+ "/download";
 				}
 			}
 
@@ -693,7 +693,7 @@ define(
 			// var index = m_utils.getLastIndexOf(nodeId, "__");
 			// return nodeId.substring(index);
 			// };
-			
+
 			var setupJsTree = function() {
 				jQuery(displayScope + "#outline").jstree(
 						{
@@ -776,6 +776,8 @@ define(
 										// }
 										// }
 										};
+
+										addMenuOptions(ctxMenu, "model");
 
 										var mod = m_model.findModelByUuid(node.attr('id'))
 										if (mod.isReadonly()) {
@@ -1587,12 +1589,12 @@ define(
 								"url" : "../css/jsTreeCustom/style.css"
 							}
 						});
-				
+
 				// Rename node handler
 				jQuery(displayScope + "#outline").bind("rename_node.jstree", function(event, data) {
 					renameNodeHandler(event, data);
 				});
-				
+
 				// Tree Node Selection handler
 				m_utils.jQuerySelect(displayScope + "#outline")
 						.bind(
@@ -2063,14 +2065,14 @@ define(
 				if (!model) {
 					for (var i = 0; i < m_model.getErroredModels().length; i++) {
 						if (m_model.getErroredModels()[i].id === modelId) {
-							model = m_model.getErroredModels()[i];		
+							model = m_model.getErroredModels()[i];
 						}
-					}						
+					}
 				}
-				
+
 				if (model) {
 					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, model.id, {}));	
+							.createDeleteModelCommand(model.uuid, model.id, {}));
 				}
 			};
 
@@ -2472,7 +2474,7 @@ define(
 
 				parent.iPopupDialog.openPopup(popupData);
 			};
-			
+
 
 			/**
 			 *
@@ -2547,7 +2549,7 @@ define(
 					};
 				}
 			};
-			
+
 			var setupEventHandling = function() {
 				/* Listen to toolbar events */
 				m_utils.jQuerySelect(document).bind('TOOL_CLICKED_EVENT',
@@ -2578,9 +2580,9 @@ define(
 				};
 
 				readAllModels();
-				
+
 				setupJsTree();
-		
+
 				var handleToolbarEvents = function(event, data) {
 					if ("createModel" == data.id) {
 						createModel();
@@ -2720,9 +2722,9 @@ define(
 					outline = new Outline();
 
 					outline.initialize();
-					
+
 					m_messageDisplay.updateLastSavedLabel(m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title"));
-					
+
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
 					m_utils.jQuerySelect("#outlineDiv").css("visibility", "visible");
@@ -3147,12 +3149,12 @@ define(
 					jQuery.each(data.participants, function(key, value) {
 						outlineObj.createParticipant(value, true);
 					});
-					
+
 					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
 							"#" + "participants_" + data.uuid);
-					
+
 					jQuery("div#outlineMessageDiv").hide();
-					 
+
 					runHasModelsCheck();
 
 					return model;

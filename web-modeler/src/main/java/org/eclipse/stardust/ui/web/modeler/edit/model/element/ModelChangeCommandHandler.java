@@ -37,8 +37,13 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
-import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecutor;
+import org.eclipse.stardust.ui.web.modeler.model.conversion.ModelConverter;
+import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 
 /**
  * @author Shrikant.Gangal
@@ -61,6 +66,10 @@ public class ModelChangeCommandHandler
       if ("model.create".equals(commandId))
       {
          return createModel(commandId, request);
+      }
+      else if ("model.clone".equals(commandId))
+      {
+         return cloneModel(commandId, request);
       }
       else if ("model.update".equals(commandId))
       {
@@ -115,6 +124,34 @@ public class ModelChangeCommandHandler
       model.eResource().eAdapters().add(new SchemaLocatorAdapter());
       JsonArray added = new JsonArray();
       JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(model);
+      added.add(addedModel);
+      return generateResponse(commandId, null, added, null);
+   }
+
+   /**
+    * @param commandId
+    * @param request
+    */
+   private JsonObject cloneModel(String commandId, JsonObject request)
+   {
+      JsonMarshaller jsonIo = springContext.getBean(JsonMarshaller.class);
+      RequestExecutor requestExecutor = new BeanInvocationExecutor(jsonIo,
+            modelService(), springContext.getBean(ModelerSessionRestController.class));
+
+      ModelConverter converter = new ModelConverter(jsonIo, requestExecutor);
+
+      // extract ID from request
+      String srcModelId = GsonUtils.extractString(request, ModelerConstants.MODEL_ID_PROPERTY);
+
+      // TODO handle cloning to BPMN2
+
+      String newModelId = converter.convertModel(srcModelId);
+
+      ModelType modelClone = modelService().getModelManagementStrategy().getModels().get(newModelId);
+
+      // TODO how about BPMN2 models?
+      JsonArray added = new JsonArray();
+      JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(modelClone);
       added.add(addedModel);
       return generateResponse(commandId, null, added, null);
    }
@@ -222,14 +259,5 @@ public class ModelChangeCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-
-   /**
-    * @return
-    */
-   private ModelBuilderFacade getModelBuilderFacade()
-   {
-      return CommandHandlerUtils.getModelBuilderFacade(springContext);
-   }
-
 }
 

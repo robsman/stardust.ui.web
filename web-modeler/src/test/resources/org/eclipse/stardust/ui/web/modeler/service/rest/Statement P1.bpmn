@@ -1,0 +1,1787 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:_0="http://www.omg.org/bpmn20" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpva="http://www.visual-paradigm.com/product/bpva/" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:stardust="http://www.eclipse.org/stardust" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd http://www.omg.org/spec/DD/20100524/DC http://www.omg.org/spec/DD/20100524/DC-XMI http://www.omg.org/spec/DD/20100524/DI http://www.omg.org/spec/DD/20100524/DI-XMI http://www.omg.org/spec/BPMN/20100524/DI http://www.omg.org/spec/BPMN/20100524/DI-XMI" id="Definition" stardust:uuid="35258023-f7c1-4c12-a0ce-19de63b1d733" exporter="Eclipse Stardust" exporterVersion="7.1.1" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.omg.org/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <collaboration id="collaboration-BP186_BP848_">
+    <participant id="BP186_BP848_BP844" name="Leo" processRef="_0:process-BP186_BP848_BP844">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="SC71KDyAU1wk2hvw"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPPool"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="97"/>
+							<StringProperty xsi:type="xsd:anyType" Name="qualityReason" Value="2&#x9;2"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348405951516"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798219"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP844"/>
+							<IntegerProperty xsi:type="xsd:anyType" Name="userIDLastNumericValue" Value="141"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </participant>
+  </collaboration>
+  <process id="process-BP186_BP848_BP844" name="Leo" processType="None">
+    <extensionElements>
+      <bpva:Extensions xsi:type="xsd:anyType">
+				<DiagramExtension xsi:type="xsd:anyType" Idref="diagram-BP186_BP848_">
+					<VpId xsi:type="xsd:anyType" Value="7kj1KDyAU1wk2hul"/>
+					<DiagramProperties xsi:type="xsd:anyType">
+						<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357556683383"/>
+						<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1367914262308"/>
+						<StringProperty xsi:type="xsd:anyType" Name="documentation_html" Value="&lt;html>&#xD;&#xA;  &lt;head>&#xD;&#xA;    &lt;style type=&quot;text/css&quot;>&#xA;      &lt;!--&#xA;        body { color: #000000; font-family: Courier New; font-size: 11px }&#xA;      -->&#xA;    &lt;/style>&#xD;&#xA;    &#xD;&#xA;  &lt;/head>&#xD;&#xA;  &lt;body>&#xD;&#xA;    &lt;p>&#xD;&#xA;      &#xD;&#xA;    &lt;/p>&#xD;&#xA;  &lt;/body>&#xD;&#xA;&lt;/html>&#xD;&#xA;"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="connectorStyle" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="connectionPointStyle" Value="1"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="maximized" Value="true"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="1330"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="889"/>
+						<ModelRefProperty xsi:type="xsd:anyType" Name="parentModel">
+							<ModelRef xsi:type="xsd:anyType" Id="BP186_BP848" ModelType="BPSubProcess" Name="Account statement">
+								<Model xsi:type="xsd:anyType" id="BP186_BP848" name="Account statement">
+									<VpId xsi:type="xsd:anyType" Value="LCMTeDyAU1wk2hp1"/>
+									<ModelType xsi:type="xsd:anyType" Value="BPSubProcess"/>
+									<ParentRef xsi:type="xsd:anyType"/>
+									<ModelProperties xsi:type="xsd:anyType">
+										<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="29"/>
+										<StringProperty xsi:type="xsd:anyType" Name="qualityReason" Value="5&#x9;5"/>
+										<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357726139444"/>
+										<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798219"/>
+										<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP848"/>
+										<IntegerProperty xsi:type="xsd:anyType" Name="userIDLastNumericValue" Value="844"/>
+										<StringProperty xsi:type="xsd:anyType" Name="diagramId" Value="BP186_BP848_"/>
+									</ModelProperties>
+									<Children xsi:type="xsd:anyType">
+										<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844" name="Leo">
+											<VpId xsi:type="xsd:anyType" Value="SC71KDyAU1wk2hvw"/>
+											<ModelType xsi:type="xsd:anyType" Value="BPPool"/>
+											<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848"/>
+											<ModelProperties xsi:type="xsd:anyType">
+												<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="97"/>
+												<StringProperty xsi:type="xsd:anyType" Name="qualityReason" Value="2&#x9;2"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348405951516"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798219"/>
+												<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP844"/>
+												<IntegerProperty xsi:type="xsd:anyType" Name="userIDLastNumericValue" Value="141"/>
+											</ModelProperties>
+											<Children xsi:type="xsd:anyType">
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP03" name="Generate Statement for Future trades">
+													<VpId xsi:type="xsd:anyType" Value="fS71KDyAU1wk2hv7"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348406061327"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449998"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP03"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP35" name="Select  Future trades">
+													<VpId xsi:type="xsd:anyType" Value="Py71KDyAU1wk2hwG"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348599791701"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449964"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP35"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP73" name="Trade - Future">
+													<VpId xsi:type="xsd:anyType" Value="XK71KDyAU1wk2hwZ"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="jay.mitchell"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1349961010926"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449982"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP73"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP74" name="Activity record - Position - Future - Offsetting">
+													<VpId xsi:type="xsd:anyType" Value="Uq71KDyAU1wk2hwe"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="jay.mitchell"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1349961100287"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449997"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP74"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP107" name="Position - Settled Cash ">
+													<VpId xsi:type="xsd:anyType" Value="Azb9KDyAU1wk2h7u"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557755072"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449993"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP107"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP108" name="Select Offsetting Data">
+													<VpId xsi:type="xsd:anyType" Value="njcDKDyAU1wk2iO_"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557853305"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798226"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP108"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP109" name="Generate statement for offsetting">
+													<VpId xsi:type="xsd:anyType" Value="j.KDKDyAU1wk2iPQ"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557876721"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798229"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP109"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP110" name="Select Future positions">
+													<VpId xsi:type="xsd:anyType" Value="20ODKDyAU1wk2iPf"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557908187"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357726508728"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP110"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP111" name="Generate statement for future positions">
+													<VpId xsi:type="xsd:anyType" Value="vxhDKDyAU1wk2iPo"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557930237"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798232"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP111"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP112" name="Select settlement cash positions">
+													<VpId xsi:type="xsd:anyType" Value="WG5DKDyAU1wk2iPx"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557954074"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357726508728"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP112"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP113" name="Generate statement for settlement cash positions">
+													<VpId xsi:type="xsd:anyType" Value="yqNDKDyAU1wk2iP7"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+															<Values xsi:type="xsd:anyType">
+																<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+															</Values>
+														</ModelRefsProperty>
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557930237"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798235"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP113"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP130" name="Position - Future ">
+													<VpId xsi:type="xsd:anyType" Value="p1FwqDyAU1wk2iD9"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562940133"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449992"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP130"/>
+													</ModelProperties>
+												</Model>
+												<Model xsi:type="xsd:anyType" id="BP186_BP848_BP844_BP139" name="Activity record - Position - Settled Cash - Offsetting P&amp;L ">
+													<VpId xsi:type="xsd:anyType" Value="4X3z.DyAU1wk2hih"/>
+													<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+													<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+													<ModelProperties xsi:type="xsd:anyType">
+														<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357743373959"/>
+														<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449992"/>
+														<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP139"/>
+													</ModelProperties>
+												</Model>
+											</Children>
+										</Model>
+									</Children>
+								</Model>
+							</ModelRef>
+						</ModelRefProperty>
+						<BooleanProperty xsi:type="xsd:anyType" Name="initializeDiagramForCreate" Value="true"/>
+						<ModelRefProperty xsi:type="xsd:anyType" Name="_parentProcessModel">
+							<ModelRef xsi:type="xsd:anyType" Id="BP186_BP848" ModelType="BPSubProcess" Name="Account statement"/>
+						</ModelRefProperty>
+					</DiagramProperties>
+				</DiagramExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_15650120_3747_6200_2465_604466400047">
+					<VpId xsi:type="xsd:anyType" Value="4X3z.DyAU1wk2hig"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPDataObject"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="0cpPlct" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="610"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="190"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="4" Visible="true" Width="294" X="483" Y="240"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-39" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400050">
+					<VpId xsi:type="xsd:anyType" Value="p1FwqDyAU1wk2iD8"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPDataObject"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="0cpPlct" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="860"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="130"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="4" Visible="true" Width="104" X="828" Y="180"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-39" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400051">
+					<VpId xsi:type="xsd:anyType" Value="yqNDKDyAU1wk2iP5"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="1310"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400052">
+					<VpId xsi:type="xsd:anyType" Value="WG5DKDyAU1wk2iPw"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="1140"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400053">
+					<VpId xsi:type="xsd:anyType" Value="vxhDKDyAU1wk2iPn"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="970"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400054">
+					<VpId xsi:type="xsd:anyType" Value="20ODKDyAU1wk2iPe"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="800"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400055">
+					<VpId xsi:type="xsd:anyType" Value="j.KDKDyAU1wk2iPP"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="630"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400057">
+					<VpId xsi:type="xsd:anyType" Value="njcDKDyAU1wk2iO."/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="450"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400060">
+					<VpId xsi:type="xsd:anyType" Value="Azb9KDyAU1wk2h7t"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPDataObject"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="0cpPlct" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="1210"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="130"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="4" Visible="true" Width="135" X="1163" Y="180"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-39" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400061">
+					<VpId xsi:type="xsd:anyType" Value="Uq71KDyAU1wk2hwc"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPDataObject"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="0cpPlct" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="520"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="130"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="40" InternalHeight="40" InternalWidth="140" Side="4" Visible="true" Width="140" X="470" Y="180"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-39" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400062">
+					<VpId xsi:type="xsd:anyType" Value="XK71KDyAU1wk2hwX"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPDataObject"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="0cpPlct" Value="5"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="170"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="130"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="40" InternalHeight="40" InternalWidth="120" Side="4" Visible="true" Width="120" X="130" Y="180"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-39" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400063">
+					<VpId xsi:type="xsd:anyType" Value="Py71KDyAU1wk2hwE"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="110"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400064">
+					<VpId xsi:type="xsd:anyType" Value="fS71KDyAU1wk2hv5"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPTask"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idX" Value="280"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="50"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="50" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="12" Visible="true" Width="150" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-1116806" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400077">
+					<VpId xsi:type="xsd:anyType" Value="8AsjKDyAU1wk2iQ0"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="160"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="259" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400100">
+					<VpId xsi:type="xsd:anyType" Value="SZsjKDyAU1wk2iQ4"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="330"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="429" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400101">
+					<VpId xsi:type="xsd:anyType" Value="3ScjKDyAU1wk2iQ8"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="500"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="229"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="604" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400102">
+					<VpId xsi:type="xsd:anyType" Value="Tg8jKDyAU1wk2iRA"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="680"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="779" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400103">
+					<VpId xsi:type="xsd:anyType" Value="qT8jKDyAU1wk2iRE"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="850"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="949" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_03650120_3747_6200_2465_604466400104">
+					<VpId xsi:type="xsd:anyType" Value="jcijKDyAU1wk2iRI"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="1020"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="1119" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_03650120_3747_6200_2465_604466400105">
+					<VpId xsi:type="xsd:anyType" Value="wbijKDyAU1wk2iRM"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="1190"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="-20"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="219"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="200"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-16777216"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="1289" Y="80"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_55650120_3747_6200_2465_604466400056">
+					<VpId xsi:type="xsd:anyType" Value="Sb8L.DyAU1wk2h9b"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="360"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="349"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="330"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="539" Y="230"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400066">
+					<VpId xsi:type="xsd:anyType" Value="OZKL.DyAU1wk2h9h"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="550"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="230"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="330"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="680" Y="180"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400067">
+					<VpId xsi:type="xsd:anyType" Value="OsowqDyAU1wk2hvs"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="80"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="200"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="229"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="190" Y="130"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400070">
+					<VpId xsi:type="xsd:anyType" Value="OpYwqDyAU1wk2hvy"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="110"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="360"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="250"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="261" Y="170"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400071">
+					<VpId xsi:type="xsd:anyType" Value="4wGwqDyAU1wk2hwe"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="430"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="200"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="229"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="530" Y="110"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400072">
+					<VpId xsi:type="xsd:anyType" Value="IDmwqDyAU1wk2hwk"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="460"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="290"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="260"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="610" Y="180"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400073">
+					<VpId xsi:type="xsd:anyType" Value="qBNwqDyAU1wk2iEC"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="770"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="200"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="229"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="870" Y="110"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400074">
+					<VpId xsi:type="xsd:anyType" Value="n8twqDyAU1wk2iEG"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="800"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="340"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="260"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="985" Y="160"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400075">
+					<VpId xsi:type="xsd:anyType" Value="TQvwqDyAU1wk2iEy"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="1120"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="200"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="229"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="1220" Y="110"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_75650120_3747_6200_2465_604466400076">
+					<VpId xsi:type="xsd:anyType" Value="uTvwqDyAU1wk2iE2"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPAssociation"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="1150"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="330"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="260"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<StringProperty xsi:type="xsd:anyType" Name="creatorDiagramType" Value="BusinessProcessDiagram"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeXDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toShapeYDiff" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="fromConnectType" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="toConnectType" Value="0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useFromShapeCenter" Value="true"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="useToShapeCenter" Value="true"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="1" Visible="true" Width="20" X="1330" Y="160"/>
+					<ConnectorStyle xsi:type="xsd:anyType" Value="3"/>
+				</DiagramElementExtension>
+				<DiagramElementExtension xsi:type="xsd:anyType" Idref="ID_35650120_3747_6200_2465_604466400065">
+					<VpId xsi:type="xsd:anyType" Value="SC71KDyAU1wk2hvu"/>
+					<ShapeType xsi:type="xsd:anyType" Value="BPPool"/>
+					<DiagramElementProperties xsi:type="xsd:anyType">
+						<IntegerProperty xsi:type="xsd:anyType" Name="zOrder" Value="-1"/>
+						<ModelRefProperty xsi:type="xsd:anyType" Name="metaModelElement">
+							<ModelRef xsi:type="xsd:anyType" Id="BP186_BP848_BP844" ModelType="BPPool" Name="Leo"/>
+						</ModelRefProperty>
+						<IntegerProperty xsi:type="xsd:anyType" Name="x" Value="0"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="y" Value="30"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="width" Value="1580"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="height" Value="240"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="background" Value="-8728587"/>
+						<ColorProperty xsi:type="xsd:anyType" Name="foreground" Value="-16777216"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorHeaderLength" Value="40"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="parentConnectorLineLength" Value="10"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="connectToPoint" Value="true"/>
+						<DoubleProperty xsi:type="xsd:anyType" Name="parentConnectorDTheta" Value="0.0"/>
+						<BooleanProperty xsi:type="xsd:anyType" Name="requestDefaultSize" Value="false"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="idY" Value="30"/>
+						<IntegerProperty xsi:type="xsd:anyType" Name="autoStretch" Value="2"/>
+					</DiagramElementProperties>
+					<ElementFont xsi:type="xsd:anyType" Color="-16777216" Name="Dialog" Size="11" Style="0"/>
+					<Line xsi:type="xsd:anyType" Cap="0" Color="-16777216" Transparency="0" Weight="1.0">
+						<Stroke xsi:type="xsd:anyType"/>
+					</Line>
+					<Caption xsi:type="xsd:anyType" Height="240" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="8" Visible="true" Width="16" X="0" Y="0"/>
+					<FillColor xsi:type="xsd:anyType" Color1="-7873291" Style="1" Transparency="0" Type="1"/>
+				</DiagramElementExtension>
+			</bpva:Extensions>
+    </extensionElements>
+    <dataObject id="BP186_BP848_BP844_BP139" name="Activity record - Position - Settled Cash - Offsetting P&amp;L " isCollection="false">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="4X3z.DyAU1wk2hih"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357743373959"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449992"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP139"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </dataObject>
+    <dataObjectReference id="BP186_BP848_BP844_BP139-reference" name="Activity record - Position - Settled Cash - Offsetting P&amp;L " dataObjectRef="BP186_BP848_BP844_BP139"/>
+    <dataObject id="BP186_BP848_BP844_BP130" name="Position - Future " isCollection="false">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="p1FwqDyAU1wk2iD9"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562940133"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449992"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP130"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </dataObject>
+    <dataObjectReference id="BP186_BP848_BP844_BP130-reference" name="Position - Future " dataObjectRef="BP186_BP848_BP844_BP130"/>
+    <task id="BP186_BP848_BP844_BP113" name="Generate statement for settlement cash positions" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="1310" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="yqNDKDyAU1wk2iP7"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement">
+										<Model xsi:type="xsd:anyType" id="ID_07630120_3747_6200_2465_604466400133" name="Statement">
+											<VpId xsi:type="xsd:anyType" Value="KIb5nlyAU1wk2hBq"/>
+											<ModelType xsi:type="xsd:anyType" Value="Stereotype"/>
+											<ModelProperties xsi:type="xsd:anyType">
+												<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="24"/>
+												<StringProperty xsi:type="xsd:anyType" Name="qualityReason" Value="1&#x9;1&#xA;5&#x9;5"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1350660185891"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1352985144777"/>
+												<StringProperty xsi:type="xsd:anyType" Name="baseType" Value="BPTask"/>
+											</ModelProperties>
+										</Model>
+									</ModelRef>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557930237"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798235"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP113"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP121</incoming>
+    </task>
+    <task id="BP186_BP848_BP844_BP112" name="Select settlement cash positions" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="1140" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="WG5DKDyAU1wk2iPx"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select">
+										<Model xsi:type="xsd:anyType" id="ID_07630120_3747_6200_2465_604466400134" name="Select">
+											<VpId xsi:type="xsd:anyType" Value="m4QDtNyAU1wk2ibT"/>
+											<ModelType xsi:type="xsd:anyType" Value="Stereotype"/>
+											<ModelProperties xsi:type="xsd:anyType">
+												<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="21"/>
+												<StringProperty xsi:type="xsd:anyType" Name="qualityReason" Value="1&#x9;1&#xA;2&#x9;2&#xA;5&#x9;5"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1353682227869"/>
+												<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1353691965876"/>
+												<StringProperty xsi:type="xsd:anyType" Name="baseType" Value="BPTask"/>
+											</ModelProperties>
+										</Model>
+									</ModelRef>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557954074"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357726508728"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP112"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP120</incoming>
+      <outgoing>BP186_BP848_BP844_BP121</outgoing>
+    </task>
+    <task id="BP186_BP848_BP844_BP111" name="Generate statement for future positions" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="970" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="vxhDKDyAU1wk2iPo"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557930237"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798232"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP111"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP119</incoming>
+      <outgoing>BP186_BP848_BP844_BP120</outgoing>
+    </task>
+    <task id="BP186_BP848_BP844_BP110" name="Select Future positions" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="800" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="20ODKDyAU1wk2iPf"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557908187"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357726508728"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP110"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP118</incoming>
+      <outgoing>BP186_BP848_BP844_BP119</outgoing>
+    </task>
+    <task id="BP186_BP848_BP844_BP109" name="Generate statement for offsetting" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="630" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="j.KDKDyAU1wk2iPQ"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557876721"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798229"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP109"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP117</incoming>
+      <outgoing>BP186_BP848_BP844_BP118</outgoing>
+    </task>
+    <task id="BP186_BP848_BP844_BP108" name="Select Offsetting Data" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="450" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="njcDKDyAU1wk2iO_"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557853305"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798226"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP108"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP116</incoming>
+      <outgoing>BP186_BP848_BP844_BP117</outgoing>
+    </task>
+    <dataObject id="BP186_BP848_BP844_BP107" name="Position - Settled Cash " isCollection="false">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="Azb9KDyAU1wk2h7u"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357557755072"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449993"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP107"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </dataObject>
+    <dataObjectReference id="BP186_BP848_BP844_BP107-reference" name="Position - Settled Cash " dataObjectRef="BP186_BP848_BP844_BP107"/>
+    <dataObject id="BP186_BP848_BP844_BP74" name="Activity record - Position - Future - Offsetting" isCollection="false">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="Uq71KDyAU1wk2hwe"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="jay.mitchell"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1349961100287"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449997"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP74"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </dataObject>
+    <dataObjectReference id="BP186_BP848_BP844_BP74-reference" name="Activity record - Position - Future - Offsetting" dataObjectRef="BP186_BP848_BP844_BP74"/>
+    <dataObject id="BP186_BP848_BP844_BP73" name="Trade - Future" isCollection="false">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="XK71KDyAU1wk2hwZ"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPDataObject"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="jay.mitchell"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1349961010926"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449982"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP73"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </dataObject>
+    <dataObjectReference id="BP186_BP848_BP844_BP73-reference" name="Trade - Future" dataObjectRef="BP186_BP848_BP844_BP73"/>
+    <task id="BP186_BP848_BP844_BP35" name="Select  Future trades" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="110" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="Py71KDyAU1wk2hwG"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400134" ModelType="Stereotype" Name="Select"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348599791701"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449964"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP35"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <outgoing>BP186_BP848_BP844_BP115</outgoing>
+    </task>
+    <task id="BP186_BP848_BP844_BP03" name="Generate Statement for Future trades" completionQuantity="1" isForCompensation="false" startQuantity="1">
+      <extensionElements>
+        <bpva:bounds xsi:type="xsd:anyType" height="50" width="150" x="280" y="50"/>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="fS71KDyAU1wk2hv7"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPTask"/>
+						<ParentRef xsi:type="xsd:anyType" Idref="BP186_BP848_BP844"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<ModelRefsProperty xsi:type="xsd:anyType" Name="stereotypes">
+								<Values xsi:type="xsd:anyType">
+									<ModelRef xsi:type="xsd:anyType" Id="ID_07630120_3747_6200_2465_604466400133" ModelType="Stereotype" Name="Statement"/>
+								</Values>
+							</ModelRefsProperty>
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmAuthor" Value="Jay"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1348406061327"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1359650449998"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP03"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+      <incoming>BP186_BP848_BP844_BP115</incoming>
+      <outgoing>BP186_BP848_BP844_BP116</outgoing>
+    </task>
+    <sequenceFlow id="BP186_BP848_BP844_BP115" name="" sourceRef="BP186_BP848_BP844_BP35" targetRef="BP186_BP848_BP844_BP03">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="zvMjKDyAU1wk2iQz"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558108019"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798243"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP115"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP116" name="" sourceRef="BP186_BP848_BP844_BP03" targetRef="BP186_BP848_BP844_BP108">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="qJsjKDyAU1wk2iQ3"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558110485"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798219"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP116"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP117" name="" sourceRef="BP186_BP848_BP844_BP108" targetRef="BP186_BP848_BP844_BP109">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="Q8cjKDyAU1wk2iQ7"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558113218"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798226"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP117"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP118" name="" sourceRef="BP186_BP848_BP844_BP109" targetRef="BP186_BP848_BP844_BP110">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="4_cjKDyAU1wk2iQ_"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558116295"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798229"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP118"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP119" name="" sourceRef="BP186_BP848_BP844_BP110" targetRef="BP186_BP848_BP844_BP111">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="n98jKDyAU1wk2iRD"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558119417"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798242"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP119"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP120" name="" sourceRef="BP186_BP848_BP844_BP111" targetRef="BP186_BP848_BP844_BP112">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="b0ijKDyAU1wk2iRH"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558125302"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798232"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP120"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="BP186_BP848_BP844_BP121" name="" sourceRef="BP186_BP848_BP844_BP112" targetRef="BP186_BP848_BP844_BP113">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="5zijKDyAU1wk2iRL"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPSequenceFlow"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357558127847"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798240"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP121"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </sequenceFlow>
+    <association id="BP186_BP848_BP844_BP140" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP108" targetRef="_0:BP186_BP848_BP844_BP139">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="5z8L.DyAU1wk2h9a"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357743455463"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798227"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP140"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP141" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP109" targetRef="_0:BP186_BP848_BP844_BP139">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="AJKL.DyAU1wk2h9g"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357743474944"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798231"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP141"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP123" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP35" targetRef="_0:BP186_BP848_BP844_BP73">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="BgowqDyAU1wk2hvA"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562794080"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798240"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP123"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP124" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP03" targetRef="_0:BP186_BP848_BP844_BP73">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="ThYwqDyAU1wk2hvx"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562800242"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798221"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP124"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP126" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP108" targetRef="_0:BP186_BP848_BP844_BP74">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="N_6wqDyAU1wk2hwd"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562871788"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798226"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP126"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP127" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP109" targetRef="_0:BP186_BP848_BP844_BP74">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="FtmwqDyAU1wk2hwj"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562878824"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798230"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP127"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP131" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP110" targetRef="_0:BP186_BP848_BP844_BP130">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="keNwqDyAU1wk2iEB"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562955657"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798241"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP131"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP132" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP111" targetRef="_0:BP186_BP848_BP844_BP130">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="PstwqDyAU1wk2iEF"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357562958716"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798207"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP132"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP135" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP112" targetRef="_0:BP186_BP848_BP844_BP107">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="E_PwqDyAU1wk2iEx"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357563023304"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798241"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP135"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+    <association id="BP186_BP848_BP844_BP136" associationDirection="None" sourceRef="_0:BP186_BP848_BP844_BP113" targetRef="_0:BP186_BP848_BP844_BP107">
+      <extensionElements>
+        <bpva:Extensions xsi:type="xsd:anyType">
+					<ModelExtension xsi:type="xsd:anyType">
+						<VpId xsi:type="xsd:anyType" Value="R9vwqDyAU1wk2iE1"/>
+						<ModelType xsi:type="xsd:anyType" Value="BPAssociation"/>
+						<ParentRef xsi:type="xsd:anyType"/>
+						<ModelProperties xsi:type="xsd:anyType">
+							<IntegerProperty xsi:type="xsd:anyType" Name="qualityScore" Value="100"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmCreateDateTime" Value="1357563026402"/>
+							<StringProperty xsi:type="xsd:anyType" Name="pmLastModified" Value="1357743798235"/>
+							<StringProperty xsi:type="xsd:anyType" Name="userID" Value="BP136"/>
+						</ModelProperties>
+					</ModelExtension>
+				</bpva:Extensions>
+      </extensionElements>
+    </association>
+  </process>
+  <bpmndi:BPMNDiagram id="diagram-BP186_BP848_" name=" Prototype 1 - Cleared - Reports Processing - Fixed Format - Account statement">
+    <bpmndi:BPMNPlane id="plane-BP186_BP848_" bpmnElement="_0:process-BP186_BP848_BP844">
+      <bpmndi:BPMNShape id="ID_15650120_3747_6200_2465_604466400047" bpmnElement="_0:BP186_BP848_BP844_BP139-reference">
+        <omgdc:Bounds height="50.0" width="40.0" x="610.0" y="190.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400050" bpmnElement="_0:BP186_BP848_BP844_BP130-reference">
+        <omgdc:Bounds height="50.0" width="40.0" x="860.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400051" bpmnElement="_0:BP186_BP848_BP844_BP113">
+        <omgdc:Bounds height="50.0" width="150.0" x="1310.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400052" bpmnElement="_0:BP186_BP848_BP844_BP112">
+        <omgdc:Bounds height="50.0" width="150.0" x="1140.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400053" bpmnElement="_0:BP186_BP848_BP844_BP111">
+        <omgdc:Bounds height="50.0" width="150.0" x="970.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400054" bpmnElement="_0:BP186_BP848_BP844_BP110">
+        <omgdc:Bounds height="50.0" width="150.0" x="800.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400055" bpmnElement="_0:BP186_BP848_BP844_BP109">
+        <omgdc:Bounds height="50.0" width="150.0" x="630.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400057" bpmnElement="_0:BP186_BP848_BP844_BP108">
+        <omgdc:Bounds height="50.0" width="150.0" x="450.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400060" bpmnElement="_0:BP186_BP848_BP844_BP107-reference">
+        <omgdc:Bounds height="50.0" width="40.0" x="1210.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_55650120_3747_6200_2465_604466400061" bpmnElement="_0:BP186_BP848_BP844_BP74-reference">
+        <omgdc:Bounds height="50.0" width="40.0" x="520.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_35650120_3747_6200_2465_604466400062" bpmnElement="_0:BP186_BP848_BP844_BP73-reference">
+        <omgdc:Bounds height="50.0" width="40.0" x="170.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_35650120_3747_6200_2465_604466400063" bpmnElement="_0:BP186_BP848_BP844_BP35">
+        <omgdc:Bounds height="50.0" width="150.0" x="110.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ID_35650120_3747_6200_2465_604466400064" bpmnElement="_0:BP186_BP848_BP844_BP03">
+        <omgdc:Bounds height="50.0" width="150.0" x="280.0" y="50.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400077" bpmnElement="_0:BP186_BP848_BP844_BP115">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="260.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="279.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400100" bpmnElement="_0:BP186_BP848_BP844_BP116">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="430.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="449.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400101" bpmnElement="_0:BP186_BP848_BP844_BP117">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="600.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="629.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400102" bpmnElement="_0:BP186_BP848_BP844_BP118">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="780.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="799.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400103" bpmnElement="_0:BP186_BP848_BP844_BP119">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="950.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="969.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_03650120_3747_6200_2465_604466400104" bpmnElement="_0:BP186_BP848_BP844_BP120">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1120.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1139.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_03650120_3747_6200_2465_604466400105" bpmnElement="_0:BP186_BP848_BP844_BP121">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1290.0" y="80.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1309.0" y="80.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_55650120_3747_6200_2465_604466400056" bpmnElement="_0:BP186_BP848_BP844_BP140">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="460.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="460.0" y="230.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="609.0" y="230.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_35650120_3747_6200_2465_604466400066" bpmnElement="_0:BP186_BP848_BP844_BP141">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="680.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="680.0" y="230.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="650.0" y="230.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_35650120_3747_6200_2465_604466400067" bpmnElement="_0:BP186_BP848_BP844_BP123">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="180.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="180.0" y="129.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_35650120_3747_6200_2465_604466400070" bpmnElement="_0:BP186_BP848_BP844_BP124">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="370.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="370.0" y="150.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="210.0" y="150.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_35650120_3747_6200_2465_604466400071" bpmnElement="_0:BP186_BP848_BP844_BP126">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="530.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="530.0" y="129.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_35650120_3747_6200_2465_604466400072" bpmnElement="_0:BP186_BP848_BP844_BP127">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="650.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="650.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="560.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400073" bpmnElement="_0:BP186_BP848_BP844_BP131">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="870.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="870.0" y="129.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400074" bpmnElement="_0:BP186_BP848_BP844_BP132">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1040.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1040.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="900.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400075" bpmnElement="_0:BP186_BP848_BP844_BP135">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1220.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1220.0" y="129.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ID_75650120_3747_6200_2465_604466400076" bpmnElement="_0:BP186_BP848_BP844_BP136">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1380.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1380.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1250.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ID_35650120_3747_6200_2465_604466400065" bpmnElement="_0:BP186_BP848_BP844" isHorizontal="true">
+        <omgdc:Bounds height="240.0" width="1580.0" x="0.0" y="30.0"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,11 +1,14 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import java.io.StringWriter;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 
 public class GsonUtils
@@ -155,7 +158,7 @@ public class GsonUtils
       }
       return null;
    }
-   
+
    public static String toPrettyString(JsonElement json)
    {
       Gson gson = new Gson();
@@ -166,5 +169,42 @@ public class GsonUtils
       jsonWriter.setLenient(true);
       gson.toJson(json, jsonWriter);
       return writer.toString();
+   }
+
+   public static JsonObject deepCopy(JsonObject src)
+   {
+      return (JsonObject) doDeepCopy(src);
+   }
+
+   private static JsonElement doDeepCopy(JsonElement src)
+   {
+      if ((src instanceof JsonPrimitive) || (src instanceof JsonNull))
+      {
+         // immutable
+         return src;
+      }
+      else if (src instanceof JsonArray)
+      {
+         JsonArray copy = new JsonArray();
+         for (JsonElement element : (JsonArray) src)
+         {
+            copy.add(doDeepCopy(element));
+         }
+         return copy;
+      }
+      else if (src instanceof JsonObject)
+      {
+         JsonObject copy = new JsonObject();
+         for (Map.Entry<String, JsonElement> attr : ((JsonObject) src).entrySet())
+         {
+            copy.add(attr.getKey(), doDeepCopy(attr.getValue()));
+         }
+         return copy;
+      }
+      else
+      {
+         throw new IllegalArgumentException("Unsupported JsonElement instance: "
+               + src.getClass());
+      }
    }
 }
