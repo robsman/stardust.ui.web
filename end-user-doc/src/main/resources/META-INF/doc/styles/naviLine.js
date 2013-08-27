@@ -86,12 +86,19 @@ function copyright()
 function line() {
 	document.write('<table class="header"><tr><td class="header">');
 	var top=0;
+	var startarray=0;
 	var uri = location.href;
 	var uriindex = uri.indexOf("/doc/");
 	var suburi = uri.substring(0,uriindex)+maindoclink;
-	document.write('<a href=',suburi,' class="header">Portal Documenation</a> &gt; ');
+	document.write('<a href=',suburi,' class="header">End User Documentation</a> &gt; ');
+//check if in Portal or bpm documentation
+	var checkindex = uri.indexOf("/portal/");
+	if (checkindex > 0) 
+		startarray=2;
+	else
+		startarray=0;
 
-	for (var i = 0; i < linkNumber; i=i+2) {
+	for (var i = startarray; i < linkNumber; i=i+2) {
   		document.write('<a href=',linkArray[i],' class="header">',linkArray[i+1],'</a> &gt; ');
 	}
 	document.write(document.title,'</td>');
