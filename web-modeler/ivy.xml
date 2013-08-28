@@ -77,6 +77,11 @@
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
          <exclude org="org.hamcrest" module="hamcrest-core" />
       </dependency>
+      <dependency org="org.springframework" name="spring-test" transitive="false" rev="${spring-test.version}" conf="test->default" />
       <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
+      <dependency org="org.mockito" name="mockito-core" rev="${mockito-core.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="com.google.guava" name="guava" rev="${guava.version}" conf="test->default" />
    </dependencies>
 </ivy-module>
