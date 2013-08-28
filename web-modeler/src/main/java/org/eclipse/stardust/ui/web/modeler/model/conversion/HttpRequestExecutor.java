@@ -1,15 +1,12 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
-import static junit.framework.Assert.assertTrue;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.cxf.jaxrs.client.WebClient;
-
+//import org.apache.cxf.jaxrs.client.WebClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -26,6 +23,45 @@ public class HttpRequestExecutor extends RequestExecutor
 
    private final String sessionCookie;
 
+   /**
+    * This is a stub implementation of CXF's WebClient API, to enable compilation. To
+    * really use this adapter the original import needs to be re-enabled and this stub
+    * class removed.
+    */
+   private static class WebClient
+   {
+      public static WebClient create(String baseUri, boolean threadSafe)
+      {
+         throw new UnsupportedOperationException(
+               "Please uncomment the org.apache.cxf.jaxrs.client.WebClient import and recompile.");
+      }
+
+      public WebClient path(String path)
+      {
+         return null;
+      }
+
+      public WebClient header(String name, Object... values)
+      {
+         return null;
+      }
+
+      public WebClient query(String name, Object... values)
+      {
+         return null;
+      }
+
+      public Response get()
+      {
+         return null;
+      }
+
+      public Response post(Object body)
+      {
+         return null;
+      }
+   }
+
    public WebClient webClient = WebClient.create("http://localhost:8080/pepper-test/",
          false);
 
@@ -40,7 +76,7 @@ public class HttpRequestExecutor extends RequestExecutor
       Response allModels = webClient.path(SERVICE_PREFIX + SERVICE_ALL_MODELS)
             .header("Cookie", "JSESSIONID=" + sessionCookie).query("reload", false).get();
 
-      assertTrue(allModels.getEntity() instanceof InputStream);
+      assert (allModels.getEntity() instanceof InputStream);
 
       JsonObject allModelsJson = new JsonParser().parse(
             new InputStreamReader((InputStream) allModels.getEntity())).getAsJsonObject();
@@ -57,7 +93,7 @@ public class HttpRequestExecutor extends RequestExecutor
                   + processId + "/loadModel")
             .header("Cookie", "JSESSIONID=" + sessionCookie).get();
 
-      assertTrue(respDiagram.getEntity() instanceof InputStream);
+      assert (respDiagram.getEntity() instanceof InputStream);
 
       JsonObject diagramJson = new JsonParser().parse(
             new InputStreamReader((InputStream) respDiagram.getEntity()))
@@ -74,7 +110,7 @@ public class HttpRequestExecutor extends RequestExecutor
             .header("Cookie", "JSESSIONID=" + sessionCookie)
             .header("Content-Type", "application/json").post(cmdJson.toString());
 
-      assertTrue(createModelResponse.getEntity() instanceof InputStream);
+      assert (createModelResponse.getEntity() instanceof InputStream);
 
       if (Status.CREATED.getStatusCode() == createModelResponse.getStatus()
             || Status.OK.getStatusCode() == createModelResponse.getStatus())
