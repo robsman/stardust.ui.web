@@ -77,7 +77,10 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
          singleViewKey = "";
       }
 
-      trace.info("Single View Context = " + singleViewId + ":" + singleViewKey);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Single View Context = " + singleViewId + ":" + singleViewKey);
+      }
       associateView(singleViewId, singleViewKey);
       setBreadcrumb();
 
@@ -195,7 +198,10 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
 
       String scripts = singleViewEventScript.getEventScripts(syncLaunchPanels);
       scripts = PortalApplicationSingleViewEventScript.wrapIntoRunScript(scripts);
-      trace.info("SingleApp_View:getEventScripts():\n" + scripts);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("SingleApp_View:getEventScripts():\n" + scripts);
+      }
       return scripts;
    }
 
@@ -205,7 +211,10 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
    public void activeViewSync(ValueChangeEvent event)
    {
       syncLaunchPanels = false; // No need to sync LPs, just active view is changed
-      trace.info("Active View Synced");
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Active View Synced");
+      }
    }
 
    public View getView()

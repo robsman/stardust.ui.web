@@ -42,8 +42,10 @@ public class SingleViewLaunchPanels implements InitializingBean
       {
          scripts = PortalApplicationSingleViewEventScript.wrapIntoRunScript(scripts);
       }
-
-      trace.info("SingleApp_LaunchPanels:getEventScripts():\n" + scripts);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("SingleApp_LaunchPanels:getEventScripts():\n" + scripts);
+      }
       return scripts;
    }
 
@@ -66,7 +68,10 @@ public class SingleViewLaunchPanels implements InitializingBean
             View view = portalApp.getPortalUiController().findView(viewId, viewKey);
    
             View focusView = portalApp.getFocusView();
-            trace.info("Before:: Focus View: " + focusView);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Before:: Focus View: " + focusView);
+            }
             if (focusView != view)
             {
                portalApp.setFocusView(view);
@@ -81,8 +86,10 @@ public class SingleViewLaunchPanels implements InitializingBean
                   //SessionRendererHelper.render(sessionId);
                }
             }
-            trace.info("After:: Focus View: " + portalApp.getFocusView());
-   
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("After:: Focus View: " + portalApp.getFocusView());
+            }
             portalApp.printOpenViews();
          }
       }
@@ -102,7 +109,10 @@ public class SingleViewLaunchPanels implements InitializingBean
          PortalApplication portalApp = PortalApplication.getInstance();
    
          String value = (String)event.getNewValue();
-         trace.info("Closing view: " + value);
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Closing view: " + value);
+         }
 
          if (StringUtils.isNotEmpty(value))
          {
@@ -113,10 +123,16 @@ public class SingleViewLaunchPanels implements InitializingBean
             View view = portalApp.getPortalUiController().findView(viewId, viewKey);
             if (null != view)
             {
-               trace.info("Trying to Close View: " + view);
-               trace.info("Before:: View Count: " + portalApp.getOpenViewsSize());
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Trying to Close View: " + view);
+                  trace.debug("Before:: View Count: " + portalApp.getOpenViewsSize());
+               }
                portalApp.closeView(view);
-               trace.info("After:: View Count: " + portalApp.getOpenViewsSize());
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("After:: View Count: " + portalApp.getOpenViewsSize());
+               }
                // After succesfull view close, sync active view
                portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
                
@@ -127,8 +143,10 @@ public class SingleViewLaunchPanels implements InitializingBean
             }
             else
             {
-               trace.info("Could not close view: " + value);
-            
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Could not close view: " + value);
+               }
                // Unexpected Situation! View is not open at IPP, but it's open on UI at HTML5 Framework.
                // Fire JS for it's closing. It might be internal/native or external view
                // TODO: Enhance?
@@ -171,7 +189,7 @@ public class SingleViewLaunchPanels implements InitializingBean
       {
          PortalApplication.getInstance().addEventScript(value);
       }
-      trace.info("Launch Panels Synced");
+      trace.debug("Launch Panels Synced");
    }
 
    /**
