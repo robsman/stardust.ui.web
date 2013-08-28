@@ -19,16 +19,9 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.xsd.XSDSchema;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -36,7 +29,47 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
+import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IdRef;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -44,13 +77,26 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
-import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.CommandJto;
+import org.eclipse.xsd.XSDSchema;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * IPP XPDL marshaller.
@@ -458,7 +504,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             ModelType model = ModelUtils.findContainingModel(laneSymbol);
             URI proxyUri = ((InternalEObject) participant).eProxyURI();
-            ModelType referencedModel = getModelByProxyURI(model, proxyUri);
+            ModelType referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
 
             if (referencedModel != null)
             {
@@ -1695,7 +1741,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             ModelType referencedModel = null;
             URI proxyUri = ((InternalEObject) data).eProxyURI();
-            referencedModel = getModelByProxyURI(model, proxyUri);
+            referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
             if (referencedModel != null)
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
@@ -1811,22 +1857,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return dataJson;
    }
 
-   private ModelType getModelByProxyURI(ModelType model, URI proxyUri)
-   {
-      ModelType referencedModel = null;
-      if (model != null && model.getConnectionManager() != null)
-      {
-         EObject connectionObject = model.getConnectionManager().find(
-               proxyUri.scheme() + "://" + proxyUri.authority() + "/");
-         if (connectionObject != null)
-         {
-            referencedModel = (ModelType) Reflect.getFieldValue(connectionObject,
-                  "eObject");
-         }
-      }
-      return referencedModel;
-   }
-
    /**
     *
     * @param startEventSymbol
@@ -1935,7 +1965,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       if (getModelBuilderFacade().isExternalReference(role))
       {
          URI proxyUri = ((InternalEObject) role).eProxyURI();
-         ModelType referencedModel = getModelByProxyURI(model, proxyUri);
+         ModelType referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
 
          if (referencedModel != null)
          {
@@ -3351,7 +3381,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          {
             URI proxyUri = ((InternalEObject) data).eProxyURI();
             ModelType referencedModel = null;
-            referencedModel = getModelByProxyURI(model, proxyUri);
+            referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
             if (referencedModel != null)
             {
                return getModelBuilderFacade().createFullId(referencedModel, data);
