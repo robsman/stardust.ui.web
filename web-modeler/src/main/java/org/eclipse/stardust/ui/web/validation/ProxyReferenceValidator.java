@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -43,7 +42,7 @@ public class ProxyReferenceValidator implements IModelElementValidator
       {
          ModelType referencedModel = null;
          URI proxyUri = ((InternalEObject) element).eProxyURI();
-         referencedModel = getModelByProxyURI(model, proxyUri);
+         referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
          // Todo: IMO for doing this in a clean and consistent way, we need to refactor
          // connection handling etc.
          String elementID = proxyUri.lastSegment();
@@ -72,22 +71,6 @@ public class ProxyReferenceValidator implements IModelElementValidator
          }
       }
       return null;
-   }
-
-   private ModelType getModelByProxyURI(ModelType model, URI proxyUri)
-   {
-      ModelType referencedModel = null;
-      if (model != null && model.getConnectionManager() != null)
-      {
-         EObject connectionObject = model.getConnectionManager().find(
-               proxyUri.scheme() + "://" + proxyUri.authority() + "/");
-         if (connectionObject != null)
-         {
-            referencedModel = (ModelType) Reflect.getFieldValue(connectionObject,
-                  "eObject");
-         }
-      }
-      return referencedModel;
    }
 
    public boolean isExternalReference(EObject modelElement)
