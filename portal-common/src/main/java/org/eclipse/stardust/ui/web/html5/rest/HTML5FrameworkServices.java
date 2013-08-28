@@ -41,6 +41,8 @@ import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 public class HTML5FrameworkServices
 {
    private static final Logger trace = LogManager.getLogger(HTML5FrameworkServices.class);
+   private final String COMMON_MENU_KEY_SEPERATOR = "=";
+   private final String NEWLINE_TAB = "\n\t";
 
    @Context
    private ServletContext servletContext;
@@ -63,7 +65,12 @@ public class HTML5FrameworkServices
             messageBean.getString("portalFramework.config.PORTAL_TITLE"));
       contents = StringUtils.replace(contents, "SIDEBAR_LABEL",
             messageBean.getString("portalFramework.config.SIDEBAR_LABEL"));
-
+      String commonMenuConfigStr = (String) RestControllerUtils.resolveSpringBean("commonMenuConfig", servletContext);
+      if (StringUtils.isNotEmpty(commonMenuConfigStr))
+      {
+         contents = StringUtils.replace(contents, "COMMON_MENU", parseCommonMenuString(commonMenuConfigStr));
+      }
+      
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
@@ -206,5 +213,40 @@ public class HTML5FrameworkServices
    {
       Random random = new Random();
       return String.valueOf(random.nextInt(10000));
+   }
+   
+   /**
+    * 
+    * @param commonMenuString
+    * @return
+    */
+   private String parseCommonMenuString(String commonMenuString)
+   {
+      String arr[] = commonMenuString.split(",");
+      StringBuffer commonMenuJsonStr = new StringBuffer();
+      commonMenuJsonStr.append("," +NEWLINE_TAB);
+      commonMenuJsonStr.append(splitAndParseStr(arr[0], COMMON_MENU_KEY_SEPERATOR));
+      commonMenuJsonStr.append("," + NEWLINE_TAB);
+      commonMenuJsonStr.append(splitAndParseStr(arr[1], COMMON_MENU_KEY_SEPERATOR));
+      return commonMenuJsonStr.toString();
+   }
+
+   /**
+    * 
+    * @param strVal
+    * @param seperator
+    * @return
+    */
+   private String splitAndParseStr(String strVal, String seperator)
+   {
+      StringBuffer buffer = new StringBuffer();
+      if (StringUtils.isNotEmpty(strVal))
+      {
+         String params[] = strVal.split(seperator);
+         buffer.append("\"" + params[0] + "\"");
+         buffer.append(":");
+         buffer.append("\"" + params[1] + "\"");
+      }
+      return buffer.toString();
    }
 }

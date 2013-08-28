@@ -18,5 +18,5 @@
 		"navigation": "/CONTEXT_ROOT/services/rest/common/html5/api/navigation?random=RANDOM_VALUE",
 		"i18n": "/CONTEXT_ROOT/services/rest/common/html5/api/messages",
 		"theme": "/CONTEXT_ROOT/services/rest/common/html5/api/themes"
-	}
+	}COMMON_MENU
 }

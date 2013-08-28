@@ -12,4 +12,10 @@ public class RestControllerUtils
       ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
       return context.getBean(type);
    }
+   
+   public static Object resolveSpringBean(String beanId, ServletContext servletContext)
+   {
+      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+      return context.getBean(beanId);
+   }
 }
