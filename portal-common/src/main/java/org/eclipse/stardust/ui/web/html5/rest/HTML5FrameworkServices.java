@@ -70,7 +70,10 @@ public class HTML5FrameworkServices
       {
          contents = StringUtils.replace(contents, "COMMON_MENU", parseCommonMenuString(commonMenuConfigStr));
       }
-      
+      else
+      {
+         contents = StringUtils.replace(contents, "COMMON_MENU", "");
+      }
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
