@@ -231,7 +231,7 @@ if (!window["BridgeUtils"]) {
 			var url = "/plugins/common/portalSingleViewAlerts.iface";
 			var fullUrl = BridgeUtils.getContextRoot() + url;
 			var advanceArgs = {
-					anchorId: 'jQuery_div.navbar-inner .sg-controls i.bell',
+					anchorId: 'jQuery_.viewIconBase.bell',
 					zIndex: 1000, width: 300, height: 200, openOnRight: false,
 					anchorXAdjustment: 50, anchorYAdjustment: 20,
 					noUnloadWarning: 'true', border: '1px solid black'

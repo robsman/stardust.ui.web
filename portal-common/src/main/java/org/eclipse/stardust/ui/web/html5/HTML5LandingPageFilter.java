@@ -11,12 +11,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+
 /**
  * @author Subodh.Godbole
  *
  */
 public class HTML5LandingPageFilter implements Filter
 {
+   private static final String DEFAULT_LANDING_PAGE = "/sps/index.html";
+
    private String landingPage;
 
    /* (non-Javadoc)
@@ -25,6 +29,10 @@ public class HTML5LandingPageFilter implements Filter
    public void init(FilterConfig cfg) throws ServletException
    {
       landingPage = getInitParameter(cfg, "landingPage", landingPage);
+      if (StringUtils.isEmpty(landingPage))
+      {
+         landingPage = DEFAULT_LANDING_PAGE;
+      }
    }
 
    /* (non-Javadoc)

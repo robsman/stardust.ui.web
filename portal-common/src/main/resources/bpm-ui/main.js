@@ -4,7 +4,6 @@
 
 define([
     'bpm-ui/js/bpm-ui',
-    'shell',
     'bpm-ui/js/controllers/bpmUiController',
     'bpm-ui/js/controllers/sidebarController',
     'bpm-ui/js/controllers/externalPageController',
