@@ -644,11 +644,14 @@ public class PortalApplication
     */
    public void printOpenViews()
    {
-      trace.info("Open Views::");
-      List<View> openViews = getOpenViews();
-      for (View view : openViews)
+      if (trace.isDebugEnabled())
       {
-         trace.info("\t" + view);
+         trace.debug("Open Views::");
+         List<View> openViews = getOpenViews();
+         for (View view : openViews)
+         {
+            trace.debug("\t" + view);
+         }
       }
    }
 
