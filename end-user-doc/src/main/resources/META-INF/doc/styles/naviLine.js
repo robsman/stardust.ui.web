@@ -32,7 +32,7 @@ var prevLink;
 var nextLink;
 var nextTitleString;
 var linkArray = new Array(20);
-var maindoclink = new String("/doc/toc.html");
+var maindoclink = new String("/doc/jartoc.html");
 
 function writeNavigation(nextTitle,home,prev,next,param) {
 
