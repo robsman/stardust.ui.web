@@ -194,4 +194,4 @@
         return injector;
     };
 
-}(window.stardust = window.sd = (window.stardust || window.sd || {})));
+}(window.stardust = window.sg = (window.stardust || window.sg || {})));
