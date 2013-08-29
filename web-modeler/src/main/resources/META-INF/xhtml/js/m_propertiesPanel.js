@@ -410,12 +410,12 @@ define(
 							&& 0 != object.changes.modified.length) {
 
 						for ( var i = 0; i < object.changes.modified.length; i++) {
-							if (object.changes.modified[i].uuid == this.element.uuid) {
+							if (object.changes.modified[i].oid == this.element.oid) {
 								m_utils.inheritFields(this.element,
 										object.changes.modified[i]);
 								this.setElement(this.element);
 							} else if (this.element.modelElement != null
-									&& object.changes.modified[i].uuid == this.element.modelElement.uuid) {
+									&& object.changes.modified[i].oid == this.element.modelElement.oid) {
 								m_utils
 										.debug("Changes to be applied to Model Element of Properties Page:");
 								m_utils.debug(this.element.modelElement);
