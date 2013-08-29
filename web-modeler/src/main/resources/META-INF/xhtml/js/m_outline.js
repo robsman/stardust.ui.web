@@ -41,258 +41,266 @@ define(
 						+ new Date().getTime();
 			}
 
-			var readAllModels = function(force) {
-				jQuery("div#outlineLoadingMsg").show();
-				jQuery("div#outlineLoadingMsg").html(m_i18nUtils.getProperty("modeler.outline.loading.message"));
-				console.time("###################################### Load models");
-				m_model.loadModels(force);
-				console.timeEnd("###################################### Load models");
+      function DomTreeBuilder() {
+      }
 
-				m_utils.jQuerySelect("#lastsave")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.outline.lastSavedMessage.title"));
+      DomTreeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
+        var node = jQuery("<li>");
+        node.attr(nodeConfig.attr);
 
-				console.time("###################################### Tree formation");
+        jQuery("<a href='#'>" + nodeConfig.data + "</a>").appendTo(node);
 
-				var ul = createULElement();
-				jQuery
-						.each(
-								m_utils.convertToSortedArray(m_model
-										.getModels(), "name", false),
-								function(index, model) {
-									var li = createLIElement({
-										"id": model.uuid,
-										"rel": model.isReadonly() ? "lockedModel" : "model",
-										"elementId": model.id
-									});
+        if (parentNode) {
+          var parentSelector = jQuery(parentNode);
+          if (!parentSelector.children("ul").length) {
+            parentSelector.append("<ul>");
+          }
+          parentSelector.children("ul").append(node);
+        }
 
-									var a = document.createElement('a');
-									a.href = "#";
-									a.innerHTML = model.name;
-									li.appendChild(a);
+        return node;
+      };
 
-									var mul = createULElement();
-									li.appendChild(mul);
+      function TreeNodeBuilder(jsTree) {
+        this.jsTree = jsTree;
+      }
 
-									// Structured Data Types
-									var structsLi = createLIElement({
-										"id": "structuredTypes_" + model.uuid,
-										"rel": "structuredTypes",
-										"modelUUID": model.uuid
-									});
+      TreeNodeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
+        return this.jsTree.create_node(parentNode, "last", nodeConfig, null, true);
+      };
 
-									var pa = document.createElement('a');
-									pa.href = "#";
-									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.structuredTypes.name");
-									structsLi.appendChild(pa);
+      function OutlineUiModelBuilder(model, nodeBuilder) {
+        this.model = model;
+        this.nodeBuilder = nodeBuilder;
+      }
 
-									mul.appendChild(structsLi);
-									var structsUl = createULElement();
-									structsLi.appendChild(structsUl);
+      OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
+        // alias to be used from jQuery.each callbacks
+        var self = this;
 
-									jQuery
-											.each(
-													model.typeDeclarations,
-													function(index,
-															typeDeclaration) {
-														var structLi = createLIElement({
-															"id": typeDeclaration.uuid,
-															"rel": typeDeclaration.getType(),
-															"elementId": typeDeclaration.id,
-															"modelId": model.id,
-															"draggable": true,
-															"modelUUID": model.uuid,
-															"fullId": typeDeclaration.getFullId()
-														});
+        // Model
+        var modelNode = this.nodeBuilder.buildNode({
+          attr : {
+            "id" : this.model.uuid,
+            "rel" : this.model.isReadonly() ? "lockedModel" : "model",
+            "elementId" : this.model.id
+          },
+          data : this.model.name
+        }, parent);
 
-														var pa = document.createElement('a');
-														pa.href = "#";
-														pa.innerHTML = typeDeclaration.name;
-														structLi.appendChild(pa);
-														structsUl.appendChild(structLi);
-													});
+        // Structured Data Types
+        var structTypesNode = self.buildContainerNode("structuredTypes", modelNode);
+        jQuery.each(this.model.typeDeclarations, function(index, typeDeclaration) {
+          self.buildTypeDeclarationNode(typeDeclaration, structTypesNode);
+        });
 
-									// Data
-									var datasLi = createLIElement({
-										"id": "data_" + model.uuid,
-										"rel": "data",
-										"modelUUID": model.uuid
-									});
+        // Data
+        var globalDataNode = self.buildContainerNode("data", modelNode);
+        jQuery.each(this.model.dataItems, function(index, data) {
+          self.buildDataNode(data, globalDataNode);
+        });
 
-									var pa = document.createElement('a');
-									pa.href = "#";
-									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.data.name");
-									datasLi.appendChild(pa);
+        // Applications
+        var globalAppsNode = self.buildContainerNode("applications", modelNode);
+        jQuery.each(this.model.applications, function(index, application) {
+          self.buildApplicationNode(application, globalAppsNode);
+        });
 
-									mul.appendChild(datasLi);
-									var datasUl = createULElement();
-									datasLi.appendChild(datasUl);
+        // Participants
+        var globalParticipantsNode = self.buildContainerNode("participants", modelNode);
+        jQuery.each(this.model.participants, function(index, participant) {
+          // start with top level participants
+          if (!participant.parentUUID) {
+            self.buildParticipantNode(participant, globalParticipantsNode);
+          }
+        });
 
-									jQuery
-											.each(
-													model.dataItems,
-													function(index, data) {
-														if (!data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															var dataLi = createLIElement({
-																"id": data.uuid,
-																"rel": data.dataType,
-																"elementId": data.id,
-																"modelId": model.id,
-																"draggable": true,
-																"modelUUID": model.uuid,
-																"fullId": data.getFullId()
-															});
+        // Processes
+        jQuery.each(this.model.processes, function(index, process) {
+          self.buildProcessNode(process, modelNode);
+        });
 
-															var pa = document.createElement('a');
-															pa.href = "#";
-															pa.innerHTML = data.name;
-															dataLi.appendChild(pa);
-															datasUl.appendChild(dataLi);
-														}
-													});
+        return modelNode;
+      };
 
-									// Applications
-									var appsLi = createLIElement({
-										"id": "applications_" + model.uuid,
-										"rel": "applications",
-										"modelUUID": model.uuid
-									});
+      OutlineUiModelBuilder.prototype.buildErroredModelNode = function(parent) {
+        var modelNode = this.nodeBuilder.buildNode({
+          attr : {
+            "id" : model.uuid,
+            "rel" : "erroredModel",
+            "elementId" : model.id
+          },
+          data : this.model.name
+        }, parent);
 
-									var pa = document.createElement('a');
-									pa.href = "#";
-									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.applications.name");
-									appsLi.appendChild(pa);
+        // skip any details for errored models
 
-									mul.appendChild(appsLi);
-									var appsUl = createULElement();
-									appsLi.appendChild(appsUl);
+        return modelNode;
+      };
 
-									jQuery
-											.each(
-													model.applications,
-													function(index, application) {
-														var appLi = createLIElement({
-															"id": application.uuid,
-															"rel": application.applicationType,
-															"elementId": application.id,
-															"modelId": model.id,
-															"draggable": true,
-															"modelUUID": model.uuid,
-															"fullId": application.getFullId()
-														});
-														var pa = document.createElement('a');
-														pa.href = "#";
-														pa.innerHTML = application.name;
-														appLi.appendChild(pa);
-														appsUl.appendChild(appLi);
-													});
+      OutlineUiModelBuilder.prototype.buildTypeDeclarationNode = function(
+          typeDeclaration, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : typeDeclaration.uuid,
+            "rel" : typeDeclaration.getType(),
+            "elementId" : typeDeclaration.id,
+            "modelId" : this.model.id,
+            "oid" : typeDeclaration.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : typeDeclaration.getFullId()
+          },
+          data : typeDeclaration.name
+        }, parent);
+      };
 
-									// Participants
-									var partsLi = createLIElement({
-										"id": "participants_" + model.uuid,
-										"rel": "participants",
-										"modelUUID": model.uuid
-									});
+      OutlineUiModelBuilder.prototype.buildDataNode = function(data, parent) {
+        if (data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+          return undefined;
+        }
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : data.uuid,
+            "rel" : data.dataType,
+            "elementId" : data.id,
+            "modelId" : this.model.id,
+            "oid" : data.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : data.getFullId()
+          },
+          data : data.name
+        }, parent);
+      };
 
-									var pa = document.createElement('a');
-									pa.href = "#";
-									pa.innerHTML = m_i18nUtils.getProperty("modeler.outline.participants.name");
-									partsLi.appendChild(pa);
+      OutlineUiModelBuilder.prototype.buildApplicationNode = function(application, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : application.uuid,
+            "rel" : application.applicationType,
+            "elementId" : application.id,
+            "modelId" : this.model.id,
+            "oid" : application.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : application.getFullId()
+          },
+          data : application.name
+        }, parent);
+      };
 
-									mul.appendChild(partsLi);
-									var partiUl = createULElement();
-									partsLi.appendChild(partiUl);
+      OutlineUiModelBuilder.prototype.buildParticipantNode = function(participant, parent) {
+        if (participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+          return undefined;
+        }
 
-									jQuery
-											.each(
-													model.participants,
-													function(index, participant) {
-														if (!participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															if (!participant.parentUUID) {
-																var partiLi = createLIElement({
-																	"id": participant.uuid,
-																	"rel": participant.type,
-																	"elementId": participant.id,
-																	"modelId": model.id,
-																	"draggable": true,
-																	"modelUUID": model.uuid,
-																	"fullId": participant.getFullId()
-																});
+        var nodeConfig = {
+          attr : {
+            "id" : participant.uuid,
+            "rel" : participant.type,
+            "elementId" : participant.id,
+            "modelId" : this.model.id,
+            "oid" : participant.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : participant.getFullId()
+          },
+          data : participant.name
+        };
+        if (participant.parentUUID) {
+          nodeConfig.attr.parentUUID = participant.parentUUID;
+        }
 
-																var pa = document.createElement('a');
-																pa.href = "#";
-																pa.innerHTML = participant.name;
-																partiLi.appendChild(pa);
-																partiUl.appendChild(partiLi);
+        var participantNode = this.nodeBuilder.buildNode(nodeConfig, parent);
 
-																loadChildParticipants(model, participant, partiLi);
-															}
-														}
-													});
+        if (participant.childParticipants) {
+          var self = this;
+          jQuery.each(participant.childParticipants, function(index, childParticipant) {
+            self.buildParticipantNode(childParticipant, participantNode);
+          });
+        }
 
+        return participantNode;
+      };
 
-									jQuery
-											.each(
-													model.processes,
-													function(index, process) {
-														var pli = createLIElement({
-																"id": process.uuid,
-																"rel": "process",
-																"elementId": process.id,
-																"modelId": model.id,
-																"draggable": true,
-																"oid": process.oid,
-																"modelUUID": model.uuid,
-																"fullId": process.getFullId()
-															});
+      OutlineUiModelBuilder.prototype.buildProcessNode = function(process, parentNode) {
+        return this.nodeBuilder.buildNode({
+          "attr" : {
+            "id" : process.uuid,
+            "rel" : "process",
+            "elementId" : process.id,
+            "modelId" : this.model.id,
+            "draggable" : true,
+            "oid" : process.oid,
+            "modelUUID" : this.model.uuid,
+            "fullId" : process.getFullId()
+          },
+          "data" : process.name
+        }, parentNode);
+      };
 
-														var pa = document.createElement('a');
-														pa.href = "#";
-														pa.innerHTML = process.name;
-														pli.appendChild(pa);
-														mul.appendChild(pli);
-													});
+      OutlineUiModelBuilder.prototype.buildContainerNode = function(containerType, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : containerType + "_" + this.model.uuid,
+            "rel" : containerType,
+            "modelUUID" : this.model.uuid
+          },
+          data : m_i18nUtils.getProperty("modeler.outline." + containerType + ".name")
+        }, parent);
+      };
 
-									ul.appendChild(li);
-								});
+      function newOutlineTreeDomBuilder(model) {
+        return new OutlineUiModelBuilder(model, new DomTreeBuilder());
+      }
 
-				// Errored models
-				jQuery.each(m_utils.convertToSortedArray(m_model
-								.getErroredModels(), "name", false),
-						function(index, model) {
-					var li = createLIElement({
-						"id": model.uuid,
-						"rel": "erroredModel",
-						"elementId": model.id
-					});
+      function newJsTreeOutlineBuilder(model) {
+        var outlineTree = jQuery.jstree._reference(displayScope + "#outline");
 
-					var a = document.createElement('a');
-					a.href = "#";
-					a.innerHTML = model.id;
-					li.appendChild(a);
+        return new OutlineUiModelBuilder(model, new TreeNodeBuilder(outlineTree));
+      }
 
-					var mul = createULElement();
-					li.appendChild(mul);
-					ul.appendChild(li);
-				});
+      var readAllModels = function(force) {
+        jQuery("div#outlineLoadingMsg").show();
+        jQuery("div#outlineLoadingMsg").html(
+            m_i18nUtils.getProperty("modeler.outline.loading.message"));
+        console.time("###################################### Load models");
+        m_model.loadModels(force);
+        console.timeEnd("###################################### Load models");
 
-				jQuery(displayScope + "#outline").get(0).appendChild(ul);
+        m_utils.jQuerySelect("#lastsave").text(
+            m_i18nUtils.getProperty("modeler.outline.lastSavedMessage.title"));
 
-				console.timeEnd("###################################### Tree formation");
+        console.time("###################################### Tree formation");
 
-				jQuery("div#outlineLoadingMsg").hide();
-				runHasModelsCheck();
+        var outlineRoot = jQuery(displayScope + "#outline");
 
-				m_messageDisplay.markSaved();
-				m_modelsSaveStatus.setModelsSaved();
-				m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
-				m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
-			};
+        jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", false),
+            function(index, model) {
+              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+            });
+
+        // Errored models
+        jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
+            false), function(index, model) {
+          newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+        });
+
+        console.timeEnd("###################################### Tree formation");
+
+        jQuery("div#outlineLoadingMsg").hide();
+        runHasModelsCheck();
+
+        m_messageDisplay.markSaved();
+        m_modelsSaveStatus.setModelsSaved();
+        m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+        m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
+      };
 
 			/**
-			 *
-			 */
+       *
+       */
 			var runHasModelsCheck = function() {
 				var models = m_model.getModels();
 				var hasModels = false;
@@ -308,46 +316,6 @@ define(
 					jQuery("div#outlineMessageDiv").hide();
 				}
 			}
-
-			var loadChildParticipants = function(model, participant, participantLi) {
-				if (participant.childParticipants) {
-					var cPartiUl = createULElement();
-					participantLi.appendChild(cPartiUl);
-					jQuery.each(participant.childParticipants, function(
-							index, cParticipant) {
-						var cPartiLi = createLIElement({
-							"id": cParticipant.uuid,
-							"rel": cParticipant.type,
-							"elementId": cParticipant.id,
-							"modelId": model.id,
-							"draggable": true,
-							"modelUUID": model.uuid,
-							"parentUUID": participant.uuid,
-							"fullId": cParticipant.getFullId()
-						});
-
-						var pa = document.createElement('a');
-						pa.href = "#";
-						pa.innerHTML = cParticipant.name;
-						cPartiLi.appendChild(pa);
-						cPartiUl.appendChild(cPartiLi);
-						loadChildParticipants(model, cParticipant, cPartiLi);
-					});
-				}
-			}
-
-			var createULElement = function() {
-				return document.createElement('ul');
-			};
-
-			var createLIElement = function(attributes) {
-				var li = document.createElement('li');
-				for (var attr in attributes) {
-					li.setAttribute(attr, attributes[attr]);
-				}
-
-				return li;
-			};
 
 			var deployModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
@@ -2914,7 +2882,7 @@ define(
 							}
 							if (command.changes.removed[i].uuid) {
 								this
-										.fireCloseViewCommand(command.changes.removed[i].uuid)
+										.fireCloseViewCommand(command.changes.removed[i].uuid);
 							}
 						}
 
@@ -2985,7 +2953,7 @@ define(
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.undo"));
 					}
-				}
+				};
 
 				/**
 				 * TODO - temporary
@@ -3023,7 +2991,7 @@ define(
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.redo"));
 					}
-				}
+				};
 
 				/**
 				 * TODO - temporary
@@ -3031,7 +2999,7 @@ define(
 				Outline.prototype.getChangedElementsText = function(
 						elementArray) {
 					if (elementArray.length > 2) {
-						return "Multiple elements"
+						return "Multiple elements";
 					} else if (elementArray.length == 2) {
 						for ( var i = 0; i < elementArray.length; i++) {
 							var txt = this
@@ -3045,7 +3013,7 @@ define(
 					} else {
 						return this.getChangedElementText(elementArray[0]);
 					}
-				}
+				};
 
 				Outline.prototype.getChangedElementText = function(element) {
 					if (element) {
@@ -3059,106 +3027,30 @@ define(
 							}
 						}
 					}
-				}
+				};
 
-				/**
-				 *
-				 */
-				Outline.prototype.createModel = function(data) {
-					var outlineObj = this;
-					var model = m_model.createModel(data.id, data.name,
-							data.uuid);
-					m_utils.inheritFields(model, data);
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
-							"#outline", "last", {
-								"attr" : {
-									"elementId" : data.id,
-									"id" : data.uuid,
-									"fullId" : model.getFullId(),
-									"rel" : "model"
-								},
-								"data" : data.name
-							}, null, true);
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("set_type",
-							"model", "#" + data.uuid);
+        /**
+         *
+         */
+        Outline.prototype.createModel = function(data) {
+          var outlineObj = this;
 
-					m_utils.jQuerySelect(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "structuredTypes_"
-													+ data.uuid,
-											"rel" : "structuredTypes",
-											"modelId" : data.id,
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.structuredTypes.name")
-									}, null, true);
-					m_utils.jQuerySelect(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "data_" + data.uuid,
-											"rel" : "data",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.data.name")
-									}, null, true);
-					jQuery.each(data.dataItems, function(key, value) {
-						outlineObj.createData(value, true);
-					});
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
-							"#" + "data_" + data.uuid);
-					m_utils.jQuerySelect(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"modelId" : data.id,
-											"id" : "applications_" + data.uuid,
-											"rel" : "applications",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.applications.name")
-									}, null, true);
-					m_utils.jQuerySelect(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "participants_" + data.uuid,
-											"rel" : "participants",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.participants.name")
-									}, null, true);
-					jQuery.each(data.participants, function(key, value) {
-						outlineObj.createParticipant(value, true);
-					});
+          var model = m_model.initializeFromJson(data);
+          // register the new model with the model cache
+          m_model.attachModel(model);
 
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node",
-							"#" + "participants_" + data.uuid);
+          var outlineTree = jQuery.jstree._reference(displayScope + "#outline");
 
-					jQuery("div#outlineMessageDiv").hide();
+          var modelNode = newJsTreeOutlineBuilder(model).buildModelNode(
+              outlineTree.get_container());
+          outlineTree.open_node(modelNode);
 
-					runHasModelsCheck();
+          jQuery("div#outlineMessageDiv").hide();
 
-					return model;
-				}
+          runHasModelsCheck();
+
+          return model;
+        };
 
 				/**
 				 *
@@ -3170,7 +3062,7 @@ define(
 					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					runHasModelsCheck();
-				}
+				};
 
 				/**
 				 *
@@ -3183,7 +3075,7 @@ define(
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
-				}
+				};
 
 				/**
 				 *
@@ -3196,7 +3088,7 @@ define(
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_application.deleteApplication(transferObject.id, model);
-				}
+				};
 
 				/**
 				 *
@@ -3210,7 +3102,7 @@ define(
 							.findModelForElement(transferObject.uuid);
 					m_participant.deleteParticipantRole(transferObject.id,
 							model);
-				}
+				};
 
 				/**
 				 *
@@ -3225,7 +3117,7 @@ define(
 							.findModelForElement(transferObject.uuid);
 					m_typeDeclaration.deleteTypeDeclaration(transferObject.id,
 							model);
-				}
+				};
 
 				/**
 				 *
@@ -3238,150 +3130,70 @@ define(
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_data.deleteData(transferObject.id, model);
-				}
-
-				/**
-				 *
-				 */
-				Outline.prototype.createProcess = function(transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var process = m_process.createProcessFromJson(model,
-							transferObject);
-					var parentSelector = '#' + model.uuid;
-
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"id" : process.uuid,
-									"oid" : process.oid,
-									"elementId" : process.id,
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"rel" : "process",
-									"fullId" : process.getFullId(),
-									"draggable" : true
-								},
-								"data" : process.name
-							}, null, true);
-
-					return process;
 				};
 
-				/**
-				 *
-				 */
-				Outline.prototype.createApplication = function(transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var application = m_application.initializeFromJson(model,
-							transferObject);
-					var parentSelector = '#applications_' + model.uuid;
+        /**
+         *
+         */
+        Outline.prototype.createProcess = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var process = m_process.createProcessFromJson(model, transferObject);
 
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"rel" : application.applicationType,
-									"id" : application.uuid,
-									"elementId" : application.id,
-									"fullId" : application.getFullId(),
-									"modelId" : application.modelId,
-									"modelUUID" : model.uuid,
-									"draggable" : true
-								},
-								"data" : application.name
-							}, null, true);
+          newJsTreeOutlineBuilder(model).buildProcessNode(process, "#" + model.uuid);
 
-					return application;
-				};
+          return process;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createData = function(transferObject) {
-					var model = m_model
-							.findModelByUuid(transferObject.modelUUID);
-					var data = m_data.initializeFromJson(model, transferObject);
+        /**
+         *
+         */
+        Outline.prototype.createApplication = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var application = m_application.initializeFromJson(model, transferObject);
 
-					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-						var parentSelector = '#data_' + model.uuid;
-						m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
-								parentSelector, "last", {
-									"attr" : {
-										"rel" : data.dataType,
-										"modelId" : model.id,
-										"modelUUID" : model.uuid,
-										"id" : data.uuid,
-										"elementId" : data.id,
-										"fullId" : data.getFullId(),
-										"draggable" : true
-									},
-									"data" : data.name
-								}, null, true);
-					}
+          newJsTreeOutlineBuilder(model).buildApplicationNode(application,
+              "#" + model.uuid + " #applications_" + model.uuid);
 
-					return data;
-				};
+          return application;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createStructuredDataType = function(
-						transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var dataStructure = m_typeDeclaration.initializeFromJson(
-							model, transferObject);
-					var parentSelector = '#structuredTypes_' + model.uuid;
+        /**
+         *
+         */
+        Outline.prototype.createData = function(transferObject) {
+          var model = m_model.findModelByUuid(transferObject.modelUUID);
+          var data = m_data.initializeFromJson(model, transferObject);
 
-					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"rel" : dataStructure.getType(),
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"id" : dataStructure.uuid,
-									"elementId" : dataStructure.id,
-									"fullId" : dataStructure.getFullId(),
-									"draggable" : true
-								},
-								"data" : dataStructure.name
-							}, null, true);
+          newJsTreeOutlineBuilder(model).buildDataNode(data,
+              "#" + model.uuid + " #data_" + model.uuid);
 
-					return dataStructure;
-				};
+          return data;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createParticipant = function(transferObject) {
-					var model = m_model
-							.findModelByUuid(transferObject.modelUUID);
-					var participant = m_participant.initializeFromJson(model,
-							transferObject);
+        /**
+         *
+         */
+        Outline.prototype.createStructuredDataType = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var dataStructure = m_typeDeclaration.initializeFromJson(model, transferObject);
 
-					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-						var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
-								: ("#participants_" + model.uuid));
-						m_utils.jQuerySelect(displayScope + "#outline")
-								.jstree(
-										"create",
-										parentSelector,
-										"last",
-										{
-											"attr" : {
-												"id" : participant.uuid,
-												"fullId" : participant
-														.getFullId(),
-												"rel" : participant.type,
-												"modelId" : model.id,
-												"modelUUID" : model.uuid,
-												"parentUUID" : transferObject.parentUUID,
-												"draggable" : true,
-												"elementId" : participant.id
-											},
-											"data" : participant.name
-										}, null, true);
-					}
+          newJsTreeOutlineBuilder(model).buildTypeDeclarationNode(dataStructure,
+              "#" + model.uuid + " #structuredTypes_" + model.uuid);
 
-					return participant;
-				}
+          return dataStructure;
+        };
+
+        Outline.prototype.createParticipant = function(transferObject) {
+          var model = m_model.findModelByUuid(transferObject.modelUUID);
+          var participant = m_participant.initializeFromJson(model, transferObject);
+
+          var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
+              : ("#participants_" + model.uuid));
+
+          newJsTreeOutlineBuilder(model).buildParticipantNode(participant,
+              "#" + model.uuid + " " + parentSelector);
+
+          return participant;
+        };
 			}
 		});

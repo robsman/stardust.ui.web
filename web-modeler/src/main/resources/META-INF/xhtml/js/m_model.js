@@ -30,12 +30,20 @@ define(
 				loadModels : loadModels,
 
 				getModels : getModels,
-				
+
 				getErroredModels : getErroredModels,
 
 				createModel : function() {
 					return new Model();
 				},
+
+        initializeFromJson : function(json) {
+          bindModel(json);
+
+          return json;
+        },
+
+        attachModel : attachModel,
 
 				findModel : findModel,
 
@@ -72,7 +80,7 @@ define(
 					model.name = name;
 					model.uuid = uuid;
 
-					getModels()[id] = model;
+					attachModel(model);
 
 					return model;
 				},
@@ -210,6 +218,10 @@ define(
 
 				return ids[1];
 			}
+
+      function attachModel(model) {
+        getModels()[model.id] = model;
+      }
 
 			/**
 			 *
@@ -479,7 +491,7 @@ define(
 
 				return window.top.models;
 			}
-			
+
 
 			/**
 			 * Singleton on DOM level.
