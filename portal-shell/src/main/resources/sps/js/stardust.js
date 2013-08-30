@@ -34,10 +34,9 @@
     }
 
     var paths = {
-		'jQuery' : '/libs/jquery/1.9.1/jquery',
-		'angular' : '/libs/angular/1.1.5/angular',
-		'angular-resources' : '/libs/angular/1.1.5/angular-resource',
-		'underscore' : '/libs/underscore/1.4.2/underscore'
+		'jQuery' : '/sps/js/libs/jquery/1.9.1/jquery',
+		'angular' : '/sps/js/libs/angular/1.1.5/angular',
+		'angular-resources' : '/sps/js/libs/angular/1.1.5/angular-resource'
     };
 
     var shim = {
