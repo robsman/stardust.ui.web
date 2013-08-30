@@ -63,6 +63,10 @@ public class ProxyReferenceValidator implements IModelElementValidator
 
    private DataType findData(ModelType referencedModel, String elementID)
    {
+      if (referencedModel == null)
+      {
+         return null;
+      }
       for (DataType data : referencedModel.getData())
       {
          if (data.getId().equals(elementID))

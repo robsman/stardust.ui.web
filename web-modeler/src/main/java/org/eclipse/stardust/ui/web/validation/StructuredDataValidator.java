@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -57,32 +58,40 @@ public class StructuredDataValidator implements IModelElementValidator
       else
       {
          TypeDeclarationsType declarations = null;
-         if(attribute != null)
+         if (data.eIsProxy())
          {
-            String uri = attribute.getValue();
-            URI aRealUri = URI.createURI(uri);
-            Connection connection = (Connection) model.getConnectionManager()
-                  .findConnection(uri);
-            if (connection.getAttribute("importByReference") != null //$NON-NLS-1$
-                  && !"false".equals(connection.getAttribute("importByReference"))) //$NON-NLS-1$ //$NON-NLS-2$
+            URI proxyUri = ((InternalEObject) data).eProxyURI();
+            model = ModelUtils.getModelByProxyURI(model, proxyUri);
+            if (model == null)
             {
-
-               EObject o = model.getConnectionManager().find(
-                     aRealUri.scheme().toString() + "://" + aRealUri.authority() + "/"); //$NON-NLS-1$ //$NON-NLS-2$
-               ModelType referencedModel = (ModelType) Reflect.getFieldValue(o, "eObject"); //$NON-NLS-1$
-
-               declarations = referencedModel.getTypeDeclarations();
+               return null;
             }
-            else
-            {
-               declarations = model.getTypeDeclarations();
-            }
+            declarations = model.getTypeDeclarations();
          }
          else
          {
-            declarations = model.getTypeDeclarations();
-         }
+            if(attribute != null)
+            {
+               String uri = attribute.getValue();
+               URI aRealUri = URI.createURI(uri);
+               Connection connection = (Connection) model.getConnectionManager()
+                     .findConnection(uri);
+               if (connection.getAttribute("importByReference") != null //$NON-NLS-1$
+                     && !"false".equals(connection.getAttribute("importByReference"))) //$NON-NLS-1$ //$NON-NLS-2$
+               {
 
+                  EObject o = model.getConnectionManager().find(
+                        aRealUri.scheme().toString() + "://" + aRealUri.authority() + "/"); //$NON-NLS-1$ //$NON-NLS-2$
+                  ModelType referencedModel = (ModelType) Reflect.getFieldValue(o, "eObject"); //$NON-NLS-1$
+
+                  declarations = referencedModel.getTypeDeclarations();
+               }
+               else
+               {
+                  declarations = model.getTypeDeclarations();
+               }
+            }
+         }
          TypeDeclarationType type = null;
          if(declarations != null)
          {
