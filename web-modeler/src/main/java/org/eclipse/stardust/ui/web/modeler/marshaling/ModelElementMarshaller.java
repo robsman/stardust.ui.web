@@ -1059,7 +1059,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   {
                      taskType = ModelerConstants.SEND_TASK_KEY;
                   }
-                  else if (typeId.equals("camelSpringProducerApplication"))
+                  else if (typeId.equals("camelSpringProducerApplication") || typeId.equals("camelConsumerApplication"))
                   {
                      String camelAppType = getModelBuilderFacade().getAttributeValue(getModelBuilderFacade().getAttribute(
                            application,

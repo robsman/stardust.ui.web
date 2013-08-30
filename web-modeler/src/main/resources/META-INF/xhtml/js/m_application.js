@@ -80,7 +80,7 @@ define(
 				 */
 				Application.prototype.getCompatibleActivityTaskType = function() {
 					if (this.applicationType === "webservice"
-						|| (this.applicationType === "camelSpringProducerApplication"
+						|| ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
 								&& (this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "restServiceOverlay"
 										|| this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "mailIntegrationOverlay"))) {
 					return m_constants.SERVICE_TASK_TYPE;
@@ -89,12 +89,12 @@ define(
 						return m_constants.USER_TASK_TYPE;
 					}
 					if (this.applicationType === "messageTransformationBean"
-							|| (this.applicationType === "camelSpringProducerApplication"
+							|| ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
 								&& (this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "genericEndpointOverlay"
 										|| this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "scriptingIntegrationOverlay"))) {
 						return m_constants.SCRIPT_TASK_TYPE;
 					}
-					if (this.applicationType === "camelSpringProducerApplication"
+					if ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
 							&& this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "rulesIntegrationOverlay") {
 						return m_constants.RULE_TASK_TYPE;
 					}
