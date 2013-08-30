@@ -2716,7 +2716,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    @Override
    public JsonObject toModelJson(EObject model)
    {
-      System.out.println(toModelJson((ModelType) model));
       return toModelJson((ModelType) model);
    }
 
