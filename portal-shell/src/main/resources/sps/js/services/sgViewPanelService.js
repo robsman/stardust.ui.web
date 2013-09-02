@@ -15,8 +15,8 @@ define(['sps/js/shell'], function (shell) {
     		// Only one strategy is supported
         };
         
-        self.$get = ['$location', '$timeout', '$filter', '$route', '$routeParams', '$rootScope', 'sgNavigationService', /*'sdPubSubService',*/ 
-                     function ($location, $timeout, $filter, $route, $routeParams, $rootScope, sgNavigationService/*, sdPubSubService*/) {
+        self.$get = ['$location', '$timeout', '$filter', '$route', '$routeParams', '$rootScope', 'sgNavigationService', 'sgPubSubService', 
+                     function ($location, $timeout, $filter, $route, $routeParams, $rootScope, sgNavigationService, sgPubSubService) {
 
         	var service = {};
         	
@@ -56,7 +56,7 @@ define(['sps/js/shell'], function (shell) {
             	}
             	
             	if (navItem) {
-        			activePanelPath = navItem.path;
+            		activateNextViewPanel(navItem);
             	}
             };
 
@@ -66,8 +66,13 @@ define(['sps/js/shell'], function (shell) {
             service.close = function (navPath) {
             	var navItemDetails = findTabDetails(navPath, true);
             	if (navItemDetails.tab) {
-            		tabs.splice(navItemDetails.index, 1);
-        			activateNextViewPanel();
+            		var ret = sgPubSubService.publish('sgViewPanelCloseIntent', {viewPanel: navItemDetails.tab});
+            		if (ret) {
+            			$timeout(function(){
+    	            		tabs.splice(navItemDetails.index, 1);
+    	        			activateNextViewPanel();
+            			});
+            		}
             	}
             };
 
@@ -100,14 +105,24 @@ define(['sps/js/shell'], function (shell) {
             /*
              * 
              */
-            function activateNextViewPanel() {
-            	if (!service.activeViewPanel()) {
+            function activateNextViewPanel(navItem) {
+            	var activePanel;
+            	if (navItem != undefined) {
+            		activePanelPath = navItem.path;
+            		activePanel = navItem;
+            	} else if (!service.activeViewPanel()) {
+            		// Activate Last Tab
 	        		if (tabs.length > 0) {
-	        			var activePanel = tabs[tabs.length - 1];
+	        			activePanel = tabs[tabs.length - 1];
 	        			activePanelPath = activePanel.path;
 	        		} else {
 	        			activePanelPath = undefined;
+	        			activePanel = null;
 	        		}
+            	}
+
+            	if (activePanel) {
+            		sgPubSubService.publish('sgActiveViewPanelChanged', {currentNavItem: activePanel});
             	}
             }
 
@@ -125,7 +140,7 @@ define(['sps/js/shell'], function (shell) {
             	}
             	
             	if (isFull) {
-            		return ret;            		
+            		return ret;
             	} else {
             		return ret.tab;
             	}

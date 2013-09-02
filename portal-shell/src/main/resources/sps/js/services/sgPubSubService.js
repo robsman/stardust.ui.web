@@ -32,19 +32,20 @@ define(['sps/js/shell'], function (shell) {
          * TODO: Use Promises? 
          */
         this.publish = function(topic, payload) {
-        	var deferred = $q.defer();
-       	 	var retPromises = [];
+        	var ret = [];
 
             var allListeners = listeners[topic] || {};
-    		for(id in listeners[topic]) {
-    			retPromises.push(listeners[topic][id](payload));
+    		for(var id in allListeners) {
+    			ret.push(allListeners[id](payload));
         	}
     		
-    		for(i in retPromises) {
-    			if (retPromises[i] !== 'object' && retPromises[i] == false) {
+    		for(var i in ret) {
+    			if (ret[i] !== 'object' && ret[i] == false) {
     				return false;
     			}
     		}
+
+    		return true;
         };
     }]);
 });
