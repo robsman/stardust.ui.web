@@ -135,7 +135,7 @@
 			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
 			            }
 					]
-	            }
+				}
 			]
 		}
 	],
@@ -144,23 +144,26 @@
 		    "label":"ALERTS_LABEL",
 		    "id":"link",
 		    "icon":"viewIconBase bell",
+		    "cls":"sg-alerts",
 		    "actionController":"bpm-ui.BpmUiCtrl",
 		    "action":"showHideAlerts()"
 		},
 		{
-		    "label":"LOGGED_IN_USER_LABEL"
+		    "label":"LOGGED_IN_USER_LABEL",
+		    "cls":"sg-logged-in-user"
 		},
 		{
 		    "label":"SIGN_OUT_LABEL",
 		    "id":"signOut",
-		    "cls":"ng-hide: true",
+		    "cls":"sg-sign-out ng-hide: true",
 		    "actionController":"bpm-ui.BpmUiCtrl",
 		    "action":"logout()"
 		}
 	],
 	"footer":[
 	    {
-	        "label":"BUILD_INFO"
+	        "label":"BUILD_INFO",
+	        "cls":"sg-build-info"
 	    }
 	],
     "sidebar":[
