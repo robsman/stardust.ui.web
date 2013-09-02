@@ -276,7 +276,7 @@ if (!window["BridgeUtils"].View) {
 		/*
 		 *
 		 */
-		function init() {
+		function init(hiddenCounter) {
 			var initialized = false;
 			try {
 				BridgeUtils.log("BridgeUtils.View Initializing");
@@ -308,10 +308,18 @@ if (!window["BridgeUtils"].View) {
 			}
 			
 			if (!initialized){
-				BridgeUtils.log("BridgeUtils.View Initialization Delaying");
-				window.setTimeout(function(){
-					init();
-				}, 200);
+				if (hiddenCounter == undefined) {
+					hiddenCounter = 10; // Max tries
+				}
+
+				if (hiddenCounter > 0) {
+					BridgeUtils.log("BridgeUtils.View Initialization Delaying. Count = " + hiddenCounter);
+					window.setTimeout(function(){
+						init(--hiddenCounter);
+					}, 200);
+				} else {
+					BridgeUtils.log("BridgeUtils.View Initialization Failed");
+				}
 			}
 		}
 
