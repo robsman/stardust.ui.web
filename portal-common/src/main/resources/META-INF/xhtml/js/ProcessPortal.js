@@ -125,7 +125,27 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 	            } catch (e) {
 	            	alert('Failed notifying external Web App: ' + e.message);
 	            }	        	
-	        }
+	        },
+
+			completeActivity : function() {
+				confirmCloseCommandFromExternalWebApp('complete');
+			},
+
+			qaPassActivity : function() {
+				confirmCloseCommandFromExternalWebApp('qaPass');
+			},
+			
+			qaFailActivity : function() {
+				confirmCloseCommandFromExternalWebApp('qaFail');
+			},
+
+			suspendActivity : function(saveOutParams) {
+				confirmCloseCommandFromExternalWebApp(saveOutParams ? 'suspendAndSave' : 'suspend');
+			},
+
+			abortActivity : function() {
+				confirmCloseCommandFromExternalWebApp('abort');
+			}
 		}
 	};
 }
