@@ -252,6 +252,7 @@ public class SecurityDialog extends PopupUIComponentBean
                   acb = new AccessControlBean(new Participant(ace.getPrincipal(), allParticipants.get(ace
                         .getPrincipal().getName())));
                   participantAccessControlMap.put(acb.getParticipant().getPrincipal().getName(),acb);
+                  updateACBList = true;
                }
             }
             catch (Exception e)
