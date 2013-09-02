@@ -11,29 +11,27 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		var view = $scope.activeViewPanel();
 		log("External Page Controller. View = " + view);
 		if (view) {
-			$scope.iframeUrl = view.externalURL;
+			var iframeUrl = view.externalURL;
 			if (view.params) {
-				$scope.iframeUrl = BridgeUtils.substituteParams($scope.iframeUrl, view.params, true);
+				iframeUrl = BridgeUtils.substituteParams(iframeUrl, view.params, true);
 			} else {
 				view.params = [];
 			}
 
-			$scope.iframeId = "Frame" + Math.floor((Math.random()*100000) + 1);
-			view.params["iframeId"] = $scope.iframeId;
-
-			$scope.label = view.label;
+			view.params["iframeUrl"] = iframeUrl;
+			view.params["iframeId"] = "Frame" + Math.floor((Math.random()*100000) + 1);
 
 			// In IE It's observed that url is hit twice. Add a workaround to get around this
 			// As this causes issues on server side due to two duplicate requests
 			// This might be Angular / HTML5 Framework issue
 			if (BridgeUtils.Util.isIE()) {
-				$scope.iframeUrl2 = $scope.iframeUrl;
-				$scope.iframeUrl = "about:blank";
+				view.params["iframeUrl2"] = view.params["iframeUrl"];
+				view.params["iframeUrl"] = "about:blank";
 	
 				// Execute as soon as possible. No specific delay
 				window.setTimeout(function(){
-					var frame = window.document.getElementById($scope.iframeId);
-					frame.setAttribute("src", $scope.iframeUrl2);
+					var frame = window.document.getElementById(view.params["iframeId"]);
+					frame.setAttribute("src", view.params["iframeUrl2"]);
 				});
 			}
 		} else {

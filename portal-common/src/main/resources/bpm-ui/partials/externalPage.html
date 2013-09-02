@@ -1,5 +1,8 @@
+<!-- "panel" is the loop variable in FW (Shell), which is representing the current panel -->
 <div>
-    <div id="frameContainer{{ iframeId }}">
-		<iframe sg-content-frame id="{{ iframeId }}" name="{{ iframeId }}" ng-src="{{ iframeUrl }}" view-label="{{ label }}"></iframe>
+    <div id="frameContainer{{ panel.params.iframeId }}">
+		<iframe sg-content-frame id="{{ panel.params.iframeId }}" name="{{ panel.params.iframeId }}"
+			ng-src="{{ panel.params.iframeUrl }}" view-label="{{ panel.label }}">
+		</iframe>
     </div>
 </div>
