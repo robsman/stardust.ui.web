@@ -12,7 +12,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<ippui:preferencePage name="configuration"
 				include="/plugins/bpm-modeler/preferences/modelingConfigurationPanel.xhtml" />
          <ippui:preferencePage name="helpDocumentation"
-            include="/plugins/doc/bpm/toc.html" />
+            include="/plugins/doc/toc.html" />
 		</ippui:preferences>
 		<ippui:launchPanel name="ippBpmAdministrativeActions"
 			include="/plugins/bpm-modeler/launchpad/modelerLauncher.xhtml" />
