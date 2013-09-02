@@ -186,6 +186,15 @@ define(
 									}
 								}
 							}
+						} 
+
+						// Fallback portal-shell
+						var view = jQuery(".view-panel-active");
+						if (view && view.length > 0) {
+							var ret = jQuery(pattern, jQuery(view));
+							if (ret.length > 0) {
+								return ret;
+							}
 						}
 					}
 					
