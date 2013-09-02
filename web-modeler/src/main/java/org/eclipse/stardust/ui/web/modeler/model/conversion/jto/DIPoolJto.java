@@ -5,6 +5,8 @@ import com.google.gson.JsonPrimitive;
 
 public class DIPoolJto
 {
+   public String processId;
+
    public JsonPrimitive x;
    public JsonPrimitive y;
    public JsonPrimitive width;

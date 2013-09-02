@@ -17,8 +17,52 @@ import java.util.Set;
 
 import javax.xml.XMLConstants;
 
-import org.eclipse.bpmn2.*;
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Documentation;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.ExclusiveGateway;
+import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.ManualTask;
+import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.ParallelGateway;
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.Resource;
+import org.eclipse.bpmn2.ResourceRole;
+import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.ScriptTask;
+import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.ServiceTask;
+import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -32,23 +76,42 @@ import org.eclipse.dd.di.Shape;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
-import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.ElementRefUtils;
-import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
-import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
-import org.eclipse.stardust.ui.web.modeler.model.*;
-import org.eclipse.stardust.ui.web.modeler.model.di.*;
-import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.util.XSDConstants;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
+import org.eclipse.stardust.ui.web.modeler.integration.ExternalXmlSchemaManager;
+import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
+import org.eclipse.stardust.ui.web.modeler.model.ActivityJto;
+import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
+import org.eclipse.stardust.ui.web.modeler.model.DataJto;
+import org.eclipse.stardust.ui.web.modeler.model.EventJto;
+import org.eclipse.stardust.ui.web.modeler.model.GatewayJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelElementJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelParticipantJto;
+import org.eclipse.stardust.ui.web.modeler.model.PrimitiveDataJto;
+import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
+import org.eclipse.stardust.ui.web.modeler.model.TransitionJto;
+import org.eclipse.stardust.ui.web.modeler.model.TypeDeclarationJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ActivitySymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ConnectionSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.DataSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.EventSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.GatewaySymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.LaneSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.PoolSymbolJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
+import org.eclipse.stardust.ui.web.modeler.model.di.ShapeJto;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 
 public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
@@ -158,6 +221,24 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
             return jsonIo.gson().toJsonTree(symbolJto);
          }
+         else if (shape.getBpmnElement() instanceof Participant)
+         {
+            PoolSymbolJto symbolJto = newShapeJto(shape, new PoolSymbolJto());
+            symbolJto.orientation = shape.isIsHorizontal()
+                  ? ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+                  : ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
+         else if (shape.getBpmnElement() instanceof Lane)
+         {
+            LaneSymbolJto symbolJto = newShapeJto(shape, new LaneSymbolJto());
+            symbolJto.orientation = shape.isIsHorizontal()
+                  ? ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+                  : ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
          else
          {
             trace.debug("Unsupported shape: " + shape.getBpmnElement());
@@ -210,32 +291,32 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          if (root instanceof ItemDefinition)
          {
-            modelJto.typeDeclarations.add(toJto((ItemDefinition) root));
+            modelJto.typeDeclarations.put(root.getId(), toJto((ItemDefinition) root));
          }
          else if (root instanceof Participant)
          {
-            modelJto.participants.add(toJto((Participant) root));
+            modelJto.participants.put(root.getId(), toJto((Participant) root));
          }
          else if (root instanceof DataStore)
          {
-            modelJto.dataItems.add(toJto((DataStore) root));
+            modelJto.dataItems.put(root.getId(), toJto((DataStore) root));
          }
          else if (root instanceof Process)
          {
-            modelJto.processes.add(toJto((Process) root));
+            modelJto.processes.put(root.getId(), toJto((Process) root));
 
             for (FlowElement flowElement : ((Process) root).getFlowElements())
             {
                if (flowElement instanceof DataObject)
                {
-                  modelJto.dataItems.add(toJto((DataObject) flowElement));
+                  modelJto.dataItems.put(root.getId(), toJto((DataObject) flowElement));
                }
             }
 
             // expose process properties as global data (see BPMN2 -> WS-BPEL mapping)
             for (Property property : ((Process) root).getProperties())
             {
-               modelJto.dataItems.add(toJto((Process) root, property));
+               modelJto.dataItems.put(root.getId(), toJto((Process) root, property));
             }
          }
       }
@@ -390,6 +471,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (null != processPoolShape)
       {
          mainPoolJto = newShapeJto(processPoolShape, new PoolSymbolJto());
+         mainPoolJto.processId = process.getId();
          if (processPoolShape.isIsHorizontal())
          {
             mainPoolJto.orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
@@ -428,6 +510,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       else
       {
          mainPoolJto = new PoolSymbolJto();
+         mainPoolJto.processId = process.getId();
          if ( !otherPoolShapes.isEmpty())
          {
             float left = otherPoolShapes.get(0).getBounds().getX();
@@ -524,7 +607,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                   symbolJto.modelElement = toJto((Activity) shape.getBpmnElement());
 
-                  laneJto.activitySymbols.add(symbolJto);
+                  laneJto.activitySymbols.put(symbolJto.modelElement.id, symbolJto);
                   nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Gateway)
@@ -533,7 +616,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                   symbolJto.modelElement = toJto((Gateway) shape.getBpmnElement());
 
-                  laneJto.gatewaySymbols.add(symbolJto);
+                  laneJto.gatewaySymbols.put(symbolJto.modelElement.id, symbolJto);
                   nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Event)
@@ -545,7 +628,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
-                     laneJto.eventSymbols.add(symbolJto);
+                     laneJto.eventSymbols.put(symbolJto.modelElement.id, symbolJto);
                      nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                   else if (shape.getBpmnElement() instanceof BoundaryEvent)
@@ -554,7 +637,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
-                     laneJto.eventSymbols.add(symbolJto);
+                     laneJto.eventSymbols.put(symbolJto.modelElement.id, symbolJto);
                      nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                }
@@ -569,7 +652,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
                symbolJto.dataFullId = getFullId(dataObject);
 
-               laneJto.dataSymbols.add(symbolJto);
+               laneJto.dataSymbols.put(dataObject.getId(), symbolJto);
             }
             else if (((shape.getBpmnElement() instanceof DataStore)
                   || (shape.getBpmnElement() instanceof DataStoreReference)))
@@ -581,7 +664,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
                symbolJto.dataFullId = getFullId(dataStore);
 
-               laneJto.dataSymbols.add(symbolJto);
+               laneJto.dataSymbols.put(dataStore.getId(), symbolJto);
             }
             else
             {
@@ -630,11 +713,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                      edge.getWaypoint().get(edge.getWaypoint().size() - 2));
             }
 
-            jto.connections.add(symbolJto);
+            jto.connections.put(symbolJto.modelElement.id, symbolJto);
          }
       }
 
-      jto.poolSymbols.add(mainPoolJto);
+      jto.poolSymbols.put(mainPoolJto.id, mainPoolJto);
 
       for (BPMNShape poolShape : otherPoolShapes)
       {
@@ -642,8 +725,15 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
          if (poolShape.getBpmnElement() instanceof Participant)
          {
-            poolJto.id = ((Participant) poolShape.getBpmnElement()).getId();
-            poolJto.name = ((Participant) poolShape.getBpmnElement()).getName();
+            Participant poolParticipant = (Participant) poolShape.getBpmnElement();
+            poolJto.id = poolParticipant.getId();
+            poolJto.name = poolParticipant.getName();
+
+            if (null != poolParticipant.getProcessRef())
+            {
+               poolJto.processId = poolParticipant.getProcessRef().getId();
+            }
+
             // TODO anything else?
          }
 
@@ -674,7 +764,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             }
          }
 
-         jto.poolSymbols.add(poolJto);
+         jto.poolSymbols.put(poolJto.id, poolJto);
       }
 
       return jto;
@@ -858,19 +948,19 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // TODO
          if (flowElement instanceof Activity)
          {
-            jto.activities.add(toJto((Activity) flowElement));
+            jto.activities.put(flowElement.getId(), toJto((Activity) flowElement));
          }
          else if (flowElement instanceof Gateway)
          {
-            jto.gateways.add(toJto((Gateway) flowElement));
+            jto.gateways.put(flowElement.getId(), toJto((Gateway) flowElement));
          }
          else if (flowElement instanceof Event)
          {
-            jto.events.add(toJto((Event) flowElement));
+            jto.events.put(flowElement.getId(), toJto((Event) flowElement));
          }
          else if (flowElement instanceof SequenceFlow)
          {
-            jto.controlFlows.add(toJto((SequenceFlow) flowElement));
+            jto.controlFlows.put(flowElement.getId(), toJto((SequenceFlow) flowElement));
          }
       }
 

@@ -42,6 +42,12 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    }
 
    @Override
+   public String getModelFormat(Definitions model)
+   {
+      return "bpmn2";
+   }
+
+   @Override
    public String getModelId(Definitions model)
    {
       return Bpmn2Utils.getModelUuid(model);

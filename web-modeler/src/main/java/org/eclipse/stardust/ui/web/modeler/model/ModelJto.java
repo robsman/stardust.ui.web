@@ -1,8 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 
@@ -18,9 +17,9 @@ public class ModelJto
    public String fileName;
    public String filePath;
 
-   public List<ModelParticipantJto> participants = newArrayList();
-   public List<TypeDeclarationJto> typeDeclarations = newArrayList();
-   public List<DataJto> dataItems = newArrayList();
-   public List<ApplicationJto> applications = newArrayList();
-   public List<ProcessDefinitionJto> processes = newArrayList();
+   public Map<String, ModelParticipantJto> participants = new LinkedHashMap<String, ModelParticipantJto>();
+   public Map<String, TypeDeclarationJto> typeDeclarations = new LinkedHashMap<String, TypeDeclarationJto>();
+   public Map<String, DataJto> dataItems = new LinkedHashMap<String, DataJto>();
+   public Map<String, ApplicationJto> applications = new LinkedHashMap<String, ApplicationJto>();
+   public Map<String, ProcessDefinitionJto> processes = new LinkedHashMap<String, ProcessDefinitionJto>();
 }

@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.ByteArrayInputStream;
@@ -9,9 +10,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
@@ -24,6 +27,7 @@ import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -176,8 +180,9 @@ public class DefaultModelManagementStrategy extends
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       if (persistenceService.saveMode(nativeModel, baos))
       {
-         Document modelDocument = getDocumentManagementService().getDocument(
-               getModelFilePath(model));
+         Document modelDocument = (null != getModelFileName(model))
+               ? getDocumentManagementService().getDocument(getModelFilePath(model))
+               : null;
 
          if (null == modelDocument)
          {

@@ -1,6 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.deepCopy;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
@@ -8,6 +7,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,7 +17,6 @@ import org.eclipse.stardust.common.error.InternalException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.jto.DIDiagramJto;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.jto.DILaneJto;
@@ -39,7 +38,7 @@ public class ModelConverter
       this.requestExecutor = requestExecutor;
    }
 
-   public String convertModel(String modelId)
+   public String convertModel(String modelId, String targetFormat)
    {
       JsonObject allModelsJson = requestExecutor.loadAllModels();
 
@@ -51,15 +50,13 @@ public class ModelConverter
 
          assert ModelerConstants.MODEL_KEY.equals(modelJto.type);
 
-         ModelConversionContext conversionContext = new ModelConversionContext();
+         ModelConversionContext conversionContext = new ModelConversionContext(targetFormat);
 
-         for (JsonElement processJson : modelJto.processes)
+         for (Map.Entry<String, JsonElement> processJson : modelJto.processes.entrySet())
          {
-            ProcessEntryJto processJto = jsonIo.gson().fromJson(processJson, ProcessEntryJto.class);
+            ProcessEntryJto processJto = jsonIo.gson().fromJson(processJson.getValue(), ProcessEntryJto.class);
 
             assert ModelerConstants.PROCESS_KEY.equals(processJto.type);
-
-            buildFlowNodeToProcessMapping(conversionContext, processJto);
 
             loadProcessDiagram(conversionContext, processJto);
          }
@@ -74,6 +71,7 @@ public class ModelConverter
          ModelConversionContext conversionContext)
    {
       JsonObject newModelReqJson = new JsonObject();
+      newModelReqJson.addProperty("modelFormat", conversionContext.getTargetFormat());
       newModelReqJson.addProperty(ModelerConstants.NAME_PROPERTY, //
             modelJto.name + " - Clone");
       JsonObject newModelJson = applyCreateCommand(null, "model.create", newModelReqJson,
@@ -88,26 +86,26 @@ public class ModelConverter
       String modelId = extractAsString(newModelJson, "id");
       // TODO map new to old ID
 
-      conversionContext.registerNewModelId(modelId);
+      conversionContext.registerNewModelIdentifiers(modelId, modelUuid);
 
       trace.info("Created new model: " + modelUuid + " / " + modelId);
 
-      for (JsonElement variableEntry : modelJto.dataItems)
+      for (Map.Entry<String, JsonElement> variableEntry : modelJto.dataItems.entrySet())
       {
-         JsonObject variableJson = variableEntry.getAsJsonObject();
+         JsonObject variableJson = variableEntry.getValue().getAsJsonObject();
 
          assert "data".equals(extractAsString(variableJson,
                ModelerConstants.TYPE_PROPERTY));
 
          // TODO map new to old ID
-         recreateVariable(modelId, variableJson, conversionContext);
+         recreateVariable(variableJson, conversionContext);
       }
 
       // TODO recreate participants
 
-      for (JsonElement processEntry : modelJto.processes)
+      for (Map.Entry<String, JsonElement> processEntry : modelJto.processes.entrySet())
       {
-         ProcessEntryJto processJto = jsonIo.gson().fromJson(processEntry, ProcessEntryJto.class);
+         ProcessEntryJto processJto = jsonIo.gson().fromJson(processEntry.getValue(), ProcessEntryJto.class);
 
          assert ModelerConstants.PROCESS_KEY.equals(processJto.type);
 
@@ -118,7 +116,7 @@ public class ModelConverter
       return modelId;
    }
 
-   private void recreateVariable(String modelId, JsonObject variableJson,
+   private void recreateVariable(JsonObject variableJson,
          ModelConversionContext modelConversionContext)
    {
       JsonObject newVariableJson = new JsonObject();
@@ -133,8 +131,8 @@ public class ModelConverter
          newVariableJson.addProperty(ModelerConstants.PRIMITIVE_TYPE,
                ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
       }
-      JsonObject createVariableChanges = applyChange(modelId, "primitiveData.create",
-            modelId, newVariableJson);
+      JsonObject createVariableChanges = applyChange(modelConversionContext.newModelId(),
+            "primitiveData.create", modelConversionContext.newModelId(), newVariableJson);
 
       if (trace.isDebugEnabled())
       {
@@ -161,7 +159,7 @@ public class ModelConverter
       newProcessJson.addProperty("defaultPoolName", "Default Pool");
       newProcessJson.addProperty("defaultLaneName", "Default Lane");
       JsonObject createProcessChanges = applyChange(newModelId, "process.create",
-            newModelId, newProcessJson);
+            processConversionContext.newModelId(), newProcessJson);
 
       if (trace.isDebugEnabled())
       {
@@ -202,159 +200,95 @@ public class ModelConverter
 
       DIDiagramJto diagramJto = jsonIo.gson().fromJson(diagramJson, DIDiagramJto.class);
 
-      if ((null == diagramJto.poolSymbols) || (0 == diagramJto.poolSymbols.size()))
+      if ((null == diagramJto.poolSymbols) || diagramJto.poolSymbols.entrySet().isEmpty())
       {
          return;
       }
 
       // TODO recreate diagram
-      for (JsonElement poolJson : diagramJto.poolSymbols)
+      for (Map.Entry<String, JsonElement> poolJson : diagramJto.poolSymbols.entrySet())
       {
-         DIPoolJto poolJto = jsonIo.gson().fromJson(poolJson, DIPoolJto.class);
+         DIPoolJto poolJto = jsonIo.gson().fromJson(poolJson.getValue(), DIPoolJto.class);
+
+         if (isEmpty(poolJto.processId) || !poolJto.processId.equals(processJto.id))
+         {
+            // pool does not belong to this process
+            // TODO revisit once we support collaboration diagrams
+            continue;
+         }
 
          if ((null == poolJto.laneSymbols) || (0 == poolJto.laneSymbols.size()))
          {
             continue;
          }
 
-         List<JsonObject> symbolsToRecreate = newArrayList();
-
          for (JsonElement laneJson : poolJto.laneSymbols)
          {
             DILaneJto laneJto = jsonIo.gson().fromJson(laneJson, DILaneJto.class);
 
-            recreateFlowNodes(newModelId, processJto, processConversionContext,
-                  newLaneJson, laneJto.activitySymbols, symbolsToRecreate);
+            JsonObject newPoolPatchJson = new JsonObject();
+            newPoolPatchJson.add(ModelerConstants.X_PROPERTY, poolJto.x);
+            newPoolPatchJson.add(ModelerConstants.Y_PROPERTY, poolJto.y);
+            newPoolPatchJson.add(ModelerConstants.WIDTH_PROPERTY, poolJto.width);
+            newPoolPatchJson.add(ModelerConstants.HEIGHT_PROPERTY, poolJto.height);
+            newPoolPatchJson.add(ModelerConstants.ORIENTATION_PROPERTY, poolJto.orientation);
+            applyChange(newModelId, "modelElement.update",
+                  extractLong(newPoolJson, ModelerConstants.OID_PROPERTY),
+                  newPoolPatchJson);
 
-            recreateFlowNodes(newModelId, processJto, processConversionContext,
-                  newLaneJson, laneJto.gatewaySymbols, symbolsToRecreate);
-
-            recreateFlowNodes(newModelId, processJto, processConversionContext,
-                  newLaneJson, laneJto.eventSymbols, symbolsToRecreate);
-
-            if ( !symbolsToRecreate.isEmpty())
-            {
-               // recreate data symbols as well ...
-               recreateFlowNodes(newModelId, processJto, null, newLaneJson,
-                     laneJto.dataSymbols, symbolsToRecreate);
-
-               JsonObject newPoolPatchJson = new JsonObject();
-               newPoolPatchJson.add(ModelerConstants.X_PROPERTY, poolJto.x);
-               newPoolPatchJson.add(ModelerConstants.Y_PROPERTY, poolJto.y);
-               newPoolPatchJson.add(ModelerConstants.WIDTH_PROPERTY, poolJto.width);
-               newPoolPatchJson.add(ModelerConstants.HEIGHT_PROPERTY, poolJto.height);
-               newPoolPatchJson.add(ModelerConstants.ORIENTATION_PROPERTY, poolJto.orientation);
-               applyChange(newModelId, "modelElement.update",
-                     Long.toString(extractLong(newPoolJson, ModelerConstants.OID_PROPERTY)),
-                     newPoolPatchJson);
-
-               JsonObject newLanePatchJson = new JsonObject();
-               newLanePatchJson.add(ModelerConstants.X_PROPERTY, laneJto.x);
-               newLanePatchJson.add(ModelerConstants.Y_PROPERTY, laneJto.y);
-               newLanePatchJson.add(ModelerConstants.WIDTH_PROPERTY, laneJto.width);
-               newLanePatchJson.add(ModelerConstants.HEIGHT_PROPERTY, laneJto.height);
-               newLanePatchJson.add(ModelerConstants.ORIENTATION_PROPERTY, laneJto.orientation);
+            JsonObject newLanePatchJson = new JsonObject();
+            newLanePatchJson.add(ModelerConstants.X_PROPERTY, laneJto.x);
+            newLanePatchJson.add(ModelerConstants.Y_PROPERTY, laneJto.y);
+            newLanePatchJson.add(ModelerConstants.WIDTH_PROPERTY, laneJto.width);
+            newLanePatchJson.add(ModelerConstants.HEIGHT_PROPERTY, laneJto.height);
+            newLanePatchJson.add(ModelerConstants.ORIENTATION_PROPERTY, laneJto.orientation);
 //               newLanePatchJson.addProperty(ModelerConstants.PARENT_SYMBOL_ID_PROPERTY, extractString(newPoolJson, ModelerConstants.ID_PROPERTY));
-               applyChange(newModelId, "modelElement.update",
-                     Long.toString(extractLong(newLaneJson, ModelerConstants.OID_PROPERTY)),
-                     newLanePatchJson);
+            applyChange(newModelId, "modelElement.update",
+                  extractLong(newLaneJson, ModelerConstants.OID_PROPERTY),
+                  newLanePatchJson);
 
-               for (JsonObject nodeSymbolJson : symbolsToRecreate)
-               {
-                  if (ModelerConstants.ACTIVITY_SYMBOL.equals(extractString(
-                        nodeSymbolJson, ModelerConstants.TYPE_PROPERTY)))
-                  {
-                     recreateActivitySymbol(newModelId, newLaneJson, nodeSymbolJson,
-                           processConversionContext);
-                  }
-                  else if (ModelerConstants.GATEWAY_SYMBOL.equals(extractString(
-                        nodeSymbolJson, ModelerConstants.TYPE_PROPERTY)))
-                  {
-                     recreateGatewaySymbol(newModelId, newLaneJson, nodeSymbolJson,
-                           processConversionContext);
-                  }
-                  else if (ModelerConstants.EVENT_SYMBOL.equals(extractString(
-                        nodeSymbolJson, ModelerConstants.TYPE_PROPERTY)))
-                  {
-                     recreateEventSymbol(newModelId, newLaneJson, nodeSymbolJson,
-                           processConversionContext);
-                  }
-                  else if (ModelerConstants.DATA_SYMBOL.equals(extractString(
-                        nodeSymbolJson, ModelerConstants.TYPE_PROPERTY)))
-                  {
-                     recreateDataSymbol(newLaneJson, nodeSymbolJson,
-                           processConversionContext);
-                  }
-               }
+            for (Map.Entry<String, JsonElement> nodeSymbolJson : laneJto.activitySymbols
+                  .entrySet())
+            {
+               recreateActivitySymbol(newModelId, newLaneJson, nodeSymbolJson.getValue()
+                     .getAsJsonObject(), processConversionContext);
+            }
+            for (Map.Entry<String, JsonElement> nodeSymbolJson : laneJto.gatewaySymbols
+                  .entrySet())
+            {
+               recreateGatewaySymbol(newModelId, newLaneJson, nodeSymbolJson.getValue()
+                     .getAsJsonObject(), processConversionContext);
+            }
+            for (Map.Entry<String, JsonElement> nodeSymbolJson : laneJto.eventSymbols
+                  .entrySet())
+            {
+               recreateEventSymbol(newModelId, newLaneJson, nodeSymbolJson.getValue()
+                     .getAsJsonObject(), processConversionContext);
+            }
+            for (Map.Entry<String, JsonElement> nodeSymbolJson : laneJto.dataSymbols
+                  .entrySet())
+            {
+               recreateDataSymbol(newLaneJson, nodeSymbolJson.getValue()
+                     .getAsJsonObject(), processConversionContext);
             }
 
             // TODO recurse into sub-lanes
          }
 
-         for (JsonElement connectionSymbolJson : diagramJto.connections)
+         for (Map.Entry<String, JsonElement> connectionSymbolJson : diagramJto.connections.entrySet())
          {
             if (processConversionContext.hasNewElementOid(extractLong(
-                  connectionSymbolJson.getAsJsonObject(),
+                  connectionSymbolJson.getValue().getAsJsonObject(),
                   ModelerConstants.FROM_MODEL_ELEMENT_OID))
                   && processConversionContext.hasNewElementOid(extractLong(
-                        connectionSymbolJson.getAsJsonObject(),
+                        connectionSymbolJson.getValue().getAsJsonObject(),
                         ModelerConstants.TO_MODEL_ELEMENT_OID)))
             {
                recreateConnectionSymbol(newModelId, newPoolJson,
-                     connectionSymbolJson.getAsJsonObject(),
+                     connectionSymbolJson.getValue().getAsJsonObject(),
                      processConversionContext.forModel());
             }
          }
-      }
-   }
-
-   private void recreateFlowNodes(String newModelId, ProcessEntryJto processJson,
-         ProcessConversionContext conversionContext, JsonObject newLaneJson,
-         JsonArray flowNodesJson, List<JsonObject> symbolsToRecreate)
-   {
-      if (null != flowNodesJson)
-      {
-         for (JsonElement nodeSymbolJson : flowNodesJson)
-         {
-            Long flowNodeOid = nodeSymbolJson.getAsJsonObject().has(
-                  ModelerConstants.MODEL_ELEMENT_PROPERTY) //
-                  ? extractLong(nodeSymbolJson.getAsJsonObject(),
-                        ModelerConstants.MODEL_ELEMENT_PROPERTY,
-                        ModelerConstants.OID_PROPERTY) //
-                  : null;
-
-            if ((null != flowNodeOid)
-                  && processJson.id.equals(conversionContext.forModel()
-                        .retrieveProcessIdForFlowNode(flowNodeOid)))
-            {
-               symbolsToRecreate.add(nodeSymbolJson.getAsJsonObject());
-            }
-         }
-      }
-   }
-
-   private void buildFlowNodeToProcessMapping(ModelConversionContext conversionContext,
-         ProcessEntryJto processJto)
-   {
-      // parse diagram, find contained processes
-      for (JsonElement activitiyJson : processJto.activities)
-      {
-         conversionContext.mapFlowNodeOidToProcessId(GsonUtils.extractLong(
-               activitiyJson.getAsJsonObject(), ModelerConstants.OID_PROPERTY),
-               processJto.id);
-      }
-      for (JsonElement gatewayJson : processJto.gateways)
-      {
-         conversionContext.mapFlowNodeOidToProcessId(GsonUtils.extractLong(
-               gatewayJson.getAsJsonObject(), ModelerConstants.OID_PROPERTY),
-               processJto.id);
-      }
-      for (JsonElement eventJson : processJto.events)
-      {
-         conversionContext
-               .mapFlowNodeOidToProcessId(GsonUtils.extractLong(
-                     eventJson.getAsJsonObject(), ModelerConstants.OID_PROPERTY),
-                     processJto.id);
       }
    }
 
@@ -378,50 +312,14 @@ public class ModelConverter
       }
 
       // parse diagram, find contained processes
-      for (JsonElement poolJson : diagramJto.poolSymbols)
+      for (Map.Entry<String, JsonElement> poolJson : diagramJto.poolSymbols.entrySet())
       {
-         DIPoolJto poolJto = jsonIo.gson().fromJson(poolJson, DIPoolJto.class);
-         if (null == poolJto.laneSymbols)
+         DIPoolJto poolJto = jsonIo.gson().fromJson(poolJson.getValue(), DIPoolJto.class);
+
+         if ( !isEmpty(poolJto.processId))
          {
-            continue;
+            conversionContext.forProcess(poolJto.processId).registerDiagramForProcess(diagramJson);
          }
-
-         for (JsonElement laneJson : poolJto.laneSymbols)
-         {
-            DILaneJto laneJto = jsonIo.gson().fromJson(laneJson, DILaneJto.class);
-
-            inspectFlowSymbols(conversionContext, diagramJson, laneJto.activitySymbols);
-            inspectFlowSymbols(conversionContext, diagramJson, laneJto.gatewaySymbols);
-            inspectFlowSymbols(conversionContext, diagramJson, laneJto.eventSymbols);
-
-            // TODO recurse into sub-lanes
-         }
-      }
-   }
-
-   private void inspectFlowSymbols(ModelConversionContext conversionContext,
-         JsonObject diagramJson, JsonArray flowSymbolsJson)
-   {
-      if (null != flowSymbolsJson)
-      {
-         for (JsonElement activitySymbolJson : flowSymbolsJson)
-         {
-            inspectFlowSymbol(conversionContext, diagramJson, activitySymbolJson);
-         }
-      }
-   }
-
-   private void inspectFlowSymbol(ModelConversionContext conversionContext,
-         JsonObject diagramJson, JsonElement flowSymbolJson)
-   {
-      Long flowNodeOid = extractLong(flowSymbolJson.getAsJsonObject(),
-            ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            ModelerConstants.OID_PROPERTY);
-
-      String processId = conversionContext.retrieveProcessIdForFlowNode(flowNodeOid);
-      if ( !isEmpty(processId))
-      {
-         conversionContext.forProcess(processId).registerDiagramForProcess(diagramJson);
       }
    }
 
@@ -455,10 +353,8 @@ public class ModelConverter
       // remove ID to trigger creation of underlying activity
       activityJson.remove(ModelerConstants.ID_PROPERTY);
 
-      JsonObject changesJson = applyChange(
-            newModelId,
-            "activitySymbol.create",
-            Long.toString(extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY)), //
+      JsonObject changesJson = applyChange(newModelId, "activitySymbol.create",
+            extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY), //
             activitySymbolJson);
 
       mapNewElementIdentifiers(activitySymbolJson, changesJson, conversionContext.forModel());
@@ -473,9 +369,8 @@ public class ModelConverter
                   extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY));
 
             applyChange(newModelId, "modelElement.update",
-                  Long.toString(conversionContext.newElementOid(extractLong(
-                        activitySymbolJson, ModelerConstants.OID_PROPERTY))),
-                  activitySymbolJson);
+                  conversionContext.newElementOid(extractLong(activitySymbolJson,
+                        ModelerConstants.OID_PROPERTY)), activitySymbolJson);
          }
       }
    }
@@ -498,11 +393,8 @@ public class ModelConverter
       gatewaySymbolJson.addProperty(ModelerConstants.PARENT_SYMBOL_ID_PROPERTY,
             extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY));
 
-      JsonObject changesJson = applyChange(
-            newModelId,
-            "gateSymbol.create",
-            Long.toString(extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY)), //
-            gatewaySymbolJson);
+      JsonObject changesJson = applyChange(newModelId, "gateSymbol.create",
+            extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY), gatewaySymbolJson);
 
       mapNewElementIdentifiers(gatewaySymbolJson, changesJson, conversionContext.forModel());
    }
@@ -520,11 +412,8 @@ public class ModelConverter
       eventSymbolJson.addProperty(ModelerConstants.PARENT_SYMBOL_ID_PROPERTY,
             extractString(laneSymbolJson, ModelerConstants.ID_PROPERTY));
 
-      JsonObject changesJson = applyChange(
-            newModelId,
-            "eventSymbol.create",
-            Long.toString(extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY)), //
-            eventSymbolJson);
+      JsonObject changesJson = applyChange(newModelId, "eventSymbol.create",
+            extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY), eventSymbolJson);
 
       mapNewElementIdentifiers(eventSymbolJson, changesJson, conversionContext.forModel());
 
@@ -535,9 +424,8 @@ public class ModelConverter
                addedElementJson.getAsJsonObject(), ModelerConstants.TYPE_PROPERTY)))
          {
             applyChange(newModelId, "modelElement.update",
-                  Long.toString(conversionContext.newElementOid(extractLong(
-                        eventSymbolJson, ModelerConstants.OID_PROPERTY))),
-                  eventSymbolJson);
+                  conversionContext.newElementOid(extractLong(eventSymbolJson,
+                        ModelerConstants.OID_PROPERTY)), eventSymbolJson);
          }
       }
    }
@@ -562,10 +450,9 @@ public class ModelConverter
       dataSymbolJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
             conversionContext.newModelId() + ":" + conversionContext.newDataId(originalDataId));
 
-      JsonObject changesJson = applyChange(
-            conversionContext.newModelId(),
+      JsonObject changesJson = applyChange(conversionContext.newModelId(),
             "dataSymbol.create",
-            Long.toString(extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY)), //
+            extractLong(laneSymbolJson, ModelerConstants.OID_PROPERTY), //
             dataSymbolJson);
 
       mapNewElementIdentifiers(dataSymbolJson, changesJson, conversionContext.forModel());
@@ -639,10 +526,8 @@ public class ModelConverter
       connectionSymbolJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
             newTargetSymbolOid);
 
-      JsonObject changesJson = applyChange(
-            newModelId,
-            "connection.create",
-            Long.toString(extractLong(poolSymbolJson, ModelerConstants.OID_PROPERTY)), //
+      JsonObject changesJson = applyChange(newModelId, "connection.create",
+            extractLong(poolSymbolJson, ModelerConstants.OID_PROPERTY), //
             connectionSymbolJson);
 
       if ( !isEmpty(oldElementId))
@@ -667,8 +552,8 @@ public class ModelConverter
 //               trace.debug("Mapping " + symbolType + ": " + oldConnectionOid + " => "
 //                     + newConnectionOid);
 //            }
-            applyChange(newModelId, "modelElement.update",
-                  Long.toString(newConnectionSymbolOid), connectionSymbolJson);
+            applyChange(newModelId, "modelElement.update", newConnectionSymbolOid,
+                  connectionSymbolJson);
          }
       }
    }
@@ -705,21 +590,26 @@ public class ModelConverter
             + "' was created.");
    }
 
-   private JsonObject applyChange(String modelUuid, String commandId,
-         String contextElementId, JsonObject changeJson)
+   private JsonObject applyChange(String modelId, String commandId,
+         Object contextElementId, JsonObject changeJson)
    {
       JsonObject cmdJson = new JsonObject();
-      if ( !isEmpty(modelUuid))
+      if ( !isEmpty(modelId))
       {
-         cmdJson.addProperty("modelId", modelUuid);
+         cmdJson.addProperty("modelId", modelId);
       }
       cmdJson.addProperty("commandId", commandId);
       cmdJson.add("changeDescriptions", new JsonArray());
       ((JsonArray) cmdJson.get("changeDescriptions")).add(new JsonObject());
-      if ( !isEmpty(contextElementId))
+      if (contextElementId instanceof String)
       {
          ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).addProperty(
-               ModelerConstants.OID_PROPERTY, contextElementId);
+               ModelerConstants.OID_PROPERTY, (String) contextElementId);
+      }
+      else if (contextElementId instanceof Long)
+      {
+         ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).addProperty(
+               ModelerConstants.OID_PROPERTY, (Long) contextElementId);
       }
       ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).add(
             "changes", changeJson);

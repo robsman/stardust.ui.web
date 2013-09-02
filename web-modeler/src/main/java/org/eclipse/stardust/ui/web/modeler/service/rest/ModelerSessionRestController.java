@@ -3,7 +3,9 @@ package org.eclipse.stardust.ui.web.modeler.service.rest;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
+import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBeans;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +32,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
@@ -42,9 +43,9 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
-import org.eclipse.stardust.ui.web.modeler.edit.model.element.ModelChangeCommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetPostprocessingService;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -143,6 +144,34 @@ public class ModelerSessionRestController
          ChangeJto.ProblemJto failureJto = new ChangeJto.ProblemJto();
          failureJto.severity = "error";
          failureJto.message = change.getFailure().getMessage();
+
+         jto.problems = newArrayList();
+         jto.problems.add(failureJto);
+      }
+
+      return jto;
+   }
+
+   public ChangeJto toJto(CommandJto command, ModelCommandsHandler.ModificationDescriptor changes)
+   {
+      ChangeJto jto = new ChangeJto();
+
+      jto.id= changes.getId();
+      jto.timestamp = System.currentTimeMillis();
+
+      jto.commandId = command.commandId;
+      jto.modelId= command.modelId;
+      jto.account = command.account;
+
+      jto.changes.modified.addAll(changes.modified);
+      jto.changes.added.addAll(changes.added);
+      jto.changes.removed.addAll(changes.removed);
+
+      if (changes.wasFailure())
+      {
+         ChangeJto.ProblemJto failureJto = new ChangeJto.ProblemJto();
+         failureJto.severity = "error";
+         failureJto.message = changes.getFailure().getMessage();
 
          jto.problems = newArrayList();
          jto.problems.add(failureJto);
@@ -363,11 +392,12 @@ public class ModelerSessionRestController
       String commandId = commandJto.commandId;
       String modelId = commandJto.modelId;
 
-      EObject model = modelService.currentSession().modelRepository().findModel(modelId);
+      ModelRepository modelRepository = modelService.currentSession().modelRepository();
+      EObject model = modelRepository.findModel(modelId);
 
-      if (commandId.indexOf("model.") >= 0 && !modelService.getModelBuilderFacade().isReadOnly(model))
+      if (commandId.startsWith("model."))
       {
-         return applyGlobalChange(commandId, commandJto);
+         return applyGlobalChange(commandId, model, commandJto);
       }
       else
       {
@@ -388,23 +418,56 @@ public class ModelerSessionRestController
     * @param commandJson
     * @return
     */
-   private Response applyGlobalChange(String commandId, CommandJto commandJto)
+   private Response applyGlobalChange(String commandId, EObject model, CommandJto commandJto)
    {
       List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
+
       for (ChangeDescriptionJto changeDescrJto : changesJson) {
          if (null != changeDescrJto) {
             EObject targetElement = null;
-            if (null != changeDescrJto.uuid) {
+            if (null != changeDescrJto.uuid)
+            {
                String uuid = changeDescrJto.uuid;
                targetElement = modelService.uuidMapper().getEObject(uuid);
             }
+            else
+            {
+               targetElement = model;
+            }
 
-            JsonElement changeJson = changeDescrJto.changes;
-            ModelChangeCommandHandler handler = resolveSpringBean(ModelChangeCommandHandler.class, springContext);
-            // TODO make this a regular modification
-            JsonObject response = handler.handleCommand(commandId, targetElement, changeJson.getAsJsonObject());
-            if (null != response) {
-               return Response.ok(response.toString(), APPLICATION_JSON_TYPE).build();
+            JsonObject changeJson = changeDescrJto.changes;
+            String modelFormat;
+            if (null != model)
+            {
+               modelFormat = modelService.currentSession().modelRepository()
+                     .getModelFormat(model);
+            }
+            else
+            {
+               modelFormat = extractString(changeJson, "modelFormat");
+            }
+
+            ModelCommandsHandler.ModificationDescriptor changes = null;
+            for (ModelCommandsHandler handler : resolveSpringBeans(
+                  ModelCommandsHandler.class, springContext))
+            {
+               // TODO make this a regular modification
+               if (handler.handlesModel(modelFormat))
+               {
+                  changes = handler.handleCommand(commandId, targetElement, changeJson);
+                  break;
+               }
+            }
+            if (null != changes)
+            {
+               JsonObject changeJto = toJson(toJto(commandJto, changes));
+               return Response.ok(jsonIo.writeJsonObject(changeJto))
+                     .type(APPLICATION_JSON_TYPE).build();
+            }
+            else
+            {
+               return Response.status(Status.BAD_REQUEST) //
+                     .entity("Unsupported modelFormat: " + modelFormat).build();
             }
          }
       }
@@ -644,14 +707,14 @@ public class ModelerSessionRestController
       public Boolean isUndo;
       public Boolean isRedo;
 
-      static class ChangesJto
+      public static class ChangesJto
       {
          public JsonArray modified = new JsonArray();
          public JsonArray added = new JsonArray();
          public JsonArray removed = new JsonArray();
       };
 
-      static class ProblemJto
+      public static class ProblemJto
       {
          public String severity;
          public String message;

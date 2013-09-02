@@ -37,6 +37,11 @@ public class ProcessConversionContext
       return modelConversionContext.newModelId();
    }
 
+   public String newModelUuid()
+   {
+      return modelConversionContext.newModelUuid();
+   }
+
    public String newModelId(String originalModelId)
    {
       return modelConversionContext.newModelId(originalModelId);

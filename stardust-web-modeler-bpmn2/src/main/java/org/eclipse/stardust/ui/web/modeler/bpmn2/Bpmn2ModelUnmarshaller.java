@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2DcFactory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Factory;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.bpmn2Package;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
@@ -38,6 +39,7 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
@@ -65,6 +67,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+
 import org.eclipse.xsd.XSDSchema;
 
 public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
@@ -124,9 +127,13 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
          trace.info("Shape: " + shape);
          trace.info("Json: " + json);
 
-         if (shape.getBpmnElement() instanceof Lane)
+         if (shape.getBpmnElement() instanceof Participant)
          {
-            updateSwimlane((Lane) shape.getBpmnElement(), json);
+            updatePool(shape, (Participant) shape.getBpmnElement(), json);
+         }
+         else if (shape.getBpmnElement() instanceof Lane)
+         {
+            updateSwimlane(shape, (Lane) shape.getBpmnElement(), json);
          }
          else if (shape.getBpmnElement() instanceof Activity)
          {
@@ -261,8 +268,52 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
       storeExtensions(process, processJson);
    }
 
-   private void updateSwimlane(Lane lane, JsonObject laneJson)
+   private void updateShape(BPMNShape shape, JsonObject shapeJson)
    {
+      if (null == shape.getBounds())
+      {
+         // TODO set only if some coordinate has really changed
+         shape.setBounds(bpmn2DcFactory().createBounds());
+      }
+      if (shapeJson.has(ModelerConstants.X_PROPERTY))
+      {
+         shape.getBounds().setX(GsonUtils.extractInt(shapeJson, ModelerConstants.X_PROPERTY));
+      }
+      if (shapeJson.has(ModelerConstants.Y_PROPERTY))
+      {
+         shape.getBounds().setY(GsonUtils.extractInt(shapeJson, ModelerConstants.Y_PROPERTY));
+      }
+      if (shapeJson.has(ModelerConstants.WIDTH_PROPERTY))
+      {
+         shape.getBounds().setWidth(GsonUtils.extractInt(shapeJson, ModelerConstants.WIDTH_PROPERTY));
+      }
+      if (shapeJson.has(ModelerConstants.HEIGHT_PROPERTY))
+      {
+         shape.getBounds().setHeight(GsonUtils.extractInt(shapeJson, ModelerConstants.HEIGHT_PROPERTY));
+      }
+   }
+
+   private void updatePool(BPMNShape poolShape, Participant participant, JsonObject poolJson)
+   {
+      updateShape(poolShape, poolJson);
+
+      if (poolJson.has(ModelerConstants.ORIENTATION_PROPERTY))
+      {
+         poolShape.setIsHorizontal(ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+               .equals(extractString(poolJson, ModelerConstants.ORIENTATION_PROPERTY)));
+      }
+   }
+
+   private void updateSwimlane(BPMNShape laneShape, Lane lane, JsonObject laneJson)
+   {
+      updateShape(laneShape, laneJson);
+
+      if (laneJson.has(ModelerConstants.ORIENTATION_PROPERTY))
+      {
+         laneShape.setIsHorizontal(ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+               .equals(extractString(laneJson, ModelerConstants.ORIENTATION_PROPERTY)));
+      }
+
       if (laneJson.has(ModelerConstants.PARTICIPANT_FULL_ID))
       {
          // TODO resolve performer and associate with activities

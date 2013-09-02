@@ -2,7 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.service.rest;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static com.google.common.io.Closeables.closeQuietly;
-import static java.util.Collections.singletonList;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -65,26 +65,48 @@ public class TestModelConversion
       UserService userService = mockServiceFactoryLocator.get().getUserService();
       Mockito.when(userService.getUser()).thenReturn(mockUser);
 
-      Document model1 = Mockito.mock(Document.class);
-      Mockito.when(model1.getId()).thenReturn("StatementP1");
-      Mockito.when(model1.getName()).thenReturn("Statement P1.bpmn");
+      Document bpmn2Model = Mockito.mock(Document.class);
+      Mockito.when(bpmn2Model.getId()).thenReturn("StatementP1");
+      Mockito.when(bpmn2Model.getName()).thenReturn("StatementP1.bpmn");
+
+      Document xpdlModel = Mockito.mock(Document.class);
+      Mockito.when(xpdlModel.getId()).thenReturn("OffsettingP1");
+      Mockito.when(xpdlModel.getName()).thenReturn("OffsettingP1.xpdl");
 
       Folder modelsFolder = Mockito.mock(Folder.class);
-      Mockito.when(modelsFolder.getDocuments()).thenReturn(singletonList(model1));
+      Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(bpmn2Model, xpdlModel));
 
       DocumentManagementService dmsService = mockServiceFactoryLocator.get()
             .getDocumentManagementService();
 
       Mockito.when(dmsService.getFolder(DefaultModelManagementStrategy.MODELS_DIR))
             .thenReturn(modelsFolder);
-      Mockito.when(dmsService.retrieveDocumentContent(model1.getId())).thenAnswer(
+      Mockito.when(dmsService.retrieveDocumentContent(bpmn2Model.getId())).thenAnswer(
             new Answer<byte[]>()
             {
                @Override
                public byte[] answer(InvocationOnMock invocation) throws Throwable
                {
                   InputStream isModel = getClass().getResourceAsStream(
-                        "Statement P1.bpmn");
+                        "StatementP1.bpmn");
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });
+      Mockito.when(dmsService.retrieveDocumentContent(xpdlModel.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        "OffsettingP1.xpdl");
                   try
                   {
                      return toByteArray(isModel);
@@ -98,9 +120,9 @@ public class TestModelConversion
    }
 
    @Test
-   public void testModelConversion() throws Exception
+   public void testToXpdlModelConversion() throws Exception
    {
-      // model ID of "Statement P2" BPMN2 test model
+      // model ID of "Statement P1" BPMN2 test model
       final String srcModelId = "35258023-f7c1-4c12-a0ce-19de63b1d733";
 
       assertThat(modelService, is(not(nullValue())));
@@ -113,12 +135,66 @@ public class TestModelConversion
       JsonObject cmdJson = new JsonObject();
 
       cmdJson.addProperty("commandId", "model.clone");
+      cmdJson.addProperty("modelId", srcModelId);
       cmdJson.add("changeDescriptions", new JsonArray());
       ((JsonArray) cmdJson.get("changeDescriptions")).add(new JsonObject());
 
 
       JsonObject changeJson = new JsonObject();
-      changeJson.addProperty(ModelerConstants.MODEL_ID_PROPERTY, srcModelId);
+      changeJson.addProperty("targetFormat", "xpdl");
+      ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).add(
+            "changes", changeJson);
+
+      JsonObject cloneModelResult = requestExecutor.applyChange(cmdJson);
+
+      String newModelId = cloneModelResult.getAsJsonObject("changes")
+            .getAsJsonArray("added").get(0).getAsJsonObject()
+            .get(ModelerConstants.ID_PROPERTY).getAsString();
+
+      assertThat(newModelId, is(notNullValue()));
+
+      DocumentManagementService dmsService = mockServiceFactoryLocator.get()
+            .getDocumentManagementService();
+      Mockito.when(
+            dmsService.createDocument(Mockito.eq(DefaultModelManagementStrategy.MODELS_DIR),
+                  Mockito.<Document> any(), Mockito.<byte[]> any(), Mockito.anyString()))
+            .thenAnswer(new Answer<Document>()
+            {
+               @Override
+               public Document answer(InvocationOnMock invocation) throws Throwable
+               {
+                  // trace the generated model
+                  System.out.println(new String((byte[]) invocation.getArguments()[2]));
+                  return null;
+               }
+            });
+
+      modelService.saveModel(newModelId);
+   }
+
+   @Test
+   public void testFromXpdlModelConversion() throws Exception
+   {
+      // model ID of "Offsetting P1" XPDL test model
+      final String srcModelId = "OffsettingP1";
+
+      assertThat(modelService, is(not(nullValue())));
+
+      assertThat(restController, is(not(nullValue())));
+
+      RequestExecutor requestExecutor = new BeanInvocationExecutor(jsonIo, modelService,
+            restController);
+
+      JsonObject cmdJson = new JsonObject();
+
+      cmdJson.addProperty("commandId", "model.clone");
+      cmdJson.addProperty("modelId", srcModelId);
+      cmdJson.add("changeDescriptions", new JsonArray());
+      ((JsonArray) cmdJson.get("changeDescriptions")).add(new JsonObject());
+
+
+      JsonObject changeJson = new JsonObject();
+      changeJson.addProperty("targetFormat", "bpmn2");
       ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).add(
             "changes", changeJson);
 

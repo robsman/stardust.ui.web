@@ -579,6 +579,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          poolSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
                poolSymbol.getHeight());
 
+         ProcessDefinitionType process = ModelUtils.findContainingProcess(processDiagram);
+         if (null != process)
+         {
+            poolSymbolJson.addProperty("processId", process.getId());
+         }
+
          if (poolSymbol.getOrientation().equals(OrientationType.HORIZONTAL_LITERAL))
          {
             poolSymbolJson.addProperty(ModelerConstants.ORIENTATION_PROPERTY,

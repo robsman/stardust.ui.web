@@ -8,4 +8,9 @@ public class RestControllerUtils
    {
       return context.getBean(type);
    }
+
+   public static <T> Iterable<T> resolveSpringBeans(Class<T> type, ApplicationContext context)
+   {
+      return context.getBeansOfType(type).values();
+   }
 }

@@ -1,9 +1,9 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion.jto;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class DIDiagramJto
 {
-   public JsonArray poolSymbols;
-   public JsonArray connections;
+   public JsonObject poolSymbols;
+   public JsonObject connections;
 }

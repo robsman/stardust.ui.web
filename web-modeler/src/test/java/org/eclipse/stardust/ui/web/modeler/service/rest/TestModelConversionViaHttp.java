@@ -18,8 +18,6 @@ public class TestModelConversionViaHttp
    @Test
    public void test() throws Exception
    {
-      modelConverter.convertModel("Statement P1");
+      modelConverter.convertModel("Statement P1", "xpdl");
    }
-
-
 }

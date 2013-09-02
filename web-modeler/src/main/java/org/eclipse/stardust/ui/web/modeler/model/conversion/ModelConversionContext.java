@@ -6,7 +6,11 @@ import java.util.Map;
 
 public class ModelConversionContext
 {
+   private final String targetFormat;
+
    private String newModelId;
+
+   private String newModelUuid;
 
    private final Map<Long, Long> elementOidMapping = newHashMap();
 
@@ -16,11 +20,20 @@ public class ModelConversionContext
 
    private final Map<String, ProcessConversionContext> processContexts = newHashMap();
 
-   private final Map<Long, String> flowNodeOidToProcessId = newHashMap();
+   public ModelConversionContext(String targetFormat)
+   {
+      this.targetFormat = targetFormat;
+   }
 
-   public void registerNewModelId(String newModelId)
+   public String getTargetFormat()
+   {
+      return targetFormat;
+   }
+
+   public void registerNewModelIdentifiers(String newModelId, String newModelUuid)
    {
       this.newModelId = newModelId;
+      this.newModelUuid = newModelUuid;
    }
 
    public void registerNewElementOid(long originalOid, long newOid)
@@ -41,6 +54,11 @@ public class ModelConversionContext
    public String newModelId()
    {
       return newModelId;
+   }
+
+   public String newModelUuid()
+   {
+      return newModelUuid;
    }
 
    public boolean hasNewElementOid(long originalOid)
@@ -78,16 +96,6 @@ public class ModelConversionContext
          processContexts.put(processId, processContext);
       }
       return processContext;
-   }
-
-   public void mapFlowNodeOidToProcessId(long flowNodeOid, String processId)
-   {
-      flowNodeOidToProcessId.put(flowNodeOid, processId);
-   }
-
-   public String retrieveProcessIdForFlowNode(long flowNodeOid)
-   {
-      return flowNodeOidToProcessId.get(flowNodeOid);
    }
 
 }

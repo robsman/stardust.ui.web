@@ -19,9 +19,9 @@ function(m_utils, m_constants, m_model, m_i18nUtils, m_command,
     m_commandsController) {
   return {
     cloneModel : function(node) {
-      var model = m_model.findModel(node.attr('id'));
+      var model = m_model.findModelByUuid(node.attr('id'));
 
-      var cloneModelCmd = m_command.createCommandDescriptor('model.clone', '',
+      var cloneModelCmd = m_command.createCommandDescriptor('model.clone', model.id,
           {
             'modelId' : model.id,
           });

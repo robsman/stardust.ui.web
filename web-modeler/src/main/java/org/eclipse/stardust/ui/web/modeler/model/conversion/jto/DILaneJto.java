@@ -1,6 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion.jto;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class DILaneJto
@@ -12,8 +12,8 @@ public class DILaneJto
 
    public JsonPrimitive orientation;
 
-   public JsonArray dataSymbols;
-   public JsonArray activitySymbols;
-   public JsonArray gatewaySymbols;
-   public JsonArray eventSymbols;
+   public JsonObject dataSymbols;
+   public JsonObject activitySymbols;
+   public JsonObject gatewaySymbols;
+   public JsonObject eventSymbols;
 }

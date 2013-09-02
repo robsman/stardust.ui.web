@@ -11,7 +11,9 @@
 
 package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.util.Date;
 
@@ -19,10 +21,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -32,56 +31,63 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
-import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
-import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecutor;
-import org.eclipse.stardust.ui.web.modeler.model.conversion.ModelConverter;
-import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
+import org.eclipse.stardust.ui.web.modeler.edit.model.ModelConversionService;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
+import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
 /**
  * @author Shrikant.Gangal
+ * @author Robert.Sauer
  *
  */
-@Component
-@Scope("singleton")
-public class ModelChangeCommandHandler
+@CommandHandler
+public class ModelChangeCommandHandler implements ModelCommandsHandler
 {
    @Resource
    private ApplicationContext springContext;
 
-   public boolean isValidTarget(Class<? > type)
+   @Resource
+   private ModelService modelService;
+
+   @Override
+   public boolean handlesModel(String formatId)
    {
-      return IIdentifiableElement.class.isAssignableFrom(type);
+      return "xpdl".equalsIgnoreCase(formatId);
    }
 
-   public JsonObject handleCommand(String commandId, EObject targetElement, JsonObject request)
+   @Override
+   public ModificationDescriptor handleCommand(String commandId, EObject context, JsonObject request)
    {
       if ("model.create".equals(commandId))
       {
          return createModel(commandId, request);
       }
-      else if ("model.clone".equals(commandId))
+      else
       {
-         return cloneModel(commandId, request);
-      }
-      else if ("model.update".equals(commandId))
-      {
-         return updateModel(commandId, targetElement, request);
-      }
-      else if ("model.delete".equals(commandId))
-      {
-         return deleteModel(commandId, targetElement, request);
-      }
-      else if ("model.delete".equals(commandId))
-      {
-         return deleteModel(commandId, targetElement, request);
+         ModelType model = (ModelType) context;
+         if (modelService.getModelBuilderFacade().isReadOnly(model))
+         {
+            // TODO bad request?
+            return null;
+         }
+         if ("model.clone".equals(commandId))
+         {
+            return cloneModel(commandId, model, request);
+         }
+         else if ("model.update".equals(commandId))
+         {
+            return updateModel(commandId, model, request);
+         }
+         else if ("model.delete".equals(commandId))
+         {
+            return deleteModel(commandId, model, request);
+         }
       }
 
       return null;
@@ -91,13 +97,13 @@ public class ModelChangeCommandHandler
     * @param commandId
     * @param request
     */
-   private JsonObject createModel(String commandId, JsonObject request)
+   private ModificationDescriptor createModel(String commandId, JsonObject request)
    {
-      ModelBuilderFacade facade = new ModelBuilderFacade(modelService().getModelManagementStrategy());
+      ModelBuilderFacade facade = new ModelBuilderFacade(modelService.getModelManagementStrategy());
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
       ModelType model = facade.createModel(null, modelName);
-      modelService().getModelBuilderFacade().setModified(model, model.getCreated());
-      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      modelService.getModelBuilderFacade().setModified(model, model.getCreated());
+      EObjectUUIDMapper mapper = modelService.uuidMapper();
       mapper.map(model);
 
       //Assign UUID to default data
@@ -116,67 +122,38 @@ public class ModelChangeCommandHandler
       model.getRole().add(admin);
       mapper.map(admin);
 
-      modelService().getModelManagementStrategy()
+      modelService.getModelManagementStrategy()
             .getModels()
             .put(model.getId(), model);
-      modelService().getModelManagementStrategy().saveModel(model);
-      Object o = model.eResource();
+      modelService.getModelManagementStrategy().saveModel(model);
       model.eResource().eAdapters().add(new SchemaLocatorAdapter());
-      JsonArray added = new JsonArray();
-      JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(model);
-      added.add(addedModel);
-      return generateResponse(commandId, null, added, null);
+
+      ModificationDescriptor changes = new ModificationDescriptor();
+      changes.added.add(modelService.modelElementMarshaller().toModelJson(model));
+      return changes;
    }
 
    /**
     * @param commandId
     * @param request
     */
-   private JsonObject cloneModel(String commandId, JsonObject request)
+   private ModificationDescriptor cloneModel(String commandId, ModelType model, JsonObject request)
    {
-      JsonMarshaller jsonIo = springContext.getBean(JsonMarshaller.class);
-      RequestExecutor requestExecutor = new BeanInvocationExecutor(jsonIo,
-            modelService(), springContext.getBean(ModelerSessionRestController.class));
+      ModelConversionService conversionService = springContext
+            .getBean(ModelConversionService.class);
 
-      ModelConverter converter = new ModelConverter(jsonIo, requestExecutor);
-
-      // extract ID from request
-      String srcModelId = GsonUtils.extractString(request, ModelerConstants.MODEL_ID_PROPERTY);
-
-      // TODO handle cloning to BPMN2
-
-      String newModelId = converter.convertModel(srcModelId);
-
-      ModelType modelClone = modelService().getModelManagementStrategy().getModels().get(newModelId);
-
-      // TODO how about BPMN2 models?
-      JsonArray added = new JsonArray();
-      JsonObject addedModel = modelService().modelElementMarshaller().toModelJson(modelClone);
-      added.add(addedModel);
-      return generateResponse(commandId, null, added, null);
-   }
-
-   /**
-    * @param commandId
-    * @param obj
-    * @param request
-    * @return
-    */
-   private JsonObject deleteModel(String commandId, EObject obj, JsonObject request)
-   {
-      if (null != obj && obj instanceof ModelType) {
-         ModelType model = (ModelType) obj;
-
-         ModelManagementStrategy modelMgtStrategy = modelService(). getModelManagementStrategy();
-         modelMgtStrategy.deleteModel(model);
-         JsonArray deleted = new JsonArray();
-         JsonObject deletedModel = modelService().modelElementMarshaller().toModelOnlyJson(model);
-         deleted.add(deletedModel);
-
-         return generateResponse(commandId, null, null, deleted);
+      String targetFormat = extractString(request, "targetFormat");
+      if (isEmpty(targetFormat))
+      {
+         targetFormat = "bpmn2";
       }
+      EObject modelCopy = conversionService.convertModel(model, targetFormat);
 
-      return generateResponse(commandId, null, null, null);
+      ModificationDescriptor changes = new ModificationDescriptor();
+      ModelBinding<EObject> modelBinding = modelService.currentSession()
+            .modelRepository().getModelBinding(modelCopy);
+      changes.added.add(modelBinding.getMarshaller().toModelJson(modelCopy));
+      return changes;
    }
 
    /**
@@ -185,79 +162,49 @@ public class ModelChangeCommandHandler
     * @param request
     * @return
     */
-   private JsonObject updateModel(String commandId, EObject obj, JsonObject request)
+   private ModificationDescriptor deleteModel(String commandId, ModelType model, JsonObject request)
    {
-      if (null != obj && obj instanceof ModelType) {
-         ModelType model = (ModelType) obj;
-         //Delete old model xpdl
-         ModelManagementStrategy modelMgtStrategy = springContext.getBean(ModelService.class).getModelManagementStrategy();
+      ModificationDescriptor changes = new ModificationDescriptor();
+
+      if (null != model)
+      {
+         ModelManagementStrategy modelMgtStrategy = modelService
+               .getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
 
-         modelService().currentSession().modelElementUnmarshaller().populateFromJson(model, request);
+         changes.removed
+               .add(modelService.modelElementMarshaller().toModelOnlyJson(model));
+      }
+      return changes;
+   }
+
+   /**
+    * @param commandId
+    * @param obj
+    * @param request
+    * @return
+    */
+   private ModificationDescriptor updateModel(String commandId, ModelType model, JsonObject request)
+   {
+      ModificationDescriptor changes = new ModificationDescriptor();
+      if (null != model)
+      {
+         // Delete old model xpdl
+         ModelManagementStrategy modelMgtStrategy = modelService
+               .getModelManagementStrategy();
+         modelMgtStrategy.deleteModel(model);
+
+         modelService.currentSession().modelElementUnmarshaller()
+               .populateFromJson(model, request);
 
          modelMgtStrategy.getModels().put(model.getId(), model);
-         modelService().getModelBuilderFacade().setModified(model, new Date());
+         modelService.getModelBuilderFacade().setModified(model, new Date());
          modelMgtStrategy.saveModel(model);
 
-         JsonArray modified = new JsonArray();
-         JsonObject modifiedModel = modelService().modelElementMarshaller().toModelJson(model);
-         modified.add(modifiedModel);
-         return generateResponse(commandId, modified, null, null);
+         changes.modified.add(modelService.modelElementMarshaller().toModelJson(model));
       }
 
-      return generateResponse(commandId, null, null, null);
-   }
-
-   /**
-    * @param commandId
-    * @param modified
-    * @param added
-    * @param removed
-    */
-   private JsonObject generateResponse(String commandId, JsonArray modified, JsonArray added,
-         JsonArray removed)
-   {
-      JsonObject response = new JsonObject();
-
-      response.addProperty("id", System.currentTimeMillis());
-      response.addProperty("account", "sheldor"); // TODO Robert add!
-      response.addProperty("timestamp", System.currentTimeMillis());
-
-      response.addProperty("commandId", commandId);
-
-      JsonObject jsChanges = new JsonObject();
-      response.add("changes", jsChanges);
-
-      JsonArray jsModified = modified;
-      if (null == jsModified)
-      {
-         jsModified = new JsonArray();
-      }
-      jsChanges.add("modified", jsModified);
-
-      JsonArray jsAdded = added;
-      if (null == jsAdded)
-      {
-         jsAdded = new JsonArray();
-      }
-      jsChanges.add("added", jsAdded);
-
-      JsonArray jsRemoved = removed;
-      if (null == jsRemoved)
-      {
-         jsRemoved = new JsonArray();
-      }
-      jsChanges.add("removed", jsRemoved);
-
-      return response;
-   }
-
-   /**
-    * @return
-    */
-   private ModelService modelService()
-   {
-      return springContext.getBean(ModelService.class);
+      return changes;
    }
 }
 

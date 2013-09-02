@@ -1,8 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model.di;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 
@@ -15,10 +14,10 @@ public class LaneSymbolJto extends ShapeJto
 
    public String participantFullId;
 
-   public List<ActivitySymbolJto> activitySymbols = newArrayList();
-   public List<GatewaySymbolJto> gatewaySymbols = newArrayList();
-   public List<EventSymbolJto> eventSymbols = newArrayList();
-   public List<DataSymbolJto> dataSymbols = newArrayList();
+   public Map<String, ActivitySymbolJto> activitySymbols = new LinkedHashMap<String, ActivitySymbolJto>();
+   public Map<String, GatewaySymbolJto> gatewaySymbols = new LinkedHashMap<String, GatewaySymbolJto>();
+   public Map<String, EventSymbolJto> eventSymbols = new LinkedHashMap<String, EventSymbolJto>();
+   public Map<String, DataSymbolJto> dataSymbols = new LinkedHashMap<String, DataSymbolJto>();
 
    public LaneSymbolJto()
    {

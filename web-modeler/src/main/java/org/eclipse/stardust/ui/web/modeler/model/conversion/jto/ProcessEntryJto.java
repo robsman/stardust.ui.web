@@ -1,6 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion.jto;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class ProcessEntryJto
 {
@@ -10,7 +10,7 @@ public class ProcessEntryJto
 
    public String modelId;
 
-   public JsonArray activities;
-   public JsonArray gateways;
-   public JsonArray events;
+   public JsonObject activities;
+   public JsonObject gateways;
+   public JsonObject events;
 }
