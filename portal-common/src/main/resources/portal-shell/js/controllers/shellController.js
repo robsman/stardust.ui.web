@@ -1,5 +1,5 @@
 /*
- * @author Subodh.Godbole
+ * 
  */
 define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
