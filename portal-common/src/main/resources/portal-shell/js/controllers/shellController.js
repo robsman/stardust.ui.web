@@ -31,8 +31,7 @@ define(['portal-shell/js/shell'], function (shell) {
 					fetchTheme(cfg.endpoints.theme + "/current").then(function(theme){
 						$scope.theme = {};
 						$scope.theme.scripts = theme.scripts;
-						// TODO
-						//$scope.theme.styleSheets = theme.stylesheets;
+						$scope.theme.styleSheets = theme.stylesheets;
 					});
 				});
 				// ****************** Config Service - END ******************
