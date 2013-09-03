@@ -1048,7 +1048,8 @@ define(
 							"x" : x - eventSymbol.clientSideAdjX
 									+ eventSymbol.parentSymbol.symbolXOffset,
 							"y" : y,
-							"parentSymbolId" : eventSymbol.parentSymbol.id,
+							"parentSymbolId" : this.parentSymbol.id,
+							"type" : eventSymbol.type
 						};
 
 						if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {

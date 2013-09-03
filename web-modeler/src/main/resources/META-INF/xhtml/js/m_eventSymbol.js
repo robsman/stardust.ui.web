@@ -775,8 +775,11 @@ define(
 							return null;
 						}
 						
-						// bind activity
+						// bind activity - all inserts the event in correct order
 						this.bindActivity(hitSymbol);
+						//handle lane shift
+						this.dragStopBase(false);
+						//get change description for all events
 						changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent(this);
 						
 						// adjust activity width
@@ -848,6 +851,9 @@ define(
 						// binding
 						m_utils.debug("binding intermediate events....");
 						this.bindActivity(hitSymbol);
+						
+						//handle lane shift
+						this.dragStopBase(false);
 						
 						// realign boundary events
 						changeDescriptions = changeDescriptions.concat(hitSymbol.realignBoundaryEvent(this));
