@@ -14,12 +14,12 @@ define(['sps/js/shell'], function(shell) {
 
                 function calc() {
                     var elemOffset = element.offset();
-                    if( elemOffset.top < shellSizes.windowHeight ) {
-                        element.outerHeight(shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight - 16 );
+                    if(elemOffset.top < shellSizes.windowHeight) {
+                        element.outerHeight(shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight - 16);
                     }
                 }
 
-                if( sgReinit ) {
+                if(sgReinit) {
                     sgReinit.trigger = function() {
                         // Wait for the $digest cycle
                         $timeout(function() {
@@ -40,7 +40,7 @@ define(['sps/js/shell'], function(shell) {
 
     shell.module.directive('sgContentFrame', function () {
         return {
-            template : '<iframe sg-unique-id sg-stretch-to-bottom ></iframe>',
+            template : '<iframe sg-stretch-to-bottom></iframe>',
             restrict: 'A',
             replace: true,
             link: function (scope, element, attrs) {

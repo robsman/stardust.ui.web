@@ -6,8 +6,18 @@ define(['sps/js/shell'], function (shell) {
 
     shell.services.service('sgPubSubService', ['$q', function ($q) {
         var listeners = {};
-        var count = 0;
 
+        /*
+         * 
+         */
+        function getCount(topicListeners) {
+        	var count = 0;
+        	for(var id in topicListeners) {
+    			count++;
+        	}
+        	return count;
+        }
+        
         /*
          * 
          */        
@@ -16,8 +26,8 @@ define(['sps/js/shell'], function (shell) {
         		return;
         	}
 
-        	var id = count++;
         	listeners[topic] = listeners[topic] || {};
+        	var id = getCount(listeners[topic]);
         	listeners[topic][id] = callback;
 
         	// Unsubscribe function

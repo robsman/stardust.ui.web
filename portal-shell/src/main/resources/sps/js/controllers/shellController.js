@@ -62,6 +62,7 @@ define(['sps/js/shell'], function (shell) {
 		        $scope.viewPanelIndex = sgViewPanelService.viewPanelIndex;
 		        $scope.activeViewPanel = sgViewPanelService.activeViewPanel;
 
+		        // For Rendering Tabs
 		        $scope.tabs = [];
 
 		        /*
@@ -81,8 +82,12 @@ define(['sps/js/shell'], function (shell) {
                  */
                 $scope.$watch('watchMethodForTabs()', function (newItem, oldItem) {
                 	$scope.tabs = $scope.viewPanels();
+                	// TODO: Overflow Tabs
                 });
 
+                // For Rendering View Contents
+                $scope.panels = [];
+                
                 /*
                  * 
                  */
@@ -116,23 +121,9 @@ define(['sps/js/shell'], function (shell) {
                  * 
                  */                
                 $scope.viewPanelCtrl = function() {
-                	if (currentViewPanel) {
+                	if (currentViewPanel && currentViewPanel.controller) {
                 		if (!currentViewPanel.$ctrl) {
-//                			currentViewPanel.$scope = $scope.$new();
                 			currentViewPanel.$ctrl = $controller(currentViewPanel.controller, {$scope: $scope});
-
-//                			currentViewPanel.$scope.$parent.$on("destroy", function(){
-//                				alert("Scope Destroyed!");
-//                			});
-//                			currentViewPanel.$ctrl = $controller(currentViewPanel.controller, {$scope: currentViewPanel.$scope});
-                			
-//                			var contentCompiler = $compile("<ng-include src=\"" + currentViewPanel.partial + "\"></ng-include><br/><b>{{$id}}</b>");
-//                			var contentCompileElem = contentCompiler(currentViewPanel.$scope);
-//
-//                			var currentViewPanelIndex = $scope.viewPanelIndex(currentViewPanel);
-//                			var viewPanels = jQuery(".view-panels");
-//                			var viewPanel = viewPanels.children().get(currentViewPanelIndex);
-//                			jQuery(jQuery(viewPanel).children().get(0)).append(contentCompileElem);
                 		}
                 		return currentViewPanel.$ctrl;
                 	}
@@ -161,7 +152,56 @@ define(['sps/js/shell'], function (shell) {
 				 * 
 				 */
 				$scope.sidebarCtrl = function() {
-					return $controller(currSidebar.controller, {$scope: $scope});
+					if (currSidebar && currSidebar.controller) {
+						if (!currSidebar.$ctrl) {
+							currSidebar.$ctrl = $controller(currSidebar.controller, {$scope: $scope});
+						}
+						return currSidebar.$ctrl;
+					}
+				};
+
+				/*
+				 * 
+				 */
+				$scope.openSidebar = function() {
+					// TODO
+				};
+
+				/*
+				 * 
+				 */
+				$scope.closeSidebar = function() {
+					// TODO
+				};
+
+				/*
+				 * 
+				 */
+				$scope.isSidebarOpen = function() {
+					// TODO
+					return true;
+				};
+
+				/*
+				 * 
+				 */
+				$scope.pinSidebar = function() {
+					// TODO
+				};
+
+				/*
+				 * 
+				 */
+				$scope.unpinSidebar = function() {
+					// TODO
+				};
+
+				/*
+				 * 
+				 */
+				$scope.isSidebarPin = function() {
+					// TODO
+					return true;
 				};
 				// ****************** Sidebar - END ******************
 
@@ -172,11 +212,11 @@ define(['sps/js/shell'], function (shell) {
 				$scope.$watch("utilityItems", function(newVal, oldVal){
 					if (newVal !== oldVal) {
 						$timeout(function(){
-							var utilityItems = angular.element(".utility-item");
+							var utilityItems = angular.element(".app-header .utility-item");
 							angular.forEach(utilityItems, function(utilItemElem){
 								var utilItem = angular.element(utilItemElem);
-								var childScope = utilItem.scope();
-								var item = childScope.item;
+								var utilLoopScope = utilItem.scope();
+								var item = utilLoopScope.item;
 								if (item.actionController) {
 									utilItem.attr("ng-controller", item.actionController);
 									utilItem.attr("ng-click", item.action);
@@ -191,8 +231,10 @@ define(['sps/js/shell'], function (shell) {
 									utilItem.attr("id", item.id);
 								}
 
+								// This needs to be removed, to avoid double repeating when $compile is applied
 								utilItem.removeAttr("ng-repeat");
-								$compile(utilItem)(childScope);
+
+								$compile(utilItem)(utilLoopScope);
 							});
 						});
 					}
@@ -214,8 +256,10 @@ define(['sps/js/shell'], function (shell) {
 		            $scope.shell.sizes.windowHeight = angular.element($window).height();
 		        }
 
+		        // Initially Calculate sizes
 		        $timeout(calculateShellSizes, 0);
 
+		        // Register for window resize, and re-calculate sizes
 		        angular.element($window).resize(function() {
 		            if(resizeTimeoutId) {
 		            	clearTimeout(resizeTimeoutId);

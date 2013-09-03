@@ -9,8 +9,8 @@ define(['sps/js/shell'], function (shell) {
 		// Reference to angular's $routeProvider. This is set from Shell.js
 		self.$routeProvider = null;
 
-		self.$get = [ '$resource', '$route', '$rootScope', '$log', '$q', 'sgConfigService',
-		              function ($resource, $route, $rootScope, $log, $q, sgConfigService) {
+		self.$get = ['$resource', '$route', '$rootScope', '$log', '$q', 'sgConfigService',
+		             function ($resource, $route, $rootScope, $log, $q, sgConfigService) {
 
 			var nav = null;
 			var path2Item;
