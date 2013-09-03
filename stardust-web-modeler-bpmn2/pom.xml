@@ -42,10 +42,6 @@
          <exclusions>
             <exclusion>
                <groupId>com.infinity.bpm</groupId>
-               <artifactId>carnot-engine</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>com.infinity.bpm</groupId>
                <artifactId>ipp-bpm-repository</artifactId>
             </exclusion>
             <exclusion>
@@ -120,6 +116,11 @@
                <artifactId>org.eclipse.stardust.model.xpdl.builder</artifactId>
             </exclusion>
          </exclusions>
+      </dependency>
+      <dependency>
+	     <groupId>com.infinity.bpm</groupId>
+	     <artifactId>carnot-engine</artifactId>
+         <version>${ipp.version}</version>
       </dependency>
 
       <dependency>
