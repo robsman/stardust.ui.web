@@ -19,7 +19,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  */
 public class HTML5LandingPageFilter implements Filter
 {
-   private static final String DEFAULT_LANDING_PAGE = "/sps/index.html";
+   private static final String DEFAULT_LANDING_PAGE = "/portal-shell/index.html";
 
    private String landingPage;
 
