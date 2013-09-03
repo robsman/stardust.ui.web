@@ -1,9 +1,8 @@
 {
-    "name": "Camino",
+    "name": "Default",
     "id": "default",
     "rel": "stylesheet",
     "stylesheets": [
-        "shell/themes/camino/style.css",
         "plugins/common/css/common-html5-fw-bridge.css",
         "plugins/common/css/common-icons.css",
         "plugins/views-common/css/views-common-icons.css",
