@@ -23,7 +23,7 @@
 	for (var prop in pathsWithContext) {
 		pathsWithContext[prop] = pathsWithContext[prop].replace('/main.html/', '/');
 	}
-	var packages = sg.packages(window.stardust ? ['bpm-ui', 'sps'] : ['bpm-ui', 'shell', 'sg-components']);
+	var packages = sg.packages(window.stardust ? ['bpm-ui', 'portal-shell'] : ['bpm-ui', 'shell', 'sg-components']);
 
 	var r = requirejs.config({
 		paths: pathsWithContext,
@@ -34,7 +34,7 @@
 	});
 
 	// invoke initialization
-	r(window.stardust ? ['sps', 'bpm-ui'] : ['sg-components', 'shell', 'bpm-ui'], function() {
+	r(window.stardust ? ['portal-shell', 'bpm-ui'] : ['sg-components', 'shell', 'bpm-ui'], function() {
 			// everything is loaded, start application
 			sg.start();
 		}

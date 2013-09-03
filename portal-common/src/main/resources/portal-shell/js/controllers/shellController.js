@@ -1,7 +1,7 @@
 /*
  * @author Subodh.Godbole
  */
-define(['sps/js/shell'], function (shell) {
+define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
 	
 	shell.module.controller('sg.shell.Controller',

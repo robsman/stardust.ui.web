@@ -34,9 +34,9 @@
     }
 
     var paths = {
-		'jQuery' : '/sps/js/libs/jquery/1.9.1/jquery',
-		'angular' : '/sps/js/libs/angular/1.1.5/angular',
-		'angular-resources' : '/sps/js/libs/angular/1.1.5/angular-resource'
+		'jQuery' : '/portal-shell/js/libs/jquery/1.9.1/jquery',
+		'angular' : '/portal-shell/js/libs/angular/1.1.5/angular',
+		'angular-resources' : '/portal-shell/js/libs/angular/1.1.5/angular-resource'
     };
 
     var shim = {
@@ -124,7 +124,7 @@
 	 */
 	stardust.initParams = function (opts) {
         if (opts || params === null) {
-            var stylesheets = ['sps/themes/default/style.css'];
+            var stylesheets = ['portal-shell/themes/default/style.css'];
             var scripts = [];
             var rel = 'stylesheet';
 
@@ -136,7 +136,7 @@
                 appStage: 'P',
                 configEndpoint: 'api/config',
                 baseElement: document,
-                modules: ['sps'],
+                modules: ['portal-shell'],
                 defaultTheme: {
                     id : 'default',
                     name : 'default',

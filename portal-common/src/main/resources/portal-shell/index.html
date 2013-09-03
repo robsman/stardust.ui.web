@@ -21,7 +21,7 @@
     <!-- ng-cloak is defined here to prevent a flash of unprocessed binding strings -->
     <style>[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }</style>
 
-    <link rel="stylesheet" href="sps/themes/default/styles.css"></link>
+    <link rel="stylesheet" href="portal-shell/themes/default/styles.css"></link>
     <link ng-repeat="css in theme.styleSheets" rel="stylesheet" ng-href="{{css}}"></link>
 
     <script ng-repeat="js in theme.scripts" type="text/javascript" ng-src="{{js}}"></script>
@@ -39,7 +39,7 @@
 
     <style type="text/css">
       .loading-indicator {
-           background-image: url('sps/themes/default/images/Loading.gif');
+           background-image: url('portal-shell/themes/default/images/Loading.gif');
            background-repeat: no-repeat;
            background-position: center;
            background-attachment: fixed;
@@ -152,7 +152,7 @@
 		</footer>
 	</div>
 
-    <script src="sps/js/stardust.js?version=${buildNumber}"></script>
-    <script data-main="main.js?version=${buildNumber}" src="sps/js/libs/require/2.1.2/require.min.js"></script>
+    <script src="portal-shell/js/stardust.js?version=${buildNumber}"></script>
+    <script data-main="main.js?version=${buildNumber}" src="portal-shell/js/libs/require/2.1.2/require.min.js"></script>
 </body>
 </html>

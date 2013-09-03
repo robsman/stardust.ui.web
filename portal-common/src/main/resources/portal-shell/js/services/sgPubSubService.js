@@ -1,7 +1,7 @@
 /*
  * 
  */
-define(['sps/js/shell'], function (shell) {
+define(['portal-shell/js/shell'], function (shell) {
     'use strict';
 
     shell.services.service('sgPubSubService', ['$q', function ($q) {
