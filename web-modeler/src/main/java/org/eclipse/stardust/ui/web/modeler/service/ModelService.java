@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -604,7 +603,6 @@ public class ModelService
       currentUserJson.addProperty("email", currentUser.getEMail());
       return currentUserJson.toString();
    }
-
 
    private String unwrapUsername(String owner)
    {
