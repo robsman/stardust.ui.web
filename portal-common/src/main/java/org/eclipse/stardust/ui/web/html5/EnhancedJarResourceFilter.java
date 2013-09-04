@@ -61,6 +61,10 @@ public class EnhancedJarResourceFilter implements Filter
 
       String restrictLib = getInitParameter(cfg, "restrictLibs", "");
       restrictLibs = prepareList(restrictLib);
+      if (!restrictLibs.contains("portal-common"))
+      {
+         restrictLibs.add("portal-common");
+      }
 
       trace.info("EnhancedJarResourceFilter configured with");
       trace.info("\treplacePattern = " + replacePattern);
