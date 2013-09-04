@@ -45,6 +45,7 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		$scope.$root.closeSidebar = $scope.closeSidebar;
 		$scope.$root.pinSidebar = $scope.pinSidebar;
 		$scope.$root.unpinSidebar = $scope.unpinSidebar;
+		$scope.$root.getSidebarDetails = $scope.getSidebarDetails;
 
 		$scope.$watch('sidebar.position', function(newValue) {
 			disableSidebarResizing();

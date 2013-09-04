@@ -176,14 +176,6 @@ define(['portal-shell/js/shell'], function (shell) {
 				/*
 				 * 
 				 */
-				$scope.isSidebarOpen = function() {
-					// TODO
-					return true;
-				};
-
-				/*
-				 * 
-				 */
 				$scope.pinSidebar = function() {
 					// TODO
 				};
@@ -198,9 +190,16 @@ define(['portal-shell/js/shell'], function (shell) {
 				/*
 				 * 
 				 */
-				$scope.isSidebarPin = function() {
+				$scope.getSidebarDetails = function() {
 					// TODO
-					return true;
+					var sidebar = jQuery("#sidebar");
+					var ret = {
+						visible: true,
+						pinned: true,
+						width: sidebar.outerWidth(),
+						height: sidebar.outerHeight()
+					}
+					return ret;
 				};
 				// ****************** Sidebar - END ******************
 

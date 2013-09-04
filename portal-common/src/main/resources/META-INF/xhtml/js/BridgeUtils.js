@@ -677,6 +677,33 @@ if (!window["BridgeUtils"].View) {
 		}
 
 		/*
+		 * 
+		 */
+		function getSidebarDetails() {
+			var ret = {};
+			BridgeUtils.runInAngularContext(function($scope) {
+				if ($scope.$root.getSidebarDetails) {
+					ret = $scope.$root.getSidebarDetails();
+				} else {
+					var sidebar = document.getElementById("sidebar");
+					var left = BridgeUtils.getAbsoluteSize(sidebar.style.left);
+					ret.visible = !(left < 0);
+					ret.pinned = left < 10;
+					if (left < 0) { // Sidebar not pinned but is hidden
+						ret.width = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.paddingLeft) + 10;
+					} else if (left < 10) { // Sidebar Pinned
+						ret.width = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
+					} else {
+						ret.width = left;
+					}
+					ret.height = BridgeUtils.getAbsoluteSize(sidebar.style.height);
+				}
+			});
+			
+			return ret;
+		}
+
+		/*
 		 * Private Function
 		 */
 		function isPortalPath(navPath) {
@@ -737,7 +764,8 @@ if (!window["BridgeUtils"].View) {
 			openSidebar : openSidebar,
 			closeSidebar : closeSidebar,
 			pinSidebar : pinSidebar,
-			unpinSidebar : unpinSidebar
+			unpinSidebar : unpinSidebar,
+			getSidebarDetails : getSidebarDetails
 		}
 	};
 
@@ -808,22 +836,14 @@ if (!window["BridgeUtils"].Dialog) {
 
 			// Sidebar
 			var sidebar = document.getElementById("sidebar");
-			var left = BridgeUtils.getAbsoluteSize(sidebar.style.left);
-			sidebarPinned = left < 10; // Sidebar Pinned - TODO: Need HTML5 FW API to find out this
+			var sidebarDetails = BridgeUtils.View.getSidebarDetails();
+			sidebarPinned = sidebarDetails.pinned;
 			if (!fromlaunchPanels) {
-				sidebar.style.display = "none";
-
-				var iframeWidth;
-				if (left < 0) { // Sidebar not pinned but is hidden
-					iframeWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.paddingLeft) + 10;
-				} else if (sidebarPinned) {
-					iframeWidth = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
-					sidebar.style.display = "inline-block";
-				} else {
-					iframeWidth = left;
+				if (!sidebarPinned) {
+					sidebar.style.display = "none";
 				}
-				iframeForSidebar.style.width = iframeWidth + "px";
-				iframeForSidebar.style.height = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				iframeForSidebar.style.width = (sidebarDetails.width) + "px";
+				iframeForSidebar.style.height = (sidebarDetails.height - 6) + "px";
 				iframeForSidebar.style.visibility = "visible";
 				
 				// Activate the View, if fromView is not visible
@@ -844,7 +864,7 @@ if (!window["BridgeUtils"].Dialog) {
 
 				// New Size
 				var newWidth = scrollWidth + "px";
-				var newHeight = (BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6) + "px";
+				var newHeight = (sidebarDetails.height - 6) + "px";
 
 				// Launch Panels iframe				
 				launchPanelIframe = document.getElementById("modelerLaunchPanels");
