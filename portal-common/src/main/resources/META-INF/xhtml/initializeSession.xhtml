@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<html>
+<head>
+<script type="text/javascript">
+	function loaded() {
+		document.getElementById("loginSessionInitFrm:initializeFlag").value = true;
+		iceSubmitPartial(document.getElementById("loginSessionInitFrm"),
+				document.getElementById("loginSessionInitFrm:initializeFlag"));
+	}
+</script>
+</head>
+<body onload="loaded()">
+	<ice:form id="loginSessionInitFrm">
+		<ice:inputHidden id="initializeFlag" value=""
+			valueChangeListener="#{initializeSessionBean.initUserSession}"
+			partialSubmit="true" immediate="true" />
+	</ice:form>
+	<c:if test="#{initializeSessionBean.initSuccess}">
+		<script>
+			var href = window.location.href.substr(0, window.location.href
+					.indexOf('/plugins'));
+			href += '/main.html';
+			window.location.replace(href);
+		</script>
+	</c:if>
+</body>
+	</html>
+</f:view>

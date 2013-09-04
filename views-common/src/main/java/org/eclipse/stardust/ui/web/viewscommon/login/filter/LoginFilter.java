@@ -65,7 +65,7 @@ public class LoginFilter implements Filter
    private final static String DEFAULT_LOGOUT_PAGE = "/ipp/common/ippPortalLogout.jsp";
    
    private final static String MAIN_PAGE = "mainPage";
-   private final static String DEFAULT_MAIN_PAGE = "plugins/common/main.iface";
+   private final static String DEFAULT_MAIN_PAGE = "/main.html";
    
    private final static String PRINCIPAL_USER_ROLES = "principalUserRoles";
    
@@ -75,6 +75,8 @@ public class LoginFilter implements Filter
    
    private static final String DEFAULT_PUBLIC_URI_PATTERNS = ANY_PLUGIN_URI_PREFIX
          + "/public/*";
+   
+   private static final String PRINCIPAL_LOGIN_INIT_PAGE = "/plugins/common/initializeSession.iface";
    
    private String loginPage;
    private String logoutPage;
@@ -246,8 +248,17 @@ public class LoginFilter implements Filter
                {
                   trace.info("Redirect to login, because session was not initialized.");
                   StringBuffer url = new StringBuffer(request.getContextPath());
-                  url.append(logoutPage); // Always forward to logout, so that checks applied and cleanup happens properly, 
-                                          // before login page is displayed
+                  if (requestUri.endsWith(PRINCIPAL_LOGIN_INIT_PAGE))
+                  {
+                     url.append("/").append(loginPage); // While login for principal user,
+                                                        // no session present
+                  }
+                  else
+                  {
+                     url.append(logoutPage); // Always forward to logout, so that checks
+                                             // applied and cleanup happens properly,
+                                             // before login page is displayed
+                  }
                   
                   Map<String, String> urlParams = new LinkedHashMap<String, String>();
 
