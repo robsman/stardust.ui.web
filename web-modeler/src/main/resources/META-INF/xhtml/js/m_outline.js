@@ -2010,7 +2010,8 @@ define(
 
 				m_commandsController.submitCommand(m_command
 						.createCreateModelCommand({
-							"name" : name
+							"name" : name,
+							"modelFormat" : "xpdl"
 						}));
 				isElementCreatedViaOutline = true;
 			};
