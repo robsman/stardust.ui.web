@@ -1042,29 +1042,30 @@ define(
 						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 						eventSymbol = this.boundaryEventSymbols[i];
 						
-						eventSymbol.moveTo(x, y);	
-						
-						changes = {
-							"x" : x - eventSymbol.clientSideAdjX
-									+ eventSymbol.parentSymbol.symbolXOffset,
-							"y" : y,
-							"parentSymbolId" : this.parentSymbol.id,
-							"type" : eventSymbol.type
-						};
+						if (eventSymbol.x !== (x - eventSymbol.clientSideAdjX + eventSymbol.parentSymbol.symbolXOffset)
+								|| eventSymbol.y !== y) {
+							eventSymbol.moveTo(x, y);
 
-						if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {
-							changes["modelElement"] = {
-								bindingActivityUuid : this.modelElement.id
+							changes = {
+								"x" : x - eventSymbol.clientSideAdjX
+										+ eventSymbol.parentSymbol.symbolXOffset,
+								"y" : y,
+								"parentSymbolId" : this.parentSymbol.id,
+								"type" : eventSymbol.type
 							};
+
+							if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {
+								changes["modelElement"] = {
+									bindingActivityUuid : this.modelElement.id
+								};
+							}
+
+							changeDesc = {
+								oid : eventSymbol.oid,
+								changes : changes
+							};
+							changeDescriptions.push(changeDesc);
 						}
-
-						changeDesc = {
-							oid : eventSymbol.oid,
-							changes : changes
-						};
-
-						changeDescriptions.push(changeDesc);
-					
 						x -= eventSymbol.width;
 					}
 					
