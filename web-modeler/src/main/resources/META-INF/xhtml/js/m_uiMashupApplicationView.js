@@ -39,6 +39,37 @@ define(
 				}
 			};
 
+			var editorToolbarGroups = [ {
+				name : 'clipboard',
+				groups : [ 'clipboard', 'undo' ]
+			}, {
+				name : 'editing',
+				groups : [ 'find', 'selection', 'spellchecker' ]
+			}, {
+				name : 'links'
+			}, {
+				name : 'insert'
+			}, {
+				name : 'forms'
+			}, {
+				name : 'tools'
+			}, {
+				name : 'document',
+				groups : [ 'mode', 'document', 'doctools' ]
+			}, {
+				name : 'others'
+			}, '/', {
+				name : 'basicstyles',
+				groups : [ 'basicstyles', 'cleanup' ]
+			}, {
+				name : 'paragraph',
+				groups : [ 'list', 'indent', 'blocks', 'align', 'bidi' ]
+			}, {
+				name : 'styles'
+			}, {
+				name : 'colors'
+			} ];
+
 			function i18uimashupproperties() {
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
@@ -224,14 +255,25 @@ define(
 					this.editorTextArea = m_utils.jQuerySelect("#markupTextarea").get(0);
 					this.editorTextArea.id = "markupTextarea" + rdmNo;
 					var self = this;
-					this.embeddedHTMLEditor = m_codeEditorAce
-							.getCodeEditor(this.editorAnchor.id);
-					this.embeddedHTMLEditor.getEditor().on('blur', function(e) {
-						if (!self.validate()) {
-							return;
-						}
-						self.submitEmbeddedModeChanges();
-					});
+
+					// TODO - the timout is only needed of Chrome and needs to
+					// be analyzed and removed with a proper solution
+					var self = this;
+					setTimeout(function() {
+						CKEDITOR.replace(self.editorTextArea.id, {
+							toolbarGroups : editorToolbarGroups,
+							allowedContent : true
+						});
+
+						CKEDITOR.instances[self.editorTextArea.id].on('blur',
+								function(e) {
+									if (!self.validate()) {
+										return;
+									}
+									self.submitEmbeddedModeChanges();
+								});
+
+					}, 0);
 
 					this.urlInput
 							.change(
@@ -259,10 +301,8 @@ define(
 					this.generateMarkupForAngularLink.click({
 						view : this
 					}, function(event) {
-						event.data.view.embeddedHTMLEditor.getEditor()
-								.getSession().setValue(
-										event.data.view.generateMarkup());
-
+						CKEDITOR.instances[event.data.view.editorTextArea.id]
+								.setData(event.data.view.generateMarkup());
 						event.data.view.submitEmbeddedModeChanges();
 					});
 					this.viaUriInput
@@ -327,8 +367,8 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
-								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor
-										.getValue()
+								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
+										
 							});
 				};
 
@@ -429,8 +469,14 @@ define(
 
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
-						this.embeddedHTMLEditor
-								.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						var self = this;
+						// TODO - the timout is only needed of Chrome and needs to
+						// be analyzed and removed with a proper solution
+						setTimeout(
+								function() {
+									CKEDITOR.instances[self.editorTextArea.id]
+											.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+								}, 100);
 					} else {
 						this.setViaUri();
 						this.urlInput
