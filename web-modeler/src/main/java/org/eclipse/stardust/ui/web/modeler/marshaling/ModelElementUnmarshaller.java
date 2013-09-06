@@ -49,6 +49,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
@@ -90,6 +92,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
+   private static final Logger logger = LogManager.getLogger(ModelElementUnmarshaller.class);
+
    /**
 	 *
 	 */
@@ -127,7 +131,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    public void populateFromJson(EObject element, JsonObject json)
    {
-      System.out.println("Unmarshalling: " + element + " " + json);
+      logger.debug("Unmarshalling: " + element + " " + json);
 
       if (element instanceof ProcessDefinitionType)
       {
@@ -217,7 +221,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         System.out.println("===> Unsupported Symbol " + element);
+         logger.warn("===> Unsupported Symbol " + element);
       }
    }
 
@@ -1717,12 +1721,12 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(triggerJson, ModelerConstants.IMPLEMENTATION_PROPERTY))
       {
-         System.out.println("===> Implementation: "
+         logger.debug("===> Implementation: "
                + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
          trigger.setType(ModelBuilderFacade.findTriggerType(
                ModelUtils.findContainingModel(trigger),
                triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
-         System.out.println("===> Implementation: " + trigger.getType());
+         logger.debug("===> Implementation: " + trigger.getType());
       }
 
       if (isUserTrigger(trigger))
@@ -1996,7 +2000,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   String direction = accessPointJson.get(
                         ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-                  System.out.println("Direction: " + direction);
+                  logger.debug("Direction: " + direction);
 
                   AccessPointType accessPoint = null;
 
@@ -2370,11 +2374,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
          else
          {
-            System.out.println("Other type "
+            logger.debug("Other type "
                   + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
-            System.out.println("Other type "
+            logger.debug("Other type "
                   + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
-            System.out.println("Other type "
+            logger.debug("Other type "
                   + dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY).getAsString());
          }
 
@@ -2440,7 +2444,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       if (request.has(property))
       {
-         System.out.println("Setting property " + property + " of value "
+         logger.debug("Setting property " + property + " of value "
                + request.get(property) + " on object " + targetElement);
 
          try
@@ -2462,13 +2466,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                if (hasNotJsonNull(request, property))
                {
-                  System.out.println("Invoking " + setter.getName()
+                  logger.debug("Invoking " + setter.getName()
                         + " with property value " + request.get(property).getAsString());
                   setter.invoke(targetElement, request.get(property).getAsString());
                }
                else
                {
-                  System.out.println("Invoking " + setter.getName() + " with null");
+                  logger.debug("Invoking " + setter.getName() + " with null");
                   setter.invoke(targetElement, new Object[] {null});
                }
             }
@@ -2496,7 +2500,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else
       {
-         System.out.println("No value for property " + property);
+         logger.warn("No value for property " + property);
       }
    }
 
@@ -2542,7 +2546,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             JsonElement jsonValue = attributes.get(key);
             if (jsonValue.isJsonNull())
             {
-               System.out.println("Setting extended attribute " + key + " to null.");
+               logger.debug("Setting extended attribute " + key + " to null.");
                ModelBuilderFacade.setAttribute(element, key, null);
             }
             else if (jsonValue.getAsJsonPrimitive().isBoolean())
@@ -2574,7 +2578,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else
                {
-                  System.out.println("Setting extended attribute " + key + " to " + stringValue);
+                  logger.debug("Setting extended attribute " + key + " to " + stringValue);
                   ModelBuilderFacade.setAttribute(element, key, stringValue);
                }
             }

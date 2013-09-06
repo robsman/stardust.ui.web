@@ -87,6 +87,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
@@ -116,6 +118,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
+   private static final Logger logger = LogManager.getLogger(ModelElementMarshaller.class);
+
    /**
     *
     * @param modelElement
@@ -125,7 +129,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject jsResult = null;
 
-      System.out.println("ModelElement to marshall: " + modelElement);
+      logger.debug("ModelElement to marshall: " + modelElement);
 
       // TODO generically dispatch REST generation from IModelElement
 

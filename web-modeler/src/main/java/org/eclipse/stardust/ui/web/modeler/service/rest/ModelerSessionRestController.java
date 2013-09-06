@@ -34,12 +34,12 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
@@ -71,6 +71,8 @@ public class ModelerSessionRestController
    private ModelService modelService;
 
    private static CommandJto CommandJto;
+
+   private static final Logger logger = LogManager.getLogger(ModelerSessionRestController.class);
 
    public static CommandJto getCommandJto()
    {
@@ -372,7 +374,7 @@ public class ModelerSessionRestController
    @Path("/changes")
    public Response applyChange(String postedData)
    {
-      System.out.println("postedData ==============> " + postedData);
+      logger.debug("postedData ==============> " + postedData);
       try
       {
          CommandJto commandJto = jsonIo.gson().fromJson(postedData, CommandJto.class);
