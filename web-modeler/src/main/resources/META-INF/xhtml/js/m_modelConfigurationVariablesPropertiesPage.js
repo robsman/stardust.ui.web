@@ -203,7 +203,9 @@ define(
 																	"#deleteConfigurationVariableDialog")
 																	.dialog(
 																			"close");
-														}).fail(function() {
+															event.data.page.refreshConfigurationVariables();
+														}).fail(function(e) {
+															alert("Delete failed: " + e);
 												});
 									});
 				};
@@ -232,124 +234,131 @@ define(
 									},
 									{
 										"success" : function(json) {
-											m_utils.jQuerySelect(
-													"table#configurationVariablesTable tbody")
-													.empty();
-
-											var variables = m_utils
-													.convertToSortedArray(json,
-															"name", false);
-
-											for ( var n = 0; n < variables.length; ++n) {
-												var row = m_utils.jQuerySelect("<tr></tr>");
-												var cell = m_utils.jQuerySelect("<td></td>");
-
-												row.append(cell);
-
-												var button = m_utils.jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='"
-														+ m_urlUtils
-																.getContextName()
-														+ "/plugins/bpm-modeler/images/icons/delete.png'/>");
-
-												button
-														.click(
-																{
-																	page : page,
-																	configurationVariable : variables[n]
-																},
-																function(event) {
-																	event.data.page.currentConfigurationVariable = event.data.configurationVariable;
-
-																	m_utils.jQuerySelect(
-																			"#deleteConfigurationVariableDialog #emptyLiteralRadio")
-																			.prop(
-																					"checked",
-																					true);
-																	m_utils.jQuerySelect(
-																			"#deleteConfigurationVariableDialog")
-																			.dialog(
-																					"open");
-																});
-
-												cell.append(button);
-
-												cell = m_utils.jQuerySelect("<td></td>");
-
-												row.append(cell);
-
-												cell
-														.append(stripVariableName(variables[n].name));
-
-												cell = m_utils.jQuerySelect("<td></td>");
-
-												row.append(cell);
-
-												input = m_utils.jQuerySelect("<input type='text' class='cellEditor'></input>");
-
-												cell.append(input);
-												input
-														.val(variables[n].defaultValue);
-												input
-														.change(
-																{
-																	page : page,
-																	variableName : variables[n].name
-																},
-																function(event) {
-																	event.data.page
-																			.modifyConfigurationVariable(
-																					event.data.variableName,
-																					m_utils.jQuerySelect(
-																							this)
-																							.val());
-																});
-
-												cell = m_utils.jQuerySelect("<td></td>");
-
-												row.append(cell);
-
-												var list = m_utils.jQuerySelect("<ul class='referencesList'></ul>");
-
-												cell.append(list);
-
-												for ( var m = 0; m < variables[n].references.length; ++m) {
-													var item = m_utils.jQuerySelect("<li></li>");
-
-													list.append(item);
-
-													var info = "";
-
-													info +=  m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.elementType." + variables[n].references[m].elementType);
-
-													if (variables[n].references[m].elementName) {
-														info += " <span class='emphasis'>";
-														info += variables[n].references[m].elementName;
-														info += "</span>";
-													}
-
-													if (variables[n].references[m].scopeType) {
-														info += " " + m_i18nUtils.getProperty("modeler.general.ofLiteral") + " ";
-														info += m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.scopeType." + variables[n].references[m].scopeType);
-
-														if (variables[n].references[m].scopeType) {
-															info += " <span class='emphasis'>";
-															info += variables[n].references[m].scopeName;
-															info += "</span>";
-														}
-													}
-
-													item.append(info);
-												}
-
-												m_utils.jQuerySelect(
-														"table#configurationVariablesTable tbody")
-														.append(row);
-											}
+											page.refreshConfigurationVariablesTable(json);
 										},
 										"error" : function() {
 											m_utils.debug("Error");
 										}
 									});
+				};
+				
+				/**
+				 * 
+				 */
+				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariablesTable = function(json) {
+					m_utils.jQuerySelect(
+							"table#configurationVariablesTable tbody")
+							.empty();
+
+					var variables = m_utils
+							.convertToSortedArray(json,
+									"name", false);
+
+					for ( var n = 0; n < variables.length; ++n) {
+						var row = m_utils.jQuerySelect("<tr></tr>");
+						var cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						var button = m_utils.jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='"
+								+ m_urlUtils
+										.getContextName()
+								+ "/plugins/bpm-modeler/images/icons/delete.png'/>");
+
+						button
+								.click(
+										{
+											page : this,
+											configurationVariable : variables[n]
+										},
+										function(event) {
+											event.data.page.currentConfigurationVariable = event.data.configurationVariable;
+
+											m_utils.jQuerySelect(
+													"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+													.prop(
+															"checked",
+															true);
+											m_utils.jQuerySelect(
+													"#deleteConfigurationVariableDialog")
+													.dialog(
+															"open");
+										});
+
+						cell.append(button);
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						cell
+								.append(stripVariableName(variables[n].name));
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						input = m_utils.jQuerySelect("<input type='text' class='cellEditor'></input>");
+
+						cell.append(input);
+						input
+								.val(variables[n].defaultValue);
+						input
+								.change(
+										{
+											page : this,
+											variableName : variables[n].name
+										},
+										function(event) {
+											event.data.page
+													.modifyConfigurationVariable(
+															event.data.variableName,
+															m_utils.jQuerySelect(
+																	this)
+																	.val());
+										});
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						var list = m_utils.jQuerySelect("<ul class='referencesList'></ul>");
+
+						cell.append(list);
+
+						for ( var m = 0; m < variables[n].references.length; ++m) {
+							var item = m_utils.jQuerySelect("<li></li>");
+
+							list.append(item);
+
+							var info = "";
+
+							info +=  m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.elementType." + variables[n].references[m].elementType);
+
+							if (variables[n].references[m].elementName) {
+								info += " <span class='emphasis'>";
+								info += variables[n].references[m].elementName;
+								info += "</span>";
+							}
+
+							if (variables[n].references[m].scopeType) {
+								info += " " + m_i18nUtils.getProperty("modeler.general.ofLiteral") + " ";
+								info += m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.scopeType." + variables[n].references[m].scopeType);
+
+								if (variables[n].references[m].scopeType) {
+									info += " <span class='emphasis'>";
+									info += variables[n].references[m].scopeName;
+									info += "</span>";
+								}
+							}
+
+							item.append(info);
+						}
+
+						m_utils.jQuerySelect(
+								"table#configurationVariablesTable tbody")
+								.append(row);
+					}
 				};
 
 				/**
