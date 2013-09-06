@@ -199,10 +199,13 @@ public class HTML5FrameworkServices
       {
          StringBuffer sb = new StringBuffer();
          sb.append(baseUri.getScheme()).append("://");
-         sb.append(baseUri.getHost()).append(":");
-         sb.append(baseUri.getPort()).append("/");
+         sb.append(baseUri.getHost());
+         if (baseUri.getPort() > 0){
+            sb.append(":");
+            sb.append(baseUri.getPort());
+         }
+         sb.append("/");
          sb.append(toReturn);
-
          toReturn = sb.toString();
       }
 
