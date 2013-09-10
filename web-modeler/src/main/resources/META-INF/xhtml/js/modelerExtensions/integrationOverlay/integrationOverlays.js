@@ -39,8 +39,7 @@ define(
 					id : "mailIntegrationOverlay",
 					name : "E-Mail Send/Receive",
 					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/mailIntegrationOverlay.html",
-					provider : MailIntegrationOverlay,
-					visibility : "preview"
+					provider : MailIntegrationOverlay
 				}, {
 					id : "restServiceOverlay",
 					name : "REST Service",
