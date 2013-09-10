@@ -105,7 +105,7 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.markup"));
-				m_utils.jQuerySelect("#url")
+				m_utils.jQuerySelect("label[for='urlInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.url"));
