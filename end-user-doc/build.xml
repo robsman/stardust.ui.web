@@ -70,20 +70,24 @@
          <filter token="artup" value="${product.artup}" />
       </filterset>
 
-      <copy todir="${build.src}/" overwrite="true">
-         <fileset dir="${project.res}">
-            <exclude name="**/*.png"/> 
-            <exclude name="**/*.gif"/> 
-            <exclude name="**/*.jpg"/> 
+	   <!-- copy styles images -->
+      <copy todir="${build.src}/styles" overwrite="true">
+         <fileset dir="${styles.dir}" includes="images/**"/>
+      </copy>
+      <!-- copy style sheets -->
+      <copy todir="${build.src}/styles" overwrite="true">
+         <fileset dir="${styles.dir}">
+            <include name="**/*.css"/>
+            <include name="**/*.js"/>
          </fileset>
          <filterset refid="filter.product" />
       </copy>
+
       <copy todir="${build.src}/" overwrite="true">
          <fileset dir="${project.res}">
-            <include name="**/*.png"/>
-            <include name="**/*.gif"/>
-            <include name="**/*.jpg"/>        
+            <exclude name="**/styles/**"/> 
          </fileset>
+         <filterset refid="filter.product" />
       </copy>
 
       <!-- copy business process modeler doc -->
