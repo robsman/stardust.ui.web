@@ -3141,6 +3141,7 @@ define(
           var process = m_process.createProcessFromJson(model, transferObject);
 
           newJsTreeOutlineBuilder(model).buildProcessNode(process, "#" + model.uuid);
+          this.expandNode("#" + model.uuid);
 
           return process;
         };
@@ -3154,6 +3155,7 @@ define(
 
           newJsTreeOutlineBuilder(model).buildApplicationNode(application,
               "#" + model.uuid + " #applications_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #applications_" + model.uuid);
 
           return application;
         };
@@ -3167,6 +3169,7 @@ define(
 
           newJsTreeOutlineBuilder(model).buildDataNode(data,
               "#" + model.uuid + " #data_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #data_" + model.uuid);
 
           return data;
         };
@@ -3180,6 +3183,7 @@ define(
 
           newJsTreeOutlineBuilder(model).buildTypeDeclarationNode(dataStructure,
               "#" + model.uuid + " #structuredTypes_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #structuredTypes_" + model.uuid);
 
           return dataStructure;
         };
@@ -3194,7 +3198,16 @@ define(
           newJsTreeOutlineBuilder(model).buildParticipantNode(participant,
               "#" + model.uuid + " " + parentSelector);
 
+          this.expandNode("#" + model.uuid + " " + parentSelector);
+
           return participant;
+        };
+
+        /**
+         * 
+         */
+        Outline.prototype.expandNode = function(nodeSelector) {
+        	jQuery.jstree._reference(displayScope + "#outline").open_node(nodeSelector);
         };
 			}
 		});
