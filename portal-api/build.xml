@@ -161,9 +161,4 @@
       <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
    </target>
    
-   <target name="dependencies:report" depends="init,init.ivy">
-      <property name="build.report" location="${build.dir}/report" />
-      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
-   </target>
-   
 </project>

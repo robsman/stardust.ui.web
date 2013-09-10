@@ -60,6 +60,12 @@
          <exclude org="org.hamcrest" module="hamcrest-core" />
       </dependency>
       <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
+      
+      <!-- ******************** -->
+      <!--    Override Rules    -->
+      <!-- ******************** -->
+      <override org="aopalliance" module="aopalliance" rev="${aopalliance.version}" />
+   
    </dependencies>
    
 </ivy-module>
