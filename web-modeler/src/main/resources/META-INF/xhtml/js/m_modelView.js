@@ -390,15 +390,20 @@ define(
 																		event.data.viewManager
 																				.openView(
 																						applicationTypeExtension.viewId,
-																						"modelId="
-																								+ model.id
-																								+ "&applicationId="
-																								+ application.id
-																								+ "&fullId="
-																								+ application
-																										.getFullId(),
-																						application
-																								.getFullId());
+																							"modelId="
+																									+ encodeURIComponent(model.id)
+																									+ "&applicationId="
+																									+ encodeURIComponent(application.id)
+																									+ "&applicationName="
+																									+ encodeURIComponent(application.name)
+																									+ "&fullId="
+																									+ encodeURIComponent(application
+																											.getFullId())
+																									+ "&uuid="
+																									+ application.uuid
+																									+ "&modelUUID="
+																									+ model.uuid,
+																							application.uuid);
 																	});
 												} else if (model.processes[segments[1]] != null) {
 													var process = model.processes[segments[1]];
@@ -422,17 +427,20 @@ define(
 																		event.data.viewManager
 																				.openView(
 																						"processDefinitionView",
-																						"processId="
-																								+ process.id
-																								+ "&modelId="
-																								+ model.id
-																								+ "&processName="
-																								+ process.name
-																								+ "&fullId="
-																								+ process
-																										.getFullId(),
-																						process
-																								.getFullId());
+																							"processId="
+																									+ encodeURIComponent(process.id)
+																									+ "&modelId="
+																									+ encodeURIComponent(model.id)
+																									+ "&processName="
+																									+ encodeURIComponent(process.name)
+																									+ "&fullId="
+																									+ encodeURIComponent(process
+																											.getFullId())
+																									+ "&uuid="
+																									+ process.uuid
+																									+ "&modelUUID="
+																									+ model.uuid,
+																							process.uuid);
 																	});
 												} else {
 													m_utils.jQuerySelect(
@@ -454,10 +462,12 @@ define(
 																				.openView(
 																						"modelView",
 																						"modelId="
-																								+ model.id
+																								+ encodeURIComponent(model.id)
 																								+ "&modelName="
-																								+ model.name,
-																						model.id);
+																								+ encodeURIComponent(model.name)
+																								+ "&uuid="
+																								+ model.uuid,
+																						model.uuid);
 																	});
 												}
 											}
