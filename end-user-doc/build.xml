@@ -71,11 +71,11 @@
       </filterset>
 
 	   <!-- copy styles images -->
-      <copy todir="${build.src}/styles" overwrite="true">
+      <copy todir="${build.src.doc}/styles" overwrite="true">
          <fileset dir="${styles.dir}" includes="images/**"/>
       </copy>
       <!-- copy style sheets -->
-      <copy todir="${build.src}/styles" overwrite="true">
+      <copy todir="${build.src.doc}/styles" overwrite="true">
          <fileset dir="${styles.dir}">
             <include name="**/*.css"/>
             <include name="**/*.js"/>
