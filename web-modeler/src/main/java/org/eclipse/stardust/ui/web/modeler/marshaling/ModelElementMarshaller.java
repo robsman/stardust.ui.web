@@ -509,12 +509,20 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelType model = ModelUtils.findContainingModel(laneSymbol);
             URI proxyUri = ((InternalEObject) participant).eProxyURI();
             ModelType referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
-
             if (referencedModel != null)
             {
                String roleId = getModelBuilderFacade().createFullId(referencedModel,
                      LaneParticipantUtil.getParticipant(laneSymbol));
-               laneSymbolJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
+               try
+               {
+                  getModelBuilderFacade().findParticipant(roleId);
+                  laneSymbolJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, roleId);
+               }
+               catch (Throwable t)
+               {
+                  // The participant does not exist anymore in the referenced model --> no
+                  // participant to be returned
+               }
             }
          }
          else
