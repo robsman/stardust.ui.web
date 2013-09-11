@@ -322,6 +322,9 @@ public class SecurityDialog extends PopupUIComponentBean
             {
                if (updateACBList)
                {
+                  // While removing ACB entry, if saved flag is false, means new entry
+                  // (not saved to JCR)
+                  acb.setSaved(true);
                   acbs.add(acb);
                }
             }
@@ -389,29 +392,7 @@ public class SecurityDialog extends PopupUIComponentBean
       DocumentManagementService dms = ContextPortalServices.getDocumentManagementService();
       // TODO Delete the print line after perfecting the functionality
       // printDmsSecurity(dms, getResourceId());
-      Set<AccessControlPolicy> applicablePolicies = null;
-      AccessControlPolicy next = null;
-      try
-      {
-         applicablePolicies = dms.getPolicies(getResourceId());
-         next = applicablePolicies.iterator().next();
-      }
-      catch (java.util.NoSuchElementException nee)
-      {
-         try
-         {
-            applicablePolicies = dms.getApplicablePolicies(getResourceId());
-            next = applicablePolicies.iterator().next();
-         }
-         catch (Exception e)
-         {
-            trace.error(e);
-         }
-      }
-      catch (Exception e)
-      {
-         trace.error(e);
-      }
+      AccessControlPolicy next = getAccessControlPolicy();
       next.removeAllAccessControlEntries();
 
       for (AccessControlBean acb : accessControlBean)
@@ -424,44 +405,47 @@ public class SecurityDialog extends PopupUIComponentBean
          if (next != null)
          {
             acb.setEdit(false);
+            // While removing ACB entry, if saved flag is false, means new entry (not
+            // saved to JCR)
+            acb.setSaved(true);
             if (!acb.getCreate().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.CREATE_PRIVILEGE),
-                     acb.getCreate().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.CREATE_PRIVILEGE), acb.getCreate().toUpperCase()
+                           .equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
             if (!acb.getDelete().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_PRIVILEGE),
-                     acb.getDelete().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_PRIVILEGE), acb.getDelete().toUpperCase()
+                           .equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_CHILDREN_PRIVILEGE),
-                     acb.getDelete().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.DELETE_CHILDREN_PRIVILEGE), acb.getDelete()
+                           .toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
             if (!acb.getModify().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_PRIVILEGE),
-                     acb.getModify().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_PRIVILEGE), acb.getModify().toUpperCase()
+                           .equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
             if (!acb.getRead().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.READ_PRIVILEGE),
-                     acb.getRead().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.READ_PRIVILEGE), acb.getRead().toUpperCase()
+                           .equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
             if (!acb.getReadAcl().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.READ_ACL_PRIVILEGE),
-                     acb.getReadAcl().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.READ_ACL_PRIVILEGE), acb.getReadAcl().toUpperCase()
+                           .equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
             if (!acb.getModifyAcl().equals(AccessControlBean.INHERIT))
             {
                next.addAccessControlEntry(acb.getParticipant().getPrincipal(),
-                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_ACL_PRIVILEGE),
-                     acb.getModifyAcl().toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
+                     Collections.<Privilege> singleton(DmsPrivilege.MODIFY_ACL_PRIVILEGE), acb.getModifyAcl()
+                           .toUpperCase().equals(EntryType.ALLOW.toString()) ? EntryType.ALLOW : EntryType.DENY);
             }
          }
       }
@@ -704,19 +688,73 @@ public class SecurityDialog extends PopupUIComponentBean
       securityDialogTable.initialize();
    }
 
+   private AccessControlPolicy getAccessControlPolicy()
+   {
+      DocumentManagementService dms = ContextPortalServices.getDocumentManagementService();
+      Set<AccessControlPolicy> applicablePolicies = null;
+      AccessControlPolicy next = null;
+      try
+      {
+         applicablePolicies = dms.getPolicies(getResourceId());
+         next = applicablePolicies.iterator().next();
+      }
+      catch (java.util.NoSuchElementException nee)
+      {
+         try
+         {
+            applicablePolicies = dms.getApplicablePolicies(getResourceId());
+            next = applicablePolicies.iterator().next();
+         }
+         catch (Exception e)
+         {
+            trace.error(e);
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error(e);
+      }
+      return next;
+   }
+   
    public void removeRole(ActionEvent event)
    {
       AccessControlBean acb = (AccessControlBean) event.getComponent().getAttributes().get("acb");
+      AccessControlPolicy next = null;
+      AccessControlBean acbRemoveObj = null;
+      AccessControlEntry aceRemoveObj = null;
 
       for (int i = 0; i < accessControlBean.size(); i++)
       {
          if (accessControlBean.get(i).equals(acb))
          {
-            accessControlBean.remove(i);
-            policyChanged = true;
+            acbRemoveObj = accessControlBean.get(i);
             break;
          }
       }
+
+      // If current entry is not yet saved to JCR,no need to read from DMS
+      if (acb.isSaved() && acbRemoveObj != null)
+      {
+         next = getAccessControlPolicy();
+         for (AccessControlEntry ace : next.getAccessControlEntries())
+         {
+            if (ace.getPrincipal().getName().equals(acbRemoveObj.getParticipant().getPrincipal().getName()))
+            {
+               aceRemoveObj = ace;
+               break;
+            }
+         }
+         if (null != aceRemoveObj)
+         {
+            next.removeAccessControlEntry(aceRemoveObj);
+            ContextPortalServices.getDocumentManagementService().setPolicy(getResourceId(), next);
+            policyChanged = true;
+         }
+      }
+
+      accessControlBean.remove(acbRemoveObj);
+
       // When all roles are removed, do not show Apply btn
       if (accessControlBean.size() == 0)
       {

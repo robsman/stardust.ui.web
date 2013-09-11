@@ -72,7 +72,7 @@ public class AccessControlBean extends DefaultRowModel
 
    public static final String MODIFYACL = "Modify ACL";
 
-   private boolean newOrModified;
+   private boolean saved;
 
    public boolean isEdit()
    {
@@ -212,11 +212,6 @@ public class AccessControlBean extends DefaultRowModel
       setModifyAcl(ALLOW);
    }
 
-   public boolean isNewOrModified()
-   {
-      return newOrModified;
-   }
-
    public String getCreatePolicyChangedValue()
    {
       return createPolicyChangedValue;
@@ -261,6 +256,16 @@ public class AccessControlBean extends DefaultRowModel
    public String getModelLabel()
    {
       return modelLabel;
+   }
+
+   public boolean isSaved()
+   {
+      return saved;
+   }
+
+   public void setSaved(boolean saved)
+   {
+      this.saved = saved;
    }
 
    public boolean equals(Object acb)
