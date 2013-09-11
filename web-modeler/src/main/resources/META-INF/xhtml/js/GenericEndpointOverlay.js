@@ -204,67 +204,31 @@ define(
 								}
 							});
 
-					/**
-					this.directionInput
-							.change(function() {
-								if (self.directionInput.val() == "requestResponse") {
-									self.view
-											.submitChanges({
-												attributes : {
-													"carnot:engine:camel::producerMethodName" : "sendBodyInOut(java.lang.Object,java.util.Map<java.lang.String,java.lang.Object>)"
-												},
-												contexts : {
-													application : {
-														accessPoints : [
-																{
-																	id : "oParam1",
-																	name : "Input",
-																	direction : "IN",
-																	dataType : "primitive",
-																	primitiveDataType : "string"
-																},
-																{
-																	id : "returnValue",
-																	name : "Output",
-																	direction : "OUT",
-																	dataType : "primitive",
-																	primitiveDataType : "string",
-																	attributes : {
-																		"carnot:engine:flavor" : "RETURN_VALUE"
-																	}
-																} ]
-													}
-												}
-											});
-								} else {
-									self.view
-											.submitChanges({
-												attributes : {
-													"carnot:engine:camel::producerMethodName" : ""
-												},
-												contexts : {
-													application : {
-														accessPoints : [ {
-															id : "oParam1",
-															name : "Input",
-															direction : "IN",
-															dataType : "primitive",
-															primitiveDataType : "string"
-														} ]
-													}
-												}
-											});
-								}
-							});
-							**/
-					if(this.getApplication().attributes["carnot:engine:camel::camelContextId"]==null)
-					    {
+					
+					if(!this.getApplication().attributes["carnot:engine:camel::camelContextId"])
+					{
 						this.camelContextInput.val('defaultCamelContext');
 					    self.view.submitModelElementAttributeChange( "carnot:engine:camel::camelContextId", self.camelContextInput.val());
-					    }
-					 else{
+					}
+					else
+					{
 						this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
-					 }
+					}
+					
+					// set default to true if absent but invocation pattern is send or sendReveive
+					if (!this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
+							this.getApplication().attributes["carnot:engine:camel::invocationPattern"] && (
+							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("send") > -1 ||
+							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("sendReceive") > -1))
+					{
+						this.processContextHeadersInput.prop("checked", true);
+						self.view.submitModelElementAttributeChange("carnot:engine:camel::processContextHeaders", true);
+					}
+					else
+					{
+						this.processContextHeadersInput.prop("checked",
+								this.getApplication().attributes["carnot:engine:camel::processContextHeaders"]);
+					}
 				};
 
 				/**
@@ -371,6 +335,7 @@ define(
 					// camel producer tab
 					this.processContextHeadersInput.prop("checked",
 							this.getApplication().attributes["carnot:engine:camel::processContextHeaders"]);
+					
 					this.producerRouteTextarea
 						.val(this.getApplication().attributes["carnot:engine:camel::routeEntries"]);
 
@@ -417,13 +382,18 @@ define(
 
 				GenericEndpointOverlay.prototype.submitApplicationTypeChanges = function(
 						applicationTypeChanges, invocationPatternChanges,
-						invocationTypeChanges) {
+						invocationTypeChanges, producerRoute, consumerRoute, 
+						includeProcessContextHeaders) 
+				{
 					this.view
 							.submitChanges({
 								type : applicationTypeChanges,
 								attributes : {
 									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
-									"carnot:engine:camel::invocationType" : invocationTypeChanges
+									"carnot:engine:camel::invocationType" : invocationTypeChanges,
+									"carnot:engine:camel::routeEntries" : producerRoute,
+									"carnot:engine:camel::consumerRoute" : consumerRoute,
+									"carnot:engine:camel::processContextHeaders" : includeProcessContextHeaders
 								}
 							});
 				};
@@ -450,61 +420,91 @@ define(
 				{
 
 					this.view.invocationTypeInput = m_constants.TO_BE_DEFINED;
+					
 					this.submitApplicationTypeChanges(
 						"camelSpringProducerApplication",
 						null,
+						null,
+						null,
+						null,
 						null);
+					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', true);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.processContextHeadersInput.prop('disabled', true);
 				};
 
 				GenericEndpointOverlay.prototype.sendSynchronous = function()
 				{
 					this.view.invocationTypeInput = "synchronous";
+					
 					this.submitApplicationTypeChanges(
 						"camelSpringProducerApplication",
 						"send",
-						"synchronous");
+						"synchronous",
+						this.producerRouteTextarea.val(),
+						null,
+						this.processContextHeadersInput.prop("checked"));
+					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.processContextHeadersInput.prop('disabled', false);
 				};
 
 				GenericEndpointOverlay.prototype.sendReceiveSynchronous = function()
 				{
 					this.view.invocationTypeInput = "synchronous";
+					
 					this.submitApplicationTypeChanges(
 						"camelSpringProducerApplication",
 						"sendReceive",
-						"synchronous");
+						"synchronous",
+						this.producerRouteTextarea.val(),
+						null,
+						this.processContextHeadersInput.prop("checked"));
+					
 					this.invocationTypeInput.prop('disabled', false);
 					this.producerRouteTextarea.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.processContextHeadersInput.prop('disabled', false);
 				};
 
 				GenericEndpointOverlay.prototype.sendReceiveAsynchronous = function()
 				{
 					this.view.invocationTypeInput = "asynchronous";
+					
 					this.submitApplicationTypeChanges(
 						"camelConsumerApplication",
 						"sendReceive",
-						"asynchronous");
+						"asynchronous",
+						this.producerRouteTextarea.val(),
+						this.consumerRouteTextarea.val(),
+						this.processContextHeadersInput.prop("checked"));
+					
 					this.invocationTypeInput.prop('disabled', false);
 					this.producerRouteTextarea.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', false);
+					this.processContextHeadersInput.prop('disabled', false);
 				};
 
 				GenericEndpointOverlay.prototype.receiveAsynchronous = function()
 				{
 					this.view.invocationTypeInput = "asynchronous";
+					
 					this.submitApplicationTypeChanges(
 						"camelConsumerApplication",
 						"receive",
-						"asynchronous");
+						"asynchronous",
+						null,
+						this.consumerRouteTextarea.val(),
+						false);
+					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', true);
 					this.consumerRouteTextarea.prop('disabled', false);
+					this.processContextHeadersInput.prop('disabled', true);
 				};
 
 				GenericEndpointOverlay.prototype.manageInvocationSettings = function()
