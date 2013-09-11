@@ -1052,23 +1052,6 @@ define(
 						valid = false;
 					}
 
-					if (m_utils.isEmptyString(this.userInput.val())) {
-						this.view.errorMessages.push("User must be defined."); // TODO
-						// I18N
-						this.userInput.addClass("error");
-
-						valid = false;
-					}
-
-					if (m_utils.isEmptyString(this.passwordInput.val())) {
-						this.view.errorMessages
-								.push("Password must be defined."); // TODO
-						// I18N
-						this.passwordInput.addClass("error");
-
-						valid = false;
-					}
-
 					return valid;
 				};
 			}

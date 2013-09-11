@@ -1,12 +1,14 @@
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_accessPoint",
-				"bpm-modeler/js/m_typeDeclaration",
-				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce" ],
+		[ "bpm-modeler/js/m_utils", 
+		  "bpm-modeler/js/m_i18nUtils",
+		  "bpm-modeler/js/m_constants",
+		  "bpm-modeler/js/m_commandsController",
+		  "bpm-modeler/js/m_command", 
+		  "bpm-modeler/js/m_model",
+		  "bpm-modeler/js/m_accessPoint",
+		  "bpm-modeler/js/m_typeDeclaration",
+		  "bpm-modeler/js/m_parameterDefinitionsPanel",
+		  "bpm-modeler/js/m_codeEditorAce" ],
 		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
 				m_parameterDefinitionsPanel, m_codeEditorAce) {
@@ -119,9 +121,7 @@ define(
 							return;
 						}
 
-						self.view.submitModelElementAttributeChange(
-								"carnot:engine:camel::invocationType",
-									self.invocationTypeInput.val());
+						self.manageInvocationSettings();
 					});
 
 					this.producerRouteTextarea.change(function() {
@@ -329,8 +329,6 @@ define(
 
 					this.invocationTypeInput
 							.val(this.getApplication().attributes["carnot:engine:camel::invocationType"]);
-
-					this.manageInvocationSettings();
 
 					// camel producer tab
 					this.processContextHeadersInput.prop("checked",
