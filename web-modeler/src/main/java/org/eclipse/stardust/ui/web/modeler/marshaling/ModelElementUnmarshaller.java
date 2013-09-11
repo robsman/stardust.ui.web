@@ -32,6 +32,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -1522,6 +1523,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             ActivityType newHostActivity = ModelUtils.findIdentifiableElement(
                   containingProcess.getActivity(),
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
+            boolean isBoundary = false;
+            
             if (hostActivity != newHostActivity)
             {
                if (hostActivity != null)
@@ -1549,6 +1552,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         EventMarshallingUtils.unTagAsIntermediateEventHost(hostActivity);
                         EventMarshallingUtils.deleteEventHostingConfig(hostActivity, eventSymbol);
                      }
+                     isBoundary = true;
                   }
                }
 
@@ -1585,6 +1589,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   if (transition != null)
                   {
                      transition.setFrom(newHostActivity);
+                     if(isBoundary)
+                     {
+                        FeatureMap mixedNode = transition.getExpression().getMixed();
+                        ModelUtils.setCDataString(mixedNode, "ON_BOUNDARY_EVENT(" + eventHandler.getId() + ')', true);
+                     }
                   }
                }
 
