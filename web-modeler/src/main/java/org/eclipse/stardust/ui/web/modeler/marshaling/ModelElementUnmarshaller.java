@@ -1808,10 +1808,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          for (int n = 0; n < parameterMappings.size(); ++n)
          {
             JsonObject parameterMappingJson = parameterMappings.get(n).getAsJsonObject();
-            String id = parameterMappingJson.get(ModelerConstants.ID_PROPERTY)
-                  .getAsString();
+            
             String name = parameterMappingJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString();
+            
             String direction = parameterMappingJson.get(
                   ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
@@ -1825,8 +1825,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   String primitiveDataType = parameterMappingJson.get(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
+                  
+                  // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
-                        trigger, id, name, primitiveDataType, direction);
+                        trigger, null, name, primitiveDataType, direction);
                }
                else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                {
@@ -1839,13 +1841,16 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                            .getAsString();
                   }
 
+                  // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
-                        trigger, id, name, structuredDataFullId, direction);
+                        trigger, null, name, structuredDataFullId, direction);
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {
+            	   
+            	  // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
-                        trigger, id, name, direction);
+                        trigger, null, name, direction);
 
                   String structuredDataFullId = null;
 
@@ -2002,8 +2007,26 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-                  String id = NameIdUtilsExtension.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY)
-                        .getAsString(), accessPoints); // ID provided from client is ignored
+                  
+                  boolean predefined = false;
+                  
+                  if (hasNotJsonNull(accessPointJson, ModelerConstants.ATTRIBUTES_PROPERTY))
+                  {
+                	  JsonObject attributeJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+                	  if (hasNotJsonNull(attributeJson, "stardust:predefined")) 
+                	  {
+                		// TODO : create ModelerConstans entry
+                		predefined = attributeJson.get("stardust:predefined").getAsBoolean();
+                	  }  
+                  }
+                  
+                  String id = null;
+                  
+                  if (predefined)
+                  {
+                	  id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString(); 
+                  }
+                  
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
                   String direction = accessPointJson.get(
