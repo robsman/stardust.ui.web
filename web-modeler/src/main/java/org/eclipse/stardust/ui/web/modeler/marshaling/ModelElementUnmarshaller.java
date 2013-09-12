@@ -1003,15 +1003,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   processDefinition.getDataPath(), dataPathID);
             if (dataPathType == null)
             {
-               dataPathType = getModelBuilderFacade().createDataPath();
                IdFactory idFactory = new IdFactory("dataPath", "DataPath_");
+               dataPathType = getModelBuilderFacade().createDataPath();
                idFactory.computeNames(processDefinition.getDataPath(), true);
-               dataPathID = idFactory.getId();
-               dataPathName = idFactory.getName();
-               dataPathType.setId(dataPathID);
+               
+               if(dataPathID.equals("PROCESS_ATTACHMENTS"))
+               {
+                  dataPathType.setId("PROCESS_ATTACHMENTS");                                    
+                  dataPathType.setName("PROCESS_ATTACHMENTS");                                                      
+               }
+               else
+               {
+                  dataPathID = idFactory.getId();
+                  dataPathName = idFactory.getName();                  
+                  dataPathType.setId(dataPathID);                  
+                  dataPathType.setName(dataPathName);                  
+               }               
             }
-
-            dataPathType.setName(dataPathName);
 
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
