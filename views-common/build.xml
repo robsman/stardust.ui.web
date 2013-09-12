@@ -25,6 +25,7 @@
    <property file="${project.etc}/private.properties"/>
    
    <property name="views-common-menu-context.xmlfile" value="${resources.src}/META-INF/spring/views-common-menu-context.xml" />
+   <property name="common-menu-config-context.xmlfile" value="${resources.src}/META-INF/spring/common-menu-config-context.xml" />
    
    <property name="artifactId" value="ipp-views-common" />
 
@@ -133,10 +134,11 @@
          </fileset>
          <fileset dir="${resources.src}">
             <include name="**/*.*" />
-            <exclude name="META-INF/spring/views-common-menu-context.xml" />
+         	<exclude name="META-INF/spring/views-common-menu-context.xml" />
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
+   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
       
       <copy todir="${build.src}">
          <fileset dir="${project.src}">
@@ -148,6 +150,7 @@
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.src}/META-INF/spring" overwrite="true" />
+   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
       
       <!-- Copy NL property file for locale "en" to NL property with no locale. -->
       <copy todir="${build.classes}" overwrite="true">

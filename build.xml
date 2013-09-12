@@ -22,6 +22,7 @@
    <property name="nirvana.project.etc" location="${nirvana.project.dir}/etc" />
    <property file="${nirvana.project.etc}/private.properties"/>
    <property name="views-common-menu-context.xmlfile" location="${nirvana.project.dir}/views-common/src/main/resources/META-INF/spring/views-common-menu-context.xml" />
+   <property name="common-menu-config-context.xmlfile" value="${common-menu-config-context.xmlfile}" />
    
    <import file="${nirvana.project.dir}/../../buildtools/ipp-build.xml" />
    
