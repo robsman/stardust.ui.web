@@ -126,7 +126,6 @@ public class PortalApplication
    private PortalApplicationEventScript portalApplicationEventScript;
 
    private TimeZone clientTimeZone = null;
-   private boolean overflowTabPopupOpened = false;
 
    private RuntimeEnvironmentInfoProvider runtimeEnvironmentInfoProvider;
    private String version;
@@ -214,8 +213,6 @@ public class PortalApplication
       {
          launchPanelsActivated = true;
 
-         closeOverflowTabIframePopup();
-
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
 
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
@@ -238,8 +235,6 @@ public class PortalApplication
       {
          launchPanelsActivated = false;
 
-         closeOverflowTabIframePopup();
-
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_DEACTIVATED);
 
@@ -261,8 +256,6 @@ public class PortalApplication
       if (!isFullScreenModeActivated())
       {
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
-
-         closeOverflowTabIframePopup();
 
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_FULL_SCREENED);
@@ -319,8 +312,6 @@ public class PortalApplication
       {
          // broadcast activation events
          setFocusView(getFocusView());
-
-         closeOverflowTabIframePopup();
 
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_RESTORED_TO_NORMAL);
@@ -427,23 +418,6 @@ public class PortalApplication
    public void openView()
    {
       addToDisplayedViews(getPortalUiController().openView(), true);
-   }
-
-   /**
-    * Opens the overFlow view selected from the Iframe and closes iframe and renders the
-    * session
-    */
-   public void openOverflowView()
-   {
-      FacesContext context = FacesContext.getCurrentInstance();
-      String viewUrl = (String) context.getExternalContext().getRequestParameterMap().get("viewUrl");
-      openView(viewUrl, null);
-
-      if (overflowTabPopupOpened)
-      {
-         closeOverflowTabIframePopup();
-      }
-
    }
 
    /**
@@ -995,8 +969,6 @@ public class PortalApplication
       pinViewOpened = !pinViewOpened;
       launchPanelsActivated = !pinViewOpened;
 
-      closeOverflowTabIframePopup();
-
       if(pinViewOpened)
       {
          if(fullScreenModeActivated)
@@ -1062,8 +1034,6 @@ public class PortalApplication
 
                addDummyOverflowView();
             }
-
-            closeOverflowTabIframePopup();
 
             int index = view != null ? displayedViews.indexOf(view) : -1;
             setViewIndex(index);
@@ -1388,30 +1358,6 @@ public class PortalApplication
    }
 
    /**
-    *
-    * @return
-    */
-   public boolean isOverflowTabPopupOpened()
-   {
-      return overflowTabPopupOpened;
-   }
-
-   /**
-    *
-    */
-   public void toggleOverflowTabIframePopup()
-   {
-      if (overflowTabPopupOpened)
-      {
-         closeOverflowTabIframePopup();
-      }
-      else
-      {
-         openOverflowTabIframePopup();
-      }
-   }
-
-   /**
     * @return
     */
    public String getOverflowTabIframePopupId()
@@ -1429,54 +1375,6 @@ public class PortalApplication
       return advanceArgs;
    }
 
-   /**
-    *
-    */
-   public void openOverflowTabIframePopup()
-   {
-      String iFrameId = getOverflowTabIframePopupId();
-      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
-            + "/plugins/common/overflowTabIframePopup.iface?random=" + System.currentTimeMillis() + "'";
-
-      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
-            + getOverflowTabIframePopupArgs() + ");";
-      PortalApplication.getInstance().addEventScript(script);
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-      overflowTabPopupOpened = true;
-   }
-
-   /**
-    * closes the popup from portal application like completing activity
-    */
-   public void closeOverflowTabIframePopup()
-   {
-      if (overflowTabPopupOpened)
-      {
-         String iFrameId = getOverflowTabIframePopupId();
-         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
-
-         PortalApplication.getInstance().addEventScript(script);
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-
-         overflowTabPopupOpened = false;
-      }
-   }
-
-   /**
-    * closes the popup in case any menu option from the popup is selected
-    */
-   public void closeOverflowTabIframePopupSelf()
-   {
-      if (overflowTabPopupOpened)
-      {
-         String iFrameId = getOverflowTabIframePopupId();
-         String script = "parent.ippPortalMain.InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
-
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-
-         overflowTabPopupOpened = false;
-      }
-   }
 
    /**
     * @param view
