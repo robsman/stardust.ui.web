@@ -22,7 +22,7 @@ var UiUtils = function() {
 				}
 			}
 		} catch (e) {
-			alert(e);
+			//alert(e);
 		}
 	}
 
@@ -31,7 +31,7 @@ var UiUtils = function() {
 			return str.length >= subStr.length
 					&& (str.substring(str.length - subStr.length) == subStr);
 		} catch (e) {
-			alert(e);
+			//alert(e);
 		}
 	}
 
