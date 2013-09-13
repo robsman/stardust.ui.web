@@ -70,6 +70,26 @@ body, table {
 .shell-home-icon {
 }
 
+.top-menu {
+	position: absolute;
+	padding: 5px;
+	background-color: #FFFFFF;
+	cursor: auto;
+	border: 1px solid;
+	width: 300px;
+	height: 150px;
+}
+
+.topMenuItemHeader {
+	font-weight: bold;
+}
+
+.topMenuItemLabel {
+	margin-left: 15px;
+	font-weight: normal;
+	cursor: pointer;
+}
+
 .nav-tabs {
 	display: table;
 }

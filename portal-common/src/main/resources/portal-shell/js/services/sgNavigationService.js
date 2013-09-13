@@ -148,6 +148,22 @@ define(['portal-shell/js/shell'], function (shell) {
 			/*
 			 * 
 			 */
+			service.getTopMenuItems = function() {
+				// TODO: Loop through to get menu items
+				var menuItems = [];
+
+				var menuItem = {};
+				menuItem.label = nav.main[0].label;
+				menuItem.children = [];
+				menuItem.children.push({label: nav.main[0].children[0].label, path: nav.main[0].children[0].path});
+				
+				menuItems.push(menuItem);
+				return menuItems;
+			}
+
+			/*
+			 * 
+			 */
 			function getItemFromPath2Item(navPath) {
 				var navItem = null;
 				for(var path in path2Item){

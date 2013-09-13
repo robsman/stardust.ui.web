@@ -50,7 +50,27 @@ define(['portal-shell/js/shell'], function (shell) {
 					
 					// Setup Footer Items
 					$scope.footerItems = nav.footer;
+					
+					// Top Menu
+					$scope.topMenu = {
+						visible: false,
+						items: sgNavigationService.getTopMenuItems(),
+						toggle: function() {
+							$scope.topMenu.visible = !$scope.topMenu.visible; 
+						},
+						close: function() {
+							if ($scope.topMenu.visible) {
+								$scope.topMenu.visible = false;
+							}
+						},
+						openItem: function(path, event) {
+							$scope.topMenu.toggle();
+							$scope.open(path, event);
+						}
+					};
 				});
+				
+				$scope.topMenu = {};
 				// ****************** Navigation Service - END ******************
 
 		        // ****************** View Panel Service - START ******************
@@ -129,14 +149,6 @@ define(['portal-shell/js/shell'], function (shell) {
                 };
 		        // ****************** View Panel Service - END ******************
 		        
-				// ****************** Top Menu - START ******************
-				$scope.topMenu = {
-					toggle: function() {
-						// TODO
-					}	
-				};
-				// ****************** Top Menu - END ******************
-
 				// ****************** Sidebar - START ******************
 				var currSidebar;
 				/*

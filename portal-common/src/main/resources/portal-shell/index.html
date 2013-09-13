@@ -102,12 +102,22 @@
 						<div class="shell-tabs-bar">
 							<div class="nav-tabs">
 								<div class="nav-tabs-row">
-									<div class="nav-tab-shell-home">
-										<!--
+									<div class="nav-tab-shell-home" ng-mouseleave="topMenu.close()">
 										<button class="shell-home" ng-click="topMenu.toggle()">
 											<img src="plugins/views-common/images/icons/dropBox.png"></img>
 										</button>
-										 -->
+										<div ng-if="topMenu.visible" class="top-menu">
+											<div ng-repeat="topMenuItem in topMenu.items">
+												<div class="topMenuItemHeader">
+													{{topMenuItem.label}}
+													<div ng-repeat="childMenuItem in topMenuItem.children"
+														class="topMenuItemLabel"
+														ng-click="topMenu.openItem(childMenuItem.path, $event)">
+														{{childMenuItem.label}}
+													</div>
+												</div>
+											</div>
+										</div>
 									</div>
 									<div class="nav-tab" ng-repeat="tab in tabs">
 										<div title="{{tab.title}}" ng-click="open(tab.path, $event)"
