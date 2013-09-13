@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -51,8 +52,8 @@ public class TimerManager
    public void startTimer(String id, long interval, TimerEventHandler handler)
    {
       handlers.put(id, handler);
-      String timerScript = "InfinityBpm.Core.startTimer('" + id + "', " + interval + ");";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), timerScript);
+      String timerScript = "parent.CommonUtils.startTimer('" + id + "', " + interval + ");";
+      PortalApplicationEventScript.getInstance().addEventScript(timerScript);
 
       if (trace.isDebugEnabled())
       {
@@ -66,8 +67,8 @@ public class TimerManager
    public void stopTimer(String id)
    {
       handlers.remove(id);
-      String timerScript = "InfinityBpm.Core.stopTimer('" + id + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), timerScript);
+      String timerScript = "parent.CommonUtils.stopTimer('" + id + "');";
+      PortalApplicationEventScript.getInstance().addEventScript(timerScript);
 
       if (trace.isDebugEnabled())
       {
