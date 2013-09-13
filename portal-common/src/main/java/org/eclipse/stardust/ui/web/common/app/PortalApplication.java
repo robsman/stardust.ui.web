@@ -154,6 +154,9 @@ public class PortalApplication
     */
    public void afterPropertiesSet() throws Exception
    {
+   	  // eagerly instantiate label provider to be able to access it via REST API
+      MessagePropertiesBean.getInstance();
+
       launchPanelsActivated = true;
       fullScreenModeActivated = false;
       displayMode = TAB_DISPLAY_MODE;
