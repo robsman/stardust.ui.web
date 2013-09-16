@@ -55,7 +55,7 @@ body, table {
 .shell-tabs-bar {
 	height: 34px;
 	background-color: #747167;
-	overflow-y: hidden;
+	overflow: hidden;
 	z-index: 1029;
 }
 
