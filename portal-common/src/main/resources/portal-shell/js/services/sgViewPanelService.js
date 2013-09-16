@@ -65,7 +65,8 @@ define(['portal-shell/js/shell'], function (shell) {
 		        			navItem.title = navItem.label;
 		        			navItem.params = params;
 
-	        				tabs.push(new ViewPanel(navItem));
+		        			navItem = new ViewPanel(navItem);
+	        				tabs.push(navItem);
 	        			}
 	        		}
             	}
