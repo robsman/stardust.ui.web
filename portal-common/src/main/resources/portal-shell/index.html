@@ -71,15 +71,14 @@
 		
 		<!-- Main Content (Sidebar and Views) -->
 		<div class="container-fluid">
-			<div style="display: table; width: 100%; margin-bottom: 10px;">
-				<div style="display: table-row">
-					<div style="display: table-cell; width: {{config.sidebar.width}}px;">
+					<!-- Sidebar -->
+					<div style="float: left; width: {{config.sidebar.width}}px;">
 						<div class="sidebar-title">{{config.sidebar.title}}</div>
 						<div class="sidebars" style="width: 350px;">
 							<div ng-repeat="item in sidebars">
 								<div id="sidebar" class="sidebar" style="width: {{config.sidebar.width}}px;">
-									<div id="sidebar-content" class="sidebar-content">
-										<div id="sidebar-content" class="sidebar-content-inner">
+									<div id="sidebar-content" class="sidebar-content" sg-stretch-to-bottom>
+										<div class="sidebar-content-inner">
 											<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
 												<ng-include src="item.partial"/>
 											</div>
@@ -94,10 +93,7 @@
 						</div>
 					</div>
 					
-					<div style="display: table-cell; width: 0px;">
-					</div>
-					
-					<div style="display: table-cell; vertical-align: top;">
+					<div style="margin-left: {{config.sidebar.width}}px;">
 						<!-- Nav Bar with Tabs -->
 						<div class="shell-tabs-bar">
 							<div class="nav-tabs">
@@ -145,24 +141,16 @@
 							<div ng-repeat="panel in panels">
 								<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"
 									class="{{ {true: 'view-panel-active', false: 'view-panel-inactive'}[activeViewPanel().path === panel.path] }}">
-									<!--
-									<br/>Path: {{panel.path}}
-									<br/>Scope ID: {{$id}}
-									<br/>Partial: {{panel.partial}}
-									<br/>
-									 -->
 									<ng-include ng-if="viewPanelCheck(panel)" src="panel.partial"></ng-include>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
 		</div>
 
 		<!-- Footer -->
 		<footer class="footer">
-			<div class="footer-row">
+			<div class="footer-row sg-footer-bar">
 				<div class="footer-cell">
 					<span class="copy-right">Stardust Copyright</span>
 				</div>
