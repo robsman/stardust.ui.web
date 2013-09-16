@@ -32,7 +32,8 @@ body, table {
 .header-cell {
 	display: table-cell;
 	white-space: nowrap;
-	padding-right: 15px;
+	padding-left: 10px;
+	padding-right: 10px;
 	line-height: 40px;
 	vertical-align: middle;
 }
