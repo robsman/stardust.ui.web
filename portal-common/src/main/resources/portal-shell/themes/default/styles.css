@@ -4,6 +4,11 @@ body, table {
 	font-size:12px;
 }
 
+.filler-cell{
+	display: table-cell;
+	width: 100%;
+}
+
 .app-header {
 	border: 1px solid gray;
 	background-color: #E8E8E8;
@@ -25,11 +30,6 @@ body, table {
 	padding-right: 15px;
 	line-height: 40px;
 	vertical-align: middle;
-}
-
-.header-filler-cell{
-	display: table-cell;
-	width: 100%;
 }
 
 .utility-link {
@@ -72,6 +72,7 @@ body, table {
 
 .top-menu {
 	position: absolute;
+	z-index: 1000;
 	padding: 5px;
 	background-color: #FFFFFF;
 	cursor: auto;
@@ -158,6 +159,41 @@ body, table {
 	color: #FFFFFF;
 	font-weight: normal;
 	line-height: 33px;
+}
+
+.nav-overflow-tab {
+	display: table-cell;
+	height: 33px;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	padding-left: 15px;
+	padding-right: 5px;
+	color: #FFFFFF;
+}
+
+.nav-overflow-tab-title {
+	line-height: 33px;
+}
+
+.overflow-tabs {
+	position: absolute;
+	right: 0px;
+	z-index: 1000;
+	border: 1px solid #D2D3D3;
+	background-color: #F2F3F3;
+	color: #000000;
+	padding: 5px;
+	width: 300px;
+	height: 150px;
+	overflow: auto;
+}
+
+.nav-overflow-tab-item {
+	padding: 5px;
+}
+
+.nav-overflow-tab-item-label {
 }
 
 .view-panel-active {

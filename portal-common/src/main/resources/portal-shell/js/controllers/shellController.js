@@ -83,6 +83,22 @@ define(['portal-shell/js/shell'], function (shell) {
 
 		        // For Rendering Tabs
 		        $scope.tabs = [];
+		        $scope.overflowTabs = {
+		        	visible: false,
+		        	tabs: [],
+		        	toggle: function() {
+		        		$scope.overflowTabs.visible = !$scope.overflowTabs.visible; 
+					},
+		        	close: function() {
+		        		if ($scope.overflowTabs.visible) {
+		        			$scope.overflowTabs.visible = false;
+		        		}
+					},
+					openView: function(path, event) {
+		        		$scope.overflowTabs.toggle();
+						$scope.open(path, event);
+		        	}
+		        };
 
 		        /*
 		         * 
@@ -93,6 +109,12 @@ define(['portal-shell/js/shell'], function (shell) {
                     for(var i in panels) {
                     	paths += panels[i].path + '|';
                     }
+                    
+                    var activePanel = $scope.activeViewPanel();
+                    if (activePanel) {
+                    	paths += activePanel.path;
+                    }
+
                     return paths;
                 };
 
@@ -100,10 +122,10 @@ define(['portal-shell/js/shell'], function (shell) {
                  * 
                  */
                 $scope.$watch('watchMethodForTabs()', function (newItem, oldItem) {
-                	$scope.tabs = $scope.viewPanels();
-                	// TODO: Overflow Tabs
+                	$scope.tabs = sgViewPanelService.displayTabs();
+                	$scope.overflowTabs.tabs = sgViewPanelService.overflowTabs();
                 });
-
+                
                 // For Rendering View Contents
                 $scope.panels = [];
                 

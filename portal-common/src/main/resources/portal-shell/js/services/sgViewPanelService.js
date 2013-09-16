@@ -33,6 +33,10 @@ define(['portal-shell/js/shell'], function (shell) {
         	
             var activePanelPath;
             var tabs = [];
+            
+            var MAX_TABS = 3; // TODO
+            var displayTabs = [];
+            var overflowTabs = [];
 
             /*
              * 
@@ -46,7 +50,7 @@ define(['portal-shell/js/shell'], function (shell) {
              */
             service.open = function (navPath, event, params) {
             	var navItem = findTabDetails(navPath);
-            	if (!navItem) {            	
+            	if (!navItem) {
 	            	var navItemTemp = sgNavigationService.findNavItem(navPath);
 	        		if (navItemTemp) {
 	        			navItem = {};
@@ -68,6 +72,16 @@ define(['portal-shell/js/shell'], function (shell) {
             	
             	if (navItem) {
             		activateNextViewPanel(navItem);
+            		
+            		if (getIndex(displayTabs, navItem) == -1) {
+            			displayTabs.push(navItem);
+            			
+            			if (MAX_TABS < displayTabs.length) {
+            				displayTabs.splice(0, 1);
+            			}
+            			
+            			buildOverflowTabs();
+            		}
             	}
             };
 
@@ -82,10 +96,36 @@ define(['portal-shell/js/shell'], function (shell) {
             			$timeout(function(){
     	            		tabs.splice(navItemDetails.index, 1);
     	        			activateNextViewPanel();
+    	        			
+    	        			var index = getIndex(displayTabs, navItemDetails.tab);
+    	        			displayTabs.splice(index, 1);
+    	        			
+    	        			for(var i = 0; i < tabs.length; i++) {
+                        		if (getIndex(displayTabs, tabs[i]) == -1) {
+                        			displayTabs.push(tabs[i]);
+                        			break;
+                        		}
+                        	}
+
+    	        			buildOverflowTabs();
             			});
             		}
             	}
             };
+
+            /*
+             * 
+             */
+            service.displayTabs = function() {
+            	return displayTabs;
+            }
+
+            /*
+             * 
+             */
+            service.overflowTabs = function() {
+            	return overflowTabs;
+            }
 
             /*
              * 
@@ -135,6 +175,30 @@ define(['portal-shell/js/shell'], function (shell) {
             	if (activePanel) {
             		sgPubSubService.publish('sgActiveViewPanelChanged', {currentNavItem: activePanel});
             	}
+            }
+
+            /*
+             * 
+             */
+            function buildOverflowTabs() {
+    			overflowTabs = [];
+            	for(var i = 0; i < tabs.length; i++) {
+            		if (getIndex(displayTabs, tabs[i]) == -1) {
+            			overflowTabs.push(tabs[i]);
+            		}
+            	}
+            }
+
+            /*
+             * 
+             */
+            function getIndex(tabs, tab) {
+            	for(var i = 0; i < tabs.length; i++) {
+            		if (tabs[i].path === tab.path) {
+            			return i;
+            		}
+            	}
+            	return -1;
             }
 
             /*

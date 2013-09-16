@@ -58,7 +58,7 @@
 						<!-- Utility Menu -->
 						<div class="header">
 							<div class="header-row">
-								<div class="header-filler-cell"></div>
+								<div class="filler-cell"></div>
 								<div ng-repeat="item in utilityItems" class="header-cell utility-item">
 									<span class="{{item.icon}}">{{item.label}}</span>
 								</div>
@@ -126,6 +126,16 @@
 										</div>
 										<span ng-click="close(tab.path)"
 											class="nav-tab-close {{ {true: 'nav-active-tab-close', false: 'nav-inactive-tab-close'}[activeViewPanel().path === tab.path] }}">x</span>
+									</div>
+									<div class="filler-cell"></div>
+									<div class="nav-overflow-tab" ng-if="overflowTabs.tabs.length > 0" ng-mouseleave="overflowTabs.close()">
+										<div ng-click="overflowTabs.toggle()" class="nav-overflow-tab-title">({{overflowTabs.tabs.length}})</div> 
+										<div ng-if="overflowTabs.visible" class="overflow-tabs">
+											<div ng-repeat="overflowTab in overflowTabs.tabs" class="nav-overflow-tab-item"
+												ng-click="overflowTabs.openView(overflowTab.path, $event)">
+												<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
