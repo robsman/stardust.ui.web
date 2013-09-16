@@ -119,7 +119,10 @@
 									<div class="nav-tab" ng-repeat="tab in tabs">
 										<div title="{{tab.title}}" ng-click="open(tab.path, $event)"
 											class="{{ {true: 'nav-tab-active', false: 'nav-tab-inactive'}[activeViewPanel().path === tab.path] }}">
-											<div class="nav-tab-label">{{tab.label}}</div>
+											<div class="nav-tab-label-icon-wrapper">
+												<span class="{{tab.icon}}"></span>
+												<span class="nav-tab-label">{{tab.label}}</span>
+											</div>
 										</div>
 										<span ng-click="close(tab.path)"
 											class="nav-tab-close {{ {true: 'nav-active-tab-close', false: 'nav-inactive-tab-close'}[activeViewPanel().path === tab.path] }}">x</span>
@@ -130,7 +133,10 @@
 										<div ng-if="overflowTabs.visible" class="overflow-tabs">
 											<div ng-repeat="overflowTab in overflowTabs.tabs" class="nav-overflow-tab-item"
 												ng-click="overflowTabs.openView(overflowTab.path, $event)">
-												<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
+												<div class="nav-overflow-tab-label-icon-wrapper">
+													<span class="{{overflowTab.icon}}"></span>
+													<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
+												</div>
 											</div>
 										</div>
 									</div>

@@ -147,7 +147,7 @@ body, table {
 	display: inline-Block;
 }
 
-.nav-tab-label {
+.nav-tab-label-icon-wrapper {
 	max-width: 220px;
 	min-width: 50px;
 	overflow: hidden;
