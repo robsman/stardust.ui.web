@@ -328,6 +328,12 @@ public class PortalUiController
     */
    public boolean loadPerspective(String perspectiveId)
    {
+      if (null != this.currentPerspective
+            && this.currentPerspective.getName().equalsIgnoreCase(perspectiveId))
+      {
+         return true;
+      }
+
       IPerspectiveDefinition perspectiveDef = getPerspective(perspectiveId);
       if (null != perspectiveDef)
       {
