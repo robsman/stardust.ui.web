@@ -367,13 +367,15 @@ public class I18nUtils
       }
       try
       {
-         // Used StringEscapeUtils.escapeHtml to escape special characters in Java.
-         // Ex. <,> with &lt; &gt;
-         label = StringEscapeUtils.escapeHtml(Localizer.getString(key));
+         
+         label = Localizer.getString(key);
          if (null == label && isComputedCaseDataPath(element))
          {
             label = findMatchingCaseDataPathLabel((DataPath) element, mode);
          }
+         // Used StringEscapeUtils.escapeHtml to escape special characters in Java.
+         // Ex. <,> with &lt; &gt;
+         label = StringEscapeUtils.escapeHtml(label);
       }
       catch (Exception e)
       {
