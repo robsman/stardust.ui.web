@@ -281,9 +281,9 @@ div#loginBox .buttonContainer input{
 }
 
 .rightContentTd{
+	padding-top: 10px;
 	vertical-align: top;
 	height: 100%;
-	background:url(../images/toolbar-shadow.jpg) top repeat-x;
 }
 
 .toolbar{
