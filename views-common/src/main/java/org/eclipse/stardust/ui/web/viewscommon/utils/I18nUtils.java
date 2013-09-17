@@ -14,6 +14,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -366,7 +367,9 @@ public class I18nUtils
       }
       try
       {
-         label = Localizer.getString(key);
+         // Used StringEscapeUtils.escapeHtml to escape special characters in Java.
+         // Ex. <,> with &lt; &gt;
+         label = StringEscapeUtils.escapeHtml(Localizer.getString(key));
          if (null == label && isComputedCaseDataPath(element))
          {
             label = findMatchingCaseDataPathLabel((DataPath) element, mode);
