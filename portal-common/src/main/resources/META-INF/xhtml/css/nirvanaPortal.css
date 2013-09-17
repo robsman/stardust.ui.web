@@ -356,13 +356,17 @@ html, body {
 	padding: 0 10px;
 }
 
+.breadcrumbViewToolraWrapper{
+	border-bottom: 1px solid #DDDDDD;
+}
+
 .breadcrumbs{
-	border-bottom: 0 dotted #DDDDDD;
 	height: 25px;
 	line-height: 25px;
 	white-space: nowrap;
-	padding-left:15px;
 	width: auto;
+	padding-left: 8px;
+	float: left;
 }
 
 .breadcrumbs a{

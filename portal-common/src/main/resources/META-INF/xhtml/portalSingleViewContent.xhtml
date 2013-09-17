@@ -11,16 +11,18 @@
 		<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height: 100%">
 			<tr>
 				<td class="rightContentTd">
-					<ui:include src="portalSingleViewBreadCrumb.xhtml" />
 					<div class="content">
 						<f:subview id="subView">
 							<ice:panelGroup>
 								<ice:form partialSubmit="false">
-									<ui:include src="portalSingleViewToolbar.xhtml" />
-				                    <pc:tabScoped currentTab="#{ippPortalAppSingleView.view}">
-									    <ui:include src="portalUserDefinedInclude.xhtml">
-										    <ui:param name="includeFilePath" value="#{ippPortalAppSingleView.view.path}" />
-									    </ui:include>
+									<div class="breadcrumbViewToolraWrapper">
+										<ui:include src="portalSingleViewBreadCrumb.xhtml" />
+										<ui:include src="portalSingleViewToolbar.xhtml" />
+									</div>
+									<pc:tabScoped currentTab="#{ippPortalAppSingleView.view}">
+										<ui:include src="portalUserDefinedInclude.xhtml">
+											<ui:param name="includeFilePath" value="#{ippPortalAppSingleView.view.path}" />
+									   </ui:include>
 									</pc:tabScoped>
 								</ice:form>
 							</ice:panelGroup>
