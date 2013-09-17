@@ -323,6 +323,10 @@ define(
 
 					this.additionalBeanSpecificationTextarea
 						.val(this.getApplication().attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
+					if(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]==null || !this.getApplication().attributes["carnot:engine:camel::invocationPattern"] 
+					&&(this.getApplication().attributes["carnot:engine:camel::invocationType"]==null || !this.getApplication().attributes["carnot:engine:camel::invocationType"])){
+						this.sendSynchronous();
+					}
 
 					this.invocationPatternInput
 							.val(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]);
