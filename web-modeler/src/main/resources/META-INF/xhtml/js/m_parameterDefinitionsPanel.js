@@ -819,7 +819,7 @@ define(
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
 						// on server
-						name : "New " + n,
+						name : "New " + n, // TODO - i18n
 						direction : "IN",
 						dataFullId : null,
 						dataPath : null
@@ -875,14 +875,16 @@ define(
 				 */
 				ParameterDefinitionsPanel.prototype.getNextIdIndex = function() {
 					var n = 0;
-					var idExists = true;
-					while (idExists) {
+					var idOrNameExists = true;
+					while (idOrNameExists) {
 						n++;
 						var newId = "New_" + n;
-						var idExists = false;
+						var newName = "New " + n;  // TODO - i18n
+						var idOrNameExists = false;
 						for (var i = 0; i < this.parameterDefinitions.length; i++) {
-							if (this.parameterDefinitions[i].id === newId) {
-								idExists = true;
+							if (this.parameterDefinitions[i].id === newId
+									|| this.parameterDefinitions[i].name === newName) {
+								idOrNameExists = true;
 								break;
 							}
 						}
