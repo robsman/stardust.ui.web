@@ -15,7 +15,7 @@ define(['portal-shell/js/shell'], function(shell) {
                 function calc() {
                     var elemOffset = element.offset();
                     if(elemOffset.top < shellSizes.windowHeight) {
-                        element.outerHeight(shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight - 16);
+                        element.outerHeight(shellSizes.windowHeight - elemOffset.top - shellSizes.footerHeight);
                     }
                 }
 
