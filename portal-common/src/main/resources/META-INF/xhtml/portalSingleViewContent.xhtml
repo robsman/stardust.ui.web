@@ -15,10 +15,14 @@
 						<f:subview id="subView">
 							<ice:panelGroup>
 								<ice:form partialSubmit="false">
-									<div class="breadcrumbViewToolraWrapper">
-										<ui:include src="portalSingleViewBreadCrumb.xhtml" />
-										<ui:include src="portalSingleViewToolbar.xhtml" />
-									</div>
+									<ice:panelGrid columns="2" cellspacing="0" cellpadding="0" style="width: 100%;">
+										<ice:panelGroup>
+											<ui:include src="portalSingleViewBreadCrumb.xhtml" />
+										</ice:panelGroup>
+										<ice:panelGroup>
+											<ui:include src="portalSingleViewToolbar.xhtml" />
+										</ice:panelGroup>
+									</ice:panelGrid>
 									<pc:tabScoped currentTab="#{ippPortalAppSingleView.view}">
 										<ui:include src="portalUserDefinedInclude.xhtml">
 											<ui:param name="includeFilePath" value="#{ippPortalAppSingleView.view.path}" />
