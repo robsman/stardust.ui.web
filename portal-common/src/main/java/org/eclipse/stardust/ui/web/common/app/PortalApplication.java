@@ -153,7 +153,7 @@ public class PortalApplication
     */
    public void afterPropertiesSet() throws Exception
    {
-   	  // eagerly instantiate label provider to be able to access it via REST API
+      // eagerly instantiate label provider to be able to access it via REST API
       MessagePropertiesBean.getInstance();
 
       launchPanelsActivated = true;
