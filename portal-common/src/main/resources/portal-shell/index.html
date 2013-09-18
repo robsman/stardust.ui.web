@@ -72,85 +72,85 @@
 		
 		<!-- Main Content (Sidebar and Views) -->
 		<div class="container-fluid">
-					<!-- Sidebar -->
-					<div style="float: left; width: {{config.sidebar.width}}px;">
-						<div class="sidebar-title">{{config.sidebar.title}}</div>
-						<div class="sidebars" style="width: 350px;">
-							<div ng-repeat="item in sidebars">
-								<div id="sidebar" class="sidebar" style="width: {{config.sidebar.width}}px;">
-									<div id="sidebar-content" class="sidebar-content" sg-stretch-to-bottom>
-										<div class="sidebar-content-inner">
-											<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
-												<ng-include src="item.partial"/>
+			<!-- Sidebar -->
+			<div style="float: left; width: {{config.sidebar.width}}px;">
+				<div class="sidebar-title">{{config.sidebar.title}}</div>
+				<div class="sidebars" style="width: 350px;">
+					<div ng-repeat="item in sidebars">
+						<div id="sidebar" class="sidebar" style="width: {{config.sidebar.width}}px;">
+							<div id="sidebar-content" class="sidebar-content" sg-stretch-to-bottom>
+								<div class="sidebar-content-inner">
+									<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
+										<ng-include src="item.partial"/>
+									</div>
+								</div>
+								<div class="sidebar-separator"></div>
+							</div>
+							<div>
+								<!-- Controls to Toggle Sidebar -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div style="margin-left: {{config.sidebar.width}}px;">
+				<!-- Nav Bar with Tabs -->
+				<div class="shell-tabs-bar">
+					<div class="nav-tabs">
+						<div class="nav-tabs-row">
+							<div class="nav-tab-shell-home" ng-mouseleave="topMenu.close()">
+								<button class="shell-home" ng-click="topMenu.toggle()"></button>
+								<div ng-if="topMenu.visible" class="top-menu">
+									<div ng-repeat="topMenuItem in topMenu.items">
+										<div class="topMenuItemHeader">
+											{{topMenuItem.label}}
+											<div ng-repeat="childMenuItem in topMenuItem.children"
+												class="topMenuItemLabel"
+												ng-click="topMenu.openItem(childMenuItem.path, $event)">
+												{{childMenuItem.label}}
 											</div>
 										</div>
-										<div class="sidebar-separator"></div>
 									</div>
-									<div>
-										<!-- Controls to Toggle Sidebar -->
+								</div>
+							</div>
+							<div class="nav-tab" ng-repeat="tab in tabs">
+								<div title="{{tab.title}}" ng-click="open(tab.path, $event)"
+									class="{{ {true: 'nav-tab-active', false: 'nav-tab-inactive'}[activeViewPanel().path === tab.path] }}">
+									<div class="nav-tab-label-icon-wrapper">
+										<span class="{{tab.icon}}"></span>
+										<span class="nav-tab-label">{{tab.label}}</span>
+									</div>
+								</div>
+								<span ng-click="close(tab.path)"
+									class="nav-tab-close {{ {true: 'nav-active-tab-close', false: 'nav-inactive-tab-close'}[activeViewPanel().path === tab.path] }}">x</span>
+							</div>
+							<div class="filler-cell"></div>
+							<div class="nav-overflow-tab" ng-if="overflowTabs.tabs.length > 0" ng-mouseleave="overflowTabs.close()">
+								<div ng-click="overflowTabs.toggle()" class="nav-overflow-tab-title">({{overflowTabs.tabs.length}})</div> 
+								<div ng-if="overflowTabs.visible" class="overflow-tabs">
+									<div ng-repeat="overflowTab in overflowTabs.tabs" class="nav-overflow-tab-item"
+										ng-click="overflowTabs.openView(overflowTab.path, $event)">
+										<div class="nav-overflow-tab-label-icon-wrapper">
+											<span class="{{overflowTab.icon}}"></span>
+											<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					
-					<div style="margin-left: {{config.sidebar.width}}px;">
-						<!-- Nav Bar with Tabs -->
-						<div class="shell-tabs-bar">
-							<div class="nav-tabs">
-								<div class="nav-tabs-row">
-									<div class="nav-tab-shell-home" ng-mouseleave="topMenu.close()">
-										<button class="shell-home" ng-click="topMenu.toggle()"></button>
-										<div ng-if="topMenu.visible" class="top-menu">
-											<div ng-repeat="topMenuItem in topMenu.items">
-												<div class="topMenuItemHeader">
-													{{topMenuItem.label}}
-													<div ng-repeat="childMenuItem in topMenuItem.children"
-														class="topMenuItemLabel"
-														ng-click="topMenu.openItem(childMenuItem.path, $event)">
-														{{childMenuItem.label}}
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="nav-tab" ng-repeat="tab in tabs">
-										<div title="{{tab.title}}" ng-click="open(tab.path, $event)"
-											class="{{ {true: 'nav-tab-active', false: 'nav-tab-inactive'}[activeViewPanel().path === tab.path] }}">
-											<div class="nav-tab-label-icon-wrapper">
-												<span class="{{tab.icon}}"></span>
-												<span class="nav-tab-label">{{tab.label}}</span>
-											</div>
-										</div>
-										<span ng-click="close(tab.path)"
-											class="nav-tab-close {{ {true: 'nav-active-tab-close', false: 'nav-inactive-tab-close'}[activeViewPanel().path === tab.path] }}">x</span>
-									</div>
-									<div class="filler-cell"></div>
-									<div class="nav-overflow-tab" ng-if="overflowTabs.tabs.length > 0" ng-mouseleave="overflowTabs.close()">
-										<div ng-click="overflowTabs.toggle()" class="nav-overflow-tab-title">({{overflowTabs.tabs.length}})</div> 
-										<div ng-if="overflowTabs.visible" class="overflow-tabs">
-											<div ng-repeat="overflowTab in overflowTabs.tabs" class="nav-overflow-tab-item"
-												ng-click="overflowTabs.openView(overflowTab.path, $event)">
-												<div class="nav-overflow-tab-label-icon-wrapper">
-													<span class="{{overflowTab.icon}}"></span>
-													<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="shell-tabs-spacer"></div>
-						<div class="view-panels">
-							<div ng-repeat="panel in panels">
-								<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"
-									class="{{ {true: 'view-panel-active', false: 'view-panel-inactive'}[activeViewPanel().path === panel.path] }}">
-									<ng-include ng-if="viewPanelCheck(panel)" src="panel.partial"></ng-include>
-								</div>
-							</div>
+				</div>
+				<div class="shell-tabs-spacer"></div>
+				<div class="view-panels">
+					<div ng-repeat="panel in panels">
+						<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"
+							class="{{ {true: 'view-panel-active', false: 'view-panel-inactive'}[activeViewPanel().path === panel.path] }}">
+							<ng-include ng-if="viewPanelCheck(panel)" src="panel.partial"></ng-include>
 						</div>
 					</div>
+				</div>
+			</div>
 		</div>
 
 		<!-- Footer -->
