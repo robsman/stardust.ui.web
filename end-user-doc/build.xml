@@ -29,6 +29,7 @@
    <import file="../../build.tools/commons-build.xml" />
 
    <property name="documentation.dir" location="../../documentation" />
+   <property name="misc.dir" value="${documentation.dir}/org.eclipse.stardust.docs.misc" />
 
 	<target name="init">
 		<property name="build.dir" location="${project.dir}/build"/>
@@ -48,7 +49,7 @@
 
       <property name="enduser.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.enduser"/>
       <property name="bpm.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.analyst"/>
-      <property name="misc.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.misc/html/portal"/>
+      <property name="misc.doc.path" location="${misc.dir}/html/portal"/>
 
 		<property name="end.user.doc.jarfile" value="${artifactId}.jar" />
 		<property name="end.user.doc.jar" location="${build.lib}/${end.user.doc.jarfile}" />

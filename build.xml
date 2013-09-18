@@ -103,6 +103,7 @@
          <additional-properties>
             <property name="product.properties.file" value="${product.properties.file}"/>
             <property name="styles.dir" location="${styles.dir}"/>
+            <property name="misc.dir" location="${misc.dir}"/>
          </additional-properties>
       </invoke-subproject>
    </target> 
