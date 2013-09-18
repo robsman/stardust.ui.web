@@ -34,7 +34,7 @@ define(['portal-shell/js/shell'], function (shell) {
             var activePanelPath;
             var tabs = [];
             
-            var MAX_TABS = 3; // TODO
+            var MAX_TABS = 4; // TODO
             var displayTabs = [];
             var overflowTabs = [];
 
