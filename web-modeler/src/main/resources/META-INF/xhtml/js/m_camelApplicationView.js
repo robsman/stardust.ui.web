@@ -165,10 +165,18 @@ define(
 					// + "'></img><span class='tabLabel' id='" + id + "'>"
 					// + name + "</span> </a></li>");
 
-					lastListItem.before("<li><a href='#" + id
-							+ "Tab'><img src='" + icon
-							+ "'></img><span class='tabLabel' id='" + id + "'>"
-							+ name + "</span> </a></li>");
+					// TODO - need a better way of sequencing the properties tabs 
+					if (id === "parameters") {
+						lastListItem.before("<li><a href='#" + id
+								+ "Tab'><img src='" + icon
+								+ "'></img><span class='tabLabel' id='" + id + "'>"
+								+ name + "</span> </a></li>");
+					} else {
+						lastListItem.after("<li><a href='#" + id
+								+ "Tab'><img src='" + icon
+								+ "'></img><span class='tabLabel' id='" + id + "'>"
+								+ name + "</span> </a></li>");	
+					}
 
 					var elem = m_utils.jQuerySelect("#" + scope + " #" + id + "Tab")
 					var html = elem.html();

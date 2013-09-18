@@ -31,10 +31,10 @@ define(
 
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"parameters", "Parameters",
-							"plugins/bpm-modeler/images/icons/mapping.gif");
+							"plugins/bpm-modeler/images/icons/database_link.png");
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"drl", "DRL",
-							"plugins/bpm-modeler/images/icons/bricks.png");
+							"plugins/bpm-modeler/images/icons/script.png");
 
 					this.typeDeclarationsTextarea = m_utils
 							.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");

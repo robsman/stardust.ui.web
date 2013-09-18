@@ -32,9 +32,9 @@ define(
 
 					this.view.insertPropertiesTab("restServiceOverlay",
 							"parameters", "Parameters",
-							"plugins/bpm-modeler/images/icons/table.png");
+							"plugins/bpm-modeler/images/icons/database_link.png");
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
-							"Test", "plugins/bpm-modeler/images/icons/table.png");
+							"Test", "plugins/bpm-modeler/images/icons/application-run.png");
 
 					this.uriInput = m_utils.jQuerySelect("#restServiceOverlay #uriInput");
 					this.queryStringLabel = m_utils.jQuerySelect("#restServiceOverlay #queryStringLabel");

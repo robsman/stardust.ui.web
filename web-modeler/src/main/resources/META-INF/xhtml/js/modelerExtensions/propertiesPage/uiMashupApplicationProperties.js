@@ -24,7 +24,7 @@ define(
 							visibility : "preview",
 							pageName : m_i18nUtils
 									.getProperty("modeler.model.propertyView.uiMashup.test.title"),
-							pageIconUrl : "plugins/bpm-modeler/images/icons/arrow_refresh.png"
+							pageIconUrl : "plugins/bpm-modeler/images/icons/application-run.png"
 						},
 						{
 							panelId : "uiMashupApplicationView",
