@@ -51,17 +51,19 @@
 		<!-- Header --> 
 		<header class="app-header">
 			<div class="header">
-				<div class="header-row">
-					<div class="header-cell app-logo"></div>
-					<div class="header-cell app-title">{{config.appTitle}}</div>
-					<div class="header-cell">
-						<!-- Utility Menu -->
-						<div class="header">
-							<div class="header-row">
-								<div class="filler-cell"></div>
-								<div ng-repeat="item in utilityItems" class="header-cell utility-item">
-									<span class="{{item.icon}}"></span>
-									<span class="utility-item-label">{{item.label}}</span>
+				<div class="header-table">
+					<div class="header-row">
+						<div class="header-cell app-logo"></div>
+						<div class="header-cell app-title">{{config.appTitle}}</div>
+						<div class="header-cell">
+							<!-- Utility Menu -->
+							<div class="header">
+								<div class="header-row">
+									<div class="filler-cell"></div>
+									<div ng-repeat="item in utilityItems" class="header-cell utility-item">
+										<span class="{{item.icon}}"></span>
+										<span class="utility-item-label">{{item.label}}</span>
+									</div>
 								</div>
 							</div>
 						</div>
