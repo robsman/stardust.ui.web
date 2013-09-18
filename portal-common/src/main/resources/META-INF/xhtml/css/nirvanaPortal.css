@@ -356,18 +356,12 @@ html, body {
 	padding: 0 10px;
 }
 
-.breadcrumbViewToolraWrapper{
-	border-bottom: 1px solid #DDDDDD;
-}
-
 .viewToolbar {
-	height: 28px;
 	line-height: 28px;
 	text-align: right;
 }
 
 .breadcrumbs{
-	height: 25px;
 	line-height: 25px;
 	white-space: nowrap;
 	width: auto;
