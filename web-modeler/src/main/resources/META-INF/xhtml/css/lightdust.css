@@ -135,7 +135,7 @@ input[type=text].rightAligned {
 }
 
 input[type="checkbox"] {
-	margin: 0 0 2px 0 !important;
+	margin: 0 5px 2px 0 !important;
 }
 
 input[type="radio"] {
@@ -211,7 +211,6 @@ table.layoutTable tr {
 }
 
 table.layoutTable td {
-	padding: 2px;
 	margin: 0px;
 	vertical-align: top;
 }
