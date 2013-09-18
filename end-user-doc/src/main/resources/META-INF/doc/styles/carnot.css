@@ -379,6 +379,13 @@ li.collapse {
     display:none;
 }
 
+li.hideReference {
+}
+
+li.showReference {
+    display:none;
+}
+
 .tip {
     color: #FF0000;
     font-size: 14pt;
