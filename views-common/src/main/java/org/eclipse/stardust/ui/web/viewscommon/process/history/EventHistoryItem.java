@@ -25,13 +25,14 @@ import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionDelegat
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionStateChange;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventType;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.common.BpmPortalErrorMessages;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
-
 
 public class EventHistoryItem extends AbstractProcessHistoryTableEntry
 {
@@ -93,6 +94,12 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          type = EXCEPTION_TYPE;
          name = Localizer.getString(LocalizerKey.PH_EXCEPTION_TYPE);
          fullDetail = (String) event.getDetails();
+         if(StringUtils.isNotEmpty(fullDetail) && fullDetail.contains(PortalErrorClass.ACTIVITY_ALREADY_ACTIVATED.getId()))
+         {
+            fullDetail = BpmPortalErrorMessages.getString(PortalErrorClass.ACTIVITY_ALREADY_ACTIVATED.getId());
+         }
+         
+         
          break;
          
       case HistoricalEventType.EVENT_EXECUTION:
