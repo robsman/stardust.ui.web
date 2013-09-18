@@ -696,7 +696,7 @@ if (!window["BridgeUtils"].View) {
 					} else {
 						ret.width = left;
 					}
-					ret.height = BridgeUtils.getAbsoluteSize(sidebar.style.height);
+					ret.height = BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6;
 				}
 			});
 			
@@ -825,14 +825,23 @@ if (!window["BridgeUtils"].Dialog) {
 			invokedFromlaunchPanels = fromlaunchPanels;
 
 			var scrollWidth = document.body.scrollWidth;
+			var headerHeight = jQuery(".header").height();
+			var footerHeight = jQuery(".footer").height();
+			var contentHeight = jQuery(window).height() - headerHeight - footerHeight;
 
 			// Header
 			iframeForHeader.style.visibility = "visible";
 			iframeForHeader.style.width = scrollWidth + "px";
+			if (headerHeight) {
+				iframeForHeader.style.height = headerHeight + "px";
+			}
 
 			// Footer
 			iframeForFooter.style.visibility = "visible";
 			iframeForFooter.style.width = scrollWidth + "px";
+			if (footerHeight) {
+				iframeForFooter.style.height = footerHeight + "px";
+			}
 
 			// Sidebar
 			var sidebar = document.getElementById("sidebar");
@@ -842,8 +851,12 @@ if (!window["BridgeUtils"].Dialog) {
 				if (!sidebarPinned) {
 					sidebar.style.display = "none";
 				}
+				
+				if (headerHeight) {
+					iframeForSidebar.style.top = headerHeight + "px";
+				}
 				iframeForSidebar.style.width = (sidebarDetails.width) + "px";
-				iframeForSidebar.style.height = (sidebarDetails.height - 6) + "px";
+				iframeForSidebar.style.height = (sidebarDetails.height) + "px";
 				iframeForSidebar.style.visibility = "visible";
 				
 				// Activate the View, if fromView is not visible
@@ -864,7 +877,7 @@ if (!window["BridgeUtils"].Dialog) {
 
 				// New Size
 				var newWidth = scrollWidth + "px";
-				var newHeight = (sidebarDetails.height - 6) + "px";
+				var newHeight = (sidebarDetails.height) + "px";
 
 				// Launch Panels iframe				
 				launchPanelIframe = document.getElementById("modelerLaunchPanels");
@@ -877,6 +890,11 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframe.style.width = newWidth;
 				launchPanelIframe.style.height = newHeight;
 
+				if (headerHeight) {
+					launchPanelIframe.style.top = headerHeight + "px";
+					launchPanelIframe.style.left = 0 + "px";
+				}
+				
 				// Sometimes ICE Modal frame retain old size. So resize that too
 				var iceModalFrame;
 				var iframes = launchPanelIframe.contentDocument.getElementsByTagName("iframe");

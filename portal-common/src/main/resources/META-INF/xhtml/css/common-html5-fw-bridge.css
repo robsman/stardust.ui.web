@@ -17,7 +17,6 @@
 	position: fixed;
 	left: 0;
 	top: 0;
-	width: 0px;
 	height: 91px;
 }
 
@@ -31,7 +30,6 @@
 	position: fixed;
 	left: 0;
 	bottom: 0;
-	width: 0px;
 	height: 56px;
 }
 
@@ -45,8 +43,6 @@
 	position: fixed;
 	left: 0;
 	top: 90px;
-	height: 0px;
-	width: 41px;
 }
 
 .gray-out-sidebar-view {
