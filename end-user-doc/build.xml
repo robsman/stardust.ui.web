@@ -44,9 +44,11 @@
       <property name="build.src.doc" location="${build.src}/META-INF/doc" />
       <property name="build.src.bpmdoc" location="${build.src.doc}/bpm" />
       <property name="build.src.portaldoc" location="${build.src.doc}/portal" />
+      <property name="build.src.miscdoc" location="${build.src.doc}/misc" />
 
       <property name="enduser.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.enduser"/>
       <property name="bpm.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.analyst"/>
+      <property name="misc.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.misc/html/portal"/>
 
 		<property name="end.user.doc.jarfile" value="${artifactId}.jar" />
 		<property name="end.user.doc.jar" location="${build.lib}/${end.user.doc.jarfile}" />
@@ -58,6 +60,7 @@
       <mkdir dir="${build.src.doc}"/>
 		<mkdir dir="${build.src.bpmdoc}"/>
 		<mkdir dir="${build.src.portaldoc}"/>
+      <mkdir dir="${build.src.miscdoc}"/>
 	</target>
 
 	<target name="prepareSources" depends="initBuildDirectories">
@@ -118,6 +121,12 @@
             <include name="**/*.htm"/>
          </fileset>
          <filterset refid="filter.product" />
+         <!-- only for navigation to components chapters moved to misc plugins -->
+         <filterchain>
+             <tokenfilter>
+                 <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
+             </tokenfilter>
+         </filterchain>
       </copy>
       <copy todir="${build.src.portaldoc}" >
          <fileset dir="${enduser.doc.path}/html/handbooks">
@@ -126,6 +135,28 @@
             <include name="**/*.jpg"/>
          </fileset>
       </copy>
+      
+      <!-- copy portal issues residing in misc plugins -->
+      <copy todir="${build.src.miscdoc}" overwrite="true">
+         <fileset dir="${misc.doc.path}">
+            <include name="**/*.html"/>
+            <include name="**/*.htm"/>
+            <exclude name="toc.html" />
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                 <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
+      <copy todir="${build.src.miscdoc}" >
+         <fileset dir="${misc.doc.path}">
+            <include name="**/*.png"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+         </fileset>
+      </copy>     
 	</target>
 
    <target name="init.ivy">
