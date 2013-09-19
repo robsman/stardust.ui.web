@@ -98,40 +98,30 @@ define(
 					});
 					this.inputBodyAccessPointInput
 							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
-
+								
 								if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inBodyAccessPoint",
-													null);
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::inBodyAccessPoint",
+												null);
 								} else {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inBodyAccessPoint",
-													self.inputBodyAccessPointInput
-															.val());
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::inBodyAccessPoint",
+												self.inputBodyAccessPointInput
+													.val());
 								}
 							});
 					this.outputBodyAccessPointInput
 							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
-
+								
 								if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outBodyAccessPoint",
-													null);
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::outBodyAccessPoint",
+												null);
 								} else {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outBodyAccessPoint",
-													self.outputBodyAccessPointInput
-															.val());
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::outBodyAccessPoint",
+												self.outputBodyAccessPointInput
+													.val());
 								}
 							});
 
@@ -584,7 +574,18 @@ define(
 									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
 											.prop("checked")
 								}
-							});
+							}, true);
+				};
+				
+				RestServiceOverlay.prototype.submitSingleAttributeChange = function(attribute, value) {
+					
+					if (this.getModelElement().attributes[attribute] != value) {
+						var modelElement = {
+							attributes : {}
+						};
+						modelElement.attributes[attribute] = value;
+						this.view.submitChanges(modelElement, true);
+					}
 				};
 
 				/**
