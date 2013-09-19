@@ -697,9 +697,13 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
                endEvent = (EndEvent) event;
             }
 
-            endEvent.getEventDefinitions().add(
-                  getEventDefinitionForEventClass(eventJson.get(
-                        ModelerConstants.EVENT_CLASS_PROPERTY).getAsString()));
+            String eventClass = extractString(eventJson,
+                  ModelerConstants.EVENT_CLASS_PROPERTY);
+            if (!isEmpty(eventClass))
+            {
+               endEvent.getEventDefinitions().add(
+                     getEventDefinitionForEventClass(eventClass));
+            }
          }
       }
 

@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.deepCopy;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
@@ -8,6 +10,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -90,6 +93,17 @@ public class ModelConverter
 
       trace.info("Created new model: " + modelUuid + " / " + modelId);
 
+      for (Map.Entry<String, JsonElement> typeEntry : modelJto.typeDeclarations.entrySet())
+      {
+         JsonObject typeJson = typeEntry.getValue().getAsJsonObject();
+
+         assert "typeDeclaration".equals(extractAsString(typeJson,
+               ModelerConstants.TYPE_PROPERTY));
+
+         // TODO map new to old ID
+         recreateTypeDeclaration(typeJson, conversionContext);
+      }
+
       for (Map.Entry<String, JsonElement> variableEntry : modelJto.dataItems.entrySet())
       {
          JsonObject variableJson = variableEntry.getValue().getAsJsonObject();
@@ -101,7 +115,7 @@ public class ModelConverter
          recreateVariable(variableJson, conversionContext);
       }
 
-      // TODO recreate participants
+      recreateParticipants(modelJto.participants, conversionContext);
 
       for (Map.Entry<String, JsonElement> processEntry : modelJto.processes.entrySet())
       {
@@ -114,6 +128,46 @@ public class ModelConverter
       }
 
       return modelId;
+   }
+
+   private void recreateTypeDeclaration(JsonObject typeJson,
+         ModelConversionContext modelConversionContext)
+   {
+      if (0 < System.currentTimeMillis())
+      {
+         throw new UnsupportedOperationException("Not yet implemented.");
+      }
+
+      JsonObject newTypeJson = new JsonObject();
+      newTypeJson.addProperty(ModelerConstants.NAME_PROPERTY,
+            extractAsString(typeJson, ModelerConstants.NAME_PROPERTY));
+
+      // TODO handle non-primitive types as well
+      newTypeJson.addProperty(ModelerConstants.PRIMITIVE_TYPE,
+            extractAsString(typeJson, ModelerConstants.PRIMITIVE_TYPE));
+      if (null == extractAsString(newTypeJson, ModelerConstants.PRIMITIVE_TYPE))
+      {
+         newTypeJson.addProperty(ModelerConstants.PRIMITIVE_TYPE,
+               ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+      }
+      JsonObject createVariableChanges = applyChange(modelConversionContext.newModelId(),
+            "primitiveData.create", modelConversionContext.newModelId(), newTypeJson);
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Create data response: " + createVariableChanges);
+      }
+
+      JsonArray newVariablesJson = createVariableChanges.getAsJsonArray("added");
+      if (0 == newVariablesJson.size())
+      {
+         newVariablesJson = createVariableChanges.getAsJsonArray("modified");
+      }
+      String variableUuid = extractAsString(newVariablesJson.get(0).getAsJsonObject(),
+            "uuid");
+      String variableId = extractAsString(newVariablesJson.get(0).getAsJsonObject(), "id");
+
+      modelConversionContext.registerNewDataId(extractString(typeJson, ModelerConstants.ID_PROPERTY), variableId);
    }
 
    private void recreateVariable(JsonObject variableJson,
@@ -149,6 +203,102 @@ public class ModelConverter
       String variableId = extractAsString(newVariablesJson.get(0).getAsJsonObject(), "id");
 
       modelConversionContext.registerNewDataId(extractString(variableJson, ModelerConstants.ID_PROPERTY), variableId);
+   }
+
+   private void recreateParticipants(JsonObject participantsJson,
+         ModelConversionContext conversionContext)
+   {
+      List<JsonObject> pendingParticipants = newArrayList();
+      for (Map.Entry<String, JsonElement> participantEntry : participantsJson.entrySet())
+      {
+         JsonObject participantJson = participantEntry.getValue().getAsJsonObject();
+
+         String participantType = extractAsString(participantJson,
+               ModelerConstants.TYPE_PROPERTY);
+         assert ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY.equals(participantType)
+               || ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY
+                     .equals(participantType)
+               || ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY
+                     .equals(participantType);
+
+         pendingParticipants.add(participantJson);
+      }
+
+      Set<String> convertedParticipants = newHashSet();
+      while ( !pendingParticipants.isEmpty())
+      {
+         for (JsonObject participantJson : pendingParticipants)
+         {
+            // convert participants starting from root of inheritance hierarchy
+            if (!participantJson.has(ModelerConstants.PARENT_UUID_PROPERTY)
+                  || convertedParticipants.contains(extractString(participantJson,
+                        ModelerConstants.PARENT_UUID_PROPERTY)))
+            {
+               // TODO map new to old ID
+               recreateParticipant(participantJson, conversionContext);
+
+               convertedParticipants.add(extractString(participantJson,
+                     ModelerConstants.UUID_PROPERTY));
+
+               pendingParticipants.remove(participantJson);
+               break;
+            }
+         }
+      }
+   }
+
+   private void recreateParticipant(JsonObject participantJson,
+         ModelConversionContext modelConversionContext)
+   {
+      JsonObject newParticipantJson = new JsonObject();
+      newParticipantJson.addProperty(ModelerConstants.NAME_PROPERTY,
+            extractAsString(participantJson, ModelerConstants.NAME_PROPERTY));
+
+      String createCommand = null;
+      String participantType = extractString(participantJson, ModelerConstants.TYPE_PROPERTY);
+      if (ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY.equals(participantType))
+      {
+         createCommand = "role.create";
+      }
+      else if (ModelerConstants.ORGANIZATION_PARTICIPANT_TYPE_KEY.equals(participantType))
+      {
+         createCommand = "organization.create";
+      }
+      else if (ModelerConstants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE_KEY.equals(participantType))
+      {
+         createCommand = "conditionalPerformer.create";
+      }
+      else
+      {
+         throw new IllegalArgumentException("Unexpected participant type: " + participantType);
+      }
+
+      String contextElementId = modelConversionContext.newModelId();
+      if (participantJson.has(ModelerConstants.PARENT_UUID_PROPERTY))
+      {
+         // resolve new parent UUID
+         contextElementId = modelConversionContext.newParticipantUuid(extractString(
+               participantJson, ModelerConstants.PARENT_UUID_PROPERTY));
+      }
+
+      JsonObject newParticipantJson2 = applyCreateCommand(
+            modelConversionContext.newModelId(), createCommand, contextElementId,
+            newParticipantJson, participantType);
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Create participant response: " + newParticipantJson2);
+      }
+
+      String newParticipantUuid = extractAsString(newParticipantJson2, ModelerConstants.UUID_PROPERTY);
+      String newParticipantId = extractAsString(newParticipantJson2, ModelerConstants.ID_PROPERTY);
+
+      modelConversionContext.registerNewParticipantId(
+            extractString(participantJson, ModelerConstants.ID_PROPERTY),
+            newParticipantId);
+      modelConversionContext.registerNewParticipantUuid(
+            extractString(participantJson, ModelerConstants.UUID_PROPERTY),
+            newParticipantUuid);
    }
 
    private void recreateProcess(String newModelId, ProcessEntryJto processJto,
@@ -536,7 +686,7 @@ public class ModelConverter
       }
 
       String symbolType = extractString(connectionSymbolJson, ModelerConstants.TYPE_PROPERTY);
-      long oldConnectionOid = extractLong(connectionJson, ModelerConstants.OID_PROPERTY);
+//      long oldConnectionOid = extractLong(connectionJson, ModelerConstants.OID_PROPERTY);
       for (JsonElement addedElementJson : changesJson.getAsJsonArray("added"))
       {
          if (symbolType.equals(extractString(
@@ -564,10 +714,10 @@ public class ModelConverter
       return applyCreateCommand(modelUuid, commandId, null, changeJson, expectedResult);
    }
 
-   private JsonObject applyCreateCommand(String modelUuid, String commandId, String contextElementId,
+   private JsonObject applyCreateCommand(String modelUuid, String commandId, Object contextElementId,
          JsonObject changeJson, String expectedResult)
    {
-      JsonObject responseJson = applyChange(modelUuid, commandId, contextElementId, changeJson);
+      JsonObject responseJson = doApplyChange(modelUuid, commandId, contextElementId, changeJson);
 
       if (trace.isDebugEnabled())
       {
@@ -591,6 +741,18 @@ public class ModelConverter
    }
 
    private JsonObject applyChange(String modelId, String commandId,
+         String contextElementId, JsonObject changeJson)
+   {
+      return doApplyChange(modelId, commandId, contextElementId, changeJson);
+   }
+
+   private JsonObject applyChange(String modelId, String commandId,
+         long contextElementId, JsonObject changeJson)
+   {
+      return doApplyChange(modelId, commandId, contextElementId, changeJson);
+   }
+
+   private JsonObject doApplyChange(String modelId, String commandId,
          Object contextElementId, JsonObject changeJson)
    {
       JsonObject cmdJson = new JsonObject();
@@ -603,8 +765,16 @@ public class ModelConverter
       ((JsonArray) cmdJson.get("changeDescriptions")).add(new JsonObject());
       if (contextElementId instanceof String)
       {
-         ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).addProperty(
-               ModelerConstants.OID_PROPERTY, (String) contextElementId);
+         if (modelId.equals(contextElementId))
+         {
+            ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).addProperty(
+                  ModelerConstants.OID_PROPERTY, (String) contextElementId);
+         }
+         else
+         {
+            ((JsonObject) ((JsonArray) cmdJson.get("changeDescriptions")).get(0)).addProperty(
+                  ModelerConstants.UUID_PROPERTY, (String) contextElementId);
+         }
       }
       else if (contextElementId instanceof Long)
       {

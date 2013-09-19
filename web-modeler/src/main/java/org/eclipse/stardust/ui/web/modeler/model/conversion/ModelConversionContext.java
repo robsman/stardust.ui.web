@@ -18,6 +18,10 @@ public class ModelConversionContext
 
    private final Map<String, String> dataIdMapping = newHashMap();
 
+   private final Map<String, String> participantIdMapping = newHashMap();
+
+   private final Map<String, String> participantUuidMapping = newHashMap();
+
    private final Map<String, ProcessConversionContext> processContexts = newHashMap();
 
    public ModelConversionContext(String targetFormat)
@@ -49,6 +53,16 @@ public class ModelConversionContext
    public void registerNewDataId(String originalDataId, String newDataId)
    {
       dataIdMapping.put(originalDataId, newDataId);
+   }
+
+   public void registerNewParticipantId(String originalId, String newId)
+   {
+      participantIdMapping.put(originalId, newId);
+   }
+
+   public void registerNewParticipantUuid(String originalUuid, String newUuid)
+   {
+      participantUuidMapping.put(originalUuid, newUuid);
    }
 
    public String newModelId()
@@ -85,6 +99,20 @@ public class ModelConversionContext
       return dataIdMapping.containsKey(originalDataId)
             ? dataIdMapping.get(originalDataId)
             : originalDataId;
+   }
+
+   public String newParticipantId(String originalId)
+   {
+      return participantIdMapping.containsKey(originalId)
+            ? participantIdMapping.get(originalId)
+            : originalId;
+   }
+
+   public String newParticipantUuid(String originalUuid)
+   {
+      return participantUuidMapping.containsKey(originalUuid)
+            ? participantUuidMapping.get(originalUuid)
+            : originalUuid;
    }
 
    public ProcessConversionContext forProcess(String processId)
