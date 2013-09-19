@@ -38,7 +38,7 @@
       <from-view-id>/businessControlCenter.xhtml</from-view-id>
       <navigation-case>
          <from-outcome>pageRefresh</from-outcome>
-         <to-view-id>/faces/businessControlCenter.iface</to-view-id>
+         <to-view-id>businessControlCenter.iface</to-view-id>
          <redirect/>
       </navigation-case>
    </navigation-rule>
