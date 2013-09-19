@@ -85,12 +85,12 @@ define(
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "parametersTab",
-								submitHandler : this,
-								supportsOrdering : false,
-								supportsDataMappings : false,
-								supportsDescriptors : false,
-								supportsDataTypeSelection : true,
-								supportsDocumentTypes : false
+ 								submitHandler : this,
+ 								supportsOrdering : false,
+								supportsDataMappings : true,
+ 								supportsDescriptors : false,
+ 								supportsDataTypeSelection : true,
+ 								supportsDocumentTypes : false
 							});
 
 					var self = this;
