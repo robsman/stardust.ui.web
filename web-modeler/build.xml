@@ -51,21 +51,19 @@
    <target name="initBuild" depends="init">
       <property name="build.classes" value="${build.dir}/classes" />
       <property name="build.lib" value="${build.dir}/lib" />
-      <property name="build.lib.src" value="${build.dir}/src" />
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.src.none" location="${build.dir}/src-none" />
 
       <property name="web.modeler.jarfile" value="${artifactId}.jar" />
       <property name="web.modeler.jar" value="${build.lib}/${web.modeler.jarfile}" />
       <property name="web.modeler.src-jarfile" value="${artifactId}-sources.jar" />
-      <property name="web.modeler.src-jar" value="${build.lib.src}/${web.modeler.src-jarfile}" />
+      <property name="web.modeler.src-jar" value="${build.lib}/${web.modeler.src-jarfile}" />
    </target>
 
    <target name="initBuildDirectories" depends="initBuild">
       <mkdir dir="${build.classes}" />
       <mkdir dir="${build.lib}" />
       <mkdir dir="${build.src}" />
-      <mkdir dir="${build.lib.src}" />
       <mkdir dir="${build.src.none}" />
    </target>
 
@@ -147,7 +145,7 @@
    
    <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${project.dir}/ivy.xml" />
-      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}"  
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}"
          publishIvy="true" publishPom="true" />
    </target>
    

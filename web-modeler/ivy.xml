@@ -20,6 +20,8 @@
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
       <conf name="stardust-web-modeler-runtime" extends="stardust-web-modeler-compile" description="Web Modeler - Runtime Scope" />
 
+      <conf name="stardust-web-modeler-sources" description="Web Modeler - Sources" />
+
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
@@ -32,6 +34,7 @@
 
    <publications>
       <artifact name="stardust-web-modeler" type="jar" conf="stardust-web-modeler-compile,stardust-web-modeler-runtime" ext="jar" />
+      <artifact name="stardust-web-modeler" type="source" ext="jar" conf="stardust-web-modeler-sources" m:classifier="sources" />
       <artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" />
    </publications>
 
@@ -83,5 +86,6 @@
          <exclude org="org.hamcrest" module="hamcrest-core" />
       </dependency>
       <dependency org="com.google.guava" name="guava" rev="${guava.version}" conf="test->default" transitive="false"/>
+
    </dependencies>
 </ivy-module>
