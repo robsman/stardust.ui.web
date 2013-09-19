@@ -179,8 +179,13 @@ public class ProcessesView extends AbstractLaunchPanel implements
     */
    private void changeMouseCursorStyle(String style)
    {
-      PortalApplicationEventScript.getInstance().addEventScript(
-            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+      // InfinityBpm.Core is no longer available in Panama
+      // changeMouseCursorStyle() is moved to CommonUtils
+      // TODO - adjust code of CommonUtils and use accordingly
+      /*
+       * PortalApplicationEventScript.getInstance().addEventScript(
+       * "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+       */
    }
 
    public String getProfile()
