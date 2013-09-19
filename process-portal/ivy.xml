@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-workflow-perspective" type="jar" conf="ipp-workflow-perspective-compile, ipp-workflow-perspective-runtime, ipp-workflow-perspective-provided" />
-      <artifact name="ipp-workflow-perspective" type="jar" conf="ipp-workflow-perspective-sources" m:classifier="sources" />
+      <artifact name="ipp-workflow-perspective" type="source" ext="jar" conf="ipp-workflow-perspective-sources" m:classifier="sources" />
       
       <artifact name="ipp-workflow-perspective" type="pom" conf="pom" ext="pom" />
    </publications>

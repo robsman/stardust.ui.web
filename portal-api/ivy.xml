@@ -38,7 +38,7 @@
 
    <publications>
       <artifact name="ipp-portal-api" type="jar" conf="ipp-portal-api-compile, ipp-portal-api-runtime, ipp-portal-api-provided" />
-      <artifact name="ipp-portal-api" type="jar" conf="ipp-portal-api-sources" m:classifier="sources" />
+      <artifact name="ipp-portal-api" type="source" ext="jar" conf="ipp-portal-api-sources" m:classifier="sources" />
       
       <artifact name="ipp-portal-api" type="pom" conf="pom" ext="pom" />
    </publications>

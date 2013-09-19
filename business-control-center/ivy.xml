@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-business-control-center" type="jar" conf="ipp-business-control-center-compile, ipp-business-control-center-runtime, ipp-business-control-center-provided" />
-      <artifact name="ipp-business-control-center" type="jar" conf="ipp-business-control-center-sources" m:classifier="sources" />
+      <artifact name="ipp-business-control-center" type="source" ext="jar" conf="ipp-business-control-center-sources" m:classifier="sources" />
       
       <artifact name="ipp-business-control-center" type="pom" conf="pom" ext="pom" />
    </publications>
