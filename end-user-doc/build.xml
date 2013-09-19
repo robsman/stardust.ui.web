@@ -129,6 +129,17 @@
              </tokenfilter>
          </filterchain>
       </copy>
+      <!-- replace components level specific navigation to misc plugins -->
+      <copy todir="${build.src.portaldoc}/execution-clients/components" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks/execution-clients/components">
+            <include name="*.html"/>
+         </fileset>
+         <filterchain>
+             <tokenfilter>
+                 <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
       <copy todir="${build.src.portaldoc}" >
          <fileset dir="${enduser.doc.path}/html/handbooks">
             <include name="**/*.png"/>
