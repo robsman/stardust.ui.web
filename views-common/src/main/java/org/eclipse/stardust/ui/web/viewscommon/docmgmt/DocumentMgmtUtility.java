@@ -440,20 +440,7 @@ public class DocumentMgmtUtility
     */
    public static Folder getFolder(String path)
    {
-      Folder folder = null;
-      String searchString = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(path, "/");
-      searchString = DocumentMgmtUtility.replaceIllegalXpathSearchChars(searchString);
-      List<Folder> newlist = getDocumentManagementService().findFoldersByName(searchString, Folder.LOD_NO_MEMBERS);
-      for (Folder tempFolder : newlist)
-      {
-         if (path.equalsIgnoreCase(tempFolder.getPath()))
-         {
-            folder = tempFolder;
-            break;
-         }
-      }
-
-      return folder;
+      return getDocumentManagementService().getFolder(path);
    }
 
    /**

@@ -25,6 +25,7 @@
 		</c:forEach>
 		
 		<script>
+			var alreadyClicked = false;
 			function windowLoaded()
 			{
 				var iFrameId = #{activityDetailsBean.notesIframePopupId};
@@ -48,7 +49,23 @@
 			
 			function closeNotesIframe()
 			{
-				window.setTimeout(function() {parent.BridgeUtils.View.syncActiveView();},200);
+				if(alreadyClicked)
+				{
+					ev.preventDefault();
+					if (evt.stopPropagation){
+						evt.stopPropagation();
+					}
+				    if (evt.cancelBubble != null){ //Cancel event bubble
+					    evt.cancelBubble = true;
+					}
+					return false;
+				}
+				else
+				{
+					alreadyClicked = true;
+					window.setTimeout(function() {parent.BridgeUtils.View.syncActiveView();},200);
+					return true;
+				}
 			}
 			
 		</script>
