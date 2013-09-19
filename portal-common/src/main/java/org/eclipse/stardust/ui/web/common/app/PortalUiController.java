@@ -672,7 +672,7 @@ public class PortalUiController
       }
 
       // replace map
-      if (view != null && params != null && params.get("doNotCopyParams") == null)
+      if (view != null && !params.isEmpty() && params.get("doNotCopyParams") == null)
       {
          view.setViewParams(params);
       }
@@ -731,7 +731,7 @@ public class PortalUiController
             // Default createView = true
             String createView = params.get("createView");
             boolean create = isEmpty(createView) ? true : Boolean.parseBoolean(createView);
-
+            
             if (!create && null == findView(viewId, viewKey))
             {
                MessageDialog.addErrorMessage(MessagePropertiesBean.getInstance().getParamString(
