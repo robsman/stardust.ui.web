@@ -791,8 +791,8 @@ define(
 									+ "."
 									+ element.name
 									+ "'><img src='"
-									+ m_urlUtils.getPlugsInRoot()
-									+ "/views-common/images/icons/delete.png' alt='Delete'/></href></td>");
+									+ m_urlUtils.getContextName()
+									+ "/plugins/views-common/images/icons/delete.png' alt='Delete'/></href></td>");
 
 							jQuery
 									.each(
