@@ -17,6 +17,7 @@
    <info organisation="org.eclipse.stardust.ui.web" module="stardust-web-modeler" revision="${ipp.version.full}"/>
 
    <configurations>
+      <conf name="stardust-web-modeler-provided" description="Web Modeler - Provided Scope" />
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
       <conf name="stardust-web-modeler-runtime" extends="stardust-web-modeler-compile" description="Web Modeler - Runtime Scope" />
 
@@ -25,7 +26,7 @@
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
-      <conf name="compile" visibility="private" extends="stardust-web-modeler-compile" />
+      <conf name="compile" visibility="private" extends="stardust-web-modeler-compile,stardust-web-modeler-provided" />
       <conf name="runtime" visibility="private" extends="stardust-web-modeler-runtime" />
       <conf name="all" visibility="private" extends="compile, runtime, test" />
 
@@ -73,7 +74,7 @@
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
       <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-compile->default"/>
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-provided->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-compile->default"/>
       <!-->dependency org="org.apache.httpcomponents" name="httpclient" rev="${commons-httpclient.version}" conf="stardust-web-modeler-compile->default"/-->
 
