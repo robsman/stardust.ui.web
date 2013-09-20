@@ -38,6 +38,14 @@ public class IppVersion implements Version
 
    public String getCompleteString()
    {
-      return currentVersion.toCompleteString();
+      if (null != currentVersion)
+      {
+         return currentVersion.toCompleteString();
+      }
+      else
+      {
+         // By default returning 'dev' mode
+         return "dev";
+      }
    }
 }
