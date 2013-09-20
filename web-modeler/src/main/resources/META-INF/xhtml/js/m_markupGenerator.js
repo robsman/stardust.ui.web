@@ -116,14 +116,14 @@ define(
 				 */
 				MarkupGenerator.prototype.generateCss = function() {
 					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getPlugsInRoot()
-							+ "/bpm-modeler/css/lightdust.css'></link>");
+							+ m_urlUtils.getContextName()
+							+ "/plugins/bpm-modeler/css/lightdust.css'></link>");
 					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getPlugsInRoot()
-							+ "/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css'></link>");
+							+ m_urlUtils.getContextName()
+							+ "/plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css'></link>");
 					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getPlugsInRoot()
-							+ "/processportal/css/bpm-form.css'></link>");
+							+ m_urlUtils.getContextName()
+							+ "/plugins/processportal/css/bpm-form.css'></link>");
 				};
 
 				/**
@@ -132,8 +132,8 @@ define(
 				MarkupGenerator.prototype.generateJavaScript = function(
 						parameterDefinitions) {
 					writeTag("<script src='"
-							+ m_urlUtils.getPlugsInRoot()
-							+ "/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
+							+ m_urlUtils.getContextName()
+							+ "/plugins/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
 					writeTag("<script>");
 					indentUp();
 					writeTag("var baseUrl = window.location.search;");
@@ -178,11 +178,11 @@ define(
 					writeTag("require([ 'require', 'jquery', 'jquery-ui', 'json', 'jquery.url', 'angularjs',");
 					writeTag("   'xml2json', 'bpm.portal.Interaction', 'bpm.portal.GenericController' ], function(require, jquery, jqueryUi,");
 					writeTag("   json, jqueryUrl, angularjs, xml2json, stardustPortalInteraction, stardustGenericController) {");
-					writeTag("      m_utils.jQuerySelect(document).ready(");
+					writeTag("      jQuery(document).ready(");
 					writeTag("      function() {");
 					writeTag("         var interaction = new bpm.portal.Interaction();");
 					writeTag("         var controller = new bpm.portal.GenericController();");
-					writeTag("         m_utils.jQuerySelect('.structureTabs').tabs();");
+					writeTag("         jQuery('.structureTabs').tabs();");
 					writeTag("      interaction.bind().done(function(){");
 					writeTag("         controller.bind(angularjs, interaction);");
 					writeTag("         });");
@@ -738,8 +738,8 @@ define(
 							indentUp();
 
 							writeTag("<td><img src='"
-									+ m_urlUtils.getPlugsInRoot()
-									+ "/views-common/images/icons/delete.png' alt='Delete'/></td>");
+									+ m_urlUtils.getContextName()
+									+ "/plugins/views-common/images/icons/delete.png' alt='Delete'/></td>");
 
 							jQuery
 									.each(
@@ -844,8 +844,8 @@ define(
 									+ "."
 									+ element.name
 									+ "'><img src='"
-									+ m_urlUtils.getPlugsInRoot()
-									+ "/views-common/images/icons/add.png' alt='Add'/></href></td>");
+									+ m_urlUtils.getContextName()
+									+ "/plugins/views-common/images/icons/add.png' alt='Add'/></href></td>");
 							writeTag("<td></td>");
 							writeTag("<td></td>");
 							writeTag("<td></td>");
