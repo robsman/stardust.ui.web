@@ -281,7 +281,7 @@ div#loginBox .buttonContainer input{
 }
 
 .rightContentTd{
-	padding-top: 10px;
+	padding-top: 5px;
 	vertical-align: top;
 	height: 100%;
 }
@@ -364,6 +364,13 @@ html, body {
 .breadCrumbsToolbarWrapper {
 	background:url(../images/toolbar-BG-border-bottom.png) center repeat-x;
 	width: 100%;
+}
+
+.breadCrumbsColumn {
+	vertical-align: bottom;
+}
+
+.toolbarColumn {
 }
 
 .breadcrumbs{
