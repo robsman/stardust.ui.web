@@ -361,11 +361,16 @@ html, body {
 	text-align: right;
 }
 
+.breadCrumbsToolbarWrapper {
+	background:url(../images/toolbar-BG-border-bottom.png) center repeat-x;
+	width: 100%;
+}
+
 .breadcrumbs{
 	line-height: 25px;
 	white-space: nowrap;
 	width: auto;
-	padding-left: 8px;
+	padding-left: 0px;
 	float: left;
 }
 
