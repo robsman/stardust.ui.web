@@ -126,11 +126,11 @@ define(
       OutlineUiModelBuilder.prototype.buildErroredModelNode = function(parent) {
         var modelNode = this.nodeBuilder.buildNode({
           attr : {
-            "id" : model.uuid,
+            "id" : this.model.uuid,
             "rel" : "erroredModel",
-            "elementId" : model.id
+            "elementId" : this.model.id
           },
-          data : this.model.name
+          data : this.model.id
         }, parent);
 
         // skip any details for errored models
