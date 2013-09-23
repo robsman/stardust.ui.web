@@ -93,7 +93,7 @@ public abstract class PopupDialog implements Serializable
 
       visible = false;
 
-      // FOR PANAMA
+      // FOR HTML5
       if (modal)
       {
          String popupScript = "parent.BridgeUtils.Dialog.close();";
@@ -136,7 +136,7 @@ public abstract class PopupDialog implements Serializable
       addPopupCenteringScript();
       visible = true;
 
-      // FOR PANAMA
+      // FOR HTML5
       if (modal)
       {
          String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";

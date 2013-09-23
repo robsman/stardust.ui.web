@@ -1052,7 +1052,7 @@ public class PortalApplication
             firePostOpenLifeCycleEvent(view);
          }
 
-         handleViewOpenPanama(view);
+         handleViewOpenForHTML5(view);
       }
       else
       {
@@ -1066,7 +1066,7 @@ public class PortalApplication
    /**
     * @param view
     */
-   private void handleViewOpenPanama(View view)
+   private void handleViewOpenForHTML5(View view)
    {
       if (StringUtils.isEmpty(view.getParamValue("standaloneMode")))
       {
@@ -1086,7 +1086,7 @@ public class PortalApplication
             url = urlBase + url;
             
             // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views
-            processPanamaCall(view, url,
+            processHTML5OpenViewCall(view, url,
                   !view.getDefinition().getInclude().toLowerCase().equals("htmlframeadapter.xhtml"));
          }
          else
@@ -1108,7 +1108,7 @@ public class PortalApplication
     * @param url
     * @param ext
     */
-   public void processPanamaCall(View view, String url, Boolean ext)
+   public void processHTML5OpenViewCall(View view, String url, Boolean ext)
    {
       String viewId = "";
       if (ext)
@@ -1210,7 +1210,7 @@ public class PortalApplication
    /**
     * @param view
     */
-   private void handleViewClosePanama(View view)
+   private void handleViewCloseForHTML5(View view)
    {
       String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
       if (StringUtils.isNotEmpty(html5FWViewId))
@@ -1442,9 +1442,7 @@ public class PortalApplication
          restorePinView();
       }
 
-      handleViewClosePanama(closedView);
-      //handleViewOpenPanama(focusView);
-
+      handleViewCloseForHTML5(closedView);
    }
 
    /**

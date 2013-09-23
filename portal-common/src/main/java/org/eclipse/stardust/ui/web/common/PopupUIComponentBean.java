@@ -85,7 +85,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       visible = false;
       FacesUtils.clearFacesTreeValues();
 
-      // FOR PANAMA
+      // FOR HTML5
       String popupScript = "parent.BridgeUtils.Dialog.close();";
       PortalApplication.getInstance().addEventScript(popupScript);
 
@@ -115,8 +115,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       addPopupCenteringScript();
       visible = true;
 
-      // FOR PANAMA
-      
+      // FOR HTML5
       String htmlFWViewId = "";
       if (null != fromView) {
          htmlFWViewId = (String)fromView.getParamValue("html5FWViewId");   

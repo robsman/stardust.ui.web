@@ -40,7 +40,7 @@ var iPopupDialog = function() {
 	}
 
 	function centerPopup() {
-		// TODO - to be replaced as InfinityBpm.Core is no longer used after Panama
+		// TODO - to be replaced as InfinityBpm.Core is no longer used after HTML5 Move
 //		var innerDoc = (popupDialogIFrame.contentDocument) ? popupDialogIFrame.contentDocument : popupDialogIFrame.contentWindow.document;
 //		InfinityBpm.Core.positionMessageDialog("iframePopupDialog", innerDoc);
 	}

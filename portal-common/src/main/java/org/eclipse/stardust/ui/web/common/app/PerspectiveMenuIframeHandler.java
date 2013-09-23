@@ -81,7 +81,7 @@ public class PerspectiveMenuIframeHandler implements Serializable
     */
    public String getPopupArgs()
    {
-      // For Panama, appended the parentIframe for Anchor name i.e parentIframe:AnchorName
+      // For HTML5, appended the parentIframe for Anchor name i.e parentIframe:AnchorName
       String advanceArgs = "{anchorId:'modelerLaunchPanels:ippPerspectiveMenuAnchor', width:100, height:110,"
             + "openOnRight:true, anchorXAdjustment:-3, anchorYAdjustment:25, zIndex:850, border:'none', noUnloadWarning: 'true'}";
       return advanceArgs;
