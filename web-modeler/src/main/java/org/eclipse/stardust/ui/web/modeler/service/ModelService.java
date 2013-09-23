@@ -1434,15 +1434,15 @@ public class ModelService
       ActivitySymbolType activitySymbol;
       ActivitySymbolType previousActivitySymbol = null;
 
-      if (extractString(json, "preprocessingRulesApplicationFullId") != null)
+      if (extractString(json, "preprocessingApplicationFullId") != null)
       {
          activity = newApplicationActivity(processDefinition).withIdAndName(null,
-               "Rules Preprocessing").build();
+               "Preprocessing App").build();
 
          activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
 
          getModelBuilderFacade().setApplication(activity,
-               extractString(json, "preprocessingRulesApplicationFullId"));
+               extractString(json, "preprocessingApplicationFullId"));
 
          activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 
@@ -1571,14 +1571,14 @@ public class ModelService
 
       yOffset += 100;
 
-      if (extractString(json, "postprocessingRulesApplicationFullId") != null)
+      if (extractString(json, "postprocessingApplicationFullId") != null)
       {
          activity = newApplicationActivity(processDefinition).withIdAndName(null,
-               "Rules Postprocessing").build();
+               "Postprocessing App").build();
 
          activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
          getModelBuilderFacade().setApplication(activity,
-               extractString(json, "postprocessingRulesApplicationFullId"));
+               extractString(json, "postprocessingApplicationFullId"));
 
          activitySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
 

@@ -46,8 +46,8 @@ define(
 				this.responseDataTypeInput = m_utils.jQuerySelect("#responseDataTypeInput");
 				this.responseDataNameInput = m_utils.jQuerySelect("#responseDataNameInput");
 				this.serviceInvocationActivityNameInput = m_utils.jQuerySelect("#serviceInvocationActivityNameInput");
-				this.preprocessingRulesApplicationSelect = m_utils.jQuerySelect("#preprocessingRulesApplicationSelect");
-				this.postprocessingRulesApplicationSelect = m_utils.jQuerySelect("#postprocessingRulesApplicationSelect");
+				this.preprocessingApplicationSelect = m_utils.jQuerySelect("#preprocessingApplicationSelect");
+				this.postprocessingApplicationSelect = m_utils.jQuerySelect("#postprocessingApplicationSelect");
 				this.createWebServiceInput = m_utils.jQuerySelect("#createWebServiceInput");
 				this.createRestServiceInput = m_utils.jQuerySelect("#createRestServiceInput");
 				this.transientInput = m_utils.jQuerySelect("#transientInput");
@@ -88,8 +88,7 @@ define(
 				 */
 				ServiceWrapperWizard.prototype.checkCompatibility = function(
 						application) {
-					return application.applicationType == "camelSpringProducerApplication"
-							&& application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == "rulesIntegrationOverlay";
+					return true;
 				};
 
 				/**
@@ -190,15 +189,15 @@ define(
 							+ " Response Data");
 
 					this
-							.populateRulesApplicationSelect(this.preprocessingRulesApplicationSelect);
+							.populateApplicationSelect(this.preprocessingApplicationSelect);
 					this
-							.populateRulesApplicationSelect(this.postprocessingRulesApplicationSelect);
+							.populateApplicationSelect(this.postprocessingApplicationSelect);
 				};
 
 				/**
 				 * 
 				 */
-				ServiceWrapperWizard.prototype.populateRulesApplicationSelect = function(
+				ServiceWrapperWizard.prototype.populateApplicationSelect = function(
 						select) {
 					select.empty();
 					select.append("<option value='"
@@ -272,9 +271,9 @@ define(
 						processDefinitionName : this.processDefinitionNameInput
 								.val(),
 						requestDataTypeFullId : this.requestDataTypeInput.val(),
-						preprocessingRulesApplicationFullId : this.preprocessingRulesApplicationSelect
+						preprocessingApplicationFullId : this.preprocessingApplicationSelect
 								.val() == m_constants.TO_BE_DEFINED ? null
-								: this.preprocessingRulesApplicationSelect
+								: this.preprocessingApplicationSelect
 										.val(),
 						requestDataName : this.requestDataNameInput.val(),
 						responseDataTypeFullId : this.responseDataTypeInput
@@ -283,9 +282,9 @@ define(
 						serviceInvocationActivityName : this.serviceInvocationActivityNameInput
 								.val(),
 						applicationFullId : this.application.getFullId(),
-						postprocessingRulesApplicationFullId : this.postprocessingRulesApplicationSelect
+						postprocessingApplicationFullId : this.postprocessingApplicationSelect
 								.val() == m_constants.TO_BE_DEFINED ? null
-								: this.postprocessingRulesApplicationSelect
+								: this.postprocessingApplicationSelect
 										.val(),
 						createWebService : this.createWebServiceInput
 								.prop("checked"),
