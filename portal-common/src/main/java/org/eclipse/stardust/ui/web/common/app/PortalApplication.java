@@ -1085,8 +1085,9 @@ public class PortalApplication
                   + contextPath + "/plugins/common/portalSingleViewMain.iface?";
             url = urlBase + url;
             
-            // Protocol - Include ending with FrameAdapter.xhtml are HTML based Views
-            processPanamaCall(view, url, !view.getDefinition().getInclude().endsWith("FrameAdapter.xhtml"));
+            // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views
+            processPanamaCall(view, url,
+                  !view.getDefinition().getInclude().toLowerCase().equals("htmlframeadapter.xhtml"));
          }
          else
          {
