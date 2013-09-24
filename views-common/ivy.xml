@@ -62,6 +62,9 @@
       <dependency org="com.sun.media" name="jai_imageio" rev="${jai_imageio.version}" conf="ipp-views-common-compile->default">
          <exclude org="javax.media" module="jai_core" />
       </dependency>
+      <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="${org.eclipse.xsd.version}" transitive="false" conf="ipp-views-common-compile->default" />
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}" transitive="false" conf="ipp-views-common-compile->default" />
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}" transitive="false" conf="ipp-views-common-compile->default" />
 
       <!-- ipp-views-common-runtime -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-views-common-runtime->engine-module-runtime" />
@@ -89,9 +92,6 @@
       <dependency org="javax.servlet" name="jsp-api" rev="${jsp-api.version}" conf="ipp-views-common-provided->default" />
       
       <!-- compile -->
-      <dependency org="org.eclipse.xsd" name="xsd-runtime" rev="${xsd-runtime.version}" transitive="false" conf="compile->default">
-         <artifact name="org.eclipse.xsd" type="jar"/>
-      </dependency>
 
       <!-- test -->
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">

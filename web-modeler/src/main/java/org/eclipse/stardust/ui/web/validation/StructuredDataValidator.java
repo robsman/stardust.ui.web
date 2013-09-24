@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.validation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.stardust.common.StringUtils;
@@ -33,7 +34,6 @@ import org.eclipse.stardust.modeling.validation.IModelElementValidator;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationException;
 
-import org.eclipse.emf.common.util.URI;
 
 public class StructuredDataValidator implements IModelElementValidator
 {

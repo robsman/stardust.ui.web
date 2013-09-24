@@ -68,21 +68,18 @@
 		<mkdir dir="${build.src}"/>
 	</target>
 
-	<target name="prepareSources" depends="initBuild">
-		<echo message="Preparing sources for a safe but slow build." />
-		<copy todir="${build.src}" overwrite="true">
-			<fileset dir="${project.src}">
-				<include name="**/*.java" />
-				<exclude name="org/eclipse/stardust/ui/web/viewscommon/common/spi/env/impl/CurrentVersion.java"/>
-			</fileset>
-		</copy>
-	   <replace dir="${build.src}" token="import org.eclipse.xsd" 
-	      value="import com.infinity.bpm.thirdparty.xsd" summary="true"/>
-		
-        <antcall target="copyVersionSourceFile">
-           <param name="source" value="${project.src}"/>
-           <param name="destination" value="${build.src}"/>
-        </antcall>
+   <target name="prepareSources" depends="initBuild">
+      <echo message="Preparing sources for a safe but slow build." />
+      <copy todir="${build.src}" overwrite="true">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+            <exclude name="org/eclipse/stardust/ui/web/viewscommon/common/spi/env/impl/CurrentVersion.java"/>
+         </fileset>
+      </copy>
+      <antcall target="copyVersionSourceFile">
+         <param name="source" value="${project.src}"/>
+         <param name="destination" value="${build.src}"/>
+      </antcall>
 	</target>
 	
 	   <target name="copyVersionSourceFile">
@@ -134,7 +131,7 @@
          </fileset>
          <fileset dir="${resources.src}">
             <include name="**/*.*" />
-         	<exclude name="META-INF/spring/views-common-menu-context.xml" />
+            <exclude name="META-INF/spring/views-common-menu-context.xml" />
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
