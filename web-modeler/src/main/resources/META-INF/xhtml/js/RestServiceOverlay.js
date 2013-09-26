@@ -359,6 +359,12 @@ define(
 					var route = "";
 					var httpUri = "";
 					var httpQuery = "";
+					
+					if (uri.indexOf("?") >= 0)
+					{
+						// there is already a ? defined in URI
+						start = false;
+					}
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
@@ -407,7 +413,7 @@ define(
 					{
 						var index = uri.indexOf("?");
 						httpUri = uri.substring(0, index);
-						httpQuery = uri.substring(index + 1);
+                        httpQuery = uri.substring(index + 1); 						
 						route += "<setHeader headerName='CamelHttpQuery'>";
 						route += "<simple>" + httpQuery + "</simple>";
 						route += "</setHeader>";
@@ -417,15 +423,12 @@ define(
 						httpUri = uri;
 					}
 
-
 					route += "<setHeader headerName='CamelHttpUri'>";
 					route += "<simple>" + httpUri + "</simple>";
 					route += "</setHeader>";
 					route += "<setHeader headerName='CamelHttpMethod'>";
 					route += "<constant>" + this.commandSelect.val() + "</constant>";
 					route += "</setHeader>";
-
-
 
 					if (this.requestTypeSelect.val() === "application/json") {
 						route += "<to uri='bean:bpmTypeConverter?method=toJSON' />";
