@@ -780,7 +780,7 @@ define(
 						//handle lane shift
 						this.dragStopBase(false);
 						//get change description for all events
-						changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent(this);
+						changeDescriptions = this.bindingActivitySymbol.realignBoundaryEvent(this, true);
 						
 						// adjust activity width
 						var activityWidthChange = this.bindingActivitySymbol.adjustWidth(true, true);

@@ -1029,7 +1029,7 @@ define(
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.realignBoundaryEvent = function(bindingEventSymbol){
+				ActivitySymbol.prototype.realignBoundaryEvent = function(bindingEventSymbol, interrupting){
 					var x = this.x + this.width - m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 					var eventSymbol;
 					var changeDesc;
@@ -1055,9 +1055,16 @@ define(
 							};
 
 							if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {
-								changes["modelElement"] = {
-									bindingActivityUuid : this.modelElement.id
-								};
+									if(interrupting){
+										changes["modelElement"] = {
+												bindingActivityUuid : this.modelElement.id,
+												interrupting : true
+											};		
+									}else{
+										changes["modelElement"] = {
+												bindingActivityUuid : this.modelElement.id
+											};
+									}
 							}
 
 							changeDesc = {
