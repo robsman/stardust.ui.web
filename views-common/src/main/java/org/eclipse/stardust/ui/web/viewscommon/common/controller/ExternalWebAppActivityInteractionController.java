@@ -216,14 +216,6 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          uri = uri.substring(0, uri.indexOf("#"));
       }
 
-      // Take out Hash if any to append at the end
-      String uriHash = "";
-      if (uri.contains("#"))
-      {
-         uriHash = uri.substring(uri.indexOf("#"));
-         uri = uri.substring(0, uri.indexOf("#"));
-      }
-
       StringBuilder uriBuilder = new StringBuilder();
 
       uriBuilder.append(uri) //
@@ -241,9 +233,6 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       // Append Hash
       uriBuilder.append(uriHash);
       
-      // Append Hash
-      uriBuilder.append(uriHash);
-
       return fc.getExternalContext().encodeResourceURL(uriBuilder.toString());
    }
 
