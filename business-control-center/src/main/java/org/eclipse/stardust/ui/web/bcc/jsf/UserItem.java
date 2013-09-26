@@ -44,7 +44,7 @@ public class UserItem implements Serializable
    
    private Authorization authorization;
    
-   private String userName;
+   private String userName = null;
 
    public UserItem(User user, boolean loggedIn)
    {
@@ -57,7 +57,6 @@ public class UserItem implements Serializable
       this.user = user;
       authorization = null;
       hasAdminRole = null;
-      this.userName = UserUtils.getUserDisplayLabel(user);
    }
 
    public void computeRoleCount()
@@ -109,6 +108,10 @@ public class UserItem implements Serializable
 
    public String getUserName()
    {
+      if (this.userName == null)
+      {
+         this.userName = UserUtils.getUserDisplayLabel(user);
+      }
       return  userName;
    }
 
