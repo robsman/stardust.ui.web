@@ -81,7 +81,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(ActivitySymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(ActivitySymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.x = 0;
 				this.y = 0;
@@ -146,7 +146,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 					transferObject.rectangle = null;
 					transferObject.text = null;
 					transferObject.manualTaskIcon = null;

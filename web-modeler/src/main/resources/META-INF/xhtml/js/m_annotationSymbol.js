@@ -40,7 +40,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(AnnotationSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(AnnotationSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.text = null;
 				this.path = null;
@@ -94,7 +94,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.rect = null;
 					transferObject.path = null;

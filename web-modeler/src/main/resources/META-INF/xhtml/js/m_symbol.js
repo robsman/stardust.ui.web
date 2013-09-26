@@ -95,33 +95,35 @@ define(
 					this.complete();
 				};
 
-				Symbol.prototype.prepareTransferObject = function(
+				Symbol.prototype.createTransferObject = function(
 						transferObject) {
-					transferObject.diagram = null;
-					transferObject.connections = null;
-					transferObject.anchorPoints = null;
-					transferObject.parentSymbol = null;
-					transferObject.topSelectFrame = null;
-					transferObject.rightSelectFrame = null;
-					transferObject.bottomSelectFrame = null;
-					transferObject.leftSelectFrame = null;
-					transferObject.topSelectHiddenFrame = null;
-					transferObject.rightSelectHiddenFrame = null;
-					transferObject.bottomSelectHiddenFrame = null;
-					transferObject.leftSelectHiddenFrame = null;
-					transferObject.flyOutMenuBackground = null;
-					transferObject.bottomFlyOutMenuItems = null;
-					transferObject.bottomRAFlyOutMenuItems = null;
-					transferObject.rightFlyOutMenuItems = null;
-					transferObject.primitives = null;
-					transferObject.editableTextPrimitives = null;
-					transferObject.proximitySensor = null;
-					transferObject.propertiesPanel = null;
-					transferObject.commentCountIcon = null;
-					transferObject.commentCountText = null;
-					transferObject.glow = null;
+					if (transferObject) {
+						transferObject.diagram = null;
+						transferObject.connections = null;
+						transferObject.anchorPoints = null;
+						transferObject.parentSymbol = null;
+						transferObject.topSelectFrame = null;
+						transferObject.rightSelectFrame = null;
+						transferObject.bottomSelectFrame = null;
+						transferObject.leftSelectFrame = null;
+						transferObject.topSelectHiddenFrame = null;
+						transferObject.rightSelectHiddenFrame = null;
+						transferObject.bottomSelectHiddenFrame = null;
+						transferObject.leftSelectHiddenFrame = null;
+						transferObject.flyOutMenuBackground = null;
+						transferObject.bottomFlyOutMenuItems = null;
+						transferObject.bottomRAFlyOutMenuItems = null;
+						transferObject.rightFlyOutMenuItems = null;
+						transferObject.primitives = null;
+						transferObject.editableTextPrimitives = null;
+						transferObject.proximitySensor = null;
+						transferObject.propertiesPanel = null;
+						transferObject.commentCountIcon = null;
+						transferObject.commentCountText = null;
+						transferObject.glow = null;
+					}
 					return transferObject;
-				}
+				};
 
 				/**
 				 *

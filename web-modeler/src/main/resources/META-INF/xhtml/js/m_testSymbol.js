@@ -48,7 +48,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(TestSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(TestSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.width = TEST_WIDTH;
 				this.height = TEST_HEIGHT;
@@ -107,7 +107,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.rect = null;
 					transferObject.image = null;
