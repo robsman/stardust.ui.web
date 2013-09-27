@@ -70,6 +70,10 @@ input[type="text"] {
 	min-width: 100px;
 }
 
+input.cke_dialog_ui_input_text{
+	height: 20px !important;
+}
+
 input[type="text"]:focus {
 	border: 1px solid #6699ff;
 }
