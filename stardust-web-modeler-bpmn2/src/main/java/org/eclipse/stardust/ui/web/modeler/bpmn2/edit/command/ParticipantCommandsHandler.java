@@ -108,8 +108,14 @@ public class ParticipantCommandsHandler
 
       if ( !isEmpty(teamLeaderUUID))
       {
-         extJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY,
-               encodeReference(model, teamLeaderUUID));
+         EObject newTeamLead = modelService.currentSession().modelRepository()
+               .getModelBinding(model).getNavigator()
+               .findElementByUuid(model, teamLeaderUUID);
+         if (newTeamLead instanceof org.eclipse.bpmn2.Resource)
+         {
+            extJson.addProperty(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY,
+                  encodeReference((org.eclipse.bpmn2.Resource) newTeamLead));
+         }
       }
       else
       {

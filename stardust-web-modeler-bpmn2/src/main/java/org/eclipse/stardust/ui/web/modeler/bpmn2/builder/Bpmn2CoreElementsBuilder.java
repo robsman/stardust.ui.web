@@ -4,6 +4,7 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.createInternalId;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Interface;
@@ -107,6 +108,8 @@ public class Bpmn2CoreElementsBuilder
       participant.setId( !isEmpty(jto.id)
             ? jto.id
             : Bpmn2Utils.deriveElementIdFromName(jto.name));
+
+      setExtensionAttribute(participant, "uuid", Bpmn2Utils.createInternalId());
 
       // apply defaults
       JsonObject participantDetails = new JsonObject();

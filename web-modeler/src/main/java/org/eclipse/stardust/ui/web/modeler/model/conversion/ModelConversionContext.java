@@ -4,8 +4,12 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 
 import java.util.Map;
 
+import org.eclipse.stardust.common.StringUtils;
+
 public class ModelConversionContext
 {
+   private final String modelId;
+
    private final String targetFormat;
 
    private String newModelId;
@@ -16,6 +20,8 @@ public class ModelConversionContext
 
    private final Map<String, String> modelIdMapping = newHashMap();
 
+   private final Map<String, String> structuredTypeIdMapping = newHashMap();
+
    private final Map<String, String> dataIdMapping = newHashMap();
 
    private final Map<String, String> participantIdMapping = newHashMap();
@@ -24,8 +30,9 @@ public class ModelConversionContext
 
    private final Map<String, ProcessConversionContext> processContexts = newHashMap();
 
-   public ModelConversionContext(String targetFormat)
+   public ModelConversionContext(String modelId, String targetFormat)
    {
+      this.modelId = modelId;
       this.targetFormat = targetFormat;
    }
 
@@ -38,6 +45,8 @@ public class ModelConversionContext
    {
       this.newModelId = newModelId;
       this.newModelUuid = newModelUuid;
+
+      registerNewModelId(modelId, newModelId);
    }
 
    public void registerNewElementOid(long originalOid, long newOid)
@@ -92,6 +101,31 @@ public class ModelConversionContext
       return modelIdMapping.containsKey(originalModelId)
             ? modelIdMapping.get(originalModelId)
             : originalModelId;
+   }
+
+   public String newStructuredTypeId(String originalTypeId)
+   {
+      return structuredTypeIdMapping.containsKey(originalTypeId)
+            ? structuredTypeIdMapping.get(originalTypeId)
+            : originalTypeId;
+   }
+
+   public String newStructuredTypeFullId(String structTypeFullId)
+   {
+      int splitIdx = structTypeFullId.indexOf(":");
+
+      String modelId = "";
+      String typeId = structTypeFullId;
+      if (-1 != splitIdx)
+      {
+         modelId = structTypeFullId.substring(0, splitIdx);
+         typeId = (structTypeFullId.length() > splitIdx) ? structTypeFullId.substring(splitIdx + 1) : "";
+      }
+
+      String newModelId = newModelId(modelId);
+      String newTypeId = newStructuredTypeId(typeId);
+
+      return !StringUtils.isEmpty(newModelId) ? (newModelId + ":" + newTypeId) : newTypeId;
    }
 
    public String newDataId(String originalDataId)

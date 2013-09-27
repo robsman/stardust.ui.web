@@ -73,8 +73,12 @@ public class TestModelConversion
       Mockito.when(xpdlModel.getId()).thenReturn("OffsettingP1");
       Mockito.when(xpdlModel.getName()).thenReturn("OffsettingP1.xpdl");
 
+      Document xpdlReferenceModel = Mockito.mock(Document.class);
+      Mockito.when(xpdlReferenceModel.getId()).thenReturn("ModelConversionReferenceModel");
+      Mockito.when(xpdlReferenceModel.getName()).thenReturn("ModelConversionReferenceModel.xpdl");
+
       Folder modelsFolder = Mockito.mock(Folder.class);
-      Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(bpmn2Model, xpdlModel));
+      Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(bpmn2Model, xpdlModel, xpdlReferenceModel));
 
       DocumentManagementService dmsService = mockServiceFactoryLocator.get()
             .getDocumentManagementService();
@@ -107,6 +111,24 @@ public class TestModelConversion
                {
                   InputStream isModel = getClass().getResourceAsStream(
                         "OffsettingP1.xpdl");
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });
+      Mockito.when(dmsService.retrieveDocumentContent(xpdlReferenceModel.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        "ModelConversionReferenceModel.xpdl");
                   try
                   {
                      return toByteArray(isModel);
@@ -175,8 +197,8 @@ public class TestModelConversion
    @Test
    public void testFromXpdlModelConversion() throws Exception
    {
-      // model ID of "Offsetting P1" XPDL test model
-      final String srcModelId = "OffsettingP1";
+      // model ID of "ModelConversionReferenceModel" XPDL test model
+      final String srcModelId = "ModelConversionReferenceModel";
 
       assertThat(modelService, is(not(nullValue())));
 
