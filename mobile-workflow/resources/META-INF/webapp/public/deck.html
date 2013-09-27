@@ -123,10 +123,12 @@
 					ng-click="getTopPage().openStartableProcessesPage()">Startable
 					Processes</a>
 				<a href="#" data-role="button"
-					ng-click="getTopPage().openReportsPage()">Process/Activity
-					Search</a>
+					ng-click="getTopPage().openSearchPage()"> Search Processes,
+					Activities or Documents</a>
 				<a href="#" data-role="button"
 					ng-click="getTopPage().openReportsPage()">Reports</a>
+				<a href="#" data-role="button"
+					ng-click="getTopPage().openFolderPage()">Documents</a>
 			</ul>
 		</div>
 	</div>
@@ -143,20 +145,13 @@
 			<h1>Startable Processes</h1>
 		</div>
 		<div data-role="content">
-			<ul id="startableProcessesList" data-role="listview"
-				data-filter="true"></ul>
-		</div>
-	</div>
-	<div data-role="popup" id="notificationDialog" data-overlay-theme="a"
-		data-theme="a" style="max-width: 400px;" class="ui-corner-all">
-		<div data-role="header" data-theme="a" class="ui-corner-top">
-			<h1>Notification</h1>
-		</div>
-		<div data-role="content" data-theme="d"
-			class="ui-corner-bottom ui-content">
-			<p id="message"></p>
-			<a href="#" data-role="button" data-inline="true" data-rel="back"
-				data-theme="c" ng-click="getTopPage().closeNotificationDialog()">Close</a>
+			<ul id="startableProcessList" data-role="listview" data-filter="true">
+				<li ng-repeat="process in getTopPage().startableProcesses"><a
+					id="{{process.id}}" ref="#"
+					ng-click="getTopPage().startProcess(process)"><h4>
+							{{process.name}}</h4>
+						<p>{{process.description}}</p></a></li>
+			</ul>
 		</div>
 	</div>
 	<div id="worklistPage" data-role="page" data-theme="a">
@@ -321,12 +316,36 @@
 					<li><a href="#" data-icon="custom" class="backLink"
 						ng-click="getTopPage().back()">Back</a></li>
 					<li><a href="#" class="noteLink" data-icon="custom"
-						ng-click="getTopPage().createNote()">New</a></li>
+						ng-click="getTopPage().openCreateNoteDialog()">New</a></li>
 				</ul>
 			</div>
 			<h1>Notes</h1>
 		</div>
-		<div data-role="content"></div>
+		<div data-role="content">
+			<ul data-role="listview" ng-repeat="x in getTopPage().notes">
+				<li><a href="#" ng-click="getTopPage().openNotePage(x)">
+						<p style="color: #dddddd;">{{x.user.firstName}}
+							{{x.user.lastName}} ({{x.user.id}}),
+							{{getTopPage().formatDateTime(x.timestamp)}}</p>
+						<p>{{x.content}}</p>
+				</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="popup" id="createNoteDialog" data-overlay-theme="a"
+		data-theme="c" style="max-width: 400px;" class="ui-corner-all">
+		<div data-role="header" data-theme="a" class="ui-corner-top">
+			<h1>Create Note</h1>
+		</div>
+		<div data-role="content" data-theme="d"
+			class="ui-corner-bottom ui-content">
+			<textarea rows="5" cols="30" ng-model="getTopPage().newNoteContent"></textarea>
+			<a href="#" data-role="button" data-inline="true" data-rel="back"
+				data-theme="c" ng-click="getTopPage().closeCreateNoteDialog()">Cancel</a>
+			<a href="#" data-role="button" data-inline="true" data-rel="back"
+				data-transition="flow" data-theme="b"
+				ng-click="getTopPage().createNote()">Create</a>
+		</div>
 	</div>
 	<div id="notePage" data-role="page" data-theme="a"
 		class="nav-glyphish-example">
@@ -340,7 +359,9 @@
 			</div>
 			<h1>Note</h1>
 		</div>
-		<div data-role="content"></div>
+		<div data-role="content">
+			<p>{{getTopPage().note.content}}</p>
+		</div>
 	</div>
 	<div id="documentContentPage" data-role="page" data-theme="a"
 		class="nav-glyphish-example">
@@ -348,12 +369,33 @@
 			<div data-role="navbar"
 				class="ui-body ui-body-c nav-glyphish-example" data-grid="d">
 				<ul>
-					<li><a href="#" id="backLink" data-icon="custom">Back</a></li>
+					<li><a href="#" class="backLink" data-icon="custom"
+						ng-click="getTopPage().back()">Back</a></li>
 				</ul>
 			</div>
 			<h1>Document</h1>
 		</div>
-		<div data-role="content"></div>
+		<div data-role="content">
+			<table>
+				<tr>
+					<td>Name:</td>
+					<td>{{getTopPage().document.name}}</td>
+				</tr>
+				<tr>
+					<td>Content Type:</td>
+					<td>{{getTopPage().document.contentType}}</td>
+				</tr>
+				<tr>
+					<td>Owner:</td>
+					<td>{{getTopPage().document.owner}}</td>
+				</tr>
+				<tr>
+					<td>Size:</td>
+					<td>{{getTopPage().document.size}}</td>
+				</tr>
+			</table>
+			<iframe src="{{getTopPage().getContentUri()}}" style="width: 100%; border: 1px solid #bbbbbb;" />
+		</div>
 	</div>
 	<div id="userPage" data-role="page" data-theme="a"
 		class="nav-glyphish-example">
@@ -441,6 +483,60 @@
 					style="width: 100%; height: 100%; min-height: 600px; background: none;"
 					height="150%" width="100%"></iframe>
 			</div>
+		</div>
+	</div>
+	<div id="searchPage" data-role="page" data-theme="a"
+		class="nav-glyphish-example">
+		<div data-role="header" data-position="fixed">
+			<div data-role="navbar"
+				class="ui-body ui-body-c nav-glyphish-example" data-grid="d">
+				<ul>
+					<li><a href="#" data-icon="custom" class="backLink"
+						ng-click="getTopPage().back()">Back</a></li>
+				</ul>
+			</div>
+			<h1>Search</h1>
+		</div>
+		<div data-role="content""></div>
+	</div>
+	<div id="folderPage" data-role="page" data-theme="a"
+		class="nav-glyphish-example">
+		<div data-role="header" data-position="fixed">
+			<div data-role="navbar"
+				class="ui-body ui-body-c nav-glyphish-example" data-grid="d">
+				<ul>
+					<li><a href="#" data-icon="custom" class="backLink"
+						ng-click="getTopPage().back()">Back</a></li>
+				</ul>
+			</div>
+			<h1>Folder</h1>
+		</div>
+		<div data-role="content"">
+			<ul data-role="listview"
+				ng-repeat="x in getTopPage().folder.documents">
+				<li><a href="#"
+					ng-click="getTopPage().openDocumentContentPage(x)">
+						<p>Document: {{x.name}}</p>
+				</a></li>
+			</ul>
+			<ul data-role="listview"
+				ng-repeat="y in getTopPage().folder.subFolders">
+				<li><a href="#" ng-click="getTopPage().openFolderPage(y)">
+						<p>Folder: {{y.name}}</p>
+				</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="popup" id="notificationDialog" data-overlay-theme="a"
+		data-theme="a" style="max-width: 400px;" class="ui-corner-all">
+		<div data-role="header" data-theme="a" class="ui-corner-top">
+			<h1>Notification</h1>
+		</div>
+		<div data-role="content" data-theme="d"
+			class="ui-corner-bottom ui-content">
+			<p id="message"></p>
+			<a href="#" data-role="button" data-inline="true" data-rel="back"
+				data-theme="c" ng-click="getTopPage().closeNotificationDialog()">Close</a>
 		</div>
 	</div>
 </body>

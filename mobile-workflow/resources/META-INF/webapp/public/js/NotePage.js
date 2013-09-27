@@ -21,8 +21,9 @@ if (!window.bpm.mobile_workflow) {
 	bpm.mobile_workflow = {};
 }
 
-bpm.mobile_workflow.NotePage = function NotePage() {
+bpm.mobile_workflow.NotePage = function NotePage(note) {
 	this.id = "notePage";
+	this.note = note;
 
 	/**
 	 * 

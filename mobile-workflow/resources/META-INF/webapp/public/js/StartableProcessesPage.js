@@ -28,35 +28,16 @@ bpm.mobile_workflow.StartableProcessesPage = function StartableProcessesPage() {
 	 */
 	StartableProcessesPage.prototype.initialize = function() {
 		var deferred = jQuery.Deferred();
+		var self = this;
 
 		getWorkflowService().getStartableProcesses().done(
-				function(startableProcessesList) {
+				function(startableProcesses) {
 					$("#notificationDialog").popup();
 
-					jQuery("#startableProcessesList li").remove();
+					self.startableProcesses = startableProcesses;
 
-					for ( var n in startableProcessesList) {
-						var process = startableProcessesList[n];
-
-						jQuery("#startableProcessesList").append(
-								"<li><a id=\""
-										+ process.id
-										+ "\" ref=\"#\">"
-										+ "<h4>"
-										+ process.name
-										+ "</h4>"
-										+ "<p>"
-										+ (process.description == null ? ""
-												: process.description)
-										+ "</p></a></li>");
-						$("#startableProcessesList #" + process.id).click({
-							"page" : getDeck().getTopPage(),
-							"process" : process
-						}, function(event) {
-							event.data.page.startProcess(event.data.process);
-						});
-					}
-
+					//jQuery("#startableProcessList").appendTo(".ui-page").trigger("refresh");
+					
 					deferred.resolve();
 				}).fail(function() {
 			deferred.reject();
@@ -70,7 +51,7 @@ bpm.mobile_workflow.StartableProcessesPage = function StartableProcessesPage() {
 	 */
 	StartableProcessesPage.prototype.startProcess = function(process) {
 		var self = this;
-		
+
 		getWorkflowService()
 				.startProcess(process)
 				.done(
@@ -99,7 +80,6 @@ bpm.mobile_workflow.StartableProcessesPage = function StartableProcessesPage() {
 	StartableProcessesPage.prototype.openNotificationDialog = function(message) {
 		$("#notificationDialog #message").empty();
 		$("#notificationDialog #message").append(message);
-
 		$("#notificationDialog").popup("open");
 	};
 

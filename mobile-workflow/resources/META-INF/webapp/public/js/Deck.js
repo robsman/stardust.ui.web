@@ -24,19 +24,12 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		 * 
 		 */
 		Deck.prototype.initialize = function(angular, page) {
-			console.log("Angular");
-			console.log(angular);
-
 			this.pages.push(page);
 
-			var angularModule = angular.module('angularApp', []);
-
+			angular.module('angularApp', []);
 			angular.bootstrap(document, [ 'angularApp' ]);
 
 			this.scope = angular.element(document.body).scope();
-
-			console.log("Scope");
-			console.log(this.scope);
 
 			this.externalWebAppUrl = "./empty.html";
 
@@ -44,7 +37,7 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 			inheritMethods(this.scope, this);
 
 			page.initialize();
-			
+
 			return this.scope;
 		};
 
@@ -52,8 +45,6 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		 * 
 		 */
 		Deck.prototype.getExternalWebAppUrl = function() {
-			console.log("Hallo" + this.getTopPage().id);
-			console.log(this.getTopPage().externalWebAppUrl);
 			return this.getTopPage().externalWebAppUrl == null ? './empty.html'
 					: this.getTopPage().externalWebAppUrl;
 		};
@@ -73,11 +64,16 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 			var self = this;
 
 			page.initialize().done(function() {
-				self.$apply();
+				try {
+					self.$apply();
+				} catch (x) {
+					console.log(x);
+				}
 
 				$.mobile.changePage("#" + page.id, {
 					transition : "none"
 				});
+
 			}).fail();
 		};
 
@@ -96,7 +92,13 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 			var self = this;
 
 			this.getTopPage().initialize().done(function() {
-				self.$apply();
+				// try {
+				// self.$apply();
+				// } catch (x) {
+				// console.log(x);
+				// }
+
+				console.log("Changing page to " + self.getTopPage().id);
 
 				$.mobile.changePage("#" + self.getTopPage().id, {
 					transition : "none"
@@ -144,21 +146,3 @@ function inheritMethods(childObject, parentObject) {
 		}
 	}
 }
-
-// TODO Utils
-
-/**
- * 
- */
-function formatDateTime(dateTime) {
-	return pad(dateTime.getUTCDate(), 2) + "."
-			+ pad(dateTime.getUTCMonth() + 1, 2) + "."
-			+ dateTime.getUTCFullYear() + " " + pad(dateTime.getUTCHours(), 2)
-			+ ":" + pad(dateTime.getUTCMinutes(), 2);
-};
-
-function pad(number, characters) {
-	return (1e15 + number + // combine with large number
-	"" // convert to string
-	).slice(-characters); // cut leading "1"
-};

@@ -46,3 +46,21 @@ function inheritMethods(childObject, parentObject) {
 function typeObject(object, prototype) {
 	inheritMethods(object, prototype);
 }
+
+/**
+ * 
+ */
+function formatDateTime(dateTime) {
+	console.log("===> Format Data: " + dateTime);
+
+	return pad(dateTime.getUTCDate(), 2) + "."
+			+ pad(dateTime.getUTCMonth() + 1, 2) + "."
+			+ dateTime.getUTCFullYear() + " " + pad(dateTime.getUTCHours(), 2)
+			+ ":" + pad(dateTime.getUTCMinutes(), 2);
+};
+
+function pad(number, characters) {
+	return (1e15 + number + // combine with large number
+	"" // convert to string
+	).slice(-characters); // cut leading "1"
+};

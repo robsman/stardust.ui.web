@@ -59,4 +59,18 @@ bpm.mobile_workflow.DashboardPage = function DashboardPage() {
 	DashboardPage.prototype.openReportsPage = function() {
 		getDeck().pushPage(new bpm.mobile_workflow.ReportsPage());
 	};
+
+	/**
+	 * 
+	 */
+	DashboardPage.prototype.openSearchPage = function() {
+		getDeck().pushPage(new bpm.mobile_workflow.SearchPage());
+	};
+	
+	/**
+	 * 
+	 */
+	DashboardPage.prototype.openFolderPage = function() {
+		getDeck().pushPage(new bpm.mobile_workflow.FolderPage());
+	};
 };

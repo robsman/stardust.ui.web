@@ -49,6 +49,24 @@ public class MobileWorkflowResource {
 		this.mobileWorkflowService = mobileWorkflowService;
 	}
 
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("login")
+	public Response login(String postedData) {
+		try {
+			JsonObject json = jsonIo.readJsonObject(postedData);
+
+			return Response.ok(
+					getMobileWorkflowService().login(json).toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new RuntimeException(e);
+		}
+	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("startable-processes")
@@ -71,9 +89,8 @@ public class MobileWorkflowResource {
 	public Response getWorklist() {
 		try {
 			return Response.ok(
-					getMobileWorkflowService().getWorklist()
-							.toString(), MediaType.APPLICATION_JSON_TYPE)
-					.build();
+					getMobileWorkflowService().getWorklist().toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -106,9 +123,58 @@ public class MobileWorkflowResource {
 	public Response getProcessInstance(@PathParam("oid") String processOid) {
 		try {
 			return Response.ok(
-					getMobileWorkflowService().getProcessInstance(Long.parseLong(processOid))
-							.toString(), MediaType.APPLICATION_JSON_TYPE)
-					.build();
+					getMobileWorkflowService().getProcessInstance(
+							Long.parseLong(processOid)).toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("process-instances/{oid}/notes")
+	public Response getNotes(@PathParam("oid") String processOid) {
+		try {
+			return Response.ok(
+					getMobileWorkflowService().getNotes(
+							Long.parseLong(processOid)).toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new RuntimeException(e);
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("process-instances/{oid}/notes/create")
+	public Response createNote(String postedData) {
+		try {
+			JsonObject json = jsonIo.readJsonObject(postedData);
+
+			return Response.ok(
+					getMobileWorkflowService().createNote(json).toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("folders/{id}")
+	public Response getFolders(@PathParam("id") String folderId) {
+		try {
+			return Response.ok(
+					getMobileWorkflowService().getFolders(folderId).toString(),
+					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 

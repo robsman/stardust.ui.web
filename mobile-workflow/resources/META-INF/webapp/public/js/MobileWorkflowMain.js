@@ -36,24 +36,25 @@ require
 		});
 
 require([ "require", "jquery", "angularjs", "jquery-ui", "jquery-mobile",
-		"jquery.base64", "xml2json", "js/TestWorkflowService",
+		"jquery.base64", "xml2json", "js/Utils", "js/TestWorkflowService",
 		"js/WorkflowService", "js/Deck", "js/LoginPage", "js/DashboardPage",
 		"js/StartableProcessesPage", "js/WorklistPage",
 		"js/ActivityInstancePage", "js/ProcessPage", "js/NotesPage",
-		"js/NotePage", "js/UserPage", "js/ReportsPage", "js/ReportPage" ],
-		function(require, jquery, angularjs, jqueryUi, jqueryMobile,
-				jqueryBase64, xml2json, TestWorkflowService, WorkflowService,
-				Deck, LoginPage, DashboardPage, StartableProcessesPage,
-				WorklistPage, ActivityInstancePage, ProcessPage, NotesPage,
-				NotePage, UserPage, ReportsPage, ReportPage) {
-			jQuery(document).ready(
-					function() {
-						window.top.deck = new bpm.mobile_workflow.Deck();
+		"js/NotePage", "js/UserPage", "js/ReportsPage", "js/ReportPage",
+		"js/SearchPage", "js/FolderPage", "js/DocumentContentPage" ], function(
+		require, jquery, angularjs, jqueryUi, jqueryMobile, jqueryBase64,
+		xml2json, Utils, TestWorkflowService, WorkflowService, Deck, LoginPage,
+		DashboardPage, StartableProcessesPage, WorklistPage,
+		ActivityInstancePage, ProcessPage, NotesPage, NotePage, UserPage,
+		ReportsPage, ReportPage, SearchPage, FolderPage, DocumentContentPage) {
+	jQuery(document).ready(
+			function() {
+				window.top.deck = new bpm.mobile_workflow.Deck();
 
-						window.top.deck = window.top.deck.initialize(angularjs,
-								new bpm.mobile_workflow.LoginPage());
-						
-						console.log("Scope");
-						console.log(window.top.deck);
-					});
-		});
+				window.top.deck = window.top.deck.initialize(angularjs,
+						new bpm.mobile_workflow.LoginPage());
+
+				console.log("Scope");
+				console.log(window.top.deck);
+			});
+});

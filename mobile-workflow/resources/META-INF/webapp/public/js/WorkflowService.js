@@ -20,8 +20,24 @@ function WorkflowService() {
 	 */
 	WorkflowService.prototype.login = function(account, password) {
 		var deferred = jQuery.Deferred();
+		var self = this;
 
-		deferred.resolve();
+		jQuery.ajax({
+			type : "POST",
+			url : this.getMobileWorkflowRestServicesUrl() + "/login",
+			contentType : "application/json",
+			data : JSON.stringify({
+				account : account,
+				password : password
+			})
+		}).done(function(user) {
+			console.debug("User:");
+			console.debug(user);
+
+			deferred.resolve(user);
+		}).fail(function() {
+			deferred.reject();
+		});
 
 		return deferred.promise();
 	};
@@ -113,16 +129,11 @@ function WorkflowService() {
 	 */
 	WorkflowService.prototype.activateActivity = function(activityInstance) {
 		var deferred = jQuery.Deferred();
-
 		var self = this;
 
 		jQuery.ajax(
 				{
 					type : "POST",
-					beforeSend : function(request) {
-						request.setRequestHeader("Authentication", self
-								.getBasicAuthenticationHeader());
-					},
 					url : this.getMobileWorkflowRestServicesUrl()
 							+ "/activity/activate",
 					contentType : "application/json",
@@ -193,10 +204,53 @@ function WorkflowService() {
 	/**
 	 * 
 	 */
-	WorkflowService.prototype.createNote = function(processInstance) {
+	WorkflowService.prototype.getNotes = function(processInstanceOid) {
+		var deferred = jQuery.Deferred();
+		var self = this;
+
+		jQuery.ajax(
+				{
+					type : "GET",
+					url : this.getMobileWorkflowRestServicesUrl()
+							+ "/process-instances/" + processInstanceOid
+							+ "/notes",
+				}).done(function(result) {
+			console.debug("Return Value:");
+			console.debug(result);
+
+			deferred.resolve(result.notes);
+		}).fail(function() {
+			deferred.reject();
+		});
+
+		return deferred.promise();
+	};
+
+	/**
+	 * 
+	 */
+	WorkflowService.prototype.createNote = function(processInstanceOid, content) {
 		var deferred = jQuery.Deferred();
 
-		deferred.resolve();
+		jQuery.ajax(
+				{
+					type : "POST",
+					url : this.getMobileWorkflowRestServicesUrl()
+							+ "/process-instances/" + processInstanceOid
+							+ "/notes/create",
+					contentType : "application/json",
+					data : JSON.stringify({
+						processInstanceOid : processInstanceOid,
+						content : content
+					})
+				}).done(function(note) {
+			console.debug("Note:");
+			console.debug(note);
+
+			deferred.resolve(note);
+		}).fail(function() {
+			deferred.reject();
+		});
 
 		return deferred.promise();
 	};
@@ -224,6 +278,29 @@ function WorkflowService() {
 				}).fail(function(data) {
 					deferred.reject(data);
 				});
+
+		return deferred.promise();
+	};
+
+	/**
+	 * 
+	 */
+	WorkflowService.prototype.getFolders = function(folder) {
+		var deferred = jQuery.Deferred();
+		var self = this;
+		var folderId = folder ? folder.id : "null";
+
+		jQuery.ajax(
+				{
+					type : "GET",
+					url : self.getBaseUrl()
+							+ "/services/rest/mobile-workflow/folders/"
+							+ folderId,
+				}).done(function(data) {
+			deferred.resolve(data);
+		}).fail(function(data) {
+			deferred.reject(data);
+		});
 
 		return deferred.promise();
 	};

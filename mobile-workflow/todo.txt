@@ -1,22 +1,17 @@
-Must Have
+Bugs
 
-o user work statistics
-o process attachments in process overview
-o process activity history
+o Page refresh on back
+
+Must Have Features
+
+o External Web App functional
+o Wait Cursor
+o Attachments/Key Documents in Process Overview
+o Process History in Process Overview
+o Notes
  
-Nice To ave
+Nice To Have Features
 
-o descriptors
-o document viewer (TIFF, PNG, GIF, HTML, TXT)
-o document viewport size
-o icon improvements
+o Document Viewer (TIFF, PNG, GIF, HTML, TXT)
+o Icon improvements
 o Error handling, e.g. access right on activities
-o Focus handling for Pharmacy
-o Encapsulate all calls to IPP Services by calls to MobileSession as these might be remote calls from devices
-o Process attachments
-o sketch collaboration panel
-o 1:N table functionality
-
-
-
-http://localhost:8080/demo/run?__report=http://localhost:8080/demo/jackrabbit/repository/default/ipp-repository/partitions/default/realms/carnot/users/cc/documents/reports/designs/Dummy

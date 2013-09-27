@@ -26,8 +26,7 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		LoginPage.prototype.initialize = function() {
 			var deferred = jQuery.Deferred();
 
-			$("#" + this.id + " #errorPopup").popup();
-			$("#" + this.id + " #errorPopup").popup("close");
+			$("#notificationDialog").popup();
 
 			deferred.resolve();
 
@@ -38,16 +37,32 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		 * 
 		 */
 		LoginPage.prototype.login = function() {
-			console.log("Account: " + this.account);
-			console.log("Password: " + this.password);
+			var self = this;
 
 			getWorkflowService().login(this.account, this.password).done(
-					function() {
+					function(user) {
+						getDeck().user = user;
 						getDeck().pushPage(
 								new bpm.mobile_workflow.DashboardPage());
 					}).fail(function() {
-				$("#errorPopup").popup("open");
+				self.openNotificationDialog("Login failed.");
 			});
+		};
+
+		/**
+		 * 
+		 */
+		LoginPage.prototype.openNotificationDialog = function(message) {
+			$("#notificationDialog #message").empty();
+			$("#notificationDialog #message").append(message);
+			$("#notificationDialog").popup("open");
+		};
+
+		/**
+		 * 
+		 */
+		LoginPage.prototype.closeNotificationDialog = function() {
+			$("#notificationDialog").popup("close");
 		};
 	};
 }

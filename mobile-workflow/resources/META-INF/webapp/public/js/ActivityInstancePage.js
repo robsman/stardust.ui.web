@@ -142,7 +142,7 @@ bpm.mobile_workflow.ActivityInstancePage = function ActivityInstancePage(
 	 * 
 	 */
 	ActivityInstancePage.prototype.openNotesPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.NotesPage());
+		getDeck().pushPage(new bpm.mobile_workflow.NotesPage(this.activityInstance.processInstanceOid));
 	};
 
 	/**
