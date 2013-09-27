@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="PositionRecords">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="FileID" type="xs:string"/>
+							<xs:element name="RecordCount" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Positions">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Position" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SecurityIDType" type="xs:string"/>
+										<xs:element name="SecurityID" type="xs:string"/>
+										<xs:element name="BusinessEntity" type="xs:string"/>
+										<xs:element name="AccountNumber" type="xs:string"/>
+										<xs:element name="SettledUnits" type="xs:string" minOccurs="0"/>
+										<xs:element name="TradedUnits" type="xs:string" minOccurs="0"/>
+										<xs:element name="AssentedUnits" type="xs:string" minOccurs="0"/>
+										<xs:element name="ResponsibilityCode" type="xs:string" minOccurs="0"/>
+										<xs:element name="RestrictionCode" type="xs:string" minOccurs="0"/>
+										<xs:element name="LocationCode" type="xs:string" minOccurs="0"/>
+										<xs:element name="RegistrationCode" type="xs:string" minOccurs="0"/>
+										<xs:element name="CustodianAccountNumber" type="xs:string" minOccurs="0"/>										
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ProcessDate" use="required" type="xs:string"/>
+						<xs:attribute name="CloseHoldings" use="required" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

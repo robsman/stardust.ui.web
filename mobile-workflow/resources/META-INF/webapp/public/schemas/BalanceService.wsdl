@@ -1,0 +1,1618 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="XSP.WebServices.Enterprise.Balance" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="XSP.WebServices.Enterprise.Balance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="XSP.WebServices.Enterprise.Balance">
+      <s:import />
+      <s:import namespace="http://tempuri.org/BalanceViewDataSet.xsd" />
+      <s:import namespace="http://tempuri.org/AccountRecipientDataSet.xsd" />
+      <s:import namespace="http://tempuri.org/SecurityIDTypeDataset.xsd" />
+      <s:import namespace="http://tempuri.org/BalanceCADataSet.xsd" />
+      <s:import namespace="http://tempuri.org/EntitlementDataSet.xsd" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=BalanceViewDataSet" namespace="http://tempuri.org/BalanceViewDataSet.xsd" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=BalanceCADataSet" namespace="http://tempuri.org/BalanceCADataSet.xsd" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=AuditDataSet" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=SecurityIDTypeDataset" namespace="http://tempuri.org/SecurityIDTypeDataset.xsd" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=AccountRecipientDataSet" namespace="http://tempuri.org/AccountRecipientDataSet.xsd" />
+      <s:import schemaLocation="http://localhost/trunk/BalanceService.asmx?schema=EntitlementDataSet" namespace="http://tempuri.org/EntitlementDataSet.xsd" />
+      <s:element name="CheckCustodianLocationExist">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="loc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckCustodianLocationExistResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CheckCustodianLocationExistResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBalanceList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pagingDetails" type="tns:PagingDetailsDTO" />
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="PagingDetailsDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="PageNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PageSize" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SortAlias" type="tns:ArrayOfString" />
+          <s:element minOccurs="0" maxOccurs="1" name="SortIndicator" type="tns:ArrayOfString" />
+          <s:element minOccurs="1" maxOccurs="1" name="MaxRows" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="CriteriaCollection" type="tns:ArrayOfCriteria" />
+          <s:element minOccurs="1" maxOccurs="1" name="FromAnotherForm" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="KeysDelimited" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ReviewStatusDelimited" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCriteria">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Criteria" nillable="true" type="tns:Criteria" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Criteria">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MirrorColumnName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ColumnName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Operator" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SortType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DataType" type="tns:DbType" />
+          <s:element minOccurs="1" maxOccurs="1" name="IncludeInWhereClause" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsMultiLookUp" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSortable" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSpecialNull" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="SpecialNullParam" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IncludeInSortCheck" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="CanSortOnValue" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="DbType">
+        <s:restriction base="s:string">
+          <s:enumeration value="AnsiString" />
+          <s:enumeration value="Binary" />
+          <s:enumeration value="Byte" />
+          <s:enumeration value="Boolean" />
+          <s:enumeration value="Currency" />
+          <s:enumeration value="Date" />
+          <s:enumeration value="DateTime" />
+          <s:enumeration value="Decimal" />
+          <s:enumeration value="Double" />
+          <s:enumeration value="Guid" />
+          <s:enumeration value="Int16" />
+          <s:enumeration value="Int32" />
+          <s:enumeration value="Int64" />
+          <s:enumeration value="Object" />
+          <s:enumeration value="SByte" />
+          <s:enumeration value="Single" />
+          <s:enumeration value="String" />
+          <s:enumeration value="Time" />
+          <s:enumeration value="UInt16" />
+          <s:enumeration value="UInt32" />
+          <s:enumeration value="UInt64" />
+          <s:enumeration value="VarNumeric" />
+          <s:enumeration value="AnsiStringFixedLength" />
+          <s:enumeration value="StringFixedLength" />
+          <s:enumeration value="Xml" />
+          <s:enumeration value="DateTime2" />
+          <s:enumeration value="DateTimeOffset" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetBalanceListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBalanceListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="criteriaCollection" type="tns:ArrayOfCriteria" />
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRelatedBalanceListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBalanceView">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="businessEntity" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="caKey" type="s:decimal" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBalanceViewResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBalanceViewResult" type="tns:BalanceViewDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="BalanceViewDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityInfoDTO" type="tns:SecurityInfoDTO" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalSettledUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalEligibleUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalTradedUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalAssentedUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalTransactionUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalElectedUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalProcessedUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="CorporateActionID" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="CorporateActionType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WorkFlowStatus" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="EntryDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="AddedDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="CorporateActionTypeDescription" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImportantDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="DealNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BusinessEnity" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountTitle" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="AccountKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="RecycleUntilDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="VoluntaryMandatory" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionTypes" type="tns:ArrayOfTransactionTypeDTO" />
+          <s:element minOccurs="0" maxOccurs="1" name="EligibleUnitsDataSet">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="http://tempuri.org/BalanceViewDataSet.xsd" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="AccountRecipientDataSet">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="http://tempuri.org/AccountRecipientDataSet.xsd" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="AuditData">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="LotteryRequired" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="BalanceLotteryStatus" type="tns:ArrayOfWorkFlowStatusDTO" />
+          <s:element minOccurs="1" maxOccurs="1" name="DisplayOnLotteryView" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SecurityInfoDTO">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="COIKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityIDType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityIDTypeDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IssuerDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IssueDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CountryOfIssue" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityIdDataTable">
+            <s:complexType>
+              <s:sequence>
+                <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTransactionTypeDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TransactionTypeDTO" nillable="true" type="tns:TransactionTypeDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TransactionTypeDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWorkFlowStatusDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WorkFlowStatusDTO" nillable="true" type="tns:WorkFlowStatusDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkFlowStatusDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="StatusValue" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAuditDataSet">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="balanceAuditParam" type="tns:BalanceAuditParam" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="BalanceAuditParam">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="CAKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecuiryId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecuiryIdType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BusinessEntity" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RegistrationCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LocationCode" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAuditDataSetResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAuditDataSetResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddPositionsAndTransactions">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="positionDTOCollection" type="tns:ArrayOfPositionDTO" />
+            <s:element minOccurs="0" maxOccurs="1" name="transactionDTOCollection" type="tns:ArrayOfTransactionDTO" />
+            <s:element minOccurs="1" maxOccurs="1" name="recalculate" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="auditDataSet">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfPositionDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="PositionDTO" nillable="true" type="tns:PositionDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="PositionDTO">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="PositionKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Comments" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LockedFlag" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityIDType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BusinessEntity" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LocationCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RegistrationCode" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TradedUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="SettledUnits" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="AssentedUnits" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="ResponsibilityCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RestrictionCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustodianAccountNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ProcessDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Cakey" type="s:decimal" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTransactionDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TransactionDTO" nillable="true" type="tns:TransactionDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TransactionDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionKey" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LockedFlag" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Comments" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ProcessDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityIdType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SecurityId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BusinessEntityId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TransactionUnits" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="SettledDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TradeDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CounterParty" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LocationCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RegistrationCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExCumIndicator" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustodianAccountNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CompensatedFlag" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Cakey" type="s:decimal" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="AddPositionsAndTransactionsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AddPositionsAndTransactionsResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddPositions">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="positionDTOCollection" type="tns:ArrayOfPositionDTO" />
+            <s:element minOccurs="1" maxOccurs="1" name="recalculate" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="auditDataSet">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddPositionsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AddPositionsResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBusinessEntityDataTableList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBusinessEntityDataTableListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBusinessEntityDataTableListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+                <s:attribute fixed="http://www.w3.org/2001/XMLSchema" name="namespace" />
+                <s:attribute fixed="BusinessEntityDataTable" name="tableTypeName" />
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSecurityIdTypeList">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetSecurityIdTypeListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSecurityIdTypeListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://tempuri.org/SecurityIDTypeDataset.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSecurityInfo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="securityID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSecurityInfoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSecurityInfoResult" type="tns:SecurityInfoDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GETRelatedBalanceNewData">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="securityID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GETRelatedBalanceNewDataResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GETRelatedBalanceNewDataResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GETMathedBalanceNewData">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="securityID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GETMathedBalanceNewDataResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GETMathedBalanceNewDataResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceView">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="securityID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceViewResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRelatedBalanceViewResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCATypes">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetCATypesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCATypesResult" type="tns:ArrayOfCATypeDefinitionDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCATypeDefinitionDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CATypeDefinitionDTO" nillable="true" type="tns:CATypeDefinitionDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CATypeDefinitionDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CAType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Legacy" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BaseCAType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SuperCAType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CountryOfIssue" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Template" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetCorporateActionsList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="securityId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="securityIdType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCorporateActionsListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCorporateActionsListResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://tempuri.org/BalanceCADataSet.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTransactionTypesList">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetTransactionTypesListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTransactionTypesListResult" type="tns:ArrayOfTransactionTypeDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SaveWHTaxOverriden">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="withholdingTaxOverriddenDTO" type="tns:WithholdingTaxOverriddenDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="WithholdingTaxOverriddenDTO">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="AccountKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="WHTaxUserChangeKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="WithholdingType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="WithholdingRate" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="ReclaimRate" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="ExpenseRate" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CAKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="AccountSecurityRefKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsPosition" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExceptionFlag" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TaxTableChanged" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuditDataSet">
+            <s:complexType>
+              <s:sequence>
+                <s:any namespace="" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SaveWHTaxOverridenResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="RecalculateEntitlement">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="balanceEntitlementArgs" type="tns:BalanceEntitlementArgs" />
+            <s:element minOccurs="1" maxOccurs="1" name="saveWHTaxRate" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="BalanceEntitlementArgs">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="AccountSecurityRefKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WithholdingTaxOverriddenDTO" type="tns:WithholdingTaxOverriddenDTO" />
+          <s:element minOccurs="1" maxOccurs="1" name="CAKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="AccountKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="PositionOrTransactionKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="EligibleUnitKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsPosition" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ETRANEntitlementArgs" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="EntitlementType" type="tns:EntitlementType" />
+          <s:element minOccurs="1" maxOccurs="1" name="EntitledUnitType" type="tns:EntitledUnitType" />
+          <s:element minOccurs="1" maxOccurs="1" name="OptionKey" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="PayoutKey" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="VoluntaryMandatory" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExternalSecurityIDPriority" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="EntitlementType">
+        <s:restriction base="s:string">
+          <s:enumeration value="ActualEntitlement" />
+          <s:enumeration value="PotentialEntitlement" />
+          <s:enumeration value="All" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="EntitledUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Elected" />
+          <s:enumeration value="Processed" />
+          <s:enumeration value="Settled" />
+          <s:enumeration value="Traded" />
+          <s:enumeration value="Transaction" />
+          <s:enumeration value="EligibleUnit" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="RecalculateEntitlementResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecalculateEntitlementResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://tempuri.org/EntitlementDataSet.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEntitlements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="balanceEntitlementArgs" type="tns:BalanceEntitlementArgs" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEntitlementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEntitlementsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://tempuri.org/EntitlementDataSet.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckForLicense">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="feature" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckForLicenseResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CheckForLicenseResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalance">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="caKey" type="s:decimal" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageNo" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageSize" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRelatedBalanceResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+                <s:attribute name="namespace" />
+                <s:attribute fixed="RelatedBalanceDataTable" name="tableTypeName" />
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceForAccount">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="caKey" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageNo" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageSize" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceForAccountResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRelatedBalanceForAccountResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+                <s:attribute name="namespace" />
+                <s:attribute fixed="RelatedBalanceDataTable" name="tableTypeName" />
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceAudit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="IDAndIDType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRelatedBalanceAuditResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRelatedBalanceAuditResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsRelatedBalanceExist">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="businessEntity" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="registrationCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="matchedSecId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="matchedSecIdType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsRelatedBalanceExistResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IsRelatedBalanceExistResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmException">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="eligibleUnitKey" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="auditTrailData">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmExceptionResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetBalanceOptionInformation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caKey" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="locationCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="custodianAccNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="caSecurityId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="registrationCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBalanceOptionInformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBalanceOptionInformationResult" type="tns:ArrayOfBalanceOptionInformationDTO" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfBalanceOptionInformationDTO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="BalanceOptionInformationDTO" nillable="true" type="tns:BalanceOptionInformationDTO" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="BalanceOptionInformationDTO">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="OptionNumber" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="OptionAction" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OptionStatus" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ResponseDueDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="eTranResponseCloseDate" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="LockEligibleUnitBalances">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="euKeys" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="auditDateTime" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="auditUserName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LockEligibleUnitBalancesResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="CheckCustodianLocationExistSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckCustodianLocationExist" />
+  </wsdl:message>
+  <wsdl:message name="CheckCustodianLocationExistSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckCustodianLocationExistResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBalanceList" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBalanceListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceList" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceViewSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBalanceView" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceViewSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBalanceViewResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAuditDataSetSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAuditDataSet" />
+  </wsdl:message>
+  <wsdl:message name="GetAuditDataSetSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAuditDataSetResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddPositionsAndTransactionsSoapIn">
+    <wsdl:part name="parameters" element="tns:AddPositionsAndTransactions" />
+  </wsdl:message>
+  <wsdl:message name="AddPositionsAndTransactionsSoapOut">
+    <wsdl:part name="parameters" element="tns:AddPositionsAndTransactionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddPositionsSoapIn">
+    <wsdl:part name="parameters" element="tns:AddPositions" />
+  </wsdl:message>
+  <wsdl:message name="AddPositionsSoapOut">
+    <wsdl:part name="parameters" element="tns:AddPositionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBusinessEntityDataTableListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBusinessEntityDataTableList" />
+  </wsdl:message>
+  <wsdl:message name="GetBusinessEntityDataTableListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBusinessEntityDataTableListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSecurityIdTypeListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSecurityIdTypeList" />
+  </wsdl:message>
+  <wsdl:message name="GetSecurityIdTypeListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSecurityIdTypeListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSecurityInfoSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSecurityInfo" />
+  </wsdl:message>
+  <wsdl:message name="GetSecurityInfoSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSecurityInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GETRelatedBalanceNewDataSoapIn">
+    <wsdl:part name="parameters" element="tns:GETRelatedBalanceNewData" />
+  </wsdl:message>
+  <wsdl:message name="GETRelatedBalanceNewDataSoapOut">
+    <wsdl:part name="parameters" element="tns:GETRelatedBalanceNewDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="GETMathedBalanceNewDataSoapIn">
+    <wsdl:part name="parameters" element="tns:GETMathedBalanceNewData" />
+  </wsdl:message>
+  <wsdl:message name="GETMathedBalanceNewDataSoapOut">
+    <wsdl:part name="parameters" element="tns:GETMathedBalanceNewDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceViewSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceView" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceViewSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceViewResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCATypesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCATypes" />
+  </wsdl:message>
+  <wsdl:message name="GetCATypesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCATypesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCorporateActionsListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCorporateActionsList" />
+  </wsdl:message>
+  <wsdl:message name="GetCorporateActionsListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCorporateActionsListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTransactionTypesListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTransactionTypesList" />
+  </wsdl:message>
+  <wsdl:message name="GetTransactionTypesListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTransactionTypesListResponse" />
+  </wsdl:message>
+  <wsdl:message name="SaveWHTaxOverridenSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveWHTaxOverriden" />
+  </wsdl:message>
+  <wsdl:message name="SaveWHTaxOverridenSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveWHTaxOverridenResponse" />
+  </wsdl:message>
+  <wsdl:message name="RecalculateEntitlementSoapIn">
+    <wsdl:part name="parameters" element="tns:RecalculateEntitlement" />
+  </wsdl:message>
+  <wsdl:message name="RecalculateEntitlementSoapOut">
+    <wsdl:part name="parameters" element="tns:RecalculateEntitlementResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEntitlementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEntitlements" />
+  </wsdl:message>
+  <wsdl:message name="GetEntitlementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEntitlementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="CheckForLicenseSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckForLicense" />
+  </wsdl:message>
+  <wsdl:message name="CheckForLicenseSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckForLicenseResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalance" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceForAccountSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceForAccount" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceForAccountSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceForAccountResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceAuditSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceAudit" />
+  </wsdl:message>
+  <wsdl:message name="GetRelatedBalanceAuditSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRelatedBalanceAuditResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsRelatedBalanceExistSoapIn">
+    <wsdl:part name="parameters" element="tns:IsRelatedBalanceExist" />
+  </wsdl:message>
+  <wsdl:message name="IsRelatedBalanceExistSoapOut">
+    <wsdl:part name="parameters" element="tns:IsRelatedBalanceExistResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmExceptionSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmException" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmExceptionSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmExceptionResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceOptionInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBalanceOptionInformation" />
+  </wsdl:message>
+  <wsdl:message name="GetBalanceOptionInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBalanceOptionInformationResponse" />
+  </wsdl:message>
+  <wsdl:message name="LockEligibleUnitBalancesSoapIn">
+    <wsdl:part name="parameters" element="tns:LockEligibleUnitBalances" />
+  </wsdl:message>
+  <wsdl:message name="LockEligibleUnitBalancesSoapOut">
+    <wsdl:part name="parameters" element="tns:LockEligibleUnitBalancesResponse" />
+  </wsdl:message>
+  <wsdl:portType name="BalanceServiceSoap">
+    <wsdl:operation name="CheckCustodianLocationExist">
+      <wsdl:input message="tns:CheckCustodianLocationExistSoapIn" />
+      <wsdl:output message="tns:CheckCustodianLocationExistSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceList">
+      <wsdl:input message="tns:GetBalanceListSoapIn" />
+      <wsdl:output message="tns:GetBalanceListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceList">
+      <wsdl:input message="tns:GetRelatedBalanceListSoapIn" />
+      <wsdl:output message="tns:GetRelatedBalanceListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceView">
+      <wsdl:input message="tns:GetBalanceViewSoapIn" />
+      <wsdl:output message="tns:GetBalanceViewSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAuditDataSet">
+      <wsdl:input message="tns:GetAuditDataSetSoapIn" />
+      <wsdl:output message="tns:GetAuditDataSetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPositionsAndTransactions">
+      <wsdl:input message="tns:AddPositionsAndTransactionsSoapIn" />
+      <wsdl:output message="tns:AddPositionsAndTransactionsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPositions">
+      <wsdl:input message="tns:AddPositionsSoapIn" />
+      <wsdl:output message="tns:AddPositionsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBusinessEntityDataTableList">
+      <wsdl:input message="tns:GetBusinessEntityDataTableListSoapIn" />
+      <wsdl:output message="tns:GetBusinessEntityDataTableListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityIdTypeList">
+      <wsdl:input message="tns:GetSecurityIdTypeListSoapIn" />
+      <wsdl:output message="tns:GetSecurityIdTypeListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityInfo">
+      <wsdl:input message="tns:GetSecurityInfoSoapIn" />
+      <wsdl:output message="tns:GetSecurityInfoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GETRelatedBalanceNewData">
+      <wsdl:input message="tns:GETRelatedBalanceNewDataSoapIn" />
+      <wsdl:output message="tns:GETRelatedBalanceNewDataSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GETMathedBalanceNewData">
+      <wsdl:input message="tns:GETMathedBalanceNewDataSoapIn" />
+      <wsdl:output message="tns:GETMathedBalanceNewDataSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceView">
+      <wsdl:input message="tns:GetRelatedBalanceViewSoapIn" />
+      <wsdl:output message="tns:GetRelatedBalanceViewSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCATypes">
+      <wsdl:input message="tns:GetCATypesSoapIn" />
+      <wsdl:output message="tns:GetCATypesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCorporateActionsList">
+      <wsdl:input message="tns:GetCorporateActionsListSoapIn" />
+      <wsdl:output message="tns:GetCorporateActionsListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTransactionTypesList">
+      <wsdl:input message="tns:GetTransactionTypesListSoapIn" />
+      <wsdl:output message="tns:GetTransactionTypesListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveWHTaxOverriden">
+      <wsdl:input message="tns:SaveWHTaxOverridenSoapIn" />
+      <wsdl:output message="tns:SaveWHTaxOverridenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RecalculateEntitlement">
+      <wsdl:input message="tns:RecalculateEntitlementSoapIn" />
+      <wsdl:output message="tns:RecalculateEntitlementSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEntitlements">
+      <wsdl:input message="tns:GetEntitlementsSoapIn" />
+      <wsdl:output message="tns:GetEntitlementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckForLicense">
+      <wsdl:input message="tns:CheckForLicenseSoapIn" />
+      <wsdl:output message="tns:CheckForLicenseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalance">
+      <wsdl:input message="tns:GetRelatedBalanceSoapIn" />
+      <wsdl:output message="tns:GetRelatedBalanceSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceForAccount">
+      <wsdl:input message="tns:GetRelatedBalanceForAccountSoapIn" />
+      <wsdl:output message="tns:GetRelatedBalanceForAccountSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceAudit">
+      <wsdl:input message="tns:GetRelatedBalanceAuditSoapIn" />
+      <wsdl:output message="tns:GetRelatedBalanceAuditSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsRelatedBalanceExist">
+      <wsdl:input message="tns:IsRelatedBalanceExistSoapIn" />
+      <wsdl:output message="tns:IsRelatedBalanceExistSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmException">
+      <wsdl:input message="tns:ConfirmExceptionSoapIn" />
+      <wsdl:output message="tns:ConfirmExceptionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceOptionInformation">
+      <wsdl:input message="tns:GetBalanceOptionInformationSoapIn" />
+      <wsdl:output message="tns:GetBalanceOptionInformationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LockEligibleUnitBalances">
+      <wsdl:input message="tns:LockEligibleUnitBalancesSoapIn" />
+      <wsdl:output message="tns:LockEligibleUnitBalancesSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BalanceServiceSoap" type="tns:BalanceServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CheckCustodianLocationExist">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/CheckCustodianLocationExist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceView">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceView" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAuditDataSet">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetAuditDataSet" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddPositionsAndTransactions">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/AddPositionsAndTransactions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddPositions">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/AddPositions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBusinessEntityDataTableList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBusinessEntityDataTableList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityIdTypeList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetSecurityIdTypeList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityInfo">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetSecurityInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETRelatedBalanceNewData">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GETRelatedBalanceNewData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETMathedBalanceNewData">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GETMathedBalanceNewData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceView">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceView" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCATypes">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetCATypes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCorporateActionsList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetCorporateActionsList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTransactionTypesList">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetTransactionTypesList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveWHTaxOverriden">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/SaveWHTaxOverriden" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecalculateEntitlement">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/RecalculateEntitlement" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEntitlements">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetEntitlements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckForLicense">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/CheckForLicense" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalance">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalance" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceForAccount">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceForAccount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceAudit">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceAudit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsRelatedBalanceExist">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/IsRelatedBalanceExist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmException">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/ConfirmException" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceOptionInformation">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceOptionInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LockEligibleUnitBalances">
+      <soap:operation soapAction="XSP.WebServices.Enterprise.Balance/LockEligibleUnitBalances" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BalanceServiceSoap12" type="tns:BalanceServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CheckCustodianLocationExist">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/CheckCustodianLocationExist" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceView">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceView" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAuditDataSet">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetAuditDataSet" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddPositionsAndTransactions">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/AddPositionsAndTransactions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddPositions">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/AddPositions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBusinessEntityDataTableList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBusinessEntityDataTableList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityIdTypeList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetSecurityIdTypeList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSecurityInfo">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetSecurityInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETRelatedBalanceNewData">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GETRelatedBalanceNewData" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETMathedBalanceNewData">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GETMathedBalanceNewData" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceView">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceView" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCATypes">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetCATypes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCorporateActionsList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetCorporateActionsList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTransactionTypesList">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetTransactionTypesList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveWHTaxOverriden">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/SaveWHTaxOverriden" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecalculateEntitlement">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/RecalculateEntitlement" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEntitlements">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetEntitlements" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckForLicense">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/CheckForLicense" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalance">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalance" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceForAccount">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceForAccount" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRelatedBalanceAudit">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetRelatedBalanceAudit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsRelatedBalanceExist">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/IsRelatedBalanceExist" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmException">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/ConfirmException" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBalanceOptionInformation">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/GetBalanceOptionInformation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LockEligibleUnitBalances">
+      <soap12:operation soapAction="XSP.WebServices.Enterprise.Balance/LockEligibleUnitBalances" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BalanceService">
+    <wsdl:port name="BalanceServiceSoap" binding="tns:BalanceServiceSoap">
+      <soap:address location="http://localhost/trunk/BalanceService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="BalanceServiceSoap12" binding="tns:BalanceServiceSoap12">
+      <soap12:address location="http://localhost/trunk/BalanceService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
