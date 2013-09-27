@@ -672,7 +672,7 @@ public class PortalUiController
       }
 
       // replace map
-      if (view != null && !params.isEmpty() && params.get("doNotCopyParams") == null)
+      if (view != null && (params != null && !params.isEmpty()) && params.get("doNotCopyParams") == null)
       {
          view.setViewParams(params);
       }
