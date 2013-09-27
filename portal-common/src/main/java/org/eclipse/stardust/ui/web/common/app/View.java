@@ -307,8 +307,7 @@ public class View extends AbstractUiElement implements TabScopeManager
 
       if (StringUtils.isNotEmpty(params))
       {
-         int pos = params.indexOf("?");
-         if (pos > -1 && params.length() > pos + 1)
+         if (params.startsWith("?") && (params.length() > 1))
          {
             params = params.substring(params.indexOf("?") + 1);
          }
