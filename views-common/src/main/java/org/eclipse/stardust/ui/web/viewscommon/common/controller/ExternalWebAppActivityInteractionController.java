@@ -24,7 +24,6 @@ import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -207,6 +206,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             trace.info("Overriding external Web App URI to " + uri);
          }
       }
+      
+      // Take out Hash if any to append at the end
+      String uriHash = "";
+      if (uri.contains("#"))
+      {
+         uriHash = uri.substring(uri.indexOf("#"));
+         uri = uri.substring(0, uri.indexOf("#"));
+      }
 
       StringBuilder uriBuilder = new StringBuilder();
 
@@ -222,6 +229,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       uriBuilder.append("&") //
             .append(PARAM_SERVICES_BASE_URI).append("=").append(servicesBaseUri);
       
+      // Append Hash
+      uriBuilder.append(uriHash);
+
       return fc.getExternalContext().encodeResourceURL(uriBuilder.toString());
    }
 
