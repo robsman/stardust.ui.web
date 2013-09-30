@@ -143,6 +143,11 @@ define(
 							this.parameterDefinitionPathInput = m_utils.jQuerySelect(this.options.scope
 									+ " #parameterDefinitionPathInput");
 						}
+					} else {
+						m_utils.jQuerySelect(this.options.scope
+								+ " #parameterDefinitionDataSelect").hide();
+						m_utils.jQuerySelect(this.options.scope
+								+ " label[for='parameterDefinitionDataSelect']").hide();
 					}
 
 					if (this.options.supportsDataTypeSelection) {
