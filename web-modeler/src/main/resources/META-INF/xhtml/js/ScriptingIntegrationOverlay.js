@@ -368,6 +368,8 @@ define(
 					var route = "";
 					if (this.languageSelect.val() === "JavaScript") {
 					var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
+					code += "function convertStringToDate(format, input){\nreturn new java.text.SimpleDateFormat(format).parse(input);\n}\n";
+					
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
@@ -389,6 +391,9 @@ define(
 										+ " =  eval('(' + request.headers.get('"
 										+ accessPoint.id + "')+ ')');\n";
 								code += "}\n";
+								code += "Input.embedded.dates= Input.zeroOrMore;\n";
+								var typeDeclaration = m_model.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
+								code+=this.loopRecursivelyThroughSdt(typeDeclaration,accessPoint.id);
 							}
 						}
 					}
@@ -459,6 +464,62 @@ define(
 					return route;
 				};
 
+				
+				ScriptingIntegrationOverlay.prototype.loopRecursivelyThroughSdt=function(typeDeclarations, parentId){
+				var code="";
+				for ( var i = 0; i < typeDeclarations.getElementCount(); i++) {
+										var element = typeDeclarations.getElements()[i];
+
+										var type = element.type;
+										if(element.cardinality == "many" ||element.cardinality == "atLeastOne"){
+											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){//LIST of date
+												code+="if("+parentId+"."+element.name+"!=null){\n";
+												code+="for ( var j = 0; j < "+parentId+"."+element.name+".length; j++) {"
+												code+="if("+parentId+"."+element.name+"[j]!=null){\n";
+												code+=parentId+"."+element.name+"[j]=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+parentId+"."+element.name+"[j]);\n";
+												code+="}\n";
+												code+="}\n";
+												code+="}\n";
+											}else{
+											if (element.type.indexOf(':') !== -1) {
+													type = element.type.split(":")[1];
+												}
+
+												var childTypeDeclaration = typeDeclarations.model
+														.findTypeDeclarationBySchemaName(type);
+														
+												if (childTypeDeclaration != null) {
+												//complex type
+												code+="if("+parentId+"."+element.name+"!=null){\n";
+												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,parentId+"."+element.name);
+												code+="}\n";
+												}
+											}
+										}
+										else{
+											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){
+													code+="if("+parentId+"."+element.name+"!=null){\n";
+													code+=parentId+"."+element.name+"=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+parentId+"."+element.name+");\n";
+													code+="}\n"
+											}else{
+												if (element.type.indexOf(':') !== -1) {
+													type = element.type.split(":")[1];
+												}
+
+												var childTypeDeclaration = typeDeclarations.model
+														.findTypeDeclarationBySchemaName(type);
+														
+												if (childTypeDeclaration != null) {
+												//complex type
+												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,parentId+"."+element.name);
+												}
+												
+											}
+										}
+				};
+									return code;
+
+}
 				/**
 				 *
 				 */
