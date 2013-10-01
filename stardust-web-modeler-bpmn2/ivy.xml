@@ -61,7 +61,7 @@
       </dependency>
       <dependency org="com.infinity.bpm" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->carnot-engine-compile" />
       
-      <dependency org="org.eclipse.bpmn2" name="org.eclipse.bpmn2" rev="0.7.0-SNAPSHOT" conf="stardust-web-modeler-bpmn2-compile->default" />
+      <dependency org="org.eclipse.bpmn2" name="org.eclipse.bpmn2" rev="${org.eclipse.bpmn2.version}" conf="stardust-web-modeler-bpmn2-compile->default" />
       <dependency org="org.springframework" name="spring-context" rev="${spring-context.version}" conf="stardust-web-modeler-bpmn2-compile->default" />
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-bpmn2-compile->default" />
       
