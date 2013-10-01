@@ -180,26 +180,6 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-
-				var parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parameterDefinitionDirectionSelect");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.in");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"IN\">" + selectdata
-								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.inout");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"INOUT\">" + selectdata
-								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.out");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"OUT\">" + selectdata
-								+ "</option>");
 			}
 			/**
 			 * 
@@ -243,6 +223,7 @@ define(
 								supportsDataMappings : false,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
+								supportsInOutDirection : true,
 								tableWidth : "500px",
 								directionColumnWidth : "50px",
 								nameColumnWidth : "250px",

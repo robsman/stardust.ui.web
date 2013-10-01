@@ -89,8 +89,20 @@ define(
 							+ " #parameterDefinitionsTable tbody");
 					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
+					
 					this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionDirectionSelect");
+					this.parameterDefinitionDirectionSelect.empty();
+					var direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
+					this.parameterDefinitionDirectionSelect.append("<option value=\"IN\">" + direction + "</option>");
+					if (options.supportsInOutDirection) {
+						direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
+						this.parameterDefinitionDirectionSelect.append("<option value=\"INOUT\">" + direction + "</option>");
+					}
+					direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
+					this.parameterDefinitionDirectionSelect.append("<option value=\"OUT\">" + direction + "</option>");
+					
+					
 					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
 					this.deleteParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope

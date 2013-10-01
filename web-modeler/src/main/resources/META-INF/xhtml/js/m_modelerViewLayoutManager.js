@@ -331,26 +331,6 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
 				gatewayTypeInputselect.append("<option value=\"xor\">"+selectdata+"</option>" );
 
-				var directionSelect = m_utils.jQuerySelect("#parameterDefinitionTypeSelector").find("#parameterDefinitionDirectionSelect");
-
-				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
-				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
-				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
-				directionSelect.append("<option value=\"INOUT\">" + selectdata + "</option>");
-
-				directionSelect = m_utils.jQuerySelect("#directionlistTable").find("#parameterDefinitionDirectionSelect");
-
-				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
-				directionSelect.append("<option value=\"IN\">"+ selectdata + "</option>");
-
-				selectdata = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
-				directionSelect.append("<option value=\"OUT\">"+ selectdata + "</option>");
-
-
 				m_utils.jQuerySelect("#gatewayid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.gateway"));
 
