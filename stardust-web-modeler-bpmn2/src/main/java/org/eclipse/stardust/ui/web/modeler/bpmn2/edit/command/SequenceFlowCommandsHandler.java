@@ -1,13 +1,19 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2.edit.command;
 
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipatingProcesses;
+
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.dd.di.Diagram;
 import org.eclipse.emf.ecore.EObject;
@@ -39,6 +45,36 @@ public class SequenceFlowCommandsHandler
 
    @Resource
    private ModelService modelService;
+
+   @OnCommand(commandId = "connection.create")
+   public void onCreateConnectionSymbol(Definitions model, BPMNShape context,
+         JsonObject details)
+   {
+      Diagram diagram = Bpmn2Utils.findContainingDiagram(context);
+      if ((null != diagram) && (diagram.getRootElement() instanceof BPMNPlane))
+      {
+          BPMNPlane plane = (BPMNPlane) diagram.getRootElement();
+
+          Process process = null;
+          if (plane.getBpmnElement() instanceof Process)
+          {
+             process = (Process) plane.getBpmnElement();
+          }
+          else if (plane.getBpmnElement() instanceof Collaboration)
+          {
+             List<Process> participatingProcesses = findParticipatingProcesses((Collaboration) plane.getBpmnElement());
+             if (1 == participatingProcesses.size())
+             {
+                process = participatingProcesses.get(0);
+             }
+          }
+
+          if (null != process)
+          {
+             onCreateConnectionSymbol(model, process, details);
+          }
+      }
+   }
 
    @OnCommand(commandId = "connection.create")
    public void onCreateConnectionSymbol(Definitions model, Process context,

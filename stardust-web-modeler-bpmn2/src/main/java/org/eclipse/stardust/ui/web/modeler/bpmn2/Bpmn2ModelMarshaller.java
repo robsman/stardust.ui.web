@@ -297,6 +297,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          {
             modelJto.participants.put(root.getId(), toJto((Participant) root));
          }
+         else if (root instanceof Resource)
+         {
+            ModelParticipantJto jto = toJto((Resource) root);
+            if (isEmpty(jto.parentUUID))
+            {
+               modelJto.participants.put(root.getId(), jto);
+            }
+         }
          else if (root instanceof DataStore)
          {
             modelJto.dataItems.put(root.getId(), toJto((DataStore) root));
@@ -877,7 +885,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                   (Resource) parentResource, "core");
             if (parentExtJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY)
                   && extractAsString(parentExtJson,
-                        ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).endsWith(jto.uuid))
+                        ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).endsWith(jto.id))
             {
                jto.type = ModelerConstants.TEAM_LEADER_TYPE_KEY;
             }
@@ -887,6 +895,24 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (extJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
       {
          jto.teamLeadFullId = extJson.get(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).getAsString();
+      }
+
+      Definitions model = findContainingModel(resource);
+      if (null != model)
+      {
+         for (RootElement rootElement : model.getRootElements())
+         {
+            if (rootElement instanceof Resource)
+            {
+               JsonObject extJson2 = Bpmn2ExtensionUtils.getExtensionAsJson(rootElement, "core");
+               if (extJson2.has(ModelerConstants.PARENT_UUID_PROPERTY)
+                     && jto.uuid.equals(extJson2.get(ModelerConstants.PARENT_UUID_PROPERTY).getAsString()))
+               {
+                  ModelParticipantJto childParticipant = toJto((Resource) rootElement);
+                  jto.childParticipants.add(childParticipant);
+               }
+            }
+         }
       }
 
       return jto;
