@@ -84,6 +84,9 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes"],function(m_model,m_drlAttr
         if (obj.name==="<sequence>" && paramDef){
         	obj.name=paramDef.name;
         }
+        if(paramDef && obj.enumeration){
+        	paramDef.enumeration=obj.enumeration;
+        }
         temp={data: {title:obj.name, icon:img}, 
         	  attr: {title: obj.type},
         	  metadata: {

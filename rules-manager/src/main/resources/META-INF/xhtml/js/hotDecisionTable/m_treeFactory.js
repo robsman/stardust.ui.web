@@ -48,7 +48,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
           console.log(refObj);
           var parent=$.jstree._reference(this)._get_parent(data.rslt.obj);
           
-          /*Autocomplete types have a source list of values we msut pass along*/
+          /*Autocomplete types have a source list of values we must pass along*/
           if(colType.type==="autocomplete"){
 	    	  colType.source=refObj.enumeration.split(",");
 	      }
