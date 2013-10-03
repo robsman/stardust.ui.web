@@ -75,10 +75,10 @@ require([ "require",
 					addIcons: ".add-icon", /**/
 					importIcons: ".import-icon", /**/
 					decisionTableTabs: "#decisionTableTabs", /**/
-					decisionTableCodeTab: "#decisionTableCodeTab" /**/
+					decisionTableCodeTab: "#decisionTableCodeTab", /**/
+					hideNonDataColumns: "#hideNonDataCols"
 		}};
 		
 		decisionTblView.initialize(BridgeUtils.View.getActiveViewParams().param("ruleSetUuid"),
-								   BridgeUtils.View.getActiveViewParams().param("uuid"),
-								   options);
+								   BridgeUtils.View.getActiveViewParams().param("uuid"),options);
 });

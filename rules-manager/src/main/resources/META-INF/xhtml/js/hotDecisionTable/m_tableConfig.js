@@ -11,6 +11,9 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
             };
           }
         },
+        snapShots: {
+        	hiddenColumns:{}
+        },
         beforeKeyDown: function(event){
         	console.log("Before KeyDown");
         	console.log(event);
@@ -336,8 +339,32 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
             	colHeaders: settings.colHeaders,
             	colWidths: settings.colWidths
             });
-    	    console.log("getting column data");
-    	    console.log(settings.columns[newIndex]);
+          },
+          toggleNonDataColumns: function(instance){
+        	  var settings=instance.getSettings(),
+        	  	  snapShots=settings.snapShots,
+        	      colHdrs=settings.colHeaders,
+        	      colWidths=settings.colWidths,
+        	      colHdrCount=colHdrs.length,
+        	      colHdr;
+        	      
+        	  while(colHdrCount--){
+        		  colHdr=colHdrs[colHdrCount].split("|");
+        		  if(colHdr[2]==="Attribute" || (colHdr[2]==="Header" && colHdr[0]==="Description")){
+        			  if(colWidths[colHdrCount]==1){
+        				  if(snapShots.hiddenColumns["COL_" + colHdr[0]]){
+        					  colWidths[colHdrCount]=snapShots.hiddenColumns["COL_" + colHdr[0] ];
+        				  }
+        			  }
+        			  else{
+        				  snapShots.hiddenColumns["COL_" + colHdr[0] ]=colWidths[colHdrCount];
+        				  colWidths[colHdrCount]=1;
+        			  }
+        		  }
+        		  instance.updateSettings({
+        			  "colWidths":colWidths,
+        			  "snapShots":snapShots});
+        	  }
           },
           setColumnWidth: function(index,width){
             //TODO: implement, need ref to instance

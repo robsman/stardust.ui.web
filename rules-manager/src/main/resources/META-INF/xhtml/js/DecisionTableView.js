@@ -81,7 +81,8 @@ define(
 							addIcons: m_utils.jQuerySelect(options.selectors.addIcons),
 							importIcons: m_utils.jQuerySelect(options.selectors.importIcons),
 							decisionTableTabs: m_utils.jQuerySelect(options.selectors.decisionTableTabs),
-							decisionTableCodeTab: m_utils.jQuerySelect(options.selectors.decisionTableCodeTab)
+							decisionTableCodeTab: m_utils.jQuerySelect(options.selectors.decisionTableCodeTab),
+							hideNonDataCols: m_utils.jQuerySelect(options.selectors.hideNonDataColumns)
 					};
 					
 					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -127,6 +128,13 @@ define(
 				    uiElements.decisionTableInstance= uiElements.decisionTable.handsontable('getInstance');
 				    
 				    
+				    /*bind behaivour to our hideNonDataCols UIElement. ON click we toggle between 
+				     * hiding and showing the non data columns in our decision table. NonData columns
+				     * being DRL attribute columns (salience,enabled,etc...) and the description column.*/
+				    uiElements.hideNonDataCols.on("click",function(){
+				    	var settings=uiElements.decisionTableInstance.getSettings();
+				    	settings.helperFunctions.toggleNonDataColumns(uiElements.decisionTableInstance);
+				    });
 				    
 				    /* Handle the custom JQUERY event for requests for operator menu dialogs.
 				     * These events bubble up from our decisiontable and indicate a user interaction with
@@ -234,22 +242,11 @@ define(
 				    	}
 				    });
 				    uiElements.decisionTableInstance.rootElement.on("column_removed",function(event){
-				    	console.log("caught column removed, throwing to mainview");
-				    	console.log(event);
 				    	if(myDialog){
-				    		console.log("triggering dialog");
 				    		myDialog.trigger(event);
 				    	}
 				    });
-				    if(ruleSet.parameterDefinitions[0]){
-				    var paramDef=ruleSet.parameterDefinitions[0];
-				    typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
-				    var results=typeParser.parseTypeDeclToDRL(typeDecl);
-				    console.log("parsing..............");
-				    console.log(results);
-				    console.log(typeDecl);
-				    console.log(m_model);
-				    }
+				    
 				    
 				    /*add the add-decision-table-row functionality to matched elements*/
 				    uiElements.addRowBtn.each(function(){
