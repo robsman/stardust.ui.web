@@ -496,7 +496,7 @@ define(
 										var techRule = ruleSet
 												.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 
-										viewManager.openView("TechnicalRuleView", "id="
+										viewManager.openView("technicalRuleView", "id="
 												+ techRule.id + "&ruleSetId="
 												+ ruleSet.id + "&name="
 												+ techRule.name + "&uuid="
