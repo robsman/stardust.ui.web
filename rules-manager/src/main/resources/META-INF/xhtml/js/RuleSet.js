@@ -6,8 +6,9 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		"bpm-modeler/js/m_dialog", "rules-manager/js/Uuid",
 		"rules-manager/js/Rule","rules-manager/js/TechnicalRule",
 		"rules-manager/js/DecisionTable","bpm-modeler/js/m_model",
-		"rules-manager/js/hotDecisionTable/m_typeParser" ], function(m_utils, m_constants, m_command,
-		m_commandsController, m_dialog, Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser) {
+		"rules-manager/js/hotDecisionTable/m_typeParser",
+		"rules-manager/js/m_ruleSetParser"], function(m_utils, m_constants, m_command,
+		m_commandsController, m_dialog, Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser) {
 
 
 
@@ -99,9 +100,20 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		this.rules = {};
 		this.technicalRules={};
 		this.decisionTables={};
-		/**
-		 * 
-		 */
+		
+		RuleSet.prototype.toJSON=function(format){
+			var parsedData;
+			/*TODO:JSON.stringify support? IE7 will fail*/
+			/*TODO:Add default function (beware circular references)*/
+			switch (format.toUpperCase()){
+			case "PRE-DRL":
+				parsedData=m_ruleSetParser.toPreDRLFormat(this);
+				break;
+			default:
+				parsedData="['Not Implemented']";
+			}
+			return parsedData;
+		}
 		RuleSet.prototype.initialize = function(id, name) {
 			this.uuid = Uuid.generate();
 			this.id = id;

@@ -8,7 +8,8 @@ define([],function(){
 	 * to Javas' haschcode function. Hashcode is based on the symbol value, so if you change the symbol 
 	 * rerun the hashcode. Do not run it against the literal symbol (as if you copy and pasted from the source in this file),
 	 * run it off the HTML encoding of the symbol as the symbol would appear on a web-page. This is to allow lookups
-	 * based on the html value of the symbol.
+	 * based on the html value of the symbol. Implication is that referencing operators by hashCode should be a run-time
+	 * type use-case. They (hashcodes) should not be used as storage values as the symbol is potentially variant.
 	 * */
 	var operators=[
 		{
@@ -175,13 +176,16 @@ define([],function(){
 		},
 		getOperatorByHashCode: function(val){
 		  var opCount=operators.length,
+		  	  retOp="NA",
               tempOp;
 		  while(opCount--){
 		    tempOp=operators[opCount];
 		    if(tempOp.hashCode === val){
-		      return tempOp;
+		      retOp = tempOp;
+		      break;
 		    }
 		  }
+		  return retOp;
 		}
 	};
   return opFac;

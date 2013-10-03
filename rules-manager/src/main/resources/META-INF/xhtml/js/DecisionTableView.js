@@ -303,6 +303,7 @@ define(
 					/*Hook for the change event of our table: Saved for undo redo functionality*/
 					uiElements.decisionTableInstance.addHook('afterChange', function(changes,source) {
 						console.log("Decision Table Change event...");
+						//console.log(ruleSet.toJSON("PRE-DRL"));
 					});
 					
 					/* Adding a hook for column resizing as this value was not actually being saved into
