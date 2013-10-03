@@ -16,9 +16,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,14 +25,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
-@Path("/rules-management/{randomPostFix}")
+@Path("/rules/{randomPostFix}")
 public class RulesManagementResource
 {
    @Context
@@ -111,7 +108,6 @@ public class RulesManagementResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
-   
 }
 
 

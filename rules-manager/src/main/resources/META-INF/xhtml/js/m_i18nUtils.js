@@ -43,7 +43,7 @@ define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils,
 
 		jQuery.ajax({
 			url : m_urlUtils.getContextName()
-					+ "/services/rest/rules-manager/rulesManagement/"
+					+ "/services/rest/rules-manager/rules/"
 					+ new Date().getTime() + "/language",
 			async : false,
 			success : function(l) {
@@ -53,7 +53,7 @@ define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils,
 		InfinityBPMI18N.initPluginProps({
 			pluginName : "modeler",
 			singleEndPoint : m_urlUtils.getContextName()
-					+ "/services/rest/rules-manager/rulesManagement/"
+					+ "/services/rest/rules-manager/rules/"
 					+ new Date().getTime() + "/rules-manager-client-messages/"
 					+ lang
 		});
