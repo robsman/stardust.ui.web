@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+	<ippui:perspective id="stardustRulesManager" messageBundles="rules-manager-messages" controller="rulesManagerLaunchPanel">
+		<ippui:launchPanel name="rulesManagerLauncher"
+			include="/plugins/rules-manager/launchpad/rulesManagerLauncher.xhtml" />
+		<ippui:view name="ruleSetView"
+			include="htmlFrameAdapter.xhtml"
+			controller="ruleSetView" />
+		<ippui:view name="ruleView"
+			include="htmlFrameAdapter.xhtml"
+			controller="ruleView" />
+		<ippui:view name="technicalRuleView"
+			include="htmlFrameAdapter.xhtml"
+			controller="technicalRuleView" />
+		<ippui:view name="decisionTableView"
+			include="htmlFrameAdapter.xhtml"
+			controller="decisionTableView" />
+	</ippui:perspective>
+</beans>

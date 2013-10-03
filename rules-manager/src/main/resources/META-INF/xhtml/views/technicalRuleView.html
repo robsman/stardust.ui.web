@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
+	type="text/css" />
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/Handsontable/jquery.handsontable.full.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/jstree/default/style.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.style.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.camino.css" />
+<link rel="stylesheet" href="plugins/bpm-modeler/css/jstree/default/style.css" />
+<style>
+
+/* Move to lightdust.css */
+ul.popupSelectorItemList {
+	list-style: none;
+	list-style-position: inside;
+	padding: 0px;
+	margin: 0px;
+}
+
+.popupSelectorItem {
+	
+}
+
+.popupSelectorItem:hover {
+	background: url(plugins/bpmn-modeler/images/toolbarIconSelectHover.png)
+		center repeat-x #ffd700;
+	cursor: pointer;
+}
+
+.emphasis {
+	font-weight: bold;
+}
+
+.factTerm {
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+table.wrapperTable {
+	width: 100%;
+}
+
+/* End of move */
+#decisionTable {
+	border-collapse: collapse;
+	border: 1px solid #afd7ed;
+	margin-top: 10px;
+	min-width: 700px;
+}
+
+#decisionTable td {
+	border: 1px solid #afd7ed;
+	padding: none;
+}
+
+#decisionTable td.titleCell {
+	vertical-align: middle;
+	text-align: center;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	width: 100%;
+	font-weight: bold;
+}
+
+#decisionTable td.buttonsCell {
+	vertical-align: top;
+	text-align: right;
+}
+
+#decisionTable td.inputCell {
+	padding: 2px;
+}
+
+#decisionTable input[type=text] {
+	border: none;
+	width: 100%;
+	padding: 0px;
+}
+
+#decisionTable table.wrapperTable {
+	border-collapse: collapse;
+	border: none;
+}
+
+#decisionTable table.wrapperTable td {
+	border: none;
+	padding: none;
+}
+#drlEditor {
+        top:10px;
+        width: 80%;
+        height: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+	<div id="techRuleView">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div class="errorMessagesPanel">
+						<ul id="errorMessagesList">
+						</ul>
+					</div></td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px; margin-right: 10px;">
+									<tr id="uuidOutputRow">
+										<td><label for="uuidOutput">UUID</label>
+										</td>
+										<td><div id="uuidOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr id="idOutputRow">
+										<td><label for="idOutput">ID</label>
+										</td>
+										<td><div id="idOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="nameInput" id="name">Rule Name</label>
+										</td>
+										<td><input id="nameInput" type="text"
+											style="width: 200px;"></input>
+										</td>
+									</tr>
+								</table></td>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px;">
+									<tr>
+										<td><label for="creationDateOutput">Creation Date</label>
+										</td>
+										<td><div id="creationDateOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="lastModificationDateOutput">Last
+												Modification Date</label>
+										</td>
+										<td><div id="lastModificationDateOutput" class="output"></div>
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<!-- techRuleTabs -->
+				</td>
+			</tr>
+		</table>
+		<div id="techRuleTabs" style="margin-top: 10px;width:95%;">
+						<ul id="techRuleTabsList">
+							<li><a href="#codeTab"><img
+									src="plugins/rules-manager/images/icons/script_edit.png"></img><span
+									class="tabLabel" id="techRuleCodeTab">Rule Editor</span> </a>
+							</li>
+							<!-- 
+							<li><a href="#testTab"><img
+									src="plugins/rules-manager/images/icons/application-run.png"></img><span class="tabLabel"
+									id="test">Test</span> </a>
+							</li>
+							-->
+						</ul>
+						<div id="codeTab">
+							<hr class="carved" style="position:relative;padding:0;margin:0;"/>
+							<div style="height:24px;" id="techEditToolbar">
+								<img src="plugins/rules-manager/images/icons/palette.png"></img>
+								<img id="themeDropdown" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/menu-arrow-down.gif"></img>
+								<span id="drlSelectedTheme">Chrome</span>
+								<img src="plugins/rules-manager/images/icons/toolbar-separator.png"></img>
+								<img src="plugins/rules-manager/images/icons/font.png"></img>
+								<img id="fontDropdown" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/menu-arrow-down.gif"></img>
+								<span id="selectedFontSize">12pt</span>
+								<img src="plugins/rules-manager/images/icons/toolbar-separator.png"></img>
+								<span>Line #</span>
+								<input id="gotoLineNo" style="min-width:28px;width:28px;"  maxlength="4" size="4" type="text"></input>
+								<img src="plugins/rules-manager/images/icons/toolbar-separator.png"></img>
+								<span>Find</span>
+								<input id="drlEditorFindVal" style="width:28px;" type="text"></input>
+								<img id="drlFindBackwards" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/resultset_previous.png"></img>
+								<img id="drlFindForwards" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/resultset_next.png"></img>
+								<span>Replace</span>
+								<input id="drlEditorReplaceVal" style="width:28px;" type="text"></input>
+								<img id="drlEditorReplaceAction" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/text_replace.png"></img>
+								<img id="drlEditorReplaceOption" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/menu-arrow-down.gif"></img>
+								<span id="drlEditorReplaceOptionVal">Replace Current</span>
+							</div>
+							<hr class="carved" style="position:relative;padding:0;margin:0;"/>
+							<div style="position:relative;width:100%;height:400px;border:solid 1px #999999;" id="techRuleCodeEditor">
+							</div>
+						</div>
+						<!--  
+						<div id="testTab">
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td><input id="runButton" type="image"
+													src="plugins/rules-manager/images/icons/run.png"
+													title="Run Message Transformation" /></td>
+												<td><input id="resetButton" type="image"
+													src="plugins/rules-manager/images/icons/clear.png"
+													title="Clear input data fields" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="inputDataTextArea" id="inputData">Input
+											Data</label></td>
+								</tr>
+								<tr>
+									<td><textarea id="inputDataTextarea" rows="10" cols="80"
+											style="width: 680px;"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="outputDataTable" id="outputData">Output
+											Data</label></td>
+								</tr>
+								<tr>
+									<td><div
+											style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
+											<table id="outputDataTable" style="width: 680px;">
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+					</div>
+					-->
+			</div>
+		
+	</div>
+	<script type="text/javascript" src="plugins/rules-manager/js/TechnicalRuleViewMain.js"></script>
+</body>
+</html>

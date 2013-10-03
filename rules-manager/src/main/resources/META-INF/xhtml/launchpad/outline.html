@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+.jstree a,.modelLinks a {
+	color: #00629A !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.jstree-classic .jstree-clicked {
+	border: 1px solid navy !important;
+	color: white;
+	padding: 0 2px 0 1px !important;
+	background: none repeat scroll 0 0 #BEEBFF !important;
+}
+
+#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a,#vakata-contextmenu.jstree-classic-context li.jstree-contextmenu-disabled a:hover
+	{
+	color: gray !important;
+	background: transparent;
+	border: 0;
+	padding: 1px 4px;
+	cursor: default !important;
+}
+
+#vakata-contextmenu.jstree-classic-context a {
+	color: #00629A !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+#vakata-contextmenu.jstree-classic-context,#vakata-contextmenu.jstree-classic-context li ul
+	{
+	background: none repeat scroll 0 0 #FFFFFF !important;
+	border: 1px solid #979797;
+}
+
+#vakata-contextmenu li {
+	border: 1px solid #E7E7E7;
+}
+
+#vakata-contextmenu {
+	min-width: 200px !important;
+}
+
+input {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+div#outline {
+	overflow: auto;
+	border: none;
+}
+
+td#toolbar div.toolDiv {
+	margin: 2px 4px 5px;
+	padding: 3px;
+	cursor: pointer;
+	float: left;
+}
+
+div.toolDiv:hover {
+	background:
+		url(../../views-common/images/icons/toolbarIconSelectHover.png) center
+		repeat-x #ffd700;
+}
+
+.toolDisabled {
+	opacity : 0.5;
+	cursor: default;
+}
+
+td#toolbar div.toolSeparator {
+	float: left;
+	margin-top: 4px;
+}
+</style>
+<script type="text/javascript" data-main="../js/OutlineMain"
+	src="../js/libs/require/2.0.5/require.js"></script>
+</head>
+<body>
+	<table style="width: 100%;">
+		<tr>
+			<td>
+				<div id="lastSaveStatusPanel">
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td><span class="label-form" id="lastsave">Last Save:</span></td>
+							<td style="text-align: left;">
+								<div id="lastSaveDateDisplay">
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="toolbar">
+				<div id="outlineToolbar">
+					<div class="toolDiv">
+						<img id="createRuleSetButton"
+							src="../../views-common/images/icons/add.png"
+							title="Create RuleSet" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="importModel"
+							src="../../views-common/images/icons/page_white_get.png"
+							title="Import test Model" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="undoChange"
+							src="../images/icons/undo.png"
+							title="Undo" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="redoChange"
+							src="../images/icons/redo.png"
+							title="Redo" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="saveAllModels"
+							src="../../views-common/images/icons/disk_multiple.png"
+							title="Save All Models" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="refreshModels" src="../images/icons/refresh.png"
+							title="Refresh models" />
+					</div>
+				</div></td>
+		</tr>
+		<tr>
+			<td>
+				<div id="outline"
+					style="text-align: left; list-style-type: none; background-color: white;">
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

@@ -1,0 +1,250 @@
+/**
+ * @author Marc.Gille
+ */
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
+		"bpm-modeler/js/m_dialog", "rules-manager/js/Uuid",
+		"rules-manager/js/Rule","rules-manager/js/TechnicalRule",
+		"rules-manager/js/DecisionTable","bpm-modeler/js/m_model",
+		"rules-manager/js/hotDecisionTable/m_typeParser" ], function(m_utils, m_constants, m_command,
+		m_commandsController, m_dialog, Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser) {
+
+
+
+	var ruleSets = {};
+
+
+
+	return {
+		create : function(id, name) {
+			var ruleSet = new RuleSet();
+			ruleSet.initialize(id, name);
+			getRuleSets()[ruleSet.uuid] = ruleSet;
+			return ruleSet;
+		},
+		getRuleSets : getRuleSets,
+		emptyRuleSets : emptyRuleSets,
+		getRuleSetsCount : function() {
+			var count = 0;
+			for ( var i in getRuleSets()) {
+				count++;
+			}
+			return count;
+		},
+		findRuleSetByUuid : function(uuid) {
+			return getRuleSets()[uuid];
+		},
+		findRuleByUuid : function(uuid) {
+			for ( var ruleSetUuid in getRuleSets()) {
+				var rule = getRuleSets()[ruleSetUuid].findRuleByUuid(uuid);
+
+				if (rule) {
+					return rule;
+				}
+			}
+			return null;
+		},
+		typeObject : function(json) {
+			m_utils.inheritMethods(json, new RuleSet());
+
+			if (!json.creationDate) {
+				json.creationDate = new Date();
+			}
+
+			if (!json.lastModificationDate) {
+				json.lastModificationDate = new Date();
+			}
+
+			if (!json.parameterDefinitions) {
+				json.parameterDefinitions = [];
+			}
+
+			if (!json.rules) {
+				json.rules = [];
+			}
+
+			for ( var id in json.rules) {
+				Rule.typeObject(json.rules[id]);
+			}
+
+			return json;
+		}
+	};
+
+	/**
+	 * 
+	 */
+	function getRuleSets() {
+		if (window.top.ruleSets) {
+			return window.top.ruleSets;
+		}
+		// TODO Dummy
+		window.top.ruleSets = ruleSets;
+		return window.top.ruleSets;
+	}
+
+	/**
+	 * 
+	 */
+	function emptyRuleSets() {
+		window.top.ruleSets = {};
+	}
+
+	/**
+	 * 
+	 */
+	function RuleSet() {
+		this.type = "ruleSet";
+		this.parameterDefinitions = [];
+		this.rules = {};
+		this.technicalRules={};
+		this.decisionTables={};
+		/**
+		 * 
+		 */
+		RuleSet.prototype.initialize = function(id, name) {
+			this.uuid = Uuid.generate();
+			this.id = id;
+			this.name = name;
+			this.creationDate = new Date();
+			this.lastModificationDate = new Date();
+		};
+		RuleSet.prototype.addDecisionTable=function(id,name){
+			var uuid=Uuid.generate();
+			var decisionTable=DecisionTable.create(this,uuid,id,name);
+			this.decisionTables[uuid]=decisionTable;
+			return decisionTable;
+		};
+		
+		RuleSet.prototype.getDecisionTableCount=function(){
+			var count = 0;
+			for (var k in this.decisionTables) {
+			    if (this.decisionTables.hasOwnProperty(k)) {
+			       ++count;
+			    }
+			}
+			return count;
+		};
+		RuleSet.prototype.deleteDecisionTable=function(id){
+			if(this.decisionTables.hasOwnProperty(id)){
+				delete this.decisionTables[id];
+			}
+		};
+		
+		RuleSet.prototype.addTechnicalRule=function(id,name){
+			var uuid=Uuid.generate();
+			var techRule=TechnicalRule.create(this,uuid,id,name);
+			this.technicalRules[uuid]=techRule;
+			return techRule;
+		};
+		
+		RuleSet.prototype.getTechnicalRuleCount=function(){
+			var count = 0;
+			for (var k in this.technicalRules) {
+			    if (this.technicalRules.hasOwnProperty(k)) {
+			       ++count;
+			    }
+			}
+			return count;
+		};
+		RuleSet.prototype.deleteTechnicalRule=function(id){
+			if(this.technicalRules.hasOwnProperty(id)){
+				delete this.technicalRules[id];
+			}
+		};
+		
+		
+		RuleSet.prototype.addRule = function(id, name) {
+			var uuid = Uuid.generate();
+			var rule = Rule.create(this, uuid, id, name);
+
+			this.rules[uuid] = rule;
+
+			return rule;
+		};
+
+		/**
+		 * 
+		 */
+		RuleSet.prototype.findRuleByUuid = function(uuid) {
+			return this.rules[uuid];
+		};
+		
+		RuleSet.prototype.findTechnicalRuleByUuid = function(uuid) {
+			return this.technicalRules[uuid];
+		};
+		
+		RuleSet.prototype.findDecisionTableByUuid = function(uuid) {
+			return this.decisionTables[uuid];
+		};
+		/**
+		 * 
+		 */
+		RuleSet.prototype.getRulesCount = function() {
+			var count = 0;
+
+			for ( var i in this.rules) {
+				++count;
+			}
+
+			return count;
+		};
+
+		/**
+		 * 
+		 */
+		RuleSet.prototype.getParameterDefinitionByName = function(name) {
+			for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
+				if (this.parameterDefinitions[n].name == name) {
+					return this.parameterDefinitions[n];
+				}
+			}
+
+			return null;
+		};
+		RuleSet.prototype.generateDRLTypes=function(){
+			var paramDefLength=this.parameterDefinitions.length,
+				tempTypeDecl,
+			    typeDecls=[],
+			    results=[],
+			    options={},
+			    paramDef;
+			for (var k in this.parameterDefinitions) {
+			    if (this.parameterDefinitions.hasOwnProperty(k)) {
+			    	paramDef=this.parameterDefinitions[k];
+			    	tempTypeDecl=$.extend({},m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId));
+			    	options={
+			    			direction: paramDef.direction,
+			    			id: paramDef.id,
+			    			dataTypeID: paramDef.structuredDataTypeFullId,
+			    			name: paramDef.name
+			    	};
+			    	tempTypeDecl.paramDefOptions=options;
+					typeDecls.push(tempTypeDecl);
+			    }
+			}
+			results=typeParser.parseTypeDeclToDRL(typeDecls);
+			return results.join("\n\n");
+		};	
+		/**
+		 * 
+		 */
+		RuleSet.prototype.generateDrl = function() {
+			var drl = "";
+
+			drl += "/*\n";
+			drl += "*\n";
+			drl += "* Last Modified:" + new Date() + "\n";
+			drl += "*\n";
+			drl += "*/\n\n";
+
+			for ( var i in this.rules) {
+				var rule = this.rules[i];
+
+				drl += rule.generateDrl();
+			}
+
+			return drl;
+		};
+	}
+});

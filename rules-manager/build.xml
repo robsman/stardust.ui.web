@@ -1,0 +1,197 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+  - you need an Infinity installation or you have to execute at least the latakia build file
+-->
+
+<project name="web.modeler" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" value="." />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="project.resources" value="${project.dir}/src/main/resources" />
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property file="${project.etc}/private.properties" />
+
+   <property name="organizationId" value="com.infinity.bpm" />
+   <property name="artifactId" value="stardust-web-modeler" />
+
+   <import file="${project.dir}/../../build.tools/commons-build.xml" />
+
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
+
+      <property name="javac.debuglevel" value="lines,source" />
+   </target>
+
+   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initIvy">
+      <property name="build.dir" value="${build.home}" />
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuildDir" unless="build.home">
+      <property name="build.home" value="${project.dir}/build" />
+   </target>
+
+   <target name="initBuild" depends="init, initBuildDir">
+      <property name="build.dir" value="${build.home}" />
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.lib.src" value="${build.dir}/src" />
+      <property name="build.src" value="${build.dir}/src" />
+      <property name="build.src.none" location="${build.dir}/src-none" />
+
+      <property name="web.modeler.jarfile" value="${artifactId}.jar" />
+      <property name="web.modeler.jar" value="${build.lib}/${web.modeler.jarfile}" />
+      <property name="web.modeler.src-jarfile" value="${artifactId}-sources.jar" />
+      <property name="web.modeler.src-jar" value="${build.lib.src}/${web.modeler.src-jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}" />
+      <mkdir dir="${build.lib}" />
+      <mkdir dir="${build.src}" />
+      <mkdir dir="${build.lib.src}" />
+      <mkdir dir="${build.src.none}" />
+   </target>
+
+	<target name="initIvy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+   <target name="initClasspath" depends="init">
+   	<init-ivy-classpath />
+
+      <path id="web.modeler.classpath">
+         <path refid="compile.deps" />
+      </path>
+   </target>
+   
+   <target name="prepareSources" depends="initBuildDirectories, prepareSourcesForFastBuild, prepareSourcesForSafeBuild" />
+
+   <target name="prepareSourcesForFastBuild" if="build.fast">
+      <echo message="Preparing sources for a fast but potentially unsafe build." />
+
+      <property name="build.src.static" value="${project.src}" />
+      <property name="build.src.generated" value="${build.src}" />
+   </target>
+
+   <target name="prepareSourcesForSafeBuild" unless="build.fast">
+      <echo message="Preparing sources for a safe but slow build." />
+
+      <property name="build.src.static" value="${build.src.none}" />
+      <property name="build.src.generated" value="${build.src}" />
+
+      <mkdir dir="${build.src.generated}/org/eclipse/stardust" />
+
+      <copy todir="${build.src.generated}" overwrite="true">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
+   
+   <target name="compile" depends="prepareSources, initClasspath, init" description="Compiles the project's Java classes">
+      <!-- if build.fast property is set - only CurrentVersion class is compiled here. Otherwise all classes are compiled -->
+      <ipp:javac-java6 destdir="${build.classes}"
+         srcdir="${build.src.generated}" sourcepath="${build.src.generated}:${build.src.static}">
+         <include name="**/*.java" />
+         <exclude name="**/web/modeler/edit/twophase/**" />
+         <classpath id="compile6.classpath">
+            <path path="${build.classes}" />
+            <path refid="web.modeler.classpath" />
+         </classpath>
+      </ipp:javac-java6>
+
+      <!-- compile all other classes if it is not done by the previous step -->
+      <ipp:javac-java6 destdir="${build.classes}"
+         srcdir="${build.src.static}" sourcepath="${build.src.generated}:${build.src.static}">
+         <classpath refid="compile6.classpath" />
+      </ipp:javac-java6>
+   </target>
+
+   <target name="jar" depends="compile">
+      <ipp:jar jarfile="${web.modeler.jar}" implementationTitle="Model XPDL Builder">
+         <fileset dir="${build.classes}" id="fileset.xpdl.builder.jar">
+         	<include name="**/*.class" />
+         </fileset>
+         <fileset dir="${project.resources}" includes="**/*.*" />
+      </ipp:jar>
+   </target>
+
+   <target name="jar.src" depends="compile">
+      <delete file="${web.modeler.src-jar}" />
+      <ipp:jar jarfile="${web.modeler.src-jar}" implementationTitle="Model XPDL Builder">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </ipp:jar>
+   </target>
+   
+   <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${project.dir}/ivy.xml" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}"  
+         publishIvy="true" publishPom="true" />
+   </target>
+   
+   <target name="report" depends="init" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <mkdir dir="report" />
+      <ivy:resolve type="${ivy.resolve.types}"/>
+      <ivy:report todir="report" />
+   </target>
+
+   <target name="dist" depends="build, jar.src">
+      <!-- TODO: copy to correct location -->
+      <!-- property name="stardust.dir" value="../.." />
+      <copy file="${xpdl.builder.jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" />
+      <copy file="${xpdl.builder.src-jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" / -->
+   </target>
+
+   <target name="deploy" depends="build" />
+
+   <target name="install" depends="deploy" if="maven.localRepository"
+     description="installs the artifacts into a local Maven repository">
+     <ipp:init-mvn />
+      <ipp:init-mvn />
+      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
+         <arg value="install:install-file"/>
+         <arg value="-Dfile=${web.modeler.jar}"/>
+         <arg value="-DpomFile=${build.lib}/${artifactId}.pom"/>
+         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
+      </exec>
+   </target>
+   
+   <!-- target is invoked by stardust-engine-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${project.resources}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+            <include name="**/*_zh_TW.properties"/>
+         </fileset>
+      </copy>
+   </target>
+</project>

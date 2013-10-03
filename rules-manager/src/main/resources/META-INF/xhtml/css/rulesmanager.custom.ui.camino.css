@@ -1,0 +1,112 @@
+/* These styles are designed to override the JQUERYUI dialog widgets' styling when included as 
+   as the dialogClass option upon creation of the widget {dialogClass: 'ui-camino-dialog'}. 
+   All styles save .ui-dialog are dependent upon .ui-camino-dialog existing as a parent class.
+*/
+.ui-dialog {
+	padding: 0px 0px 0px 0px;
+}
+.ui-camino-dialog  span.ui-dialog-title{
+	font-size: 16px;
+	font-family: Arial;
+	font-weight: bold;
+	line-height: 16px;
+	margin: 0;
+	color: white;
+	vertical-align: middle;
+	padding-right: 12px;
+	left: 15px; 
+}
+.ui-camino-dialog button.ui-dialog-titlebar-close{
+	background-color:transparent;
+	background-image:none;
+	color: #A7C1C4;
+	border: 0px;
+	font-weight: bold;
+	font-size: 1em;
+	font-family: verdana;
+}
+.ui-camino-dialog button.ui-dialog-titlebar-close:hover{
+	background: rgb(196,189,187); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M0YmRiYiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhOGEwOWIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(196,189,187,1) 0%, rgba(168,160,155,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(196,189,187,1)), color-stop(100%,rgba(168,160,155,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(196,189,187,1) 0%,rgba(168,160,155,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(196,189,187,1) 0%,rgba(168,160,155,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(196,189,187,1) 0%,rgba(168,160,155,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(196,189,187,1) 0%,rgba(168,160,155,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c4bdbb', endColorstr='#a8a09b',GradientType=0 ); /* IE6-8 */
+	border: 1px solid #4a6e90;
+	color: #FCFCFC;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.ui-camino-dialog .ui-dialog-buttonset button:hover{
+	color: #ffffff;
+	background-color: #4a6e90;
+	background-position: 0 -15px;
+	-webkit-transition: background-position 0.1s linear;
+	-moz-transition: background-position 0.1s linear;
+	-o-transition: background-position 0.1s linear;
+	transition: background-position 0.1s linear;
+}
+.ui-camino-dialog .ui-dialog-buttonset button{
+    color: #ffffff;
+	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25);
+	filter: dropshadow(color=#000000, offx=0, offy=-1);
+	background-color: #4a7c90;
+	background-image: -moz-linear-gradient(top, #4a8590, #4a6e90);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4a8590), to(#4a6e90));
+	background-image: -webkit-linear-gradient(top, #4a8590, #4a6e90);
+	background-image: -o-linear-gradient(top, #4a8590, #4a6e90);
+	background-image: linear-gradient(to bottom, #4a8590, #4a6e90);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4a8590', endColorstr='#ff4a6e90', GradientType=0);
+	border-color: #4a6e90 #4a6e90 #30475d;
+	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);*/
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+	display: inline-block;
+	padding: 4px 14px;
+	margin-bottom: 0;
+	font-size: 12px;
+	line-height: 20px;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+}
+.ui-camino-dialog .ui-dialog-buttonpane{
+	background: rgb(229,229,229); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2U1ZTVlNSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgba(229,229,229,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(229,229,229,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(255,255,255,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(229,229,229,1) 0%,rgba(255,255,255,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); /* IE6-8 */
+	border-top: 1px solid #999999;
+	padding: 10px 0;
+	width: 100%;
+}
+.ui-camino-dialog .ui-dialog-titlebar {
+	padding-bottom: 12px;
+	padding-top: 11px;
+	background-color: #3c7882;
+	border-color:#3c7882;
+	background-image: none;
+	border-bottom: 1px solid #2e5c63;
+	-webkit-border-radius: 3px 3px 0px 0px;
+	-moz-border-radius: 3px 3px 0px 0px;
+	border-radius: 3px 3px 0px 0px;
+}

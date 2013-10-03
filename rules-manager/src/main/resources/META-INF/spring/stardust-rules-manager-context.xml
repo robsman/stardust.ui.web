@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.eclipse.stardust.ui.web.rules_manager" />
+
+	<!-->bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
+		<qualifier value="default" />
+	</bean-->
+
+	<bean id="rulesManagementService" class="org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService"
+		scope="session">
+		<aop:scoped-proxy/>
+	</bean>
+
+	<bean id="rulesManagementResource" class="org.eclipse.stardust.ui.web.rules_manager.service.rest.RulesManagementResource">
+	</bean>
+
+	<bean name="rulesManagerMessages" class="org.eclipse.stardust.ui.web.rules_manager.portal.messages.Messages"
+		scope="session">
+	</bean>
+
+	<bean id="ruleSetView" class="org.eclipse.stardust.ui.web.rules_manager.portal.RuleSetView">
+		<property name="rulesManagementService" ref="rulesManagementService" />
+	</bean>
+
+	<bean id="ruleView" class="org.eclipse.stardust.ui.web.rules_manager.portal.RuleView">
+		<property name="rulesManagementService" ref="rulesManagementService" />
+	</bean>
+	
+	<bean id="technicalRuleView" class="org.eclipse.stardust.ui.web.rules_manager.portal.TechnicalRuleView">
+		<property name="rulesManagementService" ref="rulesManagementService" />
+	</bean>
+	
+	<bean id="decisionTableView" class="org.eclipse.stardust.ui.web.rules_manager.portal.DecisionTableView">
+		<property name="rulesManagementService" ref="rulesManagementService" />
+	</bean>
+
+</beans>

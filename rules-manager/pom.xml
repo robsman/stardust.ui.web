@@ -1,0 +1,202 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.eclipse.stardust.ui.web</groupId>
+	<artifactId>stardust-rules-manager</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<packaging>jar</packaging>
+
+	<!-- <parent> <groupId>com.infinity.bpm.pepper</groupId> <artifactId>pepper-common</artifactId> 
+		<version>0.0.1-SNAPSHOT</version> <relativePath>../pepper-common/pom.xml</relativePath> 
+		</parent> -->
+
+	<properties>
+		<ipp.version>7.2.0-RC3-SNAPSHOT</ipp.version>
+		<atmosphere.version>0.9.7</atmosphere.version>
+		<!--atmosphere.version>1.0.0.beta5</atmosphere.version -->
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- <dependency> <groupId>com.infinity.bpm</groupId> <artifactId>carnot-common</artifactId> 
+				<version>${ipp.version}</version> <type>pom</type> <scope>import</scope> 
+				</dependency> <dependency> <groupId>com.infinity.bpm.rtenv</groupId> <artifactId>rtenv-common</artifactId> 
+				<version>${ipp.version}</version> <type>pom</type> <scope>import</scope> 
+				</dependency> <dependency> <groupId>com.sun.jersey</groupId> <artifactId>jersey-core</artifactId> 
+				<version>1.10</version> </dependency> <dependency> <groupId>com.sun.jersey</groupId> 
+				<artifactId>jersey-server</artifactId> <version>1.10</version> </dependency> 
+				<dependency> <groupId>com.sun.jersey</groupId> <artifactId>jersey-servlet</artifactId> 
+				<version>1.10</version> </dependency> -->
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- IMPORTANT: these dependencies must be in sync with those of ivy.xml -->
+		<dependency>
+			<groupId>com.infinity.bpm</groupId>
+			<artifactId>carnot-engine</artifactId>
+			<version>${ipp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.infinity.bpm</groupId>
+			<artifactId>ipp-bpm-model</artifactId>
+			<version>${ipp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.infinity.bpm</groupId>
+			<artifactId>ipp-portal-common</artifactId>
+			<version>${ipp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.infinity.bpm</groupId>
+			<artifactId>ipp-views-common</artifactId>
+			<version>${ipp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.myfaces.core</groupId>
+			<artifactId>myfaces-api</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.common</artifactId>
+			<version>2.6.0.v20100914-1218</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+			<version>2.6.1.v20100914-1218</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.emf</groupId>
+					<artifactId>org.eclipse.emf.common</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+			<version>2.5.0.v20100521-1846</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.emf</groupId>
+					<artifactId>org.eclipse.emf.ecore</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.change</artifactId>
+			<version>2.5.1.v20100907-1643</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.emf</groupId>
+					<artifactId>org.eclipse.emf.ecore</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.xsd</groupId>
+			<artifactId>org.eclipse.xsd</artifactId>
+			<version>2.6.0.v20100914-1218</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>ipp-repo</id>
+			<url>https://infinity.sungard.com/repository/ipp-libs</url>
+		</repository>
+		<repository>
+			<id>ipp-repo-dev</id>
+			<url>https://infinity.sungard.com/repository/ipp-libs-dev</url>
+		</repository>
+	</repositories>
+	<profiles>
+		<profile>
+			<id>with-emfcompare</id>
+			<properties>
+				<use-emfcompare>true</use-emfcompare>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.emf.compare</groupId>
+					<artifactId>org.eclipse.emf.compare.match</artifactId>
+					<version>1.3.1.v20120605-0748</version>
+				</dependency>
+				<dependency>
+					<groupId>org.eclipse.emf.compare</groupId>
+					<artifactId>org.eclipse.emf.compare.diff</artifactId>
+					<version>1.3.1.v20120605-0748</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>not-with-emfcompare</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/web/modeler/edit/twophase/**</exclude>
+							</excludes>
+							<testExcludes>
+								<testExclude>**/web/modeler/edit/twophase/**</testExclude>
+							</testExcludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
