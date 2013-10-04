@@ -1352,14 +1352,8 @@ public class ModelService
          {
             getModelBuilderFacade().setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
-                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH);
+                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_SOAP);
          }
-      }
-      else
-      {
-         getModelBuilderFacade().setAttribute(processDefinition,
-               "carnot:engine:externalInvocationType",
-               PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH);
       }
 
       if (extractBoolean(json, "transientProcess"))
