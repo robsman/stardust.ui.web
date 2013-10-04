@@ -16,19 +16,19 @@ define(
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process",
 				"bpm-modeler/js/m_application", "bpm-modeler/js/m_participant",
 				"bpm-modeler/js/m_typeDeclaration",
-				"bpm-modeler/js/m_outlineToolbarController",
 				"bpm-modeler/js/m_data",
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_messageDisplay",
 				"bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_communicationController",
+				"rules-manager/js/m_outlineToolbarController",
 				"rules-manager/js/CommandsDispatcher",
 				"rules-manager/js/RuleSet" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
-				m_participant, m_typeDeclaration, m_outlineToolbarController,
-				m_data, m_elementConfiguration, m_jsfViewManager,
-				m_messageDisplay, m_i18nUtils, CommandsDispatcher, RuleSet) {
+				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
+				m_messageDisplay, m_i18nUtils, m_communicationController, m_outlineToolbarController, CommandsDispatcher, RuleSet) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			function getURL() {
@@ -65,52 +65,58 @@ define(
 							jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
 									"#" + ruleSet.uuid);
 							
-							jQuery.each(ruleSet.rules, function(index, rule) {
-								jQuery(displayScope + "#outline").jstree("create",
-										"#" + ruleSet.uuid, "last", {
-											"attr" : {
-												"id" : rule.uuid,
-												"ruleSetId" : ruleSet.id,
-												"ruleSetUuid" : ruleSet.uuid,
-												"rel" : rule.type,
-												"draggable" : true,
-												"elementId" : rule.id
-											},
-											"data" : rule.name
-										}, null, true);
-								jQuery(displayScope + "#outline").jstree("close_node",
-										"#" + rule.id);
-							});
+							if (ruleSet.rules) {
+								jQuery.each(ruleSet.rules, function(index, rule) {
+									jQuery(displayScope + "#outline").jstree("create",
+											"#" + ruleSet.uuid, "last", {
+												"attr" : {
+													"id" : rule.uuid,
+													"ruleSetId" : ruleSet.id,
+													"ruleSetUuid" : ruleSet.uuid,
+													"rel" : rule.type,
+													"draggable" : true,
+													"elementId" : rule.id
+												},
+												"data" : rule.name
+											}, null, true);
+									jQuery(displayScope + "#outline").jstree("close_node",
+											"#" + rule.id);
+								});	
+							}
 							
-							jQuery.each(ruleSet.technicalRules, function(index, techRule) {
-								jQuery(displayScope + "#outline").jstree("create",
-										"#" + ruleSet.uuid, "last", {
-											"attr" : {
-												"id" : techRule.uuid,
-												"ruleSetId" : ruleSet.id,
-												"ruleSetUuid" : ruleSet.uuid,
-												"rel" : "TechnicalRule",
-												"draggable" : true,
-												"elementId" : techRule.id
-											},
-											"data" : techRule.name
-										}, null, true);
-							});
+							if (ruleSet.technicalRules) {
+								jQuery.each(ruleSet.technicalRules, function(index, techRule) {
+									jQuery(displayScope + "#outline").jstree("create",
+											"#" + ruleSet.uuid, "last", {
+												"attr" : {
+													"id" : techRule.uuid,
+													"ruleSetId" : ruleSet.id,
+													"ruleSetUuid" : ruleSet.uuid,
+													"rel" : "TechnicalRule",
+													"draggable" : true,
+													"elementId" : techRule.id
+												},
+												"data" : techRule.name
+											}, null, true);
+								});	
+							}
 							
-							jQuery.each(ruleSet.decisionTables, function(index, decTable) {
-								jQuery(displayScope + "#outline").jstree("create",
-										"#" + ruleSet.uuid, "last", {
-											"attr" : {
-												"id" : decTable.uuid,
-												"ruleSetId" : ruleSet.id,
-												"ruleSetUuid" : ruleSet.uuid,
-												"rel" : "DecisionTable",
-												"draggable" : true,
-												"elementId" : decTable.id
-											},
-											"data" : decTable.name
-										}, null, true);
-							});
+							if (ruleSet.decisionTables) {
+								jQuery.each(ruleSet.decisionTables, function(index, decTable) {
+									jQuery(displayScope + "#outline").jstree("create",
+											"#" + ruleSet.uuid, "last", {
+												"attr" : {
+													"id" : decTable.uuid,
+													"ruleSetId" : ruleSet.id,
+													"ruleSetUuid" : ruleSet.uuid,
+													"rel" : "DecisionTable",
+													"draggable" : true,
+													"elementId" : decTable.id
+												},
+												"data" : decTable.name
+											}, null, true);
+								});	
+							}
 						});
 				m_utils.debug("Tree initialized");
 
@@ -298,7 +304,7 @@ define(
 
 			var reloadOutlineTree = function(saveFirst) {
 				if (true == saveFirst) {
-					saveAllModels();
+					saveAllRules();
 				}
 				jQuery(displayScope + "#outline").empty();
 				readAllModels(true);
@@ -391,14 +397,30 @@ define(
 				});
 			}
 
-			function saveAllModels() {
+			function getRuleSets() {
+				var ruleSetArray = [];
+				jQuery.each(RuleSet.getRuleSets(), function(index, ruleSet) {
+					var ruleSetClone = {};
+					jQuery.each(ruleSet, function(i, member) {
+						if (typeof member != "function") {
+							ruleSetClone[i] = member;	
+						}						
+					});
+					ruleSetArray.push(ruleSetClone);
+				});
+				
+				return ruleSetArray;
+			}
+			
+			function saveAllRules() {
+				var ruleSetArray = getRuleSets();
+				
 				m_communicationController
-						.syncGetData(
+						.postData(
 								{
-									url : require("bpm-modeler/js/m_urlUtils")
-											.getModelerEndpointUrl()
-											+ "/models/save"
+									url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/save"
 								},
+								JSON.stringify(ruleSetArray),
 								new function() {
 									return {
 										success : function(data) {
@@ -786,9 +808,9 @@ define(
 						undoMostCurrent();
 					} else if ("redoChange" == data.id) {
 						redoLastUndo();
-					} else if ("saveAllModels" == data.id) {
-						saveAllModels();
-					} else if ("refreshModels" == data.id) {
+					} else if ("saveAllRules" == data.id) {
+						saveAllRules();
+					} else if ("refreshRules" == data.id) {
 						refresh();
 					}
 				};
@@ -1070,7 +1092,7 @@ define(
 
 					outline.initialize();
 
-					// m_outlineToolbarController.init("outlineToolbar");
+					m_outlineToolbarController.init("rulesOutlineToolbar");
 
 					// i18nStaticLabels();
 					

@@ -11,18 +11,26 @@
 
 package org.eclipse.stardust.ui.web.rules_manager.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.rules_manager.store.DefaultRulesManagementStrategy;
+import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 
 /**
  *
@@ -44,14 +52,69 @@ public class RulesManagementService
 
    private DocumentManagementService documentManagementService;
 
-   private JsonObject rulesPackagesJson = new JsonObject();
-   
    /**
     * 
     * @return
     */
-   public JsonObject getAllRuleSets(boolean reload)
+   public JsonObject getAllRuleSets(boolean reload) throws Exception
    {
-      return new JsonObject();
+      List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
+      JsonObject ruleSets = new JsonObject();
+      for (Document doc : drls) {
+         JsonObject ruleSet = new JsonParser().parse(new String(getDocumentManagementService().retrieveDocumentContent(doc.getId()))).getAsJsonObject();         
+         ruleSets.add(ruleSet.get("uuid").getAsString(), ruleSet);
+      }
+
+      return ruleSets;
+   }   
+
+   /**
+    * 
+    * @return
+    */
+   public void saveRuleSets(String ruleSetsJson) throws Exception
+   {
+      if (null == ruleSetsJson) return;
+      JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
+      for (JsonElement je : ruleSets)
+      {
+         String ruleSetId = je.getAsJsonObject().get("id").getAsString();
+         getRulesManagementStrategy().saveRuleSet(ruleSetId, je.toString());
+      }
+   }
+   
+   /**
+   *
+   * @return
+   */
+  public RulesManagementStrategy getRulesManagementStrategy()
+  {
+     return (DefaultRulesManagementStrategy) context.getBean("rulesManagementStrategy");
+  }
+
+   /**
+    * 
+    * @return
+    */
+   private DocumentManagementService getDocumentManagementService()
+   {
+      if (documentManagementService == null)
+      {
+         documentManagementService = getServiceFactory().getDocumentManagementService();
+      }
+
+      return documentManagementService;
+   }
+
+   private ServiceFactory getServiceFactory()
+   {
+      // TODO Replace
+
+      if (serviceFactory == null)
+      {
+         serviceFactory = serviceFactoryLocator.get();
+      }
+
+      return serviceFactory;
    }
 }

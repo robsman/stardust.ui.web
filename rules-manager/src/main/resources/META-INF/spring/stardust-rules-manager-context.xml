@@ -16,6 +16,12 @@
 		<qualifier value="default" />
 	</bean-->
 
+	<bean name="rulesManagementStrategy" class="org.eclipse.stardust.ui.web.rules_manager.store.DefaultRulesManagementStrategy" scope="prototype" />
+
+	<bean class="org.eclipse.stardust.ui.web.rules_manager.common.DefaultServiceFactoryLocator" scope="session">
+		<qualifier value="default" />
+	</bean>
+	
 	<bean id="rulesManagementService" class="org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService"
 		scope="session">
 		<aop:scoped-proxy/>

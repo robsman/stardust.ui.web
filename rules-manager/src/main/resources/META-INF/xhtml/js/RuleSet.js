@@ -3,18 +3,13 @@
  */
 define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-		"bpm-modeler/js/m_dialog", "rules-manager/js/Uuid",
-		"rules-manager/js/Rule","rules-manager/js/TechnicalRule",
+		"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_communicationController",
+		"rules-manager/js/Uuid", "rules-manager/js/Rule","rules-manager/js/TechnicalRule",
 		"rules-manager/js/DecisionTable","bpm-modeler/js/m_model",
 		"rules-manager/js/hotDecisionTable/m_typeParser",
 		"rules-manager/js/m_ruleSetParser"], function(m_utils, m_constants, m_command,
-		m_commandsController, m_dialog, Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser) {
-
-
-
-	var ruleSets = {};
-
-
+		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
+		Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser) {
 
 	return {
 		create : function(id, name) {
@@ -79,8 +74,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		if (window.top.ruleSets) {
 			return window.top.ruleSets;
 		}
-		// TODO Dummy
-		window.top.ruleSets = ruleSets;
+		refreshRuleSets();
 		return window.top.ruleSets;
 	}
 
@@ -90,7 +84,42 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 	function emptyRuleSets() {
 		window.top.ruleSets = {};
 	}
+	
+	/**
+	 * 
+	 */
+	function refreshRuleSets() {
+		m_communicationController.syncGetData({
+			url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets"
+		}, {
+			"success" : function(json) {
+				window.top.ruleSets = json;
+				bindRuleSets();
+			},
+			"error" : function() {
+				alert('Error occured while fetching rules');
+			}
+		});
+	};
 
+	/**
+	 *
+	 */
+	function bindRuleSets() {
+		for ( var ruleSet in getRuleSets()) {
+			bindRuleSet(getRuleSets()[ruleSet]);
+		}
+	}
+
+	/**
+	 *
+	 */
+	function bindRuleSet(ruleSet) {
+		// TODO Ugly, user prototype
+
+		m_utils.typeObject(ruleSet, new RuleSet());
+	}
+	
 	/**
 	 * 
 	 */
@@ -237,7 +266,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			}
 			results=typeParser.parseTypeDeclToDRL(typeDecls);
 			return results.join("\n\n");
-		};	
+		};
 		/**
 		 * 
 		 */

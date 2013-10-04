@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,6 +45,9 @@ public class RulesManagementResource
       return (RulesManagementService) context.getBean("rulesManagementService");
    }
 
+   /**
+    * @return
+    */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("rule-sets")
@@ -54,6 +58,25 @@ public class RulesManagementResource
          String result = getRulesManagementService().getAllRuleSets(true).toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+   
+   /**
+    * @param ruleSets
+    * @return
+    */
+   @POST
+   @Path("save")
+   public Response saveRuleSets(String ruleSets)
+   {
+      try
+      {
+         getRulesManagementService().saveRuleSets(ruleSets);         
+         return Response.ok("Saved", MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
