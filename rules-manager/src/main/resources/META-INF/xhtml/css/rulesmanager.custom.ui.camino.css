@@ -2,7 +2,7 @@
    as the dialogClass option upon creation of the widget {dialogClass: 'ui-camino-dialog'}. 
    All styles save .ui-dialog are dependent upon .ui-camino-dialog existing as a parent class.
 */
-.ui-dialog {
+.ui-camino-dialog {
 	padding: 0px 0px 0px 0px;
 }
 .ui-camino-dialog  span.ui-dialog-title{
