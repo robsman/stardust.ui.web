@@ -65,8 +65,6 @@ require([ "require",
 					uuidOutput: "#uuidOutput", /*element that display the uuid of our decision table*/
 					idOutput: "#idOutput", /*element that display the id of our decision table*/
 					nameInput: "#nameInput", /*element that will bind its val to the name of our decision table*/
-					creationDateOutput: "#creationDateOutput", /*element that display the create date of our decision table*/
-					lastModificationDateOutput: "#lastModificationDateOutput", /*element that display the last-mod-date of our decision table*/
 					decisionTable: "#decisionTableBuilder", /*element that will be our decision table*/
 					drlEditor: "decisionTableCodeEditor", /*element that will be our ace code editor*/
 					columnTreeButton:"#categoryDropdown", /*element which onclick will launch a column-add-tree*/

@@ -16,7 +16,7 @@ define(
 			"rules-manager/js/CommandsDispatcher", 
 			"bpm-modeler/js/m_view",
 			"bpm-modeler/js/m_modelElementView",
-			"bpm-modeler/js/m_i18nUtils",
+			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_parameterDefinitionsPanel",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
@@ -70,8 +70,6 @@ define(
 							uuidOutput: m_utils.jQuerySelect(options.selectors.uuidOutput),
 							idOutput: m_utils.jQuerySelect(options.selectors.idOutput),
 							nameInput: m_utils.jQuerySelect(options.selectors.nameInput),
-							creationDateOutput: m_utils.jQuerySelect(options.selectors.creationDateOutput),
-							lastModificationDateOutput: m_utils.jQuerySelect(options.selectors.lastModificationDateOutput),
 							decisionTable: m_utils.jQuerySelect(options.selectors.decisionTable),
 							decisionTableInstance: undefined,
 							drlEditor: undefined,
@@ -101,7 +99,6 @@ define(
 					this.uuidOutput = m_utils.jQuerySelect("#DecisionTableView #uuidOutput");
 					this.idOutput = m_utils.jQuerySelect("#DecisionTableView #idOutput");
 					this.nameInput = m_utils.jQuerySelect("#DecisionTableView #nameInput");
-					this.creationDateOutput = m_utils.jQuerySelect("#DecisionTableView #creationDateOutput");
 					this.lastModificationDateOutput = m_utils.jQuerySelect("#DecisionTableView #lastModificationDateOutput");
 					
 					/*Compute a new ID for our HoT instance rootElement based off of our decisiontable uuid*/
@@ -276,28 +273,6 @@ define(
 				    //initialize main tabs control for the view
 					uiElements.decisionTableTabs.tabs();
 					
-					//initialize ACE editor for expert mode drl scripting
-					//uiElements.drlEditor=ace2.getDrlEditor(options.selectors.drlEditor);
-
-					//add click behavior for our code tab so that it always shows the current DRL
-					//rendering of the decisionTable.
-					/*
-					uiElements.decisionTableCodeTab.on("click", function(event){
-						var totalRows=uiElements.decisionTableInstance.countRows()-uiElements.decisionTableInstance.countEmptyRows(true),
-							drlStrings=[],
-							tempString,
-							settings=uiElements.decisionTableInstance.getSettings();
-						while(totalRows--){
-							tempString=settings
-								.helperFunctions
-								.parseRowToDRL(totalRows,uiElements.decisionTableInstance);
-							drlStrings.splice(0,0,tempString);
-						}
-						var drlTypes=ruleSet.generateDRLTypes();
-						uiElements.drlEditor.setValue(drlTypes + "\n\n" 
-								+ drlStrings.join("\n\n"));
-					});
-					*/
 					var view = this;
 					
 					/*Hook for the change event of our table: Saved for undo redo functionality*/
@@ -332,11 +307,6 @@ define(
 					uiElements.idOutput.empty();
 					uiElements.idOutput.append(decTable.id);
 					uiElements.nameInput.val(decTable.name);
-					uiElements.creationDateOutput.empty();
-					uiElements.creationDateOutput.append("" + decTable.creationDate);
-					uiElements.lastModificationDateOutput.empty();
-					uiElements.lastModificationDateOutput.append("" + decTable.lastModificationDate);
-
 
 					if (decisionTableUpdate) {
 						this.decisionTable.activate(this.ruleSet,false,decTable,uiElements);

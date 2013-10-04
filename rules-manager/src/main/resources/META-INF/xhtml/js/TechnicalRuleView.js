@@ -57,8 +57,6 @@ define(
 							uuidOutput: m_utils.jQuerySelect(options.selectors.uuidOutput),
 							idOutput: m_utils.jQuerySelect(options.selectors.idOutput),
 							nameInput: m_utils.jQuerySelect(options.selectors.nameInput),
-							creationDateOutput: m_utils.jQuerySelect(options.selectors.creationDateOutput),
-							lastModificationDateOutput: m_utils.jQuerySelect(options.selectors.lastModificationDateOutput),
 							drlEditor: undefined,
 							drlEditorTextArea: undefined,
 							drlEditorReplaceOptionVal: m_utils.jQuerySelect(options.selectors.drlEditorReplaceOptionVal),
@@ -243,9 +241,6 @@ define(
 				};
 
 				this.activate = function(ruleSet,techRule,uiElements) {
-					console.log("***********************************");
-					console.log("Activating Technical Rule View");
-					console.log("***********************************");
 					var drlText="";
 					this.ruleSet = ruleSet;
 					this.technicalRule=techRule;
@@ -254,10 +249,6 @@ define(
 					uiElements.idOutput.empty();
 					uiElements.idOutput.append(this.technicalRule.id);
 					uiElements.nameInput.val(this.technicalRule.name);
-					uiElements.creationDateOutput.empty();
-					uiElements.creationDateOutput.append("" + this.technicalRule.creationDate);
-					uiElements.lastModificationDateOutput.empty();
-					uiElements.lastModificationDateOutput.append("" + this.technicalRule.lastModificationDate);
 					uiElements.drlEditor.setValue(this.technicalRule.getDRL());
 				};
 				

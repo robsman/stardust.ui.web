@@ -106,8 +106,6 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 				uuidOutput: "#uuidOutput", /*displays techrule metadata*/
 				idOutput: "#idOutput",/*displays techrule metadata*/
 				nameInput: "#nameInput",/*update our techRule name->flows back to ruleset*/
-				creationDateOutput: "#creationDateOutput",/*displays techrule metadata*/
-				lastModificationDateOutput:"#lastModificationDateOutput",/*displays techrule metadata*/
 				tabs: "#techRuleTabs",/*root element for our jqueryui tabs*/
 				drlEditorReplaceOptionVal: "#drlEditorReplaceOptionVal",/*displays currently selected replace option*/
 				drlEditorReplaceOption: "#drlEditorReplaceOption",/*element to which the replace options menu toggles-on-click*/
