@@ -216,7 +216,7 @@ define(
 					}
 					
 					// set default to true if absent but invocation pattern is send or sendReveive
-					if (!this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
+					if (this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"] && (
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("send") > -1 ||
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("sendReceive") > -1))
