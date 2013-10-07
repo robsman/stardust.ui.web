@@ -6,7 +6,11 @@ define([],function(){
 	var format="yy-mm-dd",
 	    today = new Date();
 	/*dependency on jqueryui datepicker for formatting.*/
+	try{
 	today=$.datepicker.formatDate(format, new Date());
+	}catch (err){
+		console.log("Error formatting default date. " + err);
+	}
 	
 	return{
 		ippToHoTTable: function(ippType){
