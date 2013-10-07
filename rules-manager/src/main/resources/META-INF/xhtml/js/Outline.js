@@ -118,7 +118,8 @@ define(
 								});	
 							}
 							
-							jQuery(displayScope + "#outline").jstree("close_node",  "#" + ruleSet.uuid);
+							// TODO - uncomment after the code to reload outline on every node creation / deletion is removed
+							//jQuery(displayScope + "#outline").jstree("close_node",  "#" + ruleSet.uuid);
 						});
 				m_utils.debug("Tree initialized");
 
