@@ -9,35 +9,19 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-			"bpm-modeler/js/m_extensionManager", 
-			"bpm-modeler/js/m_model",
-			"bpm-modeler/js/m_dialog",
+		[   "bpm-modeler/js/m_utils", 
 			"rules-manager/js/CommandsDispatcher", 
-			"bpm-modeler/js/m_view",
-			"bpm-modeler/js/m_modelElementView",
 			"rules-manager/js/m_i18nUtils",
-			"bpm-modeler/js/m_parameterDefinitionsPanel",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
-			"rules-manager/js/DecisionTable",
-			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/hotDecisionTable/m_decisionTable",
 			"rules-manager/js/hotDecisionTable/m_tableConfig",
-			"rules-manager/js/hotDecisionTable/m_renderEngines",
-			"rules-manager/js/hotDecisionTable/m_dataFactory",
-			"rules-manager/js/hotDecisionTable/m_chFactory",
 			"rules-manager/js/hotDecisionTable/m_images",
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
-			"Handsontable",
-			"rules-manager/js/hotDecisionTable/m_popoverFactory",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory"],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
-				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,ace2,
-				hotDecisionTable,tableConfig,renderEngines,dataFactory,chFactory,
-				images,treeFactory,ht2,popoverFactory,typeParser,operatorMenuFactory) {
+		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
+				hotDecisionTable,tableConfig,images,treeFactory,typeParser,operatorMenuFactory) {
 			return {
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);

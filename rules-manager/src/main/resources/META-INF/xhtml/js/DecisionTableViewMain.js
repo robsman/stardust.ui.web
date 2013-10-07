@@ -19,10 +19,7 @@ require
 				'jquery-ui': [
 				        'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
 				        '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min'],
-				'common-plugins' : '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 				'i18n' : 'common/InfinityBPMI18N',
-				'ace': ['rules-manager/js/libs/ACE/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
-				'bootstrap3' :   ['rules-manager/js/libs/bootstrap/bootstrap'],
 				'Handsontable': ['rules-manager/js/libs/Handsontable/jquery.handsontable.full.0917'],
 				'jstree': ['rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree']
 			},
@@ -34,7 +31,6 @@ require
 					exports : "InfinityBPMI18N"
 				},
 				'jquery-ui' : [ 'jquery' ],
-				'bootstrap3' :{deps: ['jquery']},
 			    'Handsontable' : {deps: ["jquery"]},
 			    'jstree' : {deps: ["jquery"]}
 			}
@@ -43,19 +39,9 @@ require
 require([ "require", 
           "jquery", 
           "jquery-ui", 
-		  "bpm-modeler/js/m_utils", 
 		  "i18n", 
-		  "common-plugins",
-		  "bpm-modeler/js/m_communicationController",
-		  "bpm-modeler/js/m_urlUtils", 
-		  "bpm-modeler/js/m_constants",
-		  "bpm-modeler/js/m_command", 
-		  "bpm-modeler/js/m_commandsController",
-		  "bpm-modeler/js/m_view", 
 		  "rules-manager/js/DecisionTableView",
-		  "rules-manager/js/libs/ACE/ace",
 		  "Handsontable",
-		  "bootstrap3",
 		  "jstree"], 
 		function(require) {
 		var decisionTblView=require("rules-manager/js/DecisionTableView");
