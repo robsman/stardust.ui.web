@@ -38,13 +38,6 @@ public class RulesManagementResource
    @Context
    private ServletContext servletContext;
 
-   public RulesManagementService getRulesManagementService()
-   {
-      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-
-      return (RulesManagementService) context.getBean("rulesManagementService");
-   }
-
    /**
     * @return
     */
@@ -55,7 +48,7 @@ public class RulesManagementResource
    {
       try
       {
-         String result = getRulesManagementService().getAllRuleSets(true).toString();
+         String result = getRulesManagementService().getAllRuleSets().toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
@@ -130,6 +123,16 @@ public class RulesManagementResource
       {
          return Response.status(Status.FORBIDDEN).build();
       }
+   }
+
+   /**
+    * @return
+    */
+   private RulesManagementService getRulesManagementService()
+   {
+      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+      return (RulesManagementService) context.getBean("rulesManagementService");
    }
 }
 

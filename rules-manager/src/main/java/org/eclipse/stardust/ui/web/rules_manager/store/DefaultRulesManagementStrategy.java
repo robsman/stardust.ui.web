@@ -38,29 +38,10 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
 
    @Override
-   public void saveRuleSet(String ruleSetId, String content)
-   {
-      createRuleSetFolderIfAbsent();
-      
-      Document ruleSet = getDocumentManagementService().getDocument(
-            RULES_DIR + ruleSetId + ".json");
-      if (null != ruleSet)
-      {
-         getDocumentManagementService().updateDocument(ruleSet, content.getBytes(), "",
-               true, "", null, false);
-      } else {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(ruleSetId + ".json");
-         docInfo.setContentType("text/plain");
-         Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo, content.getBytes(), null);
-         getDocumentManagementService().versionDocument(doc.getId(), "", null);
-      }
-   }
-
-   @Override
    public List<Document> getAllRuleSets()
    {
-      createRuleSetFolderIfAbsent();
-      
+      createRulesFolderIfAbsent();
+
       List<Document> ruleSetDocuments = new LinkedList<Document>();
       @SuppressWarnings("unchecked")
       List<Document> candidateRuleSetDocuments = getDocumentManagementService().getFolder(
@@ -76,33 +57,55 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
 
    @Override
+   public Document getRuleSet(String ruleSetId)
+   {
+      createRulesFolderIfAbsent();
+      
+      // TODO - assumption is that rules file name will be same as its id.
+      return getDocumentManagementService().getDocument(RULES_DIR + ruleSetId + ".json");
+   }
+
+   @Override
+   public void saveRuleSet(String ruleSetId, String content)
+   {
+      createRulesFolderIfAbsent();
+
+      // TODO - check!
+      // Here the assumption is that the rules file name is same as the ruleset id
+      // and will never change
+      // still need additional support for uploaded files that may have file name that
+      // is different from id.
+      DocumentInfo docInfo = DmsUtils.createDocumentInfo(ruleSetId + ".json");
+      docInfo.setContentType("text/plain");
+      Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo,
+            content.getBytes(), null);
+      getDocumentManagementService().versionDocument(doc.getId(), "", null);
+   }
+
+   @Override
    public void emptyRuleSets()
    {
+      // Deletes the rules folder with all its contents and recreates an empty one.
       Folder folder = getDocumentManagementService().getFolder(RULES_DIR);
       if (null != folder)
       {
          getDocumentManagementService().removeFolder(folder.getId(), true);
       }
 
-      getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(RULES_DIR_NAME));
-   }
-
-   @Override
-   public Document getRuleSet(String ruleSetId)
-   {
-      createRuleSetFolderIfAbsent();
-      return getDocumentManagementService().getDocument(RULES_DIR + ruleSetId + ".json");
+      getDocumentManagementService().createFolder("/",
+            DmsUtils.createFolderInfo(RULES_DIR_NAME));
    }
    
    /**
     * 
     */
-   private void createRuleSetFolderIfAbsent()
+   private void createRulesFolderIfAbsent()
    {
       Folder folder = getDocumentManagementService().getFolder(RULES_DIR);
       if (null == folder)
       {
-         getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(RULES_DIR_NAME));
+         getDocumentManagementService().createFolder("/",
+               DmsUtils.createFolderInfo(RULES_DIR_NAME));
       }
    }
    

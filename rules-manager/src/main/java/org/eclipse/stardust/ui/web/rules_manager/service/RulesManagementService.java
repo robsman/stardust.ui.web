@@ -56,31 +56,33 @@ public class RulesManagementService
     * 
     * @return
     */
-   public JsonObject getAllRuleSets(boolean reload) throws Exception
+   public JsonObject getAllRuleSets()
    {
       List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
       JsonObject ruleSets = new JsonObject();
-      for (Document doc : drls) {
-         JsonObject ruleSet = new JsonParser().parse(new String(getDocumentManagementService().retrieveDocumentContent(doc.getId()))).getAsJsonObject();         
+      for (Document doc : drls)
+      {
+         JsonObject ruleSet = new JsonParser().parse(
+               new String(getDocumentManagementService().retrieveDocumentContent(
+                     doc.getId()))).getAsJsonObject();
          ruleSets.add(ruleSet.get("uuid").getAsString(), ruleSet);
       }
 
       return ruleSets;
-   }   
+   }
 
    /**
     * 
     * @return
     */
-   public void saveRuleSets(String ruleSetsJson) throws Exception
+   public void saveRuleSets(String ruleSetsJson)
    {
       if (null == ruleSetsJson)
       {
          return;
       }
 
-      // Empty existing rule sets
-      // as they need to be overwritten
+      // Empty existing rule sets as they need to be overwritten
       getRulesManagementStrategy().emptyRuleSets();
 
       // Save all rule sets.
@@ -115,10 +117,11 @@ public class RulesManagementService
       return documentManagementService;
    }
 
+   /**
+    * @return
+    */
    private ServiceFactory getServiceFactory()
    {
-      // TODO Replace
-
       if (serviceFactory == null)
       {
          serviceFactory = serviceFactoryLocator.get();
