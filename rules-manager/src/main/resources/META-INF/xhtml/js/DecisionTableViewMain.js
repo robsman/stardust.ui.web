@@ -23,7 +23,7 @@ require
 				'i18n' : 'common/InfinityBPMI18N',
 				'ace': ['rules-manager/js/libs/ACE/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
 				'bootstrap3' :   ['rules-manager/js/libs/bootstrap/bootstrap'],
-				'Handsontable': ['rules-manager/js/libs/Handsontable/jquery.handsontable.full.0917.js'],
+				'Handsontable': ['rules-manager/js/libs/Handsontable/jquery.handsontable.full.0917'],
 				'jstree': ['rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree']
 			},
 			shim : {
