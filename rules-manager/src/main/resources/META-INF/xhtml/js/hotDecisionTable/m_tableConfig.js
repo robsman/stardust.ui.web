@@ -18,6 +18,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
         	console.log("Before KeyDown");
         	console.log(event);
         },
+        contextMenu: ['row_above', 'row_below', 'remove_row'],
         beforeChange: function(changes,source){
         	console.log("BeforeChange- THIS");
         	console.log(source);
@@ -105,7 +106,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
         manualColumnMove: true,
         manualColumnResize: true,
         rowHeaders: false,
-        contextMenu:false,
         helperFunctions:{
           addDefaultRow: function(instance){
         	  var settings=instance.getSettings(),
