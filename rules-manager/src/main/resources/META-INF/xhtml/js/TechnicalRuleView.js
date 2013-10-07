@@ -9,19 +9,13 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-			"bpm-modeler/js/m_extensionManager", 
-			"bpm-modeler/js/m_model",
-			"bpm-modeler/js/m_dialog",
+		[   "bpm-modeler/js/m_utils",
 			"rules-manager/js/CommandsDispatcher", 
-			"bpm-modeler/js/m_view",
-			"bpm-modeler/js/m_modelElementView",
 			"bpm-modeler/js/m_i18nUtils",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
 			"rules-manager/js/m_drlAceEditor"],
-		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils, m_jsfViewManager, RuleSet,ace2) {
+		function(m_utils,CommandsDispatcher, m_i18nUtils, m_jsfViewManager, RuleSet,ace2) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
