@@ -10,20 +10,19 @@ define([ "bpm-modeler/js/m_utils", "rules-manager/js/FactCondition",
 			};
 
 			function TechnicalRule() {
-				var drl="";
 				this.type = "TechnicalRule";
-				
 				this.getDRL=function(){
-					return drl;
+					return this.drl;
 				};
 				
 				this.setDRL=function(val){
-					drl=val;
+					this.drl=val;
 				};
 				
 				TechnicalRule.prototype.initialize = function(ruleSet, uuid, id, name) {
 					var currentDateTime=(new Date()).toString();
 					this.ruleSet = ruleSet;
+					this.drl="";
 					this.uuid = uuid;
 					this.id = id;
 					this.name = name;

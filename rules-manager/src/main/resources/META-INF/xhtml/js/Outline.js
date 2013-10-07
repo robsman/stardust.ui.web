@@ -486,10 +486,9 @@ define(
 								"select_node.jstree",
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'ruleSet') {
-										var ruleSet = RuleSet
-												.findRuleSetByUuid(data.rslt.obj
-														.attr("id"));
-
+										var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+										console.log("ruleset - on - treeclick");
+										console.log(ruleSet);
 										viewManager.openView("ruleSetView",
 												"id=" + ruleSet.id + "&name="
 														+ ruleSet.name

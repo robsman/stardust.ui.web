@@ -62,7 +62,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 					};
 				}
 			}
-			return JSON.stringify(data);
+			return data;
 		}
 	};
 });

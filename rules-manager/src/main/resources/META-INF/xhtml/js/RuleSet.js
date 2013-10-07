@@ -119,8 +119,19 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 	 */
 	function bindRuleSet(ruleSet) {
 		// TODO Ugly, user prototype
-
+		var key;
 		m_utils.typeObject(ruleSet, new RuleSet());
+		ruleSet.technicalRules=$.extend({},ruleSet.technicalRules);
+		for(key in ruleSet.technicalRules){
+			if (ruleSet.technicalRules.hasOwnProperty(key)){
+				ruleSet.technicalRules[key]=$.extend(TechnicalRule.create(),ruleSet.technicalRules[key]);
+			}
+		}
+		for(key in ruleSet.decisionTables){
+			if (ruleSet.decisionTables.hasOwnProperty(key)){
+				ruleSet.decisionTables[key]=$.extend(DecisionTable.create(),ruleSet.decisionTables[key]);
+			}
+		}
 	}
 	
 	/**

@@ -57,10 +57,7 @@ require
 						'https://github.com/cowboy/jquery-outside-events/blob/master/jquery.ba-outside-events.js' ],
 				'common-plugins' : '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
 				'i18n' : 'common/InfinityBPMI18N',
-				'ace': ['rules-manager/js/libs/ACE/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
-				'bootstrap3' :   ['rules-manager/js/libs/bootstrap/bootstrap'],
-				'Handsontable': ['rules-manager/js/libs/Handsontable/jquery.handsontable.full.0917.js'],
-				'jstree': ['rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree']
+				'ace': ['rules-manager/js/libs/ACE/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace']
 			},
 			shim : {
 				'json' : {
@@ -77,10 +74,7 @@ require
 				'jquery.tablescroll' : [ 'jquery' ],
 				'jquery.treeTable' : [ 'jquery' ],
 				'jquery.url' : [ 'jquery' ],
-				'jquery.ba-outside-events': ['jquery'],
-				'bootstrap3' :{deps: ['jquery']},
-			    'Handsontable' : {deps: ["jquery"]},
-			    'jstree' : {deps: ["jquery"]}
+				'jquery.ba-outside-events': ['jquery']
 			}
 		});
 
@@ -94,7 +88,7 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 		"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 		"bpm-modeler/js/m_view", "rules-manager/js/RuleSetView",
 		"rules-manager/js/libs/ACE/ace",
-		"Handsontable","bootstrap3","jstree","rules-manager/js/TechnicalRuleView"], function(
+		"rules-manager/js/TechnicalRuleView"], function(
 		require) {
 	
 	var techRuleView=require("rules-manager/js/TechnicalRuleView");

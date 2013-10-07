@@ -232,7 +232,9 @@ define(
 					/*binding ruleset technical rule drl to change events on our drlEditor textarea*/
 					uiElements.drlEditor.editor.on("change",function(event){
 						var tempVal=uiElements.drlEditor.getValue();
+						console.log("setting DRL");
 						techRule.setDRL(tempVal);
+						console.log(techRule.drl);
 					});
 					
 					/*by convention: is this function neccesary?*/

@@ -19,6 +19,7 @@ define([ "bpm-modeler/js/m_utils" ],
 			};
 
 			function DecisionTable() {
+				/*
 				var tableData={
 						columns:[{type:"text"},{type:"text"}],
 				        data:[
@@ -32,14 +33,15 @@ define([ "bpm-modeler/js/m_utils" ],
 				        colHeaders:["|NA|Header",
 				                     "Description|NA|Header"]
 				};
+				*/
 				this.type = "DecisionTable";
 				
 				this.getTableData=function(){
-					return tableData;
+					return this.tableData;
 				};
 				
 				this.setTableData=function(val){
-					tableData=val;
+					this.tableData=val;
 				};
 				
 				DecisionTable.prototype.initialize = function(ruleSet, uuid, id, name) {
@@ -50,6 +52,19 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.name = name;
 					this.lastModificationDate=currentDateTime;
 					this.creationDate=currentDateTime;
+					this.tableData={
+							columns:[{type:"text"},{type:"text"}],
+					        data:[
+					               [0,'rule 1'],
+					               [0,'rule 2'],
+					               [0,'rule 3'],
+					               [0,'rule 4'],
+					               [0,'rule 5']
+					           ],
+					        colWidths:[35,90],
+					        colHeaders:["|NA|Header",
+					                     "Description|NA|Header"]
+					};
 				};
 				
 				//TODO: is this circular reference needed? Fubars JSON.stringify
