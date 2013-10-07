@@ -18,6 +18,9 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			getRuleSets()[ruleSet.uuid] = ruleSet;
 			return ruleSet;
 		},
+		deleteRuleSet : function(uuid) {
+			delete getRuleSets()[uuid];
+		},
 		getRuleSets : getRuleSets,
 		emptyRuleSets : emptyRuleSets,
 		getRuleSetsCount : function() {

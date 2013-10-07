@@ -11,9 +11,25 @@ import org.eclipse.stardust.engine.api.runtime.Document;
  */
 public interface RulesManagementStrategy
 {
+   /**
+    * @return
+    */
    List<Document> getAllRuleSets();
    
+   /**
+    * @param ruleSetId
+    * @return
+    */
    Document getRuleSet(String ruleSetId);
    
+   /**
+    * @param ruleSetId
+    * @param content
+    */
    void saveRuleSet(String ruleSetId, String content);
+   
+   /**
+    * 
+    */
+   void emptyRuleSets();
 }

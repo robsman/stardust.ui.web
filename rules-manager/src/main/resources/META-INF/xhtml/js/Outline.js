@@ -710,7 +710,7 @@ define(
 															deleteElementAction(
 																	obj.context.lastChild.data,
 																	function() {
-																		deleteModel(obj.attr("elementId"));
+																		deleteRuleSet(obj.attr("id"));
 																	});
 														}
 													},
@@ -856,10 +856,11 @@ define(
 				/**
 				 * 
 				 */
-				function deleteModel(modelId) {
-					var model = m_model.findModel(modelId);
-					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, {}));
+				function deleteRuleSet(ruleSetUUID) {
+					RuleSet.deleteRuleSet(ruleSetUUID);
+					// TODO - this is just a way to trigger a refresh
+					// need a better solution
+					CommandsDispatcher.submitCommand();
 				}
 
 				/**

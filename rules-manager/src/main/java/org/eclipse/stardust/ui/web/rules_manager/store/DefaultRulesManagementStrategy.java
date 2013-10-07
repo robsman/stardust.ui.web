@@ -7,6 +7,7 @@ import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    private DocumentManagementService documentManagementService;
 
    public static final String RULES_DIR = "/rules/";
+   
+   public static final String RULES_DIR_NAME = "rules";
 
    /**
     * 
@@ -35,14 +38,10 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
 
    @Override
-   public Document getRuleSet(String ruleSetId)
-   {
-      return getDocumentManagementService().getDocument(RULES_DIR + ruleSetId + ".json");
-   }
-   
-   @Override
    public void saveRuleSet(String ruleSetId, String content)
    {
+      createRuleSetFolderIfAbsent();
+      
       Document ruleSet = getDocumentManagementService().getDocument(
             RULES_DIR + ruleSetId + ".json");
       if (null != ruleSet)
@@ -56,11 +55,12 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
          getDocumentManagementService().versionDocument(doc.getId(), "", null);
       }
    }
-   
 
    @Override
    public List<Document> getAllRuleSets()
    {
+      createRuleSetFolderIfAbsent();
+      
       List<Document> ruleSetDocuments = new LinkedList<Document>();
       @SuppressWarnings("unchecked")
       List<Document> candidateRuleSetDocuments = getDocumentManagementService().getFolder(
@@ -75,6 +75,37 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       return ruleSetDocuments;
    }
 
+   @Override
+   public void emptyRuleSets()
+   {
+      Folder folder = getDocumentManagementService().getFolder(RULES_DIR);
+      if (null != folder)
+      {
+         getDocumentManagementService().removeFolder(folder.getId(), true);
+      }
+
+      getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(RULES_DIR_NAME));
+   }
+
+   @Override
+   public Document getRuleSet(String ruleSetId)
+   {
+      createRuleSetFolderIfAbsent();
+      return getDocumentManagementService().getDocument(RULES_DIR + ruleSetId + ".json");
+   }
+   
+   /**
+    * 
+    */
+   private void createRuleSetFolderIfAbsent()
+   {
+      Folder folder = getDocumentManagementService().getFolder(RULES_DIR);
+      if (null == folder)
+      {
+         getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(RULES_DIR_NAME));
+      }
+   }
+   
    /**
     * 
     * @return
@@ -89,10 +120,11 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       return documentManagementService;
    }
 
+   /**
+    * @return
+    */
    private ServiceFactory getServiceFactory()
    {
-      // TODO Replace
-
       if (serviceFactory == null)
       {
          serviceFactory = serviceFactoryLocator.get();

@@ -74,7 +74,16 @@ public class RulesManagementService
     */
    public void saveRuleSets(String ruleSetsJson) throws Exception
    {
-      if (null == ruleSetsJson) return;
+      if (null == ruleSetsJson)
+      {
+         return;
+      }
+
+      // Empty existing rule sets
+      // as they need to be overwritten
+      getRulesManagementStrategy().emptyRuleSets();
+
+      // Save all rule sets.
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
       for (JsonElement je : ruleSets)
       {
