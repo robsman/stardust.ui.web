@@ -28,6 +28,7 @@ define([],function(){
 					   language:'en',
 					   "default": 0};
 			  break;
+		  case "XSD:SHORT":
 		  case "XSD:INT":
 		  case "XSD:DOUBLE":
 		  case "DOUBLE":
