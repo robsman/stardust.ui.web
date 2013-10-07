@@ -20,13 +20,13 @@ public interface RulesManagementStrategy
     * @param ruleSetId
     * @return
     */
-   Document getRuleSet(String ruleSetId);
+   Document getRuleSet(String ruleSetFileName);
    
    /**
     * @param ruleSetId
     * @param content
     */
-   void saveRuleSet(String ruleSetId, String content);
+   void saveRuleSet(String ruleSetFileName, String content);
    
    /**
     * 

@@ -11,7 +11,9 @@
 
 package org.eclipse.stardust.ui.web.rules_manager.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -52,6 +54,8 @@ public class RulesManagementService
 
    private DocumentManagementService documentManagementService;
 
+   private Map<String, String> ruleSetUUIDVsFileNameMap = new HashMap<String, String>();
+
    /**
     * 
     * @return
@@ -60,12 +64,15 @@ public class RulesManagementService
    {
       List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
       JsonObject ruleSets = new JsonObject();
+      ruleSetUUIDVsFileNameMap.clear();
       for (Document doc : drls)
       {
          JsonObject ruleSet = new JsonParser().parse(
                new String(getDocumentManagementService().retrieveDocumentContent(
                      doc.getId()))).getAsJsonObject();
-         ruleSets.add(ruleSet.get("uuid").getAsString(), ruleSet);
+         String uuid = ruleSet.get("uuid").getAsString();
+         ruleSets.add(uuid, ruleSet);
+         ruleSetUUIDVsFileNameMap.put(uuid, doc.getName());
       }
 
       return ruleSets;
@@ -89,8 +96,12 @@ public class RulesManagementService
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
       for (JsonElement je : ruleSets)
       {
-         String ruleSetId = je.getAsJsonObject().get("id").getAsString();
-         getRulesManagementStrategy().saveRuleSet(ruleSetId, je.toString());
+         String fileName = ruleSetUUIDVsFileNameMap.get(je.getAsJsonObject().get("uuid").getAsString());
+         if (null == fileName)
+         {
+            fileName = je.getAsJsonObject().get("id").getAsString() + ".json";
+         }
+         getRulesManagementStrategy().saveRuleSet(fileName, je.toString());
       }
    }
    
