@@ -117,6 +117,8 @@ define(
 											}, null, true);
 								});	
 							}
+							
+							jQuery(displayScope + "#outline").jstree("close_node",  "#" + ruleSet.uuid);
 						});
 				m_utils.debug("Tree initialized");
 
