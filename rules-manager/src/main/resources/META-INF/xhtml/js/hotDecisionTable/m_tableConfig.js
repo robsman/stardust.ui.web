@@ -1,5 +1,26 @@
-define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_images","./m_chMenuFactoryLegacy","./m_utilities","./m_operators"],
-      function($,renderEngines,dataFactory,colHdrFactory,images,chMenuFactory,utils,operators){
+define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
+        "./m_images","./m_chMenuFactoryLegacy","./m_utilities","./m_operators","rules-manager/js/m_i18nUtils"],
+      function($,renderEngines,dataFactory,colHdrFactory,images,chMenuFactory,utils,operators,m_i18nUtils){
+	  
+	  /*Maps column header category text to its i18n resource value*/
+	  var categoryTextMapper=function(category){
+		  var mappedVal="";
+		  switch (category.toUpperCase()){
+		  	case "ATTRIBUTE":
+		  		mappedVal=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.columncategory.attribute","NA");
+		  		break;
+		  	case "CONDITION":
+		  		mappedVal=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.columncategory.condition","NA");
+		  		break;
+		  	case "ACTION":
+		  		mappedVal=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.columncategory.action","NA");
+		  		break;
+		  	default:
+		  		mappedVal="";
+		  }
+		  return mappedVal;
+	  };
+	  
       var tableConfig={
         cells:function(row, col, prop){
           /*Column zero needs a special renderer to add DOM elements for the
@@ -18,7 +39,52 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
         	console.log("Before KeyDown");
         	console.log(event);
         },
-        contextMenu: ['row_above', 'row_below', 'remove_row'],
+        contextMenu: {
+        	callback: function(key,options){
+        		var rootSelector=options.selector.split(" ")[0];
+        		var instance=$(rootSelector).handsontable('getInstance');
+        		var selectedRow = instance.getSelected()[0];
+        		var settings=instance.getSettings();
+        		
+        		switch(key){
+        		case "override_insert_rowBelow":
+        			selectedRow =selectedRow+1;
+        		case "override_insert_rowAbove":
+        			settings.helperFunctions.addDefaultRow(instance,selectedRow);
+        			break;
+        		case "override_remove_row":
+        			if(instance.countRows() ===1) return;
+        			instance.alter("remove_row",selectedRow);
+        			break;
+        		default:
+        			console.log("Unsupported contextMenu key.");
+        		}
+        	},
+        	items:{
+        		override_remove_row:{
+        			name: "Remove Row",
+        			disabled:function(key,options){
+	        			var rootSelector=options.selector.split(" ")[0],
+	        			    instance=$(rootSelector).handsontable('getInstance');
+	        			if(instance.countRows() ===1){return true;}
+	        			return (instance.getSelected()===undefined);
+	        		}},
+        		override_insert_rowAbove:{
+        			name: "Insert Row (Above)",
+        			disabled:function(key,options){
+        				var rootSelector=options.selector.split(" ")[0],
+        			    	instance=$(rootSelector).handsontable('getInstance');
+        				return (instance.getSelected()===undefined);
+        		}},
+        		override_insert_rowBelow:{
+        			name: "Insert Row (Below)",
+        			disabled: function(key,options){
+	        			var rootSelector=options.selector.split(" ")[0],
+				    		instance=$(rootSelector).handsontable('getInstance');
+	        			return (instance.getSelected()===undefined);
+        		}}
+        	}
+        },
         beforeChange: function(changes,source){
         	console.log("BeforeChange- THIS");
         	console.log(source);
@@ -79,7 +145,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
             $colObj=$(".colHeader",TH);
             $colObj.empty().append($hdrObj);
             if(category.toLowerCase() !="header"){
-              $categoryLabel=$("<div class='hot-splithdr-label'>" + category +"</div>");
+              $categoryLabel=$("<div class='hot-splithdr-label'>" + categoryTextMapper(category) +"</div>");
               $colObj.prepend( $categoryLabel);
                $img=$(images.remove).on("click",function(event){
                 var settings=instance.getSettings();
@@ -107,9 +173,10 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
         manualColumnResize: true,
         rowHeaders: false,
         helperFunctions:{
-          addDefaultRow: function(instance){
+          addDefaultRow: function(instance,rowNum){
         	  var settings=instance.getSettings(),
         	  	  columns,
+        	  	  position,
         	      rowCount,
         	      colCount,
         	      newRow;
@@ -138,7 +205,9 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory","./m_imag
 	        			newRow[colCount]="";
         		  }
         	  }
-        	  settings.data.push(newRow);
+        	  position=(rowNum!==undefined)?rowNum:rowCount+1;
+        	  console.log("position=" + position);
+        	  settings.data.splice(position,0,newRow);
         	  instance.updateSettings({data: settings.data});
           },
           parseRowToDRL: function(index,instance){
