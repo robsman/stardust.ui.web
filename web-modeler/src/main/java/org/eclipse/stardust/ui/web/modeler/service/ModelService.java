@@ -1161,7 +1161,7 @@ public class ModelService
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
             ModelType loadModel = getModelManagementStrategy().loadModel(
-                  participantModelID + ".xpdl");
+                  participantModelID);
             IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
                   loadModel, participantId);
             if (participantCopy == null)
@@ -1961,7 +1961,7 @@ public class ModelService
 
    public ModelType refreshAndFindModel(String modelId)
    {
-      return getModelManagementStrategy().loadModel(modelId + ".xpdl");
+      return getModelManagementStrategy().loadModel(modelId);
    }
 
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
