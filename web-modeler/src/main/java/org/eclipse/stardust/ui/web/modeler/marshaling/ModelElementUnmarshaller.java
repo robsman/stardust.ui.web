@@ -763,7 +763,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
                ModelType loadModel = getModelBuilderFacade().getModelManagementStrategy()
-                     .loadModel(participantModelID + ".xpdl");
+                     .loadModel(participantModelID);
 
                IModelParticipant participantCopy = null;
 
