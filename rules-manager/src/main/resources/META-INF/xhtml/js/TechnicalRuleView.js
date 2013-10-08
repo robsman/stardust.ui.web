@@ -11,7 +11,7 @@
 define(
 		[   "bpm-modeler/js/m_utils",
 			"rules-manager/js/CommandsDispatcher", 
-			"bpm-modeler/js/m_i18nUtils",
+			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
 			"rules-manager/js/m_drlAceEditor"],
@@ -65,7 +65,12 @@ define(
 							fontDropdown: m_utils.jQuerySelect(options.selectors.fontDropdown),
 							drlSelectedTheme: m_utils.jQuerySelect(options.selectors.drlSelectedTheme),
 							themeDropdown: m_utils.jQuerySelect(options.selectors.themeDropdown),
-							drlTabControl: undefined
+							drlTabControl: undefined,
+							codeTab: m_utils.jQuerySelect(options.selectors.codeTab),
+							findLabel: m_utils.jQuerySelect(options.selectors.findLabel),
+							lineNumberLabel: m_utils.jQuerySelect(options.selectors.lineNumberLabel),
+							replaceLabel: m_utils.jQuerySelect(options.selectors.replaceLabel),
+							replaceMenu: m_utils.jQuerySelect(options.selectors.replaceMenu)
 					};
 					
 					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -78,7 +83,18 @@ define(
 							break;
 						}
 					};
-					
+					var tempProp;
+					for(var key in options.i18nMaps){
+						if(uiElements[key] && uiElements.hasOwnProperty(key)){
+							var i18nMap=options.i18nMaps[key];
+								if(i18nMap){
+									tempProp=m_i18nUtils.getProperty(i18nMap.path,i18nMap.defaultText);
+									uiElements[key].attr(i18nMap.attr,tempProp);
+									console.log("Mapping " + key + " " + tempProp);
+							}
+						}
+					}
+					 
 				    /*initialize tabs control*/
 					uiElements.drlTabControl= m_utils.jQuerySelect(options.selectors.tabs).tabs();
 
@@ -90,10 +106,7 @@ define(
 					/*****Menu Building Section for our DRL editors associated toolbar*****/
 					
 					/*Add menu for text replacement options (all||current)*/
-					replaceMenu="<ul style='position:absolute;z-index:9999;'>" + 
-					               "<li><a href='#'>Replace Current</a></li>" +
-					               "<li><a href='#'>Replace All</a></li>" +
-				               "</ul>";
+					replaceMenu=$("#replaceMenu");
 					$replaceMenu=$(replaceMenu)
 						.menu()
 						.appendTo(m_utils.jQuerySelect("body"))

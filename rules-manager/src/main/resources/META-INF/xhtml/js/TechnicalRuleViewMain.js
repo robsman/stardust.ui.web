@@ -45,13 +45,41 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView",
 				drlEditorReplaceVal: "#drlEditorReplaceVal",/*val to textReplace with in our drlEditor*/
 				drlEditorReplaceAction:"#drlEditorReplaceAction",/*inititate a text replace in our drlEditor*/
 				drlEditorFindVal: "#drlEditorFindVal",/*element with the val we will search for*/
-				drlFindBackwards: "#drlFindBackwards",/*iniitates a find backwards text search on click*/
+				drlFindBackwards: "#drlFindBackwards",/*initates a find backwards text search on click*/
 				drlFindForwards: "#drlFindForwards",/*initiates a find forward text search on click*/
 				gotoLineNo: "#gotoLineNo",/*input element monitored for line number jumps*/
 				selectedFontSize: "#selectedFontSize",/*element to display the selected font size*/
 				fontDropdown: "#fontDropdown",/* element which the fontSize menu will toggle-on-click*/
 				drlSelectedTheme: "#drlSelectedTheme",/*element which will show the name of the selected theme*/
-				themeDropdown: "#themeDropdown"/*element to which the theme menu will toggle-on-click*/
+				themeDropdown: "#themeDropdown", /*element to which the theme menu will toggle-on-click*/
+				codeTab: "#techRuleCodeTab",
+				findLabel: "#findLabel",
+				lineNumberLabel: "#lineNumberLabel",
+				replaceLabel: "#replaceLabel",
+				replaceMenu: "#replaceMenu",
+				optReplaceCurrent: "#optReplaceCurrent",
+				optReplaceAll: "#optReplaceAll",
+				idLabel:"#idLabel",
+				uuidLabel:"#uuidLabel",
+				descriptionLabel:"#descriptionLabel",
+				nameLabel:"#nameLabel"
+			},
+			i18nMaps:{
+				codeTab: {path:"rules.propertyView.technicalruleview.ruleeditor.tab",defaultText:"NA",attr:"text"},
+				findLabel: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.find",defaultText:"NA",attr:"text"},
+				lineNumberLabel: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.lineNumber",defaultText:"NA",attr:"text"},
+				replaceLabel:  {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replace",defaultText:"NA",attr:"text"},
+				drlFindForwards: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.tooltip.gotoNext",defaultText:"NA",attr:"title"},
+				drlFindBackwards: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.tooltip.gotoPrevious",defaultText:"NA",attr:"title"},
+				fontDropdown: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.tooltip.selectFontSize",defaultText:"NA",attr:"title"},
+				themeDropdown: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.tooltip.selectTheme",defaultText:"NA",attr:"title"},
+				drlEditorReplaceAction: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replace",defaultText:"NA",attr:"title"},
+				optReplaceCurrent:	{path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replaceCurrent",defaultText:"NA",attr:"text"},
+				optReplaceAll: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replaceAll",defaultText:"NA",attr:"text"},
+				idLabel:{path:"rules.element.properties.commonProperties.id",defaultText:"NA",attr:"text"},
+				nameLabel:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
+				descriptionLabel:{path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
+				uuidLabel:{path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"}
 			}
 	};
 	

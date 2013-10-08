@@ -117,19 +117,19 @@ table.wrapperTable {
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px; margin-right: 10px;">
 									<tr id="uuidOutputRow">
-										<td><label for="uuidOutput">UUID</label>
+										<td><label id="uuidLabel" for="uuidOutput">UUID</label>
 										</td>
 										<td><div id="uuidOutput" class="output"></div>
 										</td>
 									</tr>
 									<tr id="idOutputRow">
-										<td><label for="idOutput">ID</label>
+										<td><label id="idLabel" for="idOutput">ID</label>
 										</td>
 										<td><div id="idOutput" class="output"></div>
 										</td>
 									</tr>
 									<tr>
-										<td><label for="nameInput" id="name">Rule Name</label>
+										<td><label id="nameLabel" for="nameInput" id="name">Rule Name</label>
 										</td>
 										<td><input id="nameInput" type="text"
 											style="width: 200px;"></input>
@@ -140,7 +140,7 @@ table.wrapperTable {
 					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
+				<td><label id="descriptionLabel" for="descriptionTextarea">Description</label>
 				</td>
 			</tr>
 			<tr>
@@ -177,17 +177,21 @@ table.wrapperTable {
 								<img id="fontDropdown" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/menu-arrow-down.gif"></img>
 								<span id="selectedFontSize">12pt</span>
 								<img src="plugins/rules-manager/images/icons/toolbar-separator.png"></img>
-								<span>Line #</span>
+								<span id="lineNumberLabel">Line #</span>
 								<input id="gotoLineNo" style="min-width:28px;width:28px;"  maxlength="4" size="4" type="text"></input>
 								<img src="plugins/rules-manager/images/icons/toolbar-separator.png"></img>
-								<span>Find</span>
+								<span id="findLabel">Find</span>
 								<input id="drlEditorFindVal" style="width:28px;" type="text"></input>
 								<img id="drlFindBackwards" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/resultset_previous.png"></img>
 								<img id="drlFindForwards" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/resultset_next.png"></img>
-								<span>Replace</span>
+								<span id="replaceLabel">Replace</span>
 								<input id="drlEditorReplaceVal" style="width:28px;" type="text"></input>
 								<img id="drlEditorReplaceAction" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/text_replace.png"></img>
 								<img id="drlEditorReplaceOption" class="btn-ipp pointy" src="plugins/rules-manager/images/icons/menu-arrow-down.gif"></img>
+								<ul id="replaceMenu" style='position:absolute;z-index:9999;'>
+					               <li><a id="optReplaceCurrent" href='#'>Replace Current</a></li> 
+					               <li><a id="optReplaceAll" href='#'>Replace All</a></li> 
+				                </ul>
 								<span id="drlEditorReplaceOptionVal">Replace Current</span>
 							</div>
 							<hr class="carved" style="position:relative;padding:0;margin:0;"/>
