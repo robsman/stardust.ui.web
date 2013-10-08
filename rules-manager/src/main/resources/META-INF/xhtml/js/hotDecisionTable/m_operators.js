@@ -1,4 +1,4 @@
-define([],function(){
+define(["rules-manager/js/m_i18nUtils"],function(){
 	var catBool=1,
 	    catString=2,
 	    catNumeric=4,
@@ -16,7 +16,7 @@ define([],function(){
 			operator:"EqualTo",
 			hashCode: 61,
 			DRLoperator:"==",
-			text: "Equal To",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.equalTo","NA"),
 			symbol:"&#x3d;",
 			validBitMask: catBool |
 						  catString  |
@@ -27,7 +27,7 @@ define([],function(){
 			operator:"NotEqualTo",
 			hashCode: 8800,
 			DRLoperator:"!=",
-			text: "Not Equal To",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.notEqualTo","NA"),
 			symbol:"&#x2260;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -37,7 +37,7 @@ define([],function(){
 			operator:"GreaterThan",
 			hashCode: 62,
 			DRLoperator:">",
-			text: "Greater Than",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.greaterThan","NA"),
 			symbol:"&#x3e;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -47,7 +47,7 @@ define([],function(){
 			operator:"LessThan",
 			hashCode: 60,
 			DRLoperator:"<",
-			text: "Less Than",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.lessThan","NA"),
 			symbol:"&#x3c;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -57,7 +57,7 @@ define([],function(){
 			operator:"LessThanOrEqualTo",
 			hashCode: 8804,
 			DRLoperator:"<=",
-			text: "Less Than or Equal To",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.lessThanOrEqualTo","NA"),
 			symbol:"&#x2264;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -67,7 +67,7 @@ define([],function(){
 			operator:"GreaterThanOrEqualTo",
 			hashCode: 8805,
 			DRLoperator:">=",
-			text: "Greater ThanOr Equal To",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.greaterThanOrEqualTo","NA"),
 			symbol:"&#x2265;",
 			validBitMask: catString  |
 						 catNumeric | 
@@ -77,7 +77,7 @@ define([],function(){
 			operator:"Matches",
 			hashCode:8773,
 			DRLoperator:"matches",
-			text: "Matches",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.matches","NA"),
 			symbol:"&#x2245;",
 			validBitMask: catString
 		},
@@ -85,7 +85,7 @@ define([],function(){
 			operator:"SoundsLike",
 			hashCode: 9835,
 			DRLoperator:"soundslike",
-			text: "Sounds Like",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.soundsLike","NA"),
 			symbol:"&#9835;",
 			validBitMask: catString
 		},
@@ -93,7 +93,7 @@ define([],function(){
 			operator:"Null",
 			hashCode: 63,
 			DRLoperator:"== null",
-			text: "Null",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.null","NA"),
 			symbol:"?",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -103,7 +103,7 @@ define([],function(){
 			operator:"NotNull",
 			hashCode: 1086,
 			DRLoperator:"!= null",
-			text: "Not Null",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.notNull","NA"),
 			symbol:"!?",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -113,7 +113,7 @@ define([],function(){
 			operator:"InList",
 			hashCode: 8712,
 			DRLoperator:"in",
-			text: "In List",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.inList","NA"),
 			symbol:"&#8712;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -123,7 +123,7 @@ define([],function(){
 			operator:"NotInList",
 			hashCode: 8713,
 			DRLoperator:"not in",
-			text: "Not In List",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.notInList","NA"),
 			symbol:"&#8713;",
 			validBitMask: catString  |
 						  catNumeric | 
@@ -133,7 +133,7 @@ define([],function(){
 			operator:"After",
 			hashCode: 303490,
 			DRLoperator:"after",
-			text: "After",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.after","NA"),
 			symbol:"&#x263c;&#x3e;",
 			validBitMask: catDate
 		},
@@ -141,7 +141,7 @@ define([],function(){
 			operator:"Before",
 			hashCode: 11648,
 			DRLoperator:"before",
-			text: "Before",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.before","NA"),
 			symbol:"&#x3c;&#x263c;",
 			validBitMask: catDate
 		},
@@ -149,7 +149,7 @@ define([],function(){
 			operator:"Coincides",
 			hashCode: 9788,
 			DRLoperator:"?coincides",
-			text: "Coincides",
+			text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.menu.operators.label.coincides","NA"),
 			symbol:"&#x263c;",
 			validBitMask: catDate
 		}
