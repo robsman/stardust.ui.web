@@ -14,8 +14,10 @@ define(
 			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
-			"rules-manager/js/m_drlAceEditor"],
-		function(m_utils,CommandsDispatcher, m_i18nUtils, m_jsfViewManager, RuleSet,ace2) {
+			"rules-manager/js/m_drlAceEditor",
+			"rules-manager/js/m_i18nMapper"],
+		function(m_utils,CommandsDispatcher, m_i18nUtils, 
+				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -83,18 +85,10 @@ define(
 							break;
 						}
 					};
-					var tempProp;
-					for(var key in options.i18nMaps){
-						if(uiElements[key] && uiElements.hasOwnProperty(key)){
-							var i18nMap=options.i18nMaps[key];
-								if(i18nMap){
-									tempProp=m_i18nUtils.getProperty(i18nMap.path,i18nMap.defaultText);
-									uiElements[key].attr(i18nMap.attr,tempProp);
-									console.log("Mapping " + key + " " + tempProp);
-							}
-						}
-					}
-					 
+					
+					/*Map uiElements to their resource text values*/
+					m_i18nMapper.map(options,true);
+					
 				    /*initialize tabs control*/
 					uiElements.drlTabControl= m_utils.jQuerySelect(options.selectors.tabs).tabs();
 

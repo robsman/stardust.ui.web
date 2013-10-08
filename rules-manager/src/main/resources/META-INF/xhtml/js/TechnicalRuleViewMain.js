@@ -52,17 +52,17 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView",
 				fontDropdown: "#fontDropdown",/* element which the fontSize menu will toggle-on-click*/
 				drlSelectedTheme: "#drlSelectedTheme",/*element which will show the name of the selected theme*/
 				themeDropdown: "#themeDropdown", /*element to which the theme menu will toggle-on-click*/
-				codeTab: "#techRuleCodeTab",
-				findLabel: "#findLabel",
-				lineNumberLabel: "#lineNumberLabel",
-				replaceLabel: "#replaceLabel",
-				replaceMenu: "#replaceMenu",
-				optReplaceCurrent: "#optReplaceCurrent",
-				optReplaceAll: "#optReplaceAll",
-				idLabel:"#idLabel",
-				uuidLabel:"#uuidLabel",
-				descriptionLabel:"#descriptionLabel",
-				nameLabel:"#nameLabel"
+				codeTab: "#techRuleCodeTab", /*tab (li) for our code view*/
+				findLabel: "#findLabel", /*Code editor toolbar label*/
+				lineNumberLabel: "#lineNumberLabel", /*Code editor toolbar label*/
+				replaceLabel: "#replaceLabel", /*Code editor toolbar label*/
+				replaceMenu: "#replaceMenu", /*Menu selector for toolbar replace menu*/
+				optReplaceCurrent: "#optReplaceCurrent", /*menu option for toolbar replace menu*/
+				optReplaceAll: "#optReplaceAll", /*menu option for toolbar replace menu*/
+				idLabel:"#idLabel", /*label for our rule ID*/
+				uuidLabel:"#uuidLabel", /* label for our rule UUID*/
+				descriptionLabel:"#descriptionLabel", /*label for rule description textarea*/
+				nameLabel:"#nameLabel" /*label for rule name*/
 			},
 			i18nMaps:{
 				codeTab: {path:"rules.propertyView.technicalruleview.ruleeditor.tab",defaultText:"NA",attr:"text"},
