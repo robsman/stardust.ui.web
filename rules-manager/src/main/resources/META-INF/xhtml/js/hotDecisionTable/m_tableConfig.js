@@ -56,11 +56,19 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         			if(instance.countRows() ===1) return;
         			instance.alter("remove_row",selectedRow);
         			break;
+        		case "move_row_up":
+        			settings.helperFunctions.moveRow(instance,selectedRow,selectedRow-1);
+        			break;
+        		case "move_row_down":
+        			settings.helperFunctions.moveRow(instance,selectedRow,selectedRow+1);
+        			break;
         		default:
         			console.log("Unsupported contextMenu key.");
         		}
         	},
         	items:{
+        		move_row_up:{name:"Move Row Up"},
+        		move_row_down:{name:"Move Row Down"},
         		override_remove_row:{
         			name: "Remove Row",
         			disabled:function(key,options){
@@ -173,6 +181,14 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         manualColumnResize: true,
         rowHeaders: false,
         helperFunctions:{
+          moveRow: function(instance,from,to){
+        	  var settings=instance.getSettings(),
+        	      data=settings.data,
+        	      rowCount=settings.data.length;
+        	  if(to < 0 || to > rowCount){return;}
+        	  data.splice(to,0,data.splice(from,1)[0]);
+        	  instance.updateSettings({"data":data});
+          },
           addDefaultRow: function(instance,rowNum){
         	  var settings=instance.getSettings(),
         	  	  columns,
@@ -206,7 +222,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         		  }
         	  }
         	  position=(rowNum!==undefined)?rowNum:rowCount+1;
-        	  console.log("position=" + position);
         	  settings.data.splice(position,0,newRow);
         	  instance.updateSettings({data: settings.data});
           },
