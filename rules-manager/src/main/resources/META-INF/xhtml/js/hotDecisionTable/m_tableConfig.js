@@ -25,12 +25,14 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         cells:function(row, col, prop){
           /*Column zero needs a special renderer to add DOM elements for the
           add/remove row buttons*/
+        	/*
           if(col===0){
             return{
               type:{renderer:renderEngines.rowHeader},
               readOnly: true
             };
           }
+          */
         },
         snapShots: {
         	hiddenColumns:{}
@@ -43,7 +45,9 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         	callback: function(key,options){
         		var rootSelector=options.selector.split(" ")[0];
         		var instance=$(rootSelector).handsontable('getInstance');
-        		var selectedRow = instance.getSelected()[0];
+        		var selectedArr=instance.getSelected();
+        		var selectedRow = selectedArr[0];
+        		var selectedCol = selectedArr[1];
         		var settings=instance.getSettings();
         		
         		switch(key){
@@ -62,13 +66,47 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         		case "move_row_down":
         			settings.helperFunctions.moveRow(instance,selectedRow,selectedRow+1);
         			break;
+        		case "remove_column":
+        			ch=instance.getColHeader(selectedCol).split("|");
+        			if(ch[2].toUpperCase()==="HEADER"){return;}
+                    settings.helperFunctions.removeColumn(instance,selectedCol);
+                    instance.rootElement.trigger({
+                    	type:"column_removed",
+                    	"category":ch[2],
+                    	colValue: ch[0]});
+                    break;
         		default:
         			console.log("Unsupported contextMenu key.");
         		}
         	},
         	items:{
-        		move_row_up:{name:"Move Row Up"},
-        		move_row_down:{name:"Move Row Down"},
+        		remove_column:{
+        			name:"Remove Column",
+        			disabled: function(key,options){
+        				var rootSelector=options.selector.split(" ")[0],
+				    		instance=$(rootSelector).handsontable('getInstance'),
+				    		selectedCol,
+				    		colHeader;
+        				selectedCol=instance.getSelected();
+        				if(!selectedCol){return true;}
+        				colHeader=instance.getColHeader(selectedCol[1]).split("|");
+        				if(colHeader[2]==="Header"){return true;}
+        			}
+        		},
+        		move_row_up:{
+        			name:"Move Row Up",
+        			disabled:function(key,options){
+			    		var rootSelector=options.selector.split(" ")[0],
+						    instance=$(rootSelector).handsontable('getInstance');
+						return (instance.getSelected()===undefined);
+					}},
+        		move_row_down:{
+        			name:"Move Row Down",
+        			disabled:function(key,options){
+			    		var rootSelector=options.selector.split(" ")[0],
+						    instance=$(rootSelector).handsontable('getInstance');
+						return (instance.getSelected()===undefined);
+					}},
         		override_remove_row:{
         			name: "Remove Row",
         			disabled:function(key,options){
@@ -167,7 +205,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             $img.addClass("pull-right");
             $img.css("margin-right","2px");
             $img.css("margin-top","4px");
-            $categoryLabel.append( $img);
+            //$categoryLabel.append( $img);
             }
           }
          

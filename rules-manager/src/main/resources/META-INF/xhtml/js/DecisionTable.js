@@ -53,17 +53,16 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.lastModificationDate=currentDateTime;
 					this.creationDate=currentDateTime;
 					this.tableData={
-							columns:[{type:"text"},{type:"text"}],
+							columns:[{type:"text"}],
 					        data:[
-					               [0,'rule 1'],
-					               [0,'rule 2'],
-					               [0,'rule 3'],
-					               [0,'rule 4'],
-					               [0,'rule 5']
+					               ['rule 1'],
+					               ['rule 2'],
+					               ['rule 3'],
+					               ['rule 4'],
+					               ['rule 5']
 					           ],
-					        colWidths:[35,90],
-					        colHeaders:["|NA|Header",
-					                     "Description|NA|Header"]
+					        colWidths:[90],
+					        colHeaders:["Description|NA|Header"]
 					};
 				};
 				

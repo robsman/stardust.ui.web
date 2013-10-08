@@ -24,12 +24,8 @@ require
 				'jstree': ['rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree']
 			},
 			shim : {
-				'json' : {
-					exports : "JSON"
-				},
-				'i18n' : {
-					exports : "InfinityBPMI18N"
-				},
+				'json' : {exports : "JSON"},
+				'i18n' : {exports : "InfinityBPMI18N"},
 				'jquery-ui' : [ 'jquery' ],
 			    'Handsontable' : {deps: ["jquery"]},
 			    'jstree' : {deps: ["jquery"]}
@@ -58,10 +54,29 @@ require([ "require",
 					exportBtn: ".export-icon", /**/
 					addIcons: ".add-icon", /**/
 					importIcons: ".import-icon", /**/
-					decisionTableTabs: "#decisionTableTabs", /**/
-					decisionTableCodeTab: "#decisionTableCodeTab", /**/
-					hideNonDataColumns: "#hideNonDataCols"
-		}};
+					decisionTableTabs: "#decisionTableTabs", /*parent container for our jqueryui tabcontrol*/
+					decisionTableCodeTab: "#decisionTableCodeTab", /*drl editor tab of our tab control (removed)*/
+					hideNonDataColumns: "#hideNonDataCols", /*toolbar image bound to function to hide certain columns in our dectbl*/
+					decisionTableTab: "#decisionTableTab", /*tab for our decision table*/
+					decTableNameLabel: "#decTableNameLabel", /*label for the decision table name (not the value of)*/
+					decTableIdLbl: "#decTableIdLbl", /*label for the decision table id (not the value of)*/
+					decTableUuidLbl: "#decTableUuidLbl", /*label for the decision table uuid (not the value of)*/
+					decTableDescrLbl: "#decTableDescrLbl", /*label for the decision table descr (not the value of)*/
+					exportData: "#exportData",
+					importData: "#importData"
+				},
+				i18nMaps:{
+					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},
+					decTableNameLabel: {path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
+					decTableIdLbl: {path:"rules.element.properties.commonProperties.id",defaultText:"NA",attr:"text"},
+					decTableUuidLbl: {path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"},
+					decTableDescrLbl:{path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
+					hideNonDataColumns:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.hide",defaultText:"NA",attr:"title"},
+					exportData: {path:"rules.propertyView.decisiontableview.toolbar.tooltip.export",defaultText:"NA",attr:"title"},
+					importData: {path:"rules.propertyView.decisiontableview.toolbar.tooltip.import",defaultText:"NA",attr:"title"},
+					columnTreeButton:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addColumn",defaultText:"NA",attr:"title"}
+				}
+		};
 		
 		decisionTblView.initialize(BridgeUtils.View.getActiveViewParams().param("ruleSetUuid"),
 								   BridgeUtils.View.getActiveViewParams().param("uuid"),options);

@@ -3,6 +3,7 @@ define(["jquery","./m_images"],function($,images){
     var renderEngines={
       depTest: function(){console.log(Handsontable);},
       rowHeader:function (instance, td, row, col, prop, value, cellProperties) {
+    	  return;
           var sHtml=$('<div class=""></div>');
               imgRemove=$(images.remove)
               .on("click",function(){

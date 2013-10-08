@@ -19,9 +19,10 @@ define(
 			"rules-manager/js/hotDecisionTable/m_images",
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
-			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory"],
+			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory",
+			"rules-manager/js/m_i18nMapper"],
 		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
-				hotDecisionTable,tableConfig,images,treeFactory,typeParser,operatorMenuFactory) {
+				hotDecisionTable,tableConfig,images,treeFactory,typeParser,operatorMenuFactory,m_i18nMapper) {
 			return {
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
@@ -64,7 +65,14 @@ define(
 							importIcons: m_utils.jQuerySelect(options.selectors.importIcons),
 							decisionTableTabs: m_utils.jQuerySelect(options.selectors.decisionTableTabs),
 							decisionTableCodeTab: m_utils.jQuerySelect(options.selectors.decisionTableCodeTab),
-							hideNonDataCols: m_utils.jQuerySelect(options.selectors.hideNonDataColumns)
+							hideNonDataColumns: m_utils.jQuerySelect(options.selectors.hideNonDataColumns),
+							decisionTableTab: m_utils.jQuerySelect(options.selectors.decisionTableTab),
+							decTableNameLabel:m_utils.jQuerySelect(options.selectors.decTableNameLabel),
+							decTableIdLbl: m_utils.jQuerySelect(options.selectors.decTableIdLbl),
+							decTableUuidLbl: m_utils.jQuerySelect(options.selectors.decTableUuidLbl),
+							decTableDescrLbl: m_utils.jQuerySelect(options.selectors.decTableDescrLbl),
+							exportData: m_utils.jQuerySelect(options.selectors.exportData),
+							importData:m_utils.jQuerySelect(options.selectors.importData)
 					};
 					
 					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -92,6 +100,8 @@ define(
 					
 					codeEditSelector="decisionTableCodeEditor";
 				    
+					m_i18nMapper.map(options,uiElements,true);
+					
 				    /* Initialization of decision table*/
 					var decTableData=decTable.getTableData();
 					/*--------------IMPORTANT-----------
@@ -109,10 +119,10 @@ define(
 				    uiElements.decisionTableInstance= uiElements.decisionTable.handsontable('getInstance');
 				    
 				    
-				    /*bind behaivour to our hideNonDataCols UIElement. ON click we toggle between 
+				    /*bind behavior to our hideNonDataCols UIElement. ON click we toggle between 
 				     * hiding and showing the non data columns in our decision table. NonData columns
 				     * being DRL attribute columns (salience,enabled,etc...) and the description column.*/
-				    uiElements.hideNonDataCols.on("click",function(){
+				    uiElements.hideNonDataColumns.on("click",function(){
 				    	var settings=uiElements.decisionTableInstance.getSettings();
 				    	settings.helperFunctions.toggleNonDataColumns(uiElements.decisionTableInstance);
 				    });
@@ -139,12 +149,17 @@ define(
 				    });
 				    
 				    /*On any click event that bubbles to our root element, close all dialogs in our array*/
-				    uiElements.decisionTableInstance.rootElement.on("click",function(){
+				    uiElements.decisionTableInstance.rootElement.on("click",function(event){
 				    	var openMenuCount=myOpenDialogs.length;
 				    	while(openMenuCount--){
 				    		myOpenDialogs[openMenuCount].dialog("destroy");
 				    	}
 				    	myOpenDialogs=[];
+				    });
+				    
+				    uiElements.decisionTableInstance.rootElement.on("contextmenu",function(event){
+				    	console.log("mousedown");
+				    	console.log(event);
 				    });
 				    
 				    /* POC for modifying any cell value that can be parsed as numeric on a scrollwheel event.
