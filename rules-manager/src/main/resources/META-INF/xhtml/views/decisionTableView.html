@@ -117,19 +117,19 @@ table.wrapperTable {
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 									style="margin-bottom: 10px; margin-right: 10px;">
 									<tr id="uuidOutputRow">
-										<td><label for="uuidOutput">UUID</label>
+										<td><label for="uuidOutput" id="decTableUuidLbl>UUID</label>
 										</td>
 										<td><div id="uuidOutput" class="output"></div>
 										</td>
 									</tr>
 									<tr id="idOutputRow">
-										<td><label for="idOutput">ID</label>
+										<td><label for="idOutput" id="decTableIdLbl>ID</label>
 										</td>
 										<td><div id="idOutput" class="output"></div>
 										</td>
 									</tr>
 									<tr>
-										<td><label for="nameInput" id="name">Decision Table Name</label>
+										<td><label for="nameInput" id="decTableNameLbl">Decision Table Name</label>
 										</td>
 										<td><input id="nameInput" type="text"
 											style="width: 200px;"></input>
@@ -140,7 +140,7 @@ table.wrapperTable {
 					</table></td>
 			</tr>
 			<tr>
-				<td><label for="descriptionTextarea">Description</label>
+				<td><label for="descriptionTextarea" id="decTableDescrLbl" >Description</label>
 				</td>
 			</tr>
 			<tr>
@@ -157,14 +157,15 @@ table.wrapperTable {
 			<ul id="ruleSetTabsList">
 				<li><a href="#hotTableTab"><img
 						src="plugins/rules-manager/images/icons/table_edit.png"></img><span
-						class="tabLabel" id="decision2">Decision Table</span> </a>
+						class="tabLabel" id="decisionTableTab">Decision Table</span> </a>
 				</li>
 			</ul>
 			<div id="hotTableTab">
-			<div class="panelBorder" style="padding:2px;">
+			<div class="camino-panel">
+				<div class="camino-toolbar" style="height:25px;"><span>Decision Table</span></div>
 				<div class="toolBar" style="margin-bottom:2px;">
-			        <input type="image" src="plugins/rules-manager/images/icons/page_white_get.png" class="toolbarButton" alt="Export Data" />
-			        <input type="image"  src="plugins/rules-manager/images/icons/page_white_put.png" class="toolbarButton" alt="Import Data" />
+			        <input id="exportData" type="image" src="plugins/rules-manager/images/icons/page_white_get.png" class="toolbarButton" alt="Export Data" />
+			        <input id="importData" type="image"  src="plugins/rules-manager/images/icons/page_white_put.png" class="toolbarButton" alt="Import Data" />
 			        <img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAPCAYAAAAlH6X5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpimDlz5n8mBgYGRhBBEQsgwACnMwnnnRI7rwAAAABJRU5ErkJggg==" />
 			        <input type="image"  src="plugins/rules-manager/images/icons/add.png" id="categoryDropdown" class="toolbarButton" alt="Add Column" />
 			        <input type="image"  src="plugins/rules-manager/images/icons/eye.png" id="hideNonDataCols" class="toolbarButton" alt="Hide Description and Attribute columns" />
