@@ -1,4 +1,4 @@
-define(["rules-manager/js/m_i18nUtils"],function(){
+define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 	var catBool=1,
 	    catString=2,
 	    catNumeric=4,

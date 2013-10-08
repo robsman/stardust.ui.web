@@ -1,6 +1,6 @@
-define(["rules-manager/js/m_i18nUtils"],function(){
+define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 	return {
-		map: function(options,loggingOn){
+		map: function(options,uiElements,loggingOn){
 			var tempProp,
 				i18nMap,
 			    logging = false || loggingOn;
@@ -12,12 +12,12 @@ define(["rules-manager/js/m_i18nUtils"],function(){
 							tempProp=m_i18nUtils.getProperty(i18nMap.path,i18nMap.defaultText);
 							uiElements[key].attr(i18nMap.attr,tempProp);
 							if(logging){
-								console.log("Mapping " + key + " " + tempProp);
+								console.log("Mapping: " + key + " / " + tempProp);
 							}
 						}
 						else{
 							if(logging){
-								console.log("Map not present for " + key + " / " + tempProp);
+								console.log("Map not present for: " + key + " / " + tempProp);
 							}
 						}
 				}

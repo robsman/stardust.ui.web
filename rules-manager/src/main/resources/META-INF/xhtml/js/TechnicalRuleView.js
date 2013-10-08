@@ -11,12 +11,11 @@
 define(
 		[   "bpm-modeler/js/m_utils",
 			"rules-manager/js/CommandsDispatcher", 
-			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
 			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/m_i18nMapper"],
-		function(m_utils,CommandsDispatcher, m_i18nUtils, 
+		function(m_utils,CommandsDispatcher, 
 				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
@@ -87,7 +86,7 @@ define(
 					};
 					
 					/*Map uiElements to their resource text values*/
-					m_i18nMapper.map(options,true);
+					m_i18nMapper.map(options,uiElements,true);
 					
 				    /*initialize tabs control*/
 					uiElements.drlTabControl= m_utils.jQuerySelect(options.selectors.tabs).tabs();
