@@ -1,4 +1,5 @@
-define(["bpm-modeler/js/m_model","./m_drlAttributes"],function(m_model,m_drlAttributes){
+define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"],
+		function(m_model,m_drlAttributes,m_urlUtils){
   
   /*************************************************
    * Parse the result of a typeDeclarations.getBody() 
@@ -9,12 +10,13 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes"],function(m_model,m_drlAttr
    * 		 sequence/metadata node for that call should 
    * 		 be titled with the parameter definitions name.
    *************************************************/
-  var attributeImage="/pepper-test/plugins/rules-manager/images/icons/tag_blue.png",
-  	  attributeRootImage="/pepper-test/plugins/rules-manager/images/icons/table-insert-column-gray.png",
-	  seqImage="/pepper-test/plugins/rules-manager/images/icons/bricks.png",
-	  elementImage="/pepper-test/plugins/rules-manager/images/icons/data-primitive.png",
-	  conditionImage="/pepper-test/plugins/rules-manager/images/icons/table-insert-column-blue.png",
-	  actionImage="/pepper-test/plugins/rules-manager/images/icons/table-insert-column-green.png";
+  var contextName=m_urlUtils.getContextName();
+  var attributeImage="plugins/rules-manager/images/icons/tag_blue.png",
+  	  attributeRootImage="plugins/rules-manager/images/icons/table-insert-column-gray.png",
+	  seqImage="plugins/rules-manager/images/icons/bricks.png",
+	  elementImage="plugins/rules-manager/images/icons/data-primitive.png",
+	  conditionImage="plugins/rules-manager/images/icons/table-insert-column-blue.png",
+	  actionImage="plugins/rules-manager/images/icons/table-insert-column-green.png";
   
   /*@Param:obj=typeDecl object
    * Converts a typeDecl for an enumeration into a typeBody object which can be parsed
