@@ -27,21 +27,29 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 			facetsObj={}, /*flat object built from our facets[]*/
 			facets,       /*result of the typeDecl.getFacets call*/
 			facetsCount,  /*number of facets, loop counter*/
+			facetsEnum=[],   /*our collection of enumerations in our facet obj*/
 			facetTemp;    /*temp var for our loop*/
 		
 		facets=obj.getFacets();
 		
 		console.log("-----Facets-----");
 		console.log(facets);
+		facetsObj=facetBuilder(facets);
 		
-		facetsCount=facets.length;
-		
+		//facetsCount=facets.length;
+		//facetsObj.enumeration=[];
 		/*convert facets to flattened object*/
+		/*
 		while(facetsCount--){
 			facetTemp=facets[facetsCount];
-			facetsObj[facetTemp.classifier]=facetTemp.name;
-		}
-		facetsObj=facetBuilder(facets);
+			if(facetTemp.classifier==="enumeration"){
+				facetsObj.enumeration.push(facetTemp.name);
+			}
+			else{
+				facetsObj[facetTemp.classifier]=facetTemp.name;
+			}
+		}*/
+		//facetsObj=facetBuilder(facets);
 		/*create our typeBody object which fx can process*/
 		typeBody[0]=facetsObj;
 		typeBody[0].type="enumeration";
@@ -52,13 +60,22 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
   
   /*convert facets to flattened object*/
   var facetBuilder=function(facets){
-		var facetsCount=facets.length,
-			facetsObj={};
-		while(facetsCount--){
-			facetTemp=facets[facetsCount];
+	  var facetsCount=facets.length,
+	  	  facetTemp,
+	      facetsObj={};
+	  
+	  facetsObj.enumeration=[];
+	  /*convert facets to flattened object*/
+	  while(facetsCount--){
+		  facetTemp=facets[facetsCount];
+		  if(facetTemp.classifier==="enumeration"){
+		    facetsObj.enumeration.push(facetTemp.name);
+		  }
+		  else{
 			facetsObj[facetTemp.classifier]=facetTemp.name;
-		}
-		return facetsObj;
+		  }
+	}
+	return facetsObj;
   };
   
   var fx=function(body,paramDef){
@@ -74,16 +91,17 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
         body=body[0].body; //skip and pass children onwards
     }
     /*test for nodes which are enumerations*/
-    if(body[0].facets){
-    	bodyRef=body[0];
-    	body[0]=facetBuilder(body[0].facets);
-    	body[0].name=bodyRef.name;
-    	body[0].type="enumeration";
-    }
+    
     for(i=0;i<body.length;i++){
         obj=body[i];
+        if(obj.facets){
+        	bodyRef=obj;
+        	obj=facetBuilder(obj.facets);
+        	obj.name=bodyRef.name;
+        	obj.type="enumeration";
+        }
         img=(obj.body)?seqImage:elementImage;
-        if (obj.name==="<sequence>" && paramDef){
+        if (paramDef){
         	obj.name=paramDef.name;
         }
         if(paramDef && obj.enumeration){

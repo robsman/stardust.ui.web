@@ -49,7 +49,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
           
           /*Autocomplete types have a source list of values we must pass along*/
           if(colType.type==="autocomplete"){
-	    	  colType.source=refObj.enumeration.split(",");
+	    	  colType.source=refObj.enumeration;
 	      }
           
           /*Never put a column with an unmapped/unknown type in the table.*/
