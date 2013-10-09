@@ -157,11 +157,6 @@ define(
 				    	myOpenDialogs=[];
 				    });
 				    
-				    uiElements.decisionTableInstance.rootElement.on("contextmenu",function(event){
-				    	console.log("mousedown");
-				    	console.log(event);
-				    });
-				    
 				    /* POC for modifying any cell value that can be parsed as numeric on a scrollwheel event.
 				     * Stepsize is based on the number length (powers of 10) of the current cell value, such
 				     * that the wheel event will increment the value by length-1 powers of 10. In other words,
@@ -231,9 +226,22 @@ define(
 			                    	title: "Add Column"});
 		                    myDialog.dialog("open");
 		                    myDialog.on("column_removed",function(event){
-		                    	if(event.category==="Attribute"){
-		                    		$("a:contains('" + event.colValue +"')",columnBuildertree).removeClass("ipp-disabled-text");
-		                    	}
+		                    	var path,
+			                    	pathRoot,
+			                    	pathModel,
+			                    	leafVal;
+		                    	if(event.category==="Attribute" || event.category==="Action"){
+		                    		leafVal=event.colValue.split(".").pop();
+		          					$treeNode=$("a:contains('" + leafVal +"')",jstreeInstance);
+		          					$treeNode.each(function(){
+		          						path=jstreeInstance.jstree("get_path",$(this));
+		          						pathRoot=path[0];
+		          						pathModel=path.slice(1).join(".");
+		          						if(pathRoot===event.category +"s" && (pathModel==event.colValue)){
+		          							$(this).removeClass("ipp-disabled-text");
+		          						}
+		          					});
+		          				}
 		                    });
 				    	}
 				    });

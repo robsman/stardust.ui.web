@@ -45,7 +45,6 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
           model=path.slice(1).join(".");
           colType=typeMapper.ippToHoTTable(colType);
           refObj=data.rslt.obj.data("ref") || data.rslt.obj.data("jstree").ref;
-          console.log(refObj);
           var parent=$.jstree._reference(this)._get_parent(data.rslt.obj);
           
           /*Autocomplete types have a source list of values we must pass along*/
@@ -63,8 +62,8 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
 	      }	      
          if(model){
            /*Any node with a class of ipp-disabled-text = exit func*/
-           if(category==="Attribute"){
-        	   $treeNode=$("a:contains('" + model +"')",jsTreeInstance);
+           if(category==="Attribute" || category==="Action"){
+        	   $treeNode=$("a",data.rslt.obj);
         	   if($treeNode.hasClass("ipp-disabled-text")){
         		   return;
         	   }
@@ -90,14 +89,29 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
   		  	  $treeNode,
 	  		  columnHeaders=settings.colHeaders,
 	  		  hdrCount=columnHeaders.length,
+	  		  path,
+	  		  pathRoot,
+	  		  pathModel,
+	  		  category,
+	  		  leafVal,
 	  		  colHdrArr;
-	  		  
+  		  
   		  while(hdrCount--){
   			colHdrArr=columnHeaders[hdrCount].split("|");
   			if(colHdrArr.length >=3){
-  				if(colHdrArr[2]==="Attribute"){
-  					$treeNode=$("a:contains('" + colHdrArr[0] +"')",jsTreeInstance);
-  					$treeNode.addClass("ipp-disabled-text");
+  				category=colHdrArr[2];
+  				leafVal=colHdrArr[0].split(".").pop();
+  				if(category==="Attribute" || category==="Action"){
+  					$treeNode=$("a:contains('" + leafVal +"')",jsTreeInstance);
+  					$treeNode.each(function(){
+  						path=jsTreeInstance.jstree("get_path",$(this));
+  						pathRoot=path[0];
+  						pathModel=path.slice(1).join(".");
+  						//console.log("PM:" + pathModel + " : " + colHdrArr[0] );
+  						if(pathRoot===category +"s" && (pathModel===colHdrArr[0])){
+  							$(this).addClass("ipp-disabled-text");
+  						}
+  					});
   				}
   			}
   		  }
