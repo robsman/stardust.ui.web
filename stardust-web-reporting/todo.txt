@@ -1,0 +1,18 @@
+o Table Formatting
+	o Header
+o Cleanup table rows on redraw
+o DnD into CHKEDITOR
+	o Detect DnD on CHKEDITOR
+o Chart Configuration
+	o More Config Data
+		o Tick Format
+		o Tick Angle
+	o Table Rearrangements
+o More features in CHKEDITOR
+	o Images
+o Metadata on Server
+	o JSON assembly
+	o Retrieval from client
+o Null grouping criteria
+o Parameters from URL
+	

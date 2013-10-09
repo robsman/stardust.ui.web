@@ -96,6 +96,10 @@
 
    <target name="process-portal" depends="init">
       <invoke-subproject subproject="process-portal" />
+   </target>
+   
+   <target name="stardust-web-reporting" depends="init">
+      <invoke-subproject subproject="stardust-web-reporting" />
    </target> 
 
    <target name="end-user-doc" depends="init">
@@ -130,7 +134,7 @@
 
 	<target name="package" depends="init, portal-common,portal-api, 
 	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
-	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc">
+	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc, stardust-web-reporting">
 	</target>
 
    <!-- - - - - - - - -  -->

@@ -1,0 +1,1230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html ng-app>
+<head>
+<title>Process Reporting</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="keywords" content="">
+<link href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css" />
+<link href="../css/bpm-reporting.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/jqplot/jquery.jqplot.css" />
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/datatables.css" />
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools.css" />
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css" />
+<link rel="stylesheet" type="text/css"
+	href="../css/bpm-reporting-table.css" />
+<style type="text/css">
+table.formTable td {
+	padding: 3px;
+}
+</style>
+<script type="text/javascript"
+	data-main="../js/ReportDefinitionViewMain"
+	src="../js/libs/require/2.0.5/require.js"></script>
+</head>
+<body>
+	<div id="reportDefinitionView" style="visibility: hidden;">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 1200px; margin: 10px;">
+			<tr>
+				<td height="500px" valign="top">
+					<div id="propertiesTabs">
+						<ul id="propertiesTabsList">
+							<li><a href="#dataSetTab"><img
+									src="../css/images/report.png"></img><span class="tabLabel"
+									id="dataSet">Data Set</span></a></li>
+							<li><a href="#layoutTab"><img
+									src="../css/images/report.png"></img><span class="tabLabel"
+									id="layout">Report Layout</span></a></li>
+							<li><a href="#previewTab"><img
+									src="../css/images/report.png"></img><span class="tabLabel"
+									id="preview">Preview</span></a></li>
+							<li><a href="#definitionTab"><img
+									src="../css/images/report.png"></img><span class="tabLabel"
+									id="definition">Report Definition</span></a></li>
+							<li><a href="#schedulingTab"><img
+									src="../css/images/report.png"></img><span class="tabLabel"
+									id="scheduling">Scheduling</span></a></li>
+						</ul>
+						<div id="dataSetTab">
+							<table cellpadding="0" cellspacing="0" class="formTable">
+								<tr>
+									<td><label>Retrieve data about</label></td>
+									<td><select id="primaryObjectSelect">
+									</select></td>
+									<td><input ng-model="report.dataSet.type"
+										ng-click="changeDataSetType()" value="seriesGroup"
+										type="radio" style="margin-left: 10px;"></td>
+									<td><label>as a Series Group</label></td>
+									<td><input ng-model="report.dataSet.type"
+										ng-click="changeDataSetType()" value="recordSet" type="radio"></td>
+									<td><label>a Record Set</label></td>
+									<td><input ng-model="report.dataSet.type"
+										ng-click="changeDataSetType()" value="processHistory"
+										type="radio"></td>
+									<td><label>a Process History</label></td>
+								</tr>
+							</table>
+							<div ng-show="report.dataSet.type == 'recordSet'">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td><h2>Available Columns</h2></td>
+										<td></td>
+										<td><h2>Selected Columns</h2></td>
+									</tr>
+									<tr>
+										<td><select id="availableDimensionsSelect"
+											multiple="multiple" style="height: 100px; width: 250px;"
+											ng-model="report.dataSet.columns"></select></td>
+										<td style="vertical-align: center"><table cellpadding="0"
+												cellspacing="0">
+												<tr>
+													<td><button>&lt;</button></td>
+												</tr>
+												<tr>
+													<td><button>&gt;</button></td>
+												</tr>
+												<tr>
+													<td><button
+															ng-click="deselectAllDimensionsForColumns()">&lt;&lt;</button>
+													</td>
+												</tr>
+												<tr>
+													<td><button ng-click="selectAllDimensionsForColumns()">&gt;&gt;</button>
+													</td>
+												</tr>
+											</table></td>
+										<td><select id="selectedDimensionsSelect"
+											multiple="multiple" style="height: 100px; width: 250px;"
+											ng-model="report.dataSet.columns"></select></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.dataSet.type == 'seriesGroup'">
+								<h2>Fact</h2>
+								<table cellpadding="0" cellspacing="0" class="formTable">
+									<tr>
+										<td><label>Fact</label></td>
+										<td><select id="factSelect">
+										</select></td>
+										<td><label ng-show="isFactDuration()">Unit</label></td>
+										<td><select ng-model="report.dataSet.factDurationUnit"
+											ng-show="isFactDuration()"><option value="s">Seconds</option>
+												<option value="m">Minutes</option>
+												<option value="h">Hours</option>
+												<option value="d">Days</option>
+												<option value="w">Weeks</option>
+												<option value="M">Months</option>
+												<option value="y">Years</option>
+										</select></td>
+									</tr>
+								</table>
+								<h2>Dimensions</h2>
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td valign="top">
+											<table cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label
+														style="width: 100px; display: inline-block;">First
+															Dimension</label></td>
+													<td><select id="firstDimensionSelect">
+													</select></td>
+												</tr>
+											</table>
+										</td>
+										<td valign="top">
+											<div id="firstDimensionTimeBoundariesPanel"
+												ng-show="getFirstDimension().type == getMetadata().timestampType"
+												style="margin-left: 10px;">
+												<div ng-show="firstDimensionToFrom"
+													style="margin-left: 10px;">
+													<table cellpadding="0" cellspacing="0" class="formTable">
+														<tr>
+															<td><label>From</label></td>
+															<td><input type="text"
+																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
+															<td><a href=""
+																ng-click="removeParameter(getFirstDimension().id + '.from')"
+																ng-show="existsParameter(getFirstDimension().id + '.from')"><img
+																	src="../css/images/parameter.png" title="Parameter" />
+																	<a href=""
+																	ng-click="addParameter(getFirstDimension().id + '.from', getFirstDimension().name + ' From', getMetadata().timestampType)"
+																	ng-show="!existsParameter(getFirstDimension().id + '.from')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter" /> </a> </a></td>
+														</tr>
+														<tr>
+															<td><label>To</label></td>
+															<td><input type="text"
+																ng-model="report.dataSet.firstDimensionTo" sd-date /></td>
+															<td><a href=""
+																ng-click="removeParameter(getFirstDimension().id + '.to')"
+																ng-show="existsParameter(getFirstDimension().id + '.to')"><img
+																	src="../css/images/parameter.png" title="Parameter" />
+																	<a href=""
+																	ng-click="addParameter(getFirstDimension().id + '.to', getFirstDimension().name + ' To', getMetadata().timestampType)"
+																	ng-show="!existsParameter(getFirstDimension().id + '.to')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter" /> </a> </a></td>
+														</tr>
+													</table>
+													<a style="font-size: 9px;"
+														ng-click="firstDimensionToFrom = false;"> Switch to
+														Start Date and Duration &raquo;</a>
+												</div>
+												<div ng-show="!firstDimensionToFrom"
+													style="margin-left: 10px;">
+													<table cellpadding="0" cellspacing="0" class="formTable">
+														<tr>
+															<td><label>From</label></td>
+															<td colspan="2"><input type="text"
+																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
+															<td><a href=""
+																ng-click="removeParameter(getFirstDimension().id + '.from')"
+																ng-show="existsParameter(getFirstDimension().id + '.from')"><img
+																	src="../css/images/parameter.png" title="Parameter" />
+																	<a href=""
+																	ng-click="addParameter(getFirstDimension().id + '.from', getFirstDimension().name + ' From', getMetadata().timestampType)"
+																	ng-show="!existsParameter(getFirstDimension().id + '.from')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter" /> </a> </a></td>
+														</tr>
+														<tr>
+															<td><label>Duration</label></td>
+															<td><input type="number"
+																ng-model="report.dataSet.firstDimensionDurationCount"
+																style="width: 50px;" /></td>
+															<td><select
+																ng-model="report.dataSet.firstDimensionDurationUnit">
+																	<option value="s">Second(s)</option>
+																	<option value="m">Minutes(s)</option>
+																	<option value="h">Hour(s)</option>
+																	<option value="d">Day(s)</option>
+																	<option value="w">Week(s)</option>
+																	<option value="M">Month(s)</option>
+																	<option value="Y">Year(s)</option>
+															</select></td>
+															<td><a href=""
+																ng-click="removeParameters([getFirstDimension().id + '.durationCount', getFirstDimension().id + '.durationUnit'])"
+																ng-show="existsParameter(getFirstDimension().id + '.durationCount')"><img
+																	src="../css/images/parameter.png" title="Parameter" />
+																	<a href=""
+																	ng-click="addParameters([{id: getFirstDimension().id + '.durationCount', name: getFirstDimension().name + ' Duration Count', type: getMetadata().integerType},
+																	{id: getFirstDimension().id + '.durationUnit', name: getFirstDimension().name + ' Duration Unit', type: getMetadata().enumerationType}])"
+																	ng-show="!existsParameter(getFirstDimension().id + '.durationCount')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter" /> </a> </a></td>
+														</tr>
+													</table>
+													<a style="font-size: 9px;"
+														ng-click="firstDimensionToFrom = true;">Switch to
+														Start and End Date &raquo;</a>
+												</div>
+											</div>
+											<div id="firstDimensionEnumerationSelectionPanel"
+												ng-show="getFirstDimension().type == getMetadata().enumerationType"
+												style="margin-left: 10px; height: 120px;">
+												<table>
+													<tr>
+														<td valign="top"><select multiple="multiple"
+															style="height: 100px; width: 250px;"
+															ng-model="report.dataSet.firstDimensionFilters"
+															ng-options="x as x for x in firstDimensionEnumerators"></select>
+														</td>
+														<td valign="top"><a href=""
+															ng-click="firstDimensionEnumerationParameter = false"
+															ng-show="firstDimensionEnumerationParameter"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="firstDimensionEnumerationParameter = true"
+																ng-show="!firstDimensionEnumerationParameter"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /> </a> </a></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+										<td valign="top">
+											<div
+												ng-show="getFirstDimension().type == reportingService.metadata.timestampType">
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td style="padding-left: 20px;"><label>Cumulation
+																Interval</label></td>
+														<td><input type="number" style="width: 50px;"
+															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
+														</td>
+														<td><select
+															ng-model="report.dataSet.firstDimensionCumulationIntervalUnit">
+																<option value="s">Second(s)</option>
+																<option value="m">Minutes(s)</option>
+																<option value="h">Hour(s)</option>
+																<option value="d">Day(s)</option>
+																<option value="w">Week(s)</option>
+																<option value="M">Month(s)</option>
+																<option value="Y">Year(s)</option>
+														</select></td>
+													</tr>
+												</table>
+											</div>
+											<div
+												ng-show="getFirstDimension().type == reportingService.metadata.integerType">
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td style="padding-left: 20px;"><label>Cumulation
+																Interval</label></td>
+														<td><input type="number" style="width: 50px;"
+															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
+														</td>
+													</tr>
+												</table>
+											</div>
+											<div
+												ng-show="getFirstDimension().type == reportingService.metadata.decimalType">
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td style="padding-left: 20px;"><label>Cumulation
+																Interval</label></td>
+														<td><input style="width: 100px;"
+															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
+														</td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<table cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label
+														style="width: 100px; display: inline-block;">Second
+															Dimension</label></td>
+													<td><select id="secondDimensionSelect"><option>None</option>
+													</select></td>
+												</tr>
+											</table>
+										</td>
+										<td></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.dataSet.type == 'processHistory'">
+								<table style="margin-top: 10px;">
+									<tr>
+										<td valign="top"><label>Process</label></td>
+										<td valign="top"><select multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="report.dataSet.processId"
+											ng-options="x as x for x in getProcesses()"></select></td>
+										<td valign="top"><a href=""
+											ng-click="firstDimensionEnumerationParameter = false"
+											ng-show="firstDimensionEnumerationParameter"><img
+												src="../css/images/parameter.png" title="Parameter" /> <a
+												href="" ng-click="firstDimensionEnumerationParameter = true"
+												ng-show="!firstDimensionEnumerationParameter"><img
+													src="../css/images/no-parameter.png" title="No Parameter" />
+											</a> </a></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.dataSet.type != 'processHistory'">
+								<h2>Additional Filtering</h2>
+								<table cellpadding="0" cellspacing="0" class="formTable"
+									style="margin-top: 10px;">
+									<tr ng-repeat="x in report.dataSet.filters">
+										<td valign="top"><a href=""
+											ng-click="deleteFilter(x.index)"><img
+												src="../css/images/delete.png" /> </a></td>
+										<td valign="top"><select ng-model="x.dimension"
+											ng-change="onFilterDimensionChange(x.index)">
+												<!--  ng-options="y.id as y.name for y in getPrimaryObject().dimensions"  is not working -->
+												<option value="{{y.id}}"
+													ng-repeat="y in getPrimaryObject().dimensions">{{y.name}}</option>
+										</select></td>
+										<td valign="top">
+											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().stringType">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td><select ng-model="x.operator"><option>equal</option>
+																<option>greater or equal</option>
+																<option>less or equal</option>
+																<option>between</option>
+																<option>not equal</option></select></td>
+														<td><input type="text" ng-model="x.values[0]"
+															required></td>
+														<td><a href=""
+															ng-click="removeParameter('filters.' + x.dimension)"
+															ng-show="existsParameter('filters.' + x.dimension)"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().stringType)"
+																ng-show="!existsParameter('filters.' + x.dimension)"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /></td>
+													</tr>
+												</table>
+											</div>
+											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().integerType">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td><select ng-model="x.operator"><option>equal</option>
+																<option>greater or equal</option>
+																<option>less or equal</option>
+																<option>between</option>
+																<option>not equal</option></select></td>
+														<td><input type="text" ng-model="x.values[0]"
+															required></td>
+														<td><a href=""
+															ng-click="removeParameter(x.dimension, 'From')"
+															ng-show="existsParameter(x.dimension, 'From')"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="addParameter(x.dimension, 'From', 'timestampType')"
+																ng-show="!existsParameter(x.dimension, 'From')"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /></td>
+													</tr>
+												</table>
+											</div>
+											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().timestampType">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td><label>From</label></td>
+														<td><input type="text" ng-model="x.values[0]" sd-date /></td>
+														<td><a href=""
+															ng-click="removeParameter(x.dimension, 'From')"
+															ng-show="existsParameter(x.dimension, 'From')"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="addParameter(x.dimension, 'From', 'timestampType')"
+																ng-show="!existsParameter(x.dimension, 'From')"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /></td>
+													</tr>
+													<tr>
+														<td><label>To</label></td>
+														<td><input type="text" ng-model="x.values[1]" sd-date /></td>
+														<td><a href="" ng-click="removeParameter(x.id, 'To')"
+															ng-show="existsParameter(x.dimension, 'To')"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="addParameter(x.dimension, 'To', 'timestampType')"
+																ng-show="!existsParameter(x.dimension, 'To')"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /> </a> </a></td>
+													</tr>
+												</table>
+											</div>
+											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().enumerationType"
+												style="height: 120px;">
+												<table class="layoutTable">
+													<tr>
+														<td valign="top"><select multiple="multiple"
+															style="height: 100px; width: 250px;" ng-model="x.values"
+															ng-options="y as y for y in getEnumerators(getDimension(x.dimension))"></select>
+														</td>
+														<td valign="top"><a href=""
+															ng-click="firstDimensionEnumerationParameter = false"
+															ng-show="firstDimensionEnumerationParameter"><img
+																src="../css/images/parameter.png" title="Parameter" />
+																<a href=""
+																ng-click="firstDimensionEnumerationParameter = true"
+																ng-show="!firstDimensionEnumerationParameter"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter" /> </a> </a></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td><a href="" ng-click="addFilter()"><img
+												src="../css/images/add.png" /> </a></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</table>
+								<h2>Grouping</h2>
+								<table cellpadding="0" cellspacing="0" class="layoutTable"
+									style="margin-top: 10px;">
+									<tr>
+										<td>
+											<table cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label style="width: 250px;">Group By</label></td>
+													<td><select id="groupBySelect"
+														ng-model="report.dataSet.groupBy">
+													</select></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="layoutTab">
+							<table cellpadding="0" cellspacing="0" class="formTable"
+								style="margin-top: 10px; margin-bottom: 10px;">
+								<tr>
+									<td><input ng-model="report.layout.type"
+										ng-show="report.dataSet.type == 'seriesGroup'" value="chart"
+										type="radio"></td>
+									<td><label ng-show="report.dataSet.type == 'seriesGroup'">Chart</label></td>
+									<td><input ng-model="report.layout.type"
+										ng-show="report.dataSet.type == 'recordSet'" value="table"
+										type="radio"></td>
+									<td><label ng-show="report.dataSet.type == 'recordSet'">Table</label></td>
+									<td><input ng-model="report.layout.type" value="document"
+										type="radio"></td>
+									<td><label>Document</label></td>
+									<td><input ng-model="report.layout.type"
+										ng-show="report.dataSet.type == 'processHistory'"
+										value="processDiagram" type="radio"></td>
+									<td><label
+										ng-show="report.dataSet.type == 'processHistory'">Process
+											Diagram</label></td>
+								</tr>
+							</table>
+							<div ng-show="report.layout.type == 'table'">
+								<table cellpadding="0" cellspacing="0" class="formTable">
+									<tr>
+										<td><input type="checkbox"
+											ng-model="report.layout.table.options.showSearchInput" /></td>
+										<td><label>Show Search Input</label></td>
+									</tr>
+									<tr>
+										<td><input type="checkbox"
+											ng-model="report.layout.table.options.showVisibleRowCountSelector" />
+										</td>
+										<td><label>Show Visible Row Count Selector</label></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.layout.type == 'chart'">
+								<table cellpadding="0" cellspacing="0" class="formTable">
+									<tr>
+										<td><label>Chart Type</label></td>
+										<td><select id="chartTypeSelect">
+										</select></td>
+									</tr>
+								</table>
+								<h2>Title</h2>
+								<table cellpadding="0" cellspacing="0" class="formTable">
+									<tr>
+										<td><label>Title</label></td>
+										<td><input type="text"
+											ng-model="report.layout.chart.options.title"
+											style="width: 250px;" /></td>
+									</tr>
+								</table>
+								<table style="margin-top: 10px;">
+									<tr>
+										<td valign="top">
+											<div>
+												<h2>Cursor</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.cursor.show" /></td>
+														<td><label>Show Cursor</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.cursor.showTooltip" /></td>
+														<td><label>Show Tooltip</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.cursor.zoom" /></td>
+														<td><label>Zoom</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+										<td valign="top">
+											<div style="margin-left: 10px;">
+												<h2>Highlighter</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.highlighter.show" /></td>
+														<td><label>Show Highlighter</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+										<td valign="top">
+											<div style="margin-left: 10px;">
+												<h2>Legend</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.legend.show" /></td>
+														<td><label>Show Legend</label></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Legend Position</label></td>
+														<td><select
+															ng-model="report.layout.chart.options.legend.location">
+																<option value="w" selected>West</option>
+																<option value="nw">North/West</option>
+																<option value="n">North</option>
+																<option value="ne">North/East</option>
+																<option value="e">East</option>
+																<option value="se">South/East</option>
+																<option value="s">South</option>
+																<option value="sw">South/West</option>
+														</select></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top">
+											<div ng-show="getChartType().hasAxes">
+												<h2>X-Axis</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Label</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.axes.xaxis.label" /></td>
+													</tr>
+													<tr>
+														<td><label>Tick Position</label></td>
+														<td><select
+															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.mark"><option
+																	value="inside">Inside</option>
+																<option value="outside">Outside</option>
+																<option value="cross">Cross</option></select></td>
+													</tr>
+													<tr>
+														<td><label>Mark Size</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.markSize" /></td>
+													</tr>
+													<tr>
+														<td><label>Label Format String</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.formatString" /></td>
+													</tr>
+													<tr>
+														<td><label>Label Angle</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.angle" /></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.showGridline" /></td>
+														<td><label>Show Gridline</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.xaxis.showTickMarks" /></td>
+														<td><label>Show Tick Marks</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.xaxis.showTicks" /></td>
+														<td><label>Show Tick Labels</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+										<td valign="top">
+											<div ng-show="getChartType().hasAxes"
+												style="margin-left: 10px;">
+												<h2>Y-Axis</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Label Y-Axis</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.axes.yaxis.label" /></td>
+													</tr>
+													<tr>
+														<td><label>Tick Position</label></td>
+														<td><select
+															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.mark"><option
+																	value="inside">Inside</option>
+																<option value="outside">Outside</option>
+																<option value="cross">Cross</option></select></td>
+													</tr>
+													<tr>
+														<td><label>Mark Size</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.markSize" /></td>
+													</tr>
+													<tr>
+														<td><label>Label Format String</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.formatString" /></td>
+													</tr>
+													<tr>
+														<td><label>Label Angle</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.angle" /></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.showGridline" /></td>
+														<td><label>Show Gridline</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.yaxis.showTickMarks" /></td>
+														<td><label>Show Tick Marks</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.axes.yaxis.showTicks" /></td>
+														<td><label>Show Tick Labels</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+										<td valign="top">
+											<div ng-show="getChartType().hasDefaultSeries"
+												style="margin-left: 10px;">
+												<h2>Series (Defaults)</h2>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Line Width</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.seriesDefaults.lineWidth" />
+														</td>
+													</tr>
+													<tr>
+														<td><label>Line Color (CSS)</label></td>
+														<td><input
+															ng-model="report.layout.chart.options.seriesDefaults.color" />
+														</td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.seriesDefaults.shadow" />
+														</td>
+														<td><label>Show Shadow</label></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.seriesDefaults.showMarker" />
+														</td>
+														<td><label>Show Marker</label></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Marker Style</label></td>
+														<td><select
+															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.style">
+																<option value="circle">Circle</option>
+																<option value="diamond">Diamond</option>
+																<option value="square">Square</option>
+																<option value="filledCircle">Filled Circle</option>
+																<option value="filledDiamond">Filled Diamond</option>
+																<option value="filledSquare">Filled Square</option>
+														</select></td>
+													</tr>
+												</table>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.shadow" />
+														</td>
+														<td><label>Show Marker Shadow</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.seriesDefaults.pointLabels.show" />
+														</td>
+														<td><label>Show Point Label</label></td>
+													</tr>
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.seriesDefaults.trendline.show" />
+														</td>
+														<td><label>Show Trendline</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.layout.type == 'document'">
+								<div id="documentTemplateEditor"></div>
+							</div>
+						</div>
+						<div id="previewTab">
+							<div ng-show="hasParameters()">
+								<h2>Parameters</h2>
+								<table class="formTable" style="margin-bottom: 10px;">
+									<tr ng-repeat="parameter in getParameters()">
+										<td><label>{{parameter.name}}</label></td>
+										<td><input type="text"
+											ng-model="getParameters()[parameter.id].value" sd-date
+											ng-show="parameter.type == getMetadata().timestampType" value="{{getParameterDefaultValue(parameter.id)}}"/><input
+											type="number"
+											ng-model="report.parameters[parameter.id].value"
+											ng-show="parameter.type == getMetadata().integerType" value="{{getParameterDefaultValue(parameter.id)}}"/> <input
+											ng-model="report.parameters[parameter.id].value"
+											ng-show="parameter.type == getMetadata().stringType" value="{{getParameterDefaultValue(parameter.id)}}"/> <select
+											multiple="multiple"
+											ng-show="parameter.type == getMetadata().enumerationType"
+											ng-options="x as x for x in getTestEnumerators()"></select></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="report.layout.type == 'table'">
+								<div style="padding-bottom: 20px; border: 3px solid #dddddd"
+									class="dataTableFrame">
+									<div class="dataTableControls">
+										<table style="padding: 5px;">
+											<tr>
+												<td><a href="" ng-click=""> <img
+														src="../css/images/refresh.png" title="Refresh" />
+												</a></td>
+												<td><a href="{{getReportUri()}}" target="_blank"> <img
+														src="../css/images/report.png"
+														title="Open in separate Window" />
+												</a></td>
+											</tr>
+										</table>
+									</div>
+									<table id="reportTable" class="display dataTable"
+										cellpadding="0" cellspacing="0" border="0" width="100%"
+										style="padding-top: 10px;">
+										<thead>
+											<tr id="dataTableHeaderRow">
+											</tr>
+										</thead>
+										<tbody id="dataTableBody">
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div ng-show="report.layout.type == 'chart'">
+								<table>
+									<tr>
+										<td><a href="" ng-click="createChart()"> <img
+												src="../css/images/refresh.png" title="Refresh" />
+										</a></td>
+										<td><a href="" ng-click="printChart()"> <img
+												src="../css/images/print.png" title="Print" />
+										</a></td>
+										<td><a href="{{getReportUri()}}" target="_blank"> <img
+												src="../css/images/report.png"
+												title="Open in separate Window" />
+										</a></td>
+									</tr>
+								</table>
+								<div style="border: 1px solid #aaaaaa; padding: 10px;">
+									<div id="chartView" style="height: 400px; width: 800px;"></div>
+								</div>
+							</div>
+							<div ng-show="report.layout.type == 'document'">
+								<table>
+									<tr>
+										<td><a href="" ng-click=""> <img
+												src="../css/images/refresh.png" title="Refresh" />
+										</a></td>
+										<td><a href="" ng-click=""> <img
+												src="../css/images/print.png" title="Print" />
+										</a></td>
+										<td><a href="{{getReportUri()}}" target="_blank"> <img
+												src="../css/images/report.png"
+												title="Open in separate Window" />
+										</a></td>
+									</tr>
+								</table>
+								<iframe id="documentFrame" allowtransparency="true"
+									frameborder="0"
+									sandbox="allow-same-origin allow-forms allow-scripts"
+									scrolling="auto"
+									style="border: 1px solid #dddddd; width: 100%; height: 100%;"></iframe>
+							</div>
+						</div>
+						<div id="definitionTab">
+							<table>
+								<tr>
+									<td valign="top">
+										<p>Save this Report Definition as a Report Template with
+											name</p> <input type="text" ng-model="report.name"
+										style="width: 250px;"></input>
+										<p>with description</p> <textarea rows="5" cols="60"
+											ng-model="report.description"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top">
+										<p>for on-demand or scheduled repetetive execution as a
+										<table>
+											<tr>
+												<td><input type="radio"
+													ng-model="report.storage.location" value="personalFolder" /></td>
+												<td colspan="2">Personal Report Template</td>
+											</tr>
+											<tr>
+												<td><input type="radio"
+													ng-model="report.storage.location" value="publicFolder" /></td>
+												<td colspan="2">Globally available Report Template</td>
+											</tr>
+											<tr>
+												<td><input type="radio"
+													ng-model="report.storage.location"
+													value="participantFolder" /></td>
+												<td>Report Template available for Organization/Role</td>
+												<td><select ng-model="report.storage.participant"></select>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2"><button ng-click="saveReport()"
+											style="margin-top: 10px;">Save</button></td>
+								</tr>
+							</table>
+						</div>
+						<div id="schedulingTab">
+							<table>
+								<tr>
+									<td valign="top">
+										<h2>Scheduling</h2>
+										<table>
+											<tr>
+												<td><input type="checkbox"
+													ng-model="report.scheduling.active"></input></td>
+												<td>Schedule this Report Template to be executed with
+													one or more Recurrences</td>
+											</tr>
+										</table>
+										<div ng-show="report.scheduling.active">
+											<table>
+												<tr>
+													<td><label>Time</label></td>
+													<td><input type="text"
+														ng-model="report.scheduling.startTime" sd-date required /></td>
+												</tr>
+												<tr>
+													<td><label>Map Start Timestamp to Parameter</label></td>
+													<td><select><option>None</option>
+															<option ng-repeat="parameter in getParameters()">{{parameter.scope}}
+																+ {{parameter.id}}</option>
+													</select></td>
+												</tr>
+											</table>
+											<h3>Recurrence Pattern</h3>
+											<table cellpadding="0" cellspacing="0">
+												<tr>
+													<td valign="top"
+														style="margin-right: 10px; padding-right: 10px;">
+														<table>
+															<tr>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceInterval"
+																	value="daily" /></td>
+																<td><label>Daily</label></td>
+															</tr>
+															<tr>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceInterval"
+																	value="weekly" /></td>
+																<td><label>Weekly</label></td>
+															</tr>
+															<tr>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceInterval"
+																	value="monthly" /></td>
+																<td><label>Monthly</label></td>
+															</tr>
+															<tr>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceInterval"
+																	value="yearly" /></td>
+																<td><label>Yearly</label></td>
+															</tr>
+														</table>
+													</td>
+													<td valign="top"
+														style="border-left: 1px solid grey; margin-left: 10px; padding-left: 10px;">
+														<div
+															ng-show="report.scheduling.recurrenceInterval == schedulingController.DAILY">
+															<table>
+																<tr>
+																	<td><input type="radio"
+																		ng-model="report.scheduling.dailyRecurrenceOptions.daysRecurrence"
+																		value="interval" /></td>
+																	<td><label>Every</label></td>
+																	<td><input type="number" style="width: 50px;"
+																		ng-model="report.scheduling.dailyRecurrenceOptions.daysIntervalCount" />
+																	</td>
+																	<td><label>Day(s)</label></td>
+																</tr>
+																<tr>
+																	<td><input type="radio"
+																		ng-model="report.scheduling.dailyRecurrenceOptions.daysRecurrence"
+																		value="weekdays" /></td>
+																	<td colspan="3"><label>Every Weekday</label></td>
+																</tr>
+															</table>
+														</div>
+														<div
+															ng-show="report.scheduling.recurrenceInterval == schedulingController.WEEKLY">
+															<table cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<table>
+																			<tr>
+																				<td><label>Recurs every</label></td>
+																				<td><input type="number" style="width: 50px;"
+																					ng-model="report.scheduling.weeklyRecurrenceOptions.recurrenceWeekCount" />
+																				</td>
+																				<td><label>Weeks on</label></td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<table cellpadding="0" cellspacing="0">
+																			<tr>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.mondays" />
+																							</td>
+																							<td><label>Monday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.tuesday" />
+																							</td>
+																							<td><label>Tuesday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.wednesdays" />
+																							</td>
+																							<td><label>Wednesday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.thursdays" />
+																							</td>
+																							<td><label>Thursday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.fridays" />
+																							</td>
+																							<td><label>Friday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.saturdays" />
+																							</td>
+																							<td><label>Saturday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td>
+																					<table>
+																						<tr>
+																							<td><input type="checkbox"
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.sundays" />
+																							</td>
+																							<td><label>Sunday</label></td>
+																						</tr>
+																					</table>
+																				</td>
+																				<td></td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+															</table>
+														</div>
+														<div
+															ng-show="report.scheduling.recurrenceInterval == schedulingController.MONTHLY">
+															<table cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<table>
+																			<tr>
+																				<td><input type="radio" /></td>
+																				<td><label>Day</label></td>
+																				<td><table>
+																						<tr>
+																							<td><input type="number"
+																								style="width: 50px;"></input></td>
+																							<td><label>of every</label></td>
+																							<td><input type="number"
+																								style="width: 50px;"></input></td>
+																							<td><label>Month(s)</label>
+																						</tr>
+																					</table></td>
+																			</tr>
+																			<tr>
+																				<td><input type="radio" /></td>
+																				<td><label>The</label></td>
+																				<td><table>
+																						<tr>
+																							<td><input type="number"
+																								style="width: 50px;"></input></td>
+																							<td><select><option>Monday</option>
+																							</select></td>
+																							<td><label>of every</label></td>
+																							<td><input type="number"
+																								style="width: 50px;"></input></td>
+																							<td><label>Month(s)</label>
+																						</tr>
+																					</table></td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+															</table>
+														</div>
+														<div
+															ng-show="report.scheduling.recurrenceInterval == schedulingController.YEARLY">
+															<table cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<table>
+																			<tr>
+																				<td><label>Recurs every</label></td>
+																				<td><input type="number" style="width: 50px;" /></td>
+																				<td><label>Years</label></td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+											<h3>Range of Recurrence</h3>
+											<table cellpadding="0" cellspacing="0">
+												<tr>
+													<td valign="top">
+														<table>
+															<tr>
+																<td><label>Start</label></td>
+																<td><input type="text" sd-date /></td>
+															</tr>
+														</table>
+													</td>
+													<td valign="top">
+														<table>
+															<tr>
+																<td><input type="radio" /></td>
+																<td><label>No End Date</label></td>
+															</tr>
+															<tr>
+																<td><input type="radio" /></td>
+																<td><label>End after</label></td>
+																<td><input type="number" style="width: 50px;" /></td>
+																<td><label>Occurences</label></td>
+															</tr>
+															<tr>
+																<td><input type="radio" /></td>
+																<td><label>End by</label></td>
+																<td colspan="2"><input type="text" sd-date /></td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td valign="top" style="padding-left: 20px;">
+										<div ng-show="report.scheduling.active">
+											<h2>Delivery</h2>
+											<table>
+												<tr>
+													<td><input type="radio" value="personalFolder"
+														ng-model="report.scheduling.delivery.mode" /></td>
+													<td colspan="2">Save under personal Reports</td>
+												</tr>
+												<tr>
+													<td><input type="radio" value="publicFolder"
+														ng-model="report.scheduling.delivery.mode" /></td>
+													<td colspan="2">Save under public Reports</td>
+												</tr>
+												<tr>
+													<td><input type="radio" value="participantFolder"
+														ng-model="report.scheduling.delivery.mode" /></td>
+													<td>Save under Reports for Role/Organization</td>
+													<td><select
+														ng-model="report.scheduling.delivery.participant"></select></td>
+												</tr>
+												<tr>
+													<td><input type="radio" value="eMailToMe"
+														ng-model="report.scheduling.delivery.mode" /></td>
+													<td colspan="2">E-Mail to me</td>
+												</tr>
+												<tr>
+													<td><input type="radio" value="eMailToAddress"
+														ng-model="report.scheduling.delivery.mode" /></td>
+													<td>E-Mail to</td>
+													<td><input type="text"
+														ng-model="report.scheduling.delivery.eMailAddress" /></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

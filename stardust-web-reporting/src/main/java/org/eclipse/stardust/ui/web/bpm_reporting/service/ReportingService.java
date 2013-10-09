@@ -1,0 +1,1400 @@
+/*******************************************************************************
+ * Copyright (c) 2013 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+package org.eclipse.stardust.ui.web.bpm_reporting.service;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ActivityFilter;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
+import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.FilterAndTerm;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
+import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.engine.ws.WebServiceEnv;
+import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+public class ReportingService extends ClientEnvironmentAware {
+	private DocumentManagementService documentManagementService;
+	private UserService userService;
+	private QueryService queryService;
+	private JsonMarshaller jsonIo;
+	/**
+	 * Stores uncommitted changes.
+	 */
+	private Map<String, JsonObject> reportDefinitionCache;
+	private Map<String, JsonObject> reportDefinitionJsons;
+	private Map<String, Map<String, ValueProvider>> valueProviders;
+
+	public ReportingService() {
+		super();
+
+		jsonIo = new JsonMarshaller();
+		reportDefinitionCache = new HashMap<String, JsonObject>();
+		reportDefinitionJsons = new HashMap<String, JsonObject>();
+
+		valueProviders = new HashMap<String, Map<String, ValueProvider>>();
+
+		Map<String, ValueProvider> map = new HashMap<String, ValueProvider>();
+
+		valueProviders.put("processInstance", map);
+
+		map.put("count", new ValueProvider() {
+			public Object getValue(Object object) {
+				return new Long(1);
+			}
+		});
+		map.put("duration", new ValueProvider() {
+			public Object getValue(Object object) {
+				Date time = ((ProcessInstance) object).getTerminationTime();
+
+				if (time == null) {
+					time = new Date();
+				}
+
+				return new Double(time.getTime()
+						- ((ProcessInstance) object).getStartTime().getTime());
+			}
+		});
+		map.put("startTimestamp", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ProcessInstance) object).getStartTime().getTime();
+			}
+		});
+		map.put("terminationTimestamp", new ValueProvider() {
+			public Object getValue(Object object) {
+				if (((ProcessInstance) object).getTerminationTime() != null) {
+					return ((ProcessInstance) object).getTerminationTime()
+							.getTime();
+				} else {
+					return Long.MAX_VALUE;
+				}
+			}
+		});
+		map.put("processName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ProcessInstance) object).getProcessName();
+			}
+		});
+		map.put("startingUserName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ProcessInstance) object).getStartingUser().getName();
+			}
+		});
+		map.put("state", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ProcessInstance) object).getState().toString();
+			}
+		});
+		map.put("priority", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ProcessInstance) object).getPriority();
+			}
+		});
+
+		map = new HashMap<String, ValueProvider>();
+
+		valueProviders.put("activityInstance", map);
+
+		map.put("count", new ValueProvider() {
+			public Object getValue(Object object) {
+				return new Long(1);
+			}
+		});
+		map.put("duration", new ValueProvider() {
+			public Object getValue(Object object) {
+				return new Double(((ActivityInstance) object)
+						.getLastModificationTime().getTime()
+						- ((ActivityInstance) object).getStartTime().getTime());
+			}
+		});
+		map.put("startTimestamp", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getStartTime().getTime();
+			}
+		});
+		map.put("lastModificationTimestamp", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getLastModificationTime()
+						.getTime();
+			}
+		});
+		map.put("activityName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getActivity().getName();
+			}
+		});
+		map.put("processName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getProcessInstance()
+						.getProcessName();
+			}
+		});
+		map.put("userPerformerName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getUserPerformerName();
+			}
+		});
+		map.put("participantPerformerName", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object)
+						.getParticipantPerformerName();
+			}
+		});
+		map.put("state", new ValueProvider() {
+			public Object getValue(Object object) {
+				return ((ActivityInstance) object).getState();
+			}
+		});
+	}
+
+	/**
+	 * 
+	 */
+	private void prepareEnvironment() {
+		String[] userPwd = usernamePassword();
+		WebServiceEnv.setCurrentCredentials(userPwd[0], userPwd[1]);
+		WebServiceEnv.setCurrentSessionProperties(properties());
+
+		// System.out.println("Partition " +
+		// properties().get(SecurityProperties.PARTITION));
+		// System.out.println("Realm " +
+		// properties().get(SecurityProperties.REALM));
+		// System.out.println("Domain " +
+		// properties().get(SecurityProperties.DOMAIN));
+
+	}
+
+	/**
+	 * 
+	 */
+	private void unwindEnvironment() {
+		WebServiceEnv.removeCurrent();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private ServiceFactory getServiceFactory() {
+		return WebServiceEnv.currentWebServiceEnvironment().getServiceFactory();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	DocumentManagementService getDocumentManagementService() {
+		if (documentManagementService == null) {
+			documentManagementService = getServiceFactory()
+					.getDocumentManagementService();
+		}
+
+		return documentManagementService;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private UserService getUserService() {
+		if (userService == null) {
+			userService = getServiceFactory().getUserService();
+		}
+
+		return userService;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private QueryService getQueryService() {
+		if (queryService == null) {
+			queryService = getServiceFactory().getQueryService();
+		}
+
+		return queryService;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JsonObject getModelData() {
+		try {
+			prepareEnvironment();
+
+			JsonObject resultJson = new JsonObject();
+			JsonObject processesJson = new JsonObject();
+			JsonObject descriptorsJson = new JsonObject();
+
+			resultJson.add("processDefinitions", processesJson);
+			resultJson.add("descriptors", descriptorsJson);
+
+			// Ensures uniqueness of descriptor entries across all Process
+			// Definitions
+
+			Map<String, Object> descriptorsMap = new HashMap<String, Object>();
+
+			for (ProcessDefinition processDefinition : getQueryService()
+					.getAllProcessDefinitions()) {
+				JsonObject processJson = new JsonObject();
+
+				processJson.addProperty("id", processDefinition.getId());
+				processJson.addProperty("name", processDefinition.getName());
+
+				processesJson.add(processDefinition.getId(), processJson);
+
+				for (DataPath dataPath : (List<DataPath>) processDefinition
+						.getAllDataPaths()) {
+					if (dataPath.isDescriptor()) {
+						if (!descriptorsMap.containsKey(dataPath.getId())) {
+							JsonObject descriptorJson = new JsonObject();
+
+							descriptorsJson.add(dataPath.getId(),
+									descriptorJson);
+
+							descriptorJson.addProperty("id", dataPath.getId());
+							descriptorJson.addProperty("name",
+									dataPath.getName());
+							descriptorJson.addProperty("type", dataPath
+									.getMappedType().getSimpleName());
+							descriptorsMap.put(dataPath.getId(), dataPath);
+						}
+					}
+				}
+			}
+
+			JsonObject participantsJson = new JsonObject();
+
+			resultJson.add("participants", participantsJson);
+
+			for (Participant participant : getQueryService()
+					.getAllParticipants()) {
+				JsonObject participantJson = new JsonObject();
+
+				participantJson.addProperty("id", participant.getId());
+				participantJson.addProperty("name", participant.getName());
+
+				participantsJson.add(participant.getId(), participantJson);
+			}
+
+			return resultJson;
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isDiscreteDimension(String primaryObject, String dimension) {
+		if (dimension.equals("startTimestamp")
+				|| dimension.equals("terminationTimestamp")) {
+			return false;
+		}
+
+		return true;
+	};
+
+	/**
+	 * 
+	 * @return
+	 */
+	public ValueProvider getValueProvider(String primaryObject,
+			final String property) {
+
+		if (valueProviders.containsKey(primaryObject)
+				&& valueProviders.get(primaryObject).containsKey(property)) {
+			return valueProviders.get(primaryObject).get(property);
+		} else {
+			if (primaryObject.equals("processInstance")) {
+				return new ValueProvider() {
+					public Object getValue(Object object) {
+						return ((ProcessInstanceDetails) object)
+								.getDescriptorValue(property);
+					}
+				};
+			} else if (primaryObject.equals("activityInstance")) {
+				return new ValueProvider() {
+					public Object getValue(Object object) {
+						return ((ActivityInstanceDetails) object)
+								.getDescriptorValue(property);
+					}
+				};
+			}
+		}
+
+		throw new IllegalArgumentException(
+				"No property found for primary object " + primaryObject
+						+ " and property " + property + ".");
+	};
+
+	/**
+	 * Converts the key of a duration unit into the equivalent in seconds.
+	 * 
+	 * @param unit
+	 * @return
+	 */
+	private long convertDurationUnit(String unit) {
+		if (unit.equals("m")) {
+			return 1000 * 60;
+		} else if (unit.equals("h")) {
+			return 1000 * 60 * 60;
+		} else if (unit.equals("d")) {
+			return 1000 * 60 * 60 * 24;
+		} else if (unit.equals("w")) {
+			return 1000 * 60 * 60 * 24 * 7;
+		} else if (unit.equals("M")) {
+			return 1000 * 60 * 60 * 24 * 30; // TODO Consider calendar?
+		} else if (unit.equals("Y")) {
+			return 1000 * 60 * 60 * 24 * 30 * 256; // TODO Consider calendar?
+		}
+
+		throw new IllegalArgumentException("Duration unit \"" + unit
+				+ "\" is not supported.");
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws ParseException
+	 * @throws UnsupportedFilterException
+	 */
+	public JsonObject getReportData(JsonObject reportJson)
+			throws UnsupportedFilterException, ParseException {
+		try {
+			prepareEnvironment();
+
+			JsonObject dataSetJson = reportJson.get("dataSet")
+					.getAsJsonObject();
+			String dataSetType = dataSetJson.get("type").getAsString();
+			String primaryObject = dataSetJson.get("primaryObject")
+					.getAsString();
+			String fact = dataSetJson.get("fact").getAsString();
+			String firstDimension = dataSetJson.get("firstDimension")
+					.getAsString();
+			JsonObject parametersJson = reportJson.get("parameters")
+					.getAsJsonObject();
+			JsonArray filters = dataSetJson.get("filters").getAsJsonArray();
+			final String groupByCriterion = dataSetJson.has("groupBy") ? dataSetJson
+					.get("groupBy").getAsString() : null;
+			JsonObject result = new JsonObject();
+			DateFormat dateFormat = DateFormat.getDateInstance();
+
+			// Obtain cumulation criteria
+
+			long firstDimensionCumulationIntervalCount = 1;
+			String firstDimensionCumulationIntervalUnit = "d";
+
+			if (dataSetJson.has("firstDimensionCumulationIntervalCount")) {
+				firstDimensionCumulationIntervalCount = dataSetJson.get(
+						"firstDimensionCumulationIntervalCount").getAsLong();
+			}
+
+			if (dataSetJson.has("firstDimensionCumulationIntervalUnit")) {
+				firstDimensionCumulationIntervalUnit = dataSetJson.get(
+						"firstDimensionCumulationIntervalUnit").getAsString();
+			}
+
+			long firstDimensionCumulationInterval = firstDimensionCumulationIntervalCount
+					* convertDurationUnit(firstDimensionCumulationIntervalUnit);
+
+			if (primaryObject.equals("processInstance")) {
+				ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+
+				addProcessInstanceQueryFilters(query, filters, parametersJson);
+
+				// Set order and restrictions
+
+				if (firstDimension != null) {
+					// TODO The following code structure should be applicable
+					// for all duration dimensions, parameterized by dimension
+					// (first, second)
+
+					if (firstDimension.equals("startTimestamp")) {
+						long fromTimestamp = 0; // Beginning of the era
+
+						if (dataSetJson.has("firstDimensionFrom")) {
+							if (parametersJson.has("startTimestamp")
+									&& parametersJson.get("startTimestamp")
+											.getAsJsonObject().has("from")) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.greaterOrEqual(fromTimestamp = dateFormat
+												.parse(parametersJson
+														.get("startTimestamp")
+														.getAsJsonObject()
+														.get("from")
+														.getAsString())
+												.getTime()));
+							} else if (!dataSetJson.get("firstDimensionFrom")
+									.isJsonNull()) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.greaterOrEqual(fromTimestamp = dateFormat
+												.parse(dataSetJson.get(
+														"firstDimensionFrom")
+														.getAsString())
+												.getTime()));
+							}
+						}
+
+						// Distinguish between to/from and to/duration
+
+						if (dataSetJson.has("firstDimensionTo")) {
+							if (parametersJson.has("startTimestamp")
+									&& parametersJson.get("startTimestamp")
+											.getAsJsonObject().has("to")) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.lessOrEqual(dateFormat.parse(
+												parametersJson
+														.get("startTimestamp")
+														.getAsJsonObject()
+														.get("to")
+														.getAsString())
+												.getTime()));
+							} else if (!dataSetJson.get("firstDimensionTo")
+									.isJsonNull()) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.lessOrEqual(dateFormat.parse(
+												dataSetJson.get(
+														"firstDimensionTo")
+														.getAsString())
+												.getTime()));
+							}
+						} else if (dataSetJson.has("firstDimensionDuration")) {
+							if (parametersJson.has("startTimestamp")
+									&& parametersJson.get("startTimestamp")
+											.getAsJsonObject()
+											.has("durationValue")) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.lessOrEqual(fromTimestamp
+												+ parametersJson
+														.get("startTimestamp")
+														.getAsJsonObject()
+														.get("durationCount")
+														.getAsLong()
+												* convertDurationUnit(parametersJson
+														.get("startTimestamp")
+														.getAsJsonObject()
+														.get("durationUnit")
+														.getAsString())));
+							} else if (!dataSetJson.get(
+									"firstDimensionDuration").isJsonNull()) {
+								query.where(ProcessInstanceQuery.START_TIME
+										.lessOrEqual(fromTimestamp
+												+ dataSetJson
+														.get("firstDimensionDurationCount")
+														.getAsLong()
+												+ convertDurationUnit(dataSetJson
+														.get("firstDimensionDurationUnit")
+														.getAsString())));
+							}
+						}
+					} else if (firstDimension.equals("terminationTimestamp")) {
+						// TODO Replicate above
+					} else if (firstDimension.equals("processName")) {
+						query.orderBy(ProcessInstanceQuery.PROC_DEF_NAME);
+
+						if (dataSetJson.has("firstDimensionValueList")) {
+							JsonArray valueList = dataSetJson.get(
+									"firstDimensionValueList").getAsJsonArray();
+
+							// query.where(ProcessInstanceQuery.PROC_DEF_NAME.equals(valueList.get(0).getAsString()));
+
+						}
+					} else if (firstDimension.equals("startingUserName")) {
+						query.orderBy(ProcessInstanceQuery.STARTING_USER_OID);
+
+						if (dataSetJson.has("firstDimensionValue")) {
+
+						}
+					} else if (firstDimension.equals("state")) {
+						query.orderBy(ProcessInstanceQuery.STATE);
+
+						if (dataSetJson.has("firstDimensionValueList")) {
+
+						}
+					} else if (firstDimension.equals("priority")) {
+						query.orderBy(ProcessInstanceQuery.PRIORITY);
+
+						if (dataSetJson.has("firstDimensionValueList")) {
+
+						}
+					}
+
+					// TODO Handle descriptor filters
+				}
+
+				// TODO Add second dimension filters
+
+				// TODO Decide whether descriptors are needed
+
+				query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+
+				if (dataSetType.equals("recordSet")) {
+					JsonArray series = new JsonArray();
+
+					result.add("recordSet", series);
+
+					Map<String, String> descriptorMap = null;
+
+					for (ProcessInstance processInstance : getQueryService()
+							.getAllProcessInstances(query)) {
+						// Filter for unique descriptors
+
+						if (descriptorMap == null) {
+							descriptorMap = new HashMap<String, String>();
+
+							for (String key : ((ProcessInstanceDetails) processInstance)
+									.getDescriptors().keySet()) {
+								if (!descriptorMap.containsKey(key)) {
+									descriptorMap.put(key, key);
+								}
+							}
+						}
+
+						JsonObject processInstanceJson = new JsonObject();
+
+						series.add(processInstanceJson);
+
+						processInstanceJson.addProperty("processId",
+								processInstance.getProcessID());
+						processInstanceJson.addProperty("processName",
+								processInstance.getProcessName());
+						processInstanceJson.addProperty("startTimestamp",
+								processInstance.getStartTime().getTime());
+
+						if (processInstance.getTerminationTime() != null) {
+							processInstanceJson.addProperty(
+									"terminationTimestamp", processInstance
+											.getTerminationTime().getTime());
+						}
+
+						processInstanceJson.addProperty("state",
+								processInstance.getState().getName());
+						processInstanceJson.addProperty("priority",
+								processInstance.getPriority());
+
+						// Map descriptors
+
+						for (String key : descriptorMap.keySet()) {
+							Object value = ((ProcessInstanceDetails) processInstance)
+									.getDescriptorValue(key);
+
+							if (value == null) {
+								processInstanceJson.addProperty(key,
+										(String) null);
+							} else if (value instanceof Boolean) {
+								processInstanceJson.addProperty(key,
+										(Boolean) value);
+
+							} else if (value instanceof Character) {
+								processInstanceJson.addProperty(key,
+										(Character) value);
+
+							} else if (value instanceof Number) {
+								processInstanceJson.addProperty(key,
+										(Number) value);
+
+							} else {
+								processInstanceJson.addProperty(key,
+										value.toString());
+							}
+						}
+					}
+				} else {
+					TimestampSeriesCumulator cumulator = new TimestampSeriesCumulator(
+							getValueProvider(primaryObject, fact),
+							getValueProvider(primaryObject, firstDimension),
+							isDiscreteDimension(primaryObject, firstDimension),
+							!fact.equals("count"));
+
+					// Grouping criterion
+
+					if (groupByCriterion != null) {
+						cumulator.setGroupCriterionProvider(getValueProvider(
+								primaryObject, groupByCriterion));
+					}
+
+					JsonArray groupIds = new JsonArray();
+
+					result.add("groupIds", groupIds);
+					result.add("seriesGroup", cumulator
+							.createCumulatedSeriesGroup(
+									(List) getQueryService()
+											.getAllProcessInstances(query),
+									firstDimensionCumulationInterval, groupIds));
+				}
+			} else if (primaryObject.equals("activityInstance")) {
+				ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+
+				addActivityInstanceQueryFilters(query, filters, parametersJson);
+
+				// Set order
+
+				if (firstDimension != null) {
+					if (firstDimension.equals("activityName")) {
+						query.orderBy(ActivityInstanceQuery.ACTIVITY_NAME);
+					} else if (firstDimension.equals("processName")) {
+						query.orderBy(ActivityInstanceQuery.PROC_DEF_NAME);
+					} else if (firstDimension.equals("userPerformerName")) {
+						query.orderBy(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID);
+					} else if (firstDimension
+							.equals("participantPerformerName")) {
+						query.orderBy(ActivityInstanceQuery.CURRENT_PERFORMER_OID);
+					} else if (firstDimension.equals("state")) {
+						query.orderBy(ActivityInstanceQuery.STATE);
+					}
+				}
+
+				if (dataSetType.equals("recordSet")) {
+					JsonArray series = new JsonArray();
+
+					result.add("recordSet", series);
+
+					Map<String, String> descriptorMap = null;
+
+					for (ActivityInstance activityInstance : getQueryService()
+							.getAllActivityInstances(query)) {
+						// Filter for unique descriptors
+
+						if (descriptorMap == null) {
+							descriptorMap = new HashMap<String, String>();
+
+							for (String key : ((ProcessInstanceDetails) activityInstance
+									.getProcessInstance()).getDescriptors()
+									.keySet()) {
+								if (!descriptorMap.containsKey(key)) {
+									descriptorMap.put(key, key);
+								}
+							}
+						}
+
+						JsonObject activityInstanceJson = new JsonObject();
+
+						series.add(activityInstanceJson);
+
+						activityInstanceJson.addProperty("activityId",
+								activityInstance.getActivity().getId());
+						activityInstanceJson.addProperty("activityName",
+								activityInstance.getActivity().getName());
+						activityInstanceJson.addProperty("processId",
+								activityInstance.getProcessInstance()
+										.getProcessID());
+						activityInstanceJson.addProperty("processName",
+								activityInstance.getProcessInstance()
+										.getProcessName());
+						activityInstanceJson.addProperty("startTimestamp",
+								activityInstance.getStartTime().getTime());
+						activityInstanceJson.addProperty("id", activityInstance
+								.getActivity().getId());
+						activityInstanceJson.addProperty("state",
+								activityInstance.getState().getName());
+						activityInstanceJson.addProperty("criticality",
+								activityInstance.getCriticality());
+
+						if (activityInstance.getPerformedBy() != null) {
+							activityInstanceJson.addProperty(
+									"userPerformerName", activityInstance
+											.getPerformedBy().getName());
+						}
+
+						activityInstanceJson.addProperty(
+								"participantPerformerName",
+								activityInstance.getParticipantPerformerName());
+
+						// Map descriptors
+
+						for (String key : descriptorMap.keySet()) {
+							Object value = ((ProcessInstanceDetails) activityInstance
+									.getProcessInstance())
+									.getDescriptorValue(key);
+
+							if (value == null) {
+								activityInstanceJson.addProperty(key,
+										(String) null);
+
+							} else if (value instanceof Boolean) {
+								activityInstanceJson.addProperty(key,
+										(Boolean) value);
+
+							} else if (value instanceof Character) {
+								activityInstanceJson.addProperty(key,
+										(Character) value);
+
+							} else if (value instanceof Number) {
+								activityInstanceJson.addProperty(key,
+										(Number) value);
+
+							} else {
+								activityInstanceJson.addProperty(key,
+										(String) value);
+							}
+						}
+					}
+				} else {
+					TimestampSeriesCumulator cumulator = new TimestampSeriesCumulator(
+							getValueProvider(primaryObject, fact),
+							getValueProvider(primaryObject, firstDimension),
+							isDiscreteDimension(primaryObject, firstDimension),
+							!fact.equals("count"));
+
+					// Grouping criterion
+
+					if (groupByCriterion != null) {
+						cumulator.setGroupCriterionProvider(getValueProvider(
+								primaryObject, groupByCriterion));
+					}
+
+					JsonArray groupIds = new JsonArray();
+
+					result.add("groupIds", groupIds);
+					result.add("seriesGroup", cumulator
+							.createCumulatedSeriesGroup(
+									(List) getQueryService()
+											.getAllActivityInstances(query),
+									firstDimensionCumulationInterval, groupIds));
+				}
+
+			} else if (primaryObject.equals("role")) {
+				if (dataSetType.equals("recordSet")) {
+				}
+			}
+
+			return result;
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	/**
+	 * TODO: This code should be completed looking at the implementation of
+	 * Process Instance Search in the Portal.
+	 * 
+	 * @throws ParseException
+	 * @throws UnsupportedFilterException
+	 * 
+	 */
+	public void addProcessInstanceQueryFilters(ProcessInstanceQuery query,
+			JsonArray filters, JsonObject parametersJson)
+			throws UnsupportedFilterException, ParseException {
+		DateFormat dateFormat = DateFormat.getDateInstance();
+
+		for (int n = 0; n < filters.size(); ++n) {
+			JsonObject filterJson = filters.get(n).getAsJsonObject();
+
+			System.out.println("Filter: " + filterJson.toString());
+
+			// TODO: These need to be overwritten by parameters
+
+			JsonArray valuesJson = filterJson.get("values").getAsJsonArray();
+
+			if (filterJson.get("dimension").getAsString().equals("processName")) {
+				if (!valuesJson.get(0).isJsonNull()) {
+					query.where(new ProcessDefinitionFilter(valuesJson.get(0)
+							.getAsString()));
+				}
+
+				break;
+			} else {
+				if (filterJson.get("dimension").getAsString()
+						.equals("startTimestamp")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						query.where(ProcessInstanceQuery.START_TIME
+								.greaterOrEqual(dateFormat.parse(
+										valuesJson.get(0).getAsString())
+										.getTime()));
+
+					}
+
+					if (!valuesJson.get(1).isJsonNull()) {
+						query.where(ProcessInstanceQuery.START_TIME
+								.lessOrEqual(dateFormat.parse(
+										valuesJson.get(1).getAsString())
+										.getTime()));
+
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("terminationTimestamp")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						query.where(ProcessInstanceQuery.TERMINATION_TIME
+								.greaterOrEqual(dateFormat.parse(
+										valuesJson.get(0).getAsString())
+										.getTime()));
+
+					}
+
+					if (!valuesJson.get(1).isJsonNull()) {
+						query.where(ProcessInstanceQuery.TERMINATION_TIME
+								.lessOrEqual(dateFormat.parse(
+										valuesJson.get(1).getAsString())
+										.getTime()));
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("priority")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						if (filterJson.get("operator").getAsString()
+								.equals("equal")) {
+							query.where(ProcessInstanceQuery.PRIORITY
+									.isEqual(valuesJson.get(0).getAsLong()));
+						}
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("startingUserName")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						// TODO Find user by account and use OID
+						if (filterJson.get("operator").getAsString()
+								.equals("equals")) {
+							query.where(ProcessInstanceQuery.STARTING_USER_OID
+									.isEqual(valuesJson.get(0).getAsLong()));
+						}
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("state")) {
+					ProcessInstanceState[] processInstanceStates = new ProcessInstanceState[valuesJson
+							.size()];
+
+					for (int m = 0; m < valuesJson.size(); ++m) {
+						if (valuesJson.get(m).isJsonNull()) {
+							break;
+						}
+
+						System.out.println("State: "
+								+ valuesJson.get(m).getAsString());
+
+						if (valuesJson.get(m).getAsString().equals("Created")) {
+							processInstanceStates[m] = ProcessInstanceState.Created;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Active")) {
+							processInstanceStates[m] = ProcessInstanceState.Active;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Completed")) {
+							processInstanceStates[m] = ProcessInstanceState.Completed;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Aborted")) {
+							processInstanceStates[m] = ProcessInstanceState.Aborted;
+						} else {
+							throw new IllegalArgumentException("State "
+									+ valuesJson.get(m).getAsString()
+									+ " unknown for process instance state.");
+						}
+					}
+
+					ProcessStateFilter processStateFilter = new ProcessStateFilter(
+							processInstanceStates);
+
+					query.where(processStateFilter);
+
+				} else {
+					// Descriptors
+
+					if (filterJson.get("operator").getAsString()
+							.equals("equal")) {
+						query.where(DataFilter.isEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					} else if (filterJson.get("operator").getAsString()
+							.equals("equal")) {
+						query.where(DataFilter.notEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					} else if (filterJson.get("operator").getAsString()
+							.equals("notEqual")) {
+						query.where(DataFilter.notEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					}
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * TODO: This code should be completed looking at the implementation of
+	 * Process Instance Search in the Portal.
+	 * 
+	 * @throws ParseException
+	 * @throws UnsupportedFilterException
+	 * 
+	 */
+	public void addActivityInstanceQueryFilters(ActivityInstanceQuery query,
+			JsonArray filters, JsonObject parametersJson)
+			throws UnsupportedFilterException, ParseException {
+		DateFormat dateFormat = DateFormat.getDateInstance();
+
+		for (int n = 0; n < filters.size(); ++n) {
+			JsonObject filterJson = filters.get(n).getAsJsonObject();
+
+			System.out.println("Filter: " + filterJson.toString());
+
+			// TODO: These need to be overwritten by parameters
+
+			JsonArray valuesJson = filterJson.get("values").getAsJsonArray();
+
+			if (filterJson.get("dimension").getAsString().equals("processName")) {
+				if (!valuesJson.get(0).isJsonNull()) {
+					query.where(new ProcessDefinitionFilter(valuesJson.get(0)
+							.getAsString()));
+				}
+
+				break;
+			} else if (filterJson.get("dimension").getAsString()
+					.equals("activityName")) {
+				if (!valuesJson.get(0).isJsonNull()) {
+					query.where(new ActivityFilter(valuesJson.get(0)
+							.getAsString()));
+				}
+
+				break;
+			} else {
+				if (filterJson.get("dimension").getAsString()
+						.equals("startTimestamp")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						query.where(ActivityInstanceQuery.START_TIME
+								.greaterOrEqual(dateFormat.parse(
+										valuesJson.get(0).getAsString())
+										.getTime()));
+
+					}
+
+					if (!valuesJson.get(1).isJsonNull()) {
+						query.where(ProcessInstanceQuery.START_TIME
+								.lessOrEqual(dateFormat.parse(
+										valuesJson.get(1).getAsString())
+										.getTime()));
+
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("lastModificationTimestamp")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
+								.greaterOrEqual(dateFormat.parse(
+										valuesJson.get(0).getAsString())
+										.getTime()));
+
+					}
+
+					if (!valuesJson.get(1).isJsonNull()) {
+						query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
+								.lessOrEqual(dateFormat.parse(
+										valuesJson.get(1).getAsString())
+										.getTime()));
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("criticality")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						if (filterJson.get("operator").getAsString()
+								.equals("equal")) {
+							query.where(ActivityInstanceQuery.CRITICALITY
+									.isEqual(valuesJson.get(0).getAsLong()));
+						}
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("participantPerformerName")) {
+					if (!valuesJson.get(0).isJsonNull()) {
+						// TODO Find user by account and use OID
+						if (filterJson.get("operator").getAsString()
+								.equals("equals")) {
+							query.where(ActivityInstanceQuery.CURRENT_PERFORMER_OID
+									.isEqual(valuesJson.get(0).getAsLong()));
+						}
+					}
+				} else if (filterJson.get("dimension").getAsString()
+						.equals("state")) {
+					ActivityInstanceState[] activityInstanceStates = new ActivityInstanceState[valuesJson
+							.size()];
+
+					for (int m = 0; m < valuesJson.size(); ++m) {
+						if (valuesJson.get(m).isJsonNull()) {
+							break;
+						}
+
+						if (valuesJson.get(m).getAsString()
+								.equals("Application")) {
+							activityInstanceStates[m] = ActivityInstanceState.Application;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Suspended")) {
+							activityInstanceStates[m] = ActivityInstanceState.Suspended;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Hibernated")) {
+							activityInstanceStates[m] = ActivityInstanceState.Hibernated;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Completed")) {
+							activityInstanceStates[m] = ActivityInstanceState.Completed;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Aborting")) {
+							activityInstanceStates[m] = ActivityInstanceState.Aborting;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Aborted")) {
+							activityInstanceStates[m] = ActivityInstanceState.Aborted;
+						} else if (valuesJson.get(m).getAsString()
+								.equals("Interrupted")) {
+							activityInstanceStates[m] = ActivityInstanceState.Interrupted;
+						} else {
+							throw new IllegalArgumentException("State "
+									+ valuesJson.get(m).getAsString()
+									+ " unknown for activity instance state.");
+						}
+					}
+
+					ActivityStateFilter activityStateFilter = new ActivityStateFilter(
+							activityInstanceStates);
+
+					query.where(activityStateFilter);
+
+				} else {
+					// Descriptors
+
+					if (filterJson.get("operator").getAsString()
+							.equals("equal")) {
+						query.where(DataFilter.isEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					} else if (filterJson.get("operator").getAsString()
+							.equals("equal")) {
+						query.where(DataFilter.notEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					} else if (filterJson.get("operator").getAsString()
+							.equals("notEqual")) {
+						query.where(DataFilter.notEqual(
+								filterJson.get("dimension").getAsString(),
+								valuesJson.get(0).getAsString()));
+					}
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * 
+	 * @param json
+	 */
+	public void saveReportDefinition(JsonObject json) {
+		try {
+			prepareEnvironment();
+
+			JsonObject reportJson = json.get("report").getAsJsonObject();
+			JsonObject storageJson = reportJson.get("storage")
+					.getAsJsonObject();
+			String name = reportJson.get("name").getAsString();
+			String location = storageJson.get("location").getAsString();
+
+			Folder folder = null;
+
+			if (location.equals("personalFolder")) {
+				folder = getOrCreatePublicReportDefinitionFolder(true);
+			} else if (location.equals("publicFolder")) {
+				folder = getOrCreatePublicReportDefinitionFolder(true);
+			} else if (location.equals("participantFolder")) {
+				folder = getOrCreatePublicReportDefinitionFolder(true);
+				// path = "/participants/"
+				// + storageJson.get("participant").getAsString() + "/"
+				// + name;
+			}
+
+			saveReportDefinitionDocument(reportJson, folder, name);
+
+			// Add to cache
+
+			reportDefinitionJsons
+					.put(folder.getPath() + "/" + name, reportJson);
+
+			System.out.println(reportDefinitionJsons);
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	/**
+	 * 
+	 * @param json
+	 */
+	public void renameReportDefinition(String path, String name) {
+		try {
+			prepareEnvironment();
+
+			// Replace in cache
+
+			JsonObject reportJson = reportDefinitionJsons.remove(path);
+
+			reportDefinitionJsons.put(
+					renameReportDefinitionDocument(path, name), reportJson);
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	/**
+	 * 
+	 * @param json
+	 */
+	public JsonObject loadReportDefinition(String path) {
+		if (reportDefinitionJsons.get(path) != null) {
+			return reportDefinitionJsons.get(path);
+		} else {
+			Document document = getDocumentManagementService()
+					.getDocument(path);
+
+			if (document != null) {
+				return jsonIo.readJsonObject(new String(
+						getDocumentManagementService().retrieveDocumentContent(
+								document.getId())));
+			} else {
+				throw new ObjectNotFoundException("Document " + path
+						+ " does not exist.");
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
+	public JsonObject deleteReportDefinition(JsonObject json) {
+		try {
+			prepareEnvironment();
+
+			deleteReportDefinitionDocument(json.get("path").getAsString());
+
+			return new JsonObject();
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	// ===
+
+	private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
+	private static final String PERSONAL_REPORT_DEFINITIONS_DIR = "/realms/carnot/users/motu/documents/reports/designs";
+
+	/**
+    *
+    */
+	private Folder getOrCreatePublicReportDefinitionFolder(boolean create) {
+		Folder folder = getDocumentManagementService().getFolder(
+				PUBLIC_REPORT_DEFINITIONS_DIR);
+
+		if (folder == null && create) {
+
+		}
+
+		return folder;
+	}
+
+	/**
+	 * TODO Split off persistence part
+	 */
+	public JsonObject loadReportDefinitions() {
+		try {
+			prepareEnvironment();
+
+			Folder publicFolder = getOrCreatePublicReportDefinitionFolder(true);
+			Folder personalFolder = getDocumentManagementService().getFolder(
+					PERSONAL_REPORT_DEFINITIONS_DIR);
+			JsonObject rootFolderJson = new JsonObject();
+			JsonArray subFoldersJson = new JsonArray();
+
+			rootFolderJson.add("subFolders", subFoldersJson);
+
+			JsonObject publicFolderJson = new JsonObject();
+
+			subFoldersJson.add(publicFolderJson);
+
+			publicFolderJson.addProperty("name", "Public Report Definitions"); // I18N
+			publicFolderJson.addProperty("id", publicFolder.getId());
+			publicFolderJson.addProperty("path", publicFolder.getPath());
+
+			JsonArray reportDefinitionsJson = null;
+			List<Document> candidateReportDefinitionsDocuments = null;
+
+			if (publicFolder != null) {
+				candidateReportDefinitionsDocuments = publicFolder
+						.getDocuments();
+
+				reportDefinitionsJson = new JsonArray();
+
+				publicFolderJson
+						.add("reportDefinitions", reportDefinitionsJson);
+
+				for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments) {
+					if (reportDefinitionDocument.getName().endsWith(".bpmrpt")) {
+						String content = new String(
+								getDocumentManagementService()
+										.retrieveDocumentContent(
+												reportDefinitionDocument
+														.getId()));
+
+						JsonObject reportDefinitionJson = jsonIo
+								.readJsonObject(content);
+
+						// TODO Retrieve partially from content
+
+						reportDefinitionsJson.add(reportDefinitionJson);
+						reportDefinitionJson.addProperty("id",
+								reportDefinitionDocument.getId());
+						reportDefinitionJson.addProperty(
+								"name",
+								reportDefinitionDocument.getName().substring(
+										0,
+										reportDefinitionDocument.getName()
+												.indexOf(".bpmrpt")));
+						reportDefinitionJson.addProperty("path",
+								reportDefinitionDocument.getPath());
+					}
+				}
+			}
+
+			JsonObject personalFolderJson = new JsonObject();
+
+			subFoldersJson.add(personalFolderJson);
+
+			personalFolderJson.addProperty("name",
+					"Personal Report Definitions"); // I18N
+
+			if (personalFolder != null) {
+				candidateReportDefinitionsDocuments = personalFolder
+						.getDocuments();
+
+				reportDefinitionsJson = new JsonArray();
+
+				personalFolderJson.add("reportDefinitions",
+						reportDefinitionsJson);
+
+				for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments) {
+					if (reportDefinitionDocument.getName().endsWith(".bpmrpt")) {
+						JsonObject reportDefinitionJson = new JsonObject();
+
+						reportDefinitionsJson.add(reportDefinitionJson);
+						reportDefinitionJson.addProperty("name",
+								reportDefinitionDocument.getName());
+					}
+				}
+			}
+
+			return rootFolderJson;
+		} finally {
+			unwindEnvironment();
+		}
+	}
+
+	/**
+	 *
+	 */
+	private void saveReportDefinitionDocument(JsonObject reportDefinitionJson,
+			Folder folder, String name) {
+		String reportContent = reportDefinitionJson.toString();
+		String path = folder.getPath() + "/" + name + ".bpmrpt";
+		Document reportDesignDocument = getDocumentManagementService()
+				.getDocument(path);
+
+		if (null == reportDesignDocument) {
+			DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name
+					+ ".bpmrpt");
+
+			documentInfo.setOwner(getServiceFactory().getWorkflowService()
+					.getUser().getAccount());
+			documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
+
+			reportDesignDocument = getDocumentManagementService()
+					.createDocument(folder.getPath(), documentInfo,
+							reportContent.getBytes(), null);
+
+			// Create initial version
+
+			// getDocumentManagementService().versionDocument(
+			// reportDesignDocument.getId(), null);
+		} else {
+			getDocumentManagementService().updateDocument(reportDesignDocument,
+					reportContent.getBytes(), null, false, null, false);
+		}
+	}
+
+	/**
+	 * TODO Should be more elegant
+	 * 
+	 * @param path
+	 */
+	private String renameReportDefinitionDocument(String path, String name) {
+		Document reportDefinitionDocument = getDocumentManagementService()
+				.getDocument(path);
+		String folderPath = path.substring(0, path.lastIndexOf('/'));
+		DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name
+				+ ".bpmrpt");
+
+		documentInfo.setOwner(getServiceFactory().getWorkflowService()
+				.getUser().getAccount());
+		documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
+
+		byte[] content = getDocumentManagementService()
+				.retrieveDocumentContent(path);
+
+		getDocumentManagementService().createDocument(folderPath, documentInfo,
+				content, null);
+		getDocumentManagementService().removeDocument(
+				reportDefinitionDocument.getId());
+
+		return folderPath + "/" + name + ".bpmrpt";
+	}
+
+	/**
+	 * 
+	 * @param path
+	 */
+	private void deleteReportDefinitionDocument(String path) {
+		Document reportDefinitionDocument = getDocumentManagementService()
+				.getDocument(path);
+
+		if (reportDefinitionDocument != null) {
+			getDocumentManagementService().removeDocument(
+					reportDefinitionDocument.getId());
+		}
+	}
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="stardust-web-reporting" revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="stardust-web-reporting-compile" description="Stardust Web Reporting - Compile Scope" />
+      <conf name="stardust-web-reporting-compile-optional" description="Stardust Web Reporting - (Optional) Compile Scope" />
+      <conf name="stardust-web-reporting-provided" description="Stardust Web Reporting - Provided Scope" />
+      <conf name="stardust-web-reporting-runtime" description="Stardust Web Reporting - Runtime Scope" />
+      
+      <conf name="stardust-web-reporting-sources" description="Stardust Web Reporting Sources" />
+      
+      <conf name="compile" extends="stardust-web-reporting-compile, stardust-web-reporting-compile-optional, stardust-web-reporting-provided" visibility="private" description="Compile Time Dependencies" />
+      <conf name="runtime" extends="stardust-web-reporting-runtime"  visibility="private" />
+      <conf name="test" visibility="private" description="Test dependencies" />
+      <conf name="pom" description="Stardust Web Reporting - POM" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="all" visibility="private" extends="compile, runtime, test" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-web-reporting" type="jar"
+         conf="stardust-web-reporting-compile, stardust-web-reporting-compile-optional, stardust-web-reporting-provided, stardust-web-reporting-runtime"
+         ext="jar" />
+      <artifact name="stardust-web-reporting" type="source" conf="stardust-web-reporting-sources" ext="jar"  m:classifier="sources"/>
+      <artifact name="stardust-web-reporting" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      <dependency org="com.infinity.bpm" name="stardust-engine-base" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->stardust-engine-base-compile" />
+      <dependency org="com.infinity.bpm" name="infinity-process-engine" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->carnot-engine-compile" />
+      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->logging-slf4j-log4j-module-compile" />
+      <dependency org="com.infinity.bpm" name="stardust-engine-ws-cxf" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->stardust-engine-ws-cxf-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->ipp-portal-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}"
+         conf="stardust-web-reporting-compile->ipp-views-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" 
+         conf="stardust-web-reporting-compile->jsf-api-module-compile"/>
+      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" 
+         conf="stardust-web-reporting-compile->spring-module-compile"/>
+      
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
+         conf="stardust-web-reporting-provided->default"/>
+      <dependency org="com.sun.facelets" name="jsf-facelets" rev="${jsf-facelets.version}" 
+         conf="stardust-web-reporting-compile->default"/>
+      <dependency org="org.icefaces" name="icefaces" rev="${icefaces.version}" 
+         conf="stardust-web-reporting-compile->default">
+         <exclude org="javax.faces" module="jsf-api" />
+         <exclude org="javax.faces" module="jsf-impl" />
+         <exclude org="commons-logging" module="commons-logging-api"/>
+         <exclude org="commons-logging" module="commons-logging"/>
+         <exclude org="commons-beanutils" module="commons-beanutils"/>
+         <exclude org="backport-util-concurrent" module="backport-util-concurrent"/>
+         <exclude org="com.sun.xml.fastinfoset" module="FastInfoset"/>
+      </dependency>
+      <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" 
+         conf="stardust-web-reporting-compile->default"/>
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" 
+         conf="stardust-web-reporting-compile->default"/>
+      <dependency org="org.slf4j" name="slf4j-api" rev="${slf4j-api.version}" 
+         conf="stardust-web-reporting-compile->default"/>
+      
+      <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
+      
+   </dependencies>
+</ivy-module>
+
