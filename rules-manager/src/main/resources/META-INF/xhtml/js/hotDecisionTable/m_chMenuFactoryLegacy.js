@@ -55,10 +55,11 @@ define(["./m_images","./m_menuFactory","./m_operators"],function(images,menuFact
               /*Now build our span, this is what we return to callers, it contains all the dynamically built
                * DOM elements for our column header.
                * */
-              $span=$("<span></span>")
-                .append(leafModel)
-                .addClass("cursor-default").attr({title:modelText})
-                .append($opBadge);
+              $span=$("<span></span>").append(leafModel).addClass("cursor-default").attr({title:modelText})
+                
+              if(metaData[2]==="Condition"){
+            	  $span.append($opBadge);
+              }
               
               /*Determine the handsontable datatype for this column.
                * We need this info so we can attach the correct operator menu to the columnheaders $opbadge
