@@ -71,8 +71,6 @@ define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 					metadata:{type: myAttr.type,ref: "primitive",isParamDef:false}
 					};
 			}
-		}
-		
+		}	
 	};
-	
 });
