@@ -200,6 +200,11 @@ define(
 				     * parameterDefinitons panel has made to our ruleSet.*/ 
 				    var myDialog;
 				    uiElements.columnTreeButton.on("click",function(){
+				    	if(myDialog){
+				    		try{
+				    			myDialog.dialog("destroy");
+				    		}catch(err){/*DO_NOTHING_AND_CONTINUE*/}
+				    	}
 				    	var columnBuildertree,
 				    		jstreeInstance,
 				    		jsonTreeData;
@@ -210,6 +215,7 @@ define(
 						    jstreeInstance=$(".jstree",columnBuildertree);
 		                    myDialog=$(columnBuildertree).dialog({
 			                    	autoOpen: false,
+			                    	maxHeight: 600,
 			                    	buttons: [{
 			                    		text: "Close", click: function(){$(this).dialog("destroy");}
 			                    	}],
