@@ -303,8 +303,13 @@ define(
 								}
 							});
 				}
+			};
+			
+			var reloadOutlineTreeReset = function(){
+				window.top.ruleSets = null;
+				reloadOutlineTree(false);
 			}
-
+			
 			var reloadOutlineTree = function(saveFirst) {
 				if (true == saveFirst) {
 					saveAllRules();
@@ -1031,8 +1036,8 @@ define(
 				if (window.parent.EventHub != null) {
 					window.parent.EventHub.events.subscribe("CHANGE_PROFILE",
 							changeProfileHandler);
-					window.parent.EventHub.events.subscribe("RELOAD_MODELS",
-							reloadOutlineTree);
+					window.parent.EventHub.events.subscribe("RELOAD_RULES",
+							reloadOutlineTreeReset);
 				}
 
 				readAllModels();

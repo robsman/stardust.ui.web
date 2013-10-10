@@ -31,7 +31,6 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
-import org.eclipse.stardust.ui.web.rules_manager.store.DefaultRulesManagementStrategy;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 
 /**
@@ -111,7 +110,7 @@ public class RulesManagementService
    */
   public RulesManagementStrategy getRulesManagementStrategy()
   {
-     return (DefaultRulesManagementStrategy) context.getBean("rulesManagementStrategy");
+     return (RulesManagementStrategy) context.getBean("rulesManagementStrategy");
   }
 
    /**

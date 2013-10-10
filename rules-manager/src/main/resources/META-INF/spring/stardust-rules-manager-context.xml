@@ -12,7 +12,7 @@
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.rules_manager" />
 
-	<!-->bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
+	<!-- bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
 		<qualifier value="default" />
 	</bean-->
 
