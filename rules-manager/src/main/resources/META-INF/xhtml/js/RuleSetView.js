@@ -73,7 +73,7 @@ define(
 					m_utils.jQuerySelect("#ruleSetTabs").tabs();
 					
 					//initialize ACE editor for expert mode drl scripting
-					this.drlEditor=ace2.getDrlEditor(codeEditSelector);
+					//this.drlEditor=ace2.getDrlEditor(codeEditSelector);
 
 					this.parameterMappingsPanelAnchor = m_utils.jQuerySelect("#parameterMappingsPanelAnchor");
 
@@ -248,7 +248,7 @@ define(
 					//this.codeTextarea.val(this.ruleSet.generateDrl());
 					//debugger;
 					drlText +=this.ruleSet.generateDrl();
-					this.drlEditor.setValue(drlText);
+					//this.drlEditor.setValue(drlText);
 					// Workaround until command handling is improved
 
 					this.parameterMappingsPanel.setScopeModel(null);
