@@ -14,10 +14,6 @@
 // pages
 //
 // Parameters:
-//     home: relative location of Stardust Documentation overview (if the link is pointing to
-//			 another doc plugin it has to be with versionnumber, which will be eliminated for 
-//			 Eclipse Help docu depending on the stylesheet used)
-//			 be eliminated
 //     prev: relative location of previous chapter - empty if document is the first chapter in this
 //           category
 //     next: relative location of next chapter - empty if document is the last chapter in this
@@ -27,14 +23,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////       
 
 var linkNumber;
-var homeLink;
 var prevLink;
 var nextLink;
 var nextTitleString;
 var linkArray = new Array(20);
 var maindoclink = new String("/doc/jartoc.html");
 
-function writeNavigation(nextTitle,home,prev,next,param) {
+function writeNavigation(nextTitle,prev,next,param) {
 
 //	hide breadcrumbs provided since Eclipse v 3.3 to use the custom Stardust breadcrumbs
 	var styletest = getStyleSheet(".help_breadcrumbs");
