@@ -4,7 +4,7 @@ define(["./m_images","./m_menuFactory","./m_operators"],function(images,menuFact
               var metaData=meta.split("|"),
                   $span,
                   categoryPrefix,
-                  $opBadge=$("<div class='ipp-badge pointy nudgeLeft pop' title=''>" + metaData[1] + "</div>"),
+                  $opBadge=$("<div class='ipp-badge pointy nudgeLeft pop' title=''></div>"),
                   category=metaData[2],
                   currentOp=metaData[1],
                   modelText=metaData[0],
@@ -13,6 +13,7 @@ define(["./m_images","./m_menuFactory","./m_operators"],function(images,menuFact
                   needTooltip=false,
                   $prefix="",
                   popover,
+                  tempOp,
                   $img,
                   settings,
                   colType,
@@ -22,6 +23,10 @@ define(["./m_images","./m_menuFactory","./m_operators"],function(images,menuFact
                   menuRows,
                   tempRowString,
                   $dialog;
+              
+              /*Populate the correct symbol for our operator name*/
+              tempOp=operators.getOperatorByOpName(metaData[1]);
+              $opBadge.append(tempOp.symbol || "NOOP");
               
               /*convert our meta text header to a data attribute to attach to the
               DOM conversion of the original text header.*/

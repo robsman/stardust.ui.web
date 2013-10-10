@@ -55,17 +55,19 @@ define(["./m_operators","./m_utilities"],function(operators,utils){
 		            	    metaArray=meta.split("|");
 	            	    
 	            	    if(metaArray.length > 2){
-	            	    	metaArray.splice(1,1,mySymbol);
+	            	    	metaArray.splice(1,1,myOperator);
 	            	    	meta=metaArray.join("|");
 	            	    }
 	            	    console.log("Hash for: " + mySymbol + " " + utils.hashString(mySymbol));
 	                    colHeaders.splice(col,1,meta);
+	                    instance.render();
 	                    $opBadge.attr("data-meta-head",meta); 
 	                    $opBadge.attr("data-operator", myOperator);
 	                    $opBadge.attr("title",opText);
 	                    $opBadge.text(mySymbol);
 	                    event.stopPropagation();
 	            	    $dialog.dialog("close");  
+	            	    console.log(myOperator);
 	            	    //$dialog.dialog("destroy");
 	            	  });
 	              return $dialog;

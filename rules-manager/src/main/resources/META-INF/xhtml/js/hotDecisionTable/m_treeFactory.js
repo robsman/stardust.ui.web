@@ -73,7 +73,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
            }
            
            /*otherwise build our col config obj and add to our table*/
-           obj.hdr=model + "|=|" + category;
+           obj.hdr=model + "|EqualTo|" + category;
            obj.type=colType;
            obj.type.ref=refObj;
            obj.category=category;

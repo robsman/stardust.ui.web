@@ -162,6 +162,19 @@ define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 				CAT_NUMERIC: catNumeric,
 				CAT_DATE:    catDate
 		},
+		getOperatorByOpName: function(val){
+		  var opCount=operators.length,
+		  	  retOp="NA",
+              tempOp;
+		  while(opCount--){
+		    tempOp=operators[opCount];
+		    if(tempOp.operator === val){
+		      retOp = tempOp;
+		      break;
+		    }
+		  }
+		  return retOp;	
+		},
 		getOperators: function(category){
 		  var opCount=operators.length,
 		      matchedOps=[],
