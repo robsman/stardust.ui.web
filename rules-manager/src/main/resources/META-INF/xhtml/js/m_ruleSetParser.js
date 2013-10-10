@@ -1,9 +1,94 @@
 define(["rules-manager/js/hotDecisionTable/m_operators",
-        "rules-manager/js/hotDecisionTable/m_utilities"],function(operators,utils){
+        "rules-manager/js/hotDecisionTable/m_utilities",
+        "rules-manager/js/RuleSet",
+        "rules-manager/js/TechnicalRule",
+        "rules-manager/js/DecisionTable"],
+        function(operators,utils,m_RuleSet,m_TechnicalRule,m_DecisionTable){
+	
+	/* m_RuleSet is not being injected through the define function. Current
+	 * workaround is to simply inject the object we need through our function call(s)*/
+	var __fromPreDRLFormat=function(data,ver,RS){
+		var rSet={},
+			key,       /*Key var for our for loop*/
+			tempRule,  /*temp techrule obj for - for loop*/
+			tempTable, /*temp dectable obj for -for loop*/
+		    l_RuleSet=m_RuleSet || RS; /*hack for undefined m_RuleSet dependency*/
+		
+		switch(ver){
+			case "0.1":
+				rSet.uuid=data.uuid;
+				rSet.id=data.id;
+				rSet.name=data.name;
+				rSet.creationDate=data.creationDate;
+				rSet.lastModificationDate=data.lastModificationDate;
+				rSet=$.extend({},RS,rSet);
+				rSet.parameterDefinitions=data.facts;
+				for(key in data.rules){
+					if(data.rules.hasOwnProperty(key)){
+						tempRule=data.rules[key];
+						rSet.technicalRules[key]=$.extend(m_TechnicalRule.create(),tempRule);
+					}
+				}
+				for(key in data.decisionTables){
+					if(data.decisionTables.hasOwnProperty(key)){
+						tempTable=data.decisionTables[key];
+						rSet.decisionTables[key]=$.extend(m_DecisionTable.create(),tempTable);
+					}
+				}
+				break;
+			default:
+				rSet={"Error": "Unsupported Version",
+					  "data": data,
+					  "ver": ver};
+		}
+		return rSet;
+	};
+	
+	var fromJSONStringify=function(data,ver,RS){
+		var key;
+		var rSet;
+		switch (ver){
+			case "0.0":
+				rSet=$.extend({},RS,data);
+				for(key in rSet.technicalRules){
+					if (rSet.technicalRules.hasOwnProperty(key)){
+						rSet.technicalRules[key]=$.extend(m_TechnicalRule.create(),rSet.technicalRules[key]);
+					}
+				}
+				for(key in rSet.decisionTables){
+					if (rSet.decisionTables.hasOwnProperty(key)){
+						rSet.decisionTables[key]=$.extend(m_DecisionTable.create(),rSet.decisionTables[key]);
+					}
+				}
+				break;
+			default:
+				rSet={"Error": "Unsupported Version",
+					  "data": data,
+					  "ver": ver};
+		}
+		return rSet;
+	};
+	
 	return {
 		/*return JSON string primed for parsing into DRL*/
+		fromPreDRLformat: function(data,serializer,RS){
+			var serializer=data.serializer || serializer,
+			    rSet;
+			switch (serializer.method){
+				case "m_ruleSetParser.toPreDRLFormat":
+					rSet=__fromPreDRLFormat(data,serializer.version,RS);
+					break;
+				case "JSON.stringify":
+					rSet=fromJSONStringify(data,serializer.version,RS);
+					break;
+				default:
+					rSet={"Error": "Unsupported Method",
+						  "data": data,
+						  "serializer": serializer};
+			}
+			return rSet;
+		},
 		toPreDRLFormat: function(rSet){
-			
 			var decTableCounter, /*number of decision tables in our ruleSet*/
 				i,				 /*a counter for our 'for' loop*/
 				tempTable,		 /*loop var for decision tables*/
@@ -14,6 +99,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 				opCounter,		 /*number of operators we will loop over*/
 				drlOps=[],		 /*array to hold operators corresponding to our colHeaders*/
 				key,			 /*key var to use in for-in loops*/
+				version="0.1",   /*version of the serializer code, included with data for reconstitution.*/
 				data;			 /*our return object we collect all our data into*/	
 			
 			/*basic initialization of our return object*/
@@ -33,7 +119,6 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 			/*Set our Technical Rules*/
 			data.rules=rSet.technicalRules;
 			for(key in rSet.technicalRules){	
-				/*drl of interest is private so we have to use our getter*/
 				if(rSet.technicalRules.hasOwnProperty(key)){
 					tempRule=rSet.technicalRules[key];
 					data.rules[key].drl=tempRule.getDRL();
@@ -42,7 +127,6 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 			
 			/*Set our Decision Tables*/
 			for(key in rSet.decisionTables ){
-				/*decTable of interest is private so we have to use our getter*/
 				if(rSet.decisionTables.hasOwnProperty(key)){
 					tempTable=rSet.decisionTables[key];
 					data.decisionTables[key]=tempTable;
@@ -62,6 +146,11 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 					};
 				}
 			}
+			data.serializer={
+				"version": version,
+				"method" : "m_ruleSetParser.toPreDRLFormat",
+				"dateTime" :  new Date().toString()
+			};
 			return data;
 		}
 	};

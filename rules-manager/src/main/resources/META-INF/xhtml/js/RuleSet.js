@@ -18,6 +18,9 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			getRuleSets()[ruleSet.uuid] = ruleSet;
 			return ruleSet;
 		},
+		createFromJSON : function(data,serializer){
+			return m_ruleSetParser.fromPreDRLformat(data,serializer,new RuleSet());
+		},
 		deleteRuleSet : function(uuid) {
 			delete getRuleSets()[uuid];
 		},
@@ -96,6 +99,23 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets"
 		}, {
 			"success" : function(json) {
+				/********/
+				var key,
+					ruleSetHashMap={},
+					tempRset,
+					jsonRset,
+					defaultSerializer={method:"JSON.stringify",version:"0.0"};
+				
+				for(key in json){
+					if(json.hasOwnProperty(key)){
+						jsonRset=json[key];
+						tempRset=m_ruleSetParser.fromPreDRLformat(jsonRset,defaultSerializer,new RuleSet());
+						ruleSetHashMap[key]=tempRset;
+					}
+				}
+				window.top.ruleSets = ruleSetHashMap;
+				return
+				/********/
 				window.top.ruleSets = json;
 				bindRuleSets();
 			},

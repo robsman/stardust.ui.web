@@ -37,10 +37,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         snapShots: {
         	hiddenColumns:{}
         },
-        beforeKeyDown: function(event){
-        	console.log("Before KeyDown");
-        	console.log(event);
-        },
         contextMenu: {
         	callback: function(key,options){
         		var rootSelector=options.selector.split(" ")[0];
@@ -76,7 +72,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
                     	colValue: ch[0]});
                     break;
         		default:
-        			console.log("Unsupported contextMenu key.");
+        			console.log("Unsupported contextMenu key: " + key);
         		}
         	},
         	items:{
@@ -131,14 +127,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         		}}
         	}
         },
-        beforeChange: function(changes,source){
-        	console.log("BeforeChange- THIS");
-        	console.log(source);
-        },
-        afterChange: function (changes, source){
-        	console.log("AfterChange- THIS");
-        	console.log(source);
-        },
         afterColumnMove: function(oldIndex,newIndex){
         	/*HoT does not actually move the underlying config and data, so we have to.
         	 *HoT will only modify its manualColumnPositions array which is pure UI sugar
@@ -162,12 +150,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             	this.PluginHooks.run('persistentStateSave', 'manualColumnPositions', this.manualColumnPositions);
         	}
         	
-        },
-        afterRemoveRow: function(index,amount){
-          //console.log("afterRemoveRow");
-        },
-        afterCreateRow: function(index,amount){
-          //console.log("afterCreateRow");
         },
         afterGetColHeader: function(col,TH){
           /*check if we have a plain text meta header that needs to be converted 
@@ -337,7 +319,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         		  }
         		  condDict[factType].push(tempCond);
         	  }
-        	  console.log(condDict);
         	  factType=factType.replace(" ","_");
         	  for(condKey in condDict){
         		  condClause="";
@@ -359,7 +340,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
 	        		   allConditions += condClause;
         		  }
         	  }
-        	  console.log(allConditions);
         	  /*******************/
         	  /*now we have our row prepped as a JSON object we can examine in order
         	   * to generate our DRL.*/

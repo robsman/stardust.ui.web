@@ -1,13 +1,15 @@
 /*Implement all type mapping functions here (any function which
  * maps to or from an IPP type).
  * */
-define([],function(){
+define(["jquery"],function($){
 
 	var format="yy-mm-dd",
 	    today = new Date();
 	/*dependency on jqueryui datepicker for formatting.*/
 	try{
 	today=$.datepicker.formatDate(format, new Date());
+	console.log("Calcualting today...");
+	console.log(today);
 	}catch (err){
 		console.log("Error formatting default date. " + err);
 	}
@@ -34,6 +36,7 @@ define([],function(){
 		  case "DOUBLE":
 			  hotType={type: "numeric","default":0};
 			  break;
+		  case "XSD:DATETIME":
 		  case "XSD:DATE":
 		  case "TIMESTAMP":
 			  hotType={type:"date", "default": today,dateFormat: format};
