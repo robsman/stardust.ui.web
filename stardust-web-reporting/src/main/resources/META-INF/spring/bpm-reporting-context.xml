@@ -11,14 +11,15 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.bpm_reporting" />
-	
+
 	<bean name="bpmReportingMessages"
 		class="org.eclipse.stardust.ui.web.bpm_reporting.portal.messages.Messages"
 		scope="session">
 	</bean>
 
 	<bean id="reportingService"
-		class="org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService">
+		class="org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService"
+		scope="session">
 	</bean>
 
 	<bean id="reportDefinitionView"

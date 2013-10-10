@@ -31,20 +31,18 @@ define(
 						report, masterController) {
 					this.report = report;
 
-					for ( var scope in this.report.parameters) {
-						var parameterSet = this.report.parameters[scope];
+					for ( var id in this.report.parameters) {
+						var parameter = this.report.parameters[id];
+						var value = jQuery.url().param("parameter_" + id);
 
-						for ( var id in parameterSet) {
-							var parameter = parameterSet[id];
-							var value = jQuery.url().param(scope + "/" + id);
-
-							if (value) {
-								console.log("Replacing parameter [" + scope
-										+ "/" + id + "] = "
-										+ this.report.parameters[scope][id]
-										+ " by " + value);
-							}
+						if (value) {
+							console.log("Replacing parameter [" 
+									+ id + "] = "
+									+ this.report.parameters[id]
+									+ " by " + value);
 						}
+						
+						parameter.value = value;
 					}
 
 					// TODO Angular may have better concepts for
@@ -406,12 +404,12 @@ define(
 					}
 
 					// TODO Check whether dimension is discrete/string
-					
+
 					for ( var n = 0; n < seriesGroup.length; ++n) {
 						for ( var m = 0; m < seriesGroup[n].length; ++m) {
 							if (seriesGroup[n][m][0] === "__UNDEFINED") {
 								seriesGroup[n][m][0] = "(Undefined)"; // TODO
-																		// I18N
+								// I18N
 							}
 						}
 					}
@@ -526,16 +524,18 @@ define(
 					}
 
 					// TODO Remove?
-//					if (this.getPrimaryObject().supportsDescriptors) {
-//						for ( var l in this.reportingService.modelData.descriptors) {
-//							var descriptor = this.reportingService.modelData.descriptors[l];
-//
-//							columns.push({
-//								id : l,
-//								name : descriptor.name
-//							});
-//						}
-//					}
+					// if (this.getPrimaryObject().supportsDescriptors) {
+					// for ( var l in
+					// this.reportingService.modelData.descriptors) {
+					// var descriptor =
+					// this.reportingService.modelData.descriptors[l];
+					//
+					// columns.push({
+					// id : l,
+					// name : descriptor.name
+					// });
+					// }
+					// }
 
 					return columns;
 				};

@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.stardust.common.StringUtils;
+import javax.annotation.Resource;
+
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -30,8 +31,6 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.FilterAndTerm;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
@@ -48,15 +47,18 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.engine.ws.WebServiceEnv;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
-public class ReportingService extends ClientEnvironmentAware {
+public class ReportingService {
+	@Resource
+	private SessionContext sessionContext;
 	private DocumentManagementService documentManagementService;
 	private UserService userService;
 	private QueryService queryService;
@@ -190,36 +192,8 @@ public class ReportingService extends ClientEnvironmentAware {
 		});
 	}
 
-	/**
-	 * 
-	 */
-	private void prepareEnvironment() {
-		String[] userPwd = usernamePassword();
-		WebServiceEnv.setCurrentCredentials(userPwd[0], userPwd[1]);
-		WebServiceEnv.setCurrentSessionProperties(properties());
-
-		// System.out.println("Partition " +
-		// properties().get(SecurityProperties.PARTITION));
-		// System.out.println("Realm " +
-		// properties().get(SecurityProperties.REALM));
-		// System.out.println("Domain " +
-		// properties().get(SecurityProperties.DOMAIN));
-
-	}
-
-	/**
-	 * 
-	 */
-	private void unwindEnvironment() {
-		WebServiceEnv.removeCurrent();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
 	private ServiceFactory getServiceFactory() {
-		return WebServiceEnv.currentWebServiceEnvironment().getServiceFactory();
+		return sessionContext.getServiceFactory();
 	}
 
 	/**
@@ -265,8 +239,6 @@ public class ReportingService extends ClientEnvironmentAware {
 	 */
 	public JsonObject getModelData() {
 		try {
-			prepareEnvironment();
-
 			JsonObject resultJson = new JsonObject();
 			JsonObject processesJson = new JsonObject();
 			JsonObject descriptorsJson = new JsonObject();
@@ -324,7 +296,6 @@ public class ReportingService extends ClientEnvironmentAware {
 
 			return resultJson;
 		} finally {
-			unwindEnvironment();
 		}
 	}
 
@@ -408,8 +379,6 @@ public class ReportingService extends ClientEnvironmentAware {
 	public JsonObject getReportData(JsonObject reportJson)
 			throws UnsupportedFilterException, ParseException {
 		try {
-			prepareEnvironment();
-
 			JsonObject dataSetJson = reportJson.get("dataSet")
 					.getAsJsonObject();
 			String dataSetType = dataSetJson.get("type").getAsString();
@@ -807,7 +776,6 @@ public class ReportingService extends ClientEnvironmentAware {
 
 			return result;
 		} finally {
-			unwindEnvironment();
 		}
 	}
 
@@ -826,75 +794,101 @@ public class ReportingService extends ClientEnvironmentAware {
 
 		for (int n = 0; n < filters.size(); ++n) {
 			JsonObject filterJson = filters.get(n).getAsJsonObject();
+			JsonPrimitive valueJson = null;
+			JsonArray valuesJson = null;
 
-			System.out.println("Filter: " + filterJson.toString());
+			if (filterJson.get("value").isJsonPrimitive()) {
+				valueJson = filterJson.get("value").getAsJsonPrimitive();
+			} else if (filterJson.get("value").isJsonArray()) {
+				valuesJson = filterJson.get("value").getAsJsonArray();
+			} else {
+				throw new IllegalArgumentException(
+						"Unexpected type for filter value of filter "
+								+ filterJson.get("dimension").getAsString()
+								+ ".");
+			}
 
-			// TODO: These need to be overwritten by parameters
+			JsonElement parameterValueJson = null;
 
-			JsonArray valuesJson = filterJson.get("values").getAsJsonArray();
+			// Overwrite by parameter, if parameter is set
+
+			if (parametersJson.has("filters."
+					+ filterJson.get("dimension").getAsString())) {
+
+				parameterValueJson = parametersJson
+						.get("filters."
+								+ filterJson.get("dimension").getAsString())
+						.getAsJsonObject().get("value");
+			}
 
 			if (filterJson.get("dimension").getAsString().equals("processName")) {
-				if (!valuesJson.get(0).isJsonNull()) {
-					query.where(new ProcessDefinitionFilter(valuesJson.get(0)
-							.getAsString()));
+				if (!valueJson.isJsonNull()) {
+					query.where(new ProcessDefinitionFilter(
+							parameterValueJson == null
+									|| parameterValueJson.isJsonNull() ? valueJson
+									.getAsString() : parameterValueJson
+									.getAsString()));
 				}
 
 				break;
 			} else {
 				if (filterJson.get("dimension").getAsString()
 						.equals("startTimestamp")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ProcessInstanceQuery.START_TIME
 								.greaterOrEqual(dateFormat.parse(
-										valuesJson.get(0).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 
-					if (!valuesJson.get(1).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ProcessInstanceQuery.START_TIME
 								.lessOrEqual(dateFormat.parse(
-										valuesJson.get(1).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("terminationTimestamp")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ProcessInstanceQuery.TERMINATION_TIME
 								.greaterOrEqual(dateFormat.parse(
-										valuesJson.get(0).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 
-					if (!valuesJson.get(1).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ProcessInstanceQuery.TERMINATION_TIME
 								.lessOrEqual(dateFormat.parse(
-										valuesJson.get(1).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("priority")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						if (filterJson.get("operator").getAsString()
 								.equals("equal")) {
-							query.where(ProcessInstanceQuery.PRIORITY
-									.isEqual(valuesJson.get(0).getAsLong()));
+							query.where(ProcessInstanceQuery.PRIORITY.isEqual(parameterValueJson == null
+									|| parameterValueJson.isJsonNull() ? valueJson
+									.getAsLong() : parameterValueJson
+									.getAsLong()));
 						}
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("startingUserName")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						// TODO Find user by account and use OID
 						if (filterJson.get("operator").getAsString()
 								.equals("equals")) {
 							query.where(ProcessInstanceQuery.STARTING_USER_OID
-									.isEqual(valuesJson.get(0).getAsLong()));
+									.isEqual(valueJson.getAsLong()));
 						}
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("state")) {
+					if (parameterValueJson != null
+							&& !parameterValueJson.isJsonNull()) {
+						valuesJson = parameterValueJson.getAsJsonArray();
+					}
+
 					ProcessInstanceState[] processInstanceStates = new ProcessInstanceState[valuesJson
 							.size()];
 
@@ -902,9 +896,6 @@ public class ReportingService extends ClientEnvironmentAware {
 						if (valuesJson.get(m).isJsonNull()) {
 							break;
 						}
-
-						System.out.println("State: "
-								+ valuesJson.get(m).getAsString());
 
 						if (valuesJson.get(m).getAsString().equals("Created")) {
 							processInstanceStates[m] = ProcessInstanceState.Created;
@@ -928,25 +919,45 @@ public class ReportingService extends ClientEnvironmentAware {
 							processInstanceStates);
 
 					query.where(processStateFilter);
-
 				} else {
 					// Descriptors
 
 					if (filterJson.get("operator").getAsString()
 							.equals("equal")) {
-						query.where(DataFilter.isEqual(
-								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+						query.where(DataFilter
+								.isEqual(
+										filterJson.get("dimension")
+												.getAsString(),
+										parameterValueJson == null
+												|| parameterValueJson
+														.isJsonNull() ? valueJson
+												.getAsString()
+												: parameterValueJson
+														.getAsString()));
 					} else if (filterJson.get("operator").getAsString()
 							.equals("equal")) {
-						query.where(DataFilter.notEqual(
-								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+						query.where(DataFilter
+								.notEqual(
+										filterJson.get("dimension")
+												.getAsString(),
+										parameterValueJson == null
+												|| parameterValueJson
+														.isJsonNull() ? valueJson
+												.getAsString()
+												: parameterValueJson
+														.getAsString()));
 					} else if (filterJson.get("operator").getAsString()
 							.equals("notEqual")) {
-						query.where(DataFilter.notEqual(
-								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+						query.where(DataFilter
+								.notEqual(
+										filterJson.get("dimension")
+												.getAsString(),
+										parameterValueJson == null
+												|| parameterValueJson
+														.isJsonNull() ? valueJson
+												.getAsString()
+												: parameterValueJson
+														.getAsString()));
 					}
 				}
 			}
@@ -974,78 +985,74 @@ public class ReportingService extends ClientEnvironmentAware {
 
 			// TODO: These need to be overwritten by parameters
 
-			JsonArray valuesJson = filterJson.get("values").getAsJsonArray();
+			JsonObject valueJson = filterJson.get("values").getAsJsonObject();
 
 			if (filterJson.get("dimension").getAsString().equals("processName")) {
-				if (!valuesJson.get(0).isJsonNull()) {
-					query.where(new ProcessDefinitionFilter(valuesJson.get(0)
+				if (!valueJson.isJsonNull()) {
+					query.where(new ProcessDefinitionFilter(valueJson
 							.getAsString()));
 				}
 
 				break;
 			} else if (filterJson.get("dimension").getAsString()
 					.equals("activityName")) {
-				if (!valuesJson.get(0).isJsonNull()) {
-					query.where(new ActivityFilter(valuesJson.get(0)
-							.getAsString()));
+				if (!valueJson.isJsonNull()) {
+					query.where(new ActivityFilter(valueJson.getAsString()));
 				}
 
 				break;
 			} else {
 				if (filterJson.get("dimension").getAsString()
 						.equals("startTimestamp")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ActivityInstanceQuery.START_TIME
 								.greaterOrEqual(dateFormat.parse(
-										valuesJson.get(0).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 
-					if (!valuesJson.get(1).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ProcessInstanceQuery.START_TIME
 								.lessOrEqual(dateFormat.parse(
-										valuesJson.get(1).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("lastModificationTimestamp")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
 								.greaterOrEqual(dateFormat.parse(
-										valuesJson.get(0).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 
 					}
 
-					if (!valuesJson.get(1).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
 								.lessOrEqual(dateFormat.parse(
-										valuesJson.get(1).getAsString())
-										.getTime()));
+										valueJson.getAsString()).getTime()));
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("criticality")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						if (filterJson.get("operator").getAsString()
 								.equals("equal")) {
 							query.where(ActivityInstanceQuery.CRITICALITY
-									.isEqual(valuesJson.get(0).getAsLong()));
+									.isEqual(valueJson.getAsLong()));
 						}
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("participantPerformerName")) {
-					if (!valuesJson.get(0).isJsonNull()) {
+					if (!valueJson.isJsonNull()) {
 						// TODO Find user by account and use OID
 						if (filterJson.get("operator").getAsString()
 								.equals("equals")) {
 							query.where(ActivityInstanceQuery.CURRENT_PERFORMER_OID
-									.isEqual(valuesJson.get(0).getAsLong()));
+									.isEqual(valueJson.getAsLong()));
 						}
 					}
 				} else if (filterJson.get("dimension").getAsString()
 						.equals("state")) {
+					JsonArray valuesJson = valueJson.getAsJsonArray();
 					ActivityInstanceState[] activityInstanceStates = new ActivityInstanceState[valuesJson
 							.size()];
 
@@ -1094,17 +1101,17 @@ public class ReportingService extends ClientEnvironmentAware {
 							.equals("equal")) {
 						query.where(DataFilter.isEqual(
 								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+								valueJson.getAsString()));
 					} else if (filterJson.get("operator").getAsString()
 							.equals("equal")) {
 						query.where(DataFilter.notEqual(
 								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+								valueJson.getAsString()));
 					} else if (filterJson.get("operator").getAsString()
 							.equals("notEqual")) {
 						query.where(DataFilter.notEqual(
 								filterJson.get("dimension").getAsString(),
-								valuesJson.get(0).getAsString()));
+								valueJson.getAsString()));
 					}
 				}
 			}
@@ -1118,8 +1125,6 @@ public class ReportingService extends ClientEnvironmentAware {
 	 */
 	public void saveReportDefinition(JsonObject json) {
 		try {
-			prepareEnvironment();
-
 			JsonObject reportJson = json.get("report").getAsJsonObject();
 			JsonObject storageJson = reportJson.get("storage")
 					.getAsJsonObject();
@@ -1129,14 +1134,12 @@ public class ReportingService extends ClientEnvironmentAware {
 			Folder folder = null;
 
 			if (location.equals("personalFolder")) {
-				folder = getOrCreatePublicReportDefinitionFolder(true);
+				folder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
 			} else if (location.equals("publicFolder")) {
-				folder = getOrCreatePublicReportDefinitionFolder(true);
+				folder = findOrCreateFolder(getUserDocumentFolderPath());
 			} else if (location.equals("participantFolder")) {
-				folder = getOrCreatePublicReportDefinitionFolder(true);
-				// path = "/participants/"
-				// + storageJson.get("participant").getAsString() + "/"
-				// + name;
+				folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson
+						.get("participant").getAsString()));
 			}
 
 			saveReportDefinitionDocument(reportJson, folder, name);
@@ -1148,7 +1151,6 @@ public class ReportingService extends ClientEnvironmentAware {
 
 			System.out.println(reportDefinitionJsons);
 		} finally {
-			unwindEnvironment();
 		}
 	}
 
@@ -1158,8 +1160,6 @@ public class ReportingService extends ClientEnvironmentAware {
 	 */
 	public void renameReportDefinition(String path, String name) {
 		try {
-			prepareEnvironment();
-
 			// Replace in cache
 
 			JsonObject reportJson = reportDefinitionJsons.remove(path);
@@ -1167,7 +1167,6 @@ public class ReportingService extends ClientEnvironmentAware {
 			reportDefinitionJsons.put(
 					renameReportDefinitionDocument(path, name), reportJson);
 		} finally {
-			unwindEnvironment();
 		}
 	}
 
@@ -1200,33 +1199,46 @@ public class ReportingService extends ClientEnvironmentAware {
 	 */
 	public JsonObject deleteReportDefinition(JsonObject json) {
 		try {
-			prepareEnvironment();
-
 			deleteReportDefinitionDocument(json.get("path").getAsString());
 
 			return new JsonObject();
 		} finally {
-			unwindEnvironment();
 		}
 	}
 
 	// ===
 
 	private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
-	private static final String PERSONAL_REPORT_DEFINITIONS_DIR = "/realms/carnot/users/motu/documents/reports/designs";
 
 	/**
-    *
-    */
-	private Folder getOrCreatePublicReportDefinitionFolder(boolean create) {
-		Folder folder = getDocumentManagementService().getFolder(
-				PUBLIC_REPORT_DEFINITIONS_DIR);
+	 * 
+	 * @return
+	 */
+	private Folder findOrCreateFolder(String path) {
+		Folder folder = getDocumentManagementService().getFolder(path);
 
-		if (folder == null && create) {
-
+		if (folder == null) {
 		}
 
 		return folder;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private String getUserDocumentFolderPath() {
+		return "/realms/" + getUserService().getUser().getRealm().getId()
+				+ "/users/" + getUserService().getUser().getId()
+				+ "/documents/reports/designs";
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private String getParticipantDocumentFolderPath(String participant) {
+		return "/participants/" + participant + "/documents/reports/designs";
 	}
 
 	/**
@@ -1234,11 +1246,8 @@ public class ReportingService extends ClientEnvironmentAware {
 	 */
 	public JsonObject loadReportDefinitions() {
 		try {
-			prepareEnvironment();
-
-			Folder publicFolder = getOrCreatePublicReportDefinitionFolder(true);
-			Folder personalFolder = getDocumentManagementService().getFolder(
-					PERSONAL_REPORT_DEFINITIONS_DIR);
+			Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
+			Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
 			JsonObject rootFolderJson = new JsonObject();
 			JsonArray subFoldersJson = new JsonArray();
 
@@ -1321,7 +1330,6 @@ public class ReportingService extends ClientEnvironmentAware {
 
 			return rootFolderJson;
 		} finally {
-			unwindEnvironment();
 		}
 	}
 

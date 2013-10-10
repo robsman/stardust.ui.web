@@ -577,6 +577,10 @@ define(
 				 */
 				ReportDefinitionController.prototype.getEnumerators = function(
 						dimension) {
+					if (!dimension) {
+						return null;
+					}
+
 					var qualifier = dimension.enumerationType.split(":");
 
 					return this.reportingService.getEnumerators(qualifier[0],
@@ -589,18 +593,14 @@ define(
 				ReportDefinitionController.prototype.addFilter = function() {
 					var index = this.report.dataSet.filters.length;
 
-					console.log(index);
-
 					this.report.dataSet.filters.push({
 						index : index,
-						values : [ null, null ],
+						value : null,
 
 						// TODO: Operator only for respective types
 
 						operator : "equal"
 					});
-
-					console.debug(this.report.dataSet.filters);
 				};
 
 				/**
@@ -610,24 +610,31 @@ define(
 						index) {
 					var newFilters = [];
 
-					console.log(index);
-					console.log(this.report.dataSet.filters);
-
 					for ( var n = 0; n < this.report.dataSet.filters.length; ++n) {
-						console.log(n);
-
 						if (n == index) {
 							continue;
 						}
 
 						newFilters.push(this.report.dataSet.filters[n]);
-
-						console.log(newFilters);
 					}
 
 					this.report.dataSet.filters = newFilters;
+				};
 
-					console.debug(this.report.dataSet.filters);
+				/**
+				 * Filters are stored in an array. Retrieves a filter by ID from
+				 * that array.
+				 */
+				ReportDefinitionController.prototype.getFilterByDimension = function(
+						dimension) {
+					for ( var n = 0; n < this.report.dataSet.filters.length; ++n) {
+						if (this.report.dataSet.filters[n].dimension == dimension) {
+							return this.report.dataSet.filters[n];
+						}
+
+						throw "No filter found with dimension " + dimension
+								+ ".";
+					}
 				};
 
 				/**
@@ -635,7 +642,7 @@ define(
 				 */
 				ReportDefinitionController.prototype.onFilterDimensionChange = function(
 						index) {
-					this.report.dataSet.filters[index].values = [ null, null ];
+					this.report.dataSet.filters[index].value = null;
 
 					// TODO: Operator only for respective types
 
@@ -823,7 +830,8 @@ define(
 					this.report.parameters[id] = {
 						id : id,
 						name : name,
-						type : type
+						type : type,
+						value : null
 					};
 				};
 
@@ -890,16 +898,14 @@ define(
 				 */
 				ReportDefinitionController.prototype.getParameterDefaultValue = function(
 						id) {
-					var path = id.split(".");
+					if (id.indexOf("firstDimension") >= 0) {
+						return this.report.dataSet[id];
+					} else if (id.indexOf("firstDimension") >= 0) {
+						return this.report.dataSet[id];
+					} else if (id.indexOf("filters.") >= 0) {
+						var path = id.split(".");
 
-					if (path[0] === 'firstDimension') {
-						return this.report.firstDimension[id
-								.substring("firstDimension".length + 1)].values[0];
-					} else if (path[0] === 'secondDimension') {
-						return this.report.secondDimension[id
-								.substring("secondDimension".length + 1)].values[0];
-					} else if (path[0] === 'filters') {
-						return this.report.filters[path[1]].values[0];
+						return this.getFilterByDimension(path[1]).value;
 					}
 				};
 
