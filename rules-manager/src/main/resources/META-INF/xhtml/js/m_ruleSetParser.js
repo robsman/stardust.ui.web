@@ -5,28 +5,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/DecisionTable",
         "rules-manager/js/hotDecisionTable/m_operators"],
         function(operators,utils,m_RuleSet,m_TechnicalRule,m_DecisionTable,m_operators){
-	
-	/*utility function to ensure our stored colHeader symbols matc hthe RuleOperator. This
-	 * is to ensure that improper char-set encodings do not FUBAR our unicode symbols.*/
-	var syncColumnOperators=function(colHeaders,RuleOperators){
-		var counter=colHeaders.length,
-			tempOp,
-			opName,
-			i,
-			trueSymbol,
-			tempArr;
-		debugger;
-		for(i=0;i<counter;i++){
-			tempArr=colHeaders[i].split("|");
-			opName=RuleOperators[i];
-			tempOp=m_operators.getOperatorByOpName(opName);
-			tempArr[1]=tempOp.symbol;
-			colHeaders[i]=tempArr.join("|");
-		}
-		return colHeaders;
-	}
-	
-	
+		
 	/* m_RuleSet is not being injected through the define function. Current
 	 * workaround is to simply inject the object we need through our function call(s)*/
 	var __fromPreDRLFormat=function(data,ver,RS){
@@ -56,13 +35,6 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 					if(data.decisionTables.hasOwnProperty(key)){
 						tempTable=data.decisionTables[key];
 						rSet.decisionTables[key]=$.extend(m_DecisionTable.create(),tempTable);
-						/*
-						txColHdrs=syncColumnOperators(
-								rSet.decisionTables[key].tableData.colHeaders,
-								rSet.decisionTables[key].tableData.drlOperators ||
-								rSet.decisionTables[key].tableData.RuleOperators);
-						rSet.decisionTables[key].tableData.colHeaders=txColHdrs;
-						*/
 					}
 				}
 				break;
@@ -162,15 +134,6 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 					data.decisionTables[key]=tempTable;
 					tempData=tempTable.getTableData();
 					opCounter=tempData.colHeaders.length;
-					/*
-					for(i=0;i<opCounter;i++){
-						hashCode=utils.hashString(tempData.colHeaders[i].split("|")[1]);
-						tempOp=operators.getOperatorByHashCode(hashCode);
-						console.log("looking up operators...");
-						console.log(tempData.colHeaders[i].split("|")[1] + " : " + tempOp.operator);
-						console.log(tempOp);
-						drlOps.push(tempOp.operator);
-					}*/
 					data.decisionTables[key].tableData={
 							columns: tempData.columns,
 							data: tempData.data,
