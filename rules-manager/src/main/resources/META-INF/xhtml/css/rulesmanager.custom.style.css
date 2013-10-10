@@ -49,7 +49,10 @@ body{
   padding:0 4px;
 }
 .jstree-search {
-  background-color:#FF0000;
+  background-color:#dddddd;
+}
+.jstree-default a.jstree-search{
+	color:#000000;
 }
 .inset{
   -webkit-box-shadow:inset 0 0 85 rgba(0,0,0,.5);
