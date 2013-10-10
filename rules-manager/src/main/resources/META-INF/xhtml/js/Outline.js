@@ -421,14 +421,11 @@ define(
 			}
 			
 			function saveAllRules() {
-				var arr=[],
-					hm2=[],
-					tempRs,
-					counter;
+				var rsArray=[];
 				
-				//Convert each RuleSet to its transformed object
+				//Convert each RuleSet to its transformed JSON object
 				jQuery.each(RuleSet.getRuleSets(),function(){
-					hm2.push(this.toJSON("PRE-DRL"));
+					rsArray.push(this.toJSON("PRE-DRL"));
 				});
 				
 				m_communicationController
@@ -436,7 +433,7 @@ define(
 								{
 									url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/save"
 								},
-								JSON.stringify(hm2),
+								JSON.stringify(rsArray),
 								new function() {
 									return {
 										success : function(data) {
