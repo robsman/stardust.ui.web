@@ -163,12 +163,12 @@
 			            },
 			            {
 			                "label": "{label}",
-			                "id": "Int/TechnicalRuleView/:id",
+			                "id": "Int/technicalRuleView/:id",
 			                "iconBase":"viewIconBase :icon",
 			                "icon":"viewIconBase tabIcon-generic",
 			                "module": "bpm-ui",
 			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/TechnicalRuleView.html"
+			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/technicalRuleView.html"
 			            }
 					]
 				}
