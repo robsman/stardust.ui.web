@@ -16,8 +16,8 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_model" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils, m_model) {
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_ruleSetsHelper" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils, m_model, m_ruleSetsHelper) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -440,6 +440,8 @@ define(
 						}
 					}
 					this.populateEngineAccessPoints(this.inputAccessPointSelectInput);
+					this.populateRulesInAccesspoints(this.inputAccessPointSelectInput);
+					
 				};
 
 				/**
@@ -510,6 +512,7 @@ define(
 						}
 					}
 					this.populateEngineAccessPoints(this.outputAccessPointSelectInput);
+					this.populateRulesOutAccesspoints(this.outputAccessPointSelectInput);
 				};
 
 				/**
@@ -536,6 +539,74 @@ define(
 							option += "</option>";
 
 							group.append(option);
+						}	
+					}
+				};
+				
+				/**
+				 *
+				 */
+				DataFlowBasicPropertiesPage.prototype.populateRulesInAccesspoints = function(inputElement) {
+					// Generate engine context access points for all data in the model,
+					// for sub-process activities with where copyAllData is disabled.
+					if (this.getModelElement()
+							&& this.getModelElement().activity
+							&& this.getModelElement().activity.activityType === m_constants.TASK_ACTIVITY_TYPE
+							&& this.getModelElement().activity.attributes["ruleSetId"]) {						
+						var ruleOptGroupName = m_i18nUtils.getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
+						var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName + "'/>");
+						inputElement.append(group);
+						var ruleSets = m_ruleSetsHelper.getRuleSets();
+						if (ruleSets) {
+							var rule = ruleSets[this.getModelElement().activity.attributes["ruleSetId"]];
+							if (rule) {
+								for (var i in rule.parameterDefinitions) {
+									var param = rule.parameterDefinitions[i];
+									if (param.direction === "IN" || param.direction === "INOUT") {
+										var option = "<option value='engine:";
+										option += param.id;
+										option += "'>";
+										option += param.name;
+										option += "</option>";
+
+										group.append(option);
+									}
+								}
+							}
+						}	
+					}
+				};
+				
+				
+				/**
+				 *
+				 */
+				DataFlowBasicPropertiesPage.prototype.populateRulesOutAccesspoints = function(inputElement) {
+					// Generate engine context access points for all data in the model,
+					// for sub-process activities with where copyAllData is disabled.
+					if (this.getModelElement()
+							&& this.getModelElement().activity
+							&& this.getModelElement().activity.activityType === m_constants.TASK_ACTIVITY_TYPE
+							&& this.getModelElement().activity.attributes["ruleSetId"]) {						
+						var ruleOptGroupName = m_i18nUtils.getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
+						var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName + "'/>");
+						inputElement.append(group);
+						if (ruleSets) {
+							var rule = ruleSets[this.getModelElement().activity.attributes["ruleSetId"]];
+							if (rule) {
+								for (var i in rule.parameterDefinitions) {
+									var param = rule.parameterDefinitions[i];
+									if (param.direction === "OUT" || param.direction === "INOUT") {
+										var option = "<option value='engine:";
+										option += param.id;
+										option += "'>";
+										option += param.name;
+										option += "</option>";
+
+										group.append(option);
+									}
+								}
+							}
 						}	
 					}
 				};
