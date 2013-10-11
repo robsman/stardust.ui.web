@@ -41,10 +41,10 @@ function writeNavigation(nextTitle,prev,next,param) {
     nextLink = next;
     nextTitleString = nextTitle;
 
-	linkNumber = writeNavigation.arguments.length - 4;
+	linkNumber = writeNavigation.arguments.length - 3;
 	if (linkNumber >= 0) {
     	for (var i = 0; i < linkNumber; i++) {
-    		linkArray[i] = writeNavigation.arguments[i+4];
+    		linkArray[i] = writeNavigation.arguments[i+3];
     	}
 		line();
 	}
