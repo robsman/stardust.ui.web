@@ -16,7 +16,7 @@
   - you need an Infinity installation or you have to execute at least the latakia build file
 -->
 
-<project name="web.modeler" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+<project name="stardust-rules-manager" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
 
    <property name="project.dir" value="." />
    <property name="project.src" value="${project.dir}/src/main/java" />
@@ -25,7 +25,7 @@
    <property file="${project.etc}/private.properties" />
 
    <property name="organizationId" value="com.infinity.bpm" />
-   <property name="artifactId" value="stardust-web-modeler" />
+   <property name="artifactId" value="stardust-rules-manager" />
 
    <import file="${project.dir}/../../build.tools/commons-build.xml" />
 
@@ -61,10 +61,10 @@
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.src.none" location="${build.dir}/src-none" />
 
-      <property name="web.modeler.jarfile" value="${artifactId}.jar" />
-      <property name="web.modeler.jar" value="${build.lib}/${web.modeler.jarfile}" />
-      <property name="web.modeler.src-jarfile" value="${artifactId}-sources.jar" />
-      <property name="web.modeler.src-jar" value="${build.lib.src}/${web.modeler.src-jarfile}" />
+      <property name="stardust-rules-manager.jarfile" value="${artifactId}.jar" />
+      <property name="stardust-rules-manager.jar" value="${build.lib}/${stardust-rules-manager.jarfile}" />
+      <property name="stardust-rules-manager.src-jarfile" value="${artifactId}-sources.jar" />
+      <property name="stardust-rules-manager.src-jar" value="${build.lib.src}/${stardust-rules-manager.src-jarfile}" />
    </target>
 
    <target name="initBuildDirectories" depends="initBuild">
@@ -83,7 +83,7 @@
    <target name="initClasspath" depends="init">
    	<init-ivy-classpath />
 
-      <path id="web.modeler.classpath">
+      <path id="stardust-rules-manager.classpath">
          <path refid="compile.deps" />
       </path>
    </target>
@@ -117,10 +117,9 @@
       <ipp:javac-java6 destdir="${build.classes}"
          srcdir="${build.src.generated}" sourcepath="${build.src.generated}:${build.src.static}">
          <include name="**/*.java" />
-         <exclude name="**/web/modeler/edit/twophase/**" />
          <classpath id="compile6.classpath">
             <path path="${build.classes}" />
-            <path refid="web.modeler.classpath" />
+            <path refid="stardust-rules-manager.classpath" />
          </classpath>
       </ipp:javac-java6>
 
@@ -132,7 +131,7 @@
    </target>
 
    <target name="jar" depends="compile">
-      <ipp:jar jarfile="${web.modeler.jar}" implementationTitle="Model XPDL Builder">
+      <ipp:jar jarfile="${stardust-rules-manager.jar}" implementationTitle="Rules Manager">
          <fileset dir="${build.classes}" id="fileset.xpdl.builder.jar">
          	<include name="**/*.class" />
          </fileset>
@@ -141,8 +140,8 @@
    </target>
 
    <target name="jar.src" depends="compile">
-      <delete file="${web.modeler.src-jar}" />
-      <ipp:jar jarfile="${web.modeler.src-jar}" implementationTitle="Model XPDL Builder">
+      <delete file="${stardust-rules-managerr.src-jar}" />
+      <ipp:jar jarfile="${stardust-rules-manager.src-jar}" implementationTitle="Rules Manager">
          <fileset dir="${project.src}">
             <include name="**/*.java" />
          </fileset>
@@ -162,24 +161,16 @@
    </target>
 
    <target name="dist" depends="build, jar.src">
-      <!-- TODO: copy to correct location -->
-      <!-- property name="stardust.dir" value="../.." />
-      <copy file="${xpdl.builder.jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" />
-      <copy file="${xpdl.builder.src-jar}" todir="${stardust.dir}/ide/engine/org.eclipse.stardust.ide.engine.base/lib" / -->
    </target>
 
    <target name="deploy" depends="build" />
 
-   <target name="install" depends="deploy" if="maven.localRepository"
-     description="installs the artifacts into a local Maven repository">
-     <ipp:init-mvn />
-      <ipp:init-mvn />
-      <exec dir="." executable="${m2.home}/bin/${mvn.exe}" failonerror="true">
-         <arg value="install:install-file"/>
-         <arg value="-Dfile=${web.modeler.jar}"/>
-         <arg value="-DpomFile=${build.lib}/${artifactId}.pom"/>
-         <arg value="-DlocalRepositoryPath=${maven.localRepository}"/>
-      </exec>
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${reporting.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    
    <!-- target is invoked by stardust-engine-nls project -->

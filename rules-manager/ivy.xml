@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="com.infinity.bpm" module="stardust-rules-manager" revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="stardust-rules-manager-compile" description="Stardust Rules - Compile Scope" />
+      <conf name="stardust-rules-manager-compile-optional" description="Stardust Rules Manager - (Optional) Compile Scope" />
+      <conf name="stardust-rules-manager-provided" description="Stardust Rules Manager - Provided Scope" />
+      <conf name="stardust-rules-manager-runtime" description="Stardust Rules Manager - Runtime Scope" />
+      
+      <conf name="stardust-rules-manager-sources" description="Stardust Rules Manager Sources" />
+      
+      <conf name="compile" extends="stardust-rules-manager-compile, stardust-rules-manager-compile-optional, stardust-rules-manager-provided" visibility="private" description="Compile Time Dependencies" />
+      <conf name="runtime" extends="stardust-rules-manager-runtime"  visibility="private" />
+      <conf name="test" visibility="private" description="Test dependencies" />
+      <conf name="pom" description="Stardust Rules Manager - POM" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="all" visibility="private" extends="compile, runtime, test" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-rules-manager" type="jar"
+         conf="stardust-rules-manager-compile, stardust-rules-manager-compile-optional, stardust-rules-manager-provided, stardust-rules-manager-runtime"
+         ext="jar" />
+      <artifact name="stardust-rules-manager" type="source" conf="stardust-rules-manager-sources" ext="jar"  m:classifier="sources"/>
+      <artifact name="stardust-rules-manager" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+      
+      <dependency org="com.infinity.bpm" name="stardust-engine-base" rev="${ipp.version.full}"
+         conf="stardust-rules-manager-compile->stardust-engine-base-compile" />
+      <dependency org="wsdl4j" name="wsdl4j" rev="${wsdl4j.version}"
+         conf="stardust-rules-manager-compile->default" />
+      <!--dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}"
+         conf="stardust-rules-manager-compile->stardust-engine-base-compile" /--> 
+      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}"
+         conf="stardust-rules-manager-compile->ipp-portal-common-compile" />
+      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}"
+         conf="stardust-rules-manager-compile->ipp-views-common-compile" />
+      <!--dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}"
+        conf="stardust-rules-manager-compile->ipp-views-common-compile" /-->
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
+         conf="stardust-rules-manager-provided->default"/>      
+      <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" 
+         conf="stardust-rules-manager-compile->default" />
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}"
+        conf="stardust-rules-manager-compile->default" />
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}"
+        conf="stardust-rules-manager-compile->default">
+        <exclude org="org.eclipse.emf" module="org.eclipse.emf.common" />        
+      </dependency>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.xmi" rev="${org.eclipse.emf.ecore.xmi.version}"
+        conf="stardust-rules-manager-compile->default">
+        <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />        
+      </dependency>      
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.change" rev="${org.eclipse.emf.ecore.change.version}"
+        conf="stardust-rules-manager-compile->default">
+        <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />        
+      </dependency>    
+      <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="${org.eclipse.xsd.version}"
+        conf="stardust-rules-manager-compile->default" />
+        
+      <dependency org="junit" name="junit" rev="${junit.version}"
+        conf="test->default" />
+                                  
+      
+      <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
+      
+   </dependencies>
+</ivy-module>
+
