@@ -47,32 +47,14 @@
          conf="stardust-rules-manager-compile->stardust-engine-base-compile" />
       <dependency org="wsdl4j" name="wsdl4j" rev="${wsdl4j.version}"
          conf="stardust-rules-manager-compile->default" />
-      <!--dependency org="com.infinity.bpm" name="ipp-bpm-model" rev="${ipp.version.full}"
-         conf="stardust-rules-manager-compile->stardust-engine-base-compile" /--> 
       <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->ipp-portal-common-compile" />
       <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->ipp-views-common-compile" />
-      <!--dependency org="org.apache.myfaces.core" name="myfaces-api" rev="${myfaces-api.version}"
-        conf="stardust-rules-manager-compile->ipp-views-common-compile" /-->
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
          conf="stardust-rules-manager-provided->default"/>      
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" 
          conf="stardust-rules-manager-compile->default" />
-      <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}"
-        conf="stardust-rules-manager-compile->default" />
-      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}"
-        conf="stardust-rules-manager-compile->default">
-        <exclude org="org.eclipse.emf" module="org.eclipse.emf.common" />        
-      </dependency>
-      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.xmi" rev="${org.eclipse.emf.ecore.xmi.version}"
-        conf="stardust-rules-manager-compile->default">
-        <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />        
-      </dependency>      
-      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.change" rev="${org.eclipse.emf.ecore.change.version}"
-        conf="stardust-rules-manager-compile->default">
-        <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />        
-      </dependency>    
       <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="${org.eclipse.xsd.version}"
         conf="stardust-rules-manager-compile->default" />
         
