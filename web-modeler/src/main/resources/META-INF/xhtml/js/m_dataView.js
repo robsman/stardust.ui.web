@@ -121,7 +121,7 @@ define(
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(DataView.prototype, view);
-
+				var currentPrimitiveType =null;
 				/**
 				 *
 				 */
@@ -172,11 +172,31 @@ define(
 					this.timestampInputText.get(0).id = "TimestampInputText" + Math.floor((Math.random()*10000) + 1);
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
-
+					
+					var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
+					this.currentPrimitiveType = null!=primitiveDataTypeSelect ? primitiveDataTypeSelect.val():null;
+					if(null!=currentPrimitiveType)
+					this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+					
+					this.enumInputSelect = m_utils.jQuerySelect("#enumInputSelect");
+					this.enumInputSelect.change({"view" : this}, enumSelectChangeHandler);
+					
 					this.initializeModelElementView(data);
 					this.view.css("visibility", "visible");
 				};
 
+				/**
+				 * Populate the Enums for selected Enum Type
+				 */
+				DataView.prototype.updateDefaultValueForEnum = function(
+						primitiveDataTypeSelect) {
+					if (primitiveDataTypeSelect.val().match("Enumeration")) {
+						var arr = primitiveDataTypeSelect.val().split("-");
+						if (null != arr) {
+							this.populateEnumsForType(arr[1]);
+						}
+					}
+				};
 				/**
 				 *
 				 */
@@ -190,7 +210,7 @@ define(
 					this.dataTypeSelector.setDataType(this.data);
 					this.initializeDataType(this.data,
 							this.data.attributes["carnot:engine:defaultValue"]);
-
+				
 					if (!this.data.attributes["carnot:engine:visibility"] ||
 							"Public" == this.data.attributes["carnot:engine:visibility"]) {
 						this.publicVisibilityCheckbox.attr("checked", true);
@@ -241,14 +261,37 @@ define(
 					return true;
 				};
 
+				
 				/**
-				 *
+				 * Read the model and populate typeDeclaration facets
+				 */
+				DataView.prototype.populateEnumsForType = function(
+						typeDeclaration) {
+					this.enumInputSelect.empty();
+					var typeDeclarationObj = m_model
+							.findTypeDeclaration(typeDeclaration);
+					for ( var i in typeDeclarationObj.getTypeDeclaration().facets) {
+						if (typeDeclarationObj.getTypeDeclaration().facets[i].classifier=='enumeration') {
+							this.enumInputSelect.append("<option value='"
+									+ typeDeclarationObj.getTypeDeclaration().facets[i].name + "'>"
+									+ typeDeclarationObj.getTypeDeclaration().facets[i].name
+									+ "</option>");
+						}
+					}
+				};
+				/**
+				 * 
 				 */
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
-
+						if(null == this.currentPrimitiveType){
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+						}else if(null!=this.currentPrimitiveType && !this.currentPrimitiveType.match(primitiveDataTypeSelect.val())){
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+						}
+						this.currentPrimitiveType = primitiveDataTypeSelect.val();
 						var self = this;
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = primitiveDataTypeSelect.val();
@@ -269,12 +312,15 @@ define(
 									$scope.timestampInputTextError = true;
 									self.timestampInputText.val(dateValue);
 								}
-							} else {
+							}else if(primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)){
+								self.enumInputSelect.val(defaultValue);
+								$scope.enumDataType = true;
+							}else {
 								$scope.defaultValue = defaultValue;
 								if ($scope.dataType == 'boolean') {
 									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
 								}
-
+									$scope.enumDataType = false;
 								$scope.inputId = $scope.dataType + 'InputText';
 
 								// Somehow initializeDataType() gets called again and again! hence the check
@@ -318,6 +364,17 @@ define(
 							// Parse Error
 							$scope.timestampInputTextError = true;
 						}
+					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
+				}
+				
+				/**
+				 * 
+				 */
+				function enumSelectChangeHandler(event) {
+					var view = event.data.view;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+							var dateValue = view.enumInputSelect.val();
+							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateValue);
 					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 				}
 

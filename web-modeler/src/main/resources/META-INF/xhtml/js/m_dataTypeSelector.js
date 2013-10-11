@@ -255,6 +255,56 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
 									+ "</option>");
+					
+					if (this.scopeModel) {
+						this.primitiveDataTypeSelect
+								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.enum.thisModel") + "'>");
+
+						for ( var i in this.scopeModel.typeDeclarations) {
+							if (this.hideEnumerations && !this.scopeModel.typeDeclarations[i].isSequence()) continue;
+							if (this.scopeModel.typeDeclarations[i]
+							.getType() == "enumStructuredDataType"){
+								this.primitiveDataTypeSelect
+								.append("<option value='Enumeration-" + this.scopeModel.typeDeclarations[i].getFullId() + "'>"
+										+ this.scopeModel.typeDeclarations[i].name
+										+ "</option>");
+							}
+							
+						}
+					}
+					
+					if (!this.restrictToCurrentModel) {
+						this.primitiveDataTypeSelect
+								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.enum.otherModels") + "'>");
+
+						for ( var n in m_model.getModels()) {
+							if (this.scopeModel
+									&& m_model.getModels()[n] == this.scopeModel) {
+								continue;
+							}
+
+							for ( var m in m_model.getModels()[n].typeDeclarations) {
+								if (m_modelElementUtils
+										.hasPublicVisibility(m_model
+												.getModels()[n].typeDeclarations[m])) {
+									
+									if (this.hideEnumerations && !m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
+										if (m_model.getModels()[n].typeDeclarations[m]
+												.getType() == "enumStructuredDataType") {
+											this.primitiveDataTypeSelect
+													.append("<option value='Enumeration-"+m_model.getModels()[n].typeDeclarations[m].getFullId()+"'>"
+															+ m_model.getModels()[n].name
+															+ "/"
+															+ m_model.getModels()[n].typeDeclarations[m].name
+															+ "</option>");
+										}
+								}
+							}
+						}
+
+						this.primitiveDataTypeSelect.append("</optgroup>");
+					}
+
 					// Commented as we don't support Money and Calendar values yet.
 //					dataType = m_i18nUtils
 //							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.decimal");
@@ -484,10 +534,20 @@ define(
 				 */
 				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
 						primitiveDataType) {
-					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp" ];
+					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp", "Enumeration" ];
+					
 					if (primitiveDataType
 							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
 						return true;
+					}
+					else{
+						// For Enum's id is a mix of constant 'Enumueration' +
+						// structuredTypeId
+						for(var i in supportedPrimitiveTypes){
+							if(primitiveDataType.match(supportedPrimitiveTypes[i])){
+								return true;
+							}
+						}
 					}
 
 					return false;
@@ -594,6 +654,12 @@ define(
 								.val()) {
 							primitiveDataType = this.primitiveDataTypeSelect
 									.val();
+							var arr=primitiveDataType.split("-");
+							if(null!=arr){
+								primitiveDataType =arr[0];
+								structTypeFullId = arr[1];	
+							}
+							
 						} else if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect
 								.val()) {
 							structTypeFullId = this.structuredDataTypeSelect

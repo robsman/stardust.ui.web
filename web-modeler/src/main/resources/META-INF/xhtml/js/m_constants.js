@@ -276,6 +276,7 @@ define(function() {
 		DOCUMENT_DATA_TYPE : "dmsDocument",
 		ENTITY_DATA_TYPE : "entity",
 		HIBERNATE_DATA_TYPE : "hibernate",
+		ENUMERATION : "Enumeration",
 
 		// Type Declarations
 

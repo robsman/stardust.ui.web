@@ -125,6 +125,21 @@ table.layoutTable tr.widget td .widget {
 															<option class="label-struct" value="struct">Composite</option>
 															<option class="label-enum" value="enum">Enumeration</option>
 														</select>
+														<div class="widget show-when-enum">
+														<table cellpadding="0" cellspacing="0">
+														<tr>
+														<td><input id="bindJavaClassCheckbox" type="checkbox"></input></td>
+														<td><label for="bindJavaClassCheckbox" id="bindJavaClass">Bind to Java</label></td>
+														
+														
+														<td><input id="javaClassInput" name="javaClassInput" type="text"
+															style="width: 120px;" ng-model="javaClassInput"
+															ng-model-onblur ng-pattern="/([a-z][a-z_0-9]*\.)*[A-Z_]($[A-Z_]|[\w_])*/"
+															ng-disabled="javaClassBinding == false" class="widget rightAligned">
+																<div id="javaClassInputError"
+																	ng-show="form.javaClassInput.$error.pattern"
+																	style="color: red">Not a valid java class</div>
+														</td></tr></table></div>
 													</td>
 												</tr>
 												<tr id="baseTypeSelect" class="widget show-when-struct">
@@ -140,7 +155,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="minLenghtInput" name="minLenghtInput" ng-model="minLength"
 															ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget rightAligned" />
+															class="widget rightAligned" ng-disabled="javaClassBinding == true"/>
 														<div id="intMinLengthError"
 															ng-show="form.minLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 													</td>
@@ -151,7 +166,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="maxLenghtInput" name="maxLenghtInput"
 															ng-model="maxLength" ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget rightAligned" />
+															class="widget rightAligned" ng-disabled="javaClassBinding == true"/>
 														<div id="intMaxLengthError"
 															ng-show="form.maxLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 														<div id="minGreaterThanMax"
@@ -176,18 +191,18 @@ table.layoutTable tr.widget td .widget {
 																			<tr>
 																				<td><input id="addElementButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/add.png"
-																					title="Add" alt="Add" class="toolbarButton" />
+																					title="Add" alt="Add" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><input id="deleteElementButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/delete.png"
-																					title="Delete" alt="Delete" class="toolbarButton" />
+																					title="Delete" alt="Delete" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><img
 																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																				</td>
 																				<td><input id="moveElementUpButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/arrow_up.png"
-																					title="Move Up" alt="Move Up" class="toolbarButton" />
+																					title="Move Up" alt="Move Up" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><img
 																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
@@ -196,7 +211,7 @@ table.layoutTable tr.widget td .widget {
 																					type="image"
 																					src="plugins/bpm-modeler/images/icons/arrow_down.png"
 																					title="Move Down" alt="Move Down"
-																					class="toolbarButton" /></td>
+																					class="toolbarButton" ng-disabled="javaClassBinding == true"/></td>
 																			</tr>
 																		</table>
 																	</div>

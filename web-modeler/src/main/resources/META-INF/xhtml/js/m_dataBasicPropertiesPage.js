@@ -36,6 +36,7 @@ define(
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(DataBasicPropertiesPage.prototype,
 						propertiesPage);
+				this.currentPrimitiveType = null;
 
 				/**
 				 *
@@ -93,6 +94,9 @@ define(
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
+					this.enumInputSelect = m_utils.jQuerySelect("#enumInputSelect");
+					this.enumInputSelect.change({"view" : this}, enumSelectChangeHandler);
+					
 					// I18N
 					m_utils.jQuerySelect("#doubleInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
@@ -104,6 +108,38 @@ define(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 				};
 
+				/**
+				 * Read the model and populate typeDeclaration facets
+				 */
+				DataBasicPropertiesPage.prototype.populateEnumsForType = function(
+						typeDeclaration) {
+					this.enumInputSelect.empty();
+					var typeDeclarationObj = m_model
+							.findTypeDeclaration(typeDeclaration);
+					for ( var i in typeDeclarationObj.getTypeDeclaration().facets) {
+						if (typeDeclarationObj.getTypeDeclaration().facets[i].classifier
+								.match('enumeration')) {
+							this.enumInputSelect.append("<option value='"
+									+ typeDeclarationObj.getTypeDeclaration().facets[i].name + "'>"
+									+ typeDeclarationObj.getTypeDeclaration().facets[i].name
+									+ "</option>");
+						}
+					}
+				};
+				
+				/**
+				 * Populate the Enums for selected Enum Type
+				 */
+				DataBasicPropertiesPage.prototype.updateDefaultValueForEnum = function(
+						primitiveDataTypeSelect) {
+					if (primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)) {
+						var arr = primitiveDataTypeSelect.val().split("-");
+						if (null != arr) {
+							this.populateEnumsForType(arr[1]);
+						}
+					}
+				};
+				
 				/**
 				 *
 				 */
@@ -199,11 +235,16 @@ define(
 						data, defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						var primitiveDataTypeSelect = this.dataTypeSelector.primitiveDataTypeSelect;
-
+						if(null == this.currentPrimitiveType){
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+						}else if(null!=this.currentPrimitiveType && !this.currentPrimitiveType.match(primitiveDataTypeSelect.val())){
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+						}
+						this.currentPrimitiveType = primitiveDataTypeSelect.val();
 						var self = this;
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = primitiveDataTypeSelect.val();
-
+							$scope.enumDataType = false;
 							if (primitiveDataTypeSelect.val() == 'Timestamp') {
 								var dateValue = defaultValue;
 								if (defaultValue.indexOf(" ") > -1) {
@@ -220,8 +261,12 @@ define(
 									$scope.timestampInputTextError = true;
 									self.timestampInputText.val(dateValue);
 								}
-							} else {
+							}else if(primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)){
+								self.enumInputSelect.val(defaultValue);
+								$scope.enumDataType = true;
+							}else {
 								$scope.defaultValue = defaultValue;
+								$scope.enumDataType = false;
 								if ($scope.dataType == 'boolean') {
 									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;
 								}
@@ -274,6 +319,17 @@ define(
 							$scope.timestampInputTextError = true;
 						}
 					}, m_utils.jQuerySelect("#datatableid").get(0));
+				};
+				
+				/**
+				 * 
+				 */
+				function enumSelectChangeHandler(event) {
+					var view = event.data.view;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+							var dateValue = view.enumInputSelect.val();
+							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateValue);
+					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 				};
 
 				/*

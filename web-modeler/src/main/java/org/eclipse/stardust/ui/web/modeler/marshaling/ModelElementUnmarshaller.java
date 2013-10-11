@@ -2458,6 +2458,11 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   data,
                   dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                         .getAsString());
+            if (dataJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+            {
+               updateTypeForPrimitive(dataJson, data);
+            }
+            
          }
          else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()
@@ -2498,6 +2503,29 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   /**
+    * 
+    * @param dataJson
+    * @param data
+    */
+   private void updateTypeForPrimitive(JsonObject dataJson, DataType data)
+   {
+      ModelType model = ModelUtils.findContainingModel(data);
+      String typeFullID = dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString();
+      String sourceModelID = getModelBuilderFacade().getModelId(typeFullID);
+      String structuredTypeId = getModelBuilderFacade().stripFullId(typeFullID);
+      String declaredTypeID = null;
+      if (sourceModelID.equals(model.getId()))
+      {
+         declaredTypeID = structuredTypeId;
+      }
+      else
+      {
+         declaredTypeID = "typeDeclaration:{" + sourceModelID + "}" + structuredTypeId;
+      }
+      AttributeUtil.setAttribute(data, ModelerConstants.DATA_TYPE, declaredTypeID);
+
+   }
    /**
     * @param model
     * @param modelJson

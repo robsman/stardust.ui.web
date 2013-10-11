@@ -71,12 +71,21 @@ define(
 					this.visibilitySelect = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 					this.structureKindSelect = m_utils.jQuerySelect("#structureKind select");
 					this.baseTypeSelect = m_utils.jQuerySelect("#baseTypeSelect select");
+					this.bindToJavaSelect = m_utils.jQuerySelect("#bindJavaClassCheckbox");
+					this.bindJavaClassEdit = m_utils.jQuerySelect("#javaClassInput");
 					this.minimumLengthEdit = m_utils.jQuerySelect("#minLenghtInput");
 					this.maximumLengthEdit = m_utils.jQuerySelect("#maxLenghtInput");
 					this.focusAttr = {};
 
 					var view = this;
-
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						if (view.bindToJavaSelect.prop("checked")) {
+							$scope.javaClassBinding = true;
+						} else {
+							$scope.javaClassBinding = false;
+						}
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
+					
 					this.visibilitySelect.change(function(event) {
 						var currentVisibility = view.typeDeclaration.attributes["carnot:engine:visibility"];
 						var newVisibility = m_utils.jQuerySelect(event.target).is(":checked") ? "Public" : "Private";
@@ -124,7 +133,47 @@ define(
 										});
 							});
 
+					
+					this.bindToJavaSelect.change(function(event) {
+						var doSubmit = false;
+						var bindJavaClass = m_utils.jQuerySelect(event.target).is(":checked");
+						if (bindJavaClass) {
+							view.typeDeclaration.removeEnumTable();
+							doSubmit = true;
+						}
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							if (bindJavaClass) {
+								$scope.javaClassBinding = true;
+								$scope.javaClassInput = undefined;
+							}else{
+								$scope.javaClassBinding = false;
+							}	
+						}, m_utils.jQuerySelect("#configurationTab").get(0));
+						
+						if (doSubmit) {
+							view.submitChanges({
+								typeDeclaration : view.typeDeclaration.typeDeclaration
+							});
+
+							view.initializeTypeDeclaration();
+						}
+					});
+					
 					var self = this;
+					
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.$watch("javaClassInput", function(newValue, oldValue) {
+							if (newValue !== oldValue && $scope.form.javaClassInput.$valid) {
+								if (newValue == "") {
+									$scope.javaClassInput = undefined;
+									self.typeDeclaration.deleteFacet("javaClassInput");
+								}else{
+									
+								}
+							}
+						});
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
+						
 					m_angularContextUtils.runInAngularContext(function($scope) {
 						$scope.$watch("minLength", function(newValue, oldValue) {
 							if (newValue !== oldValue && $scope.form.minLenghtInput.$valid) {

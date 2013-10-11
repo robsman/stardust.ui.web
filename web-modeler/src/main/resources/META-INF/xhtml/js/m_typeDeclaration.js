@@ -347,6 +347,18 @@ define(
 						td.facets = [];
 					}
 				};
+				
+				/**
+				 * Clear the Enum table, when Java Binding is available
+				 */
+				TypeDeclaration.prototype.removeEnumTable = function() {
+					if (this.getTypeDeclaration()) {
+						var td = this.getTypeDeclaration();
+						delete td.body;
+						td.base = "{http://www.w3.org/2001/XMLSchema}string";
+						td.facets = [];
+					}
+				};
 
 				TypeDeclaration.prototype.getElements = function() {
 					if (this.isSequence()) {
