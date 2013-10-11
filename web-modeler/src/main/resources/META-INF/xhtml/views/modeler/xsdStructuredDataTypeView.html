@@ -139,6 +139,9 @@ table.layoutTable tr.widget td .widget {
 																<div id="javaClassInputError"
 																	ng-show="form.javaClassInput.$error.pattern"
 																	style="color: red">Not a valid java class</div>
+																	<div id="javaClassNoInputError"
+																	ng-show="javaClassRequiredError"
+																	style="color: red">Java Class is mandatory</div>
 														</td></tr></table></div>
 													</td>
 												</tr>

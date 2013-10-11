@@ -78,13 +78,6 @@ define(
 					this.focusAttr = {};
 
 					var view = this;
-					m_angularContextUtils.runInAngularContext(function($scope) {
-						if (view.bindToJavaSelect.prop("checked")) {
-							$scope.javaClassBinding = true;
-						} else {
-							$scope.javaClassBinding = false;
-						}
-					}, m_utils.jQuerySelect("#configurationTab").get(0));
 					
 					this.visibilitySelect.change(function(event) {
 						var currentVisibility = view.typeDeclaration.attributes["carnot:engine:visibility"];
@@ -135,28 +128,37 @@ define(
 
 					
 					this.bindToJavaSelect.change(function(event) {
-						var doSubmit = false;
+						var removeTypeDeclaration = false;
 						var bindJavaClass = m_utils.jQuerySelect(event.target).is(":checked");
 						if (bindJavaClass) {
-							view.typeDeclaration.removeEnumTable();
-							doSubmit = true;
+							view.typeDeclaration.removeEnumTable(); //clear the min,max lenght and ENUM table
+							removeTypeDeclaration =true; //flag to submit the removed table
 						}
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							if (bindJavaClass) {
 								$scope.javaClassBinding = true;
+								$scope.javaClassRequiredError = true; //Error message to enter java class path
 								$scope.javaClassInput = undefined;
 							}else{
+								$scope.javaClassRequiredError = false;
 								$scope.javaClassBinding = false;
 							}	
 						}, m_utils.jQuerySelect("#configurationTab").get(0));
 						
-						if (doSubmit) {
-							view.submitChanges({
-								typeDeclaration : view.typeDeclaration.typeDeclaration
+						if(removeTypeDeclaration){
+							self.submitChanges({
+							typeDeclaration : view.typeDeclaration.typeDeclaration
 							});
-
-							view.initializeTypeDeclaration();
+						}else{
+							self.submitChanges({
+								attributes : {
+									"carnot:engine:className" : null
+								}
+							});
 						}
+
+						view.initializeTypeDeclaration();
+						
 					});
 					
 					var self = this;
@@ -164,11 +166,17 @@ define(
 					m_angularContextUtils.runInAngularContext(function($scope) {
 						$scope.$watch("javaClassInput", function(newValue, oldValue) {
 							if (newValue !== oldValue && $scope.form.javaClassInput.$valid) {
-								if (newValue == "") {
+								if (newValue == "" || newValue == undefined) {
 									$scope.javaClassInput = undefined;
-									self.typeDeclaration.deleteFacet("javaClassInput");
+									$scope.javaClassRequiredError = true;
 								}else{
-									
+									$scope.javaClassRequiredError = false;
+									var visibility = view.typeDeclaration.attributes["carnot:engine:visibility"]
+									self.submitChanges({
+										attributes : {
+											"carnot:engine:className" : $scope.javaClassInput
+										}
+									});
 								}
 							}
 						});
@@ -527,7 +535,19 @@ define(
 					this.visibilitySelect.prop("checked", (!this.typeDeclaration.attributes["carnot:engine:visibility"]
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
-
+					
+					this.bindToJavaSelect.prop("checked", (this.typeDeclaration.attributes["carnot:engine:className"]));
+					this.bindJavaClassEdit.val(this.typeDeclaration.attributes["carnot:engine:className"]);
+					
+					view=this;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						if (view.bindToJavaSelect.prop("checked")) {
+							$scope.javaClassBinding = true;
+						} else {
+							$scope.javaClassBinding = false;
+						}
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
+					
 					this.clearErrorMessages();
 					this.setBaseType(this.typeDeclaration);
 
