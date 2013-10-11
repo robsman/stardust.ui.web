@@ -102,6 +102,10 @@
       <invoke-subproject subproject="stardust-web-reporting" />
    </target> 
 
+   <target name="stardust-rules-manager" depends="init">
+      <invoke-subproject subproject="rules-manager" />
+   </target>
+
    <target name="end-user-doc" depends="init">
       <invoke-subproject subproject="end-user-doc">
          <additional-properties>
@@ -134,7 +138,7 @@
 
 	<target name="package" depends="init, portal-common,portal-api, 
 	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
-	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc, stardust-web-reporting">
+	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc, stardust-web-reporting, stardust-rules-manager">
 	</target>
 
    <!-- - - - - - - - -  -->
