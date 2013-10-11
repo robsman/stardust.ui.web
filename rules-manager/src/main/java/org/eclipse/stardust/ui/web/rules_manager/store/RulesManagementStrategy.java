@@ -23,13 +23,14 @@ public interface RulesManagementStrategy
    Document getRuleSet(String ruleSetFileName);
    
    /**
-    * @param ruleSetId
+    * @param rulesetNameOrdocId
     * @param content
+    * @return document id
     */
-   void saveRuleSet(String ruleSetFileName, String content);
+   Document saveRuleSet(String rulesetNameOrdocId, String content);
    
    /**
     * 
     */
-   void emptyRuleSets();
+   void deleteRuleSet(String documentId);
 }

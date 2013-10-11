@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Shrikant.Gangal
+ * @author Yogesh.Manware
  * 
  */
 public class DefaultRulesManagementStrategy implements RulesManagementStrategy
@@ -66,36 +67,33 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
 
    @Override
-   public void saveRuleSet(String ruleSetFileName, String content)
+   public Document saveRuleSet(String rulesetNameOrdocId, String content)
    {
       createRulesFolderIfAbsent();
+      Document ruleSet = getDocumentManagementService().getDocument(rulesetNameOrdocId);
 
-      Document ruleSet = getDocumentManagementService().getDocument(
-            RULES_DIR + ruleSetFileName);
+      Document doc;
       if (null != ruleSet)
       {
-         getDocumentManagementService().updateDocument(ruleSet, content.getBytes(), "",
-               true, "", null, false);
-      } else {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(ruleSetFileName);
+         doc = getDocumentManagementService().updateDocument(ruleSet, content.getBytes(),
+               "", true, "", null, false);
+      }
+      else
+      {
+         DocumentInfo docInfo = DmsUtils.createDocumentInfo(rulesetNameOrdocId);
          docInfo.setContentType("text/plain");
-         Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo, content.getBytes(), null);
+         doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo,
+               content.getBytes(), null);
          getDocumentManagementService().versionDocument(doc.getId(), "", null);
       }
+
+      return doc;
    }
 
    @Override
-   public void emptyRuleSets()
+   public void deleteRuleSet(String docId)
    {
-      // Deletes the rules folder with all its contents and recreates an empty one.
-      Folder folder = getDocumentManagementService().getFolder(RULES_DIR);
-      if (null != folder)
-      {
-         getDocumentManagementService().removeFolder(folder.getId(), true);
-      }
-
-      getDocumentManagementService().createFolder("/",
-            DmsUtils.createFolderInfo(RULES_DIR_NAME));
+      getDocumentManagementService().removeDocument(docId);
    }
    
    /**

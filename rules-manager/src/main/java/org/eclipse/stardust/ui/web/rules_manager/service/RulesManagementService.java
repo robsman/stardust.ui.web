@@ -12,8 +12,11 @@
 package org.eclipse.stardust.ui.web.rules_manager.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -36,6 +39,7 @@ import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 /**
  *
  * @author Marc.Gille
+ * @author Yogesh.Manware
  *
  */
 public class RulesManagementService
@@ -53,7 +57,7 @@ public class RulesManagementService
 
    private DocumentManagementService documentManagementService;
 
-   private Map<String, String> ruleSetUUIDVsFileNameMap = new HashMap<String, String>();
+   private Map<String, String> ruleSetUUIDVsDocumentIdMap = new HashMap<String, String>();
 
    /**
     * 
@@ -61,9 +65,11 @@ public class RulesManagementService
     */
    public JsonObject getAllRuleSets()
    {
+      ruleSetUUIDVsDocumentIdMap.clear();
+      
       List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
       JsonObject ruleSets = new JsonObject();
-      ruleSetUUIDVsFileNameMap.clear();
+      
       for (Document doc : drls)
       {
          JsonObject ruleSet = new JsonParser().parse(
@@ -71,7 +77,7 @@ public class RulesManagementService
                      doc.getId()))).getAsJsonObject();
          String uuid = ruleSet.get("uuid").getAsString();
          ruleSets.add(uuid, ruleSet);
-         ruleSetUUIDVsFileNameMap.put(uuid, doc.getName());
+         ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
       }
 
       return ruleSets;
@@ -88,19 +94,40 @@ public class RulesManagementService
          return;
       }
 
-      // Empty existing rule sets as they need to be overwritten
-      getRulesManagementStrategy().emptyRuleSets();
-
       // Save all rule sets.
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
+      Set<String> updatedDocList = new HashSet<String>();
       for (JsonElement je : ruleSets)
       {
-         String fileName = ruleSetUUIDVsFileNameMap.get(je.getAsJsonObject().get("uuid").getAsString());
-         if (null == fileName)
+         String uuid = je.getAsJsonObject().get("uuid").getAsString();
+         String documentId = ruleSetUUIDVsDocumentIdMap.get(uuid);
+
+         if (null == documentId)
          {
-            fileName = je.getAsJsonObject().get("id").getAsString() + ".json";
+            documentId = je.getAsJsonObject().get("id").getAsString() + ".json";
+            trace.info("creating new ruleset with name:  " + documentId);
          }
-         getRulesManagementStrategy().saveRuleSet(fileName, je.toString());
+         else
+         {
+            trace.info("updating ruleset with uuid: " + uuid);
+         }
+         Document doc = getRulesManagementStrategy().saveRuleSet(documentId,
+               je.toString());
+
+         updatedDocList.add(uuid);
+         ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
+      }
+      
+      // find deleted rules and delete the corresponding files
+      for (Entry<String, String> rules : ruleSetUUIDVsDocumentIdMap.entrySet())
+      {
+         if ( !updatedDocList.contains(rules.getKey()))
+         {
+            getRulesManagementStrategy().deleteRuleSet(rules.getValue());
+            // this will reset when you refresh view
+            ruleSetUUIDVsDocumentIdMap.put(rules.getKey(), null);
+            trace.info("deleting ruleset with uuid:  " + rules.getKey());
+         }
       }
    }
    
