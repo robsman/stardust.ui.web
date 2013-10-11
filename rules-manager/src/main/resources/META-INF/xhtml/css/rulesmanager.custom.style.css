@@ -122,8 +122,9 @@ body{
 .hot-splithdr-label{
     font-family:Arial;
     font-style:normal;
-    font-weight:normal;
-    font-size:8pt;
+    font-weight:bold;
+    font-size:11px;
+    color:#808080;
     height:25px;
     border-bottom:inset 1px #DDD;
 }

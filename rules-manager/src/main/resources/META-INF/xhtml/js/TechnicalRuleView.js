@@ -71,7 +71,8 @@ define(
 							findLabel: m_utils.jQuerySelect(options.selectors.findLabel),
 							lineNumberLabel: m_utils.jQuerySelect(options.selectors.lineNumberLabel),
 							replaceLabel: m_utils.jQuerySelect(options.selectors.replaceLabel),
-							replaceMenu: m_utils.jQuerySelect(options.selectors.replaceMenu)
+							replaceMenu: m_utils.jQuerySelect(options.selectors.replaceMenu),
+							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea)
 					};
 					
 					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -229,12 +230,17 @@ define(
 						CommandsDispatcher.submitCommand();
 					});
 					
+					/*bind our description textarea to the descritpion attribute on our technicalRule*/
+					uiElements.descriptionTextarea.val(techRule.description);
+					uiElements.descriptionTextarea.on("change",function(){
+						techRule.description=uiElements.descriptionTextarea.val();
+						CommandsDispatcher.submitCommand();
+					});
+					
 					/*binding ruleset technical rule drl to change events on our drlEditor textarea*/
 					uiElements.drlEditor.editor.on("change",function(event){
 						var tempVal=uiElements.drlEditor.getValue();
-						console.log("setting DRL");
 						techRule.setDRL(tempVal);
-						console.log(techRule.drl);
 					});
 					
 					/*by convention: is this function neccesary?*/

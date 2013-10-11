@@ -116,49 +116,19 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				window.top.ruleSets = ruleSetHashMap;
 				return
 				/********/
-				window.top.ruleSets = json;
-				bindRuleSets();
 			},
 			"error" : function() {
 				alert('Error occured while fetching rules');
 			}
 		});
 	};
-
-	/**
-	 *
-	 */
-	function bindRuleSets() {
-		for ( var ruleSet in getRuleSets()) {
-			bindRuleSet(getRuleSets()[ruleSet]);
-		}
-	}
-
-	/**
-	 *
-	 */
-	function bindRuleSet(ruleSet) {
-		// TODO Ugly, user prototype
-		var key;
-		m_utils.typeObject(ruleSet, new RuleSet());
-		ruleSet.technicalRules=$.extend({},ruleSet.technicalRules);
-		for(key in ruleSet.technicalRules){
-			if (ruleSet.technicalRules.hasOwnProperty(key)){
-				ruleSet.technicalRules[key]=$.extend(TechnicalRule.create(),ruleSet.technicalRules[key]);
-			}
-		}
-		for(key in ruleSet.decisionTables){
-			if (ruleSet.decisionTables.hasOwnProperty(key)){
-				ruleSet.decisionTables[key]=$.extend(DecisionTable.create(),ruleSet.decisionTables[key]);
-			}
-		}
-	}
 	
 	/**
 	 * 
 	 */
 	function RuleSet() {
 		this.type = "ruleSet";
+		this.description="";
 		this.parameterDefinitions = [];
 		this.rules = {};
 		this.technicalRules={};

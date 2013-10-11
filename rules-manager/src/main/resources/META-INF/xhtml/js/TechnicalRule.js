@@ -26,6 +26,7 @@ define([ "bpm-modeler/js/m_utils", "rules-manager/js/FactCondition",
 					this.uuid = uuid;
 					this.id = id;
 					this.name = name;
+					this.description="";
 					this.lastModificationDate=currentDateTime;
 					this.creationDate=currentDateTime;
 				};

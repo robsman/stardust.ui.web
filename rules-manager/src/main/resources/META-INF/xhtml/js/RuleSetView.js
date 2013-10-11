@@ -58,6 +58,7 @@ define(
 						paramDef,         /*instance of a parameter definition*/
 						typeDecl,         /*instance of a typeDeclaration*/
 						typeBody,         /*result of a typeDecl.getBody() call*/
+						$descriptionTextArea,
 						codeEditSelector; /*selector for the Ace Code editor linked to the decision table*/
 					
 					this.drlEditor;
@@ -72,8 +73,15 @@ define(
 				    //initialize tabs control
 					m_utils.jQuerySelect("#ruleSetTabs").tabs();
 					
-					//initialize ACE editor for expert mode drl scripting
-					//this.drlEditor=ace2.getDrlEditor(codeEditSelector);
+					/*Bind ruleSet description to our description textArea*/
+					$descriptionTextArea=m_utils.jQuerySelect("#descriptionTextarea");
+					$descriptionTextArea.val(ruleSet.description);
+					$descriptionTextArea.on("change",function(event){
+						ruleSet.description=$descriptionTextArea.val();
+						CommandsDispatcher.submitCommand();
+						console.log(event);
+					});
+					
 
 					this.parameterMappingsPanelAnchor = m_utils.jQuerySelect("#parameterMappingsPanelAnchor");
 

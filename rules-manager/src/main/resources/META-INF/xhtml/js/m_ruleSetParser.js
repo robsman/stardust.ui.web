@@ -21,6 +21,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 				rSet.uuid=data.uuid;
 				rSet.id=data.id;
 				rSet.name=data.name;
+				rSet.description=data.description;
 				rSet.creationDate=data.creationDate;
 				rSet.lastModificationDate=data.lastModificationDate;
 				rSet=$.extend({},RS,rSet);
@@ -74,8 +75,10 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 	return {
 		/*return JSON string primed for parsing into DRL*/
 		fromPreDRLformat: function(data,serializer,RS){
-			var serializer=data.serializer || serializer,
-			    rSet;
+			var rSet;	
+			/*data.serializer has precedence when present*/
+			serializer=data.serializer || serializer;
+			
 			switch (serializer.method){
 				case "m_ruleSetParser.toPreDRLFormat":
 					rSet=__fromPreDRLFormat(data,serializer.version,RS);
@@ -108,6 +111,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 			data={  uuid: rSet.uuid,
 					id: rSet.id,
 					name: rSet.name,
+					description: rSet.description,
 					creationDate: rSet.creationDate,
 					lastModificationDate: rSet.lastModificationDate,
 					facts: {},

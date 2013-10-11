@@ -58,7 +58,8 @@ define(
 										"attr" : {
 											"id" : ruleSet.uuid,
 											"rel" : ruleSet.type,
-											"elementId" : ruleSet.id
+											"elementId" : ruleSet.id,
+											"title": ruleSet.description
 										},
 										"data" : ruleSet.name
 									}, null, true);
@@ -90,6 +91,7 @@ define(
 											"#" + ruleSet.uuid, "last", {
 												"attr" : {
 													"id" : techRule.uuid,
+													"title": techRule.description,
 													"ruleSetId" : ruleSet.id,
 													"ruleSetUuid" : ruleSet.uuid,
 													"rel" : "TechnicalRule",
@@ -107,6 +109,7 @@ define(
 											"#" + ruleSet.uuid, "last", {
 												"attr" : {
 													"id" : decTable.uuid,
+													"title" : decTable.description,
 													"ruleSetId" : ruleSet.id,
 													"ruleSetUuid" : ruleSet.uuid,
 													"rel" : "DecisionTable",
@@ -1016,7 +1019,7 @@ define(
 				
 				function createTechnicalRule(ruleSetUuid) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
-					var	techRuleCount=ruleSet.getTechnicalRuleCount();
+					var	techRuleCount=1+ ruleSet.getTechnicalRuleCount();
 					var	name ="Rule " + techRuleCount;
 					var	id="Rule" + techRuleCount;
 					var techRule=ruleSet.addTechnicalRule(id,name);

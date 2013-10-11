@@ -33,9 +33,6 @@ define(
 				}
 			};
 
-			/**
-			 * 
-			 */
 			function DecisionTableView() {
 				
 				this.initialize = function(ruleSet,decTable,options) {
@@ -72,7 +69,8 @@ define(
 							decTableUuidLbl: m_utils.jQuerySelect(options.selectors.decTableUuidLbl),
 							decTableDescrLbl: m_utils.jQuerySelect(options.selectors.decTableDescrLbl),
 							exportData: m_utils.jQuerySelect(options.selectors.exportData),
-							importData:m_utils.jQuerySelect(options.selectors.importData)
+							importData: m_utils.jQuerySelect(options.selectors.importData),
+							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea)
 					};
 					
 					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -219,9 +217,6 @@ define(
 			                    	buttons: [{
 			                    		text: "Close", click: function(){$(this).dialog("destroy");}
 			                    	}],
-			                    	open: function(){
-			                    		$("button.ui-dialog-titlebar-close",myDialog.prev()).text("X");
-			                    	},
 			                    	dialogClass: 'ui-camino-dialog',
 			                    	appendTo: uiElements.mainView,
 			                    	position: {my: "center",
@@ -291,7 +286,6 @@ define(
 					/*Hook for the change event of our table: Saved for undo redo functionality*/
 					uiElements.decisionTableInstance.addHook('afterChange', function(changes,source) {
 						console.log("Decision Table Change event...");
-						//console.log(ruleSet.toJSON("PRE-DRL"));
 					});
 					
 					/* Adding a hook for column resizing as this value was not actually being saved into
@@ -299,6 +293,13 @@ define(
 					 */
 					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
 						decTableData.colWidths[col]=size;
+					});
+					
+					/*binding textarea to the description attribute of our decision table*/
+					uiElements.descriptionTextarea.val(decTable.description);
+					uiElements.descriptionTextarea.on("change",function(){
+						decTable.description=uiElements.descriptionTextarea.val();
+						CommandsDispatcher.submitCommand();
 					});
 					
 					/*binding input element to the value of the decisiontable name referenced in our ruleSet*/

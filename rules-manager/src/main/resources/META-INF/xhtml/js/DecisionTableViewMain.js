@@ -63,7 +63,8 @@ require([ "require",
 					decTableUuidLbl: "#decTableUuidLbl", /*label for the decision table uuid (not the value of)*/
 					decTableDescrLbl: "#decTableDescrLbl", /*label for the decision table descr (not the value of)*/
 					exportData: "#exportData",
-					importData: "#importData"
+					importData: "#importData",
+					descriptionTextarea: "#descriptionTextarea"
 				},
 				i18nMaps:{
 					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},

@@ -50,6 +50,7 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.uuid = uuid;
 					this.id = id;
 					this.name = name;
+					this.description="";
 					this.lastModificationDate=currentDateTime;
 					this.creationDate=currentDateTime;
 					this.tableData={
