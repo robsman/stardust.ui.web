@@ -180,12 +180,18 @@ input.htCheckboxRendererInput{
   width:100%;
 }
 a.ipp-disabled-text {
-	font-style: italic;
+	font-style: italic !important;
 	color:#dddddd;
-	text-decoration:none;
+	text-decoration:none !important;
 }
 a.ipp-disabled-text:hover {
 	background-color:transparent;
 	border:none;
 	cursor:default;
+}
+a.jstree-search.ipp-disabled-text{
+	color:#FFFFFF;
+}
+a.jstree-search.ipp-disabled-text:hover{
+	color:#dddddd;
 }
