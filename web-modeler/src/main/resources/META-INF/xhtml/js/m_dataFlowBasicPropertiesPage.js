@@ -563,7 +563,7 @@ define(
 								for (var i in rule.parameterDefinitions) {
 									var param = rule.parameterDefinitions[i];
 									if (param.direction === "IN" || param.direction === "INOUT") {
-										var option = "<option value='engine:";
+										var option = "<option value='application:";
 										option += param.id;
 										option += "'>";
 										option += param.name;
@@ -597,7 +597,7 @@ define(
 								for (var i in rule.parameterDefinitions) {
 									var param = rule.parameterDefinitions[i];
 									if (param.direction === "OUT" || param.direction === "INOUT") {
-										var option = "<option value='engine:";
+										var option = "<option value='application:";
 										option += param.id;
 										option += "'>";
 										option += param.name;
