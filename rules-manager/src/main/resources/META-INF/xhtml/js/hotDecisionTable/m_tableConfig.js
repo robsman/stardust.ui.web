@@ -187,7 +187,6 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             $img.addClass("pull-right");
             $img.css("margin-right","2px");
             $img.css("margin-top","4px");
-            //$categoryLabel.append( $img);
             }
           }
          
