@@ -147,14 +147,11 @@ define(
 									+ m_i18nUtils
 											.getProperty("modeler.activity.propertyPages.general.receiveTask")
 									+ "</option>");
-
-					if (m_session.getInstance().technologyPreview) {
-						this.taskTypeList
-								.append("<option value='rule'>"
-										+ m_i18nUtils
-												.getProperty("modeler.activity.propertyPages.general.ruleTask")
-										+ "</option>");
-					}
+					this.taskTypeList
+							.append("<option value='rule'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.general.ruleTask")
+									+ "</option>");
 
 					m_utils.jQuerySelect("label[for='subprocessInput']")
 							.text(
