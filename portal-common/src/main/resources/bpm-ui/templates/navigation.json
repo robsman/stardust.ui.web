@@ -133,6 +133,42 @@
 			                "module": "bpm-ui",
 			                "controller": "bpm-ui.InternalPageCtrl",
 			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/ruleView/:id",
+			                "iconBase":"viewIconBase :icon",
+			                "icon":"viewIconBase tabIcon-generic",
+			                "module": "bpm-ui",
+			                "controller": "bpm-ui.InternalPageCtrl",
+			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/ruleView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/ruleSetView/:id",
+			                "iconBase":"viewIconBase :icon",
+			                "icon":"viewIconBase tabIcon-generic",
+			                "module": "bpm-ui",
+			                "controller": "bpm-ui.InternalPageCtrl",
+			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/ruleSetView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/decisionTableView/:id",
+			                "iconBase":"viewIconBase :icon",
+			                "icon":"viewIconBase tabIcon-generic",
+			                "module": "bpm-ui",
+			                "controller": "bpm-ui.InternalPageCtrl",
+			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/decisionTableView.html"
+			            },
+			            {
+			                "label": "{label}",
+			                "id": "Int/TechnicalRuleView/:id",
+			                "iconBase":"viewIconBase :icon",
+			                "icon":"viewIconBase tabIcon-generic",
+			                "module": "bpm-ui",
+			                "controller": "bpm-ui.InternalPageCtrl",
+			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/TechnicalRuleView.html"
 			            }
 					]
 				}
