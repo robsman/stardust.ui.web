@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -28,6 +30,7 @@ import com.google.gson.JsonObject;
 public class ReportingResource {
 	private ReportingService reportingService;
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
+	private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
 
 	@Context
 	private HttpServletRequest httpRequest;
@@ -149,7 +152,7 @@ public class ReportingResource {
 	@Path("report-definition")
 	public Response saveReportDefinition(String postedData) {
 		try {
-			System.out.println("Save report definition: " + postedData);
+			System.out.println("Save report definition: " + prettyPrinter.toJson(postedData));
 
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
@@ -172,6 +175,25 @@ public class ReportingResource {
 		}
 	}
 
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("report-definitions")
+	public Response saveReportDefinitions(String postedData) {
+		try {
+			System.out.println("Save report definitions: " + prettyPrinter.toJson(postedData));
+
+			JsonObject json = jsonIo.readJsonObject(postedData);
+			
+			getReportingService().saveReportDefinitions(json);
+
+			return Response.ok("", MediaType.TEXT_PLAIN).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new RuntimeException(e);
+		}
+	}
 
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)

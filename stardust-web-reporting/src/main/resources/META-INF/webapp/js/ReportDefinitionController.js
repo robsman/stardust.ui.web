@@ -313,7 +313,8 @@ define(
 							name : name,
 							description : "",
 							storage : {
-								location : "publicFolder"
+								location : "publicFolder",
+								state : "created"
 							},
 							dataSet : {
 								type : "seriesGroup",
@@ -385,6 +386,10 @@ define(
 							scheduling : {
 								delivery : {
 									mode : "personalFolder"
+								},
+								recurrenceRange : {
+									endMode: "noEnd",
+									occurences : 10
 								}
 							}
 						};
@@ -808,6 +813,7 @@ define(
 					this.reportingService.saveReportDefinition(this.report)
 							.done(
 									function() {
+										self.report.storage.state = "saved";
 										window.top.postMessage(
 												"BPM-REPORTING-REPORT-CREATED",
 												self.reportingService
@@ -986,6 +992,71 @@ define(
 					return this.reportingService.getRootUrl()
 							+ "/plugins/bpm-reporting/views/reportPanel.html?path="
 							+ this.path;
+				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.getNextExecutionTime = function(
+						e) {
+					var date = new Date(); // Now
+
+					console.debug("Start Date:");
+					console.debug(this.report.scheduling);
+
+					if (this.report.scheduling.startDate) {
+						date = this.report.scheduling.startDate;
+					}
+
+					if (this.report.scheduling.recurrenceInterval === "weekly") {
+						console.debug("Weekday " + date.getDay());
+
+						var weekdays = [
+								this.report.scheduling.weeklyRecurrenceOptions.mondays,
+								this.report.scheduling.weeklyRecurrenceOptions.tuesdays,
+								this.report.scheduling.weeklyRecurrenceOptions.wednesdays,
+								this.report.scheduling.weeklyRecurrenceOptions.thursdays,
+								this.report.scheduling.weeklyRecurrenceOptions.fridays,
+								this.report.scheduling.weeklyRecurrenceOptions.saturdays,
+								this.report.scheduling.weeklyRecurrenceOptions.sundays ];
+						var weekday = date.getDay();
+
+						for ( var n = 0; n < weekdays.length; ++n) {
+							if (weekdays[weekday]) {
+								date.setDate(date.getDate() + n);
+
+								break;
+							}
+
+							weekday = (weekday + 1) % 7;
+						}
+					}
+
+					return date;
+				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.getWeekdayName = function(
+						date) {
+					if (date.getDay() == 0) {
+						return "Monday";
+					} else if (date.getDay() == 1) {
+						return "Tuesday";
+					} else if (date.getDay() == 2) {
+						return "Wednesday";
+					} else if (date.getDay() == 3) {
+						return "Thursday";
+					} else if (date.getDay() == 4) {
+						return "Friday";
+					} else if (date.getDay() == 5) {
+						return "Saturday";
+					} else if (date.getDay() == 6) {
+						return "Sunday";
+					} else {
+						return "(Unknown)";
+					}
 				};
 			}
 		});

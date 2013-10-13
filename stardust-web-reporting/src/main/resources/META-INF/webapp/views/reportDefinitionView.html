@@ -105,7 +105,7 @@ table.formTable td {
 								</table>
 							</div>
 							<div ng-show="report.dataSet.type == 'seriesGroup'">
-								<h2>Fact</h2>
+								<div class="heading">Fact</div>
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
 										<td><label>Fact</label></td>
@@ -123,7 +123,7 @@ table.formTable td {
 										</select></td>
 									</tr>
 								</table>
-								<h2>Dimensions</h2>
+								<div class="heading">Dimensions</div>
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
 										<td valign="top">
@@ -334,7 +334,7 @@ table.formTable td {
 								</table>
 							</div>
 							<div ng-show="report.dataSet.type != 'processHistory'">
-								<h2>Additional Filtering</h2>
+								<div class="heading">Additional Filtering</div>
 								<table cellpadding="0" cellspacing="0" class="formTable"
 									style="margin-top: 10px;">
 									<tr ng-repeat="x in report.dataSet.filters">
@@ -357,8 +357,7 @@ table.formTable td {
 																<option>less or equal</option>
 																<option>between</option>
 																<option>not equal</option></select></td>
-														<td><input type="text" ng-model="x.value"
-															required></td>
+														<td><input type="text" ng-model="x.value" required></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
@@ -379,8 +378,7 @@ table.formTable td {
 																<option>greater or equal</option>
 																<option>less or equal</option>
 																<option>not equal</option></select></td>
-														<td><input type="number" ng-model="x.value"
-															required></td>
+														<td><input type="number" ng-model="x.value" required></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
@@ -411,7 +409,8 @@ table.formTable td {
 													</tr>
 													<tr>
 														<td><label>To</label></td>
-														<td><input type="text" ng-model="x.otherValue" sd-date /></td>
+														<td><input type="text" ng-model="x.otherValue"
+															sd-date /></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension + '.to')"
 															ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
@@ -454,7 +453,7 @@ table.formTable td {
 										<td></td>
 									</tr>
 								</table>
-								<h2>Grouping</h2>
+								<div class="heading">Grouping</div>
 								<table cellpadding="0" cellspacing="0" class="layoutTable"
 									style="margin-top: 10px;">
 									<tr>
@@ -518,7 +517,7 @@ table.formTable td {
 										</select></td>
 									</tr>
 								</table>
-								<h2>Title</h2>
+								<div class="heading">Title</div>
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
 										<td><label>Title</label></td>
@@ -531,7 +530,7 @@ table.formTable td {
 									<tr>
 										<td valign="top">
 											<div>
-												<h2>Cursor</h2>
+												<div class="heading">Cursor</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
@@ -553,7 +552,7 @@ table.formTable td {
 										</td>
 										<td valign="top">
 											<div style="margin-left: 10px;">
-												<h2>Highlighter</h2>
+												<div class="heading">Highlighter</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
@@ -565,7 +564,7 @@ table.formTable td {
 										</td>
 										<td valign="top">
 											<div style="margin-left: 10px;">
-												<h2>Legend</h2>
+												<div class="heading">Legend</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
@@ -595,7 +594,7 @@ table.formTable td {
 									<tr>
 										<td valign="top">
 											<div ng-show="getChartType().hasAxes">
-												<h2>X-Axis</h2>
+												<div class="heading">X-Axis</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>Label</label></td>
@@ -648,7 +647,7 @@ table.formTable td {
 										<td valign="top">
 											<div ng-show="getChartType().hasAxes"
 												style="margin-left: 10px;">
-												<h2>Y-Axis</h2>
+												<div class="heading">Y-Axis</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>Label Y-Axis</label></td>
@@ -701,7 +700,7 @@ table.formTable td {
 										<td valign="top">
 											<div ng-show="getChartType().hasDefaultSeries"
 												style="margin-left: 10px;">
-												<h2>Series (Defaults)</h2>
+												<div class="heading">Series (Defaults)</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>Line Width</label></td>
@@ -777,7 +776,7 @@ table.formTable td {
 						</div>
 						<div id="previewTab">
 							<div ng-show="hasParameters()">
-								<h2>Parameters</h2>
+								<div class="heading">Parameters</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
 										<td><label>{{parameter.name}}</label></td>
@@ -871,16 +870,26 @@ table.formTable td {
 							<table>
 								<tr>
 									<td valign="top">
-										<p>Save this Report Definition as a Report Template with
-											name</p> <input type="text" ng-model="report.name"
-										style="width: 250px;"></input>
-										<p>with description</p> <textarea rows="5" cols="60"
-											ng-model="report.description"></textarea>
+										<div ng-show="report.storage.state == 'created'">
+											<p>Save this Report Definition as a Report Template with
+												name</p>
+											<input type="text" ng-model="report.name"
+												style="width: 250px;"></input>
+											<p>with description</p>
+											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
+										</div>
+										<div ng-show="report.storage.state == 'saved'">
+											<p>This Report Definition is saved with name</p>
+											<input type="text" ng-model="report.name"
+												style="width: 250px;"></input>
+											<p>and description</p>
+											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
+										</div>
 									</td>
 								</tr>
 								<tr>
 									<td valign="top">
-										<p>for on-demand or scheduled repetetive execution as a
+										<p>for on-demand or scheduled repetetive execution as a</p>
 										<table>
 											<tr>
 												<td><input type="radio"
@@ -904,8 +913,14 @@ table.formTable td {
 									</td>
 								</tr>
 								<tr>
-									<td colspan="2"><button ng-click="saveReport()"
-											style="margin-top: 10px;">Save</button></td>
+									<td colspan="2">
+										<div ng-show="report.storage.state == 'created'">
+											<button ng-click="saveReport()" style="margin-top: 10px;">Save</button>
+										</div>
+										<div ng-show="report.storage.state == 'saved'">
+											<button ng-click="saveReport()" style="margin-top: 10px;">Modify</button>
+										</div>
+									</td>
 								</tr>
 							</table>
 						</div>
@@ -913,7 +928,7 @@ table.formTable td {
 							<table>
 								<tr>
 									<td valign="top">
-										<h2>Scheduling</h2>
+										<div class="heading">Scheduling</div>
 										<table>
 											<tr>
 												<td><input type="checkbox"
@@ -923,6 +938,15 @@ table.formTable td {
 											</tr>
 										</table>
 										<div ng-show="report.scheduling.active">
+											<table>
+												<tr>
+													<td colspan="2"><div
+															ng-show="report.storage.state == 'created'" style="font-style: italic;">Note,
+															that this Report Definition is not saved yet. You can
+															configure Scheduling, but it will only become effective
+															after you saved the Report Definition.</div></td>
+												</tr>
+											</table>
 											<table>
 												<tr>
 													<td><label>Time</label></td>
@@ -937,7 +961,7 @@ table.formTable td {
 													</select></td>
 												</tr>
 											</table>
-											<h3>Recurrence Pattern</h3>
+											<div class="heading">Recurrence Pattern</div>
 											<table cellpadding="0" cellspacing="0">
 												<tr>
 													<td valign="top"
@@ -1026,7 +1050,7 @@ table.formTable td {
 																					<table>
 																						<tr>
 																							<td><input type="checkbox"
-																								ng-model="report.scheduling.weeklyRecurrenceOptions.tuesday" />
+																								ng-model="report.scheduling.weeklyRecurrenceOptions.tuesdays" />
 																							</td>
 																							<td><label>Tuesday</label></td>
 																						</tr>
@@ -1151,33 +1175,33 @@ table.formTable td {
 													</td>
 												</tr>
 											</table>
-											<h3>Range of Recurrence</h3>
+											<div class="heading">Range of Recurrence</div>
 											<table cellpadding="0" cellspacing="0">
 												<tr>
 													<td valign="top">
 														<table>
 															<tr>
 																<td><label>Start</label></td>
-																<td><input type="text" sd-date /></td>
+																<td><input type="text" ng-model="report.scheduling.recurrenceRange.startDate" sd-date /></td>
 															</tr>
 														</table>
 													</td>
 													<td valign="top">
 														<table>
 															<tr>
-																<td><input type="radio" /></td>
+																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="noEnd"/></td>
 																<td><label>No End Date</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio" /></td>
+																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="endAfterNOcurrences"/></td>
 																<td><label>End after</label></td>
-																<td><input type="number" style="width: 50px;" /></td>
+																<td><input type="number" ng-model="report.scheduling.recurrenceRange.occurences" style="width: 50px;" /></td>
 																<td><label>Occurences</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio" /></td>
+																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="endByDate"/></td>
 																<td><label>End by</label></td>
-																<td colspan="2"><input type="text" sd-date /></td>
+																<td colspan="2"><input type="text" ng-model="report.scheduling.recurrenceRange.endDate" sd-date /></td>
 															</tr>
 														</table>
 													</td>
@@ -1187,7 +1211,7 @@ table.formTable td {
 									</td>
 									<td valign="top" style="padding-left: 20px;">
 										<div ng-show="report.scheduling.active">
-											<h2>Delivery</h2>
+											<div class="heading">Delivery</div>
 											<table>
 												<tr>
 													<td><input type="radio" value="personalFolder"
@@ -1219,7 +1243,26 @@ table.formTable td {
 														ng-model="report.scheduling.delivery.eMailAddress" /></td>
 												</tr>
 											</table>
-										</div>
+											<div class="heading">Next Execution</div>
+											<p>Next execution of this Report Definition based on the
+												settings above would be</p>
+											<table style="width: 100%;" width="100%">
+												<tr>
+													<td align="center">
+														<table>
+															<tr>
+																<td
+																	style="color: #8ba7aa; margin-top: 15px;">
+																	<div style="text-align: left;">{{getWeekdayName(getNextExecutionTime())}}</div>
+																	<div
+																		style="font-size: 30px; font-weight: bold; text-align: left; margin-top: 5px;">
+																		{{reportingService.getISODateTime(getNextExecutionTime())}}</div>
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
 									</td>
 								</tr>
 							</table>

@@ -285,20 +285,15 @@ define(
 					document.body.style.cursor = "wait";
 
 					this.reportingService.saveReportDefinitions().done(
-							function(rootFolder) {
-								self.rootFolder = rootFolder;
-
-								console.log("Folder Structure");
-								console.log(rootFolder);
-
+							function() {
 								self.refreshTree();
 
 								document.body.style.cursor = "default";
 							}).fail(function() {
 						document.body.style.cursor = "default";
-					});					
+					});
 				};
-				
+
 				/**
 				 * 
 				 */

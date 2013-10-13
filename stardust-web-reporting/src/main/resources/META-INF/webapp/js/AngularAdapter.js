@@ -223,26 +223,43 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			// Date Picker
 
-			console.log("Checking sd-date");
-
 			this.angularModule.directive('sdDate', function($parse) {
-				console.log("sd-date parsed");
+				console.debug("sd-date parsed");
 				return function(scope, element, attrs, controller) {
+					console.debug("ng-model" + attrs.ngModel);
 					var ngModel = $parse(attrs.ngModel);
-					$(function() {
-						element.datepicker({
-							inline : true,
-							dateFormat : 'dd.mm.yy',
-							onSelect : function(dateText, inst) {
-								scope.$apply(function(scope) {
-									// Change binded variable
-									ngModel.assign(scope, dateText);
-									self
-											.postSingle(attrs.ngModel
-													.split(".")[0]);
-								});
-							}
-						});
+
+					element.datepicker({
+						inline : true,
+						dateFormat : 'dd.mm.yy', // I18N
+						onSelect : function() {
+							var date = new Date(element.datepicker("getDate"));
+
+							console.debug("Date set to " + date);
+
+							scope.$apply(function(scope) {
+								// Change bound variable
+
+								console.debug("Apply called for model " + attrs.ngModel + " and value " + date);
+
+								if (date) {
+									ngModel.assign(scope, date.toISOString());
+
+								} else {
+									ngModel.assign(scope, null);
+								}
+							});
+						}
+					});
+
+					scope.$watch(ngModel, function(val) {
+						console.debug("val = " + val);
+
+						if (val) {
+							element.datepicker("setDate", new Date(val));
+						} else {
+							element.datepicker("setDate", null);
+						}
 					});
 				};
 			});

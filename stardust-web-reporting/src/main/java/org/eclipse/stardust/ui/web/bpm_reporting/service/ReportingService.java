@@ -1120,12 +1120,22 @@ public class ReportingService {
 	}
 
 	/**
+	 * Might be invoked for saving of multiple Report Definitions or directly (whereby json contains a top-level element "report").
 	 * 
 	 * @param json
 	 */
 	public void saveReportDefinition(JsonObject json) {
 		try {
-			JsonObject reportJson = json.get("report").getAsJsonObject();
+			JsonObject reportJson = null;
+
+			// TODO Possibly homogenize handling
+			
+			if (json.has("report")) {
+				reportJson = json.get("report").getAsJsonObject();
+			} else {
+				reportJson = json;
+			}
+
 			JsonObject storageJson = reportJson.get("storage")
 					.getAsJsonObject();
 			String name = reportJson.get("name").getAsString();
@@ -1133,9 +1143,9 @@ public class ReportingService {
 
 			Folder folder = null;
 
-			if (location.equals("personalFolder")) {
+			if (location.equals("publicFolder")) {
 				folder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
-			} else if (location.equals("publicFolder")) {
+			} else if (location.equals("personalFolder")) {
 				folder = findOrCreateFolder(getUserDocumentFolderPath());
 			} else if (location.equals("participantFolder")) {
 				folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson
@@ -1151,6 +1161,16 @@ public class ReportingService {
 
 			System.out.println(reportDefinitionJsons);
 		} finally {
+		}
+	}
+
+	/**
+	 * 
+	 * @param json
+	 */
+	public void saveReportDefinitions(JsonObject json) {
+		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+			saveReportDefinition(entry.getValue().getAsJsonObject());
 		}
 	}
 

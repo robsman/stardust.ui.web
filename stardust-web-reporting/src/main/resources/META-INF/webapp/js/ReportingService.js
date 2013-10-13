@@ -5,20 +5,19 @@
 define(
 		[],
 		function() {
-			var reportingService;
-
 			return {
 				instance : function() {
-					if (!reportingService) {
-						reportingService = new ReportingService();
+					if (!window.top.reportingService) {
+						window.top.reportingService = new ReportingService();
 					}
 
-					return reportingService;
+					return window.top.reportingService;
 				}
 			};
 
 			/**
-			 * 
+			 * Singleton to access server data. Communication is stateless, but
+			 * loaded reports are kept in a cache.
 			 */
 			function ReportingService() {
 				this.mode = "server";
@@ -295,6 +294,10 @@ define(
 					}
 				};
 
+				// Cached for all loaded report definitions
+
+				this.loadedReportDefinitions = {};
+
 				ReportingService.prototype.getPrimaryObject = function(
 						primaryObject) {
 					return this.metadata.objects[primaryObject];
@@ -500,7 +503,7 @@ define(
 
 						console.debug("Report Definition");
 						console.debug(report);
-						
+
 						jQuery
 								.ajax(
 										{
@@ -662,13 +665,6 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.saveAllReportDefinitions = function(
-						reports) {
-				};
-
-				/**
-				 * 
-				 */
 				ReportingService.prototype.saveReportDefinition = function(
 						report) {
 					var deferred = jQuery.Deferred();
@@ -702,6 +698,38 @@ define(
 				};
 
 				/**
+				 * Saves all cached Report Definitions.
+				 */
+				ReportingService.prototype.saveReportDefinitions = function() {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										type : "PUT",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-definitions",
+										contentType : "application/json",
+										data : JSON
+												.stringify(this.loadedReportDefinitions)
+									}).done(function() {
+								deferred.resolve();
+							}).fail(function() {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+
+				/**
 				 * 
 				 */
 				ReportingService.prototype.retrieveReportDefinition = function(
@@ -727,6 +755,11 @@ define(
 											path : path
 										})
 									}).done(function(response) {
+								self.loadedReportDefinitions[path] = response;
+
+								console.debug("Loaded Report Definitions ");
+								console.debug(self.loadedReportDefinitions);
+
 								deferred.resolve(response);
 							}).fail(function(response) {
 								deferred.reject(response);
@@ -831,6 +864,42 @@ define(
 					return type == this.metadata.enumerationType
 							|| type == this.metadata.stringType
 							|| type == this.metadata.integerType;
+				};
+
+				/**
+				 * 
+				 */
+				ReportingService.prototype.getISODateTime = function(d, options) {
+					if (!options) {
+						options = {};
+					}
+
+					// Padding function
+
+					var s = function(a, b) {
+						return (1e15 + a + "").slice(-b);
+					};
+
+					// Default date parameter
+
+					if (typeof d === 'undefined') {
+						d = new Date();
+					}
+
+					// Return ISO datetime
+
+					if (options.showSeconds) {
+						return d.getFullYear() + '-' + s(d.getMonth() + 1, 2)
+								+ '-' + s(d.getDate(), 2) + ' '
+								+ s(d.getHours(), 2) + ':'
+								+ s(d.getMinutes(), 2) + ':'
+								+ s(d.getSeconds(), 2);
+					} else {
+						return d.getFullYear() + '-' + s(d.getMonth() + 1, 2)
+								+ '-' + s(d.getDate(), 2) + ' '
+								+ s(d.getHours(), 2) + ':'
+								+ s(d.getMinutes(), 2);
+					}
 				};
 			}
 		});
