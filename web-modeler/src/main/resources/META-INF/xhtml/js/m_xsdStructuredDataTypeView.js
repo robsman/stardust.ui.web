@@ -142,7 +142,8 @@ define(
 							}else{
 								$scope.javaClassRequiredError = false;
 								$scope.javaClassBinding = false;
-							}	
+							}
+							$scope.noEnumFoundError = false;
 						}, m_utils.jQuerySelect("#configurationTab").get(0));
 						
 						if(removeTypeDeclaration){
@@ -169,9 +170,10 @@ define(
 								if (newValue == "" || newValue == undefined) {
 									$scope.javaClassInput = undefined;
 									$scope.javaClassRequiredError = true;
+									$scope.noEnumFoundError = false;
 								}else{
 									$scope.javaClassRequiredError = false;
-									var visibility = view.typeDeclaration.attributes["carnot:engine:visibility"]
+									$scope.noEnumFoundError = false;
 									self.submitChanges({
 										attributes : {
 											"carnot:engine:className" : $scope.javaClassInput
@@ -479,7 +481,9 @@ define(
 //							$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
 //							$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
 							var facets = self.typeDeclaration.getFacets();
-							if (facets) {
+							// reset the java class binding for ENUM
+							$scope.noEnumFoundError = false;
+							if (facets && !jQuery.isEmptyObject(facets)) {
 								var minVal;
 								var maxVal;
 								for (var i in facets) {
@@ -492,6 +496,10 @@ define(
 								}
 								$scope.minLength = minVal;
 								$scope.maxLength = maxVal;
+							} else {
+								if($scope.javaClassBinding == true){
+									$scope.noEnumFoundError = true;
+								}
 							}
 						}
 					}, m_utils.jQuerySelect("#configurationTab").get(0));
@@ -536,8 +544,8 @@ define(
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 					
-					this.bindToJavaSelect.prop("checked", (this.typeDeclaration.attributes["carnot:engine:className"]));
 					this.bindJavaClassEdit.val(this.typeDeclaration.attributes["carnot:engine:className"]);
+					this.bindToJavaSelect.prop("checked", (this.typeDeclaration.attributes["carnot:engine:className"]));
 					
 					view=this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
@@ -754,7 +762,9 @@ define(
 						var childRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, schemaType);
 
 						parentRow.appendTo(view.tableBody);
-
+						if(view.bindToJavaSelect.prop("checked")){
+							m_utils.jQuerySelect("table#typeDeclarationsTable *").attr("disabled","disabled");
+						}
 						jQuery.each(childRows, function(i, childRow) {
 							childRow.addClass("child-of-" + parentPath);
 							if (parentRow.hasClass("locked")) {

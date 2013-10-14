@@ -125,24 +125,29 @@ table.layoutTable tr.widget td .widget {
 															<option class="label-struct" value="struct">Composite</option>
 															<option class="label-enum" value="enum">Enumeration</option>
 														</select>
-														<div class="widget show-when-enum">
+													<div class="widget show-when-enum">
 														<table cellpadding="0" cellspacing="0">
-														<tr>
-														<td><input id="bindJavaClassCheckbox" type="checkbox"></input></td>
-														<td><label for="bindJavaClassCheckbox" id="bindJavaClass">Bind to Java</label></td>
-														
-														
-														<td><input id="javaClassInput" name="javaClassInput" type="text"
-															style="width: 120px;" ng-model="javaClassInput"
-															ng-model-onblur ng-pattern="/([a-z][a-z_0-9]*\.)*[A-Z_]($[A-Z_]|[\w_])*/"
-															ng-disabled="javaClassBinding == false" class="widget rightAligned">
-																<div id="javaClassInputError"
-																	ng-show="form.javaClassInput.$error.pattern"
-																	style="color: red">Not a valid java class</div>
+															<tr>
+																<td><input id="bindJavaClassCheckbox" type="checkbox"></input></td>
+																<td><label for="bindJavaClassCheckbox" id="bindJavaClass">Bind to Java</label></td>
+																<td><input id="javaClassInput" name="javaClassInput" type="text"
+																	style="width: 120px;" ng-model="javaClassInput"
+																	ng-model-onblur ng-pattern="/([a-z][a-z_0-9]*\.)*[A-Z_]($[A-Z_]|[\w_])*/"
+																	ng-disabled="javaClassBinding == false" class="widget rightAligned">
+																	<div id="javaClassInputError"
+																		ng-show="form.javaClassInput.$error.pattern"
+																		style="color: red">Not a valid java class</div>
 																	<div id="javaClassNoInputError"
-																	ng-show="javaClassRequiredError"
-																	style="color: red">Java Class is mandatory</div>
-														</td></tr></table></div>
+																		ng-show="javaClassRequiredError == true" ng-hide="form.javaClassInput.$error.pattern"
+																		style="color: red">Java Class is mandatory</div>
+																	<div id="noEnumFoundInputError"
+																		ng-show="noEnumFoundError == true" ng-hide="form.javaClassInput.$error.pattern"
+																		style="color: red">No Enum values found
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
 													</td>
 												</tr>
 												<tr id="baseTypeSelect" class="widget show-when-struct">
