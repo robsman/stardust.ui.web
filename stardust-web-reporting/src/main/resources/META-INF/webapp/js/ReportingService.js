@@ -294,7 +294,11 @@ define(
 					}
 				};
 
-				// Cached for all loaded report definitions
+				// Cache for all the report folder structure
+
+				this.rootFolder = {};
+
+				// Cache for all loaded report definitions
 
 				this.loadedReportDefinitions = {};
 
@@ -455,9 +459,8 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.loadReportDefinitions = function() {
+				ReportingService.prototype.loadReportDefinitionsFolderStructure = function() {
 					var deferred = jQuery.Deferred();
-
 					var self = this;
 
 					jQuery
@@ -473,10 +476,11 @@ define(
 										},
 										url : self.getRootUrl()
 												+ "/services/rest/bpm-reporting/report-definitions",
-									}).done(function(data) {
-								deferred.resolve(data);
+									}).done(function(rootFolder) {
+										self.rootFolder = rootFolder;
+								deferred.resolve();
 							}).fail(function() {
-								deferred.reject(data);
+								deferred.reject();
 							});
 
 					return deferred.promise();
@@ -688,8 +692,8 @@ define(
 											operation : "save",
 											report : report
 										})
-									}).done(function(response) {
-								deferred.resolve(response);
+									}).done(function(report) {
+								deferred.resolve(report);
 							}).fail(function(response) {
 								deferred.reject(response);
 							});

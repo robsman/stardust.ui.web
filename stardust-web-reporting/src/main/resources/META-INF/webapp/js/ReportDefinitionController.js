@@ -812,8 +812,8 @@ define(
 
 					this.reportingService.saveReportDefinition(this.report)
 							.done(
-									function() {
-										self.report.storage.state = "saved";
+									function(report) {
+										self.report = report;
 										window.top.postMessage(
 												"BPM-REPORTING-REPORT-CREATED",
 												self.reportingService

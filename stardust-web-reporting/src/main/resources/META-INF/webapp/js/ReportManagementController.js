@@ -62,11 +62,11 @@ define(
 						self.saveReportDefinitions();
 					});
 					jQuery("#refreshReports").click(function() {
-						self.reloadReportDefinitions();
+						self.loadReportDefinitionsFolderStructure();
 					});
 					window.top.addEventListener('message', function(event) {
 						if (event.data === "BPM-REPORTING-REPORT-CREATED") {
-							self.reloadReportDefinitions();
+							self.loadReportDefinitionsFolderStructure();
 						}
 					}, false);
 					jQuery("#reportTree")
@@ -138,7 +138,7 @@ define(
 																					// refresh
 																					// tree
 																					self
-																							.reloadReportDefinitions();
+																							.loadReportDefinitionsFolderStructure();
 																					document.body.style.cursor = "default";
 																				})
 																		.fail(
@@ -193,7 +193,7 @@ define(
 													data.rslt.name);
 								}
 							});
-					this.reloadReportDefinitions();
+					this.loadReportDefinitionsFolderStructure();
 				};
 
 				/**
@@ -297,17 +297,15 @@ define(
 				/**
 				 * 
 				 */
-				ReportManagementController.prototype.reloadReportDefinitions = function() {
+				ReportManagementController.prototype.loadReportDefinitionsFolderStructure = function() {
 					var self = this;
 
 					document.body.style.cursor = "wait";
 
-					this.reportingService.loadReportDefinitions().done(
-							function(rootFolder) {
-								self.rootFolder = rootFolder;
-
+					this.reportingService.loadReportDefinitionsFolderStructure().done(
+							function() {
 								console.log("Folder Structure");
-								console.log(rootFolder);
+								console.log(self.reportingService.rootFolder);
 
 								self.refreshTree();
 
@@ -328,7 +326,7 @@ define(
 
 					jQuery
 							.each(
-									this.rootFolder.subFolders,
+									this.reportingService.rootFolder.subFolders,
 									function(index, folder) {
 										jQuery("#reportTree").jstree(
 												"create",

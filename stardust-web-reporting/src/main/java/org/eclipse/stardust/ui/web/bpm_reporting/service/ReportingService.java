@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
@@ -48,6 +50,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.ReportingResource;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -57,6 +60,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class ReportingService {
+	private static final Logger trace = LogManager
+			.getLogger(ReportingService.class);
 	@Resource
 	private SessionContext sessionContext;
 	private DocumentManagementService documentManagementService;
@@ -981,7 +986,7 @@ public class ReportingService {
 		for (int n = 0; n < filters.size(); ++n) {
 			JsonObject filterJson = filters.get(n).getAsJsonObject();
 
-			System.out.println("Filter: " + filterJson.toString());
+			trace.debug("Filter: " + filterJson.toString());
 
 			// TODO: These need to be overwritten by parameters
 
@@ -1124,7 +1129,7 @@ public class ReportingService {
 	 * 
 	 * @param json
 	 */
-	public void saveReportDefinition(JsonObject json) {
+	public JsonObject saveReportDefinition(JsonObject json) {
 		try {
 			JsonObject reportJson = null;
 
@@ -1151,6 +1156,10 @@ public class ReportingService {
 				folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson
 						.get("participant").getAsString()));
 			}
+			
+			// Mark Report Definition as saved
+			
+			reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
 
 			saveReportDefinitionDocument(reportJson, folder, name);
 
@@ -1159,7 +1168,9 @@ public class ReportingService {
 			reportDefinitionJsons
 					.put(folder.getPath() + "/" + name, reportJson);
 
-			System.out.println(reportDefinitionJsons);
+			trace.debug(reportDefinitionJsons);
+			
+			return json;
 		} finally {
 		}
 	}

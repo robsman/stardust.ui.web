@@ -9,12 +9,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService;
 
 import com.google.gson.Gson;
@@ -28,9 +29,12 @@ import com.google.gson.JsonObject;
  */
 @Path("/")
 public class ReportingResource {
-	private ReportingService reportingService;
+	private static final Logger trace = LogManager
+			.getLogger(ReportingResource.class);
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
-	private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
+	private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting()
+			.create();
+	private ReportingService reportingService;
 
 	@Context
 	private HttpServletRequest httpRequest;
@@ -62,9 +66,9 @@ public class ReportingResource {
 			return Response.ok(getReportingService().getModelData().toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -74,8 +78,8 @@ public class ReportingResource {
 	@Path("report-data")
 	public Response getReportData(String postedData) {
 		try {
-			System.out.println("report-data");
-			System.out.println(postedData);
+			trace.debug("report-data");
+			trace.debug(postedData);
 
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
@@ -83,9 +87,9 @@ public class ReportingResource {
 					getReportingService().getReportData(json).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -95,12 +99,12 @@ public class ReportingResource {
 	public Response loadReportDefinitions() {
 		try {
 			return Response.ok(
-					getReportingService().loadReportDefinitions()
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getReportingService().loadReportDefinitions().toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -109,16 +113,16 @@ public class ReportingResource {
 	@Path("report-definition")
 	public Response loadReportDefinition(@PathParam("path") String path) {
 		try {
-			return Response.ok(
-					getReportingService().loadReportDefinition(path)
+			return Response
+					.ok(getReportingService().loadReportDefinition(path)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param postedData
@@ -132,17 +136,18 @@ public class ReportingResource {
 	@Path("report-definition")
 	public Response loadReportDefinitionAsJson(String postedData) {
 		try {
-			System.out.println("Load report definition: " + postedData);
+			trace.debug("Load report definition: " + postedData);
 
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
 			return Response.ok(
-					getReportingService().loadReportDefinition(json.get("path").getAsString())
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getReportingService().loadReportDefinition(
+							json.get("path").getAsString()).toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -152,26 +157,29 @@ public class ReportingResource {
 	@Path("report-definition")
 	public Response saveReportDefinition(String postedData) {
 		try {
-			System.out.println("Save report definition: " + prettyPrinter.toJson(postedData));
+			trace.debug("Save report definition: "
+					+ prettyPrinter.toJson(postedData));
 
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
 			String operation = json.get("operation").getAsString();
-			
-			if (operation.equals("rename"))
-			{
-				getReportingService().renameReportDefinition(json.get("path").getAsString(), json.get("name").getAsString());				
-			}
-			else
-			{
-				getReportingService().saveReportDefinition(json);
-			}
 
-			return Response.ok("", MediaType.TEXT_PLAIN).build();
+			if (operation.equals("rename")) {
+				getReportingService().renameReportDefinition(
+						json.get("path").getAsString(),
+						json.get("name").getAsString());
+
+				return Response.ok("", MediaType.TEXT_PLAIN).build();
+			} else {
+				return Response.ok(
+						getReportingService().saveReportDefinition(json)
+								.toString(), MediaType.APPLICATION_JSON)
+						.build();
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -181,17 +189,18 @@ public class ReportingResource {
 	@Path("report-definitions")
 	public Response saveReportDefinitions(String postedData) {
 		try {
-			System.out.println("Save report definitions: " + prettyPrinter.toJson(postedData));
+			trace.debug("Save report definitions: "
+					+ prettyPrinter.toJson(postedData));
 
 			JsonObject json = jsonIo.readJsonObject(postedData);
-			
+
 			getReportingService().saveReportDefinitions(json);
 
 			return Response.ok("", MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 
@@ -207,9 +216,9 @@ public class ReportingResource {
 					getReportingService().deleteReportDefinition(json)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
 }

@@ -879,17 +879,31 @@ table.formTable td {
 											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
 										</div>
 										<div ng-show="report.storage.state == 'saved'">
-											<p>This Report Definition is saved with name</p>
-											<input type="text" ng-model="report.name"
-												style="width: 250px;"></input>
-											<p>and description</p>
-											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
+											<table cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label>Name</label></td>
+													<td><input type="text" ng-model="report.name"
+														style="width: 250px;"></input></td>
+												</tr>
+											</table>
+											<table>
+												<tr>
+													<td><label>Description</label></td>
+												</tr>
+												<tr>
+													<td><textarea rows="5" cols="60"
+															ng-model="report.description"></textarea></td>
+												</tr>
+											</table>
+
 										</div>
 									</td>
 								</tr>
 								<tr>
 									<td valign="top">
-										<p>for on-demand or scheduled repetetive execution as a</p>
+										<div ng-show="report.storage.state == 'created'">
+											<p>for on-demand or scheduled repetetive execution as a</p>
+										</div>
 										<table>
 											<tr>
 												<td><input type="radio"
@@ -915,10 +929,8 @@ table.formTable td {
 								<tr>
 									<td colspan="2">
 										<div ng-show="report.storage.state == 'created'">
-											<button ng-click="saveReport()" style="margin-top: 10px;">Save</button>
-										</div>
-										<div ng-show="report.storage.state == 'saved'">
-											<button ng-click="saveReport()" style="margin-top: 10px;">Modify</button>
+											<button ng-click="saveReport()" style="margin-top: 10px;">Save
+												as Template</button>
 										</div>
 									</td>
 								</tr>
@@ -941,23 +953,25 @@ table.formTable td {
 											<table>
 												<tr>
 													<td colspan="2"><div
-															ng-show="report.storage.state == 'created'" style="font-style: italic;">Note,
+															ng-show="report.storage.state == 'created'"
+															style="font-style: italic; color: #aaaaaa;">Note,
 															that this Report Definition is not saved yet. You can
 															configure Scheduling, but it will only become effective
 															after you saved the Report Definition.</div></td>
 												</tr>
 											</table>
-											<table>
+											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td><label>Time</label></td>
 													<td><input type="text"
 														ng-model="report.scheduling.startTime" sd-date required /></td>
 												</tr>
 												<tr>
-													<td><label>Map Start Timestamp to Parameter</label></td>
-													<td><select><option>None</option>
-															<option ng-repeat="parameter in getParameters()">{{parameter.scope}}
-																+ {{parameter.id}}</option>
+													<td><label>Map Start Timestamp to Parameters</label></td>
+													<td><select multiple="multiple"
+														ng-model="report.scheduling.parametersForStartTime"
+														ng-options="x.id as x.name for x in getParameters()"
+														style="height: 50px;">
 													</select></td>
 												</tr>
 											</table>
@@ -970,25 +984,25 @@ table.formTable td {
 															<tr>
 																<td><input type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
-																	value="daily" /></td>
+																	value="{{schedulingController.DAILY}}" /></td>
 																<td><label>Daily</label></td>
 															</tr>
 															<tr>
 																<td><input type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
-																	value="weekly" /></td>
+																	value="{{schedulingController.WEEKLY}}" /></td>
 																<td><label>Weekly</label></td>
 															</tr>
 															<tr>
 																<td><input type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
-																	value="monthly" /></td>
+																	value="{{schedulingController.MONTHLY}}" /></td>
 																<td><label>Monthly</label></td>
 															</tr>
 															<tr>
 																<td><input type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
-																	value="yearly" /></td>
+																	value="{{schedulingController.YEARLY}}" /></td>
 																<td><label>Yearly</label></td>
 															</tr>
 														</table>
@@ -1165,7 +1179,59 @@ table.formTable td {
 																			<tr>
 																				<td><label>Recurs every</label></td>
 																				<td><input type="number" style="width: 50px;" /></td>
-																				<td><label>Years</label></td>
+																				<td><label>Year(s)</label></td>
+																			</tr>
+																		</table>
+																		<table>
+																			<tr>
+																				<td><input type="radio" /></td>
+																				<td><label>on</label></td>
+																				<td><table cellpadding="0" cellspacing="0">
+																						<tr>
+																							<td><select><option>January</option>
+																									<option>February</option></select></td>
+																							<td><input type="number"
+																								style="width: 50px;"></input></td>
+																						</tr>
+																					</table></td>
+																			</tr>
+																		</table>
+																		<table>
+																			<tr>
+																				<td><input type="radio" /></td>
+																				<td><label>on the</label></td>
+																				<td><table>
+																						<tr>
+																							<td><select><option>first</option>
+																									<option>second</option>
+																									<option>third</option>
+																									<option>fourth</option>
+																									<option>last</option>
+																							</select></td>
+																							<td><select><option>Monday</option>
+																									<option>Tuesday</option>
+																									<option>Wednesday</option>
+																									<option>Thursday</option>
+																									<option>Friday</option>
+																									<option>Saturday</option>
+																									<option>Sunday</option>
+																							</select></td>
+																							<td><label>of</label></td>
+																							<td><select><option>January</option>
+																									<option>February</option>
+																									<option>March</option>
+																									<option>April</option>
+																									<option>May</option>
+																									<option>June</option>
+																									<option>July</option>
+																									<option>August</option>
+																									<option>September</option>
+																									<option>October</option>
+																									<option>November</option>
+																									<option>December</option>
+																							</select></td>
+																						</tr>
+																					</table></td>
 																			</tr>
 																		</table>
 																	</td>
@@ -1182,26 +1248,38 @@ table.formTable td {
 														<table>
 															<tr>
 																<td><label>Start</label></td>
-																<td><input type="text" ng-model="report.scheduling.recurrenceRange.startDate" sd-date /></td>
+																<td><input type="text"
+																	ng-model="report.scheduling.recurrenceRange.startDate"
+																	sd-date /></td>
 															</tr>
 														</table>
 													</td>
 													<td valign="top">
 														<table>
 															<tr>
-																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="noEnd"/></td>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceRange.endMode"
+																	value="noEnd" /></td>
 																<td><label>No End Date</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="endAfterNOcurrences"/></td>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceRange.endMode"
+																	value="endAfterNOcurrences" /></td>
 																<td><label>End after</label></td>
-																<td><input type="number" ng-model="report.scheduling.recurrenceRange.occurences" style="width: 50px;" /></td>
+																<td><input type="number"
+																	ng-model="report.scheduling.recurrenceRange.occurences"
+																	style="width: 50px;" /></td>
 																<td><label>Occurences</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio" ng-model="report.scheduling.recurrenceRange.endMode" value="endByDate"/></td>
+																<td><input type="radio"
+																	ng-model="report.scheduling.recurrenceRange.endMode"
+																	value="endByDate" /></td>
 																<td><label>End by</label></td>
-																<td colspan="2"><input type="text" ng-model="report.scheduling.recurrenceRange.endDate" sd-date /></td>
+																<td colspan="2"><input type="text"
+																	ng-model="report.scheduling.recurrenceRange.endDate"
+																	sd-date /></td>
 															</tr>
 														</table>
 													</td>
@@ -1249,13 +1327,14 @@ table.formTable td {
 											<table style="width: 100%;" width="100%">
 												<tr>
 													<td align="center">
-														<table>
-															<tr>
-																<td
-																	style="color: #8ba7aa; margin-top: 15px;">
+														<table style="margin-top: 15px;">
+															<tr valign="middle">
+																<td style="padding-right: 5px;"><img
+																	src="../images/icons/date.png" /></td>
+																<td style="color: #8ba7aa;">
 																	<div style="text-align: left;">{{getWeekdayName(getNextExecutionTime())}}</div>
 																	<div
-																		style="font-size: 30px; font-weight: bold; text-align: left; margin-top: 5px;">
+																		style="font-size: 25px; text-align: left; margin-top: 5px;">
 																		{{reportingService.getISODateTime(getNextExecutionTime())}}</div>
 																</td>
 															</tr>
