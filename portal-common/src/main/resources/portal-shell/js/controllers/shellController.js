@@ -5,8 +5,8 @@ define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
 	
 	shell.module.controller('sg.shell.Controller',
-			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService',
-			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService) {
+			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService',
+			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService) {
 
 				// ****************** Config Service - START ******************
 				/*
@@ -193,6 +193,8 @@ define(['portal-shell/js/shell'], function (shell) {
 					}
 				};
 
+				$scope.sidebar = {visible: true, pinned: true};
+
 				/*
 				 * 
 				 */
@@ -211,27 +213,32 @@ define(['portal-shell/js/shell'], function (shell) {
 				 * 
 				 */
 				$scope.pinSidebar = function() {
-					// TODO
+					$scope.sidebar.pinned = true;
+					$scope.sidebar.visible = true;
+					sgPubSubService.publish('sgSidebarPinStateChanged', {oldValue: false, newValue: true});
+					sgPubSubService.publish('sgSidebarVisibilityChanged', {oldValue: false, newValue: true});
 				};
 
 				/*
 				 * 
 				 */
 				$scope.unpinSidebar = function() {
-					// TODO
+					$scope.sidebar.pinned = false;
+					$scope.sidebar.visible = false;
+					sgPubSubService.publish('sgSidebarPinStateChanged', {oldValue: true, newValue: false});
+					sgPubSubService.publish('sgSidebarVisibilityChanged', {oldValue: true, newValue: false});
 				};
 
 				/*
 				 * 
 				 */
 				$scope.getSidebarDetails = function() {
-					// TODO
-					var sidebar = jQuery("#sidebar");
+					var sidebarElem = $scope.sidebar.pinned ? jQuery(".sidebar-content") : jQuery(".sg-sidebar-toggle");
 					var ret = {
-						visible: true,
-						pinned: true,
-						width: sidebar.outerWidth(),
-						height: sidebar.outerHeight()
+						visible: $scope.sidebar.visible,
+						pinned: $scope.sidebar.pinned,
+						width: sidebarElem.outerWidth(),
+						height: sidebarElem.outerHeight()
 					}
 					return ret;
 				};

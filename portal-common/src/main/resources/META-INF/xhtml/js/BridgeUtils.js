@@ -942,7 +942,7 @@ if (!window["BridgeUtils"].Dialog) {
 					sidebar.style.display = "inline-block";
 				}
 	
-				if (!sidebarPinned) {
+				if (invokedFromlaunchPanels && !sidebarPinned) {
 					BridgeUtils.View.unpinSidebar();
 				}
 				
@@ -1492,6 +1492,9 @@ if (!window["BridgeUtils"].FrameManager) {
 					// Add workaround i.e. delay activation. if last iteration then continue
 					if (hiddenCounter < 0 || !(posFrame.x == 0 && posFrame.y == 0)) {
 						delayActivation = false;
+						if (hiddenCounter < 0) {
+							BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
+						}
 
 						posFrame.x = isNaN(posFrame.x) ? 0 : posFrame.x;
 						posFrame.y = isNaN(posFrame.y) ? 0 : posFrame.y;
@@ -1566,7 +1569,7 @@ if (!window["BridgeUtils"].FrameManager) {
 							activate(contentId, advanceArgs, --hiddenCounter);
 						}, 100);
 					} else {
-						BridgeUtils.log("Anchor not found while activating. Max tries exceeded for " + contentId, "e");
+						BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
 						contentFrame.style.display = 'inline';
 					}
 				}

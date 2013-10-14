@@ -53,7 +53,7 @@
 			<div class="header">
 				<div class="header-table">
 					<div class="header-row">
-						<div class="header-cell app-logo"></div>
+						<div class="header-cell app-logo sg-common-menu"></div>
 						<div class="header-cell app-title">{{config.appTitle}}</div>
 						<div class="header-cell">
 							<!-- Utility Menu -->
@@ -122,28 +122,30 @@
 		<!-- Main Content (Sidebar and Views) -->
 		<div class="container-fluid">
 			<!-- Sidebar -->
-			<div style="float: left; width: {{config.sidebar.width}}px;">
-				<div class="sidebar-title">{{config.sidebar.title}}</div>
-				<div class="sidebars" style="width: 350px;">
-					<div ng-repeat="item in sidebars">
-						<div id="sidebar" class="sidebar" style="width: {{config.sidebar.width}}px;">
-							<div id="sidebar-content" class="sidebar-content" sg-stretch-to-bottom>
-								<div class="sidebar-content-inner">
-									<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
-										<ng-include src="item.partial"/>
-									</div>
-								</div>
-								<div class="sidebar-separator"></div>
-							</div>
-							<div>
-								<!-- Controls to Toggle Sidebar -->
+			<div id="sidebar" class="sidebar" sg-stretch-to-bottom>
+				<div class="sg-sidebar-toggle" ng-class="{'display-none': sidebar.pinned}"> 
+					<div class="sg-sidebar-toggle-inner">
+						<div class="sg-sidebar-toggle-icon" ng-click="pinSidebar()"></div>
+					</div>
+				</div>
+				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
+					style="width: {{config.sidebar.width}}px;">
+					<div class="sidebar-title">
+						{{config.sidebar.title}}
+						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()"></div>
+					</div>
+					<div class="sidebar-content-inner" ng-class="{'display-none': !sidebar.visible}">
+						<div ng-repeat="item in sidebars">
+							<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
+								<ng-include src="item.partial"/>
 							</div>
 						</div>
 					</div>
+					<div class="sidebar-separator"></div>
 				</div>
 			</div>
 			
-			<div style="margin-left: {{config.sidebar.width}}px;">
+			<div ng-class="{'view-panels-no-sidebar': !sidebar.pinned}" style="{{sidebar.pinned ? 'margin-left:' + config.sidebar.width + 'px;' : ''}}">
 				<div class="view-panels">
 					<div ng-repeat="panel in panels">
 						<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"
