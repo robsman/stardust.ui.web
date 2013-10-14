@@ -69,7 +69,7 @@ public class RulesManagementResource
       try
       {
          getRulesManagementService().saveRuleSets(ruleSets);         
-         return Response.ok("Saved", MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok("Saved").build();
       }
       catch (Exception e)
       {
