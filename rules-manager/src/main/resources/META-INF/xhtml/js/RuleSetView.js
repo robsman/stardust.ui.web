@@ -78,6 +78,7 @@ define(
 					$descriptionTextArea.val(ruleSet.description);
 					$descriptionTextArea.on("change",function(event){
 						ruleSet.description=$descriptionTextArea.val();
+						ruleSet.state.isDirty=true;
 						CommandsDispatcher.submitCommand();
 						console.log(event);
 					});
@@ -125,9 +126,9 @@ define(
 										view : this
 									},
 									function(event) {
-										event.data.view.ruleSet.name = event.data.view.nameInput
-												.val();
+										event.data.view.ruleSet.name = event.data.view.nameInput.val();
 										event.data.view.renameView(event.data.view.ruleSet);
+										ruleSet.state.isDirty=true;
 										CommandsDispatcher.submitCommand();
 									});
 					m_utils.jQuerySelect("#runButton")
@@ -253,12 +254,7 @@ define(
 					this.creationDateOutput.append("" + this.ruleSet.creationDate);
 					this.lastModificationDateOutput.empty();
 					this.lastModificationDateOutput.append("" + this.ruleSet.lastModificationDate);
-					//this.codeTextarea.val(this.ruleSet.generateDrl());
-					//debugger;
 					drlText +=this.ruleSet.generateDrl();
-					//this.drlEditor.setValue(drlText);
-					// Workaround until command handling is improved
-
 					this.parameterMappingsPanel.setScopeModel(null);
 					this.parameterMappingsPanel
 							.setParameterDefinitions(this.ruleSet.parameterDefinitions);					
@@ -303,7 +299,7 @@ define(
 					// TODO Bridge command protocol
 
 					this.ruleSet.parameterDefinitions = parameterDefinitions;
-
+					this.ruleSet.state.isDirty=true;
 					m_utils.debug("Facts:");
 					m_utils.debug(parameterDefinitions);
 
@@ -317,6 +313,7 @@ define(
 					// TODO Dummy
 
 					this.activate(this.ruleSet);
+					this.ruleSet.state.isDirty=true;
 					if (command.name
 							&& command.name === "RuleSet.Rename") {
 						this.renameView(command.ruleSet);	

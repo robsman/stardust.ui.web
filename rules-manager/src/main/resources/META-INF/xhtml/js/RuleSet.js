@@ -7,14 +7,16 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		"rules-manager/js/Uuid", "rules-manager/js/Rule","rules-manager/js/TechnicalRule",
 		"rules-manager/js/DecisionTable","bpm-modeler/js/m_model",
 		"rules-manager/js/hotDecisionTable/m_typeParser",
-		"rules-manager/js/m_ruleSetParser"], function(m_utils, m_constants, m_command,
+		"rules-manager/js/m_ruleSetParser","rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
 		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
-		Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser) {
+		Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
 		create : function(id, name) {
 			var ruleSet = new RuleSet();
+			var state=m_stateFactory.create(false,false,false);
 			ruleSet.initialize(id, name);
+			ruleSet.state=state;
 			getRuleSets()[ruleSet.uuid] = ruleSet;
 			return ruleSet;
 		},
@@ -22,7 +24,8 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			return m_ruleSetParser.fromPreDRLformat(data,serializer,new RuleSet());
 		},
 		deleteRuleSet : function(uuid) {
-			delete getRuleSets()[uuid];
+			var rSet= getRuleSets()[uuid];
+			rSet.state.isDeleted=true;
 		},
 		getRuleSets : getRuleSets,
 		emptyRuleSets : emptyRuleSets,
@@ -146,7 +149,10 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				parsedData="['Not Implemented']";
 			}
 			return parsedData;
-		}
+		};
+		RuleSet.prototype.setState=function(persisted,dirty,deleted){
+			this.state=m_stateFactory.create(persisted,dirty,deleted);
+		};
 		RuleSet.prototype.initialize = function(id, name) {
 			this.uuid = Uuid.generate();
 			this.id = id;
@@ -158,6 +164,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 			var uuid=Uuid.generate();
 			var decisionTable=DecisionTable.create(this,uuid,id,name);
 			this.decisionTables[uuid]=decisionTable;
+			this.state.isDirty=true;
 			return decisionTable;
 		};
 		
@@ -172,6 +179,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		};
 		RuleSet.prototype.deleteDecisionTable=function(id){
 			if(this.decisionTables.hasOwnProperty(id)){
+				this.state.isDirty=true;
 				delete this.decisionTables[id];
 			}
 		};
@@ -179,6 +187,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		RuleSet.prototype.addTechnicalRule=function(id,name){
 			var uuid=Uuid.generate();
 			var techRule=TechnicalRule.create(this,uuid,id,name);
+			this.state.isDirty=true;
 			this.technicalRules[uuid]=techRule;
 			return techRule;
 		};
@@ -194,6 +203,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		};
 		RuleSet.prototype.deleteTechnicalRule=function(id){
 			if(this.technicalRules.hasOwnProperty(id)){
+				this.state.isDirty=true;
 				delete this.technicalRules[id];
 			}
 		};

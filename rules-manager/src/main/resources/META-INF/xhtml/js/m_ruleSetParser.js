@@ -3,8 +3,10 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/RuleSet",
         "rules-manager/js/TechnicalRule",
         "rules-manager/js/DecisionTable",
-        "rules-manager/js/hotDecisionTable/m_operators"],
-        function(operators,utils,m_RuleSet,m_TechnicalRule,m_DecisionTable,m_operators){
+        "rules-manager/js/hotDecisionTable/m_operators",
+        "rules-manager/js/m_stateFactory"],
+        function(operators,utils,m_RuleSet,m_TechnicalRule,
+        		m_DecisionTable,m_operators,m_stateFactory){
 		
 	/* m_RuleSet is not being injected through the define function. Current
 	 * workaround is to simply inject the object we need through our function call(s)*/
@@ -75,7 +77,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 	return {
 		/*return JSON string primed for parsing into DRL*/
 		fromPreDRLformat: function(data,serializer,RS){
-			var rSet;	
+			var rSet,state;
 			/*data.serializer has precedence when present*/
 			serializer=data.serializer || serializer;
 			
@@ -91,6 +93,9 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 						  "data": data,
 						  "serializer": serializer};
 			}
+			/*set initial state of ruleset*/
+			state=m_stateFactory.create(true,false,false);
+			rSet.state=state;
 			return rSet;
 		},
 		toPreDRLFormat: function(rSet){

@@ -66,7 +66,8 @@ define(["./m_operators","./m_utilities"],function(operators,utils){
 	                    $opBadge.attr("title",opText);
 	                    $opBadge.text(mySymbol);
 	                    event.stopPropagation();
-	            	    $dialog.dialog("close");  
+	            	    $dialog.dialog("close"); 
+	            	    instance.runHooks('afterChange');
 	            	    console.log(myOperator);
 	            	    //$dialog.dialog("destroy");
 	            	  });

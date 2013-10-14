@@ -54,6 +54,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         			break;
         		case "override_remove_row":
         			if(instance.countRows() ===1) return;
+        			instance.runHooks('afterChange');
         			instance.alter("remove_row",selectedRow);
         			break;
         		case "move_row_up":
@@ -127,10 +128,16 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         		}}
         	}
         },
+        afterColumnResize: function(){
+        	this.runHooks('afterChange');
+        },
         afterColumnMove: function(oldIndex,newIndex){
         	/*HoT does not actually move the underlying config and data, so we have to.
         	 *HoT will only modify its manualColumnPositions array which is pure UI sugar
         	 *and does not reflect the underlying data. SO, we are left to implement the deep changes.*/
+        	if(newIndex==undefined){
+        		newIndex=oldIndex;
+        	}
         	var settings=this.getSettings();
         		headers=settings.colHeaders,
         		hdrCheck=headers[newIndex].split("|")[2],
@@ -204,9 +211,10 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         	  var settings=instance.getSettings(),
         	      data=settings.data,
         	      rowCount=settings.data.length;
-        	  if(to < 0 || to > rowCount){return;}
+        	  if(to < 1 || to > rowCount){return;}
         	  data.splice(to,0,data.splice(from,1)[0]);
         	  instance.updateSettings({"data":data});
+        	  instance.runHooks('afterChange');
           },
           addDefaultRow: function(instance,rowNum){
         	  var settings=instance.getSettings(),
@@ -243,6 +251,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         	  position=(rowNum!==undefined)?rowNum:rowCount+1;
         	  settings.data.splice(position,0,newRow);
         	  instance.updateSettings({data: settings.data});
+        	  instance.runHooks('afterChange');
           },
           parseRowToDRL: function(index,instance){
         	  var hdrCells=instance.getColHeader(),
@@ -424,6 +433,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             	colHeaders: settings.colHeaders,
             	colWidths: settings.colWidths
             });
+            instance.runHooks('afterChange');
           },
           moveColumn: function(instance,oldIndex,newIndex){
     	    var settings=instance.getSettings();
@@ -440,6 +450,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             	colHeaders: settings.colHeaders,
             	colWidths: settings.colWidths
             });
+    	    instance.runHooks('afterChange');
           },
           toggleNonDataColumns: function(instance){
         	  var settings=instance.getSettings(),

@@ -50,8 +50,9 @@ define(
 										.getProperty("modeler.outline.lastSavedMessage.title"));
 	
 				jQuery.each(RuleSet.getRuleSets(),
-						function(index, ruleSet) {
+					function(index, ruleSet) {
 
+						if(ruleSet.state.isDeleted===false){
 							
 							jQuery(displayScope + "#outline").jstree("create", displayScope + "#outline",
 									"first", {
@@ -120,10 +121,9 @@ define(
 											}, null, true);
 								});	
 							}
-							
-							// TODO - uncomment after the code to reload outline on every node creation / deletion is removed
-							//jQuery(displayScope + "#outline").jstree("close_node",  "#" + ruleSet.uuid);
-						});
+						} /*If ruleSet.state.isdeleted condition check end*/
+					}); /*JQUERY Each->RuleSet loop end*/
+				
 				m_utils.debug("Tree initialized");
 
 				hasUnsavedModifications = false;
@@ -194,6 +194,9 @@ define(
 					var oldName = ruleSet.name;
 					var newName = data.rslt.name;
 					ruleSet.name = newName;
+					if(oldName != newName){
+						ruleSet.state.isDirty=true;
+					}
 					CommandsDispatcher.submitCommand({
 						name:"RuleSet.Rename",
 						ruleSet:ruleSet,
@@ -206,6 +209,9 @@ define(
 					var oldName=decTable.name;
 					var newName=data.rslt.name;
 					decTable.name=newName;
+					if(oldName != newName){
+						ruleSet.state.isDirty=true;
+					}
 					CommandsDispatcher.submitCommand({
 						name:"DecisionTable.Rename",
 						decTable:decTable,
@@ -220,6 +226,9 @@ define(
 					var oldName=techRule.name;
 					var newName=data.rslt.name;
 					techRule.name=newName;
+					if(oldName != newName){
+						ruleSet.state.isDirty=true;
+					}
 					CommandsDispatcher.submitCommand({
 						name:"TechnicalRule.Rename",
 						techRule:techRule,
@@ -425,12 +434,34 @@ define(
 			
 			function saveAllRules() {
 				var rsArray=[];
-				
+				var deletedRsets=[];
 				//Convert each RuleSet to its transformed JSON object
 				jQuery.each(RuleSet.getRuleSets(),function(){
-					rsArray.push(this.toJSON("PRE-DRL"));
+					
+					/* Detect rulesets that need to be deleted from persistant storage*/
+					if(this.state.isDeleted===true && 
+					   this.state.isPersisted===true){
+						rsArray.push({
+							id: this.id,
+							uuid: this.uuid,
+							name: this.name,
+							deleted: true
+						});
+					}
+					/* Detect only those rulesets that are not saved and not deleted.*/
+					else if(this.state.isPersisted===false && 
+							this.state.isDeleted===false){
+						rsArray.push(this.toJSON("PRE-DRL"));
+					/* Finally, rulesets that are persistant and have changes (are dirty)*/
+					}else if(this.state.isPersisted===true && 
+							 this.state.isDirty===true && 
+							 this.state.isDeleted===false){
+						rsArray.push(this.toJSON("PRE-DRL"));
+					}
+					
 				});
-				
+				console.log("--RSArray--");
+				console.log(rsArray);
 				m_communicationController
 						.postData(
 								{
@@ -442,6 +473,10 @@ define(
 										success : function(data) {
 											m_messageDisplay.markSaved();
 											hasUnsavedModifications = false;
+											jQuery.each(RuleSet.getRuleSets(),function(){
+												this.state.isPersisted=true;
+												this.state.isDirty=false;
+											});
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {

@@ -247,6 +247,7 @@ define(
 				    	}
 				    });
 				    uiElements.decisionTableInstance.rootElement.on("column_removed",function(event){
+				    	ruleSet.state.isDirty=true;
 				    	if(myDialog){
 				    		myDialog.trigger(event);
 				    	}
@@ -259,6 +260,7 @@ define(
 				        	var instance=uiElements.decisionTableInstance;
 				        	var settings=instance.getSettings();
 				        	settings.helperFunctions.addDefaultRow(instance);
+				        	ruleSet.state.isDirty=true;
 				        	//uiElements.decisionTableInstance.alter('insert_row');
 				        });
 				      });
@@ -286,6 +288,7 @@ define(
 					/*Hook for the change event of our table: Saved for undo redo functionality*/
 					uiElements.decisionTableInstance.addHook('afterChange', function(changes,source) {
 						console.log("Decision Table Change event...");
+						ruleSet.state.isDirty=true;
 					});
 					
 					/* Adding a hook for column resizing as this value was not actually being saved into
@@ -293,12 +296,14 @@ define(
 					 */
 					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
 						decTableData.colWidths[col]=size;
+						ruleSet.state.isDirty=true;
 					});
 					
 					/*binding textarea to the description attribute of our decision table*/
 					uiElements.descriptionTextarea.val(decTable.description);
 					uiElements.descriptionTextarea.on("change",function(){
 						decTable.description=uiElements.descriptionTextarea.val();
+						ruleSet.state.isDirty=true;
 						CommandsDispatcher.submitCommand();
 					});
 					
@@ -306,6 +311,7 @@ define(
 					this.nameInput.change({view : this},function(event) {
 						decTable.name = uiElements.nameInput.val();
 						view.renameView(decTable);
+						ruleSet.state.isDirty=true;
 						CommandsDispatcher.submitCommand();
 					});
 					

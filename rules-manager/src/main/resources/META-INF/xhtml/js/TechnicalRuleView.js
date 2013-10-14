@@ -227,6 +227,7 @@ define(
 					uiElements.nameInput.change({view : this}, function() {
 						techRule.name = uiElements.nameInput.val();
 						view.renameView(techRule);
+						ruleSet.state.isDirty=true;
 						CommandsDispatcher.submitCommand();
 					});
 					
@@ -234,12 +235,14 @@ define(
 					uiElements.descriptionTextarea.val(techRule.description);
 					uiElements.descriptionTextarea.on("change",function(){
 						techRule.description=uiElements.descriptionTextarea.val();
+						ruleSet.state.isDirty=true;
 						CommandsDispatcher.submitCommand();
 					});
 					
 					/*binding ruleset technical rule drl to change events on our drlEditor textarea*/
 					uiElements.drlEditor.editor.on("change",function(event){
 						var tempVal=uiElements.drlEditor.getValue();
+						ruleSet.state.isDirty=true;
 						techRule.setDRL(tempVal);
 					});
 					
