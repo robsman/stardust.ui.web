@@ -154,7 +154,7 @@ public class CriticalityConfigurationUtil
    
    public static String getCriticalityDisplayLabel(int criticalityVal, CriticalityCategory criticality)
    {
-      return criticality.getLabel() + " (" + criticalityVal + ")";
+      return null != criticality ? criticality.getLabel() + " (" + criticalityVal + ")" : null;
    }
    
    public static List<CriticalityCategory> getCriticalityCategoriesList()
