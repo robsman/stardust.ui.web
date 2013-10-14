@@ -58,6 +58,10 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.defaultValue"));
+					m_utils.jQuerySelect("th#description")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.description"));
 					m_utils.jQuerySelect("th#references")
 							.text(
 									m_i18nUtils
@@ -322,6 +326,31 @@ define(
 
 						row.append(cell);
 
+						input = m_utils.jQuerySelect("<input type='text' class='cellEditor'></input>");
+
+						cell.append(input);
+						input
+								.val(variables[n].description);
+						input.prop('title', variables[n].description);
+						input
+								.change(
+										{
+											page : this,
+											variableName : variables[n].name
+										},
+										function(event) {
+											event.data.page
+													.modifyConfigurationVarDescription(
+															event.data.variableName,
+															m_utils.jQuerySelect(
+																	this)
+																	.val());
+										});
+						
+						cell = m_utils.jQuerySelect("<td></td>");
+						
+						row.append(cell);
+
 						var list = m_utils.jQuerySelect("<ul class='referencesList'></ul>");
 
 						cell.append(list);
@@ -373,6 +402,27 @@ define(
 					}, JSON.stringify({
 						variableName : variableName,
 						defaultValue : defaultValue
+					}), {
+						"success" : function() {
+						},
+						"error" : function() {
+							m_utils.debug("Error");
+						}
+					});
+				};
+				
+				/**
+				 *
+				 */
+				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVarDescription = function(
+						variableName, description) {
+					m_communicationController.postData({
+						url : m_communicationController.getEndpointUrl()
+								+ "/models/" + encodeURIComponent(this.getModel().id)
+								+ "/configurationVariables/" + variableName
+					}, JSON.stringify({
+						variableName : variableName,
+						description : description
 					}), {
 						"success" : function() {
 						},

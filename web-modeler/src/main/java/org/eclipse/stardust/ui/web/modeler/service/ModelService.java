@@ -2972,7 +2972,7 @@ public class ModelService
 
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
-
+         variableJson.addProperty("description", modelVariable.getDescription());
          List<EObject> refList = variableContext.getVariableReferences().get(
                modelVariable.getName());
 
@@ -3066,7 +3066,14 @@ public class ModelService
             "variableName")
             .getAsString());
 
-      modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
+      if(postedData.has("defaultValue"))
+      {
+         modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());   
+      }
+      if(postedData.has("description"))
+      {
+         modelVariable.setDescription(postedData.get("description").getAsString());   
+      }
       variableContext.saveVariables();
 
       return postedData;
