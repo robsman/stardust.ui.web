@@ -1020,7 +1020,15 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataPathType.setName(dataPathName);                  
                }               
             }
-
+            else
+            {
+               if(StringUtils.isNotEmpty(dataPathName))
+               {
+                  dataPathType.setName(dataPathName);
+               }
+            }
+            
+            
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                String dataFullId = dataPathJson.get(
