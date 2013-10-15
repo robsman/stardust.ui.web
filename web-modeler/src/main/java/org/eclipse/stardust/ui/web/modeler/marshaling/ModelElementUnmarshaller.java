@@ -687,7 +687,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                .getType().getId()
                .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
          {
-            dataMapping.setContext(ModelerConstants.RULE_SET_CONTEXT);
+            //dataMapping.setContext(ModelerConstants.RULE_SET_CONTEXT);
          }
          else
          {
