@@ -56,11 +56,11 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.tableData={
 							columns:[{type:"text"}],
 					        data:[
-					               ['rule 1'],
-					               ['rule 2'],
-					               ['rule 3'],
-					               ['rule 4'],
-					               ['rule 5']
+					               [''],
+					               [''],
+					               [''],
+					               [''],
+					               ['']
 					           ],
 					        colWidths:[90],
 					        colHeaders:["Description|NA|Header"]
