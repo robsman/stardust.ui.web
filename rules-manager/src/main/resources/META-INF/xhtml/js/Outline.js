@@ -516,8 +516,16 @@ define(
 											m_messageDisplay.markSaved();
 											hasUnsavedModifications = false;
 											jQuery.each(RuleSet.getRuleSets(),function(){
-												this.state.isPersisted=true;
-												this.state.isDirty=false;
+												/*Server responded with success, hard delete ruleSets
+												 *marked for deletion and clean the states of 
+												 *all other Rulesets.*/
+												if(this.state.isDeleted===true){
+													RuleSet.deleteRuleSet(this.uuid);
+												}
+												else{
+													this.state.isPersisted=true;
+													this.state.isDirty=false;
+												}
 											});
 										},
 										failure : function(data) {
@@ -942,11 +950,11 @@ define(
 					}
 				}
 
-				/**
-				 * 
-				 */
+				/* Marks a rulesets state object as isDeleted=true.
+				 * Does not actually perform a delete on the corresponding window.top.ruleset.
+				 * The hard delete should only be done after a succesful save.*/
 				function deleteRuleSet(ruleSetUUID) {
-					RuleSet.deleteRuleSet(ruleSetUUID);
+					RuleSet.markRuleSetForDeletion(ruleSetUUID);
 					// TODO - this is just a way to trigger a refresh
 					// need a better solution
 					CommandsDispatcher.submitCommand();
