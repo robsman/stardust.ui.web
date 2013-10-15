@@ -683,13 +683,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
          dataMapping.setApplicationAccessPoint(dataMappingJson.get(
                ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         if (activity.getApplication()
+         /*if (activity.getApplication()
                .getType().getId()
                .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
          {
-            //dataMapping.setContext(ModelerConstants.RULE_SET_CONTEXT);
+            dataMapping.setContext(dataMappingJson.get(memberName));
          }
-         else
+         else*/
          {
             dataMapping.setContext(dataMappingJson.get(
                   ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
