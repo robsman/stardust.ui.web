@@ -18,7 +18,7 @@ define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants", "bpm-m
 		createModelToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		},
-		importModelToolSelected : function(data) {
+		importRuleSetToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		},
 		undoChangeToolSelected : function(data) {

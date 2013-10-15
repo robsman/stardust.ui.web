@@ -33,16 +33,11 @@ define(
 				m_outlineToolbarController, CommandsDispatcher, RuleSet) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
-			function getURL() {
-				return m_urlUtils.getContextName()
-						+ "/services/rest/bpm-modeler/modeler/"
-						+ new Date().getTime();
-			}
 
 			var displayScope = "";
 			var viewManager;
 
-			var readAllModels = function(force) {
+			var readAllRuleSets = function(force) {
 
 				// Needed for types
 
@@ -132,7 +127,52 @@ define(
 				jQuery("#undoChange").addClass("toolDisabled");
 				jQuery("#redoChange").addClass("toolDisabled");
 			};
+			
+			var exportRuleSet = function(uuid) {
+				var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 
+				if (!areRuleSetsSaved()) {
+					if (parent.iPopupDialog) {
+						parent.iPopupDialog
+								.openPopup({
+									attributes : {
+										width : "400px",
+										height : "200px",
+										src : m_urlUtils.getPlugsInRoot()
+												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
+									},
+									payload : {
+										title : "Warning",
+										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
+										acceptButtonText : "Close",
+										acceptFunction : function() {
+											// Do nothing
+										}
+									}
+								});
+					} else {
+						alert("Models have unsaved changes. Please save models before continuing.");
+					}
+				} else {
+					if (ruleSet) {
+						window.location = m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/ruleSet/" + encodeURIComponent(ruleSet.uuid) + "/download"
+					}	
+				}
+			}
+
+			var areRuleSetsSaved = function() {
+				var saved = true;
+				jQuery.each(RuleSet.getRuleSets(), function(index, ruleSet) {
+					if (ruleSet.state &&
+							(ruleSet.state.isDirty == true
+									|| ruleSet.state.isPersisted == false)) {
+						saved = false;
+					}
+				});
+				
+				return saved;
+			};
+			
 			// TODO Is this still needed? Delete after verifying
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
@@ -329,11 +369,11 @@ define(
 					saveAllRules();
 				}
 				jQuery(displayScope + "#outline").empty();
-				readAllModels(true);
+				readAllRuleSets(true);
 			};
 
-			var importModel = function() {
-				if (true == hasUnsavedModifications) {
+			var importRuleSet = function() {
+				if (!areRuleSetsSaved()) {
 					if (parent.iPopupDialog) {
 						parent.iPopupDialog
 								.openPopup({
@@ -767,8 +807,7 @@ define(
 													"export RuleSet" : {
 														"label": "Export Rule Set",
 														"action": function(obj){
-															alert("Not Implemented.");
-															console.log(obj);
+															exportRuleSet(obj.attr("id"))
 														},
 														"_class" : "ipp-text-red"
 													}
@@ -852,8 +891,8 @@ define(
 				var handleToolbarEvents = function(event, data) {
 					if ("createRuleSet" == data.id) {
 						createRuleSet();
-					} else if ("importModel" == data.id) {
-						importModel();
+					} else if ("importRuleSet" == data.id) {
+						importRuleSet();
 					} else if ("undoChange" == data.id) {
 						undoMostCurrent();
 					} else if ("redoChange" == data.id) {
@@ -1085,7 +1124,7 @@ define(
 							reloadOutlineTreeReset);
 				}
 
-				readAllModels();
+				readAllRuleSets();
 			};
 
 			var i18nStaticLabels = function() {
@@ -1094,11 +1133,11 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.createModel"));
-				jQuery("#importModel")
+				jQuery("#importRuleSet")
 						.attr(
 								"title",
 								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.importModel"));
+										.getProperty("rules.outline.toolbar.tooltip.importRuleSet"));
 				jQuery("#undoChange")
 						.attr(
 								"title",

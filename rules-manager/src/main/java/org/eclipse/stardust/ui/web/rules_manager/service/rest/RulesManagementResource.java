@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.rules_manager.service.rest;
 
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -75,6 +76,22 @@ public class RulesManagementResource
       {
          throw new RuntimeException(e);
       }
+   }   
+
+   @GET
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   @Path("ruleSet/{ruleSetUUID}/download")
+   public Response downloadRuleSet(@PathParam("ruleSetUUID") String ruleSetUUID)
+   {
+      Map<String, String> ruleSetNameAndContent = getRulesManagementService().getRuleSet(ruleSetUUID);
+
+      return Response.ok(ruleSetNameAndContent.get("content").getBytes(),
+            MediaType.APPLICATION_OCTET_STREAM)
+            .header(
+                  "content-disposition",
+                  "attachment; filename = \""
+                        + ruleSetNameAndContent.get("fileName") + "\"")
+            .build();
    }
    
    /**
