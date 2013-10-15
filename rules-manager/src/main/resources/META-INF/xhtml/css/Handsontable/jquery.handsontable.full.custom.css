@@ -439,7 +439,7 @@ ul.context-menu-list li {
 
 .context-menu-item {
     padding: 2px 2px 2px 24px;
-    background-color: #EEE;
+    background-color: #FFFFFF;
     position: relative;
     -webkit-user-select: none;
        -moz-user-select: -moz-none;
@@ -462,7 +462,11 @@ ul.context-menu-list li {
 
 .context-menu-item.hover {
     cursor: pointer;
-    background-color: #39F;
+    background-color: #E8EFF7;
+    border:solid 1px #C7CEFF;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
 }
 
 .context-menu-item.disabled {
