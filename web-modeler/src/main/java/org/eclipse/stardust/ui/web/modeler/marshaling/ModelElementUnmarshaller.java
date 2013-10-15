@@ -361,19 +361,51 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (hasNotJsonNull(activityJson, ModelerConstants.TASK_TYPE))
          {
             String taskType = activityJson.get(ModelerConstants.TASK_TYPE).getAsString();
-            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE, taskType);
+            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
+                  taskType);
+            ApplicationType rulesApp = null;
+            if (activity.getApplication() != null)
+            {
+               if (activity.getApplication()
+                     .getType()
+                     .getId()
+                     .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+               {
+                  rulesApp = activity.getApplication();
+               }
+            }
 
             if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
             {
                activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+               activity.setApplication(null);
             }
             else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
             {
                activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+               activity.setApplication(null);
+            }
+            else if (taskType.equals(ModelerConstants.RULE_TASK_KEY))
+            {
+               if (activity.getApplication() == null) {
+                  ModelType model = ModelUtils.findContainingModel(activity);
+                  activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+                  ApplicationType application = getModelBuilderFacade().createApplication(model, "droolsApplication",
+                        "droolsApplication", ModelerConstants.DROOLS_APPLICATION_TYPE_ID);
+                  activity.setApplication(application);
+               }
             }
             else
             {
                activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+            }
+            //Remove the "hidden" drools application if not needed anymore
+            if (rulesApp != null
+                  && (activity.getApplication() == null || activity.getApplication()
+                        .equals(rulesApp)))
+            {
+               ModelType model = ModelUtils.findContainingModel(activity);
+               model.getApplication().remove(rulesApp);
             }
          }
 
@@ -648,10 +680,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
       {
+
          dataMapping.setApplicationAccessPoint(dataMappingJson.get(
                ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         dataMapping.setContext(dataMappingJson.get(
-               ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         if (activity.getApplication()
+               .getType().getId()
+               .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+         {
+            dataMapping.setContext(ModelerConstants.RULE_SET_CONTEXT);
+         }
+         else
+         {
+            dataMapping.setContext(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         }
       }
       else
       {
@@ -2682,6 +2724,23 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             JsonElement jsonValue = attributes.get(key);
+
+            //Infer the ruleSetId into the "hidden" drools application
+            if (key.equals(ModelerConstants.RULE_SET_ID))
+            {
+               if (element instanceof ActivityType)
+               {
+                  ActivityType activity = (ActivityType) element;
+                  if (activity.getApplication() != null)
+                  {
+                     ApplicationType application = (ApplicationType) activity.getApplication();
+                     ModelBuilderFacade.setAttribute(application,
+                           ModelerConstants.RULE_SET_ID, jsonValue.getAsString());
+                  }
+               }
+               continue;
+            }
+
             if (jsonValue.isJsonNull())
             {
                logger.debug("Setting extended attribute " + key + " to null.");

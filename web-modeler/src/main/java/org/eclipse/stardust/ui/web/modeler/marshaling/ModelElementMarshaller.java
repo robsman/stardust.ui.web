@@ -3083,6 +3083,27 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          attributes = json.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
       }
 
+      // Infer "rulesSetId" from "hidden" drools application into the JSON of the activity
+      // attributes
+      if (element instanceof ActivityType)
+      {
+         ActivityType activity = (ActivityType) element;
+         if (activity.getApplication() != null)
+         {
+            ApplicationType application = activity.getApplication();
+            if (application.getType()
+                  .getId()
+                  .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+            {
+               String rulesetId = getModelBuilderFacade().getAttributeValue(
+                     getModelBuilderFacade().getAttribute(application,
+                           ModelerConstants.RULE_SET_ID));
+               attributes.addProperty(ModelerConstants.RULE_SET_ID, rulesetId);
+            }
+         }
+      }
+
+
       for (Object attribute : getModelBuilderFacade().getAttributes(element))
       {
          String attributeName = getModelBuilderFacade().getAttributeName(attribute);
