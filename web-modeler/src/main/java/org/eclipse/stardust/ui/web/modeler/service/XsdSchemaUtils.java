@@ -383,7 +383,11 @@ public final class XsdSchemaUtils
          XSDTypeDefinition type = element.getTypeDefinition();
 
          // elements are constructed similar with types
-         JsonObject json = doSwitch(type);
+         JsonObject json = new JsonObject();
+         if (type == element.getAnonymousTypeDefinition())
+         {
+            json = doSwitch(type);
+         }   
 
          // now overwrite properties
          json.addProperty("name", element.getName());
