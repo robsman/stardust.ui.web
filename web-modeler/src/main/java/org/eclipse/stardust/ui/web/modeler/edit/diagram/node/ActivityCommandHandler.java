@@ -34,9 +34,9 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Sidharth.Singh
- * 
+ *
  */
 @CommandHandler
 public class ActivityCommandHandler
@@ -88,7 +88,7 @@ public class ActivityCommandHandler
    }
 
    /**
-    * 
+    *
     * @param parentLaneSymbol
     * @param request
     */
@@ -107,9 +107,20 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          ModelElementEditingUtils.deleteEventSymbols(activity, parentLaneSymbol);
-         
+
          ModelElementEditingUtils.deleteTransitionConnections(activitySymbol);
          ModelElementEditingUtils.deleteDataMappingConnection(activitySymbol.getDataMappings());
+
+         if (activity.getApplication() != null)
+         {
+            ApplicationType applicationType = activity.getApplication();
+            if (applicationType.getType()
+                  .getId()
+                  .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+            {
+               model.getApplication().remove(applicationType);
+            }
+         }
 
          processDefinition.getActivity().remove(activity);
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
