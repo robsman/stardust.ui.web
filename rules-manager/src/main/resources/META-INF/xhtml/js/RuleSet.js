@@ -23,9 +23,17 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 		createFromJSON : function(data,serializer){
 			return m_ruleSetParser.fromPreDRLformat(data,serializer,new RuleSet());
 		},
+		markRuleSetForDeletion: function(uuid){
+			var rSet= getRuleSets()[uuid];
+			rSet.state.isDeleted=true;
+		},
 		deleteRuleSet : function(uuid) {
 			var rSet= getRuleSets()[uuid];
 			rSet.state.isDeleted=true;
+			if(window.top.ruleSets.hasOwnProperty(uuid)){
+				delete window.top.ruleSets[uuid];
+				console.log("Hard deletion of ruleSet: "+ uuid);
+			}
 		},
 		getRuleSets : getRuleSets,
 		emptyRuleSets : emptyRuleSets,
