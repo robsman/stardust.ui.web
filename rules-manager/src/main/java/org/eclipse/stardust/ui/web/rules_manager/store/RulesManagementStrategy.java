@@ -6,6 +6,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 
 /**
  * @author Shrikant.Gangal
+ * @author Yogesh.Manware
  *
  */
 public interface RulesManagementStrategy
@@ -21,18 +22,27 @@ public interface RulesManagementStrategy
     */
    List<Document> getAllRuleSets();
    
+  
    /**
-    * @param ruleSetId
+    * @param ruleSetFileName
     * @return
     */
-   Document getRuleSet(String ruleSetFileName);
+   Document getRuleSetByName(String ruleSetFileName);
+   
+  
+   /**
+    * @param rulesetdocId
+    * @param content
+    * @return
+    */
+   Document saveRuleSet(String rulesetdocId, String content);
    
    /**
-    * @param rulesetNameOrdocId
+    * @param rulesetName
     * @param content
-    * @return document id
+    * @return
     */
-   Document saveRuleSet(String rulesetNameOrdocId, String content);
+   Document createRuleSet(String rulesetName, String content);
    
    /**
     * 

@@ -60,36 +60,31 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
 
    @Override
-   public Document getRuleSet(String ruleSetFileName)
+   public Document getRuleSetByName(String ruleSetFileName)
    {
-      createRulesFolderIfAbsent();
-      
       // TODO - assumption is that rules file name will be same as its id.
       return getDocumentManagementService().getDocument(RULES_DIR + ruleSetFileName);
    }
-
+   
    @Override
-   public Document saveRuleSet(String rulesetNameOrdocId, String content)
+   public Document createRuleSet(String rulesetName, String content)
    {
       createRulesFolderIfAbsent();
-      Document ruleSet = getDocumentManagementService().getDocument(rulesetNameOrdocId);
-
-      Document doc;
-      if (null != ruleSet)
-      {
-         doc = getDocumentManagementService().updateDocument(ruleSet, content.getBytes(),
-               "", true, "", null, false);
-      }
-      else
-      {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(rulesetNameOrdocId);
-         docInfo.setContentType("text/plain");
-         doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo,
-               content.getBytes(), null);
-         getDocumentManagementService().versionDocument(doc.getId(), "", null);
-      }
-
+      DocumentInfo docInfo = DmsUtils.createDocumentInfo(rulesetName);
+      docInfo.setContentType("text/plain");
+      Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo,
+            content.getBytes(), null);
+      getDocumentManagementService().versionDocument(doc.getId(), "", null);
+      
       return doc;
+   }
+
+   @Override
+   public Document saveRuleSet(String rulesetDocId, String content)
+   {
+      Document ruleSet = getDocumentManagementService().getDocument(rulesetDocId);
+      return getDocumentManagementService().updateDocument(ruleSet, content.getBytes(),
+            "", true, "", null, false);
    }
 
    @Override

@@ -68,8 +68,8 @@ public class RulesManagementResource
    {
       try
       {
-         getRulesManagementService().saveRuleSets(ruleSets);         
-         return Response.ok("Saved").build();
+         String result = getRulesManagementService().saveRuleSets(ruleSets);         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {

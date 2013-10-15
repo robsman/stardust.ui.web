@@ -11,18 +11,17 @@
 
 package org.eclipse.stardust.ui.web.rules_manager.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,10 +36,10 @@ import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 
 /**
- *
+ * 
  * @author Marc.Gille
  * @author Yogesh.Manware
- *
+ * 
  */
 public class RulesManagementService
 {
@@ -66,10 +65,10 @@ public class RulesManagementService
    public JsonObject getAllRuleSets()
    {
       ruleSetUUIDVsDocumentIdMap.clear();
-      
+
       List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
       JsonObject ruleSets = new JsonObject();
-      
+
       for (Document doc : drls)
       {
          JsonObject ruleSet = new JsonParser().parse(
@@ -84,61 +83,96 @@ public class RulesManagementService
    }
 
    /**
-    * 
-    * @return
+    * @param ruleSetsJson
     */
-   public void saveRuleSets(String ruleSetsJson)
+   public String saveRuleSets(String ruleSetsJson)
    {
       if (null == ruleSetsJson)
       {
-         return;
+         trace.info("invalid request...");
+         return new Gson().toJson("invalid request");
       }
 
-      // Save all rule sets.
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
-      Set<String> updatedDocList = new HashSet<String>();
+      
+      //track errors
+      List<RulesManagementService.RulesError> ruleErrorList = new ArrayList<RulesManagementService.RulesError>();
+      
       for (JsonElement je : ruleSets)
       {
          String uuid = je.getAsJsonObject().get("uuid").getAsString();
          String documentId = ruleSetUUIDVsDocumentIdMap.get(uuid);
 
-         if (null == documentId)
+         try
          {
-            documentId = je.getAsJsonObject().get("id").getAsString() + ".json";
-            trace.info("creating new ruleset with name:  " + documentId);
+            if (je.getAsJsonObject().get("deleted") != null)
+            {
+               deleteRules(uuid, documentId);
+            }
+            else
+            {
+               persistRules(je, uuid, documentId);
+            }
          }
-         else
+         catch (Exception e)
          {
-            trace.info("updating ruleset with uuid: " + uuid);
+            ruleErrorList.add(new RulesError(uuid, e.getMessage()));
          }
-         Document doc = getRulesManagementStrategy().saveRuleSet(documentId,
-               je.toString());
-
-         updatedDocList.add(uuid);
-         ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
       }
       
-      // find deleted rules and delete the corresponding files
-      for (Entry<String, String> rules : ruleSetUUIDVsDocumentIdMap.entrySet())
+      //Error case
+      if ( !ruleErrorList.isEmpty())
       {
-         if ( !updatedDocList.contains(rules.getKey()))
-         {
-            getRulesManagementStrategy().deleteRuleSet(rules.getValue());
-            // this will reset when you refresh view
-            ruleSetUUIDVsDocumentIdMap.put(rules.getKey(), null);
-            trace.info("deleting ruleset with uuid:  " + rules.getKey());
-         }
+         return new Gson().toJson(ruleErrorList);
       }
+      
+      return new Gson().toJson("saved");
    }
-   
+
    /**
-   *
-   * @return
-   */
-  public RulesManagementStrategy getRulesManagementStrategy()
-  {
-     return (RulesManagementStrategy) context.getBean("rulesManagementStrategy");
-  }
+    * @param je
+    * @param uuid
+    * @param documentId
+    */
+   private void persistRules(JsonElement je, String uuid, String documentId)
+   {
+      Document doc;
+      if (null == documentId)
+      {
+         String rulesetFileName = je.getAsJsonObject().get("name").getAsString() + uuid + ".json";
+         trace.info("creating new ruleset with uuid, name:  " + uuid + ", " + rulesetFileName);
+         doc = getRulesManagementStrategy().createRuleSet(rulesetFileName, je.toString());
+      }
+      else
+      {
+         trace.info("updating ruleset with uuid: " + uuid);
+         doc = getRulesManagementStrategy().saveRuleSet(documentId, je.toString());
+      }
+
+      ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
+   }
+
+   /**
+    * @param uuid
+    * @param documentId
+    */
+   private void deleteRules(String uuid, String documentId)
+   {
+      trace.info("deleting ruleset with uuid:  " + uuid);
+
+      getRulesManagementStrategy().deleteRuleSet(documentId);
+
+      ruleSetUUIDVsDocumentIdMap.remove(uuid);
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public RulesManagementStrategy getRulesManagementStrategy()
+   {
+      return (RulesManagementStrategy) context.getBean("rulesManagementStrategy");
+   }
 
    /**
     * 
@@ -165,5 +199,28 @@ public class RulesManagementService
       }
 
       return serviceFactory;
+   }
+   
+   public static class RulesError
+   {
+      String uuid;
+      String error;
+
+      public RulesError(String uuid, String error)
+      {
+         super();
+         this.uuid = uuid;
+         this.error = error;
+      }
+
+      public String getUuid()
+      {
+         return uuid;
+      }
+
+      public String getError()
+      {
+         return error;
+      }
    }
 }
