@@ -22,13 +22,15 @@ define(
 				"bpm-modeler/js/m_messageDisplay",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_jsfViewManagerHelper",
 				"rules-manager/js/m_outlineToolbarController",
 				"rules-manager/js/CommandsDispatcher",
 				"rules-manager/js/RuleSet" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
-				m_messageDisplay, m_i18nUtils, m_communicationController, m_outlineToolbarController, CommandsDispatcher, RuleSet) {
+				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
+				m_outlineToolbarController, CommandsDispatcher, RuleSet) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			function getURL() {
@@ -354,14 +356,14 @@ define(
 						alert("Models have unsaved changes. Please save models before continuing.");
 					}
 				} else {
-					var link = jQuery(
-							"a[id $= 'open_model_upload_dialog_link']",
-							window.parent.frames['ippPortalMain'].document);
+					var link = m_utils.jQuerySelect(
+							"a[id $= 'open_rules_upload_dialog_link']",
+							m_utils.getOutlineWindowAndDocument().doc);
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 					var formId = form.attr('id');
-					window.parent.EventHub.events.publish(
-							"OPEN_IMPORT_MODEL_DIALOG", linkId, formId);
+					m_jsfViewManagerHelper
+							.openImportModelDialog(linkId, formId);
 				}
 			}
 

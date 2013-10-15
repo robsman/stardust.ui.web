@@ -89,6 +89,10 @@
 <pc:wizard bean="#{modelDeploymentDialogBean}" modal="true" popupX="325"
 	popupY="225" />
 <body>
+	<ice:panelGroup>
+		<ui:include src="/plugins/rules-manager/popups/rulesFileUploadDialog.xhtml">
+		</ui:include>
+	</ice:panelGroup>
 	<ice:panelGroup styleClass="panelHeader" style="width: 290px;">
 		<ice:commandLink action="#{rulesManagerLaunchPanel.toggle}">
 			<ice:panelGrid columns="2">
@@ -113,6 +117,12 @@
 				<f:param name="viewIdentity" value="" />
 				<f:param name="viewParams" value="" />
 				<ice:outputText value=""
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="open_rules_upload_dialog_link"
+				action="#{rulesFileUploadDialog.openPopup}">
+				<f:param name="fromlaunchPanels" />
+				<ice:outputText value="Open upload rules dialog &amp;raquo;"
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
 		</ice:panelGroup>

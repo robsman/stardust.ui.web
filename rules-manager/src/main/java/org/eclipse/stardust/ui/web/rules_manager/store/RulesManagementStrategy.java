@@ -4,13 +4,18 @@ import java.util.List;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 
-
 /**
  * @author Shrikant.Gangal
  *
  */
 public interface RulesManagementStrategy
 {
+
+   enum RulesUploadStatus
+   {
+      NEW_RULESET_CREATED, RULESET_ALREADY_EXISTS, NEW_RULESET_VERSION_CREATED
+   };
+   
    /**
     * @return
     */
@@ -33,4 +38,13 @@ public interface RulesManagementStrategy
     * 
     */
    void deleteRuleSet(String documentId);
+
+   /**
+    * @param fileName
+    * @param fileContent
+    * @param createNewVersion
+    * @return
+    */
+   RulesUploadStatus uploadRulesFile(String fileName, byte[] fileContent,
+         boolean createNewVersion);
 }

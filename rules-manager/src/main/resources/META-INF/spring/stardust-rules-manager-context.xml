@@ -49,5 +49,9 @@
 	<bean id="decisionTableView" class="org.eclipse.stardust.ui.web.rules_manager.portal.DecisionTableView">
 		<property name="rulesManagementService" ref="rulesManagementService" />
 	</bean>
+	
+	<bean id="rulesFileUploadDialog" class="org.eclipse.stardust.ui.web.rules_manager.upload.RulesFileUploadDialog"
+		scope="session">
+	</bean>
 
 </beans>

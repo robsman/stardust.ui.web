@@ -10,6 +10,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -94,6 +96,38 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    public void deleteRuleSet(String docId)
    {
       getDocumentManagementService().removeDocument(docId);
+   }   
+
+   @Override
+   public RulesUploadStatus uploadRulesFile(String fileName, byte[] fileContent,
+         boolean createNewVersion)
+   {
+      if (DocumentMgmtUtility.isExistingResource("/" + RULES_DIR_NAME, fileName))
+      {
+         if (createNewVersion)
+         {
+            Document modelDocument = getDocumentManagementService().getDocument(
+                  RULES_DIR + fileName);
+            DocumentMgmtUtility.updateDocument(modelDocument, fileContent,
+                  modelDocument.getDescription(), "");
+
+            return RulesUploadStatus.NEW_RULESET_VERSION_CREATED;
+         }
+
+         return RulesUploadStatus.RULESET_ALREADY_EXISTS;
+      }
+      else
+      {
+         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+
+         docInfo.setOwner(getServiceFactory().getUserService().getUser().getAccount());
+         docInfo.setContentType(MimeTypesHelper.XML.getType());
+
+         getDocumentManagementService().createDocument(RULES_DIR, docInfo, fileContent,
+               null);
+
+         return RulesUploadStatus.NEW_RULESET_CREATED;
+      }
    }
    
    /**
