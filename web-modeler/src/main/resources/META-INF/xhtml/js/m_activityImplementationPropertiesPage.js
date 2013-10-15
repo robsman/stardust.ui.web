@@ -176,9 +176,11 @@ define(
 					
 					if (ruleSets) {
 						for ( var i in ruleSets) {
-							this.ruleSetList.append("<option value='"
-									+ ruleSets[i].uuid + "'>"
-									+ ruleSets[i].name + "</option>");
+							if (ruleSets[i].state.isDeleted != true) {
+								this.ruleSetList.append("<option value='"
+										+ ruleSets[i].uuid + "'>"
+										+ ruleSets[i].name + "</option>");
+							}
 						}	
 					}
 				};
