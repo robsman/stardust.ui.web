@@ -18,11 +18,31 @@ define(["jquery"],function($){
 		ippToHoTTable: function(ippType){
 		  var hotType={};
 		  switch(ippType.toUpperCase()){
+		  case "XSD:NMTOKENS":
+		  case "XSD:IDREFS":
+		  case "XSD:NOTATION":
+		  case "XSD:TIME":
+		  case "XSD:LANGUAGE":
+		  case "XSD:ANYURI":
+		  case "XSD:TOKEN":
+		  case "XSD:NMTOKEN":
+		  case "XSD:NAME":
+		  case "XSD:QNAME":
+		  case "XSD:ID":
+		  case "XSD:IDREF":
+		  case "XSD:DURATION":
+		  case "XSD:NCNAME":
+		  case "XSD:NORMALIZEDSTRING":
+		  case "XSD:HEXBINARY":
+		  case "XSD:BASE64BINARY":
+		  case "XSD:GMONTHDAY":
+		  case "XSD:GYEARMONTH":
 		  case "XSD:STRING":
 		  case "STRING":
 			  hotType={type:"text","default": ""};
 			  break;
-		  case "XSD:LONG":
+		  case "XSD:DOUBLE":
+		  case "DOUBLE":
 		  case "XSD:FLOAT":
 		  case "XSD:DECIMAL":
 			  hotType={type: "numeric", 
@@ -30,10 +50,25 @@ define(["jquery"],function($){
 					   language:'en',
 					   "default": 0};
 			  break;
+		  case "XSD:NEGATIVEINTEGER":
+		  case "XSD:POSITIVEINTEGER":
+		  case "XSD:NONNEGATIVEINTEGER":
+		  case "XSD:NONPOSITIVEINTEGER":
+		  case "XSD:UNSIGNEDBYTE" :
+		  case "XSD:UNSIGNEDINT" :
+		  case "XSD:UNSIGNEDLONG" :
+		  case "XSD:UNSIGNEDSHORT":
+		  case "XSD:GDAY":
+		  case "XSD:GMONTH":
+		  case "XSD:GYEAR":
+		  case "XSD:INTEGER":
+		  case "XSD:BYTE":
 		  case "XSD:SHORT":
 		  case "XSD:INT":
-		  case "XSD:DOUBLE":
-		  case "DOUBLE":
+		  case "XSD:LONG":
+		  case "INTEGER":
+		  case "INT":
+		  case "LONG":
 			  hotType={type: "numeric","default":0};
 			  break;
 		  case "XSD:DATETIME":
@@ -51,8 +86,8 @@ define(["jquery"],function($){
 		  default:
 			  hotType={type: "unknown","default":""};
 		  }
-		  if(hotType.type==="unkown"){
-			  console.log("Error: Unkown type encountered : typeMapper.js->" + ippType);
+		  if(hotType.type==="unknown"){
+			  console.log("Error: Unknown type encountered : typeMapper.js->" + ippType);
 		  }
 		  return hotType;
 		}
