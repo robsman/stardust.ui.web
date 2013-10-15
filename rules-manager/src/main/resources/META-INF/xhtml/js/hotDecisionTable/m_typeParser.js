@@ -366,10 +366,10 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 	    			  metadata: {ref: paramDef,
 	    					     type: paramDef.primitiveDataType || 'na'}
 	    		};
-	    		if(paramDef.direction==="IN"){
+	    		if(paramDef.direction==="IN" || paramDef.direction==="INOUT"){
 	    			jsConditionNodes.push(temp);
 	    		}
-	    		else{
+	    		if(paramDef.direction==="OUT" || paramDef.direction==="INOUT"){
 	    			jsActionNodes.push(temp);
 	    		}
 	    	}
