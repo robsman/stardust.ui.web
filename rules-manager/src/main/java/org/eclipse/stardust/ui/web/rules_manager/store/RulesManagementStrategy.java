@@ -11,12 +11,6 @@ import org.eclipse.stardust.engine.api.runtime.Document;
  */
 public interface RulesManagementStrategy
 {
-
-   enum RulesUploadStatus
-   {
-      NEW_RULESET_CREATED, RULESET_ALREADY_EXISTS, NEW_RULESET_VERSION_CREATED
-   };
-   
    /**
     * @return
     */
@@ -35,26 +29,18 @@ public interface RulesManagementStrategy
     * @param content
     * @return
     */
-   Document saveRuleSet(String rulesetdocId, String content);
+   Document saveRuleSet(String rulesetdocId, byte[] content);
    
    /**
     * @param rulesetName
     * @param content
     * @return
     */
-   Document createRuleSet(String rulesetName, String content);
+   Document createRuleSet(String rulesetName, byte[] content);
    
    /**
     * 
     */
    void deleteRuleSet(String documentId);
 
-   /**
-    * @param fileName
-    * @param fileContent
-    * @param createNewVersion
-    * @return
-    */
-   RulesUploadStatus uploadRulesFile(String fileName, byte[] fileContent,
-         boolean createNewVersion);
 }

@@ -159,12 +159,12 @@ public class RulesManagementService
       {
          String rulesetFileName = je.getAsJsonObject().get("name").getAsString() + uuid + ".json";
          trace.info("creating new ruleset with uuid, name:  " + uuid + ", " + rulesetFileName);
-         doc = getRulesManagementStrategy().createRuleSet(rulesetFileName, je.toString());
+         doc = getRulesManagementStrategy().createRuleSet(rulesetFileName, je.toString().getBytes());
       }
       else
       {
          trace.info("updating ruleset with uuid: " + uuid);
-         doc = getRulesManagementStrategy().saveRuleSet(documentId, je.toString());
+         doc = getRulesManagementStrategy().saveRuleSet(documentId, je.toString().getBytes());
       }
 
       ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());

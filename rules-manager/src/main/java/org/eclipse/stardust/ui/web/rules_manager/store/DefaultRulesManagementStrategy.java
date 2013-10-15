@@ -67,23 +67,22 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    }
    
    @Override
-   public Document createRuleSet(String rulesetName, String content)
+   public Document createRuleSet(String rulesetName, byte[] content)
    {
       createRulesFolderIfAbsent();
       DocumentInfo docInfo = DmsUtils.createDocumentInfo(rulesetName);
       docInfo.setContentType("text/plain");
-      Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo,
-            content.getBytes(), null);
+      Document doc = getDocumentManagementService().createDocument(RULES_DIR, docInfo, content, null);
       getDocumentManagementService().versionDocument(doc.getId(), "", null);
       
       return doc;
    }
 
    @Override
-   public Document saveRuleSet(String rulesetDocId, String content)
+   public Document saveRuleSet(String rulesetDocId, byte[] content)
    {
       Document ruleSet = getDocumentManagementService().getDocument(rulesetDocId);
-      return getDocumentManagementService().updateDocument(ruleSet, content.getBytes(),
+      return getDocumentManagementService().updateDocument(ruleSet, content,
             "", true, "", null, false);
    }
 
@@ -91,38 +90,6 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    public void deleteRuleSet(String docId)
    {
       getDocumentManagementService().removeDocument(docId);
-   }   
-
-   @Override
-   public RulesUploadStatus uploadRulesFile(String fileName, byte[] fileContent,
-         boolean createNewVersion)
-   {
-      if (DocumentMgmtUtility.isExistingResource("/" + RULES_DIR_NAME, fileName))
-      {
-         if (createNewVersion)
-         {
-            Document modelDocument = getDocumentManagementService().getDocument(
-                  RULES_DIR + fileName);
-            DocumentMgmtUtility.updateDocument(modelDocument, fileContent,
-                  modelDocument.getDescription(), "");
-
-            return RulesUploadStatus.NEW_RULESET_VERSION_CREATED;
-         }
-
-         return RulesUploadStatus.RULESET_ALREADY_EXISTS;
-      }
-      else
-      {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
-
-         docInfo.setOwner(getServiceFactory().getUserService().getUser().getAccount());
-         docInfo.setContentType(MimeTypesHelper.XML.getType());
-
-         getDocumentManagementService().createDocument(RULES_DIR, docInfo, fileContent,
-               null);
-
-         return RulesUploadStatus.NEW_RULESET_CREATED;
-      }
    }
    
    /**

@@ -4,6 +4,7 @@ import java.util.EventObject;
 
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -58,18 +59,17 @@ public class RulesFileUploadDialog extends PopupUIComponentBean
          if (fileInfo.isSaved())
          {
             RulesManagementService rulesService = (RulesManagementService) FacesUtils.getBeanFromContext("rulesManagementService");
-            RulesManagementStrategy.RulesUploadStatus status = rulesService.getRulesManagementStrategy()
-                  .uploadRulesFile(fileInfo.getFileName(),
-                        FileUtils.fileToBytes(fileInfo.getPhysicalPath()), false);
-            switch (status)
+            Document ruleSet = rulesService.getRulesManagementStrategy()
+                  .getRuleSetByName(fileInfo.getFileName());
+            if (null == ruleSet)
             {
-            case RULESET_ALREADY_EXISTS:
+               rulesService.getRulesManagementStrategy().createRuleSet(
+                     fileInfo.getFileName(),
+                     FileUtils.fileToBytes(fileInfo.getPhysicalPath()));
+            }
+            else
+            {
                uploadMode = false;
-               break;
-            case NEW_RULESET_CREATED:
-            case NEW_RULESET_VERSION_CREATED:
-               reloadRulesAndClosePopup();
-               break;
             }
          }
          else
@@ -107,9 +107,13 @@ public class RulesFileUploadDialog extends PopupUIComponentBean
          if (fileInfo.isSaved())
          {
             RulesManagementService rulesService = (RulesManagementService) FacesUtils.getBeanFromContext("rulesManagementService");
-            RulesManagementStrategy.RulesUploadStatus status = rulesService.getRulesManagementStrategy()
-                  .uploadRulesFile(fileInfo.getFileName(),
-                        FileUtils.fileToBytes(fileInfo.getPhysicalPath()), true);
+            Document ruleSet = rulesService.getRulesManagementStrategy().getRuleSetByName(fileInfo.getFileName());
+            if (null != ruleSet)
+            {
+               rulesService.getRulesManagementStrategy().saveRuleSet(ruleSet.getId(),
+                     FileUtils.fileToBytes(fileInfo.getPhysicalPath()));
+            }
+            
             reloadRulesAndClosePopup();
          }
          else
