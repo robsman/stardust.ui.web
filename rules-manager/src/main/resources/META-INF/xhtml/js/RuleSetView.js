@@ -105,6 +105,7 @@ define(
 														scope : view.id,
 														submitHandler : view,
 														supportsOrdering : false,
+														supportsDocumentTypes: false,
 														supportsDataMappings : false,
 														supportsDescriptors : false,
 														supportsDataTypeSelection : true,
