@@ -1,3 +1,9 @@
 .rule-set {
 	background: url("../images/icons/rule-set.png") no-repeat;
 }
+.tech-rule {
+	background: url("../images/icons/script_edit.png") no-repeat;
+}
+.decision-table {
+	background: url("../images/icons/dt_icon.png") no-repeat;
+}
