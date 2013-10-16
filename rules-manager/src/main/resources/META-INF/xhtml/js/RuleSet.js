@@ -87,8 +87,8 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 	/**
 	 * 
 	 */
-	function getRuleSets() {
-		if (window.top.ruleSets) {
+	function getRuleSets(force) {
+		if (!force && window.top.ruleSets) {
 			return window.top.ruleSets;
 		}
 		refreshRuleSets();

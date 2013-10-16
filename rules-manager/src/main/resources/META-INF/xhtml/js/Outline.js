@@ -46,7 +46,7 @@ define(
 				jQuery("#lastsave").text(m_i18nUtils
 										.getProperty("modeler.outline.lastSavedMessage.title"));
 	
-				jQuery.each(RuleSet.getRuleSets(),
+				jQuery.each(RuleSet.getRuleSets(force),
 					function(index, ruleSet) {
 
 						if(ruleSet.state.isDeleted===false){
@@ -350,26 +350,26 @@ define(
 								},
 								payload : {
 									title : "Confirm",
-									message : "All models will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>",
+									message : "All rule-sets will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>",
 									acceptButtonText : "Yes",
 									cancelButtonText : "No",
-									acceptFunction : reloadOutlineTree
+									acceptFunction : reloadOutlineTreeReset
 								}
 							});
 				}
 			};
 			
-			var reloadOutlineTreeReset = function(){
-				window.top.ruleSets = null;
-				reloadOutlineTree(false);
-			}
-			
-			var reloadOutlineTree = function(saveFirst) {
+			var reloadOutlineTreeReset = function(saveFirst) {
 				if (true == saveFirst) {
 					saveAllRules();
 				}
+
+				reloadOutlineTree(true);
+			}
+			
+			var reloadOutlineTree = function(force) {
 				jQuery(displayScope + "#outline").empty();
-				readAllRuleSets(true);
+				readAllRuleSets(force);
 			};
 
 			var importRuleSet = function() {
@@ -505,7 +505,7 @@ define(
 				console.log("--RSArray--");
 				console.log(rsArray);
 				m_communicationController
-						.postData(
+						.syncPostData(
 								{
 									url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/save"
 								},
@@ -1246,7 +1246,7 @@ define(
 				 */
 				Outline.prototype.processCommand = function(command) {
 					// TODO Dummy
-					reloadOutlineTree(false);
+					reloadOutlineTree();
 				};
 			}
 		});
