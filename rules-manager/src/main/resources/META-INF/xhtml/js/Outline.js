@@ -63,26 +63,7 @@ define(
 									}, null, true);
 							jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
 									"#" + ruleSet.uuid);
-							
-							if (ruleSet.rules) {
-								jQuery.each(ruleSet.rules, function(index, rule) {
-									jQuery(displayScope + "#outline").jstree("create",
-											"#" + ruleSet.uuid, "last", {
-												"attr" : {
-													"id" : rule.uuid,
-													"ruleSetId" : ruleSet.id,
-													"ruleSetUuid" : ruleSet.uuid,
-													"rel" : rule.type,
-													"draggable" : true,
-													"elementId" : rule.id
-												},
-												"data" : rule.name
-											}, null, true);
-									jQuery(displayScope + "#outline").jstree("close_node",
-											"#" + rule.id);
-								});	
-							}
-							
+						
 							if (ruleSet.technicalRules) {
 								jQuery.each(ruleSet.technicalRules, function(index, techRule) {
 									jQuery(displayScope + "#outline").jstree("create",
@@ -540,23 +521,7 @@ define(
 														+ "&uuid="
 														+ ruleSet.uuid,
 												ruleSet.uuid);
-									} 
-									else if (data.rslt.obj.attr('rel') == "rule") {
-										var ruleSet = RuleSet
-												.findRuleSetByUuid(data.rslt.obj
-														.attr("ruleSetUuid"));
-
-										var rule = ruleSet
-												.findRuleByUuid(data.rslt.obj
-														.attr("id"));
-
-										viewManager.openView("ruleView", "id="
-												+ rule.id + "&ruleSetId="
-												+ ruleSet.id + "&name="
-												+ rule.name + "&uuid="
-												+ rule.uuid + "&ruleSetUuid="
-												+ ruleSet.uuid, rule.uuid);
-									} 
+									}
 									else if (data.rslt.obj.attr('rel') == "TechnicalRule") {
 										var ruleSet = RuleSet
 												.findRuleSetByUuid(data.rslt.obj
@@ -570,7 +535,7 @@ define(
 												+ ruleSet.id + "&name="
 												+ techRule.name + "&uuid="
 												+ techRule.uuid + "&ruleSetUuid="
-												+ ruleSet.uuid, techRule.uuid);
+												+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
 									} 
 									else if (data.rslt.obj.attr('rel') == "DecisionTable") {
 										var ruleSet = RuleSet
@@ -585,7 +550,7 @@ define(
 												+ ruleSet.id + "&name="
 												+ decTable.name + "&uuid="
 												+ decTable.uuid + "&ruleSetUuid="
-												+ ruleSet.uuid, decTable.uuid);
+												+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
 									} 
 									else {
 										m_utils.debug("No View defined for "
@@ -692,18 +657,13 @@ define(
 															deleteElementAction(obj.context.lastChild.data,
 																function(){
 																	var ruleSet = RuleSet.findRuleSetByUuid(obj.attr("ruleSetUuid")),
-																	    id=obj.attr("id"),
-																	    myBridge;
+																	    id=obj.attr("id");
 																	if(nodeType==="DecisionTable"){
 																		ruleSet.deleteDecisionTable(id);
 																	}else if(nodeType==="TechnicalRule"){
 																		ruleSet.deleteTechnicalRule(id);
 																	}
-																	myBridge=parent.window["BridgeUtils"];
-																	if(myBridge){
-																		/*TODO: ID not matching to viewPanel in function call*/
-																		myBridge.View.closeView("decisionTableView/"+id);
-																	}
+																	viewManager.closeViewsForElement(obj.attr("id"));
 																	jQuery(displayScope + "#outline")
 																		.jstree("delete_node","#"+ id);
 																});
@@ -758,6 +718,7 @@ define(
 																	obj.context.lastChild.data,
 																	function() {
 																		deleteRuleSet(obj.attr("id"));
+																		viewManager.closeViewsForElement(obj.attr("id"));
 																	});
 														}
 													},
@@ -925,7 +886,7 @@ define(
 							+ ruleSet.id + "&name="
 							+ decTable.name + "&uuid="
 							+ decTable.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid, decTable.uuid);
+							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
 					return decTable;
 				}
 				
@@ -942,7 +903,7 @@ define(
 							+ ruleSet.id + "&name="
 							+ techRule.name + "&uuid="
 							+ techRule.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid, techRule.uuid);
+							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
 					
 					return techRule;
 				}

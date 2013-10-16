@@ -119,6 +119,12 @@
 				<ice:outputText value=""
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
+			<ice:commandLink id="views_close_link"
+				action="#{jsfViewUpdaterBean.closeViewsForElement}" visible="false">
+				<f:param name="uuid" value="REPLACEME" />
+				<ice:outputText value="Update view &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
 			<ice:commandLink id="open_rules_upload_dialog_link"
 				action="#{rulesFileUploadDialog.openPopup}">
 				<f:param name="fromlaunchPanels" />
