@@ -73,5 +73,25 @@ define([ "jquery", "jquery-ui", "jquery.download",
 		"jquery.form", "jquery.simplemodal", "jquery.url", "jquery.jstree",
 		"outline-plugins", "i18n", "rules-manager/js/Outline" ], function() {
 	var outline = require('rules-manager/js/Outline');
-	outline.init();
+	var options={
+			selectors:{
+				createRuleSetButton: "#createRuleSetButton",
+				importRuleSet: "#importRuleSet",
+				undoChange: "#undoChange",
+				redoChange: "#redoChange",
+				saveAllRules: "#saveAllRules",
+				refreshRules: "#refreshRules",
+				lastSavelLabel: "#lastsave"
+			},
+			i18nMaps: {
+				createRuleSetButton: {path:"rules.outline.toolbar.tooltip.createRuleSet",defaultText:"NA",attr:"title"},
+				importRuleSet: {path:"rules.outline.toolbar.tooltip.importRuleSet",defaultText:"NA",attr:"title"},
+				undoChange: {path:"rules.outline.toolbar.tooltip.undo",defaultText:"NA",attr:"title"},
+				redoChange: {path:"rules.outline.toolbar.tooltip.redo",defaultText:"NA",attr:"title"},
+				saveAllRules: {path:"rules.outline.toolbar.tooltip.saveAll",defaultText:"NA",attr:"title"},
+				refreshRules: {path:"rules.outline.toolbar.tooltip.refresh",defaultText:"NA",attr:"title"},
+				lastSavelLabel: {path:"rules.outline.labels.lastSave",defaultText:"NA",attr:"text"}
+			}
+	};
+	outline.init(null,null,options);
 });
