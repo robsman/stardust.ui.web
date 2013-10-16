@@ -309,10 +309,16 @@ define(
 					
 					/*binding input element to the value of the decisiontable name referenced in our ruleSet*/
 					this.nameInput.change({view : this},function(event) {
+						var oldName = decTable.name;
 						decTable.name = uiElements.nameInput.val();
 						view.renameView(decTable);
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand();
+						CommandsDispatcher.submitCommand({
+							name:"DecisionTable.Rename",
+							decTable:decTable,
+							ruleSet:ruleSet,
+							changes:[oldName, decTable.name]
+						});
 					});
 					
 					this.activate(ruleSet,false,decTable,uiElements);

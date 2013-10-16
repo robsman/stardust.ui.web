@@ -127,10 +127,15 @@ define(
 										view : this
 									},
 									function(event) {
+										var oldName = event.data.view.ruleSet.name;
 										event.data.view.ruleSet.name = event.data.view.nameInput.val();
 										event.data.view.renameView(event.data.view.ruleSet);
 										ruleSet.state.isDirty=true;
-										CommandsDispatcher.submitCommand();
+										CommandsDispatcher.submitCommand({
+											name:"RuleSet.Rename",
+											ruleSet:event.data.view.ruleSet,
+											changes:[oldName, event.data.view.ruleSet.name]
+										});
 									});
 					m_utils.jQuerySelect("#runButton")
 							.click(

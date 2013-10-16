@@ -51,54 +51,21 @@ define(
 
 						if(ruleSet.state.isDeleted===false){
 							
-							jQuery(displayScope + "#outline").jstree("create", displayScope + "#outline",
-									"first", {
-										"attr" : {
-											"id" : ruleSet.uuid,
-											"rel" : ruleSet.type,
-											"elementId" : ruleSet.id,
-											"title": ruleSet.description
-										},
-										"data" : ruleSet.name
-									}, null, true);
-							jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
-									"#" + ruleSet.uuid);
+							createRuleSetNode(ruleSet);
 						
 							if (ruleSet.technicalRules) {
 								jQuery.each(ruleSet.technicalRules, function(index, techRule) {
-									jQuery(displayScope + "#outline").jstree("create",
-											"#" + ruleSet.uuid, "last", {
-												"attr" : {
-													"id" : techRule.uuid,
-													"title": techRule.description,
-													"ruleSetId" : ruleSet.id,
-													"ruleSetUuid" : ruleSet.uuid,
-													"rel" : "TechnicalRule",
-													"draggable" : true,
-													"elementId" : techRule.id
-												},
-												"data" : techRule.name
-											}, null, true);
+									createTechinicalRuleNode(ruleSet, techRule);
 								});	
 							}
 							
 							if (ruleSet.decisionTables) {
 								jQuery.each(ruleSet.decisionTables, function(index, decTable) {
-									jQuery(displayScope + "#outline").jstree("create",
-											"#" + ruleSet.uuid, "last", {
-												"attr" : {
-													"id" : decTable.uuid,
-													"title" : decTable.description,
-													"ruleSetId" : ruleSet.id,
-													"ruleSetUuid" : ruleSet.uuid,
-													"rel" : "DecisionTable",
-													"draggable" : true,
-													"elementId" : decTable.id
-												},
-												"data" : decTable.name
-											}, null, true);
+									createDecisionTableNode(ruleSet, decTable);
 								});	
 							}
+							
+							m_utils.jQuerySelect(displayScope + "#outline").jstree("close_node", "#" + ruleSet.uuid);
 						} /*If ruleSet.state.isdeleted condition check end*/
 					}); /*JQUERY Each->RuleSet loop end*/
 				
@@ -107,6 +74,53 @@ define(
 				hasUnsavedModifications = false;
 				jQuery("#undoChange").addClass("toolDisabled");
 				jQuery("#redoChange").addClass("toolDisabled");
+			};
+			
+			var createRuleSetNode = function(ruleSet) {
+				jQuery(displayScope + "#outline").jstree("create", displayScope + "#outline",
+						"first", {
+							"attr" : {
+								"id" : ruleSet.uuid,
+								"rel" : ruleSet.type,
+								"elementId" : ruleSet.id,
+								"title": ruleSet.description
+							},
+							"data" : ruleSet.name
+						}, null, true);
+				jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
+						"#" + ruleSet.uuid);
+			};
+			
+			var createDecisionTableNode = function(ruleSet, decTable) {
+				jQuery(displayScope + "#outline").jstree("create",
+						"#" + ruleSet.uuid, "last", {
+							"attr" : {
+								"id" : decTable.uuid,
+								"title" : decTable.description,
+								"ruleSetId" : ruleSet.id,
+								"ruleSetUuid" : ruleSet.uuid,
+								"rel" : "DecisionTable",
+								"draggable" : true,
+								"elementId" : decTable.id
+							},
+							"data" : decTable.name
+						}, null, true);
+			};
+			
+			var createTechinicalRuleNode = function(ruleSet, techRule) {
+				jQuery(displayScope + "#outline").jstree("create",
+						"#" + ruleSet.uuid, "last", {
+							"attr" : {
+								"id" : techRule.uuid,
+								"title": techRule.description,
+								"ruleSetId" : ruleSet.id,
+								"ruleSetUuid" : ruleSet.uuid,
+								"rel" : "TechnicalRule",
+								"draggable" : true,
+								"elementId" : techRule.id
+							},
+							"data" : techRule.name
+						}, null, true);
 			};
 			
 			var exportRuleSet = function(uuid) {
@@ -652,7 +666,7 @@ define(
 									},
 									"plugins" : [ "themes", "html_data",
 											"crrm", "contextmenu", "types",
-											"ui","sort" ],
+											"ui" ],
 									contextmenu : {
 										"items" : function(node) {
 											var nodeType=node.attr('rel');
@@ -846,9 +860,7 @@ define(
 				 * The hard delete should only be done after a succesful save.*/
 				function deleteRuleSet(ruleSetUUID) {
 					RuleSet.markRuleSetForDeletion(ruleSetUUID);
-					// TODO - this is just a way to trigger a refresh
-					// need a better solution
-					CommandsDispatcher.submitCommand();
+					jQuery(displayScope + "#outline").jstree("delete_node", "#"+ ruleSetUUID);
 				}
 
 				function prepareDeleteElementData(name, callback) {
@@ -888,7 +900,9 @@ define(
 					var	name ="Decision Table " + decTableCount;
 					var	id="DecisionTable" + decTableCount;
 					var decTable=ruleSet.addDecisionTable(id,name);
-					CommandsDispatcher.submitCommand();
+					
+					//CommandsDispatcher.submitCommand();					
+					createDecisionTableNode(ruleSet, decTable);
 					
 					viewManager.openView("decisionTableView", "id="
 							+ decTable.id + "&ruleSetId="
@@ -906,7 +920,9 @@ define(
 					var	id="Rule" + techRuleCount;
 					var techRule=ruleSet.addTechnicalRule(id,name);
 					
-					CommandsDispatcher.submitCommand();
+					//CommandsDispatcher.submitCommand();					
+					createTechinicalRuleNode(ruleSet, techRule);
+					
 					viewManager.openView("technicalRuleView", "id="
 							+ techRule.id + "&ruleSetId="
 							+ ruleSet.id + "&name="
@@ -1032,7 +1048,9 @@ define(
 					var name = "Rule Set " + RuleSet.getRuleSetsCount();
 					var id = "RuleSet" + RuleSet.getRuleSetsCount();
 					var ruleSet = RuleSet.create(id, name);
-					CommandsDispatcher.submitCommand();
+					//CommandsDispatcher.submitCommand();
+					createRuleSetNode(ruleSet);
+					
 					viewManager.openView("ruleSetView",
 							"id=" + ruleSet.id + "&name=" + ruleSet.name
 									+ "&uuid=" + ruleSet.uuid, ruleSet.uuid);
@@ -1044,7 +1062,29 @@ define(
 				 */
 				Outline.prototype.processCommand = function(command) {
 					// TODO Dummy
-					reloadOutlineTree();
+//					reloadOutlineTree();
+					
+					// Handling renaming of nodes
+					var uuid;
+					if (command.name === "RuleSet.Rename") {
+						uuid = command.ruleSet.uuid;
+					} else if (command.name === "DecisionTable.Rename") {
+						uuid = command.decTable.uuid;
+					} else if (command.name === "TechnicalRule.Rename") {
+						uuid = command.techRule.uuid;
+					}
+					
+					if (uuid) {
+						var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
+						var node = m_utils.jQuerySelect("li#" + uuid);
+
+						// TODO - improve the command / changes structure						
+						if (node.attr("name") != command.changes[1]) {
+							node.attr("name", command.changes[1]);
+							var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
+							textElem.nodeValue = command.changes[1];
+						}
+					}
 				};
 			}
 		});

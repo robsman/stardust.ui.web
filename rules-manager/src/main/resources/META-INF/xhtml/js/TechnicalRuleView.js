@@ -225,10 +225,16 @@ define(
 					
 					/*bind our nameInput control to the actual name of the technical rule in our ruleset* */
 					uiElements.nameInput.change({view : this}, function() {
+						var oldName = techRule.name;
 						techRule.name = uiElements.nameInput.val();
 						view.renameView(techRule);
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand();
+						CommandsDispatcher.submitCommand({
+							name:"TechnicalRule.Rename",
+							techRule:techRule,
+							ruleSet:ruleSet,
+							changes:[oldName, techRule.name]
+						});
 					});
 					
 					/*bind our description textarea to the descritpion attribute on our technicalRule*/
