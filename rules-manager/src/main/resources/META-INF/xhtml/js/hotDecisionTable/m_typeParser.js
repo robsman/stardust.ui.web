@@ -78,7 +78,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 	return facetsObj;
   };
   
-  var fx=function(body,paramDef){
+  var fx=function(body,paramDef,descr){
     var data=[], /*hold our result and our recursively returned children*/
 	    temp,    /*an item to be pushed onto data[]*/
 	    i,       /*loop counter*/	    
@@ -108,7 +108,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
         	paramDef.enumeration=obj.enumeration;
         }
         temp={data: {title:obj.name, icon:img}, 
-        	  attr: {title: obj.type},
+        	  attr: {title: descr || obj.type},
         	  metadata: {
         		  ref: paramDef || obj,
         		  type: obj.type || 'na',
@@ -346,7 +346,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 		    		else{
 		    			typeBody[0].name=paramDef.name; /*Give the agnostic typeBody context from our paramDef*/
 		    		}
-		    		jstreeDataNode=fx(typeBody,paramDef); /*walk the JSON and build our tree*/	
+		    		jstreeDataNode=fx(typeBody,paramDef,typeDecl.description); /*walk the JSON and build our tree*/	
 		    		
 		    		if(paramDef.direction==="IN" || paramDef.direction==="INOUT"){
 		    			jsConditionNodes.push(jstreeDataNode);
