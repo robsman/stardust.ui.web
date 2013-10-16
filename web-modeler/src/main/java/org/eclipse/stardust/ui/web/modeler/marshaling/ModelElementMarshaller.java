@@ -825,10 +825,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                ApplicationType application = getApplication(activity);
                if (application != null)
                {
-                  activityJson.addProperty(
-                        ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
-                        getModelBuilderFacade().createFullId(
-                              ModelUtils.findContainingModel(application), application));
+                  if (!application.getType()
+                        .getId()
+                        .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+                  {
+                     activityJson.addProperty(
+                           ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
+                           getModelBuilderFacade().createFullId(
+                                 ModelUtils.findContainingModel(application), application));
+                  }
                }
             }
 
@@ -2783,7 +2788,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (ApplicationType application : model.getApplication())
       {
-         applicationsJson.add(application.getId(), toApplication(application));
+         if ( !application.getType()
+               .getId()
+               .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+         {
+            applicationsJson.add(application.getId(), toApplication(application));
+         }
       }
 
       JsonObject dataItemsJson = new JsonObject();

@@ -41,6 +41,7 @@ public class StructuredDataValidator implements IModelElementValidator
    {
       List<Issue> issues = new ArrayList<Issue>();
       DataType data = (DataType) element;
+      TypeDeclarationsType declarations = null;
       AttributeType attribute = AttributeUtil.getAttribute((IExtensibleElement) element, "carnot:connection:uri"); //$NON-NLS-1$
       if (data.getExternalReference() != null)
       {
@@ -49,6 +50,10 @@ public class StructuredDataValidator implements IModelElementValidator
       }
 
       ModelType model = ModelUtils.findContainingModel(data);
+      if (model != null)
+      {
+         declarations = model.getTypeDeclarations();
+      }
       String typeId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
       if (StringUtils.isEmpty(typeId))
       {
@@ -57,7 +62,6 @@ public class StructuredDataValidator implements IModelElementValidator
       }
       else
       {
-         TypeDeclarationsType declarations = null;
          if (data.eIsProxy())
          {
             URI proxyUri = ((InternalEObject) data).eProxyURI();
