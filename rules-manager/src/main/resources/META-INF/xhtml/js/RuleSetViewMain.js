@@ -91,6 +91,26 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 		"rules-manager/js/libs/ACE/ace",
 		"Handsontable","bootstrap3","jstree"], function(
 		require) {
-	require("rules-manager/js/RuleSetView").initialize(
-			BridgeUtils.View.getActiveViewParams().param("uuid"));
+	var ruleSetView=require("rules-manager/js/RuleSetView");
+	var options={
+			selectors:{
+				uuidLabel: "#uuidLabel",
+				idLabel: "#idLabel",
+				nameLabel: "#nameLabel",
+				descriptionLabel: "#descriptionLabel",
+				creationDateLabel: "#creationDateLabel",
+				lastModificationDateLabel: "#lastModificationDateLabel",
+				parameterTabLabel: "#data"
+			},
+			i18nMaps:{
+				uuidLabel: {path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"},
+				idLabel: {path:"rules.element.properties.commonProperties.id",defaultText:"NA",attr:"text"},
+				nameLabel: {path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
+				creationDateLabel: {path:"rules.element.properties.commonProperties.creationDate",defaultText:"NA",attr:"text"},
+				lastModificationDateLabel: {path:"rules.element.properties.commonProperties.lastModifiedDate",defaultText:"NA",attr:"text"},
+				descriptionLabel: {path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
+				parameterTabLabel: {path:"rules.propertyView.rulesetview.parameterdefinitions.parameters.tab",defaultText:"NA",attr:"text"}
+			}
+	};
+	ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);
 });
