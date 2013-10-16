@@ -294,8 +294,17 @@ define(
 					saveAllRules();
 				}
 
+				// close all rules views, if open
+				closeAllRulesViews();
+
 				reloadOutlineTree(true);
-			}
+			};
+			
+			var closeAllRulesViews = function() {
+				jQuery.each(RuleSet.getRuleSets(), function(index, ruleSet) {
+					viewManager.closeViewsForElement(ruleSet.uuid);
+				});
+			};
 			
 			var reloadOutlineTree = function(force) {
 				jQuery(displayScope + "#outline").empty();
