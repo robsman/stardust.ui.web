@@ -2738,7 +2738,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                            ModelerConstants.RULE_SET_ID, jsonValue.getAsString());
                   }
                }
-               continue;
+               //continue;
             }
 
             if (jsonValue.isJsonNull())

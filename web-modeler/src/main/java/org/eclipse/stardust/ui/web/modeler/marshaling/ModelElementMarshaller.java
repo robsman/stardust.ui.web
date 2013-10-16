@@ -3085,7 +3085,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       // Infer "rulesSetId" from "hidden" drools application into the JSON of the activity
       // attributes
-      if (element instanceof ActivityType)
+      /*if (element instanceof ActivityType)
       {
          ActivityType activity = (ActivityType) element;
          if (activity.getApplication() != null)
@@ -3101,8 +3101,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                attributes.addProperty(ModelerConstants.RULE_SET_ID, rulesetId);
             }
          }
-      }
-
+      }*/
 
       for (Object attribute : getModelBuilderFacade().getAttributes(element))
       {
