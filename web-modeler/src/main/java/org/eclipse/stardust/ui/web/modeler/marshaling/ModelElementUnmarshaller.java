@@ -147,6 +147,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
+   
+   protected abstract ClassLoaderProvider classLoaderProvider();
 
    // TODO For documentation creation
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
@@ -2380,6 +2382,37 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
                   .getAsString()))
       {
+         if (hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
+         {
+             JsonObject attributeJson = json.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+             if (hasNotJsonNull(attributeJson, PredefinedConstants.CLASS_NAME_ATT)) 
+             {
+                String className=attributeJson.get(PredefinedConstants.CLASS_NAME_ATT).getAsString();
+                JsonArray facets = loadEnumForStructuredType(className);
+                if (null != facets)
+                {
+                   JsonObject schemaJson = declarationJson.getAsJsonObject("schema");
+                   JsonArray types = GsonUtils.safeGetAsJsonArray(schemaJson, "types");
+                   JsonArray elements = GsonUtils.safeGetAsJsonArray(schemaJson, "elements");
+                   for (JsonElement entry : types)
+                   {
+                      if (entry instanceof JsonObject)
+                      {
+                         JsonObject defJson = (JsonObject) entry;
+                         defJson.add("facets", facets);
+                      }
+                   }
+                   for (JsonElement entry : elements)
+                   {
+                      if (entry instanceof JsonObject)
+                      {
+                         JsonObject defJson = (JsonObject) entry;
+                         defJson.add("facets", facets);
+                      }
+                   }
+                }
+             }
+         }
          XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
                typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
       }
@@ -2543,6 +2576,42 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          // as the previously set default may be invalid.
          ModelBuilderFacade.setAttribute(data, "carnot:engine:defaultValue", "");
       }
+   }
+   
+   /**
+    * 
+    * @param className
+    * @return
+    */
+   private JsonArray loadEnumForStructuredType(String className)
+   {
+      if (StringUtils.isNotEmpty(className))
+      {
+         JsonArray facets = new JsonArray();
+         Class< ? > clsTarget = null;
+         try
+         {
+            clsTarget = classLoaderProvider().classLoader().loadClass(className);
+            if (null != clsTarget)
+            {
+               Object[] consts = clsTarget.getEnumConstants();
+               for (Object obj : consts)
+               {
+                  // Create facets object reading the ENUM values
+                  JsonObject enumObj = new JsonObject();
+                  enumObj.addProperty("name", obj.toString());
+                  enumObj.addProperty("classifier", "enumeration");
+                  facets.add(enumObj);
+               }
+               return facets;
+            }
+         }
+         catch (Exception e)
+         {
+            // TODO: handle exception
+         }
+      }
+      return null;
    }
 
    /**

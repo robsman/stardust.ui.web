@@ -136,9 +136,8 @@ define(
 						}
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							if (bindJavaClass) {
-								$scope.javaClassBinding = true;
+								$scope.javaClassBinding = true; //Flag to show/hide other facets
 								$scope.javaClassRequiredError = true; //Error message to enter java class path
-								$scope.javaClassInput = undefined;
 							}else{
 								$scope.javaClassRequiredError = false;
 								$scope.javaClassBinding = false;
@@ -147,19 +146,16 @@ define(
 						}, m_utils.jQuerySelect("#configurationTab").get(0));
 						
 						if(removeTypeDeclaration){
-							self.submitChanges({
-							typeDeclaration : view.typeDeclaration.typeDeclaration
+							view.submitChanges({
+								typeDeclaration : view.typeDeclaration.typeDeclaration
 							});
 						}else{
-							self.submitChanges({
+							view.submitChanges({
 								attributes : {
 									"carnot:engine:className" : null
 								}
 							});
 						}
-
-						view.initializeTypeDeclaration();
-						
 					});
 					
 					var self = this;
@@ -175,6 +171,7 @@ define(
 									$scope.javaClassRequiredError = false;
 									$scope.noEnumFoundError = false;
 									self.submitChanges({
+										typeDeclaration : self.typeDeclaration.typeDeclaration,
 										attributes : {
 											"carnot:engine:className" : $scope.javaClassInput
 										}
@@ -497,8 +494,11 @@ define(
 								$scope.minLength = minVal;
 								$scope.maxLength = maxVal;
 							} else {
-								if($scope.javaClassBinding == true){
+								if($scope.javaClassBinding == true && $scope.javaClassRequiredError == false){
 									$scope.noEnumFoundError = true;
+								}else{
+									$scope.noEnumFoundError = false;
+									$scope.javaClassRequiredError = false;
 								}
 							}
 						}
@@ -545,7 +545,10 @@ define(
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 					
 					this.bindJavaClassEdit.val(this.typeDeclaration.attributes["carnot:engine:className"]);
-					this.bindToJavaSelect.prop("checked", (this.typeDeclaration.attributes["carnot:engine:className"]));
+					
+					if(!this.bindToJavaSelect.prop("checked")){
+						this.bindToJavaSelect.prop("checked",this.typeDeclaration.attributes["carnot:engine:className"] != undefined);	
+					}
 					
 					view=this;
 					m_angularContextUtils.runInAngularContext(function($scope) {

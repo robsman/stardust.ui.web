@@ -87,6 +87,12 @@ public class ModelingSession
       {
          return ModelingSession.this.modelManagementStrategy();
       }
+      
+      @Override
+      protected ClassLoaderProvider classLoaderProvider()
+      {
+         return ModelingSession.this.classLoaderProvider();
+      }
    };
 
    public String getId()

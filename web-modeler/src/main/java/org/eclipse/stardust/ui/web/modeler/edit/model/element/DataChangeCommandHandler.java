@@ -37,6 +37,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.xsd.*;
@@ -182,6 +183,13 @@ public class DataChangeCommandHandler
          {
             @Override
             protected ModelManagementStrategy modelManagementStrategy()
+            {
+               // TODO Auto-generated method stub
+               return null;
+            }
+
+            @Override
+            protected ClassLoaderProvider classLoaderProvider()
             {
                // TODO Auto-generated method stub
                return null;

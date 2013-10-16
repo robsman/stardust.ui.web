@@ -138,10 +138,10 @@ table.layoutTable tr.widget td .widget {
 																		ng-show="form.javaClassInput.$error.pattern"
 																		style="color: red">Not a valid java class</div>
 																	<div id="javaClassNoInputError"
-																		ng-show="javaClassRequiredError == true" ng-hide="form.javaClassInput.$error.pattern"
+																		ng-show="javaClassRequiredError" ng-hide="form.javaClassInput.$error.pattern"
 																		style="color: red">Java Class is mandatory</div>
 																	<div id="noEnumFoundInputError"
-																		ng-show="noEnumFoundError == true" ng-hide="form.javaClassInput.$error.pattern"
+																		ng-show="noEnumFoundError" ng-hide="form.javaClassInput.$error.pattern"
 																		style="color: red">No Enum values found
 																	</div>
 																</td>
