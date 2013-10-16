@@ -72,7 +72,13 @@ define(
 							lineNumberLabel: m_utils.jQuerySelect(options.selectors.lineNumberLabel),
 							replaceLabel: m_utils.jQuerySelect(options.selectors.replaceLabel),
 							replaceMenu: m_utils.jQuerySelect(options.selectors.replaceMenu),
-							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea)
+							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea),
+							optReplaceCurrent: m_utils.jQuerySelect(options.selectors.optReplaceCurrent),
+							optReplaceAll : m_utils.jQuerySelect(options.selectors.optReplaceAll ),
+							idLabel : m_utils.jQuerySelect(options.selectors.idLabel ),
+							nameLabel : m_utils.jQuerySelect(options.selectors.nameLabel ),
+							descriptionLabel : m_utils.jQuerySelect(options.selectors.descriptionLabel ),
+							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel )
 					};
 					
 					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -251,7 +257,7 @@ define(
 						ruleSet.state.isDirty=true;
 						techRule.setDRL(tempVal);
 					});
-					
+
 					/*by convention: is this function neccesary?*/
 					this.activate(ruleSet,techRule,uiElements);
 
@@ -267,11 +273,14 @@ define(
 					uiElements.idOutput.append(this.technicalRule.id);
 					uiElements.nameInput.val(this.technicalRule.name);
 					uiElements.drlEditor.setValue(this.technicalRule.getDRL());
+					
+
 				};
 				
 				this.renameView = function(techRule) {
-					m_jsfViewManager.create().updateView("TechnicalRuleView", "name" + "=" + techRule.name,
+					m_jsfViewManager.create().updateView("technicalRuleView", "name" + "=" + techRule.name,
 							techRule.uuid);
+					
 				};
 			}
 		});
