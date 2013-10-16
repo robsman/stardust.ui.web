@@ -143,7 +143,7 @@ define(
 									},
 									payload : {
 										title : "Warning",
-										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
+										message : "Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing.",
 										acceptButtonText : "Close",
 										acceptFunction : function() {
 											// Do nothing
@@ -151,7 +151,7 @@ define(
 									}
 								});
 					} else {
-						alert("Models have unsaved changes. Please save models before continuing.");
+						alert("Rule-sets have unsaved changes. Please save rule-sets before continuing.");
 					}
 				} else {
 					if (ruleSet) {
@@ -279,58 +279,7 @@ define(
 					});
 					
 				}
-				else {
-					var model = m_model.findModelByUuid(data.rslt.obj
-							.attr("modelUUID"));
-					var modelElement = model
-							.findModelElementByUuid(data.rslt.obj.attr("id"));
-
-					if (modelElement && (modelElement.name != data.rslt.name)) {
-						m_commandsController.submitCommand(m_command
-								.createUpdateModelElementWithUUIDCommand(
-										model.id, modelElement.uuid, {
-											"name" : data.rslt.name
-										}));
-					}
-				}
 			};
-
-			var renameElementViewLabel = function(type, uuid, name) {
-				if (type == 'model') {
-					renameView("modelView", uuid, "modelName", name);
-				} else if (type == 'process') {
-					renameView("processDefinitionView", uuid, "processName",
-							name);
-				} else if (type == "roleParticipant" || type == "teamLeader") {
-					renameView("roleView", uuid, "roleName", name)
-				} else if (type == 'organizationParticipant') {
-					renameView("organizationView", uuid, "organizationName",
-							name)
-				} else if (m_elementConfiguration.isValidDataType(type)) {
-					renameView("dataView", uuid, "dataName", name)
-				} else if (type == "webservice") {
-					renameView("webServiceApplicationView", uuid,
-							"applicationName", name)
-				} else if (type == "messageTransformationBean") {
-					renameView("messageTransformationApplicationView", uuid,
-							"applicationName", name)
-				} else if (type == "camelSpringProducerApplication") {
-					renameView("camelApplicationView", uuid, "applicationName",
-							name)
-				} else if (type == "interactive") {
-					renameView("uiMashupApplicationView", uuid,
-							"applicationName", name)
-				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
-					renameView("genericApplicationView", uuid,
-							"applicationName", name)
-				} else if (type == "structuredDataType") {
-					renameView("xsdStructuredDataTypeView", uuid,
-							"structuredDataTypeName", name)
-				} else if (type == "conditionalPerformerParticipant") {
-					renameView("conditionalPerformerView", uuid,
-							"conditionalPerformerName", name)
-				}
-			}
 
 			var renameView = function(viewId, viewIdentifier, nameParamName,
 					newName) {
@@ -385,7 +334,7 @@ define(
 									},
 									payload : {
 										title : "Warning",
-										message : "Models have unsaved changes.<BR><BR>Please save models before continuing.",
+										message : "Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing.",
 										acceptButtonText : "Close",
 										acceptFunction : function() {
 											// Do nothing
@@ -393,7 +342,7 @@ define(
 									}
 								});
 					} else {
-						alert("Models have unsaved changes. Please save models before continuing.");
+						alert("Rule-sets have unsaved changes. Please save rule-sets before continuing.");
 					}
 				} else {
 					var link = m_utils.jQuerySelect(
@@ -532,10 +481,10 @@ define(
 											if (parent.iPopupDialog) {
 												parent.iPopupDialog
 														.openPopup(prepareErrorDialogPoupupData(
-																"Error saving models.",
+																"Error saving rule-sets.",
 																"OK"));
 											} else {
-												alert("Error saving models.");
+												alert("Error saving rule-sets.");
 											}
 										}
 									}
@@ -820,34 +769,6 @@ define(
 														"_class" : "ipp-text-red"
 													}
 												};
-											} else if ('rule' == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(displayScope + "#outline").jstree("rename","#"+ obj.attr("id"));
-														}
-													},
-													"deleteProcess" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteProcess(
-																				obj
-																						.attr("elementId"),
-																				obj
-																						.attr("modelUUID"));
-																	});
-														}
-													}
-												};
 											}
 
 											return {};
@@ -960,81 +881,6 @@ define(
 					CommandsDispatcher.submitCommand();
 				}
 
-				/**
-				 * 
-				 */
-				function getUniqueNameForElement(modelId, namePrefix) {
-					var suffix = 0;
-					var name = namePrefix + (++suffix);
-					var id = m_utils.generateIDFromName(name);
-					var model = m_model.findModel(modelId);
-					if (model) {
-						while (model.findModelElementById(id.toUpperCase())) {
-							var name = namePrefix + (++suffix);
-							var id = m_utils.generateIDFromName(name);
-						}
-					}
-
-					return name;
-				}
-
-				/**
-				 * 
-				 */
-				function deleteProcess(processId, modelUUID) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteProcessCommand(model.id, model.id, {
-								"id" : processId
-							}));
-				}
-
-				/**
-				 */
-				function deleteStructuredDataType(modelUUID, structTypeId) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteStructuredDataTypeCommand(model.id,
-									model.id, {
-										"id" : structTypeId
-									}));
-				}
-
-				/**
-				 * 
-				 */
-				function deleteParticipant(modelUUID, id) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteParticipantCommand(model.id, model.id,
-									{
-										"id" : id
-									}));
-				}
-
-				/**
-				 * 
-				 */
-				function deleteApplication(modelUUID, appId) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteApplicationCommand(model.id, model.id,
-									{
-										"id" : appId
-									}));
-				}
-
-				/**
-				 * 
-				 */
-				function deleteData(modelUUID, id) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteDataCommand(model.id, model.id, {
-								"id" : id
-							}));
-				}
-
 				function prepareDeleteElementData(name, callback) {
 					var popupData = {
 						attributes : {
@@ -1064,24 +910,6 @@ define(
 					} else {
 						callback();
 					}
-				}
-
-				/**
-				 * 
-				 */
-				function createRule(ruleSetUuid) {
-					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
-					var name = "Rule " + ruleSet.getRulesCount();
-					var id = "Rule" + ruleSet.getRulesCount();
-
-					ruleSet.addRule(id, name)
-					
-					CommandsDispatcher.submitCommand();
-
-					viewManager.openView("ruleView", "id=" + rule.id
-							+ "&ruleSetId=" + ruleSet.id + "&name=" + rule.name
-							+ "&uuid=" + rule.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid, rule.uuid);
 				}
 				
 				function createDecisionTable(ruleSetUuid) {
