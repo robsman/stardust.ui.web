@@ -67,6 +67,10 @@ public class RulesManagementResource
    @Path("save")
    public Response saveRuleSets(String ruleSets)
    {
+      if (StringUtils.isEmpty(ruleSets))
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
       try
       {
          String result = getRulesManagementService().saveRuleSets(ruleSets);         

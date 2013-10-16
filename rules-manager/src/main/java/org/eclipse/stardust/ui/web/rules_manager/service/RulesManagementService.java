@@ -87,12 +87,6 @@ public class RulesManagementService
     */
    public String saveRuleSets(String ruleSetsJson)
    {
-      if (null == ruleSetsJson)
-      {
-         trace.info("invalid request...");
-         return new Gson().toJson("invalid request");
-      }
-
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
       
       //track errors
