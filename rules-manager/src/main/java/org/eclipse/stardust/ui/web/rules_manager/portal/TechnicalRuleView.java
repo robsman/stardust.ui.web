@@ -28,6 +28,6 @@ public class TechnicalRuleView extends AbstractAdapterView {
    {
       super.handleEvent(event);
       
-      event.getView().setIcon("/plugins/rules-manager/images/icons/rule.png");
+      event.getView().setIcon("/plugins/rules-manager/images/icons/tech-rule.png");
    }	
 }
