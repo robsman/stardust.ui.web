@@ -9,14 +9,15 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[   "bpm-modeler/js/m_utils", 
+		    "bpm-modeler/js/m_constants",
 			"bpm-modeler/js/m_extensionManager", 
 			"bpm-modeler/js/m_model",
 			"bpm-modeler/js/m_dialog",
 			"rules-manager/js/CommandsDispatcher", 
 			"bpm-modeler/js/m_view",
 			"bpm-modeler/js/m_modelElementView",
-			"bpm-modeler/js/m_i18nUtils",
+			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_parameterDefinitionsPanel",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
@@ -31,18 +32,19 @@ define(
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
 			"Handsontable",
 			"rules-manager/js/hotDecisionTable/m_popoverFactory",
-			"rules-manager/js/hotDecisionTable/m_typeParser"],
+			"rules-manager/js/hotDecisionTable/m_typeParser",
+			"rules-manager/js/m_i18nMapper"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
 				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
 				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,ace2,
 				hotDecisionTable,tableConfig,renderEngines,dataFactory,chFactory,
-				images,treeFactory,ht2,popoverFactory,typeParser) {
+				images,treeFactory,ht2,popoverFactory,typeParser,m_i18nMapper) {
 			return {
-				initialize : function(uuid) {
+				initialize : function(uuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 					var view = new RuleSetView();
 					CommandsDispatcher.registerCommandHandler(view);
-					view.initialize(ruleSet);
+					view.initialize(ruleSet,options);
 				}
 			};
 
@@ -53,13 +55,25 @@ define(
 				/**
 				 * 
 				 */
-				RuleSetView.prototype.initialize = function(ruleSet) {
+				RuleSetView.prototype.initialize = function(ruleSet,options) {
 					var paramDefCount,    /*Number of Parameter Definitions in our ruleset*/
 						paramDef,         /*instance of a parameter definition*/
 						typeDecl,         /*instance of a typeDeclaration*/
 						typeBody,         /*result of a typeDecl.getBody() call*/
 						$descriptionTextArea,
 						codeEditSelector; /*selector for the Ace Code editor linked to the decision table*/
+					
+					var uiElements={
+							uuidLabel: m_utils.jQuerySelect(options.selectors.uuidLabel),
+							idLabel: m_utils.jQuerySelect(options.selectors.idLabel),
+							nameLabel: m_utils.jQuerySelect(options.selectors.nameLabel),
+							descriptionLabel: m_utils.jQuerySelect(options.selectors.descriptionLabel),
+							creationDateLabel: m_utils.jQuerySelect(options.selectors.creationDateLabel),
+							lastModificationDateLabel: m_utils.jQuerySelect(options.selectors.lastModificationDateLabel),
+							parameterTabLabel: m_utils.jQuerySelect(options.selectors.parameterTabLabel)
+					};
+					
+					m_i18nMapper.map(options,uiElements,true);
 					
 					this.drlEditor;
 					this.id = "ruleSetView";
