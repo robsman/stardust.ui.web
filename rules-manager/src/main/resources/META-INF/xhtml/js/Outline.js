@@ -25,12 +25,13 @@ define(
 				"bpm-modeler/js/m_jsfViewManagerHelper",
 				"rules-manager/js/m_outlineToolbarController",
 				"rules-manager/js/CommandsDispatcher",
-				"rules-manager/js/RuleSet" ],
+				"rules-manager/js/RuleSet",
+				"rules-manager/js/m_i18nMapper"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
 				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
-				m_outlineToolbarController, CommandsDispatcher, RuleSet) {
+				m_outlineToolbarController, CommandsDispatcher, RuleSet, m_i18nMapper) {
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 
@@ -305,7 +306,7 @@ define(
 			
 			var reloadOutlineTreeReset = function(saveFirst) {
 				if (true == saveFirst) {
-					saveAllRules();
+					saveRuleSets();
 				}
 
 				// close all rules views, if open
@@ -427,15 +428,22 @@ define(
 				return ruleSetArray;
 			}
 			
-			function saveAllRules() {
-				var rsArray=[];
-				var deletedRsets=[];
+			function saveRuleSets(deletedOnly,virginOnly) {
+				var rsArray=[], /* transformed ruleSets we will post to the server*/
+					refRsArray=[]; /* ref to original ruleSets we will operate on within the success callback*/
+				
+				deletedOnly=deletedOnly || false;
+				virginOnly=virginOnly || false;
+				
 				//Convert each RuleSet to its transformed JSON object
 				jQuery.each(RuleSet.getRuleSets(),function(){
 					
-					/* Detect rulesets that need to be deleted from persistant storage*/
+					/* Detect rulesets that need to be deleted from persistant storage
+					 * No matter our flags we will always try and delete ruleSets marked
+					 * as such.*/
 					if(this.state.isDeleted===true && 
 					   this.state.isPersisted===true){
+						refRsArray.push(this);
 						rsArray.push({
 							id: this.id,
 							uuid: this.uuid,
@@ -443,17 +451,28 @@ define(
 							deleted: true
 						});
 					}
-					/* Detect only those rulesets that are not saved and not deleted.*/
-					else if(this.state.isPersisted===false && 
-							this.state.isDeleted===false){
-						rsArray.push(this.toJSON("PRE-DRL"));
-					/* Finally, rulesets that are persistant and have changes (are dirty)*/
-					}else if(this.state.isPersisted===true && 
-							 this.state.isDirty===true && 
-							 this.state.isDeleted===false){
-						rsArray.push(this.toJSON("PRE-DRL"));
-					}
 					
+					/* Now, if we arent in a delete only mode, look for ruleSets that need to be persisted.
+					 * More exactly..., if in virginOnly mode we will only look for ruleSets that have not been
+					 * persisted as of yet and are not marked for deletion, else we look for all dirty ruleSets
+					 * not marked for deletion.*/
+					if(deletedOnly===false){
+						/* Detect only those rulesets that are not persistent and not deleted (virgin).*/
+						if(this.state.isPersisted===false && 
+								this.state.isDeleted===false){
+							refRsArray.push(this);
+							rsArray.push(this.toJSON("PRE-DRL"));
+						}
+						/* Finally, rulesets that are persistent and have changes (are dirty)*/
+						if(virginOnly===false){
+							if(this.state.isPersisted===true && 
+									 this.state.isDirty===true && 
+									 this.state.isDeleted===false){
+								refRsArray.push(this);
+								rsArray.push(this.toJSON("PRE-DRL"));
+							}
+						}
+					}
 				});
 				console.log("--RSArray--");
 				console.log(rsArray);
@@ -466,9 +485,11 @@ define(
 								new function() {
 									return {
 										success : function(data) {
+											console.log(data);
 											m_messageDisplay.markSaved();
 											hasUnsavedModifications = false;
-											jQuery.each(RuleSet.getRuleSets(),function(){
+											/*very important we iterate over the refRSArray as it is prefiltered.*/
+											jQuery.each(refRsArray,function(){
 												/*Server responded with success, hard delete ruleSets
 												 *marked for deletion and clean the states of 
 												 *all other Rulesets.*/
@@ -811,7 +832,7 @@ define(
 					} else if ("redoChange" == data.id) {
 						redoLastUndo();
 					} else if ("saveAllRules" == data.id) {
-						saveAllRules();
+						saveRuleSets();
 					} else if ("refreshRules" == data.id) {
 						refresh();
 					}
@@ -856,11 +877,13 @@ define(
 				}
 
 				/* Marks a rulesets state object as isDeleted=true.
-				 * Does not actually perform a delete on the corresponding window.top.ruleset.
-				 * The hard delete should only be done after a succesful save.*/
+				 * calls saveAllRules with the deleteOnly flag set. THis will cause the method to only
+				 * send ruleSets we have marked for deletion. The hard delete is performed by the 
+				 * success callback intenal to the method.*/
 				function deleteRuleSet(ruleSetUUID) {
 					RuleSet.markRuleSetForDeletion(ruleSetUUID);
 					jQuery(displayScope + "#outline").jstree("delete_node", "#"+ ruleSetUUID);
+					saveRuleSets(true); /*deleteOnly=true*/
 				}
 
 				function prepareDeleteElementData(name, callback) {
@@ -986,8 +1009,19 @@ define(
 			var outline;
 
 			return {
-				init : function(newViewManager, newDisplayScope) {
-
+				init : function(newViewManager, newDisplayScope,options) {
+					var uiElements={
+							createRuleSetButton:  m_utils.jQuerySelect(options.selectors.createRuleSetButton),
+							importRuleSet:  m_utils.jQuerySelect(options.selectors.importRuleSet),
+							undoChange:  m_utils.jQuerySelect(options.selectors.undoChange),
+							redoChange:  m_utils.jQuerySelect(options.selectors.redoChange),
+							saveAllRules:  m_utils.jQuerySelect(options.selectors.saveAllRules),
+							refreshRules:  m_utils.jQuerySelect(options.selectors.refreshRules),
+							lastSavelLabel:  m_utils.jQuerySelect(options.selectors.lastsave)
+					};
+					
+					m_i18nMapper.map(options,uiElements,true);
+					
 					if (newDisplayScope) {
 						displayScope = "#" + newDisplayScope + " ";
 					}
@@ -1005,8 +1039,8 @@ define(
 					outline.initialize();
 
 					m_outlineToolbarController.init("rulesOutlineToolbar");
-
-					// i18nStaticLabels();
+					
+					
 					
 					return outline;
 				},
@@ -1031,7 +1065,6 @@ define(
 				 */
 				Outline.prototype.initialize = function() {
 					CommandsDispatcher.registerCommandHandler(this);
-
 					this.createRuleSetButton = jQuery("#createRuleSetButton");
 
 					this.createRuleSetButton.click({
@@ -1055,6 +1088,8 @@ define(
 							"id=" + ruleSet.id + "&name=" + ruleSet.name
 									+ "&uuid=" + ruleSet.uuid, ruleSet.uuid);
 					jQuery(displayScope + "#outline").jstree("rename","#" + ruleSet.uuid);
+					/*save our virgin Rule Set to the server.*/
+					saveRuleSets(false,true);
 				}
 
 				/**
