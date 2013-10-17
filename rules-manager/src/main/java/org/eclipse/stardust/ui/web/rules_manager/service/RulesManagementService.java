@@ -33,6 +33,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService.Response.OPERATION;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 
 /**
@@ -88,38 +89,43 @@ public class RulesManagementService
    public String saveRuleSets(String ruleSetsJson)
    {
       JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
-      
-      //track errors
-      List<RulesManagementService.RulesError> ruleErrorList = new ArrayList<RulesManagementService.RulesError>();
-      
+
+      // track errors
+      List<RulesManagementService.Response> consolidatedResponse = new ArrayList<RulesManagementService.Response>();
+
       for (JsonElement je : ruleSets)
       {
          String uuid = je.getAsJsonObject().get("uuid").getAsString();
          String documentId = ruleSetUUIDVsDocumentIdMap.get(uuid);
-
+         OPERATION op = OPERATION.SAVE;
          try
          {
             if (je.getAsJsonObject().get("deleted") != null)
             {
+               op = OPERATION.DELETE;
                deleteRules(uuid, documentId);
+               consolidatedResponse.add(new Response(uuid, op, true, "deleted"));
             }
             else
             {
+               op = OPERATION.SAVE;
                persistRules(je, uuid, documentId);
+               consolidatedResponse.add(new Response(uuid, op, true, "saved"));
             }
+           
          }
          catch (Exception e)
          {
-            ruleErrorList.add(new RulesError(uuid, e.getMessage()));
+            consolidatedResponse.add(new Response(uuid, op, false, e.getMessage()));
          }
       }
-      
-      //Error case
-      if ( !ruleErrorList.isEmpty())
+
+      // Error case
+      if ( !consolidatedResponse.isEmpty())
       {
-         return new Gson().toJson(ruleErrorList);
+         return new Gson().toJson(consolidatedResponse);
       }
-      
+
       return new Gson().toJson("saved");
    }
 
@@ -140,7 +146,7 @@ public class RulesManagementService
 
       return ruleSetNameAndContent;
    }
-   
+
    /**
     * @param je
     * @param uuid
@@ -151,14 +157,18 @@ public class RulesManagementService
       Document doc;
       if (null == documentId)
       {
-         String rulesetFileName = je.getAsJsonObject().get("name").getAsString() + uuid + ".json";
-         trace.info("creating new ruleset with uuid, name:  " + uuid + ", " + rulesetFileName);
-         doc = getRulesManagementStrategy().createRuleSet(rulesetFileName, je.toString().getBytes());
+         String rulesetFileName = je.getAsJsonObject().get("name").getAsString() + uuid
+               + ".json";
+         trace.info("creating new ruleset with uuid, name:  " + uuid + ", "
+               + rulesetFileName);
+         doc = getRulesManagementStrategy().createRuleSet(rulesetFileName,
+               je.toString().getBytes());
       }
       else
       {
          trace.info("updating ruleset with uuid: " + uuid);
-         doc = getRulesManagementStrategy().saveRuleSet(documentId, je.toString().getBytes());
+         doc = getRulesManagementStrategy().saveRuleSet(documentId,
+               je.toString().getBytes());
       }
 
       ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
@@ -212,17 +222,34 @@ public class RulesManagementService
 
       return serviceFactory;
    }
-   
-   public static class RulesError
-   {
-      String uuid;
-      String error;
 
-      public RulesError(String uuid, String error)
+   /**
+    * 
+    * @author Yogesh.Manware
+    * 
+    */
+   public static class Response
+   {
+      public static enum OPERATION
+      {
+         SAVE, DELETE
+      }
+
+      String uuid;
+
+      OPERATION Operation;
+
+      boolean success;
+
+      String message;
+
+      public Response(String uuid, OPERATION Operation, boolean success, String message)
       {
          super();
          this.uuid = uuid;
-         this.error = error;
+         this.Operation = Operation;
+         this.message = message;
+         this.success = success; 
       }
 
       public String getUuid()
@@ -230,9 +257,19 @@ public class RulesManagementService
          return uuid;
       }
 
-      public String getError()
+      public OPERATION getOperation()
       {
-         return error;
+         return Operation;
+      }
+
+      public boolean isSuccess()
+      {
+         return success;
+      }
+
+      public String getMessage()
+      {
+         return message;
       }
    }
 }
