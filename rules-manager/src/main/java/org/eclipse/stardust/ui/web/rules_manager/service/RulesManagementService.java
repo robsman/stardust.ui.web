@@ -237,7 +237,7 @@ public class RulesManagementService
 
       String uuid;
 
-      OPERATION Operation;
+      OPERATION operation;
 
       boolean success;
 
@@ -247,7 +247,7 @@ public class RulesManagementService
       {
          super();
          this.uuid = uuid;
-         this.Operation = Operation;
+         this.operation = Operation;
          this.message = message;
          this.success = success; 
       }
@@ -259,7 +259,7 @@ public class RulesManagementService
 
       public OPERATION getOperation()
       {
-         return Operation;
+         return operation;
       }
 
       public boolean isSuccess()
