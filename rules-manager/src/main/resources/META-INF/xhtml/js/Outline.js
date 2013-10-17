@@ -79,7 +79,7 @@ define(
 			
 			var createRuleSetNode = function(ruleSet) {
 				jQuery(displayScope + "#outline").jstree("create", displayScope + "#outline",
-						"first", {
+						"last", {
 							"attr" : {
 								"id" : ruleSet.uuid,
 								"rel" : ruleSet.type,
@@ -291,7 +291,7 @@ define(
 									width : "400px",
 									height : "200px",
 									src : m_urlUtils.getPlugsInRoot()
-											+ "bpm-modeler/popups/outlineRefreshConfirmationDialog.html"
+											+ "rules-manager/popups/outlineRefreshConfirmationDialog.html"
 								},
 								payload : {
 									title : "Confirm",
@@ -473,7 +473,7 @@ define(
 							}
 						}
 					}
-				});
+				});/*End JQUERY.Each*/
 				console.log("--RSArray--");
 				console.log(rsArray);
 				m_communicationController
@@ -486,23 +486,50 @@ define(
 									return {
 										success : function(data) {
 											console.log(data);
+											var failures=[]; /*ruleSets which reported success=false from the server*/
 											m_messageDisplay.markSaved();
-											hasUnsavedModifications = false;
-											/*very important we iterate over the refRSArray as it is prefiltered.*/
-											jQuery.each(refRsArray,function(){
-												/*Server responded with success, hard delete ruleSets
-												 *marked for deletion and clean the states of 
-												 *all other Rulesets.*/
-												if(this.state.isDeleted===true){
-													RuleSet.deleteRuleSet(this.uuid);
+											hasUnsavedModifications = false;/*TODO,[ZZM]is this used*/
+											jQuery.each(data,function(){
+												var rsRef;
+												if(this.operation==="DELETE"){
+													if(this.success===true){
+														RuleSet.deleteRuleSet(this.uuid);
+													}
+													else{
+														rsRef=RuleSet.getRuleSets();
+														if(rsRef.hasOwnProperty(this.uuid)){
+															rsRef=rsRef[this.uuid];
+															rsRef.state.isDeleted=false;
+															/*push our node back into the tree*/
+															createRuleSetNode(this);
+															failures.push(this);
+														}
+													}
 												}
-												else{
-													this.state.isPersisted=true;
-													this.state.isDirty=false;
+												else if(this.operation==="SAVE"){
+													rsRef=RuleSet.getRuleSets();
+													if(rsRef.hasOwnProperty(this.uuid)){
+														rsRef=rsRef[this.uuid];
+														if(this.success===true){
+															rsRef.state.isPersisted=true;
+															rsRef.state.isDirty=false;
+														}
+														else{
+															failures.push(this);
+														}
+													}
 												}
 											});
+											console.log("FAILURES...");
+											console.log(failures);
 										},
 										failure : function(data) {
+											JQuery.each(refRsArray,function(){
+												if(this.state.isDeleted===true){
+													this.state.isDeleted===false;
+													createRuleSetNode(this);
+												}
+											});
 											if (parent.iPopupDialog) {
 												parent.iPopupDialog
 														.openPopup(prepareErrorDialogPoupupData(
