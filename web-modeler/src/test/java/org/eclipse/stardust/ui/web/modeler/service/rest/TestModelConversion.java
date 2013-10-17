@@ -39,7 +39,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"embedded-test-context.xml"})
+@ContextConfiguration(locations = {"../../web-modeler-test-context.xml"})
 public class TestModelConversion
 {
    @Resource
