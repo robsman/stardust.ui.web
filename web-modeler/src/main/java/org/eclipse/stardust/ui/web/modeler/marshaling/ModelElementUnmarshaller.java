@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -998,27 +999,28 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString();
             String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString();
+            String dataPathDirection = dataPathJson.get(
+                  ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-            DataPathType dataPathType = ModelUtils.findElementById(
-                  processDefinition.getDataPath(), dataPathID);
+            DataPathType dataPathType = getDataPath(processDefinition, dataPathID, dataPathDirection);
             if (dataPathType == null)
             {
                IdFactory idFactory = new IdFactory("dataPath", "DataPath_");
                dataPathType = getModelBuilderFacade().createDataPath();
                idFactory.computeNames(processDefinition.getDataPath(), true);
-               
+
                if(dataPathID.equals("PROCESS_ATTACHMENTS"))
                {
-                  dataPathType.setId("PROCESS_ATTACHMENTS");                                    
-                  dataPathType.setName("PROCESS_ATTACHMENTS");                                                      
+                  dataPathType.setId("PROCESS_ATTACHMENTS");
+                  dataPathType.setName("PROCESS_ATTACHMENTS");
                }
                else
                {
                   dataPathID = idFactory.getId();
-                  dataPathName = idFactory.getName();                  
-                  dataPathType.setId(dataPathID);                  
-                  dataPathType.setName(dataPathName);                  
-               }               
+                  dataPathName = idFactory.getName();
+                  dataPathType.setId(dataPathID);
+                  dataPathType.setName(dataPathName);
+               }
             }
             else
             {
@@ -1027,8 +1029,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   dataPathType.setName(dataPathName);
                }
             }
-            
-            
+
+
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
                String dataFullId = dataPathJson.get(
@@ -1540,7 +1542,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   containingProcess.getActivity(),
                   extractAsString(eventJson, ModelerConstants.BINDING_ACTIVITY_UUID));
             boolean isBoundary = false;
-            
+
             if (hostActivity != newHostActivity)
             {
                if (hostActivity != null)
@@ -1824,10 +1826,10 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          for (int n = 0; n < parameterMappings.size(); ++n)
          {
             JsonObject parameterMappingJson = parameterMappings.get(n).getAsJsonObject();
-            
+
             String name = parameterMappingJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString();
-            
+
             String direction = parameterMappingJson.get(
                   ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
@@ -1841,7 +1843,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   String primitiveDataType = parameterMappingJson.get(
                         ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY).getAsString();
-                  
+
                   // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
                         trigger, null, name, primitiveDataType, direction);
@@ -1863,7 +1865,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                }
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {
-            	   
+
             	  // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
                         trigger, null, name, direction);
@@ -2023,26 +2025,26 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
-                  
+
                   boolean predefined = false;
-                  
+
                   if (hasNotJsonNull(accessPointJson, ModelerConstants.ATTRIBUTES_PROPERTY))
                   {
                 	  JsonObject attributeJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
-                	  if (hasNotJsonNull(attributeJson, "stardust:predefined")) 
+                	  if (hasNotJsonNull(attributeJson, "stardust:predefined"))
                 	  {
                 		// TODO : create ModelerConstans entry
                 		predefined = attributeJson.get("stardust:predefined").getAsBoolean();
-                	  }  
+                	  }
                   }
-                  
+
                   String id = null;
-                  
+
                   if (predefined)
                   {
-                	  id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString(); 
+                	  id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
                   }
-                  
+
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
                   String direction = accessPointJson.get(
@@ -2459,6 +2461,22 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             model.setDescription(dt);
          }
       }
+   }
+
+   private DataPathType getDataPath(ProcessDefinitionType processDefinition,
+         String dataPathID, String dataPathDirection)
+   {
+      List<DataPathType> datapaths = processDefinition.getDataPath();
+      for (Iterator<DataPathType> i = datapaths.iterator(); i.hasNext();)
+      {
+         DataPathType dataPath = i.next();
+         if (dataPath.getId().equals(dataPathID)
+               && dataPath.getDirection().getLiteral().equals(dataPathDirection))
+         {
+            return dataPath;
+         }
+      }
+      return null;
    }
 
    /**
