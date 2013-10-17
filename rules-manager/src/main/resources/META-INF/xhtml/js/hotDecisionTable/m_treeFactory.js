@@ -1,5 +1,6 @@
-define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_utils"],
-		function($,Handsontable,jstree,typeMapper,m_utils){
+define(["jquery","Handsontable","jstree","./m_typeMapper",
+        "bpm-modeler/js/m_utils","rules-manager/js/m_i18nUtils"],
+		function($,Handsontable,jstree,typeMapper,m_utils,m_i18nUtils){
   
   var modelTreeFactory={
     getTree : function(category,hotInstanceSelector,treeData){
@@ -11,9 +12,11 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
             instance,        /*HandsOnTable Instance*/
             $domFrag; 		 /*domString after $()*/
         
-        instance=m_utils.jQuerySelect(hotInstanceSelector).handsontable('getInstance')
+        instance=m_utils.jQuerySelect(hotInstanceSelector).handsontable('getInstance');
         domString='<div style="margin-bottom:4px;">' +
-			          '<span class="ipp-menuitem">Search</span>' +
+			          '<span class="ipp-menuitem">' + 
+			          	m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.label.search","Search") +
+			          '</span>' +
 			          '<input type="text" class="form-control inpt-skinny">' +
 			      '</div>';
         
@@ -35,12 +38,16 @@ define(["jquery","Handsontable","jstree","./m_typeMapper","bpm-modeler/js/m_util
              path,
              $treeNode,
              rootModel,
-             colType;
+             colType,
+             $rootNode,
+             category;
     	   
 	      colType=data.rslt.obj.data("type") || data.rslt.obj.data("jstree").type;
           path=$(this).jstree("get_path");
           category=path[0].replace("s","");
-          
+          $rootNode=data.rslt.obj.parents("li").filter(":last");
+          category = $rootNode.attr("category");
+         
           /*TODO:compute path from object hierarchy rather than node names*/
           model=path.slice(1).join(".");
           colType=typeMapper.ippToHoTTable(colType);

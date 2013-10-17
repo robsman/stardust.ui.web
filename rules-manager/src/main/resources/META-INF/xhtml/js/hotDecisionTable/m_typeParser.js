@@ -1,5 +1,6 @@
-define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"],
-		function(m_model,m_drlAttributes,m_urlUtils){
+define(["bpm-modeler/js/m_model","./m_drlAttributes",
+        "bpm-modeler/js/m_urlUtils","rules-manager/js/m_i18nUtils"],
+		function(m_model,m_drlAttributes,m_urlUtils,m_i18nUtils){
   
   /*************************************************
    * Parse the result of a typeDeclarations.getBody() 
@@ -16,8 +17,10 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 	  seqImage="plugins/rules-manager/images/icons/bricks.png",
 	  elementImage="plugins/rules-manager/images/icons/data-primitive.png",
 	  conditionImage="plugins/rules-manager/images/icons/table-insert-column-blue.png",
-	  actionImage="plugins/rules-manager/images/icons/table-insert-column-green.png";
-  
+	  actionImage="plugins/rules-manager/images/icons/table-insert-column-green.png",
+  	  actionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.actions","Actions"),
+  	  conditionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.conditions","Conditions"),
+  	  attributeTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.attributes","Attributes");
   /*@Param:obj=typeDecl object
    * Converts a typeDecl for an enumeration into a typeBody object which can be parsed
    * by our recursive function->fx. 
@@ -374,7 +377,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 	    		}
 	    	}
 	    }
-	    var treeJSON=[ {data: {title:"Attributes",icon: attributeRootImage}, 
+	    var treeJSON=[ {data: {title: attributeTitle,icon: attributeRootImage},attr: {category: "Attribute"}, 
 	    		    children:[m_drlAttributes.getAttributeAsJSTreeData("salience",attributeImage),
 	    		              m_drlAttributes.getAttributeAsJSTreeData("enabled",attributeImage),
 	    		              m_drlAttributes.getAttributeAsJSTreeData("date-effective",attributeImage),
@@ -388,8 +391,8 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes","bpm-modeler/js/m_urlUtils"
 	    		              m_drlAttributes.getAttributeAsJSTreeData("rule-flow-group",attributeImage),
 	    		              m_drlAttributes.getAttributeAsJSTreeData("dialect",attributeImage)
                             ]},
-                    {data: {title:"Conditions",icon:conditionImage},children: jsConditionNodes},
-          	        {data: {title:"Actions", icon:actionImage},children: jsActionNodes}];
+                    {data: {title: conditionTitle,icon:conditionImage},attr: {category: "Condition"},children: jsConditionNodes},
+          	        {data: {title: actionTitle, icon:actionImage},attr: {category: "Action"},children: jsActionNodes}];
 	    return treeJSON;//jsonTreeData;
     }
   };
