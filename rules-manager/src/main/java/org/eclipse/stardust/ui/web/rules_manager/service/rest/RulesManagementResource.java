@@ -15,8 +15,10 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @Path("/rules/{randomPostFix}")
@@ -38,6 +41,9 @@ public class RulesManagementResource
 {
    @Context
    private ServletContext servletContext;
+   
+   @Context
+   private HttpServletRequest httpRequest;
 
    /**
     * @return
@@ -144,6 +150,21 @@ public class RulesManagementResource
       {
          return Response.status(Status.FORBIDDEN).build();
       }
+   }
+
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("/language")
+   public Response getLanguage()
+   {
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"),
+            ","); 
+      if (tok.hasMoreTokens())
+      {
+         return Response.ok(LanguageUtil.getLocale(tok.nextToken()),
+               MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
    }
 
    /**
