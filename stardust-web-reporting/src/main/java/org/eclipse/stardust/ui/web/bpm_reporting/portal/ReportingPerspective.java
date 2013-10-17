@@ -52,10 +52,9 @@ public class ReportingPerspective extends AbstractLaunchPanel implements
 		sessionMap.setObject("SESSION_CONTEXT",
 				SessionContext.findSessionContext());
 
-		System.out.println("===> Reporting Perspective Initialization");
-
 		// My processes panel should be expanded by default
 		// Set it to expanded and activate outline IFRAME
+		
 		setExpanded(true);
 		activateIframe();
 	}
@@ -91,16 +90,20 @@ public class ReportingPerspective extends AbstractLaunchPanel implements
     *
     */
 	private static void activateIframe() {
-		// Activiate iframe
+		String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() 
+		           + "/plugins/bpm-reporting/launchpanel/reportTree.html";
+		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
+				"', {anchorId:'modelerLaunchPanels:reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
 
-		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '../bpm-reporting/launchpanel/reportTree.html', "
-				+ "{anchorId:'reportTreeAnchor', zIndex:200, noUnloadWarning: 'true'}); console.log('Content Frame Activated');";
+//		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
+//				"', {anchorId:'reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+
+		// Activate iframe
+
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
 				activateIframeJS);
 		PortalApplicationEventScript.getInstance().addEventScript(
 				activateIframeJS);
-		
-		System.out.println("===> Content Frame Activated");
 
 		// Resize iframe
 
@@ -122,8 +125,6 @@ public class ReportingPerspective extends AbstractLaunchPanel implements
 	 * (org .eclipse.stardust.ui.web.common.event.PerspectiveEvent)
 	 */
 	public void handleEvent(PerspectiveEvent event) {
-		System.out.println("===> Reporting Perspective Event Handling");
-
 		boolean toggled = false;
 		switch (event.getType()) {
 		

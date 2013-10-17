@@ -3,8 +3,8 @@
  ******************************************************************************/
 
 define(
-		[ "js/AngularAdapter", "js/ReportingService" ],
-		function(AngularAdapter, ReportingService) {
+		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService", "bpm-modeler/js/m_jsfViewManager" ],
+		function(AngularAdapter, ReportingService, ViewManager) {
 			return {
 				create : function(angular) {
 					var controller = new ReportManagementController();
@@ -35,6 +35,8 @@ define(
 
 					var self = this;
 
+					this.viewManager = ViewManager.create();
+					
 					this.descriptionPopupDialog = jQuery("#descriptionPopupDialog");
 
 					this.descriptionPopupDialog.dialog({
@@ -92,7 +94,7 @@ define(
 													icon : {
 														image : this.reportingService
 																.getRootUrl()
-																+ "/plugins/bpm-reporting/images/icons/report-definition.png"
+																+ "/plugins/bpm-reporting/css/images/report.png"
 													},
 													valid_children : []
 												}
@@ -391,23 +393,25 @@ define(
 				 */
 				ReportManagementController.prototype.openView = function(
 						viewId, viewParams, viewIdentity) {
-					var link = jQuery("a[id $= 'view_management_link']",
-							window.parent.frames['ippPortalMain'].document);
-					var linkId = link.attr('id');
-					var form = link.parents('form:first');
-					var formId = form.attr('id');
-
-					link = this.getIPPPortalMainWindow().document
-							.getElementById(linkId);
-
-					var linkForm = this.getIPPPortalMainWindow().formOf(link);
-
-					linkForm[formId + ':_idcl'].value = linkId;
-					linkForm['viewParams'].value = viewParams;
-					linkForm['viewId'].value = viewId;
-					linkForm['viewIdentity'].value = viewIdentity;
-
-					this.getIPPPortalMainWindow().iceSubmit(linkForm, link);
+//					var link = jQuery("a[id $= 'view_management_link']",
+//							window.parent.frames['ippPortalMain'].document);
+//					var linkId = link.attr('id');
+//					var form = link.parents('form:first');
+//					var formId = form.attr('id');
+//
+//					link = this.getIPPPortalMainWindow().document
+//							.getElementById(linkId);
+//
+//					var linkForm = this.getIPPPortalMainWindow().formOf(link);
+//
+//					linkForm[formId + ':_idcl'].value = linkId;
+//					linkForm['viewParams'].value = viewParams;
+//					linkForm['viewId'].value = viewId;
+//					linkForm['viewIdentity'].value = viewIdentity;
+//
+//					this.getIPPPortalMainWindow().iceSubmit(linkForm, link);
+					
+					this.viewManager.openView(viewId, viewParams, viewIdentity);
 				};
 
 				/**

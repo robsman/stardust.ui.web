@@ -20,6 +20,7 @@
 	<bean id="reportingService"
 		class="org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService"
 		scope="session">
+		<aop:scoped-proxy />
 	</bean>
 
 	<bean id="reportDefinitionView"

@@ -151,12 +151,12 @@ table.formTable td {
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
-																	src="../css/images/parameter.png" title="Parameter" />
-																	<a href=""
+																	src="../css/images/parameter.png"
+																	title="Parameter (firstDimensionFrom)" /> <a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter" /> </a> </a></td>
+																		title="No Parameter (firstDimensionFrom)" /> </a> </a></td>
 														</tr>
 														<tr>
 															<td><label>To</label></td>
@@ -187,12 +187,12 @@ table.formTable td {
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
-																	src="../css/images/parameter.png" title="Parameter" />
-																	<a href=""
+																	src="../css/images/parameter.png"
+																	title="Parameter (firstDimensionFrom)" /> <a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter" /> </a> </a></td>
+																		title="No Parameter (firstDimensionFrom)" /> </a> </a></td>
 														</tr>
 														<tr>
 															<td><label>Duration</label></td>
@@ -361,12 +361,13 @@ table.formTable td {
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" />
 																<a href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().stringType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /></td>
+																	title="No Parameter (filters.{{x.dimension}})" /></td>
 													</tr>
 												</table>
 											</div>
@@ -382,12 +383,13 @@ table.formTable td {
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" />
 																<a href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().integerType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /></td>
+																	title="No Parameter (filters.{{x.dimension}})" /></td>
 													</tr>
 												</table>
 											</div>
@@ -400,12 +402,13 @@ table.formTable td {
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension + '.from')"
 															ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" />
 																<a href=""
 																ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id')"
 																ng-show="!existsParameter('filters.' + x.dimension + '.from')"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /></td>
+																	title="No Parameter (filters.{{x.dimension}})" /></td>
 													</tr>
 													<tr>
 														<td><label>To</label></td>
@@ -414,12 +417,14 @@ table.formTable td {
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension + '.to')"
 															ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" />
 																<a href=""
 																ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension + '.to')"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /> </a> </a></td>
+																	title="No Parameter (filters.{{x.dimension}})" />
+															</a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -435,12 +440,14 @@ table.formTable td {
 														<td valign="top"><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="!existsParameter('filters.' + x.dimension)"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" />
 																<a href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().enumerationType.id, x.value)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /> </a> </a></td>
+																	title="No Parameter (filters.{{x.dimension}})" />
+															</a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -779,7 +786,7 @@ table.formTable td {
 								<div class="heading">Parameters</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
-										<td><label>{{parameter.name}}</label></td>
+										<td><label>{{parameter.name}} ({{parameter.id}})</label></td>
 										<td><input type="text"
 											ng-model="getParameters()[parameter.id].value" sd-date
 											ng-show="parameter.type == getMetadata().timestampType.id"
@@ -1008,7 +1015,7 @@ table.formTable td {
 														</table>
 													</td>
 													<td valign="top"
-														style="border-left: 1px solid grey; margin-left: 10px; padding-left: 10px;">
+														style="border-left: 1px solid #aaaaaa; margin-left: 10px; padding-left: 10px;">
 														<div
 															ng-show="report.scheduling.recurrenceInterval == schedulingController.DAILY">
 															<table>
@@ -1018,7 +1025,8 @@ table.formTable td {
 																		value="interval" /></td>
 																	<td><label>Every</label></td>
 																	<td><input type="number" style="width: 50px;"
-																		ng-model="report.scheduling.dailyRecurrenceOptions.daysIntervalCount" />
+																		ng-model="report.scheduling.dailyRecurrenceOptions.daysIntervalCount"
+																		ng-disabled="report.scheduling.dailyRecurrenceOptions.daysRecurrence != 'interval'" />
 																	</td>
 																	<td><label>Day(s)</label></td>
 																</tr>
@@ -1038,7 +1046,7 @@ table.formTable td {
 																		<table>
 																			<tr>
 																				<td><label>Recurs every</label></td>
-																				<td><input type="number" style="width: 50px;"
+																				<td><input type="number" min="1" style="width: 50px;"
 																					ng-model="report.scheduling.weeklyRecurrenceOptions.recurrenceWeekCount" />
 																				</td>
 																				<td><label>Weeks on</label></td>
@@ -1136,11 +1144,14 @@ table.formTable td {
 																	<td>
 																		<table>
 																			<tr>
-																				<td><input type="radio" /></td>
+																				<td><input type="radio"
+																					ng-model="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence"
+																					value="day" /></td>
 																				<td><label>Day</label></td>
 																				<td><table>
 																						<tr>
-																							<td><input type="number"
+																							<td><input type="number" min="1" max="31"
+																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'day'"
 																								style="width: 50px;"></input></td>
 																							<td><label>of every</label></td>
 																							<td><input type="number"
@@ -1150,16 +1161,20 @@ table.formTable td {
 																					</table></td>
 																			</tr>
 																			<tr>
-																				<td><input type="radio" /></td>
+																				<td><input type="radio"
+																					ng-model="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence"
+																					value="weekday" /></td>
 																				<td><label>The</label></td>
 																				<td><table>
 																						<tr>
-																							<td><input type="number"
+																							<td><input type="number" min="1" max="5"
 																								style="width: 50px;"></input></td>
-																							<td><select><option>Monday</option>
+																							<td><select
+																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'"><option>Monday</option>
 																							</select></td>
 																							<td><label>of every</label></td>
-																							<td><input type="number"
+																							<td><input type="number" min="1"
+																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'"
 																								style="width: 50px;"></input></td>
 																							<td><label>Month(s)</label>
 																						</tr>
@@ -1249,8 +1264,7 @@ table.formTable td {
 															<tr>
 																<td><label>Start</label></td>
 																<td><input type="text"
-																	ng-model="report.scheduling.recurrenceRange.startDate"
-																	sd-date /></td>
+																	ng-model="report.scheduling.recurrenceRange.startDate" sd-date/></td>
 															</tr>
 														</table>
 													</td>
@@ -1269,6 +1283,7 @@ table.formTable td {
 																<td><label>End after</label></td>
 																<td><input type="number"
 																	ng-model="report.scheduling.recurrenceRange.occurences"
+																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endAfterNOcurrences'"
 																	style="width: 50px;" /></td>
 																<td><label>Occurences</label></td>
 															</tr>
@@ -1278,8 +1293,8 @@ table.formTable td {
 																	value="endByDate" /></td>
 																<td><label>End by</label></td>
 																<td colspan="2"><input type="text"
-																	ng-model="report.scheduling.recurrenceRange.endDate"
-																	sd-date /></td>
+																	ng-model="report.scheduling.recurrenceRange.endDate" 
+																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endByDate'" sd-date/></td>
 															</tr>
 														</table>
 													</td>

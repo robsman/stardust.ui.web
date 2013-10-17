@@ -1,5 +1,5 @@
 define(
-		[ "js/AngularAdapter", "js/ReportingService" ],
+		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService" ],
 		function(AngularAdapter, ReportingService) {
 			return {
 				create : function(angular) {

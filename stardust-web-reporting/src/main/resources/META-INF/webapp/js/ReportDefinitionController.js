@@ -1,6 +1,6 @@
 define(
-		[ "js/AngularAdapter", "js/ReportingService",
-				"js/ReportRenderingController", "js/SchedulingController" ],
+		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService",
+				"bpm-reporting/js/ReportRenderingController", "bpm-reporting/js/SchedulingController" ],
 		function(AngularAdapter, ReportingService, ReportRenderingController,
 				SchedulingController) {
 			return {
@@ -384,11 +384,13 @@ define(
 								document : {}
 							},
 							scheduling : {
+								recurrenceInterval : "weekly",
 								delivery : {
 									mode : "personalFolder"
 								},
 								recurrenceRange : {
-									endMode: "noEnd",
+									startDate : new Date().toISOString(),
+									endMode : "noEnd",
 									occurences : 10
 								}
 							}
@@ -1001,16 +1003,15 @@ define(
 						e) {
 					var date = new Date(); // Now
 
-					console.debug("Start Date:");
-					console.debug(this.report.scheduling);
-
-					if (this.report.scheduling.startDate) {
-						date = this.report.scheduling.startDate;
+					console.log("Start Date");
+					console.log(this.report.scheduling.recurrenceRange.startDate);
+					
+					if (this.report.scheduling.recurrenceRange.startDate) {
+						date = new Date(
+								this.report.scheduling.recurrenceRange.startDate);
 					}
 
 					if (this.report.scheduling.recurrenceInterval === "weekly") {
-						console.debug("Weekday " + date.getDay());
-
 						var weekdays = [
 								this.report.scheduling.weeklyRecurrenceOptions.mondays,
 								this.report.scheduling.weeklyRecurrenceOptions.tuesdays,
