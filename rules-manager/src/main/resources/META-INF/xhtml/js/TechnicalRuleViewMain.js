@@ -63,7 +63,8 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView",
 				uuidLabel:"#uuidLabel", /* label for our rule UUID*/
 				descriptionLabel:"#descriptionLabel", /*label for rule description textarea*/
 				nameLabel:"#nameLabel", /*label for rule name*/
-				descriptionTextarea: "#descriptionTextarea" /*text area for our technical Rule description*/
+				descriptionTextarea: "#descriptionTextarea", /*text area for our technical Rule description*/
+				stringifyParamDefs: "#stringifyParamDefs" /*dump drl typeDefs into our editor*/
 			},
 			i18nMaps:{
 				codeTab: {path:"rules.propertyView.technicalruleview.ruleeditor.tab",defaultText:"NA",attr:"text"},

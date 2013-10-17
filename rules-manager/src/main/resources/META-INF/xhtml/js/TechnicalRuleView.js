@@ -78,7 +78,8 @@ define(
 							idLabel : m_utils.jQuerySelect(options.selectors.idLabel ),
 							nameLabel : m_utils.jQuerySelect(options.selectors.nameLabel ),
 							descriptionLabel : m_utils.jQuerySelect(options.selectors.descriptionLabel ),
-							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel )
+							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel ),
+							stringifyParamDefs : m_utils.jQuerySelect(options.selectors.stringifyParamDefs )
 					};
 					
 					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -257,7 +258,13 @@ define(
 						ruleSet.state.isDirty=true;
 						techRule.setDRL(tempVal);
 					});
-
+					
+					uiElements.stringifyParamDefs.on("click",function(){
+						var typeDrl=ruleSet.generateDRLTypes();
+						var currentVal=uiElements.drlEditor.getValue();
+						uiElements.drlEditor.setValue(typeDrl + "\n\n" + currentVal);
+					});
+					
 					/*by convention: is this function neccesary?*/
 					this.activate(ruleSet,techRule,uiElements);
 
