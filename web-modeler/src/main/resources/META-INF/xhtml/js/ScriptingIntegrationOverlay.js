@@ -391,9 +391,8 @@ define(
 										+ " =  eval('(' + request.headers.get('"
 										+ accessPoint.id + "')+ ')');\n";
 								code += "}\n";
-								code += "Input.embedded.dates= Input.zeroOrMore;\n";
 								var typeDeclaration = m_model.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
-								code+=this.loopRecursivelyThroughSdt(typeDeclaration,accessPoint.id);
+								code+=this.loopRecursivelyThroughSdt(typeDeclaration,null,accessPoint.id);
 							}
 						}
 					}
@@ -465,18 +464,26 @@ define(
 				};
 
 				
-				ScriptingIntegrationOverlay.prototype.loopRecursivelyThroughSdt=function(typeDeclarations, parentId){
+				ScriptingIntegrationOverlay.prototype.loopRecursivelyThroughSdt=function(typeDeclarations, parentId, childId){
 				var code="";
+				var childPath="";
+				if((parentId!=null && parentId!="") && (childId !=null &&childId!="" ))
+				    childPath=  parentId+"."+childId;
+				else if (parentId!=null && parentId!="")
+				    	childPath=  parentId;
+					else
+					    childPath=  childId;    
+				
 				for ( var i = 0; i < typeDeclarations.getElementCount(); i++) {
 										var element = typeDeclarations.getElements()[i];
 
 										var type = element.type;
 										if(element.cardinality == "many" ||element.cardinality == "atLeastOne"){
 											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){//LIST of date
-												code+="if("+parentId+"."+element.name+"!=null){\n";
+												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
 												code+="for ( var j = 0; j < "+parentId+"."+element.name+".length; j++) {"
-												code+="if("+parentId+"."+element.name+"[j]!=null){\n";
-												code+=parentId+"."+element.name+"[j]=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+parentId+"."+element.name+"[j]);\n";
+												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"[j]!=null){\n";
+												code+=childPath+"."+element.name+"[j]=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+childPath+"."+element.name+"[j]);\n";
 												code+="}\n";
 												code+="}\n";
 												code+="}\n";
@@ -490,16 +497,16 @@ define(
 														
 												if (childTypeDeclaration != null) {
 												//complex type
-												code+="if("+parentId+"."+element.name+"!=null){\n";
-												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,parentId+"."+element.name);
+												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
+												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,childPath,element.name);
 												code+="}\n";
 												}
 											}
 										}
 										else{
 											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){
-													code+="if("+parentId+"."+element.name+"!=null){\n";
-													code+=parentId+"."+element.name+"=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+parentId+"."+element.name+");\n";
+													code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
+													code+=childPath+"."+element.name+"=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+childPath+"."+element.name+");\n";
 													code+="}\n"
 											}else{
 												if (element.type.indexOf(':') !== -1) {
@@ -511,7 +518,7 @@ define(
 														
 												if (childTypeDeclaration != null) {
 												//complex type
-												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,parentId+"."+element.name);
+												    code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,childPath,element.name);
 												}
 												
 											}
