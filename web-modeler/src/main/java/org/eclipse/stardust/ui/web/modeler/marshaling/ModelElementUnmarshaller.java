@@ -1024,9 +1024,13 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             }
             else
             {
-               if(StringUtils.isNotEmpty(dataPathName))
+               if (StringUtils.isNotEmpty(dataPathName)
+                     && !dataPathName.equals(dataPathType.getName())
+                     && !dataPathID.equals("PROCESS_ATTACHMENTS"))
                {
                   dataPathType.setName(dataPathName);
+                  dataPathType.setId(NameIdUtilsExtension.createIdFromName(null,
+                        (IIdentifiableElement) dataPathType, dataPathName));
                }
             }
 
