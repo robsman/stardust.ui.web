@@ -107,7 +107,7 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 				idLabel: {path:"rules.element.properties.commonProperties.id",defaultText:"NA",attr:"text"},
 				nameLabel: {path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
 				creationDateLabel: {path:"rules.element.properties.commonProperties.creationDate",defaultText:"NA",attr:"text"},
-				lastModificationDateLabel: {path:"rules.element.properties.commonProperties.lastModifiedDate",defaultText:"NA",attr:"text"},
+				lastModificationDateLabel: {path:"rules.element.properties.lastModifiedDate",defaultText:"NA",attr:"text"},
 				descriptionLabel: {path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
 				parameterTabLabel: {path:"rules.propertyView.rulesetview.parameterdefinitions.parameters.tab",defaultText:"NA",attr:"text"}
 			}

@@ -78,7 +78,7 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         	},
         	items:{
         		remove_column:{
-        			name:"Remove Column",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.removeColumn",""),
         			disabled: function(key,options){
         				var rootSelector=options.selector.split(" ")[0],
 				    		instance=$(rootSelector).handsontable('getInstance'),
@@ -91,21 +91,21 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         			}
         		},
         		move_row_up:{
-        			name:"Move Row Up",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.moveRowUp",""),
         			disabled:function(key,options){
 			    		var rootSelector=options.selector.split(" ")[0],
 						    instance=$(rootSelector).handsontable('getInstance');
 						return (instance.getSelected()===undefined);
 					}},
         		move_row_down:{
-        			name:"Move Row Down",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.moveRowDown",""),
         			disabled:function(key,options){
 			    		var rootSelector=options.selector.split(" ")[0],
 						    instance=$(rootSelector).handsontable('getInstance');
 						return (instance.getSelected()===undefined);
 					}},
         		override_remove_row:{
-        			name: "Remove Row",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.removeRow",""),
         			disabled:function(key,options){
 	        			var rootSelector=options.selector.split(" ")[0],
 	        			    instance=$(rootSelector).handsontable('getInstance');
@@ -113,14 +113,14 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
 	        			return (instance.getSelected()===undefined);
 	        		}},
         		override_insert_rowAbove:{
-        			name: "Insert Row (Above)",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.insertRowAbove",""),
         			disabled:function(key,options){
         				var rootSelector=options.selector.split(" ")[0],
         			    	instance=$(rootSelector).handsontable('getInstance');
         				return (instance.getSelected()===undefined);
         		}},
         		override_insert_rowBelow:{
-        			name: "Insert Row (Below)",
+        			name: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.decisiontable.contextmenu.insertRowBelow",""),
         			disabled: function(key,options){
 	        			var rootSelector=options.selector.split(" ")[0],
 				    		instance=$(rootSelector).handsontable('getInstance');

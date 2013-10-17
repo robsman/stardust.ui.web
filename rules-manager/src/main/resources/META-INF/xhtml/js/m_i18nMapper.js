@@ -10,7 +10,12 @@ define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 					    i18nMap=options.i18nMaps[key];
 						if(i18nMap){
 							tempProp=m_i18nUtils.getProperty(i18nMap.path,i18nMap.defaultText);
-							uiElements[key].attr(i18nMap.attr,tempProp);
+							if(i18nMap.attr==="text"){
+								uiElements[key].text(tempProp);
+							}else{
+								uiElements[key].attr(i18nMap.attr,tempProp);
+							}
+							
 							if(logging){
 								console.log("Mapping: " + key + " / " + tempProp);
 							}

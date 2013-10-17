@@ -64,7 +64,9 @@ require([ "require",
 					decTableDescrLbl: "#decTableDescrLbl", /*label for the decision table descr (not the value of)*/
 					exportData: "#exportData",
 					importData: "#importData",
-					descriptionTextarea: "#descriptionTextarea"
+					descriptionTextarea: "#descriptionTextarea",
+					addRow: "#addRow",
+					decTableNameLbl: "#decTableNameLbl"
 				},
 				i18nMaps:{
 					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},
@@ -75,7 +77,9 @@ require([ "require",
 					hideNonDataColumns:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.hide",defaultText:"NA",attr:"title"},
 					exportData: {path:"rules.propertyView.decisiontableview.toolbar.tooltip.export",defaultText:"NA",attr:"title"},
 					importData: {path:"rules.propertyView.decisiontableview.toolbar.tooltip.import",defaultText:"NA",attr:"title"},
-					columnTreeButton:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addColumn",defaultText:"NA",attr:"title"}
+					columnTreeButton:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addColumn",defaultText:"NA",attr:"title"},
+					addRow:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addRow",defaultText:"NA",attr:"title"},
+					decTableNameLbl:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"}
 				}
 		};
 		

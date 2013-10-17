@@ -70,7 +70,9 @@ define(
 							decTableDescrLbl: m_utils.jQuerySelect(options.selectors.decTableDescrLbl),
 							exportData: m_utils.jQuerySelect(options.selectors.exportData),
 							importData: m_utils.jQuerySelect(options.selectors.importData),
-							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea)
+							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea),
+							addRow: m_utils.jQuerySelect(options.selectors.addRow),
+							decTableNameLbl: m_utils.jQuerySelect(options.selectors.decTableNameLbl)
 					};
 					
 					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
@@ -215,7 +217,8 @@ define(
 			                    	autoOpen: false,
 			                    	maxHeight: 600,
 			                    	buttons: [{
-			                    		text: "Close", click: function(){$(this).dialog("destroy");}
+			                    		text: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.buttonset.close","Close"), 
+			                    		click: function(){$(this).dialog("destroy");}
 			                    	}],
 			                    	dialogClass: 'ui-camino-dialog',
 			                    	appendTo: uiElements.mainView,
@@ -224,7 +227,7 @@ define(
 			                    			   of: uiElements.mainView,
 			                    			   within: uiElements.mainView,
 			                    		       collision: "fit"},
-			                    	title: "Add Column"});
+			                    	title: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.titleBar","Add Column")});
 		                    myDialog.dialog("open");
 		                    myDialog.on("column_removed",function(event){
 		                    	var path,
@@ -255,15 +258,12 @@ define(
 				    
 				    
 				    /*add the add-decision-table-row functionality to matched elements*/
-				    uiElements.addRowBtn.each(function(){
-				        $(this).on("click",function(){
-				        	var instance=uiElements.decisionTableInstance;
-				        	var settings=instance.getSettings();
-				        	settings.helperFunctions.addDefaultRow(instance);
-				        	ruleSet.state.isDirty=true;
-				        	//uiElements.decisionTableInstance.alter('insert_row');
-				        });
-				      });
+				    uiElements.addRow.on("click",function(){
+			        	var instance=uiElements.decisionTableInstance;
+			        	var settings=instance.getSettings();
+			        	settings.helperFunctions.addDefaultRow(instance);
+			        	ruleSet.state.isDirty=true;
+			        });
 				    
 				    //add source image for all matched elements
 				    uiElements.exportBtn.each(function(){

@@ -20,7 +20,7 @@ define(
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_i18nUtils",
+				"rules-manager/js/m_i18nUtils",
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_jsfViewManagerHelper",
 				"rules-manager/js/m_outlineToolbarController",
@@ -45,7 +45,7 @@ define(
 				m_model.loadModels(false);
 
 				jQuery("#lastsave").text(m_i18nUtils
-										.getProperty("modeler.outline.lastSavedMessage.title"));
+										.getProperty("rules.outline.labels.lastSave"));
 	
 				jQuery.each(RuleSet.getRuleSets(force),
 					function(index, ruleSet) {
@@ -696,7 +696,7 @@ define(
 													"ccp":false,
 													"create":false,										
 													"delete":{
-														"label":"Delete",
+														"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
 														"action": function(obj){
 															deleteElementAction(obj.context.lastChild.data,
 																function(){
@@ -714,7 +714,7 @@ define(
 														}
 													},
 													"rename":{
-														"label":"Rename",
+														"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
 														"action":function(obj){
 															/*TODO:Rename Portal Label*/
 															/*Rename of View is handled on rename_node event of tree*/
@@ -728,7 +728,7 @@ define(
 													"ccp" : false,
 													"create" : false,													
 													"createTechnicalRule" : {
-														"label" : "Create Rule",
+														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createRule","Create Rule"),
 														"action" : function(obj) {
 															var techRule;
 															techRule=createTechnicalRule(obj.attr("id"));
@@ -737,7 +737,7 @@ define(
 														}
 													},
 													"createDecisionTable" : {
-														"label" : "Create Decision Table",
+														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.createDecisionTable","Create Decision Table"),
 														"action" : function(obj) {
 															var decTable;
 															decTable=createDecisionTable(obj.attr("id"));
@@ -748,15 +748,14 @@ define(
 														}
 													},
 													"rename" : {
-														"label" : "Rename",
+														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.rename","Rename"),
 														"action" : function(obj) {
 															jQuery(displayScope + "#outline")
 																	.jstree("rename","#"+ obj.attr("id"));
 														}
 													},
 													"deleteRuleSet" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
+														"label" : m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
 														"action" : function(obj) {
 															deleteElementAction(
 																	obj.context.lastChild.data,
@@ -767,7 +766,7 @@ define(
 														}
 													},
 													"export RuleSet" : {
-														"label": "Export Rule Set",
+														"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.export","Export Rule Set"),
 														"action": function(obj){
 															exportRuleSet(obj.attr("id"))
 														},
@@ -920,8 +919,9 @@ define(
 				function createDecisionTable(ruleSetUuid) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
 					var	decTableCount=ruleSet.getDecisionTableCount();
-					var	name ="Decision Table " + decTableCount;
-					var	id="DecisionTable" + decTableCount;
+					var decName =m_i18nUtils.getProperty("rules.object.decisiontable.name","Decision Table");
+					var	name =decName + " " + decTableCount;
+					var	id=decName.replace(/\s/g,"") + decTableCount;
 					var decTable=ruleSet.addDecisionTable(id,name);
 					
 					//CommandsDispatcher.submitCommand();					
@@ -939,8 +939,9 @@ define(
 				function createTechnicalRule(ruleSetUuid) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
 					var	techRuleCount=1+ ruleSet.getTechnicalRuleCount();
-					var	name ="Rule " + techRuleCount;
-					var	id="Rule" + techRuleCount;
+					var trName=m_i18nUtils.getProperty("rules.object.technicalrule.name","Rule");
+					var	name =trName + " " + techRuleCount;
+					var	id=trName.replace(/\s/g,"") + techRuleCount;
 					var techRule=ruleSet.addTechnicalRule(id,name);
 					
 					//CommandsDispatcher.submitCommand();					
@@ -972,40 +973,7 @@ define(
 				readAllRuleSets();
 			};
 
-			var i18nStaticLabels = function() {
-				jQuery("#createModel")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.createModel"));
-				jQuery("#importRuleSet")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("rules.outline.toolbar.tooltip.importRuleSet"));
-				jQuery("#undoChange")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.undo"));
-				jQuery("#redoChange")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.redo"));
-				jQuery("#saveAllModels")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.saveAllModel"));
-				jQuery("#refreshModels")
-						.attr(
-								"title",
-								m_i18nUtils
-										.getProperty("modeler.outline.toolbar.tooltip.refreshModels"));
-
-			};
-
+			
 			var outline;
 
 			return {
@@ -1078,8 +1046,9 @@ define(
 				 * 
 				 */
 				Outline.prototype.createRuleSet = function() {
-					var name = "Rule Set " + RuleSet.getRuleSetsCount();
-					var id = "RuleSet" + RuleSet.getRuleSetsCount();
+					var rsName=m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+					var name = rsName + " " + RuleSet.getRuleSetsCount();
+					var id = rsName.replace(/\s/g,"") + RuleSet.getRuleSetsCount();
 					var ruleSet = RuleSet.create(id, name);
 					//CommandsDispatcher.submitCommand();
 					createRuleSetNode(ruleSet);

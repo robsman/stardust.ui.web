@@ -80,7 +80,8 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView",
 				idLabel:{path:"rules.element.properties.commonProperties.id",defaultText:"NA",attr:"text"},
 				nameLabel:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
 				descriptionLabel:{path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
-				uuidLabel:{path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"}
+				uuidLabel:{path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"},
+				drlEditorReplaceOptionVal: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replaceCurrent",defaultText:"NA",attr:"text"}
 			}
 	};
 	

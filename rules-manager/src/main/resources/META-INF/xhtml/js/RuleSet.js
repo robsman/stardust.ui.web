@@ -1,13 +1,19 @@
 /**
  * @author Marc.Gille
  */
-define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-		"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-		"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_communicationController",
-		"rules-manager/js/Uuid", "rules-manager/js/Rule","rules-manager/js/TechnicalRule",
+define([ "bpm-modeler/js/m_utils", 
+         "bpm-modeler/js/m_constants",
+		"bpm-modeler/js/m_command", 
+		"bpm-modeler/js/m_commandsController",
+		"bpm-modeler/js/m_dialog", 
+		"bpm-modeler/js/m_urlUtils", 
+		"bpm-modeler/js/m_communicationController",
+		"rules-manager/js/Uuid", 
+		"rules-manager/js/Rule","rules-manager/js/TechnicalRule",
 		"rules-manager/js/DecisionTable","bpm-modeler/js/m_model",
 		"rules-manager/js/hotDecisionTable/m_typeParser",
-		"rules-manager/js/m_ruleSetParser","rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
+		"rules-manager/js/m_ruleSetParser",
+		"rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
 		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
 		Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
