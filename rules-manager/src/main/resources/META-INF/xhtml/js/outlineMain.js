@@ -71,8 +71,8 @@ require
 
 define([ "jquery", "jquery-ui", "jquery.download",
 		"jquery.form", "jquery.simplemodal", "jquery.url", "jquery.jstree",
-		"outline-plugins", "i18n", "rules-manager/js/Outline" ], function() {
-	var outline = require('rules-manager/js/Outline');
+		"outline-plugins", "i18n", "rules-manager/js/m_outline" ], function() {
+	var outline = require('rules-manager/js/m_outline');
 	var options={
 			selectors:{
 				createRuleSetButton: "#createRuleSetButton",
