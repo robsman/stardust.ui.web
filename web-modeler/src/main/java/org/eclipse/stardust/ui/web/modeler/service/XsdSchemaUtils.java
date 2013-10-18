@@ -99,6 +99,8 @@ public final class XsdSchemaUtils
 
    private static final String LOCATIONS = "locations";
 
+   private static int xxx = 0;
+
    public static void main(String[] args)
    {
       try
@@ -384,10 +386,11 @@ public final class XsdSchemaUtils
 
          // elements are constructed similar with types
          JsonObject json = new JsonObject();
-         if (type == element.getAnonymousTypeDefinition())
+         if (type == element.getAnonymousTypeDefinition()
+               || (type instanceof XSDComplexTypeDefinition && element.eContainer() instanceof XSDSchema))
          {
             json = doSwitch(type);
-         }   
+         }
 
          // now overwrite properties
          json.addProperty("name", element.getName());
