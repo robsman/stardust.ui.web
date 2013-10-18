@@ -99,8 +99,6 @@ public final class XsdSchemaUtils
 
    private static final String LOCATIONS = "locations";
 
-   private static int xxx = 0;
-
    public static void main(String[] args)
    {
       try
