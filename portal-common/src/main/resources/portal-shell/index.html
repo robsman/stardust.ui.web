@@ -53,16 +53,27 @@
 			<div class="header">
 				<div class="header-table">
 					<div class="header-row">
-						<div class="header-cell app-logo sg-common-menu"></div>
-						<div class="header-cell app-title">{{config.appTitle}}</div>
+						<div class="header-cell app-logo-main">
+							<div class="header-cell app-logo sg-common-menu"></div>
+							<div class="header-cell app-title">{{config.appTitle}}</div>
+						</div>
 						<div class="header-cell">
 							<!-- Utility Menu -->
-							<div class="header">
+							<div class="header-table">
 								<div class="header-row">
 									<div class="filler-cell"></div>
 									<div ng-repeat="item in utilityItems" class="header-cell utility-item">
 										<span class="{{item.icon}}"></span>
 										<span class="utility-item-label">{{item.label}}</span>
+									</div>
+								</div>
+							</div>
+							<!-- Added direct Configuration View Link -->
+							<div style="display: table; padding-bottom: 4px;">
+								<div style="display: table-row;">
+									<div class="filler-cell"></div>
+									<div class="nav-tab-configuration">
+										<button class="configuration" ng-click="open('/ippPortal/configurationTreeView', $event)"></button>
 									</div>
 								</div>
 							</div>
@@ -130,8 +141,8 @@
 				</div>
 				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
 					style="width: {{config.sidebar.width}}px;">
-					<div class="sidebar-title">
-						{{config.sidebar.title}}
+					<div class="sidebar-title-wrapper">
+						<span class="sidebar-title">{{config.sidebar.title}}</span>
 						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()"></div>
 					</div>
 					<div class="sidebar-content-inner" ng-class="{'display-none': !sidebar.visible}">
