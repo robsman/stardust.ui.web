@@ -1,6 +1,5 @@
-define([ "bpm-modeler/js/m_utils", "rules-manager/js/m_factCondition",
-		"rules-manager/js/FactAction" ],
-		function(m_utils, FactCondition, FactAction) {
+define([ "bpm-modeler/js/m_utils"],
+		function(m_utils) {
 			return {
 				create : function(ruleSet, uuid, id, name) {
 					var technicalRule = new TechnicalRule();
