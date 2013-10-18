@@ -27,7 +27,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
         jsTreeInstance=$well.jstree({ 
     		  "json_data" : {data: treeData},
     		  "plugins" : [ "themes", "json_data", "ui", "search" ],
-    		  "themes" :{"theme" : "default",icons:true}
+    		  "themes" :{"theme" : "classic",icons:true}
   	  	}).bind("select_node.jstree", function (e, data) { 
     	   var settings=instance.getSettings(),
              model,index,
