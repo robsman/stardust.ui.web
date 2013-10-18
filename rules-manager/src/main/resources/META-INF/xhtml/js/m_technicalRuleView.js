@@ -10,7 +10,7 @@
 
 define(
 		[   "bpm-modeler/js/m_utils",
-			"rules-manager/js/CommandsDispatcher", 
+			"rules-manager/js/m_commandsDispatcher", 
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
 			"rules-manager/js/m_drlAceEditor",

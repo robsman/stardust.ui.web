@@ -14,7 +14,7 @@ define(
 			"bpm-modeler/js/m_extensionManager", 
 			"bpm-modeler/js/m_model",
 			"bpm-modeler/js/m_dialog",
-			"rules-manager/js/CommandsDispatcher", 
+			"rules-manager/js/m_commandsDispatcher", 
 			"bpm-modeler/js/m_view",
 			"bpm-modeler/js/m_modelElementView",
 			"rules-manager/js/m_i18nUtils",

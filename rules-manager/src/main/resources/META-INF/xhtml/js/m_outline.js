@@ -24,7 +24,7 @@ define(
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_jsfViewManagerHelper",
 				"rules-manager/js/m_outlineToolbarController",
-				"rules-manager/js/CommandsDispatcher",
+				"rules-manager/js/m_commandsDispatcher",
 				"rules-manager/js/RuleSet",
 				"rules-manager/js/m_i18nMapper"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
