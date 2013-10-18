@@ -200,17 +200,21 @@ define(
 										}
 									});
 				};
-
+				
 				/**
 				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.setSchema = function(schema) {
+					var timeStart = new Date().getTime();
 					this.schema = schema;
 					m_utils.debug("===> Type Declarations");
 					m_utils.debug(schema);
 
-					this.tableBody.empty();
-
+					if (this.tableBody) {
+						this.tableBody.remove();
+					}
+					this.tableBody = document.createElement("tbody");
+					
 					for ( var name in this.schema.elements) {
 						var element = this.schema.elements[name];
 
@@ -229,14 +233,17 @@ define(
 						row.data("element", element);
 
 						row.addClass("top-level");
-						this.tableBody.append(row);
-
+						
+						var view = this;
+						jQuery.each(row, function() {
+							view.tableBody.appendChild(this);
+						});
+						
 						// drill into elements, too (requires element's schemaType, see above)
 						if (schemaType) {
 							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 						}
 					}
-
 					var view = this;
 					//check if xsd contains any complex types
 					if (this.schema.types) {
@@ -255,11 +262,16 @@ define(
 								row.data("typeDeclaration", type);
 							});
 							row.addClass("top-level");
-							view.tableBody.append(row);
+
+							jQuery.each(row, function() {
+								view.tableBody.appendChild(this);
+							});
 
 							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 						});
 					}
+					
+					this.tree.append(this.tableBody);
 
 					this.tree.tableScroll({
 						height : 170
@@ -280,6 +292,8 @@ define(
 						// allow multi-select, but restrict to top-level entries
 						m_utils.jQuerySelect(this).toggleClass("selected");
 					});
+					var timeEnd = new Date().getTime();
+					m_utils.debug("Total Time to render the tree===> " + (timeEnd - timeStart));
 				};
 
 				/**
