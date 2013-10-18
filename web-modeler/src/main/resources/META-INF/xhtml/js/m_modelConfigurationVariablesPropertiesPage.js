@@ -383,7 +383,40 @@ define(
 
 							item.append(info);
 						}
+						
+						var showMoreLink = m_utils
+								.jQuerySelect('<li class="show_more"><a class="configLink" style="text-decoration:none">'
+										+ m_i18nUtils
+												.getProperty("modeler.propertyView.modelView.configurationVariables.showAllReferences")
+										+ '</a></li>');
+						var showLessLink = m_utils
+								.jQuerySelect('<li class="show_less"><a class="configLink" style="text-decoration:none">'
+										+ m_i18nUtils
+												.getProperty("modeler.propertyView.modelView.configurationVariables.showfewReferences")
+										+ '</a></li>');
+						showMoreLink.click({
+							currList : list
+						}, function(event) {
+							event.data.currList.children().show();
+							event.data.currList.find('li.show_more').hide();
+						});
+						
 
+						showLessLink.click({
+							currList : list
+						}, function(event) {
+							event.data.currList.find('li:gt('+ (m_constants.CONFIG_VAR_REF_LIMIT - 1)+')').hide();
+							event.data.currList.find('li.show_more').show();
+							
+						});
+						
+						if (list.children().size() > m_constants.CONFIG_VAR_REF_LIMIT) {
+							var lastElement=list.find('li:gt('+ (m_constants.CONFIG_VAR_REF_LIMIT - 1)+')').hide().end();
+							lastElement.append(showMoreLink);
+							list.append(showLessLink);
+							list.find('li.show_less').hide();
+						}
+						 
 						m_utils.jQuerySelect(
 								"table#configurationVariablesTable tbody")
 								.append(row);

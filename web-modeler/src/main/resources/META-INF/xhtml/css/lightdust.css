@@ -365,6 +365,12 @@ div.toolBar {
 	display: none;
 }
 
+.configLink{
+	color: #00629A !important;
+  	cursor: pointer;
+	font-family: Arial,Helvetica,sans-serif;
+    font-size: 11px;
+}
 /* */
 .code {
 	font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace !important;

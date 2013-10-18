@@ -216,6 +216,9 @@ define(function() {
 		MODEL : "model",
 		DATE_OF_CREATION : "dateOfCreation",
 		DATE_OF_MODIFICATION : "dateOfModification",
+		
+		//Model Config Variable
+		CONFIG_VAR_REF_LIMIT : 3,
 
 		// Process Definition
 
