@@ -28,9 +28,9 @@ require
 			}
 		});
 
-require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView","i18n","rules-manager/js/libs/ACE/ace",], function(require) {
+require([ "require", "jquery", "jquery-ui","rules-manager/js/m_technicalRuleView","i18n","rules-manager/js/libs/ACE/ace",], function(require) {
 	
-	var techRuleView=require("rules-manager/js/TechnicalRuleView");
+	var techRuleView=require("rules-manager/js/m_technicalRuleView");
 	/*pass in our selectors the view will bind its functionality to*/
 	var options={
 			selectors:{
