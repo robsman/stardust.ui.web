@@ -21,7 +21,7 @@ define(
 			"bpm-modeler/js/m_parameterDefinitionsPanel",
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/RuleSet", 
-			"rules-manager/js/DecisionTable",
+			"rules-manager/js/m_decisionTable",
 			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/hotDecisionTable/m_decisionTable",
 			"rules-manager/js/hotDecisionTable/m_tableConfig",
