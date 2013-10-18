@@ -91,7 +91,7 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 		"rules-manager/js/libs/ACE/ace",
 		"Handsontable","bootstrap3","jstree"], function(
 		require) {
-	var ruleSetView=require("rules-manager/js/RuleSetView");
+	var ruleSetView=require("rules-manager/js/m_ruleSetView");
 	var options={
 			selectors:{
 				uuidLabel: "#uuidLabel",
