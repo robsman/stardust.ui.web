@@ -1,7 +1,7 @@
 define(["rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/hotDecisionTable/m_utilities",
         "rules-manager/js/RuleSet",
-        "rules-manager/js/TechnicalRule",
+        "rules-manager/js/m_technicalRule",
         "rules-manager/js/DecisionTable",
         "rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/m_stateFactory"],
