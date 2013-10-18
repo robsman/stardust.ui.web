@@ -3,8 +3,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService", "bpm-modeler/js/m_jsfViewManager" ],
-		function(AngularAdapter, ReportingService, ViewManager) {
+		[ "bpm-reporting/js/AngularAdapter",
+				"bpm-reporting/js/ReportingService" ],
+		function(AngularAdapter, ReportingService) {
 			return {
 				create : function(angular) {
 					var controller = new ReportManagementController();
@@ -35,8 +36,6 @@ define(
 
 					var self = this;
 
-					this.viewManager = ViewManager.create();
-					
 					this.descriptionPopupDialog = jQuery("#descriptionPopupDialog");
 
 					this.descriptionPopupDialog.dialog({
@@ -304,8 +303,9 @@ define(
 
 					document.body.style.cursor = "wait";
 
-					this.reportingService.loadReportDefinitionsFolderStructure().done(
-							function() {
+					this.reportingService
+							.loadReportDefinitionsFolderStructure()
+							.done(function() {
 								console.log("Folder Structure");
 								console.log(self.reportingService.rootFolder);
 
@@ -313,8 +313,8 @@ define(
 
 								document.body.style.cursor = "default";
 							}).fail(function() {
-						document.body.style.cursor = "default";
-					});
+								document.body.style.cursor = "default";
+							});
 				};
 
 				/**
@@ -393,32 +393,56 @@ define(
 				 */
 				ReportManagementController.prototype.openView = function(
 						viewId, viewParams, viewIdentity) {
-//					var link = jQuery("a[id $= 'view_management_link']",
-//							window.parent.frames['ippPortalMain'].document);
-//					var linkId = link.attr('id');
-//					var form = link.parents('form:first');
-//					var formId = form.attr('id');
-//
-//					link = this.getIPPPortalMainWindow().document
-//							.getElementById(linkId);
-//
-//					var linkForm = this.getIPPPortalMainWindow().formOf(link);
-//
-//					linkForm[formId + ':_idcl'].value = linkId;
-//					linkForm['viewParams'].value = viewParams;
-//					linkForm['viewId'].value = viewId;
-//					linkForm['viewIdentity'].value = viewIdentity;
-//
-//					this.getIPPPortalMainWindow().iceSubmit(linkForm, link);
+					var portalWinDoc = this.getOutlineWindowAndDocument();
+					var link = jQuery("a[id $= 'view_management_link']",
+							portalWinDoc.doc);
+
+					console.debug("Link");
+					console.debug(link);
+
+					var linkId = link.attr('id');
+					var form = link.parents('form:first');
+
+					console.debug("Form");
+					console.debug(form);
 					
-					this.viewManager.openView(viewId, viewParams, viewIdentity);
+					var formId = form.attr('id');
+
+					console.debug("Form ID");
+					console.debug(formId);
+
+					link = portalWinDoc.doc
+							.getElementById(linkId);
+
+					var linkForm = portalWinDoc.win.contentWindow
+							.formOf(link);
+
+					console.debug("Link Form");
+					console.debug(linkForm);
+
+					linkForm[formId + ':_idcl'].value = linkId;
+					linkForm['viewParams'].value = viewParams;
+					linkForm['viewId'].value = viewId;
+					linkForm['viewIdentity'].value = viewIdentity;
+
+					portalWinDoc.win.contentWindow
+							.iceSubmit(linkForm, link);
 				};
 
-				/**
+				/*
 				 * 
 				 */
-				ReportManagementController.prototype.getIPPPortalMainWindow = function() {
-					return window.top.frames['ippPortalMain'];
+				ReportManagementController.prototype.getOutlineWindowAndDocument = function() {
+					return {
+						win : parent.document
+								.getElementById("modelerLaunchPanels"),
+						doc : parent.document
+								.getElementById("modelerLaunchPanels").contentDocument
+					};
+					return {
+						win : window.top.frames['ippPortalMain'],
+						doc : window.top.frames['ippPortalMain'].document
+					};
 				};
 			}
 		});
