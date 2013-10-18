@@ -387,6 +387,7 @@ public final class XsdSchemaUtils
          // elements are constructed similar with types
          JsonObject json = new JsonObject();
          if (type == element.getAnonymousTypeDefinition()
+               || type instanceof XSDSimpleTypeDefinition
                || (type instanceof XSDComplexTypeDefinition && element.eContainer() instanceof XSDSchema))
          {
             json = doSwitch(type);
