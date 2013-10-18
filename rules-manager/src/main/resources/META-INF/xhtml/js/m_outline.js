@@ -579,131 +579,139 @@ define(
 				};
 
 				// Tree Node Selection
-
+				var jsOutlineTree=jQuery(displayScope + "#outline");
+				jsOutlineTree.css("display","none");
 				jQuery(displayScope + "#outline")
-						.bind(
-								"select_node.jstree",
-								function(event, data) {
-									if (data.rslt.obj.attr('rel') == 'ruleSet') {
-										var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
-										viewManager.openView("ruleSetView",
-												"id=" + ruleSet.id + "&name="
-														+ ruleSet.name
-														+ "&uuid="
-														+ ruleSet.uuid,
-												ruleSet.uuid);
-									}
-									else if (data.rslt.obj.attr('rel') == "TechnicalRule") {
-										var ruleSet = RuleSet
-												.findRuleSetByUuid(data.rslt.obj
-														.attr("ruleSetUuid"));
+					.bind("loaded.jstree",function(){
+							/* This is a hack to work around the issue where the tree would not display after updating
+							 * to jstree1.0.3 and sorting. The tree actually loaded all the nodes, and you can see it flash 
+							 * momentarily but then it disappears, thus the reload and css none->block*/
+							reloadOutlineTree(false);
+							jsOutlineTree.css("display","block");
+						})
+					.bind(
+							"select_node.jstree",
+							function(event, data) {
+								if (data.rslt.obj.attr('rel') == 'ruleSet') {
+									var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+									viewManager.openView("ruleSetView",
+											"id=" + ruleSet.id + "&name="
+													+ ruleSet.name
+													+ "&uuid="
+													+ ruleSet.uuid,
+											ruleSet.uuid);
+								}
+								else if (data.rslt.obj.attr('rel') == "TechnicalRule") {
+									var ruleSet = RuleSet
+											.findRuleSetByUuid(data.rslt.obj
+													.attr("ruleSetUuid"));
 
-										var techRule = ruleSet
-												.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
+									var techRule = ruleSet
+											.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 
-										viewManager.openView("technicalRuleView", "id="
-												+ techRule.id + "&ruleSetId="
-												+ ruleSet.id + "&name="
-												+ techRule.name + "&uuid="
-												+ techRule.uuid + "&ruleSetUuid="
-												+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
-									} 
-									else if (data.rslt.obj.attr('rel') == "DecisionTable") {
-										var ruleSet = RuleSet
-												.findRuleSetByUuid(data.rslt.obj
-														.attr("ruleSetUuid"));
+									viewManager.openView("technicalRuleView", "id="
+											+ techRule.id + "&ruleSetId="
+											+ ruleSet.id + "&name="
+											+ techRule.name + "&uuid="
+											+ techRule.uuid + "&ruleSetUuid="
+											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
+								} 
+								else if (data.rslt.obj.attr('rel') == "DecisionTable") {
+									var ruleSet = RuleSet
+											.findRuleSetByUuid(data.rslt.obj
+													.attr("ruleSetUuid"));
 
-										var decTable = ruleSet
-												.findDecisionTableByUuid(data.rslt.obj.attr("id"));
+									var decTable = ruleSet
+											.findDecisionTableByUuid(data.rslt.obj.attr("id"));
 
-										viewManager.openView("decisionTableView", "id="
-												+ decTable.id + "&ruleSetId="
-												+ ruleSet.id + "&name="
-												+ decTable.name + "&uuid="
-												+ decTable.uuid + "&ruleSetUuid="
-												+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
-									} 
-									else {
-										m_utils.debug("No View defined for "
-												+ data.rslt.obj.attr('rel'));
-									}
+									viewManager.openView("decisionTableView", "id="
+											+ decTable.id + "&ruleSetId="
+											+ ruleSet.id + "&name="
+											+ decTable.name + "&uuid="
+											+ decTable.uuid + "&ruleSetUuid="
+											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
+								} 
+								else {
+									m_utils.debug("No View defined for "
+											+ data.rslt.obj.attr('rel'));
+								}
 
-									jQuery("a")
-											.mousedown(
-													function(e) {
+								jQuery("a")
+										.mousedown(
+												function(e) {
 
-														if (jQuery(this)
-																.parent()
-																.attr(
-																		'draggable')) {
-															if (e.preventDefault) {
-																e
-																		.preventDefault();
-															}
-															var insElem = this.childNodes[0];
-															var textElem = jQuery(this.childNodes[1])[0];
-															var bgImage = jQuery(
-																	insElem)
-																	.css(
-																			'background-image');
-															bgImage = bgImage
-																	.substring(
-																			4,
-																			(bgImage.length - 1));
+													if (jQuery(this)
+															.parent()
+															.attr(
+																	'draggable')) {
+														if (e.preventDefault) {
+															e
+																	.preventDefault();
+														}
+														var insElem = this.childNodes[0];
+														var textElem = jQuery(this.childNodes[1])[0];
+														var bgImage = jQuery(
+																insElem)
+																.css(
+																		'background-image');
+														bgImage = bgImage
+																.substring(
+																		4,
+																		(bgImage.length - 1));
 
-															// Strip double
-															// quotes (for FF
-															// and IE)
-															bgImage = bgImage
-																	.replace(
-																			/\"/g,
-																			"");
+														// Strip double
+														// quotes (for FF
+														// and IE)
+														bgImage = bgImage
+																.replace(
+																		/\"/g,
+																		"");
 
-															// parent.iDnD.drawIframeAt(e,
-															// window.name);
-															parent.iDnD
-																	.setDrag();
-															var transferObj = {
-																'elementType' : jQuery(
-																		insElem)
-																		.parent()
-																		.parent()
-																		.attr(
-																				'rel'),
-																'elementId' : jQuery(
-																		insElem)
-																		.parent()
-																		.parent()
-																		.attr(
-																				"elementId"),
-																'attr' : {}
-															};
-
-															if (transferObj.elementType == "Plain_Java_Application") {
-																transferObj.attr.accessPoint = jQuery(
-																		insElem)
-																		.parent()
-																		.parent()
-																		.attr(
-																				'accessPoint');
-															}
-
-															transferObj.attr.fullId = jQuery(
+														// parent.iDnD.drawIframeAt(e,
+														// window.name);
+														parent.iDnD
+																.setDrag();
+														var transferObj = {
+															'elementType' : jQuery(
 																	insElem)
 																	.parent()
 																	.parent()
 																	.attr(
-																			"fullId");
+																			'rel'),
+															'elementId' : jQuery(
+																	insElem)
+																	.parent()
+																	.parent()
+																	.attr(
+																			"elementId"),
+															'attr' : {}
+														};
 
-															parent.iDnD
-																	.setTransferObject(transferObj);
-															parent.iDnD
-																	.setImageToDrag(
-																			bgImage,
-																			textElem.nodeValue);
+														if (transferObj.elementType == "Plain_Java_Application") {
+															transferObj.attr.accessPoint = jQuery(
+																	insElem)
+																	.parent()
+																	.parent()
+																	.attr(
+																			'accessPoint');
 														}
-													});
-								})
+
+														transferObj.attr.fullId = jQuery(
+																insElem)
+																.parent()
+																.parent()
+																.attr(
+																		"fullId");
+
+														parent.iDnD
+																.setTransferObject(transferObj);
+														parent.iDnD
+																.setImageToDrag(
+																		bgImage,
+																		textElem.nodeValue);
+													}
+												});
+							})
 						.bind("rename_node.jstree", function(event, data) {
 							renameNodeHandler(event, data);
 						})
@@ -714,7 +722,7 @@ define(
 									},
 									"plugins" : [ "themes", "html_data",
 											"crrm", "contextmenu", "types",
-											"ui" ],
+											"ui","sort" ],
 									contextmenu : {
 										"items" : function(node) {
 											var nodeType=node.attr('rel');

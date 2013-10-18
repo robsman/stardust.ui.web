@@ -35,7 +35,7 @@ require
 						'bpm-modeler/js/libs/jquery/plugins/jquery.form',
 						'https://raw.github.com/malsup/form/5d413a0169b673c9ee81d5f458b1c955ff1b8027/jquery.form' ],
 				'jquery.jstree' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.jstree',
+						'rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree',
 						'https://jstree.googlecode.com/svn-history/r191/trunk/jquery.jstree' ],
 				'jquery.simplemodal' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
