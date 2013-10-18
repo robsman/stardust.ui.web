@@ -87,7 +87,7 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 		"bpm-modeler/js/m_communicationController",
 		"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_constants",
 		"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-		"bpm-modeler/js/m_view", "rules-manager/js/RuleSetView",
+		"bpm-modeler/js/m_view", "rules-manager/js/m_ruleSetView",
 		"rules-manager/js/libs/ACE/ace",
 		"Handsontable","bootstrap3","jstree"], function(
 		require) {
