@@ -1,7 +1,7 @@
 /**
  * @author Marc.Gille
  */
-define([ "bpm-modeler/js/m_utils", "rules-manager/js/FactCondition",
+define([ "bpm-modeler/js/m_utils", "rules-manager/js/m_factCondition",
 		"rules-manager/js/FactAction" ],
 		function(m_utils, FactCondition, FactAction) {
 			return {
