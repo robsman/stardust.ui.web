@@ -87,8 +87,10 @@ define(
 					this.processCommand=function(cmd){
 						switch(cmd.name){
 						case "TechnicalRule.Rename":
-							uiElements.nameInput.val(cmd.changes[1]);
-							this.renameView(cmd.techRule);
+							if (cmd.techRule.uuid === techRule.uuid) {
+								uiElements.nameInput.val(cmd.changes[1]);
+								this.renameView(cmd.techRule);
+							}
 							break;
 						}
 					};

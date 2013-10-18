@@ -80,8 +80,10 @@ define(
 					this.processCommand=function(cmd){
 						switch(cmd.name){
 						case "DecisionTable.Rename":
-							uiElements.nameInput.val(cmd.changes[1]);
-							this.renameView(cmd.decTable);
+							if (cmd.decTable.uuid === decTable.uuid) {
+								uiElements.nameInput.val(cmd.changes[1]);
+								this.renameView(cmd.decTable);
+							}
 							break;
 						}
 					};
