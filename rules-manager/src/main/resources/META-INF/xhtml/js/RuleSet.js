@@ -9,13 +9,13 @@ define([ "bpm-modeler/js/m_utils",
 		"bpm-modeler/js/m_urlUtils", 
 		"bpm-modeler/js/m_communicationController",
 		"rules-manager/js/m_uuid", 
-		"rules-manager/js/Rule","rules-manager/js/m_technicalRule",
+		"rules-manager/js/m_technicalRule",
 		"rules-manager/js/m_decisionTable","bpm-modeler/js/m_model",
 		"rules-manager/js/hotDecisionTable/m_typeParser",
 		"rules-manager/js/m_ruleSetParser",
 		"rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
 		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
-		Uuid, Rule,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
+		Uuid,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
 		create : function(id, name) {
@@ -83,7 +83,7 @@ define([ "bpm-modeler/js/m_utils",
 			}
 
 			for ( var id in json.rules) {
-				Rule.typeObject(json.rules[id]);
+				//Rule.typeObject(json.rules[id]);
 			}
 
 			return json;
@@ -222,15 +222,6 @@ define([ "bpm-modeler/js/m_utils",
 			}
 		};
 		
-		
-		RuleSet.prototype.addRule = function(id, name) {
-			var uuid = Uuid.generate();
-			var rule = Rule.create(this, uuid, id, name);
-
-			this.rules[uuid] = rule;
-
-			return rule;
-		};
 
 		/**
 		 * 
