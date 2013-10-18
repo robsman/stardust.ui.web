@@ -1,7 +1,7 @@
 /**
  * @author Marc.Gille
  */
-define([ "bpm-modeler/js/m_utils", "rules-manager/js/PropertyCondition" ],
+define([ "bpm-modeler/js/m_utils", "rules-manager/js/m_propertyCondition" ],
 		function(m_utils, PropertyCondition) {
 			return {
 				create : function(rule, fact, parameterDefinition) {
