@@ -11,7 +11,7 @@
 define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
 		"bpm-modeler/js/m_model", "bpm-modeler/js/m_dialog",
 		"rules-manager/js/m_commandsDispatcher", "rules-manager/js/RuleSet",
-		"rules-manager/js/PopupSelector", "rules-manager/js/RuleEditor" ],
+		"rules-manager/js/m_popupSelector", "rules-manager/js/RuleEditor" ],
 		function(m_utils, m_i18nUtils, m_model, m_dialog, CommandsDispatcher,
 				RuleSet, PopupSelector, RuleEditor) {
 			return {
