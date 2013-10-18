@@ -57,26 +57,26 @@ define(
 				},
 
 				initializeWaitCursor : function(element) {
-//					if (element && window.parent.InfinityBpm.Core) {
-//						element.ajaxStart(function() {
-//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
-//						});
-//						element.ajaxStop(function() {
-//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
-//						});
-//					}
+					if (element && window.parent.CommonUtils) {
+						element.ajaxStart(function() {
+							window.parent.CommonUtils.changeMouseCursorStyle("progress");
+						});
+						element.ajaxStop(function() {
+							window.parent.CommonUtils.changeMouseCursorStyle("default");
+						});
+					}
 				},
 
 				showWaitCursor : function() {
-//					if (window.parent.InfinityBpm.Core) {
-//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
-//					}
+					if (window.parent.CommonUtils) {
+						window.parent.CommonUtils.changeMouseCursorStyle("progress");
+					}
 				},
 
 				hideWaitCursor : function () {
-//					if (window.parent.InfinityBpm.Core) {
-//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
-//					}
+					if (window.parent.CommonUtils) {
+						window.parent.CommonUtils.changeMouseCursorStyle("default");
+					}
 				},
 
 				isBrowserChrome : function() {
