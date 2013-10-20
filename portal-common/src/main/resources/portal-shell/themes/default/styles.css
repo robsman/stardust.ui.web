@@ -51,6 +51,7 @@ body, table {
 
 .app-logo-main {
 	background-image: url('./images/stardust-logo.png');
+	width: 100%;
 }
 
 .app-title {
