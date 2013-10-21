@@ -35,7 +35,7 @@ public class XSDInheritanceTest
    {
       XSDSchema externalSchema = this.loadExternalSchema("/Person.xsd");
       JsonObject personJSON = createPersonJSON();
-      //assertEquality(externalSchema, personJSON);
+      assertEquality(externalSchema, personJSON);
    }
 
    @Test
@@ -106,7 +106,7 @@ public class XSDInheritanceTest
       employeeAddressType.addProperty("name", "address");
       employeeAddressType.addProperty("classifier", "element");
 
-      addAddressSequence(employeeAddressType);
+      //addAddressSequence(employeeAddressType);
 
       employeeAddressType.addProperty("cardinality", "required");
       employeeAddressType.addProperty("type", "tns:Address");
@@ -148,7 +148,7 @@ public class XSDInheritanceTest
       personAddressType.addProperty("name", "address");
       personAddressType.addProperty("classifier", "element");
 
-      addAddressSequence(personAddressType);
+      //addAddressSequence(personAddressType);
 
       personAddressType.addProperty("cardinality", "required");
       personAddressType.addProperty("type", "tns:Address");
