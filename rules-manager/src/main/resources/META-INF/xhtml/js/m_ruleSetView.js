@@ -20,7 +20,7 @@ define(
 			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_parameterDefinitionsPanel",
 			"bpm-modeler/js/m_jsfViewManager",
-			"rules-manager/js/RuleSet", 
+			"rules-manager/js/m_ruleSet", 
 			"rules-manager/js/m_decisionTable",
 			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/hotDecisionTable/m_decisionTable",

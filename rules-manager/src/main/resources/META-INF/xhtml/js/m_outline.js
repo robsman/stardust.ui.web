@@ -25,7 +25,7 @@ define(
 				"bpm-modeler/js/m_jsfViewManagerHelper",
 				"rules-manager/js/m_outlineToolbarController",
 				"rules-manager/js/m_commandsDispatcher",
-				"rules-manager/js/RuleSet",
+				"rules-manager/js/m_ruleSet",
 				"rules-manager/js/m_i18nMapper"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,

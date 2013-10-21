@@ -13,7 +13,7 @@ define(
 			"rules-manager/js/m_commandsDispatcher", 
 			"rules-manager/js/m_i18nUtils",
 			"bpm-modeler/js/m_jsfViewManager",
-			"rules-manager/js/RuleSet", 
+			"rules-manager/js/m_ruleSet", 
 			"rules-manager/js/hotDecisionTable/m_decisionTable",
 			"rules-manager/js/hotDecisionTable/m_tableConfig",
 			"rules-manager/js/hotDecisionTable/m_images",

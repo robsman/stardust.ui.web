@@ -1,6 +1,6 @@
 define(["rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/hotDecisionTable/m_utilities",
-        "rules-manager/js/RuleSet",
+        "rules-manager/js/m_ruleSet",
         "rules-manager/js/m_technicalRule",
         "rules-manager/js/m_decisionTable",
         "rules-manager/js/hotDecisionTable/m_operators",
