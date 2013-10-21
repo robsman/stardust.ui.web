@@ -1,6 +1,8 @@
 define(
-		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService",
-				"bpm-reporting/js/ReportRenderingController", "bpm-reporting/js/SchedulingController" ],
+		[ "bpm-reporting/js/AngularAdapter",
+				"bpm-reporting/js/ReportingService",
+				"bpm-reporting/js/ReportRenderingController",
+				"bpm-reporting/js/SchedulingController" ],
 		function(AngularAdapter, ReportingService, ReportRenderingController,
 				SchedulingController) {
 			return {
@@ -33,6 +35,8 @@ define(
 				ReportDefinitionController.prototype.initialize = function(
 						renderingController, name, path) {
 					this.renderingController = renderingController;
+					this.schedulingController = SchedulingController.create();
+
 					this.path = path;
 
 					this.dataSetPanel = jQuery("#dataSetPanel");
@@ -239,8 +243,8 @@ define(
 															self.chartTypeSelect
 																	.val(self.report.layout.chart.type);
 
-															self.schedulingController = SchedulingController
-																	.create(self.report.scheduling);
+															self.schedulingController
+																	.initialize(self.report.scheduling);
 
 															self.updateView();
 
@@ -331,6 +335,8 @@ define(
 								chart : {
 									type : this.reportingService.metadata.chartTypes.xyPlot.id,
 									options : {
+										animate : true,
+										animateReplot : true,
 										series : {},
 										seriesDefaults : {
 											lineWidth : 1.5,
@@ -348,7 +354,7 @@ define(
 												shadowOffset : 1.5,
 												shadowDepth : 3,
 												shadowAlpha : 0.07
-											}
+											},
 										},
 										axes : {
 											xaxis : {
@@ -383,17 +389,8 @@ define(
 								},
 								document : {}
 							},
-							scheduling : {
-								recurrenceInterval : "weekly",
-								delivery : {
-									mode : "personalFolder"
-								},
-								recurrenceRange : {
-									startDate : new Date().toISOString(),
-									endMode : "noEnd",
-									occurences : 10
-								}
-							}
+							scheduling : self.schedulingController
+									.createDefaultSettings()
 						};
 
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
@@ -584,7 +581,7 @@ define(
 				 */
 				ReportDefinitionController.prototype.getEnumerators = function(
 						dimension) {
-					if (!dimension) {
+					if (!dimension || !dimension.enumerationType) {
 						return null;
 					}
 
@@ -1004,8 +1001,9 @@ define(
 					var date = new Date(); // Now
 
 					console.log("Start Date");
-					console.log(this.report.scheduling.recurrenceRange.startDate);
-					
+					console
+							.log(this.report.scheduling.recurrenceRange.startDate);
+
 					if (this.report.scheduling.recurrenceRange.startDate) {
 						date = new Date(
 								this.report.scheduling.recurrenceRange.startDate);

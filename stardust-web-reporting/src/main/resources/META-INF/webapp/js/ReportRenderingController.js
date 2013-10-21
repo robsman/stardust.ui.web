@@ -1,5 +1,6 @@
 define(
-		[ "bpm-reporting/js/AngularAdapter", "bpm-reporting/js/ReportingService" ],
+		[ "bpm-reporting/js/AngularAdapter",
+				"bpm-reporting/js/ReportingService" ],
 		function(AngularAdapter, ReportingService) {
 			return {
 				create : function(angular) {
@@ -36,12 +37,11 @@ define(
 						var value = jQuery.url().param("parameter_" + id);
 
 						if (value) {
-							console.log("Replacing parameter [" 
-									+ id + "] = "
-									+ this.report.parameters[id]
-									+ " by " + value);
+							console.log("Replacing parameter [" + id + "] = "
+									+ this.report.parameters[id] + " by "
+									+ value);
 						}
-						
+
 						parameter.value = value;
 					}
 
@@ -353,14 +353,33 @@ define(
 											self.chart.destroy();
 										}
 
+										// Clean rendering area
+										
+										jQuery("#chartView").empty();
+
 										window
 												.setTimeout(
 														function() {
-															self.chart = jQuery
-																	.jqplot(
-																			'chartView',
-																			data.seriesGroup,
-																			chartOptions);
+															console
+																	.debug("Chart Data");
+															console
+																	.debug(data.seriesGroup);
+
+															if (data.seriesGroup.length) {
+																self.chart = jQuery
+																		.jqplot(
+																				'chartView',
+																				data.seriesGroup,
+																				chartOptions);
+															} else {
+																self.chart = null;
+
+																jQuery(
+																		"#chartView")
+																		.append(
+																				"<p>Empty data set retrieved.</p>");
+
+															}
 															document.body.style.cursor = "default";
 														}, 1000);
 									}).fail(function() {

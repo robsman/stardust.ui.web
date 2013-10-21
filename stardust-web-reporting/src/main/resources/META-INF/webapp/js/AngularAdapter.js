@@ -223,46 +223,63 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			// Date Picker
 
-			this.angularModule.directive('sdDate', function($parse) {
+			this.angularModule.directive('sdDate', function() {
 				console.debug("sd-date parsed");
-				return function(scope, element, attrs, controller) {
-					console.debug("ng-model" + attrs.ngModel);
-					var ngModel = $parse(attrs.ngModel);
+				return {
+					restrict : "A",
+					require : "ngModel",
+					link : function(scope, element, attrs, controller) {
+						element.datepicker({
+							inline : true,
+							dateFormat : 'dd.mm.yy', // I18N
+							onSelect : function() {
+								var date = new Date(element
+										.datepicker("getDate"));
 
-					element.datepicker({
-						inline : true,
-						dateFormat : 'dd.mm.yy', // I18N
-						onSelect : function() {
-							var date = new Date(element.datepicker("getDate"));
+								console.debug("Date set to " + date);
+								console.debug("Controller");
+								console.debug(controller);
+								console.debug("Scope");
+								console.debug(scope);
 
-							console.debug("Date set to " + date);
+								controller.$modelValue = date.toISOString();
+								scope.$apply();
 
-							scope.$apply(function(scope) {
-								// Change bound variable
+								console.debug("Controller");
+								console.debug(controller);
+								console.debug("Scope");
+								console.debug(scope);
+							}
+						});
 
-								console.debug("Apply called for model " + attrs.ngModel + " and value " + date);
-
-								if (date) {
-									ngModel.assign(scope, date.toISOString());
-
-								} else {
-									ngModel.assign(scope, null);
-								}
-							});
-						}
-					});
-
-					scope.$watch(ngModel, function(val) {
-						console.debug("val = " + val);
-
-						if (val) {
-							element.datepicker("setDate", new Date(val));
-						} else {
-							element.datepicker("setDate", null);
-						}
-					});
+						// scope.$watch(ngModel, function(val) {
+						// console.debug("val = " + val);
+						//
+						// if (val) {
+						// element.datepicker("setDate", new Date(val));
+						// } else {
+						// element.datepicker("setDate", null);
+						// }
+						// });
+					}
 				};
 			});
+
+			// Allow for on blur semantics until Angular JS releases it (TODO this does not work)
+
+			this.angularModule.directive('ngBlur', [ '$parse',
+					function($parse) {
+						return function(scope, element, attr) {
+							var fn = $parse(attr['ngBlur']);
+							element.bind('blur', function(event) {
+								scope.$apply(function() {
+									fn(scope, {
+										$event : event
+									});
+								});
+							});
+						};
+					} ]);
 
 			// Data Table
 
