@@ -38,7 +38,6 @@ var config = require("../config");
 var textCompleter = require("../autocomplete/text_completer");
 var keyWordCompleter = {
     getCompletions: function(editor, session, pos, prefix, callback) {
-        console.log(session.$mode.$keywordList);
         var keywords = session.$mode.$keywordList || [];
         keywords = keywords.filter(function(w) {
             return w.lastIndexOf(prefix, 0) == 0;

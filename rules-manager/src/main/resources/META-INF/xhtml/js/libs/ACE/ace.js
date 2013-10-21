@@ -8435,7 +8435,6 @@ var TextHighlightRules = function() {
                 keywords[list[i]] = className;
         });
         this.$keywordList = Object.keys(keywords);
-        console.log(this.$keywordList);
         map = null;
         return ignoreCase
             ? function(value) {return keywords[value.toLowerCase()] || defaultToken }
