@@ -339,7 +339,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       DataTypeType dataType = formalParameter.getDataType();
       final ModelType model = ModelUtils.findContainingModel(formalParameter);
-      if (model != null)
+      if (model != null && dataType.getCarnotType() != null)
       {
          if (dataType.getCarnotType().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
          {
