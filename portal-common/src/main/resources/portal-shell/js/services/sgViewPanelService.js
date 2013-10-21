@@ -94,21 +94,25 @@ define(['portal-shell/js/shell'], function (shell) {
             	if (navItemDetails.tab) {
             		var ret = sgPubSubService.publish('sgViewPanelCloseIntent', {viewPanel: navItemDetails.tab});
             		if (ret) {
-            			$timeout(function(){
-    	            		tabs.splice(navItemDetails.index, 1);
-    	        			activateNextViewPanel();
-    	        			
-    	        			var index = getIndex(displayTabs, navItemDetails.tab);
-    	        			displayTabs.splice(index, 1);
-    	        			
-    	        			for(var i = 0; i < tabs.length; i++) {
-                        		if (getIndex(displayTabs, tabs[i]) == -1) {
-                        			displayTabs.push(tabs[i]);
-                        			break;
-                        		}
-                        	}
-
-    	        			buildOverflowTabs();
+            			$timeout(function() {
+            				// Find nav details (position) again
+            				navItemDetails = findTabDetails(navPath, true);
+            				if (navItemDetails.tab) {
+	    	            		tabs.splice(navItemDetails.index, 1);
+	    	        			activateNextViewPanel();
+	    	        			
+	    	        			var index = getIndex(displayTabs, navItemDetails.tab);
+	    	        			displayTabs.splice(index, 1);
+	    	        			
+	    	        			for(var i = 0; i < tabs.length; i++) {
+	                        		if (getIndex(displayTabs, tabs[i]) == -1) {
+	                        			displayTabs.push(tabs[i]);
+	                        			break;
+	                        		}
+	                        	}
+	
+	    	        			buildOverflowTabs();
+            				}
             			});
             		}
             	}
