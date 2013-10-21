@@ -254,9 +254,7 @@ define(
 							"table#configurationVariablesTable tbody")
 							.empty();
 
-					var variables = m_utils
-							.convertToSortedArray(json,
-									"name", false);
+					var variables = json;
 
 					for ( var n = 0; n < variables.length; ++n) {
 						var row = m_utils.jQuerySelect("<tr></tr>");
