@@ -19,9 +19,9 @@ define(
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_user" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager, m_model,
-				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
+				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils, m_user) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -87,6 +87,10 @@ define(
 
 					this.parameterDefinitionsTableBody = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tbody");
+					this.parameterDefinitionIdOutput = m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionIdOutput");
+					this.parameterDefinitionIdOutputLabel = m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionIdOutput']");
 					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
 					
@@ -705,6 +709,20 @@ define(
 									.removeAttr("disabled");
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
+						}
+
+						if (this.options.displayParameterId) {
+							if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
+								this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);
+								this.parameterDefinitionIdOutput.show();
+								this.parameterDefinitionIdOutputLabel.show();
+							} else {
+								this.parameterDefinitionIdOutput.hide();
+								this.parameterDefinitionIdOutputLabel.hide();
+							}
+						} else {
+							this.parameterDefinitionIdOutput.hide();
+							this.parameterDefinitionIdOutputLabel.hide();							
 						}
 
 						this.parameterDefinitionNameInput
