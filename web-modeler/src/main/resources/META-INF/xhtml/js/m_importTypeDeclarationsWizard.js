@@ -205,6 +205,7 @@ define(
 				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.setSchema = function(schema) {
+					m_utils.showWaitCursor();
 					var timeStart = new Date().getTime();
 					this.schema = schema;
 					m_utils.debug("===> Type Declarations");
@@ -294,6 +295,7 @@ define(
 					});
 					var timeEnd = new Date().getTime();
 					m_utils.debug("Total Time to render the tree===> " + (timeEnd - timeStart));
+					m_utils.hideWaitCursor();
 				};
 
 				/**
