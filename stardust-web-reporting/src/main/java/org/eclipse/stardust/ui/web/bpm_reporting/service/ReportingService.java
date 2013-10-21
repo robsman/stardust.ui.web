@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -1125,7 +1126,8 @@ public class ReportingService {
 	}
 
 	/**
-	 * Might be invoked for saving of multiple Report Definitions or directly (whereby json contains a top-level element "report").
+	 * Might be invoked for saving of multiple Report Definitions or directly
+	 * (whereby json contains a top-level element "report").
 	 * 
 	 * @param json
 	 */
@@ -1134,7 +1136,7 @@ public class ReportingService {
 			JsonObject reportJson = null;
 
 			// TODO Possibly homogenize handling
-			
+
 			if (json.has("report")) {
 				reportJson = json.get("report").getAsJsonObject();
 			} else {
@@ -1156,10 +1158,11 @@ public class ReportingService {
 				folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson
 						.get("participant").getAsString()));
 			}
-			
+
 			// Mark Report Definition as saved
-			
-			reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
+
+			reportJson.get("storage").getAsJsonObject()
+					.addProperty("state", "saved");
 
 			saveReportDefinitionDocument(reportJson, folder, name);
 
@@ -1169,7 +1172,7 @@ public class ReportingService {
 					.put(folder.getPath() + "/" + name, reportJson);
 
 			trace.debug(reportDefinitionJsons);
-			
+
 			return json;
 		} finally {
 		}
@@ -1242,16 +1245,36 @@ public class ReportingService {
 	private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
 
 	/**
+	 * Returns the folder if exist otherwise create new folder
 	 * 
+	 * @param folderPath
 	 * @return
 	 */
-	private Folder findOrCreateFolder(String path) {
-		Folder folder = getDocumentManagementService().getFolder(path);
+	public Folder findOrCreateFolder(String folderPath) {
+		Folder folder = getDocumentManagementService().getFolder(folderPath);
 
-		if (folder == null) {
+		if (null == folder) {
+			// folder does not exist yet, create it
+			String parentPath = folderPath.substring(0,
+					folderPath.lastIndexOf('/'));
+			String childName = folderPath
+					.substring(folderPath.lastIndexOf('/') + 1);
+
+			if (StringUtils.isEmpty(parentPath)) {
+				// Top-level reached
+				
+				return getDocumentManagementService().createFolder("/",
+						DmsUtils.createFolderInfo(childName));
+			} else {
+				Folder parentFolder = findOrCreateFolder(parentPath);
+				
+				return getDocumentManagementService().createFolder(
+						parentFolder.getId(),
+						DmsUtils.createFolderInfo(childName));
+			}
+		} else {
+			return folder;
 		}
-
-		return folder;
 	}
 
 	/**
