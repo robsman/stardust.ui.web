@@ -36,11 +36,11 @@ require([ "require",
           "jquery", 
           "jquery-ui", 
 		  "i18n", 
-		  "rules-manager/js/m_decisionTableView",
+		  "rules-manager/js/DecisionTableView",
 		  "Handsontable",
 		  "jstree"], 
 		function(require) {
-		var decisionTblView=require("rules-manager/js/m_decisionTableView");
+		var decisionTblView=require("rules-manager/js/DecisionTableView");
 		var options={
 				selectors: {
 					id: "#DecisionTableView", /*ID of our main view container*/
