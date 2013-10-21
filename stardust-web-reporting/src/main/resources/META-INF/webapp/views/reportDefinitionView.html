@@ -153,7 +153,7 @@ table.formTable td {
 																ng-show="existsParameter('firstDimensionFrom')"><img
 																	src="../css/images/parameter.png"
 																	title="Parameter (firstDimensionFrom)" /> <a href=""
-																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType)"
+																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
 																		title="No Parameter (firstDimensionFrom)" /> </a> </a></td>
@@ -362,8 +362,8 @@ table.formTable td {
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
 																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" />
-																<a href=""
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().stringType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
@@ -384,8 +384,8 @@ table.formTable td {
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
 																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" />
-																<a href=""
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().integerType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
@@ -403,9 +403,9 @@ table.formTable td {
 															ng-click="removeParameter('filters.' + x.dimension + '.from')"
 															ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
 																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" />
-																<a href=""
-																ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id')"
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
+																ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension + '.from')"><img
 																	src="../css/images/no-parameter.png"
 																	title="No Parameter (filters.{{x.dimension}})" /></td>
@@ -418,13 +418,12 @@ table.formTable td {
 															ng-click="removeParameter('filters.' + x.dimension + '.to')"
 															ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
 																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" />
-																<a href=""
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
 																ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension + '.to')"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter (filters.{{x.dimension}})" />
-															</a> </a></td>
+																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -441,13 +440,12 @@ table.formTable td {
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="!existsParameter('filters.' + x.dimension)"><img
 																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" />
-																<a href=""
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
 																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().enumerationType.id, x.value)"
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter (filters.{{x.dimension}})" />
-															</a> </a></td>
+																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -597,12 +595,34 @@ table.formTable td {
 												</table>
 											</div>
 										</td>
+										<td valign="top">
+											<div style="margin-left: 10px;">
+												<div class="heading">Animation</div>
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><input type="checkbox"
+															ng-model="report.layout.chart.options.animation" /></td>
+														<td><label>Show Animation</label></td>
+													</tr>
+												</table>
+											</div>
+										</td>
 									</tr>
 									<tr>
 										<td valign="top">
 											<div ng-show="getChartType().hasAxes">
 												<div class="heading">X-Axis</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Minimum</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.xaxis.min" /></td>
+													</tr>
+													<tr>
+														<td><label>Maximum</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.xaxis.max" /></td>
+													</tr>
 													<tr>
 														<td><label>Label</label></td>
 														<td><input
@@ -656,6 +676,16 @@ table.formTable td {
 												style="margin-left: 10px;">
 												<div class="heading">Y-Axis</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>Minimum</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.yaxis.min" /></td>
+													</tr>
+													<tr>
+														<td><label>Maximum</label></td>
+														<td><input type="number"
+															ng-model="report.layout.chart.options.axes.yaxis.max" /></td>
+													</tr>
 													<tr>
 														<td><label>Label Y-Axis</label></td>
 														<td><input
@@ -786,31 +816,34 @@ table.formTable td {
 								<div class="heading">Parameters</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
-										<td><label>{{parameter.name}} ({{parameter.id}})</label></td>
+										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)</label></td>
 										<td><input type="text"
 											ng-model="getParameters()[parameter.id].value" sd-date
 											ng-show="parameter.type == getMetadata().timestampType.id"
-											value="{{getParameterDefaultValue(parameter.id)}}" /><input
-											type="number"
+											value="{{getParameterDefaultValue(parameter.id)}}"
+											ng-blur="refreshPreview()" /><input type="number"
 											ng-model="report.parameters[parameter.id].value"
 											ng-show="parameter.type == getMetadata().integerType.id"
-											value="{{getParameterDefaultValue(parameter.id)}}" /> <input
+											value="{{getParameterDefaultValue(parameter.id)}}"
+											ng-blur="refreshPreview()" /> <input
 											ng-model="report.parameters[parameter.id].value"
 											ng-show="parameter.type == getMetadata().stringType.id"
-											value="{{getParameterDefaultValue(parameter.id)}}" /> <select
-											multiple="multiple"
+											value="{{getParameterDefaultValue(parameter.id)}}"
+											ng-blur="refreshPreview()" /> <select multiple="multiple"
 											ng-show="parameter.type == getMetadata().enumerationType.id"
-											ng-options="x as x for x in getTestEnumerators()"></select></td>
+											ng-options="x as x for x in getTestEnumerators()"
+											ng-blur="refreshPreview()"></select></td>
 									</tr>
 								</table>
 							</div>
 							<div ng-show="report.layout.type == 'table'">
+								<div class="heading">Table</div>
 								<div style="padding-bottom: 20px; border: 3px solid #dddddd"
 									class="dataTableFrame">
 									<div class="dataTableControls">
 										<table style="padding: 5px;">
 											<tr>
-												<td><a href="" ng-click=""> <img
+												<td><a href="" ng-click="refreshPreview()"> <img
 														src="../css/images/refresh.png" title="Refresh" />
 												</a></td>
 												<td><a href="{{getReportUri()}}" target="_blank"> <img
@@ -833,9 +866,10 @@ table.formTable td {
 								</div>
 							</div>
 							<div ng-show="report.layout.type == 'chart'">
+								<div class="heading">Chart</div>
 								<table>
 									<tr>
-										<td><a href="" ng-click="createChart()"> <img
+										<td><a href="" ng-click="refreshPreview()"> <img
 												src="../css/images/refresh.png" title="Refresh" />
 										</a></td>
 										<td><a href="" ng-click="printChart()"> <img
@@ -852,6 +886,7 @@ table.formTable td {
 								</div>
 							</div>
 							<div ng-show="report.layout.type == 'document'">
+								<div class="heading">Document</div>
 								<table>
 									<tr>
 										<td><a href="" ng-click=""> <img
@@ -977,7 +1012,7 @@ table.formTable td {
 													<td><label>Map Start Timestamp to Parameters</label></td>
 													<td><select multiple="multiple"
 														ng-model="report.scheduling.parametersForStartTime"
-														ng-options="x.id as x.name for x in getParameters()"
+														ng-options="enum.id as enum.name for (key, enum) in getParameters()"
 														style="height: 50px;">
 													</select></td>
 												</tr>
@@ -1046,7 +1081,8 @@ table.formTable td {
 																		<table>
 																			<tr>
 																				<td><label>Recurs every</label></td>
-																				<td><input type="number" min="1" style="width: 50px;"
+																				<td><input type="number" min="1"
+																					style="width: 50px;"
 																					ng-model="report.scheduling.weeklyRecurrenceOptions.recurrenceWeekCount" />
 																				</td>
 																				<td><label>Weeks on</label></td>
@@ -1264,7 +1300,8 @@ table.formTable td {
 															<tr>
 																<td><label>Start</label></td>
 																<td><input type="text"
-																	ng-model="report.scheduling.recurrenceRange.startDate" sd-date/></td>
+																	ng-model="report.scheduling.recurrenceRange.startDate"
+																	sd-date /></td>
 															</tr>
 														</table>
 													</td>
@@ -1293,8 +1330,9 @@ table.formTable td {
 																	value="endByDate" /></td>
 																<td><label>End by</label></td>
 																<td colspan="2"><input type="text"
-																	ng-model="report.scheduling.recurrenceRange.endDate" 
-																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endByDate'" sd-date/></td>
+																	ng-model="report.scheduling.recurrenceRange.endDate"
+																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endByDate'"
+																	sd-date /></td>
 															</tr>
 														</table>
 													</td>
