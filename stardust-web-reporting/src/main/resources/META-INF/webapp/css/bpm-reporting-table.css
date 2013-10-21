@@ -1,9 +1,16 @@
+/**
+* Overwrites for datatable
+*/
 table.display tr.odd.gradeA {
-	background-color: #CCEDFF;
+	background-color: #FFFFFF;
 }
 
 table.display tr.odd.gradeA td {
-	border-bottom: 1px solid #AFD7ED;
+	border-bottom: 1px solid #E7E7E7;
+}
+
+table.display tr.odd.gradeA td.sorting_1 {
+	background-color: #FFFFFF;
 }
 
 table.display tr.even.gradeA {
@@ -12,6 +19,10 @@ table.display tr.even.gradeA {
 
 table.display tr.even.gradeA td {
 	border-bottom: 1px solid #E7E7E7;
+}
+
+table.display tr.even.gradeA td.sorting_1 {
+	background-color: #FFFFFF;
 }
 
 #reportTable_info {
