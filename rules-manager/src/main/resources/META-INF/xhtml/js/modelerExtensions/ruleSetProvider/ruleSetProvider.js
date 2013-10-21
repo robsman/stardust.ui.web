@@ -1,4 +1,4 @@
-define(['rules-manager/js/RuleSetProvider'], function(RuleSetProvider) {
+define(['rules-manager/js/m_ruleSetProvider'], function(RuleSetProvider) {
 	return {
 		ruleSetProvider : [ {
 			id : "defaultRuleSetProvider",
