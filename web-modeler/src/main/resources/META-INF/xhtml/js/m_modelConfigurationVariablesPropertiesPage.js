@@ -390,7 +390,7 @@ define(
 						var showLessLink = m_utils
 								.jQuerySelect('<li class="show_less"><a class="configLink" style="text-decoration:none">'
 										+ m_i18nUtils
-												.getProperty("modeler.propertyView.modelView.configurationVariables.showfewReferences")
+												.getProperty("modeler.propertyView.modelView.configurationVariables.collapseReferences")
 										+ '</a></li>');
 						showMoreLink.click({
 							currList : list
