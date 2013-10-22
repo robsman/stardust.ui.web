@@ -143,7 +143,7 @@ define(
 				 */
 				BasicPropertiesPage.prototype.getModelElementUuid = function() {
 					// TODO Replace with uuid
-					return this.propertiesPanel.element.oid;
+					return this.propertiesPanel.element.uuid;
 					// return this.getModelElement().uuid;
 				};
 

@@ -20,6 +20,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -74,16 +75,21 @@ public class ActivityCommandHandler
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)
       {
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
          ActivityType activity = getModelBuilderFacade().createActivity(model,
                processDefinition, activityType, taskType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
-
+         
+         mapper.map(activity);
+         
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         getModelBuilderFacade().createActivitySymbol(
+         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(
                model, activity, processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
+         
+         mapper.map(activitySymbol);
       }
    }
 
@@ -129,6 +135,11 @@ public class ActivityCommandHandler
       }
    }
 
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
+   }
+   
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);

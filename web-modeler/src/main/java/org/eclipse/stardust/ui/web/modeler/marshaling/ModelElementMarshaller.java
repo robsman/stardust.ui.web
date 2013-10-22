@@ -732,6 +732,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
          activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
          activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
+         activityJson.addProperty(ModelerConstants.UUID_PROPERTY,
+               eObjectUUIDMapper().getUUID(activity));
          loadDescription(activityJson, activity);
          loadAttributes(activity, activityJson);
 
@@ -1136,6 +1138,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       activitySymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
             activitySymbol.getYPos() + laneOffsetY);
 
+      activitySymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, eObjectUUIDMapper().getUUID(activitySymbol));
       ActivityType activity = activitySymbol.getActivity();
 
       if (null != activity)
@@ -1246,6 +1249,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             startEventSymbol.getElementOid());
+      eventSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, 
+            eObjectUUIDMapper().getUUID(startEventSymbol));
+
       // TODO check this math
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY, startEventSymbol.getXPos()
             + laneOffsetX);
@@ -1314,6 +1320,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
+      eventSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(endEventSymbol));
 
       setNodeSymbolCoordinates(eventSymbolJson, endEventSymbol);
 
@@ -1367,6 +1375,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventSymbol.getElementOid());
+      eventSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(eventSymbol));
 
       // set default height and width if not defined
       int width = eventSymbol.getWidth();
@@ -2316,6 +2326,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             dataMappingConnection.getElementOid());
       connectionJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.DATA_FLOW_CONNECTION_LITERAL);
+      connectionJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(dataMappingConnection));
 
       connectionJson.addProperty(ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY,
             mapAnchorOrientation(dataMappingConnection.getSourceAnchor()));
@@ -2441,6 +2453,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             transitionConnection.getElementOid());
       connectionJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.CONTROL_FLOW_CONNECTION_LITERAL);
+      connectionJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(transitionConnection));
 
       IFlowObjectSymbol sourceActivitySymbol = transitionConnection.getSourceActivitySymbol();
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
@@ -2613,6 +2627,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       controlFlowJson.addProperty(ModelerConstants.ID_PROPERTY, transition.getId());
       controlFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
             transition.getElementOid());
+      controlFlowJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(transition));
       controlFlowJson.addProperty(ModelerConstants.NAME_PROPERTY, transition.getName());
 
       if (null != transition.getCondition()
