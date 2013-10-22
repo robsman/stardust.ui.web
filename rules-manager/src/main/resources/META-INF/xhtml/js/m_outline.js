@@ -1100,8 +1100,9 @@ define(
 				 * 
 				 */
 				Outline.prototype.processCommand = function(command) {
-					// TODO Dummy
-//					reloadOutlineTree();
+					// TODO this should not be executed for operations like create / delete rule-sets that
+					// don't need explicit save
+					m_messageDisplay.markModified();
 					
 					// Handling renaming of nodes
 					var uuid;
