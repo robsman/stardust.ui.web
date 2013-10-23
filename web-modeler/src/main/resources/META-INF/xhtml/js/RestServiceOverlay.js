@@ -6,16 +6,17 @@ define(
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_typeDeclaration",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce" ],
+				"bpm-modeler/js/m_codeEditorAce"],
 		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
 				m_parameterDefinitionsPanel, m_codeEditorAce) {
 			return {
 				create : function(view) {
+					
 					var overlay = new RestServiceOverlay();
 
 					overlay.initialize(view);
-
+					
 					return overlay;
 				}
 			};
@@ -28,6 +29,7 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.initialize = function(view) {
+					
 					this.view = view;
 
 					this.view.insertPropertiesTab("restServiceOverlay",
@@ -35,6 +37,9 @@ define(
 							"plugins/bpm-modeler/images/icons/database_link.png");
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
 							"Test", "plugins/bpm-modeler/images/icons/application-run.png");
+					
+					this.view.insertPropertiesTab("restServiceOverlay", "security",
+							"Security", "plugins/bpm-modeler/images/icons/server-key.png"); 
 
 					this.uriInput = m_utils.jQuerySelect("#restServiceOverlay #uriInput");
 					this.queryStringLabel = m_utils.jQuerySelect("#restServiceOverlay #queryStringLabel");
@@ -49,6 +54,34 @@ define(
 					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
 					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
+					this.securityModeSelect = m_utils.jQuerySelect("#securityTab #securityModeSelect");
+					this.httpBasicAuthUserInput = m_utils.jQuerySelect("#securityTab #httpBasicAuthUserInput");
+					this.httpBasicAuthPwdInput = m_utils.jQuerySelect("#securityTab #httpBasicAuthPwdInput");
+					this.httpBasicAuthUsingCVInput = m_utils.jQuerySelect("#securityTab #httpBasicAuthUsingCVInput");
+					
+					this.customSecurityTokenKeyInput = m_utils.jQuerySelect("#securityTab #customSecurityTokenKeyInput");
+					this.customSecurityTokenValueInput = m_utils.jQuerySelect("#securityTab #customSecurityTokenValueInput");
+					this.customSecurityTokenUsingCVInput = m_utils.jQuerySelect("#securityTab #customSecurityTokenUsingCVInput");
+					
+					m_utils.jQuerySelect("label[for='securityModeSelect']").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.label"));
+					
+					m_utils.jQuerySelect("#securityModeSelect option[value='none']").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.none.label"));
+					
+					m_utils.jQuerySelect("#securityModeSelect option[value='httpBasicAuth']").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.httpBasicAuth.label"));
+					
+					m_utils.jQuerySelect("#securityModeSelect option[value='customSecTok']").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.customSecTok.label"));
+			
+					m_utils.jQuerySelect("#httpBasicAuthenticationHintLabel").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.httpBasicAuthenticationHint.label"));
+					
+					m_utils.jQuerySelect("#customSecurityTokenHintLabel").text(m_i18nUtils
+							.getProperty("modeler.model.applicationOverlay.rest.security.customSecurityTokenHint.label"));
+					
+					
 					this.resetButton
 							.prop(
 									"title",
@@ -124,7 +157,36 @@ define(
 													.val());
 								}
 							});
-
+					
+					this.securityModeSelect.change(function() {
+						self.setSecurityMode(self.securityModeSelect.val());
+						self.submitChanges();
+					});
+					
+					this.httpBasicAuthUserInput.change(function() {
+						self.submitChanges();
+					});
+					
+					this.httpBasicAuthPwdInput.change(function() {
+						self.submitChanges();
+					});
+					
+					this.httpBasicAuthUsingCVInput.change(function() {
+						self.submitChanges();
+					});
+					
+					this.customSecurityTokenKeyInput.change(function() {
+						self.submitChanges();
+					});
+					
+					this.customSecurityTokenValueInput.change(function() {
+						self.submitChanges();
+					}); 
+					
+					this.customSecurityTokenUsingCVInput.change(function() {
+						self.submitChanges();
+					});
+					
 					this.runButton
 							.click(
 									{
@@ -238,6 +300,185 @@ define(
 												.append(inputData);
 									});
 				};
+				
+				RestServiceOverlay.prototype.setSecurityMode = function(securityMode) {
+
+					if (!securityMode) 
+					{
+						securityMode = "none";
+					}
+
+					this.securityModeSelect.val(securityMode);
+
+					m_utils.jQuerySelect("#httpBasicAuthenticationDiv").hide();
+					m_utils.jQuerySelect("#customSecurityTokenDiv").hide();
+					
+					if (securityMode === "httpBasicAuth") 
+					{
+						m_utils.jQuerySelect("#httpBasicAuthenticationDiv").show();
+						this.customSecurityTokenKeyInput.val("");
+						this.customSecurityTokenValueInput.val(""); 
+						this.customSecurityTokenUsingCVInputprop('checked', false);
+					} 
+					else if (securityMode === "customSecTok") 
+					{
+						m_utils.jQuerySelect("#customSecurityTokenDiv").show();
+						this.httpBasicAuthUserInput.val("");
+						this.httpBasicAuthPwdInput.val("");
+						this.httpBasicAuthUsingCVInputprop('checked', false);
+					}
+					else
+					{
+						this.httpBasicAuthUserInput.val("");
+						this.httpBasicAuthPwdInput.val("");
+						this.httpBasicAuthUsingCVInputprop('checked', false);
+						this.customSecurityTokenKeyInput.val("");
+						this.customSecurityTokenValueInput.val("");
+						this.customSecurityTokenUsingCVInputprop('checked', false);
+					}
+				};
+				
+				RestServiceOverlay.prototype.refreshHeaderAttributesTable = function(httpHeadersJson) {
+					
+					if (!httpHeadersJson)
+					{
+						httpHeadersJson = "[]";
+					}
+					
+					var httpHeaders = JSON.parse(httpHeadersJson);
+					
+					m_utils.jQuerySelect("#securityTab #addHeaderButton").click
+					(
+						{
+							page : this,
+						},
+						function(event) 
+						{
+							httpHeaders.push({"headerName" : "New " + (httpHeaders.length + 1), "headerValue" : ""});
+							event.data.page.refreshHeaderAttributesTable(JSON.stringify(httpHeaders));
+						}	
+					);
+					
+					m_utils.jQuerySelect("table#headerAttributesTable tbody").empty();
+
+					for ( var n = 0; n < httpHeaders.length; ++n) {
+						
+						var row = m_utils.jQuerySelect("<tr></tr>");
+						var cell = m_utils.jQuerySelect("<td></td>");
+						
+						row.append(cell);
+
+						var button = m_utils.jQuerySelect(
+								"<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='plugins/bpm-modeler/images/icons/delete.png'/>");
+
+						button.click
+						(
+							{
+								page : this,
+								headerName : httpHeaders[n].headerName
+							},
+							function(event) 
+							{
+								newHttpHeaders = [];
+								
+								for (var h = 0; h < httpHeaders.length; ++h) 
+								{
+									if (event.data.headerName !== httpHeaders[h].headerName)
+									{
+										newHttpHeaders.push(httpHeaders[h]);
+									}
+								}
+							
+								// submit changes
+								event.data.page.submitSingleAttributeChange(
+										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(newHttpHeaders));
+							}
+						);
+
+						cell.append(button);
+						
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						
+						headerNameInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ httpHeaders[n].headerName +"'></input>");
+						headerNameInput.change
+						(
+							{
+								page : this,
+								headerName : httpHeaders[n].headerName
+							},
+							function(event) 
+							{
+								var oldValue = event.data.headerName;
+								var newValue = event.target.value;
+								
+								for ( var h = 0; h < httpHeaders.length; ++h) 
+								{
+									if (httpHeaders[h].headerName === oldValue)
+									{
+										httpHeaders[h].headerName = newValue;
+									}
+								}
+								
+								// submit changes
+								event.data.page.submitSingleAttributeChange(
+										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(httpHeaders));
+							}
+						);
+						headerNameInput.keydown
+						(
+							{
+								page : this
+							},	
+							function(event) 
+							{
+								if (event.which == 9) { //tab key pressed
+									if(!event.shiftKey){
+//										event.data.page.preserveFocus(m_utils.jQuerySelect(this), true);
+									}
+								}
+							}
+						);
+						
+						cell.append(headerNameInput);
+						row.append(cell);
+						
+						cell = m_utils.jQuerySelect("<td></td>");
+						
+						headerValueInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ httpHeaders[n].headerValue +"'></input>");
+						headerValueInput.change
+						(
+							{
+								page : this,
+								headerValue : httpHeaders[n].headerValue
+							},
+							function(event) 
+							{
+								var oldValue = event.data.headerValue;
+								var newValue = event.target.value;
+								
+								for ( var h = 0; h < httpHeaders.length; ++h) 
+								{
+									if (httpHeaders[h].headerValue === oldValue)
+									{
+										httpHeaders[h].headerValue = newValue;
+									}
+								}
+								
+								// submit changes
+								event.data.page.submitSingleAttributeChange(
+										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(httpHeaders));
+							}
+						);
+						
+						cell.append(headerValueInput);
+						row.append(cell);
+						
+						m_utils.jQuerySelect(
+								"table#headerAttributesTable tbody")
+								.append(row);
+					}
+				};
 
 				/**
 				 * 
@@ -334,6 +575,7 @@ define(
 				RestServiceOverlay.prototype.getModelElement = function() {
 					return this.view.getModelElement();
 				};
+				
 
 				/**
 				 * 
@@ -408,6 +650,47 @@ define(
 					}
 
 					uri = uri.replace(/&/g, "&amp;");
+					
+					// add addtional headers defined via custom security token
+					if (this.securityModeSelect.val() === "customSecTok")
+					{
+						route += "<setHeader headerName='" + this.customSecurityTokenKeyInput.val() + "'>";
+						route += "<simple>";
+						
+						if (this.customSecurityTokenUsingCVInput.prop("checked"))
+						{
+							route += "${"; 
+						}
+						
+						// TODO: verify if any encoding is required
+						route += this.customSecurityTokenValueInput.val();
+						
+						if (this.customSecurityTokenUsingCVInput.prop("checked"))
+						{
+							route += "}"; 
+						}
+						
+						route += "</simple>";
+						route += "</setHeader>";
+
+						// TODO: JSON String should be stored as global variable?
+						var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
+						
+						if (!httpHeadersJson)
+						{
+							httpHeadersJson = "[]";
+						}
+						
+						var httpHeaders = JSON.parse(httpHeadersJson);
+						
+						for (var h=0; h<httpHeaders.length; h++)
+						{
+							route += "<setHeader headerName='" + httpHeaders[h].headerName + "'>";
+							route += "<simple>" + httpHeaders[h].headerValue + "</simple>"; // TODO: verify if any encoding is required
+							route += "</setHeader>";
+						}
+					}
+					
 
 					if (uri.indexOf("?") > 0)
 					{
@@ -436,7 +719,28 @@ define(
 						route += "<to uri='bean:bpmTypeConverter?method=toXML' />";
 					}
 
-					route += "<to uri='http://isoverwritten'/>";
+					route += "<to uri='http://isoverwritten";
+					
+					if (this.securityModeSelect.val() === "httpBasicAuth")
+					{
+						route += "?authMethod=Basic";
+						route += "&amp;authUsername=" + this.httpBasicAuthUserInput.val();
+						route += "&amp;authPassword=";
+						
+						if (this.httpBasicAuthUsingCVInput.prop("checked"))
+						{
+							route += "${";
+							route += this.httpBasicAuthPwdInput.val(); // TODO: Verify if URL encoding is required.
+							route += "}"; // TODO: Add :password type information
+						}
+						else
+						{
+							route += this.httpBasicAuthPwdInput.val(); // TODO: Verify if URL encoding is required.
+						}
+					}
+					
+					route += "'/>";
+					
 
 					if (this.responseTypeSelect.val() === "application/json") {
 						route += "<to uri='bean:bpmTypeConverter?method=fromJSON' />";
@@ -463,10 +767,13 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.update = function() {
-					this.parameterDefinitionsPanel.setScopeModel(this
-							.getScopeModel());
-					this.parameterDefinitionsPanel
-							.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+					
+					var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
+					this.refreshHeaderAttributesTable(httpHeadersJson);
+					
+					this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
+					
+					this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
 
 					this.inputBodyAccessPointInput.empty();
 					this.inputBodyAccessPointInput.append("<option value='"
@@ -504,23 +811,23 @@ define(
 										+ "'>" + accessPoint.name + "</option>");
 					}
 
-					this.inputBodyAccessPointInput
-							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
-					this.outputBodyAccessPointInput
-							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-					this.uriInput
-							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
+					this.inputBodyAccessPointInput.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
+					this.outputBodyAccessPointInput.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.uriInput.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
 					this.queryStringLabel.append(this.getQueryString());
 					this.commandSelect.val(this.getApplication().attributes["stardust:restServiceOverlay::command"]);
-					this.requestTypeSelect
-							.val(this.getApplication().attributes["stardust:restServiceOverlay::requestType"]);
-					this.responseTypeSelect
-							.val(this.getApplication().attributes["stardust:restServiceOverlay::responseType"]);
-					this.crossDomainInput
-							.prop(
-									"checked",
-									this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
+					this.requestTypeSelect.val(this.getApplication().attributes["stardust:restServiceOverlay::requestType"]);
+					this.responseTypeSelect.val(this.getApplication().attributes["stardust:restServiceOverlay::responseType"]);
+					this.crossDomainInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
+					this.setSecurityMode(this.getApplication().attributes["stardust:restServiceOverlay::securityMode"]);
+					this.httpBasicAuthUserInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthUser"]);
+					this.httpBasicAuthPwdInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]);
+					this.httpBasicAuthUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthCV"]);
+					this.customSecurityTokenKeyInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenKey"]);
+					this.customSecurityTokenValueInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]);
+					this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);
+					
 				};
 
 				/**
@@ -533,18 +840,19 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries" : this
-											.getRoute(),
-									"stardust:restServiceOverlay::uri" : this.uriInput
-											.val(),
-									"stardust:restServiceOverlay::command" : this.commandSelect
-											.val(),
-									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect
-											.val(),
-									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect
-											.val(),
-									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
-											.prop("checked")
+									"carnot:engine:camel::routeEntries" : this.getRoute(),
+									"stardust:restServiceOverlay::uri" : this.uriInput.val(),
+									"stardust:restServiceOverlay::command" : this.commandSelect.val(),
+									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect.val(),
+									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect.val(),
+									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
+									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
+									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked"),
+									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked")
 								}
 							});
 				};
@@ -564,18 +872,19 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries" : this
-											.getRoute(),
-									"stardust:restServiceOverlay::uri" : this.uriInput
-											.val(),
-									"stardust:restServiceOverlay::command" : this.commandSelect
-											.val(),
-									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect
-											.val(),
-									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect
-											.val(),
-									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
-											.prop("checked")
+									"carnot:engine:camel::routeEntries" : this.getRoute(),
+									"stardust:restServiceOverlay::uri" : this.uriInput.val(),
+									"stardust:restServiceOverlay::command" : this.commandSelect.val(),
+									"stardust:restServiceOverlay::requestType" : this.requestTypeSelect.val(),
+									"stardust:restServiceOverlay::responseType" : this.responseTypeSelect.val(),
+									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
+									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
+									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked"),
+									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked")
 								}
 							}, true);
 				};
@@ -590,6 +899,7 @@ define(
 						this.view.submitChanges(modelElement, true);
 					}
 				};
+				
 
 				/**
 				 * 
@@ -597,12 +907,37 @@ define(
 				RestServiceOverlay.prototype.validate = function() {
 
 					this.uriInput.removeClass("error");
+					this.httpBasicAuthUserInput.removeClass("error");
+					this.httpBasicAuthPwdInput.removeClass("error");
+					this.httpBasicAuthPwdInput.removeClass("warn");
 
 					if (m_utils.isEmptyString(this.uriInput.val())) 
 					{
 						this.view.errorMessages.push("URI must not be empty."); // TODO I18N
 						this.uriInput.addClass("error");
 						return false;
+					}
+					
+					if ("httpBasicAuth" === this.securityModeSelect.val())
+					{
+						if (m_utils.isEmptyString(this.httpBasicAuthUserInput.val())) 
+						{
+							this.view.errorMessages.push("Username for HTTP Basic Authentication must not be empty."); // TODO I18N
+							this.httpBasicAuthUserInput.addClass("error");
+							return false;
+						}
+						
+						if (m_utils.isEmptyString(this.httpBasicAuthPwdInput.val())) 
+						{
+							this.view.errorMessages.push("Pasword for HTTP Basic Authentication must not be empty."); // TODO I18N
+							this.httpBasicAuthPwdInput.addClass("error");
+							return false;
+						}
+						else if (this.httpBasicAuthPwdInput.val().indexOf("${") == 0)
+						{
+							this.view.errorMessages.push("You should be using a configuration variable."); // TODO I18N
+							this.httpBasicAuthPwdInput.addClass("warn");
+						}
 					}
 
 					return true;
