@@ -9,16 +9,13 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:launchPanel name="rulesManagerLauncher"
 			include="/plugins/rules-manager/launchpad/rulesManagerLauncher.xhtml" />
 		<ippui:view name="ruleSetView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/rules-manager/views/ruleSetView.html"
 			controller="ruleSetView" />
-		<ippui:view name="ruleView"
-			include="htmlFrameAdapter.xhtml"
-			controller="ruleView" />
 		<ippui:view name="technicalRuleView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/rules-manager/views/technicalRuleView.html"
 			controller="technicalRuleView" />
 		<ippui:view name="decisionTableView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/rules-manager/views/decisionTableView.html"
 			controller="decisionTableView" />
 	</ippui:perspective>
 </beans>

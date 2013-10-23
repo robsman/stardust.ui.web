@@ -17,28 +17,28 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:launchPanel name="ippBpmAdministrativeActions"
 			include="/plugins/bpm-modeler/launchpad/modelerLauncher.xhtml" />
 		<ippui:view name="modelView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/modelView.html"
 			controller="modelView" />
 		<ippui:view name="processDefinitionView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/processDefinitionView.html"
 			controller="processDefinitionView" />
 		<ippui:view name="genericApplicationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/genericApplicationView.html"
 			controller="genericApplicationView" />
 		<ippui:view name="uiMashupApplicationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html"
 			controller="uiMashupApplicationView" />
 		<ippui:view name="webServiceApplicationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
 			controller="webServiceApplicationView" />
 		<ippui:view name="xsdStructuredDataTypeView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html"
 			controller="xsdStructuredDataTypeView" />
 		<ippui:view name="messageTransformationApplicationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html"
 			controller="messageTransformationApplicationView" />
 		<ippui:view name="camelApplicationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/camelApplicationView.html"
 			controller="camelApplicationView" />
 <!-- 		TODO - delete the following views related code if not needed anymore.
 		<ippui:view name="modelingWorklistView"
@@ -48,16 +48,16 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/bpm-modeler/views/modeler/modelingWorkAssignmentView.xhtml"
 			controller="modelingWorkAssignmentView" /> -->
 		<ippui:view name="roleView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/roleView.html"
 			controller="roleView" />
 		<ippui:view name="organizationView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/organizationView.html"
 			controller="organizationView" />
 		<ippui:view name="conditionalPerformerView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html"
 			controller="conditionalPerformerView" />
 		<ippui:view name="dataView"
-			include="htmlFrameAdapter.xhtml"
+			include="/plugins/bpm-modeler/views/modeler/dataView.html"
 			controller="dataView" />
 	</ippui:perspective>
 	<!-- <ippui:perspective id="test" messageBundles="bpm-modeler-messages">

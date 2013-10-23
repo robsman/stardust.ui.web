@@ -1087,7 +1087,7 @@ public class PortalApplication
             
             // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views
             processHTML5OpenViewCall(view, url,
-                  !view.getDefinition().getInclude().toLowerCase().equals("htmlframeadapter.xhtml"));
+                  !view.getDefinition().getInclude().toLowerCase().endsWith(".html"));
          }
          else
          {

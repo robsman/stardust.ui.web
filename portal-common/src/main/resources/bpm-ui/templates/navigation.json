@@ -15,161 +15,17 @@
 	                "target": "tab",
 	                "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView",
 	                "children": [
-			            {
-			                "label": "{label}",
-			                "id": "Ext/:type/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "partial": "bpm-ui/partials/externalPage.html",
-			                "controller": "bpm-ui.ExternalPageCtrl",
-			                "target": "tab",
-			                "externalURL": ":url"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/modelView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/modelView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/processDefinitionView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/processDefinitionView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/dataView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/dataView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/xsdStructuredDataTypeView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/roleView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/roleView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/conditionalPerformerView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/conditionalPerformerView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/uiMashupApplicationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/messageTransformationApplicationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/organizationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/organizationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/camelApplicationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/camelApplicationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/genericApplicationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/genericApplicationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/webServiceApplicationView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase genericViewIcon",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/ruleView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/ruleView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/ruleSetView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/ruleSetView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/decisionTableView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/decisionTableView.html"
-			            },
-			            {
-			                "label": "{label}",
-			                "id": "Int/technicalRuleView/:id",
-			                "iconBase":"viewIconBase :icon",
-			                "icon":"viewIconBase tabIcon-generic",
-			                "module": "bpm-ui",
-			                "controller": "bpm-ui.InternalPageCtrl",
-			                "partial": "/CONTEXT_ROOT/plugins/rules-manager/views/technicalRuleView.html"
-			            }
+						{
+						    "label": "{label}",
+						    "id": "Ext/:type/:id",
+						    "iconBase":"viewIconBase :icon",
+						    "icon":"viewIconBase tabIcon-generic",
+						    "module": "bpm-ui",
+						    "partial": "bpm-ui/partials/externalPage.html",
+						    "controller": "bpm-ui.ExternalPageCtrl",
+						    "target": "tab",
+						    "externalURL": ":url"
+						}NATIVE_VIEW_DEFS
 					]
 				}
 			]
