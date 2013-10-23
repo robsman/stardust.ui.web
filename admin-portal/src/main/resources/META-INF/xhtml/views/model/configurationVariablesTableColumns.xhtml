@@ -11,12 +11,18 @@
 		<ice:panelGroup rendered="#{empty row.modelName}"
 			style="white-space: nowrap;display:inline;">
 			<ice:inputText partialSubmit="true" value="#{row.value}" 
-				valueChangeListener="#{bean.valueChange}">
+				valueChangeListener="#{bean.valueChange}" rendered="#{row.type == 'String'}">
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-Value" standAlone="false" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:inputText>
 
+			<ice:inputSecret partialSubmit="true" value="#{row.value}" redisplay="true"
+				valueChangeListener="#{bean.valueChange}" rendered="#{row.type == 'Password'}">
+				<pc:automationTag
+					value="auto-ADM-ConfigVariable-ConfigTreeTbl-Value" standAlone="false" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:inputSecret>
 			<ice:outputText value="*" rendered="#{row.edited}"
 				style="color: red;padding-left: 0.5px;font-size: 15px; display:inline;" />
 		</ice:panelGroup>
