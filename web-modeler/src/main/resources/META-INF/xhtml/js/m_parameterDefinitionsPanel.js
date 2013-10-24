@@ -91,6 +91,8 @@ define(
 							+ " #parameterDefinitionIdOutput");
 					this.parameterDefinitionIdOutputLabel = m_utils.jQuerySelect(this.options.scope
 							+ " label[for='parameterDefinitionIdOutput']");
+					this.displayParameterId();
+
 					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
 					
@@ -670,6 +672,27 @@ define(
 				/**
 				 *
 				 */
+				ParameterDefinitionsPanel.prototype.displayParameterId = function() {
+					if (this.options.displayParameterId) {
+						if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
+							if (this.currentParameterDefinition) {
+								this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);	
+							}							
+							this.parameterDefinitionIdOutput.show();
+							this.parameterDefinitionIdOutputLabel.show();
+						} else {
+							this.parameterDefinitionIdOutput.hide();
+							this.parameterDefinitionIdOutputLabel.hide();
+						}
+					} else {
+						this.parameterDefinitionIdOutput.hide();
+						this.parameterDefinitionIdOutputLabel.hide();							
+					}
+				};
+
+				/**
+				 *
+				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
 					if (!this.currentParameterDefinition
 							|| (this.currentParameterDefinition.attributes && this.currentParameterDefinition.attributes["stardust:predefined"])) {
@@ -711,19 +734,7 @@ define(
 									.removeAttr("disabled");
 						}
 
-						if (this.options.displayParameterId) {
-							if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
-								this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);
-								this.parameterDefinitionIdOutput.show();
-								this.parameterDefinitionIdOutputLabel.show();
-							} else {
-								this.parameterDefinitionIdOutput.hide();
-								this.parameterDefinitionIdOutputLabel.hide();
-							}
-						} else {
-							this.parameterDefinitionIdOutput.hide();
-							this.parameterDefinitionIdOutputLabel.hide();							
-						}
+						this.displayParameterId();
 
 						this.parameterDefinitionNameInput
 								.val(this.currentParameterDefinition.name);

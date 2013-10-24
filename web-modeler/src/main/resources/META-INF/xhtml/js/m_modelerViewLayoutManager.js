@@ -123,6 +123,11 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 				m_utils.jQuerySelect(
+						"#dataPathPropertiesPage label[for='parameterDefinitionIdOutput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
+				m_utils.jQuerySelect(
 						"#dataPathPropertiesPage label[for='parameterDefinitionDirectionSelect']")
 						.text(
 								m_i18nUtils
