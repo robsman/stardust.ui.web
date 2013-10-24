@@ -3,19 +3,19 @@
  */
 define([ "bpm-modeler/js/m_utils", 
          "bpm-modeler/js/m_constants",
-		"bpm-modeler/js/m_command", 
-		"bpm-modeler/js/m_commandsController",
-		"bpm-modeler/js/m_dialog", 
-		"bpm-modeler/js/m_urlUtils", 
-		"bpm-modeler/js/m_communicationController",
-		"rules-manager/js/m_uuid", 
-		"rules-manager/js/m_technicalRule",
-		"rules-manager/js/m_decisionTable","bpm-modeler/js/m_model",
-		"rules-manager/js/hotDecisionTable/m_typeParser",
-		"rules-manager/js/m_ruleSetParser",
-		"rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
+		 "bpm-modeler/js/m_command", 
+		 "bpm-modeler/js/m_commandsController",
+		 "bpm-modeler/js/m_dialog", 
+		 "bpm-modeler/js/m_urlUtils", 
+		 "bpm-modeler/js/m_communicationController",
+		 "rules-manager/js/hotDecisionTable/m_utilities", 
+		 "rules-manager/js/m_technicalRule",
+		 "rules-manager/js/m_decisionTable","bpm-modeler/js/m_model",
+		 "rules-manager/js/hotDecisionTable/m_typeParser",
+		 "rules-manager/js/m_ruleSetParser",
+		 "rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
 		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
-		Uuid,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
+		m_utils,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
 		create : function(id, name) {
@@ -116,13 +116,17 @@ define([ "bpm-modeler/js/m_utils",
 			url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets"
 		}, {
 			"success" : function(json) {
+
 				/********/
 				var key,
 					ruleSetHashMap={},
 					tempRset,
 					jsonRset,
 					defaultSerializer={method:"JSON.stringify",version:"0.0"};
-				
+				/*TODO:remove- debugging*/
+				//window.top.ruleSets = ruleSetHashMap;
+				//return;
+				/*************************/
 				for(key in json){
 					if(json.hasOwnProperty(key)){
 						jsonRset=json[key];
@@ -131,7 +135,6 @@ define([ "bpm-modeler/js/m_utils",
 					}
 				}
 				window.top.ruleSets = ruleSetHashMap;
-				return
 				/********/
 			},
 			"error" : function() {
@@ -168,14 +171,14 @@ define([ "bpm-modeler/js/m_utils",
 			this.state=m_stateFactory.create(persisted,dirty,deleted);
 		};
 		RuleSet.prototype.initialize = function(id, name) {
-			this.uuid = Uuid.generate();
+			this.uuid = m_utils.uuidV4();
 			this.id = id;
 			this.name = name;
 			this.creationDate = new Date();
 			this.lastModificationDate = new Date();
 		};
 		RuleSet.prototype.addDecisionTable=function(id,name){
-			var uuid=Uuid.generate();
+			var uuid=m_utils.uuidV4();
 			var decisionTable=DecisionTable.create(this,uuid,id,name);
 			this.decisionTables[uuid]=decisionTable;
 			this.state.isDirty=true;
@@ -199,7 +202,7 @@ define([ "bpm-modeler/js/m_utils",
 		};
 		
 		RuleSet.prototype.addTechnicalRule=function(id,name){
-			var uuid=Uuid.generate();
+			var uuid=m_utils.uuidV4();
 			var techRule=TechnicalRule.create(this,uuid,id,name);
 			this.state.isDirty=true;
 			this.technicalRules[uuid]=techRule;
