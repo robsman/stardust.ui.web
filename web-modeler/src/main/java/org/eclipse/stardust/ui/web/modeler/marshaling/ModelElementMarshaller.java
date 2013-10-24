@@ -827,9 +827,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                ApplicationType application = getApplication(activity);
                if (application != null)
                {
-                  if (!application.getType()
-                        .getId()
-                        .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+                  if (application.getType() == null
+                        || !(application.getType().getId().equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID)))
                   {
                      activityJson.addProperty(
                            ModelerConstants.APPLICATION_FULL_ID_PROPERTY,
