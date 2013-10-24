@@ -907,12 +907,11 @@ define(
 								});
 
 								this.conditionExpressionText.show();
-							} else if (this.fromModelElementType == m_constants.GATEWAY 
-										&& this.modelElement.name) {
+							} /*else if (this.modelElement.name) {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.name);
 								this.conditionExpressionText.show();
-							} else {
+							} */else {
 								this.conditionExpressionText.hide();
 							}
 						}
