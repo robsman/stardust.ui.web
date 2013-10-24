@@ -2903,6 +2903,21 @@ define(
 							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 
+						if (obj.uiState) {
+						  if (obj.uiState.modelLocks) {
+                m_utils.jQuerySelect(obj.uiState.modelLocks).each(function(i, lockInfo) {
+                  var model = m_model.findModel(lockInfo.modelId);
+                  if (model) {
+                    model.editLock = model.editLock || {};
+                    m_utils.inheritFields(model.editLock, lockInfo);
+
+                    var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+                    modelNode.attr("rel", ("lockedByOther" === model.editLock.lockStatus) ? "lockedModel" : "model");
+                  }
+                });
+              }
+						}
+
 						if (command.commandId === "modelLockStatus.update") {
 							if (isModelLockCommand) {
 								m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");

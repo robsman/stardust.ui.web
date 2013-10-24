@@ -445,6 +445,9 @@ define(
 							&& this.attributes["stardust:security:hash"]) {
 						return true;
 					}
+					if (this.editLock && ("lockedByOther" === this.editLock.lockStatus)) {
+					  return true;
+					}
 
 					return false;
 				};
