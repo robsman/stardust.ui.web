@@ -33,12 +33,15 @@ define(
 			"Handsontable",
 			"rules-manager/js/hotDecisionTable/m_popoverFactory",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
-			"rules-manager/js/m_i18nMapper"],
+			"rules-manager/js/m_i18nMapper",
+			"rules-manager/js/m_ruleSetCommandDispatcher",
+			"rules-manager/js/m_ruleSetCommand"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
 				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
 				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,ace2,
 				hotDecisionTable,tableConfig,renderEngines,dataFactory,chFactory,
-				images,treeFactory,ht2,popoverFactory,typeParser,m_i18nMapper) {
+				images,treeFactory,ht2,popoverFactory,typeParser,m_i18nMapper,
+				m_ruleSetCommandDispatcher,m_ruleSetCommand) {
 			return {
 				initialize : function(uuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -82,6 +85,8 @@ define(
 					this.nameInput = m_utils.jQuerySelect("#ruleSetView #nameInput");
 					this.creationDateOutput = m_utils.jQuerySelect("#ruleSetView #creationDateOutput");
 					this.lastModificationDateOutput = m_utils.jQuerySelect("#ruleSetView #lastModificationDateOutput");
+					this.parameterMappingsPanelAnchor = m_utils.jQuerySelect("#parameterMappingsPanelAnchor");
+					
 					codeEditSelector="ruleSetCodeEditor";
 
 				    //initialize tabs control
@@ -90,15 +95,53 @@ define(
 					/*Bind ruleSet description to our description textArea*/
 					$descriptionTextArea=m_utils.jQuerySelect("#descriptionTextarea");
 					$descriptionTextArea.val(ruleSet.description);
+					
+					/* Bind change events to our ruleSet and our toplevel processor
+					 * Outgoing events....
+					 * */
 					$descriptionTextArea.on("change",function(event){
 						ruleSet.description=$descriptionTextArea.val();
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand();
+						var cmd=m_ruleSetCommand.ruleSetDescriptionCmd(
+								ruleSet,ruleSet.description,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
 						console.log(event);
 					});
 					
-
-					this.parameterMappingsPanelAnchor = m_utils.jQuerySelect("#parameterMappingsPanelAnchor");
+					/*Bind our description textarea to incoming events from our top level processor.*/
+					m_ruleSetCommandDispatcher.register($descriptionTextArea,"RuleSet.Description.Change");
+					$descriptionTextArea.on("RuleSet.Description.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(ruleSet.uuid ===uuid && $descriptionTextArea.val()!=newVal){
+							$descriptionTextArea.val(newVal);
+						}
+					});
+					
+					/*Bind our nameInput field to incoming events from our top level processor.*/
+					m_ruleSetCommandDispatcher.register(this.nameInput,"RuleSet.Name.Change");
+					var $nameInput=this.nameInput;
+					this.nameInput.on("RuleSet.Name.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(ruleSet.uuid ===uuid && $nameInput.val()!=newVal){
+							$nameInput.val(newVal);
+						}
+					});
+					
+					/*Bind our Parameter Definition panel  to incoming events from our top level processor.*/
+					var $that=$(this);
+					m_ruleSetCommandDispatcher.register($that,"RuleSet.Fact.Change");
+					$that.on("RuleSet.Fact.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(ruleSet.uuid ===uuid){
+							$that[0].parameterMappingsPanel
+							.setParameterDefinitions($that[0].ruleSet.parameterDefinitions);
+						}
+					});
+					
+					
 
 					var view = this;
 
@@ -145,11 +188,11 @@ define(
 										event.data.view.ruleSet.name = event.data.view.nameInput.val();
 										event.data.view.renameView(event.data.view.ruleSet);
 										ruleSet.state.isDirty=true;
-										CommandsDispatcher.submitCommand({
-											name:"RuleSet.Rename",
-											ruleSet:event.data.view.ruleSet,
-											changes:[oldName, event.data.view.ruleSet.name]
-										});
+										
+										var cmd=m_ruleSetCommand.ruleSetRenameCmd(
+												ruleSet,event.data.view.ruleSet.name,event);
+										m_ruleSetCommandDispatcher.trigger(cmd);
+
 									});
 					m_utils.jQuerySelect("#runButton")
 							.click(
@@ -320,6 +363,10 @@ define(
 
 					this.ruleSet.parameterDefinitions = parameterDefinitions;
 					this.ruleSet.state.isDirty=true;
+					var cmd=m_ruleSetCommand.ruleSetFactCmd(
+							this.ruleSet,parameterDefinitions,undefined);
+					m_ruleSetCommandDispatcher.trigger(cmd);
+					
 					m_utils.debug("Facts:");
 					m_utils.debug(parameterDefinitions);
 

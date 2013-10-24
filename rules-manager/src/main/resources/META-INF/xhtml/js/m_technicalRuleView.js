@@ -14,9 +14,12 @@ define(
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/m_ruleSet", 
 			"rules-manager/js/m_drlAceEditor",
-			"rules-manager/js/m_i18nMapper"],
+			"rules-manager/js/m_i18nMapper",
+			"rules-manager/js/m_ruleSetCommandDispatcher",
+			"rules-manager/js/m_ruleSetCommand"],
 		function(m_utils,CommandsDispatcher, 
-				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper) {
+				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper,
+				 m_ruleSetCommandDispatcher,m_ruleSetCommand) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -41,6 +44,7 @@ define(
 						findFunc,		  	/*Function wrapper for DRL editor find function*/   
 						fontSizeMenu,       /*string-domFrag for our fontsize options for ACE*/
 						$fontSizeMenu,      /*Menu containing font size options for the drlEditor*/
+						$drlEditorTextArea, /*JQUERY wrapped textarea of our DRLeditor.*/
 						fontSizeMenuHandler;/*handler for click events on $fontSizeMenu*/
 					
 					
@@ -85,6 +89,7 @@ define(
 					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
 					 * command dispatches.*/
 					this.processCommand=function(cmd){
+						return;
 						switch(cmd.name){
 						case "TechnicalRule.Rename":
 							if (cmd.techRule.uuid === techRule.uuid) {
@@ -232,33 +237,66 @@ define(
 					uiElements.themeDropdown.on("click",themeMenuHandler);
 					var view = this;
 					
+					/*Binding UIElement to incoming events from our top level command processor*/
+					m_ruleSetCommandDispatcher.register(uiElements.nameInput,"Rule.Name.Change");
+					uiElements.nameInput.on("Rule.Name.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(techRule.uuid ===uuid && uiElements.nameInput.val()!=newVal){
+							uiElements.nameInput.val(newVal);
+						}
+					});
+					
+					/*Binding UIElement to incoming events from our top level command processor*/
+					$drlEditorTextArea=$(uiElements.drlEditorTextArea);
+					m_ruleSetCommandDispatcher.register($drlEditorTextArea,"Rule.Script.Change");
+					$drlEditorTextArea.on("Rule.Script.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(techRule.uuid ===uuid && $drlEditorTextArea.val()!=newVal){
+							uiElements.drlEditor.setValue(newVal);
+						}
+					});
+					
+					/*Binding UIElement to incoming events from our top level command processor*/
+					m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,"Rule.Description.Change");
+					uiElements.descriptionTextarea.on("Rule.Description.Change",function(event,data){
+						var uuid=data.elementID;
+						var newVal=data.changes[0].value.after;
+						if(techRule.uuid ===uuid && uiElements.descriptionTextarea.val()!=newVal){
+							uiElements.descriptionTextarea.val(newVal);
+						}
+					});
+					
 					/*bind our nameInput control to the actual name of the technical rule in our ruleset* */
-					uiElements.nameInput.change({view : this}, function() {
+					uiElements.nameInput.change({view : this}, function(event) {
 						var oldName = techRule.name;
 						techRule.name = uiElements.nameInput.val();
 						view.renameView(techRule);
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand({
-							name:"TechnicalRule.Rename",
-							techRule:techRule,
-							ruleSet:ruleSet,
-							changes:[oldName, techRule.name]
-						});
+						var cmd=m_ruleSetCommand.ruleRenameCmd(
+								ruleSet,techRule,techRule.name,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
 					});
 					
 					/*bind our description textarea to the descritpion attribute on our technicalRule*/
 					uiElements.descriptionTextarea.val(techRule.description);
-					uiElements.descriptionTextarea.on("change",function(){
+					uiElements.descriptionTextarea.on("change",function(event){
 						techRule.description=uiElements.descriptionTextarea.val();
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand();
+						var cmd=m_ruleSetCommand.ruleDescriptionCmd(
+								ruleSet,techRule,techRule.description,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
 					});
 					
 					/*binding ruleset technical rule drl to change events on our drlEditor textarea*/
-					uiElements.drlEditor.editor.on("change",function(event){
+					uiElements.drlEditor.editor.on("blur",function(event){
 						var tempVal=uiElements.drlEditor.getValue();
 						ruleSet.state.isDirty=true;
 						techRule.setDRL(tempVal);
+						var cmd=m_ruleSetCommand.ruleScriptChangeCmd(
+								ruleSet,techRule,tempVal,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
 					});
 					
 					uiElements.stringifyParamDefs.on("click",function(){

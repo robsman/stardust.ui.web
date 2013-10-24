@@ -20,9 +20,13 @@ define(
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory",
-			"rules-manager/js/m_i18nMapper"],
+			"rules-manager/js/m_i18nMapper",
+			"rules-manager/js/m_ruleSetCommandDispatcher",
+			"rules-manager/js/m_ruleSetCommand"],
 		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
-				hotDecisionTable,tableConfig,images,treeFactory,typeParser,operatorMenuFactory,m_i18nMapper) {
+				hotDecisionTable,tableConfig,images,treeFactory,
+				typeParser,operatorMenuFactory,m_i18nMapper,
+				m_ruleSetCommandDispatcher,m_ruleSetCommand) {
 			return {
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
@@ -44,6 +48,7 @@ define(
 						decTblSelector,   /*selector for our decision table*/
 						codeEditSelector, /*selector for the Ace Code editor linked to the decision table*/
 						newID,            /*because I don't trust HoT, Lets make a unique ID for the instance rootElement*/
+						lastCmdID,        /*ID of the last DecisionTable.data.cmd sent to the $sink*/
 						decTblInstance;   /*instance of handsontable/dectbl with methods etc..*/
 					
 					
@@ -78,6 +83,7 @@ define(
 					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
 					 * command dispatches.*/
 					this.processCommand=function(cmd){
+						return;
 						switch(cmd.name){
 						case "DecisionTable.Rename":
 							if (cmd.decTable.uuid === decTable.uuid) {
@@ -119,6 +125,73 @@ define(
 					var extData=$.extend(decTableData,tableConfig);
 				    hotDecisionTable.initialize(uiElements.decisionTable,extData);
 				    uiElements.decisionTableInstance= uiElements.decisionTable.handsontable('getInstance');
+
+				    /*bind UIElements to events from our top level command processor*/
+				    m_ruleSetCommandDispatcher.register(uiElements.nameInput,"DecisionTable.Name.Change");
+				    uiElements.nameInput.on("DecisionTable.Name.Change",function(event,data){
+				    	var elementID=data.elementID;
+				    	var newVal=data.changes[0].value.after;
+				    	if (elementID === decTable.uuid && newVal !=uiElements.nameInput.val) {
+							uiElements.nameInput.val(newVal);
+						}
+				    });
+				    
+				    /*bind UIElements to events from our top level command processor*/
+				    m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,"DecisionTable.Description.Change");
+				    uiElements.descriptionTextarea.on("DecisionTable.Description.Change",function(event,data){
+				    	var elementID=data.elementID;
+				    	var newVal=data.changes[0].value.after;
+				    	if (elementID === decTable.uuid && newVal !=uiElements.descriptionTextarea.val) {
+							uiElements.descriptionTextarea.val(newVal);
+						}
+				    });
+				    
+				    /*TODO:remove after closure issue addressed*/
+				    var snapshotBuilder=function(obj){
+				    	var snapShot={
+			    			columns: obj.columns.slice(0),
+					        data: obj.data.slice(0),
+					        colWidths: obj.colWidths.slice(0),
+					        colHeaders: obj.colHeaders.slice(0)
+				    	}
+				    	return function(){
+				    		return snapShot;
+				    	}
+				    }
+
+				    /*Hook for the change event of our table: Saved for undo redo functionality*/
+				    var afterChangeFunc=function(changes,source){
+				    	console.log("Decision Table Change event , native...");
+						var settings=uiElements.decisionTableInstance.getSettings();
+						var dataSnapshot={
+							columns: settings.columns.slice(0),
+					        data: settings.data.slice(0),
+					        colWidths: settings.colWidths.slice(0),
+					        colHeaders: settings.colHeaders.slice(0)
+						};
+						console.log(dataSnapshot)
+						var cmd=m_ruleSetCommand.decTableDataCmd(
+								ruleSet,decTable,snapshotBuilder(settings)(),event);
+						lastCmdID=cmd.id;
+						m_ruleSetCommandDispatcher.trigger(cmd);
+						ruleSet.state.isDirty=true;
+				    };
+					uiElements.decisionTableInstance.addHook('afterChange',afterChangeFunc);
+					
+				    /*bind UIElements to events from our top level command processor*/
+				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,"DecisionTable.Data.Change");
+				    uiElements.decisionTableInstance.rootElement.on("DecisionTable.Data.Change",function(event,data){
+				    	var elementID=data.elementID;
+				    	var newVal=data.changes[0].value.after;
+				    	console.log("DecisionTable.Data.Change received from sink");
+				    	if (elementID === decTable.uuid) {
+							console.log(newVal);
+							uiElements.decisionTableInstance.removeHook("afterChange",afterChangeFunc);
+							uiElements.decisionTableInstance.updateSettings(snapshotBuilder(newVal)());
+							uiElements.decisionTableInstance.addHook("afterChange",afterChangeFunc);
+						}
+				    });
+				    
 				    
 				    
 				    /*bind behavior to our hideNonDataCols UIElement. ON click we toggle between 
@@ -287,12 +360,6 @@ define(
 					
 					var view = this;
 					
-					/*Hook for the change event of our table: Saved for undo redo functionality*/
-					uiElements.decisionTableInstance.addHook('afterChange', function(changes,source) {
-						console.log("Decision Table Change event...");
-						ruleSet.state.isDirty=true;
-					});
-					
 					/* Adding a hook for column resizing as this value was not actually being saved into
 					 * the HandsOnTable config settings by the HoT widget (and thus not reflected in our ruleSet data).
 					 */
@@ -303,10 +370,12 @@ define(
 					
 					/*binding textarea to the description attribute of our decision table*/
 					uiElements.descriptionTextarea.val(decTable.description);
-					uiElements.descriptionTextarea.on("change",function(){
+					uiElements.descriptionTextarea.on("change",function(event){
 						decTable.description=uiElements.descriptionTextarea.val();
-						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand();
+						ruleSet.state.isDirty=true;	
+						var cmd=m_ruleSetCommand.decTableDescriptionCmd(
+								ruleSet,decTable,decTable.description,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
 					});
 					
 					/*binding input element to the value of the decisiontable name referenced in our ruleSet*/
@@ -315,12 +384,10 @@ define(
 						decTable.name = uiElements.nameInput.val();
 						view.renameView(decTable);
 						ruleSet.state.isDirty=true;
-						CommandsDispatcher.submitCommand({
-							name:"DecisionTable.Rename",
-							decTable:decTable,
-							ruleSet:ruleSet,
-							changes:[oldName, decTable.name]
-						});
+						var cmd=m_ruleSetCommand.decTableRenameCmd(
+								ruleSet,decTable,decTable.name,event);
+						m_ruleSetCommandDispatcher.trigger(cmd);
+
 					});
 					
 					this.activate(ruleSet,false,decTable,uiElements);
