@@ -38,21 +38,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		console.log("-----Facets-----");
 		console.log(facets);
 		facetsObj=facetBuilder(facets);
-		
-		//facetsCount=facets.length;
-		//facetsObj.enumeration=[];
-		/*convert facets to flattened object*/
-		/*
-		while(facetsCount--){
-			facetTemp=facets[facetsCount];
-			if(facetTemp.classifier==="enumeration"){
-				facetsObj.enumeration.push(facetTemp.name);
-			}
-			else{
-				facetsObj[facetTemp.classifier]=facetTemp.name;
-			}
-		}*/
-		//facetsObj=facetBuilder(facets);
+
 		/*create our typeBody object which fx can process*/
 		typeBody[0]=facetsObj;
 		typeBody[0].type="enumeration";
@@ -119,6 +105,8 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
         	  };
         /*an obj with a body prop means it has children we need to add*/
         if(obj.body){
+        	console.log("Recursing");
+        	console.log(obj);
           temp.children=fx(obj.body); //...and recurse
         }
         data.push(temp); 
