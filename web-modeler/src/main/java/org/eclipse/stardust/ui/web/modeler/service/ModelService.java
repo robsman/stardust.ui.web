@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.wsdl.Binding;
 import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
@@ -50,6 +49,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
@@ -122,18 +122,19 @@ import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -371,7 +372,13 @@ public class ModelService
       {
          destroyModelingSession();
       }
-      return sessionManager.currentSession(me.getCurrentUserId());
+      ModelingSession currentSession = sessionManager.getOrCreateSession(me);
+      if (me.isAdministrator())
+      {
+         currentSession.setSessionAttribute(ModelingSession.SUPERUSER, true);
+      }
+
+      return currentSession;
    }
 
    /**
@@ -478,7 +485,7 @@ public class ModelService
     */
    private EditingSession getEditingSession(ModelType model)
    {
-      return currentSession().getSession(model);
+      return currentSession().getEditSession(model);
    }
 
    /**
@@ -496,36 +503,37 @@ public class ModelService
    {
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(account);
-      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-
-      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allInvitedUsers = new JsonObject();
       allInvitedUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
       allInvitedUsers.addProperty("account", account);
       allInvitedUsers.addProperty("timestamp", System.currentTimeMillis());
       allInvitedUsers.addProperty("path", "users");
-      allInvitedUsers.addProperty("ownerColor",
-            Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
       allInvitedUsers.addProperty("operation", "updateCollaborators");
 
       JsonObject old = new JsonObject();
-      JsonArray allUsers = new JsonArray();
-      Collection<User> collaborators = currentSession.getAllCollaborators();
-      for (User user : collaborators)
-      {
-         JsonObject userJson = new JsonObject();
-         userJson.addProperty("account", user.getAccount());
-         userJson.addProperty("firstName", user.getFirstName());
-         userJson.addProperty("lastName", user.getLastName());
-         userJson.addProperty("email", user.getEMail());
-         userJson.addProperty("imageUrl", "");
-         trace.info(">>>>>>>>>>>>>>>> usercolour: "
-               + Integer.toHexString(currentSession.getColor(user).getRGB()));
-         userJson.addProperty("color",
-               Integer.toHexString(currentSession.getColor(user).getRGB() & 0x00ffffff));
 
-         allUsers.add(userJson);
+      JsonArray allUsers = new JsonArray();
+      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
+      if (null != currentSession)
+      {
+         allInvitedUsers.addProperty("ownerColor",
+               Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
+         for (User user : currentSession.getAllCollaborators())
+         {
+            JsonObject userJson = new JsonObject();
+            userJson.addProperty("account", user.getAccount());
+            userJson.addProperty("firstName", user.getFirstName());
+            userJson.addProperty("lastName", user.getLastName());
+            userJson.addProperty("email", user.getEMail());
+            userJson.addProperty("imageUrl", "");
+            trace.info(">>>>>>>>>>>>>>>> usercolour: "
+                  + Integer.toHexString(currentSession.getColor(user).getRGB()));
+            userJson.addProperty("color", Integer.toHexString(currentSession.getColor(
+                  user).getRGB() & 0x00ffffff));
+
+            allUsers.add(userJson);
+         }
       }
       old.add("users", allUsers);
       allInvitedUsers.add("oldObject", old);
@@ -544,9 +552,6 @@ public class ModelService
    {
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(account);
-      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-
-      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allProspectUsers = new JsonObject();
       allProspectUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
@@ -557,17 +562,21 @@ public class ModelService
 
       JsonObject old = new JsonObject();
       JsonArray allUsers = new JsonArray();
-      Collection<User> prospects = currentSession.getAllProspects();
-      for (User user : prospects)
-      {
-         JsonObject userJson = new JsonObject();
-         userJson.addProperty("account", user.getAccount());
-         userJson.addProperty("firstName", user.getFirstName());
-         userJson.addProperty("lastName", user.getLastName());
-         userJson.addProperty("email", user.getEMail());
-         userJson.addProperty("imageUrl", "");
 
-         allUsers.add(userJson);
+      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
+      if (null != currentSession)
+      {
+         for (User user : currentSession.getAllProspects())
+         {
+            JsonObject userJson = new JsonObject();
+            userJson.addProperty("account", user.getAccount());
+            userJson.addProperty("firstName", user.getFirstName());
+            userJson.addProperty("lastName", user.getLastName());
+            userJson.addProperty("email", user.getEMail());
+            userJson.addProperty("imageUrl", "");
+
+            allUsers.add(userJson);
+         }
       }
       old.add("users", allUsers);
       allProspectUsers.add("oldObject", old);
@@ -578,10 +587,9 @@ public class ModelService
 
    }
 
-   public String getLoggedInUser(ServletContext context)
+   public String getLoggedInUser()
    {
-      PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(context)
-            .getBean(PortalApplication.class);
+      PortalApplication app = context.getBean(PortalApplication.class);
       org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
       JsonObject currentUserJson = new JsonObject();
       currentUserJson.addProperty(TYPE_PROPERTY, "WHO_AM_I");
@@ -648,7 +656,7 @@ public class ModelService
             catch (Exception e)
             {
                JsonObject failedModel = new JsonObject();
-               failedModel.addProperty("id", ((ModelType) model).getId());
+               failedModel.addProperty("id", modelRepository.getModelBinding(model).getModelId(model));
                failedModel.addProperty("uuid",  uuidMapper().getUUID(model));
                failedModel.addProperty("error", e.getMessage());
                failed.add(failedModel);
@@ -675,6 +683,12 @@ public class ModelService
    public void saveModel(String modelId)
    {
       ModelType model = findModel(modelId);
+
+      if (!currentSession().canSaveModel(modelId))
+      {
+         throw new MissingWritePermissionException(
+               "Failed to (re-)validate edit lock on model " + modelId);
+      }
 
       getModelManagementStrategy().saveModel(model);
    }
@@ -704,6 +718,16 @@ public class ModelService
       // yet.
       // After that happens this code can be deleted.
       Collection<ModelType> models = getModelManagementStrategy().getModels().values();
+
+      for (ModelType model : models)
+      {
+         if ( !currentSession().canSaveModel(model.getId()))
+         {
+            throw new MissingWritePermissionException(
+                  "Failed to (re-)validate edit lock on model " + model.getId());
+         }
+      }
+
       for (ModelType model : models)
       {
          try
@@ -712,13 +736,13 @@ public class ModelService
             {
                getModelManagementStrategy().saveModel(model);
             }
-            getEditingSession(model).clearUndoRedoStack();
          }
          catch (Exception e)
          {
             trace.warn("Failed saving model " + getModelFileName(model.getId()), e);
          }
       }
+      currentSession().reset();
    }
 
    /**
@@ -3070,11 +3094,11 @@ public class ModelService
 
       if(postedData.has("defaultValue"))
       {
-         modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());   
+         modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
       }
       if(postedData.has("description"))
       {
-         modelVariable.setDescription(postedData.get("description").getAsString());   
+         modelVariable.setDescription(postedData.get("description").getAsString());
       }
       variableContext.saveVariables();
 

@@ -121,6 +121,7 @@ import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelE
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -147,8 +148,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private Map<Class<? >, String[]> propertiesMap;
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
-   
-   protected abstract ClassLoaderProvider classLoaderProvider();
+
+   protected abstract ModelingSession modelingSession();
 
    // TODO For documentation creation
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
@@ -2385,7 +2386,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          if (hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
          {
              JsonObject attributeJson = json.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
-             if (hasNotJsonNull(attributeJson, PredefinedConstants.CLASS_NAME_ATT)) 
+             if (hasNotJsonNull(attributeJson, PredefinedConstants.CLASS_NAME_ATT))
              {
                 String className=attributeJson.get(PredefinedConstants.CLASS_NAME_ATT).getAsString();
                 JsonArray facets = loadEnumForStructuredType(className);
@@ -2577,9 +2578,9 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          ModelBuilderFacade.setAttribute(data, "carnot:engine:defaultValue", "");
       }
    }
-   
+
    /**
-    * 
+    *
     * @param className
     * @return
     */
@@ -2591,7 +2592,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          Class< ? > clsTarget = null;
          try
          {
-            clsTarget = classLoaderProvider().classLoader().loadClass(className);
+            clsTarget = modelingSession().classLoaderProvider().classLoader().loadClass(className);
             if (null != clsTarget)
             {
                Object[] consts = clsTarget.getEnumConstants();

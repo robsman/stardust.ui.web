@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static org.eclipse.emf.common.util.ECollections.sort;
+import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingDiagram;
@@ -38,6 +39,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeDescriptionJto;
@@ -60,7 +63,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    protected abstract ModelManagementStrategy modelManagementStrategy();
 
-   protected abstract ClassLoaderProvider classLoaderProvider();
+   protected abstract ModelingSession modelingSession();
 
    private ModelBuilderFacade modelBuilderFacade;
 
@@ -1248,7 +1251,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             ModelerConstants.EVENT_SYMBOL);
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             startEventSymbol.getElementOid());
-      eventSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY, 
+      eventSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(startEventSymbol));
 
       // TODO check this math
@@ -2229,7 +2232,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          }
 
          Method method = ClassesHelper.getMethodBySignature(
-               classLoaderProvider().classLoader(), className, methodName);
+               modelingSession().classLoaderProvider().classLoader(), className, methodName);
 
          ClassesHelper.addParameterAccessPoints(accessPointsJson, method);
          ClassesHelper.addReturnTypeAccessPoint(accessPointsJson, method);
@@ -2703,6 +2706,20 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    {
          JsonObject modelJson = new JsonObject();
 
+	      JsonObject lockInfoJson = new JsonObject();
+	      LockInfo lockInfo = modelingSession().getEditLockInfo(model);
+	      if (null != lockInfo)
+         {
+            lockInfoJson.addProperty("lockStatus", lockInfo
+                  .isLockedBySession(modelingSession()) ? "lockedByMe" : "lockedByOther");
+            // TODO provide full name of the "other"
+            lockInfoJson.addProperty("ownerId", lockInfo.ownerId);
+            lockInfoJson.addProperty("ownerName", lockInfo.ownerName);
+            lockInfoJson.addProperty("canBreakEditLock",
+                  lockInfo.canBreakEditLock(modelingSession()));
+         }
+	      modelJson.add("editLock", lockInfoJson);
+
          modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
          modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
          modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
@@ -2730,7 +2747,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
          loadAttributes(model, modelJson);
 
-         if (model.getDescription() != null)
+	      if ((model.getDescription() != null) && !isEmpty(model.getDescription().getMixed()))
          {
             modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
                   (String) model.getDescription().getMixed().get(0).getValue());

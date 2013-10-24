@@ -23,7 +23,19 @@
       </property>
    </bean>
 
-   <bean class="org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider" />
+   <bean name="regularTestUserIdProvider" class="org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider" primary="true">
+      <constructor-arg index="0" value="regular-user" />
+      <constructor-arg index="1" value="Regular User" />
+   </bean>
+
+   <bean name="otherRegularTestUserIdProvider" class="org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider" primary="false">
+      <constructor-arg index="0" value="other-regular-user" />
+      <constructor-arg index="1" value="Other Regular User" />
+   </bean>
+
+   <bean name="adminTestUserIdProvider" class="org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider" primary="false">
+      <constructor-arg index="0" value="admin" />
+   </bean>
 
    <bean class="org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator"
    	  scope="session" />
