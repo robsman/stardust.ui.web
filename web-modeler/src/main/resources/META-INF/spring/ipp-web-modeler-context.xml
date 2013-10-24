@@ -60,9 +60,7 @@
 		<qualifier value="test" />
 	</bean>
 
-	<bean id="modelerResource" class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource">
-		<property name="modelService" ref="modelService" />
-	</bean>
+	<bean id="modelerResource" class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource" />
 
 	<bean id="genericApplicationView" class="org.eclipse.stardust.ui.web.modeler.portal.GenericApplicationView">
 		<property name="modelService" ref="modelService" />
