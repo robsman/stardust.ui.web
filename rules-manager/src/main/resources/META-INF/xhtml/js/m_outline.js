@@ -26,18 +26,23 @@ define(
 				"rules-manager/js/m_outlineToolbarController",
 				"rules-manager/js/m_commandsDispatcher",
 				"rules-manager/js/m_ruleSet",
-				"rules-manager/js/m_i18nMapper"],
+				"rules-manager/js/m_i18nMapper",
+				"rules-manager/js/m_ruleSetCommandDispatcher",
+				"rules-manager/js/m_ruleSetCommand"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
 				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
-				m_outlineToolbarController, CommandsDispatcher, RuleSet, m_i18nMapper) {
+				m_outlineToolbarController, CommandsDispatcher, RuleSet, m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand) {
+			
+			
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
-
 			var displayScope = "";
 			var viewManager;
-
+			
+			
+			
 			var readAllRuleSets = function(force) {
 
 				// Needed for types
@@ -73,11 +78,13 @@ define(
 				m_utils.debug("Tree initialized");
 
 				hasUnsavedModifications = false;
-				jQuery("#undoChange").addClass("toolDisabled");
-				jQuery("#redoChange").addClass("toolDisabled");
+				//jQuery("#undoChange").addClass("toolDisabled");
+				//jQuery("#redoChange").addClass("toolDisabled");
 			};
 			
 			var createRuleSetNode = function(ruleSet) {
+				var node=jQuery(displayScope + "#outline").jstree('get_selected').trigger("blur");
+				$("a",node).removeClass("jstree-clicked");
 				jQuery(displayScope + "#outline").jstree("create", displayScope + "#outline",
 						"last", {
 							"attr" : {
@@ -235,11 +242,9 @@ define(
 					if(oldName != newName){
 						ruleSet.state.isDirty=true;
 					}
-					CommandsDispatcher.submitCommand({
-						name:"RuleSet.Rename",
-						ruleSet:ruleSet,
-						changes:[oldName,newName]
-					});
+					var cmd=m_ruleSetCommand.ruleSetRenameCmd(
+							ruleSet,newName,event);
+					m_ruleSetCommandDispatcher.trigger(cmd);
 				} 
 				else if(nodeType=="DecisionTable"){
 					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
@@ -250,13 +255,9 @@ define(
 					if(oldName != newName){
 						ruleSet.state.isDirty=true;
 					}
-					CommandsDispatcher.submitCommand({
-						name:"DecisionTable.Rename",
-						decTable:decTable,
-						ruleSet:ruleSet,
-						changes:[oldName,newName]
-					});
-					
+					var cmd=m_ruleSetCommand.decTableRenameCmd(
+							ruleSet,decTable,decTable.name,{});
+					m_ruleSetCommandDispatcher.trigger(cmd);
 				}
 				else if(nodeType=="TechnicalRule"){
 					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
@@ -267,12 +268,9 @@ define(
 					if(oldName != newName){
 						ruleSet.state.isDirty=true;
 					}
-					CommandsDispatcher.submitCommand({
-						name:"TechnicalRule.Rename",
-						techRule:techRule,
-						ruleSet:ruleSet,
-						changes:[oldName,newName]
-					});
+					var cmd=m_ruleSetCommand.ruleRenameCmd(
+							ruleSet,techRule,newName,event);
+					m_ruleSetCommandDispatcher.trigger(cmd);
 					
 				}
 			};
@@ -580,6 +578,42 @@ define(
 
 				// Tree Node Selection
 				var jsOutlineTree=jQuery(displayScope + "#outline");
+				
+				/*Set up command processing for our jsTree instance*/
+				var jsTreeRegisterHooks=[
+				                   "DecisionTable.Name.Change",
+				                   "DecisionTable.Description.Change",
+				                   "RuleSet.Name.Change",
+				                   "RuleSet.Description.Change",
+				                   "Rule.Name.Change",
+				                   "Rule.Description.Change"];
+				
+				m_ruleSetCommandDispatcher.register(jsOutlineTree,jsTreeRegisterHooks);
+				
+				jsOutlineTree.on("DecisionTable.Name.Change RuleSet.Name.Change Rule.Name.Change",function(event,data){
+					var elementID=data.elementID;
+					var link = m_utils.jQuerySelect("li#" + elementID + " a")[0];
+					var node = m_utils.jQuerySelect("li#" + elementID);
+					var newVal=data.changes[0].value.after;
+					
+					if (node.attr("name") != newVal) {
+						node.attr("name", newVal);
+						var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
+						textElem.nodeValue = newVal;
+					}
+				});
+				
+				jsOutlineTree.on("DecisionTable.Description.Change RuleSet.Description.Change Rule.Description.Change",function(event,data){
+					var elementID=data.elementID;
+					var link = m_utils.jQuerySelect("li#" + elementID + " a")[0];
+					var node = m_utils.jQuerySelect("li#" + elementID);
+					var newVal=data.changes[0].value.after;
+					
+					if (node.attr("title") != newVal) {
+						node.attr("title", newVal);
+					}
+				});
+				
 				jsOutlineTree.css("display","none");
 				jQuery(displayScope + "#outline")
 					.bind("loaded.jstree",function(){
@@ -857,14 +891,17 @@ define(
 				// "default");
 
 				var handleToolbarEvents = function(event, data) {
+					console.log(data);
 					if ("createRuleSet" == data.id) {
 						createRuleSet();
 					} else if ("importRuleSet" == data.id) {
 						importRuleSet();
 					} else if ("undoChange" == data.id) {
-						undoMostCurrent();
-					} else if ("redoChange" == data.id) {
-						redoLastUndo();
+						var cmd=m_ruleSetCommand.ruleSetUndoCmd();
+						m_ruleSetCommandDispatcher.trigger(cmd);
+					} else if ("redoChange" == data.id) {	
+						var cmd=m_ruleSetCommand.ruleSetRedoCmd();
+						m_ruleSetCommandDispatcher.trigger(cmd);
 					} else if ("saveAllRules" == data.id) {
 						saveRuleSets();
 					} else if ("refreshRules" == data.id) {
@@ -1068,12 +1105,20 @@ define(
 				 */
 				Outline.prototype.initialize = function() {
 					CommandsDispatcher.registerCommandHandler(this);
+					
+					/*quick initialization of ruleSet dispatcher if null.*/
+					console.log("testing command sink");
+					console.log(m_ruleSetCommandDispatcher);
+					m_ruleSetCommandDispatcher.register("Bob","something");
+					
+					
 					this.createRuleSetButton = jQuery("#createRuleSetButton");
-
+					
 					this.createRuleSetButton.click({
 						outline : this
 					}, function(event) {
-						event.data.outline.createRuleSet()
+						event.data.outline.createRuleSet();
+						m_ruleSetCommandDispatcher.trigger({name: "RuleSet.command"});
 					});
 				};
 
@@ -1087,7 +1132,6 @@ define(
 					var ruleSet = RuleSet.create(id, name);
 					//CommandsDispatcher.submitCommand();
 					createRuleSetNode(ruleSet);
-					
 					viewManager.openView("ruleSetView",
 							"id=" + ruleSet.id + "&name=" + ruleSet.name
 									+ "&uuid=" + ruleSet.uuid, ruleSet.uuid);
@@ -1113,7 +1157,7 @@ define(
 					} else if (command.name === "TechnicalRule.Rename") {
 						uuid = command.techRule.uuid;
 					}
-					
+					return;
 					if (uuid) {
 						var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
 						var node = m_utils.jQuerySelect("li#" + uuid);
