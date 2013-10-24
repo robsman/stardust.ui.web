@@ -26,7 +26,6 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -37,8 +36,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.xsd.*;
 import org.springframework.context.ApplicationContext;
@@ -179,22 +176,8 @@ public class DataChangeCommandHandler
          xsdElementDeclaration.setTypeDefinition(xsdTypeDefinition);
          xsdSchema.getContents().add(xsdElementDeclaration);
 
-         new ModelElementUnmarshaller()
-         {
-            @Override
-            protected ModelManagementStrategy modelManagementStrategy()
-            {
-               // TODO Auto-generated method stub
-               return null;
-            }
-
-            @Override
-            protected ClassLoaderProvider classLoaderProvider()
-            {
-               // TODO Auto-generated method stub
-               return null;
-            }
-         }.populateFromJson(declaration, request);
+         modelService().currentSession().modelElementUnmarshaller()
+               .populateFromJson(declaration, request);
       }
 
       // Map newly created data element to a UUID
