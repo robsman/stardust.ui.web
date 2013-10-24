@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.html5.rest;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -40,6 +42,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.UserUtils;
 import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
+import org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils;
 
 
 /**
@@ -167,11 +170,44 @@ public class HTML5FrameworkServices
          stylesJson = sb.toString();
       }
       
+      contents = addPluginViewIconStyleSheets(contents);
       contents = StringUtils.replace(contents, "PORAL_SKIN_STYLE_SHEETS", stylesJson);
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
+   /**
+    * @param contents
+    * @return
+    */
+   public String addPluginViewIconStyleSheets(String contents)
+   {
+      final String STYLE_FILE_POSTFIX = "-icons.css";
+      final String STYLES_FILE_PATH = "xhtml/css/*-icons.css";
+      StringBuffer pluginIconsStyles = new StringBuffer("");
+
+      try
+      {
+         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(appContext,
+               STYLES_FILE_PATH);
+         for (String fileName : cssFileNames)
+         {
+            String pluginName = (fileName.substring(0, fileName.indexOf(STYLE_FILE_POSTFIX)));
+            pluginIconsStyles.append(",\n\t\"plugins/" + pluginName + "/css/"
+                  + fileName + "\"");
+         }
+      }
+      catch (IOException e)
+      {
+         trace.warn(e);
+      }
+
+      contents = StringUtils.replace(contents, "PLUGIN_VIEW_ICON_STYLE_SHEETS",
+            pluginIconsStyles.toString());
+
+      return contents;
+   }
+   
    /**
     * @param contents
     */

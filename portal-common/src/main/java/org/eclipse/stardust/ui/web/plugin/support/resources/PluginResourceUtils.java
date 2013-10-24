@@ -15,9 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 
 /**
@@ -145,6 +149,26 @@ public class PluginResourceUtils
       }
 
       return prefix;
+   }
+   
+   /**
+    * @param resolver
+    * @param resourcePath
+    * @return
+    * @throws IOException
+    */
+   public static Set<String> getMatchingFileNames(ResourcePatternResolver resolver,
+         String resourcePath) throws IOException
+   {
+      Set<String> fileNames = new HashSet<String>();
+      Resource[] resources = resolver.getResources("classpath*:/" + PATH_META_INF
+            + resourcePath);
+      for (Resource resource : resources)
+      {
+         fileNames.add(resource.getFilename());
+      }
+
+      return fileNames;
    }
 
    private PluginResourceUtils()
