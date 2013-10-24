@@ -2969,7 +2969,9 @@ public class ModelService
          JsonObject variableJson = new JsonObject();
 
          variablesJson.add(variableJson);
-
+         
+         String cleanName = getModelVariableName(modelVariable.getName());         
+         variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
          variableJson.addProperty("description", modelVariable.getDescription());
@@ -3105,5 +3107,14 @@ public class ModelService
       // TODO I18N
 
       return "Embedded Web Application is not configured.";
+   }
+   
+   private String getModelVariableName(String name)
+   {
+      if (name.startsWith("${")) //$NON-NLS-1$
+      {
+         name = name.substring(2, name.length() - 1);
+      }
+      return name;
    }
 }
