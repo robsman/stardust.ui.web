@@ -104,9 +104,7 @@ public class ModelRepository
 
    protected EObject getNativeModel(ModelType xpdlModel)
    {
-      return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
-            ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(xpdlModel.getId())
-            : xpdlModel;
+      return findModel(xpdlModel.getId());
    }
 
    @SuppressWarnings("unchecked")
