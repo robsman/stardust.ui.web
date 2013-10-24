@@ -33,6 +33,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
+import org.eclipse.stardust.ui.web.common.app.PerspectiveAuthorizationProxy;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.env.RuntimeEnvironmentInfoProvider;
@@ -188,7 +190,7 @@ public class HTML5FrameworkServices
 
       try
       {
-         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(appContext,
+         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(getAppContext(),
                STYLES_FILE_PATH);
          for (String fileName : cssFileNames)
          {
@@ -355,14 +357,8 @@ public class HTML5FrameworkServices
          PerspectiveDefinition pd = systemPerspectives.get(key);
          if (isAuthorized(pd))
          {
-            // TODO - use PerspectiveAuthorizationProxy.newInstance(pd) before adding
-            // the perspective definition to the map
-            // PerspectiveAuthorizationProxy is designed to handle authorizations
-            // at lower level (views, etc.). This class cannot be used here as it internally
-            // uses FacesContext get PortalApplication bean (which fails here as this Restlet is
-            // outside the faces context)
-            perspectives.put(key, pd);
-            
+            perspectives.put(key, PerspectiveAuthorizationProxy.newInstance(pd,
+                  (PortalApplication) getAppContext().getBean("ippPortalApp")));            
          }
       }
       
