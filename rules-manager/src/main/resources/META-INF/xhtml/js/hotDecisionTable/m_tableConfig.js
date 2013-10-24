@@ -129,7 +129,8 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         	}
         },
         afterColumnResize: function(){
-        	this.runHooks('afterChange');
+        	//this.runHooks('afterChange');
+        	console.log(this);
         },
         afterColumnMove: function(oldIndex,newIndex){
         	/*HoT does not actually move the underlying config and data, so we have to.
