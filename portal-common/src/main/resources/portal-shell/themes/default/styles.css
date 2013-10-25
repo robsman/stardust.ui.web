@@ -323,6 +323,7 @@ body, table {
 	height: 40px;
 	position: fixed;
 	bottom: 0px;
+	margin-top: 5px;
 }
 
 .footer-row {

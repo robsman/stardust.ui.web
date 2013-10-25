@@ -291,9 +291,25 @@ define(['portal-shell/js/shell'], function (shell) {
 		         */
 		        function calculateShellSizes() {
 		            resizeTimeoutId = null;
-	                $scope.shell.sizes.footerHeight = jQuery(".footer").outerHeight();
+		            var footerElem = jQuery(".footer");
+	                $scope.shell.sizes.footerHeight = footerElem.outerHeight() + getAbsoluteSize(footerElem.css("marginTop"));
 		            $scope.shell.sizes.windowHeight = angular.element($window).height();
 		        }
+
+				/*
+				 *
+				 */
+				function getAbsoluteSize(size) {
+					if (size) {
+						if (size.indexOf('px') != -1) {
+							size = size.substr(0, size.indexOf('px'));
+						}
+	
+						return parseInt(size);
+					}
+					
+					return 0;
+				}
 
 		        // Initially Calculate sizes
 		        $timeout(calculateShellSizes, 0);
