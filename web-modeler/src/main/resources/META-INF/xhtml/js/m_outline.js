@@ -261,6 +261,22 @@ define(
         return new OutlineUiModelBuilder(model, new TreeNodeBuilder(outlineTree));
       }
 
+      function refreshModelStatus(model) {
+        var lockInfo = model.editLock || {lockStatus: ""};
+
+        var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+        modelNode.attr("rel", ("lockedByOther" === lockInfo.lockStatus) ? "lockedModel" : "model");
+
+        if (modelNode.attr("rel") === "lockedModel") {
+          modelNode.attr("title", m_i18nUtils
+              .getProperty("modeler.outline.model.statusLocked")
+              + " " + lockInfo.ownerName);
+          modelNode.addClass("show_tooltip");
+        } else {
+          modelNode.removeClass("show_tooltip");
+        }
+      }
+
       var readAllModels = function(force) {
         jQuery("div#outlineLoadingMsg").show();
         jQuery("div#outlineLoadingMsg").html(
@@ -274,17 +290,20 @@ define(
 
         console.time("###################################### Tree formation");
 
+        var outline = this;
         var outlineRoot = jQuery(displayScope + "#outline");
 
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", false),
             function(index, model) {
               newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+              refreshModelStatus(model);
             });
 
         // Errored models
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
             false), function(index, model) {
           newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+          refreshModelStatus(model);
         });
 
         console.timeEnd("###################################### Tree formation");
@@ -2911,8 +2930,7 @@ define(
                     model.editLock = model.editLock || {};
                     m_utils.inheritFields(model.editLock, lockInfo);
 
-                    var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
-                    modelNode.attr("rel", ("lockedByOther" === model.editLock.lockStatus) ? "lockedModel" : "model");
+                    refreshModelStatus(model);
                   }
                 });
               }
@@ -2952,9 +2970,8 @@ define(
 
                 m_utils.inheritFields(model.editLock, lockInfoJson);
 
-                // TODO refresh UI state
-                var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
-                modelNode.attr("rel", ("lockedByOther" === model.editLock.lockStatus) ? "lockedModel" : "model");
+                // refresh UI state
+                refreshModelStatus(model);
               },
               "error" : function(e) {
                 m_utils.debug("Failed refreshing lock status");
