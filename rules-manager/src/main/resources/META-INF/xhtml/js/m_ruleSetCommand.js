@@ -52,6 +52,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 			return chng;
 		};
 		
+		/* Return individual functions for each command we require for our RuleSet perspecitve,
+		 * as well as the two base functions used to create all commands.*/
 		return {
 			"createCommand": createCommand,
 			"createChangeObj" :createChangeObj,
