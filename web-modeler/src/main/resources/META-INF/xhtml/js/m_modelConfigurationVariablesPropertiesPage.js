@@ -202,6 +202,7 @@ define(
 																	+ "/configurationVariables/"
 																	+ event.data.page.currentConfigurationVariable.name,
 															contentType : "application/json",
+															async : false,
 															data : JSON
 																	.stringify(deleteOptions)
 														})
@@ -357,8 +358,7 @@ define(
 
 						row.append(cell);
 
-						cell
-								.append(variables[n].type);
+						cell.append(variables[n].type);
 						
 						cell = m_utils.jQuerySelect("<td></td>");
 						
