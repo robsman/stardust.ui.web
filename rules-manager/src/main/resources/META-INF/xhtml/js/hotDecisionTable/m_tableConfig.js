@@ -479,8 +479,11 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
         			  "snapShots":snapShots});
         	  }
           },
-          setColumnWidth: function(index,width){
-            //TODO: implement, need ref to instance
+          setColumnWidth: function(instance,index,width){
+            var settings=instance.getSettings();
+            var colWidths=settings.colWidths;
+            colWidths[index]=width;
+            instance.updateSettings({"colWidths": colWidths});
           }
         }
       };
