@@ -12,7 +12,7 @@ require
 				'jquery-ui' : [
 						'bpm-reporting/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min',
 						'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min' ],
-				'jquery.base64' : [ 'js/libs/jquery/plugins/jquery.base64', '' ],
+				'jquery.base64' : [ 'bpm-reporting/js/libs/jquery/plugins/jquery.base64', '' ],
 				'json' : [ 'bpm-reporting/js/libs/json/json2',
 						'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
 				'angularjs' : [ 'bpm-reporting/js/libs/angular/angular-1.0.2',
