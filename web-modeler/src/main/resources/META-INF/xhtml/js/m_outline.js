@@ -2933,6 +2933,36 @@ define(
 					}
 				};
 
+        Outline.prototype.processCommandError = function(command, response) {
+          m_utils.debug("===> Outline - Processing Command Error");
+
+          var obj = ("string" == typeof (command)) ? jQuery.parseJSON(command) : command;
+
+          if (409 === response.status) {
+            m_utils.debug("Refreshing model lock status");
+
+            var model = m_model.findModel(command.modelId);
+
+            m_communicationController.syncGetData({
+              url : m_communicationController.getEndpointUrl() + "/sessions/editLock/"
+                  + encodeURIComponent(model.id)
+            }, {
+              "success" : function(lockInfoJson) {
+                model.editLock = model.editLock || {};
+
+                m_utils.inheritFields(model.editLock, lockInfoJson);
+
+                // TODO refresh UI state
+                var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+                modelNode.attr("rel", ("lockedByOther" === model.editLock.lockStatus) ? "lockedModel" : "model");
+              },
+              "error" : function(e) {
+                m_utils.debug("Failed refreshing lock status");
+              }
+            });
+          }
+        };
+
 				/**
 				 * TODO - temporary
 				 */
@@ -3219,7 +3249,7 @@ define(
         };
 
         /**
-         * 
+         *
          */
         Outline.prototype.expandNode = function(nodeSelector) {
         	jQuery.jstree._reference(displayScope + "#outline").open_node(nodeSelector);

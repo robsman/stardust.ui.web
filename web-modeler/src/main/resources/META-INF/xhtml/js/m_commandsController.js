@@ -56,6 +56,9 @@ define(
 				broadcastCommand : function(command) {
 					getInstance().broadcastCommand(command);
 				},
+        broadcastError : function(command, response) {
+          getInstance().broadcastError(command, response);
+        },
 				broadcastCommandUndo : function(command) {
 					getInstance().broadcastCommandUndo(command);
 				}
@@ -269,8 +272,9 @@ define(
 																	command);
 													deferred.resolve();
 												},
-												"error" : function(command) {
-													deferred.reject(command);
+												"error" : function(response) {
+                          getInstance().broadcastError(command, response);
+													deferred.reject(response);
 												}
 											};
 										});
@@ -320,8 +324,9 @@ define(
 																.reject(command);
 													}
 												},
-												"error" : function(command) {
-													deferred.reject(command);
+												"error" : function(response) {
+                          getInstance().broadcastError(command, response);
+													deferred.reject(response);
 												}
 											};
 										});
@@ -370,9 +375,25 @@ define(
 					}
 				};
 
+        CommandsController.prototype.broadcastError = function(command, response) {
+          m_utils.debug("===> Broadcast Error:");
+          m_utils.debug(command);
+          m_utils.debug(response);
+
+          for (var n = 0; n < this.commandHandlers.length; ++n) {
+            try {
+              if (this.commandHandlers[n] && this.commandHandlers[n].processCommandError) {
+                this.commandHandlers[n].processCommandError(command, response);
+              }
+            } catch (e) {
+              m_utils.debug("Exception while invoking error handler " + e);
+            }
+          }
+        };
+
 				/**
-				 *
-				 */
+         *
+         */
 				CommandsController.prototype.broadcastCommandUndo = function(
 						command) {
 					m_utils.debug("===> Broadcast Command Undo:");
