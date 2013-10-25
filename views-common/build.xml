@@ -138,7 +138,8 @@
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
-   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
+      <!-- file not required in Stardust - do not stop build if not available -->
+   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" failonerror="false" />
       
       <copy todir="${build.src}">
          <fileset dir="${project.src}">
@@ -150,7 +151,8 @@
          </fileset>
       </copy>
       <copy file="${views-common-menu-context.xmlfile}" todir="${build.src}/META-INF/spring" overwrite="true" />
-   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" />
+      <!-- file not required in Stardust - do not stop build if not available -->
+   	  <copy file="${common-menu-config-context.xmlfile}" todir="${build.classes}/META-INF/spring" overwrite="true" failonerror="false" />
       
       <!-- Copy NL property file for locale "en" to NL property with no locale. -->
       <copy todir="${build.classes}" overwrite="true">
