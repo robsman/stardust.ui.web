@@ -299,9 +299,13 @@ define(
 						cell = m_utils.jQuerySelect("<td></td>");
 
 						row.append(cell);
-
-						input = m_utils.jQuerySelect("<input type='text' class='cellEditor'></input>");
-
+						if (variables[n].type == m_constants.TYPE_PASSWORD) {
+							input = m_utils
+									.jQuerySelect("<input type='password' class='cellEditor'></input>");
+						} else {
+							input = m_utils
+									.jQuerySelect("<input type='text' class='cellEditor'></input>");
+						}
 						cell.append(input);
 						input
 								.val(variables[n].defaultValue);

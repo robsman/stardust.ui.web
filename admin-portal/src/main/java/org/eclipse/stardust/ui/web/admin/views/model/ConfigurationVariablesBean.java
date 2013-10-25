@@ -428,8 +428,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
 
       if (!isHideDefaultValue())
       {
-         ColumnPreference colDefaultValue = new ColumnPreference("Default Value", "defaultValue",
-               ColumnDataType.STRING, this.getMessages().getString("column.defaultValue"));
+         ColumnPreference colDefaultValue = new ColumnPreference("Default Value", "defaultValue", this.getMessages()
+               .getString("column.defaultValue"), ResourcePaths.V_MODEL_CONFIGURATION_VIEW_COLUMNS, true, false);
          cols.add(3, colDefaultValue);
       }
 

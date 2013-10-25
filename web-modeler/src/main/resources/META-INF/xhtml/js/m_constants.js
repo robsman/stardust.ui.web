@@ -219,6 +219,7 @@ define(function() {
 		
 		//Model Config Variable
 		CONFIG_VAR_REF_LIMIT : 3,
+		TYPE_PASSWORD :"Password",
 
 		// Process Definition
 

@@ -35,5 +35,14 @@
 	<ice:panelGroup rendered="#{col.columnName == 'Description'}">
 		<ice:outputText value="#{row.description}" escape="false" />
 	</ice:panelGroup>
+	
+	<ice:panelGroup rendered="#{col.columnName == 'Default Value'}">
+		<ice:outputText value="#{row.defaultValue}" escape="false" rendered="#{row.type == 'String'}"/>
+		<ice:inputSecret value="#{row.defaultValue}" escape="false"
+			redisplay="true"
+			style="border: transparent;background: transparent;" readonly="true"
+			rendered="#{row.type == 'Password'}" >
+			</ice:inputSecret>
+	</ice:panelGroup>
 
 </f:view>
