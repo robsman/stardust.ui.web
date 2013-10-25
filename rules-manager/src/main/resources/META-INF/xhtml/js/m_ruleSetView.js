@@ -46,7 +46,6 @@ define(
 				initialize : function(uuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 					var view = new RuleSetView();
-					CommandsDispatcher.registerCommandHandler(view);
 					view.initialize(ruleSet,options);
 				}
 			};
@@ -186,9 +185,7 @@ define(
 									function(event) {
 										var oldName = event.data.view.ruleSet.name;
 										event.data.view.ruleSet.name = event.data.view.nameInput.val();
-										event.data.view.renameView(event.data.view.ruleSet);
 										ruleSet.state.isDirty=true;
-										
 										var cmd=m_ruleSetCommand.ruleSetRenameCmd(
 												ruleSet,event.data.view.ruleSet.name,event);
 										m_ruleSetCommandDispatcher.trigger(cmd);
@@ -373,25 +370,5 @@ define(
 					this.activate(this.ruleSet);
 				};
 
-				/**
-				 * 
-				 */
-				RuleSetView.prototype.processCommand = function(command) {
-					// TODO Dummy
-
-					this.activate(this.ruleSet);
-					this.ruleSet.state.isDirty=true;
-					if (command.name
-							&& command.name === "RuleSet.Rename") {
-						this.renameView(command.ruleSet);	
-					}
-				};
-				
-				/**
-				 * 
-				 */
-				RuleSetView.prototype.renameView = function(ruleSet) {
-					m_jsfViewManager.create().updateView("ruleSetView", "name" + "=" + ruleSet.name, ruleSet.uuid);
-				};
 			}
 		});

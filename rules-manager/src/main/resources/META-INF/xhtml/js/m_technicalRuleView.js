@@ -25,7 +25,6 @@ define(
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 					var techRule=ruleSet.findTechnicalRuleByUuid(techRuleID);
 					var view = new TechnicalRuleView();
-					CommandsDispatcher.registerCommandHandler(view);
 					view.initialize(ruleSet,techRule,options);
 				}
 			};
@@ -84,20 +83,6 @@ define(
 							descriptionLabel : m_utils.jQuerySelect(options.selectors.descriptionLabel ),
 							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel ),
 							stringifyParamDefs : m_utils.jQuerySelect(options.selectors.stringifyParamDefs )
-					};
-					
-					/* By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
-					 * command dispatches.*/
-					this.processCommand=function(cmd){
-						return;
-						switch(cmd.name){
-						case "TechnicalRule.Rename":
-							if (cmd.techRule.uuid === techRule.uuid) {
-								uiElements.nameInput.val(cmd.changes[1]);
-								this.renameView(cmd.techRule);
-							}
-							break;
-						}
 					};
 					
 					/*Map uiElements to their resource text values*/
@@ -272,7 +257,6 @@ define(
 					uiElements.nameInput.change({view : this}, function(event) {
 						var oldName = techRule.name;
 						techRule.name = uiElements.nameInput.val();
-						view.renameView(techRule);
 						ruleSet.state.isDirty=true;
 						var cmd=m_ruleSetCommand.ruleRenameCmd(
 								ruleSet,techRule,techRule.name,event);
@@ -320,14 +304,7 @@ define(
 					uiElements.idOutput.append(this.technicalRule.id);
 					uiElements.nameInput.val(this.technicalRule.name);
 					uiElements.drlEditor.setValue(this.technicalRule.getDRL());
-					
-
 				};
 				
-				this.renameView = function(techRule) {
-					m_jsfViewManager.create().updateView("technicalRuleView", "name" + "=" + techRule.name,
-							techRule.uuid);
-					
-				};
 			}
 		});

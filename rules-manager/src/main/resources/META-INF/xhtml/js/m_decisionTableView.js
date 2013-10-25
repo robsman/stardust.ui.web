@@ -32,7 +32,6 @@ define(
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
 					var decTable=ruleSet.findDecisionTableByUuid(decTableUuid);
 					var view = new DecisionTableView();
-					CommandsDispatcher.registerCommandHandler(view);
 					view.initialize(ruleSet,decTable,options);
 				}
 			};
@@ -80,20 +79,7 @@ define(
 							decTableNameLbl: m_utils.jQuerySelect(options.selectors.decTableNameLbl)
 					};
 					
-					/*By Convention name and CommandsDispatcher.registerCommandHandler we link to windows.top
-					 * command dispatches.*/
-					this.processCommand=function(cmd){
-						return;
-						switch(cmd.name){
-						case "DecisionTable.Rename":
-							if (cmd.decTable.uuid === decTable.uuid) {
-								uiElements.nameInput.val(cmd.changes[1]);
-								this.renameView(cmd.decTable);
-							}
-							break;
-						}
-					};
-					
+					/*TODO: [ZZM] Factor these out.*/
 					this.drlEditor;
 					this.id = "DecisionTableView";
 					this.uuidOutput = m_utils.jQuerySelect("#DecisionTableView #uuidOutput");
@@ -177,7 +163,9 @@ define(
 						ruleSet.state.isDirty=true;
 				    };
 					uiElements.decisionTableInstance.addHook('afterChange',afterChangeFunc);
-					
+					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
+						uiElements.decisionTableInstance.setColumnWidth
+					});
 				    /*bind UIElements to events from our top level command processor*/
 				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,"DecisionTable.Data.Change");
 				    uiElements.decisionTableInstance.rootElement.on("DecisionTable.Data.Change",function(event,data){
@@ -362,9 +350,12 @@ define(
 					
 					/* Adding a hook for column resizing as this value was not actually being saved into
 					 * the HandsOnTable config settings by the HoT widget (and thus not reflected in our ruleSet data).
-					 */
+					 * To avoid internal problems with Handsontable, we are not messaging this event as a command.
+					 * This means column resizes aren't an individual event but rather get collected into whichever 
+					 * event occurs next which is registered on the command stack. A rough workaround for the present.*/
 					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
-						decTableData.colWidths[col]=size;
+						var settings=uiElements.decisionTableInstance.getSettings();
+						settings.helperFunctions.setColumnWidth(uiElements.decisionTableInstance,col,size);
 						ruleSet.state.isDirty=true;
 					});
 					
@@ -373,6 +364,7 @@ define(
 					uiElements.descriptionTextarea.on("change",function(event){
 						decTable.description=uiElements.descriptionTextarea.val();
 						ruleSet.state.isDirty=true;	
+						/*Communciate event to our dispatcher in the sky.*/
 						var cmd=m_ruleSetCommand.decTableDescriptionCmd(
 								ruleSet,decTable,decTable.description,event);
 						m_ruleSetCommandDispatcher.trigger(cmd);
@@ -382,8 +374,8 @@ define(
 					this.nameInput.change({view : this},function(event) {
 						var oldName = decTable.name;
 						decTable.name = uiElements.nameInput.val();
-						view.renameView(decTable);
 						ruleSet.state.isDirty=true;
+						/*Communciate event to our dispatcher in the sky.*/
 						var cmd=m_ruleSetCommand.decTableRenameCmd(
 								ruleSet,decTable,decTable.name,event);
 						m_ruleSetCommandDispatcher.trigger(cmd);
@@ -409,9 +401,5 @@ define(
 
 				};
 				
-				this.renameView = function(decTable) {
-					m_jsfViewManager.create().updateView("decisionTableView", "name" + "=" + decTable.name,
-							decTable.uuid);	
-				};
 			}
 		});
