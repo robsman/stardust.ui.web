@@ -262,15 +262,14 @@ define(
       }
 
       function refreshModelStatus(model) {
-        var lockInfo = model.editLock || {lockStatus: ""};
-
         var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
-        modelNode.attr("rel", ("lockedByOther" === lockInfo.lockStatus) ? "lockedModel" : "model");
+        modelNode.attr("rel", model.isReadonly() ? "lockedModel" : "model");
 
-        if (modelNode.attr("rel") === "lockedModel") {
+        if (model.isReadonly() && model.editLock
+            && ("lockedByOther" === model.editLock.lockStatus)) {
           modelNode.attr("title", m_i18nUtils
               .getProperty("modeler.outline.model.statusLocked")
-              + " " + lockInfo.ownerName);
+              + " " + model.editLock.ownerName);
           modelNode.addClass("show_tooltip");
         } else {
           modelNode.removeClass("show_tooltip");
