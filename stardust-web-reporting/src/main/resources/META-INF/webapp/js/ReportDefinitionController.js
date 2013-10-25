@@ -56,8 +56,6 @@ define(
 
 					this.primaryObjectSelect = jQuery("#primaryObjectSelect");
 					this.factSelect = jQuery("#factSelect");
-					this.firstDimensionSelect = jQuery("#firstDimensionSelect");
-					this.secondDimensionSelect = jQuery("#secondDimensionSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 
 					var self = this;
@@ -173,15 +171,6 @@ define(
 
 															self.updateView();
 														});
-
-										self.firstDimensionSelect
-												.change(function() {
-													self.report.dataSet.firstDimension = self.firstDimensionSelect
-															.val();
-
-													self.changeFirstDimension();
-													self.updateView();
-												});
 
 										jQuery("#groupBySelect")
 												.change(
@@ -323,6 +312,10 @@ define(
 							dataSet : {
 								type : "seriesGroup",
 								primaryObject : "processInstance",
+								externalJoins : [ {
+									joinType : "outer",
+									restUri : "http://localhost:9090/server/services/rest/bpm-reporting/test-external-data"
+								} ],
 								columns : [],
 								filters : [],
 								factDurationUnit : "d",
@@ -491,20 +484,6 @@ define(
 								+ fact.name + "</option>");
 					}
 
-					this.populateFirstDimensionSelect();
-
-					this.secondDimensionSelect.empty();
-
-					this.secondDimensionSelect.append("<option value='" + -1
-							+ "'>None</option>");
-
-					for ( var i in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[i];
-
-						this.secondDimensionSelect.append("<option value='" + i
-								+ "'>" + dimension.name + "</option>");
-					}
-
 					jQuery("#availableDimensionsSelect").empty();
 
 					for ( var k in this.getPrimaryObject().dimensions) {
@@ -654,17 +633,56 @@ define(
 				};
 
 				/**
-				 * 
+				 * Returns a consolidated list of possible dimensions excluding
+				 * joined data from external data sources.
 				 */
-				ReportDefinitionController.prototype.populateFirstDimensionSelect = function() {
-					this.firstDimensionSelect.empty();
+				ReportDefinitionController.prototype.getInternalDimensions = function() {
+					var dimensions = [];
 
 					for ( var m in this.getPrimaryObject().dimensions) {
 						var dimension = this.getPrimaryObject().dimensions[m];
 
-						this.firstDimensionSelect.append("<option value='" + m
-								+ "'>" + dimension.name + "</option>");
+						dimensions.push({
+							id : dimension.id,
+							name : dimension.name
+						});
 					}
+
+					return dimensions;
+				};
+
+				/**
+				 * Returns a consolidated list of possible dimensions including
+				 * joined data from external data sources.
+				 */
+				ReportDefinitionController.prototype.getCumulatedDimensions = function() {
+					var dimensions = [];
+
+					for ( var m in this.getPrimaryObject().dimensions) {
+						var dimension = this.getPrimaryObject().dimensions[m];
+
+						dimensions.push({
+							id : dimension.id,
+							name : dimension.name
+						});
+					}
+
+					if (this.report.dataSet.externalJoins) {
+						for ( var l in this.report.dataSet.externalJoins) {
+							var join = this.report.dataSet.externalJoins[l];
+
+							for ( var k in join.fields) {
+								var field = join.fields[k];
+
+								dimensions.push({
+									id : field.name,
+									name : field.name
+								});
+							}
+						}
+					}
+
+					return dimensions;
 				};
 
 				/**
@@ -763,8 +781,10 @@ define(
 
 					this.report.dataSet.columns = [];
 
-					for ( var k in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[k];
+					var cumulatedDimensions = this.getCumulatedDimensions();
+					
+					for ( var k in cumulatedDimensions) {
+						var dimension = cumulatedDimensions[k];
 
 						this.report.dataSet.columns.push(k);
 
@@ -783,8 +803,10 @@ define(
 
 					this.report.dataSet.columns = [];
 
-					for ( var k in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[k];
+					var cumulatedDimensions = this.getCumulatedDimensions();
+					
+					for ( var k in cumulatedDimensions) {
+						var dimension = cumulatedDimensions[k];
 
 						jQuery("#availableDimensionsSelect").append(
 								"<option value='" + k + "'>" + dimension.name
@@ -1057,5 +1079,47 @@ define(
 						return "(Unknown)";
 					}
 				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.evaluateExternalTestdata = function(
+						externalJoin) {
+					var self = this;
+
+					document.body.style.cursor = "wait";
+
+					this.reportingService
+							.retrieveExternalData(externalJoin.restUri)
+							.done(
+									function(records) {
+
+										if (records && records[0]) {
+											externalJoin.fields = [];
+
+											var start = true;
+
+											for ( var x in records[0]) {
+												externalJoin.fields
+														.push({
+															id : x,
+															name : x,
+															useAs : x,
+															type : self.reportingService.metadata.stringType.id,
+														});
+
+												if (start) {
+													externalJoin.externalKey = x;
+													start = false;
+												}
+											}
+										}
+
+										document.body.style.cursor = "default";
+									}).fail(function() {
+								document.body.style.cursor = "default";
+							});
+				};
+
 			}
 		});

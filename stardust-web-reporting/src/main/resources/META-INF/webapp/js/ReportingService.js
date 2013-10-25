@@ -57,28 +57,32 @@ define(
 				};
 
 				this.metadata.stringType = {
-					id : "stringType"
+					id : "stringType",
+					name : "String"
 				};
 				this.metadata.integerType = {
-					id : "integerType"
+					id : "integerType",
+					name : "Integer"
 				};
 				this.metadata.decimalType = {
-					id : "decimalType"
-				};
-				this.metadata.decimalType = {
-					id : "decimalType"
+					id : "decimalType",
+					name : "Decimal"
 				};
 				this.metadata.countType = {
-					id : "countType"
+					id : "countType",
+					name : "Count"
 				};
 				this.metadata.timestampType = {
-					id : "timestampType"
+					id : "timestampType",
+					name : "Timestamp"
 				};
 				this.metadata.durationType = {
-					id : "durationType"
+					id : "durationType",
+					name : "Duration"
 				};
 				this.metadata.enumerationType = {
-					id : "enumerationType"
+					id : "enumerationType",
+					name : "Enumeration"
 				};
 
 				this.metadata.objects = {
@@ -477,7 +481,7 @@ define(
 										url : self.getRootUrl()
 												+ "/services/rest/bpm-reporting/report-definitions",
 									}).done(function(rootFolder) {
-										self.rootFolder = rootFolder;
+								self.rootFolder = rootFolder;
 								deferred.resolve();
 							}).fail(function() {
 								deferred.reject();
@@ -775,6 +779,45 @@ define(
 				/**
 				 * 
 				 */
+				ReportingService.prototype.retrieveExternalData = function(uri) {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					jQuery.ajax({
+						type : "GET",
+						// beforeSend : function(request) {
+						// request
+						// .setRequestHeader(
+						// "Authentication",
+						// self
+						// .getBasicAuthenticationHeader());
+						// },
+						url : uri,
+						contentType : "application/json"
+					}).done(function(response) {
+						console.debug("Retrieved external data");
+						console.debug(response);
+
+						// Use heuristics to obtain records - first element is
+						// the record set
+						// TODO Fine tune
+
+						for ( var x in response) {
+							deferred.resolve(response[x]);
+
+							break;
+						}
+
+					}).fail(function(response) {
+						deferred.reject(response);
+					});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
 				ReportingService.prototype.renameReportDefinition = function(
 						path, name) {
 					var deferred = jQuery.Deferred();
@@ -904,6 +947,18 @@ define(
 								+ s(d.getHours(), 2) + ':'
 								+ s(d.getMinutes(), 2);
 					}
+				};
+
+				/**
+				 * 
+				 */
+				ReportingService.prototype.getPrimitiveTypes = function() {
+					return [ this.metadata.stringType,
+							this.metadata.integerType,
+							this.metadata.decimalType,
+							this.metadata.decimalType, this.metadata.countType,
+							this.metadata.timestampType,
+							this.metadata.durationType];
 				};
 			}
 		});

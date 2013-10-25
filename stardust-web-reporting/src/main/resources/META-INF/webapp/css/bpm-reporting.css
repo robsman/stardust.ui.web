@@ -236,8 +236,7 @@ div.right {
 
 .dataTable thead {
 	margin-top: 10px;
-	background-image :
-	-webkit-linear-gradient( top, #FFFFFF, #E6E6E6);
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -ms-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -o-linear-gradient(top, #FFFFFF, #E6E6E6);
@@ -246,10 +245,48 @@ div.right {
 }
 
 .dataTable thead th {
-	border-bottom: 1px solid #999999; 
+	border-bottom: 1px solid #999999;
 	font-weight: normal;
 }
 
 .dataTable tbody td {
 	border-bottom: 1px solid #AFD7ED;
+}
+
+/* Embedded Table */
+.embeddedTable {
+	border: 1px solid #AFD7ED;
+}
+
+.embeddedTable td {
+	padding: 3px;
+	border-top: 1px solid #AFD7ED;
+}
+
+.embeddedTable thead td {
+	font-weight: bold;
+	border: none;
+}
+
+.embeddedTable td input {
+	border: none;
+}
+
+.embeddedTable td select {
+	border: none;
+}
+
+.smallLink
+{
+	font-size: 9px;
+	text-decoration: none;
+	color: #AFD7ED;
+}
+
+/* JQuery UI Overrides */
+.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
+	{
+	font-size: 11px !important;
+	font-weight: normal !important;
+	font-family: Helvetica, Arial, sans-serif !important;
 }

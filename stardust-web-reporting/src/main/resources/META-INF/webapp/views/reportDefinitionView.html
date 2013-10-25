@@ -69,6 +69,84 @@ table.formTable td {
 									<td><label>a Process History</label></td>
 								</tr>
 							</table>
+							<div class="heading">External Data</div>
+							<table cellpadding="0" cellspacing="0" class="formTable">
+								<tr>
+									<td><input type="checkbox"
+										ng-model="report.dataSet.joinExternalData"></td>
+									<td><label>Join external Data</label></td>
+									<td><div ng-show="report.dataSet.joinExternalData">
+											<table cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label>as</label></td>
+													<td><select
+														ng-model="report.dataSet.externalJoins[0].joinType"><option
+																value="inner">Inner Join</option>
+															<option value="outer">Outer Join</option></select></td>
+													<td><label>with internal Join Key</label></td>
+													<td><select
+														ng-model="report.dataSet.externalJoins[0].internalKey"
+														ng-options="dimension.id as dimension.name for dimension in getInternalDimensions()">
+															<option value=""></option>
+													</select></td>
+												</tr>
+											</table>
+										</div></td>
+								</tr>
+							</table>
+							<div ng-show="report.dataSet.joinExternalData">
+								<table cellpadding="0" cellspacing="0" class="formTable"
+									style="margin-top: 5px;">
+									<tr>
+										<td><label>REST URI</label></td>
+										<td><input
+											ng-model="report.dataSet.externalJoins[0].restUri"
+											style="width: 450px;" /></td>
+									</tr>
+									<tr>
+										<td colspan="2"><a style="font-size: 9px;"
+											ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])" class="smallLink">Load
+												test data to obtain record structure &raquo;</a></td>
+									</tr>
+								</table>
+								<table cellpadding="0" cellspacing="0" class="embeddedTable"
+									style="margin-top: 5px;">
+									<thead>
+										<tr>
+											<td></td>
+											<td>Field Name</td>
+											<td>Use As</td>
+											<td>Display As</td>
+											<td>Type</td>
+											<td>External Join Key</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr
+											ng-repeat="field in report.dataSet.externalJoins[0].fields">
+											<td><a href="" ng-click=""><img
+													src="../css/images/delete.png" /> </a></td>
+											<td><input type="text" ng-model="field.id" /></td>
+											<td><input type="text" ng-model="field.useAs" /></td>
+											<td><input type="text" ng-model="field.name" /></td>
+											<td><select ng-model="field.type"
+												ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option></option></select></td>
+											<td style="text-align: center;"><input type="radio"
+												value="{{field.id}}"
+												ng-model="report.dataSet.externalJoins[0].externalKey" /></td>
+										</tr>
+										<tr>
+											<td><a href="" ng-click=""><img
+													src="../css/images/add.png" /> </a></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 							<div ng-show="report.dataSet.type == 'recordSet'">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
@@ -132,7 +210,10 @@ table.formTable td {
 													<td><label
 														style="width: 100px; display: inline-block;">First
 															Dimension</label></td>
-													<td><select id="firstDimensionSelect">
+													<td><select ng-model="report.dataSet.firstDimension"
+														ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions()"
+														ng-change="changeFirstDimension()">
+															<option value=""></option>
 													</select></td>
 												</tr>
 											</table>
@@ -174,7 +255,7 @@ table.formTable td {
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = false;"> Switch to
+														ng-click="firstDimensionToFrom = false;" class="smallLink"> Switch to
 														Start Date and Duration &raquo;</a>
 												</div>
 												<div ng-show="!firstDimensionToFrom"
@@ -222,7 +303,7 @@ table.formTable td {
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = true;">Switch to
+														ng-click="firstDimensionToFrom = true;" class="smallLink">Switch to
 														Start and End Date &raquo;</a>
 												</div>
 											</div>
@@ -305,7 +386,10 @@ table.formTable td {
 													<td><label
 														style="width: 100px; display: inline-block;">Second
 															Dimension</label></td>
-													<td><select id="secondDimensionSelect"><option>None</option>
+													<td><select ng-model="report.dataSet.secondDimension"
+														ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions()"
+														ng-change="changeSecondDimension()">
+															<option value=""></option>
 													</select></td>
 												</tr>
 											</table>
@@ -816,7 +900,8 @@ table.formTable td {
 								<div class="heading">Parameters</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
-										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)</label></td>
+										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)
+										</label></td>
 										<td><input type="text"
 											ng-model="getParameters()[parameter.id].value" sd-date
 											ng-show="parameter.type == getMetadata().timestampType.id"
