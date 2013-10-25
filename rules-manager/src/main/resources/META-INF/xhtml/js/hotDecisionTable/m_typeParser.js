@@ -67,7 +67,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 	return facetsObj;
   };
   
-  var fx=function(body,paramDef,descr){
+  var fx=function(body,paramDef,typeDecl){
     var data=[], /*hold our result and our recursively returned children*/
 	    temp,    /*an item to be pushed onto data[]*/
 	    i,       /*loop counter*/	    
@@ -97,7 +97,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
         	paramDef.enumeration=obj.enumeration;
         }
         temp={data: {title:obj.name, icon:img}, 
-        	  attr: {title: descr || obj.type},
+        	  attr: {title: typeDecl.description || obj.type},
         	  metadata: {
         		  ref: paramDef || obj,
         		  type: obj.type || 'na',
@@ -107,7 +107,19 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
         if(obj.body){
         	console.log("Recursing");
         	console.log(obj);
-          temp.children=fx(obj.body); //...and recurse
+          temp.children=fx(obj.body, undefined, typeDecl); //...and recurse
+        } else {
+        	if (typeof typeDecl.asSchemaType === "function") {
+        		var childSchemaType = typeDecl.asSchemaType().resolveElementType(obj.name);	
+        	} else if (typeof typeDecl.resolveElementType === "function") {
+        		var childSchemaType = typeDecl.resolveElementType(obj.name);	
+        	}
+            
+            if (childSchemaType && childSchemaType.type) {
+            	console.log("Recursing");
+            	console.log(childSchemaType.type);
+            	temp.children=fx(childSchemaType.type.body, undefined, childSchemaType);
+            }
         }
         data.push(temp); 
       }
@@ -337,7 +349,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		    		else{
 		    			typeBody[0].name=paramDef.name; /*Give the agnostic typeBody context from our paramDef*/
 		    		}
-		    		jstreeDataNode=fx(typeBody,paramDef,typeDecl.description); /*walk the JSON and build our tree*/	
+		    		jstreeDataNode=fx(typeBody,paramDef,typeDecl); /*walk the JSON and build our tree*/	
 		    		
 		    		if(paramDef.direction==="IN" || paramDef.direction==="INOUT"){
 		    			jsConditionNodes.push(jstreeDataNode);
