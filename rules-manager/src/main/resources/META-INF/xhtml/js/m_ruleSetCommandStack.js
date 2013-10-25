@@ -1,7 +1,56 @@
-define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
+define(["rules-manager/js/m_ruleSet",
+        "rules-manager/js/m_ruleSetCommand",
+        "bpm-modeler/js/m_jsfViewManager"],
+		function(m_ruleSet,m_ruleSetCommand,m_jsfViewManager){
 	
 	
-	/*helper function to apply changes to our actual ruleSet data*/
+	/* private factory to generate pointer commands. These are the commands we will
+	 * issue when the pointer of the commandStack is moved. Commands are triggered on the associated
+	 * sink for listeners who are tuned into the sinks events. */
+	var stackCommandFactory={
+			pointerMoveCommand: function(nextCmd,previousCmd){
+				var cmd,changeObj;
+				changeObj=m_ruleSetCommand.createChangeObj("","","",nextCmd,previousCmd);
+				cmd=m_ruleSetCommand.createCommand(
+						"CommandStack.Move.Pointer",
+						false,changeObj,
+						"Stack Pointer Moved.",
+						undefined,"","","");
+				return cmd;
+			}
+	};
+	
+	/*Helper function to mediate changes to our portal tab name.*/
+	var renameView=function(cmdObj){
+		var viewType,
+			newVal,
+			uuid;
+		switch(cmdObj.event){
+		case "DecisionTable.Name.Change":
+			viewType="decisionTableView";
+			break;
+		case "RuleSet.Name.Change":
+			viewType="ruleSetView";
+			break;
+		case "Rule.Name.Change":
+			viewType="technicalRuleView";
+			break;
+		}
+		if(viewType){
+			newVal=cmdObj.changes[0].value.after;
+			uuid=cmdObj.elementID;
+			m_jsfViewManager.create().updateView(viewType, "name" + "=" + newVal,uuid);
+		}
+	};
+	
+	/* Helper function to apply changes that we wish to effect secondarily.
+	 * For example: Our primary command is to rename a ruleset. However, a secondary
+	 * effect of that would be that we need to change the ruleSet portal tab name as well.
+	 * This is where those effects are implemented. Generally, we effect things here that
+	 * are out of the domain of our views. Portal UI elements, 
+	 * top level Objects (Window.top.RuleSets)etc . We would not manipulate DOM elements of
+	 * individual views here. That is what our event communication is for.
+	 *  etc...)*/
 	var applyToRuleSet=function(cmdObj){
 		if(cmdObj.nameSpace==="RuleSet"){
 			var rSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
@@ -15,6 +64,7 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 				tempObj=rSet.findDecisionTableByUuid(cmdObj.elementID);
 				tempObj.name=cmdVal;
 				rSet.isDirty=true;
+				renameView(cmdObj);
 				break;
 			case "DecisionTable.Description.Change":
 				tempObj=rSet.findDecisionTableByUuid(cmdObj.elementID);
@@ -29,6 +79,7 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 			case "RuleSet.Name.Change":
 				rSet.name=cmdVal;
 				rSet.isDirty=true;
+				renameView(cmdObj);
 				break;
 			case "RuleSet.Description.Change":
 				rSet.description=cmdVal;
@@ -41,6 +92,7 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 			case "Rule.Name.Change":
 				tempObj=rSet.findTechnicalRuleByUuid(cmdObj.elementID);
 				tempObj.name=cmdVal;
+				renameView(cmdObj);
 				break;
 			case "Rule.Description.Change":
 				tempObj=rSet.findTechnicalRuleByUuid(cmdObj.elementID);
@@ -119,15 +171,20 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 		/*Simple stack with no hashing.All commands go on the same stack
 		 * 	[cmd,cmd,cmd,cmd,...n]
 		 * */
-		var globalRuleSetStack=function(){
+		var globalRuleSetStack=function($sink){
+			var $sinkRef=$sink;
 			this.stack=[];
 			this.pointer=0;
-			
+			/*TODO: [ZZM] Extract and normalize common code between undo and redo functions*/
 			this.redo=function(obj){
-				  var cmdObj;
+				  var cmdObj,nextCmd, prevCmd;
 				  if(this.pointer < this.stack.length-1){
 					  this.pointer=this.pointer+1;
 					  cmdObj=this.stack[this.pointer];
+					  nextCmd=this.stack[this.pointer+1];/*allow undefined on out of bounds*/
+					  prevCmd=this.stack[this.pointer-2];/*allow undefined on out of bounds*/
+					  pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
+					  $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
 				  }
 				  applyToRuleSet(cmdObj);
 				  return cmdObj;
@@ -138,6 +195,10 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 				  if(this.pointer >0){
 					  this.pointer=this.pointer-1;
 					  cmdObj=this.stack[this.pointer];
+					  nextCmd=this.stack[this.pointer+2];/*allow undefined on out of bounds*/
+					  prevCmd=this.stack[this.pointer-1];/*allow undefined on out of bounds*/
+					  pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
+					  $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
 				  }
 				  applyToRuleSet(cmdObj);
 				  return cmdObj;
@@ -145,7 +206,12 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 			  
 			 this.push=function(obj){
 				 this.stack.push($.extend({},obj));
+				 renameView(obj);
 				 this.pointer=this.stack.length-1;
+				 nextCmd=undefined;
+				 prevCmd=this.stack[this.pointer-1];/*allow undefined on out of bounds*/
+				 pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
+				 $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
 			 };
 		};
 		
@@ -153,8 +219,8 @@ define(["rules-manager/js/m_ruleSet"],function(m_ruleSet){
 			createHashStack: function(){
 				return new ruleSetStack();
 			},
-			createSimpleStack: function(){
-				return new globalRuleSetStack();
+			createSimpleStack: function($sink){
+				return new globalRuleSetStack($sink);
 			}
 		};
 	
