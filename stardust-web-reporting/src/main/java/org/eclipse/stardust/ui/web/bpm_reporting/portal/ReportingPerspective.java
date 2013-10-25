@@ -93,7 +93,7 @@ public class ReportingPerspective extends AbstractLaunchPanel implements
 		String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() 
 		           + "/plugins/bpm-reporting/launchpanel/reportTree.html";
 		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
-				"', {anchorId:'modelerLaunchPanels:reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+				"', {anchorId:'modelerLaunchPanels:reportTreeAnchor', autoResize: true, heightAdjustment: -40, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
 
 //		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
 //				"', {anchorId:'reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
