@@ -1,7 +1,7 @@
 body, table {
 	margin:0;
 	font-family:Arial, Helvetica, sans-serif;
-	font-size:12px;
+	font-size:11px;
 }
 
 .display-none {
@@ -50,7 +50,7 @@ body, table {
 }
 
 .app-logo-main {
-	background-image: url('./images/stardust-logo.png');
+	background: url('./images/stardust-logo.png')  no-repeat;
 	width: 100%;
 }
 
@@ -63,7 +63,7 @@ body, table {
 
 .shell-tabs-bar {
 	height: 34px;
-	background-color: #747167;
+	background-color: #F3F3F3;
 	overflow: hidden;
 	z-index: 1029;
 }
@@ -126,7 +126,7 @@ body, table {
 }
 
 .configuration {
-	background: url('./images/settings.png') no-repeat center;
+	background: url('./images/wrench.png') no-repeat center;
 	border: 1px solid #F3F3F3;
 	height: 24px;
 	width: 24px;
@@ -150,7 +150,7 @@ body, table {
 	cursor: pointer;
 	white-space: nowrap;
 	vertical-align: middle;
-	border: 1px solid gray;
+	border-radius: 5px 5px 0px 0px;
 }
 
 .nav-tab-close {
@@ -187,13 +187,17 @@ body, table {
 	color: #000000;
 	font-weight: bold;
 	line-height: 33px;
+	border: 1px solid #cccccc;
+	border-radius: inherit;
 }
 
 .nav-tab-inactive {
-	background-color: #999999;
+	background-color: rgb(72, 69, 62);
 	color: #FFFFFF;
 	font-weight: normal;
 	line-height: 33px;
+	border: 1px solid #888888;
+	border-radius: inherit;
 }
 
 .nav-overflow-tab {
@@ -204,7 +208,7 @@ body, table {
 	vertical-align: middle;
 	padding-left: 35px;
 	padding-right: 5px;
-	color: #FFFFFF;
+	color: #000000;
 }
 
 .nav-overflow-tab-title {
@@ -304,8 +308,11 @@ body, table {
 }
 
 .footer {
+	background-image: none !important;
+	border-top: 1px solid #cccccc !important;
 	display: table;
-	background-color: #E8E8E8;
+	background-color: #FFFFFF !important;
+	color: #000000 !important;
 	width: 100%;
 	height: 40px;
 	position: fixed;
@@ -319,17 +326,19 @@ body, table {
 .footer-cell {
 	display: table-cell;
 	white-space: nowrap;
-	padding-right: 15px;
+	padding-right: 5px;
 	line-height: 40px;
 	vertical-align: middle;
+	text-align: right;
 }
 
 .footer-filler-cell {
-	display: table-cell;
+	display: none;
 	width: 100%;
 }
 
 .footer-item {
+	text-align: left;
 }
 
 .copy-right {
