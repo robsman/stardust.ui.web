@@ -200,6 +200,12 @@ body, table {
 	border-radius: inherit;
 }
 
+.nav-tab-filler {
+	display: table-cell;
+	width: 100%;
+	border-bottom: 2px solid #cccccc;
+}
+
 .nav-overflow-tab {
 	display: table-cell;
 	height: 33px;
