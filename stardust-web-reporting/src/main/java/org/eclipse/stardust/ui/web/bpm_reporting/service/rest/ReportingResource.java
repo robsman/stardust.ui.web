@@ -221,4 +221,19 @@ public class ReportingResource {
 			return Response.serverError().build();
 		}
 	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("test-external-data")
+	public Response testExternalDataRetrieval() {
+		try {
+			return Response.ok(
+					getReportingService().testExternalDataRetrieval()
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
 }

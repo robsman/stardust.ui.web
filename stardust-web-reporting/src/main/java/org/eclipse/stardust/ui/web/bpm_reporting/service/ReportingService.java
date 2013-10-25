@@ -1459,4 +1459,30 @@ public class ReportingService {
 					reportDefinitionDocument.getId());
 		}
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Object testExternalDataRetrieval() {
+		JsonObject returnObject = new JsonObject();
+		
+		JsonArray list = new JsonArray();
+		
+		for (int n = 0; n < 100; ++n)
+		{
+			JsonObject record = new JsonObject();
+			
+			record.addProperty("firstName", "FirstName" + n);
+			record.addProperty("lastName", "LastName" + n);
+			record.addProperty("known", true);
+			record.addProperty("numberOfDependents", n);
+			
+			list.add(record);
+		}
+		
+		returnObject.add("list", list);
+		
+		return returnObject;
+	}
 }
