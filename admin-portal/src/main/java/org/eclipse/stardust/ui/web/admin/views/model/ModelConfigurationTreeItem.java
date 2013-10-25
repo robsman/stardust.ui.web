@@ -46,6 +46,7 @@ public class ModelConfigurationTreeItem
          this.description = getModelDescription(conVariables.getModelId());
          this.value = "";
          this.defaultValue = "";
+         this.type = "";
       }
       else if ((source != null) && source instanceof ConfigurationVariable)
       {

@@ -413,6 +413,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
       ColumnPreference colValue = new ColumnPreference("Value", "value", this.getMessages().getString("column.value"),
             ResourcePaths.V_MODEL_CONFIGURATION_VIEW_COLUMNS, true, false);
 
+      ColumnPreference colType = new ColumnPreference("Type", "type", ColumnDataType.STRING, this.getMessages()
+            .getString("column.type"));
       // if (hideDefaultValue)
       // {
       // colValue.setColumnDataFilterPopup(new TableDataFilterPopup(new
@@ -425,6 +427,7 @@ public class ConfigurationVariablesBean extends UIComponentBean
       cols.add(colName);
       cols.add(colValue);
       cols.add(colDescription);
+      cols.add(colType);
 
       if (!isHideDefaultValue())
       {

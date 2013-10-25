@@ -62,6 +62,10 @@ define(
 					.text(
 							m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.description"));
+					m_utils.jQuerySelect("th#type")
+					.text(
+							m_i18nUtils
+									.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.type"));
 					m_utils.jQuerySelect("th#references")
 							.text(
 									m_i18nUtils
@@ -348,6 +352,13 @@ define(
 																	this)
 																	.val());
 										});
+						
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						cell
+								.append(variables[n].type);
 						
 						cell = m_utils.jQuerySelect("<td></td>");
 						
