@@ -9,7 +9,8 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				$sink= $({});
 				$sink.listeners=[];
 				//$sink.commandStack=m_ruleSetCommandStack.createHashStack();
-				$sink.commandStack=m_ruleSetCommandStack.createSimpleStack();
+				$sink.commandStack=m_ruleSetCommandStack.createSimpleStack($sink);
+				
 				/*Special handler for Undo operations on our ruleSet commandStack.
 				 *Command objects from our command stack must be published to listeners
 				 *outside the scope of our regular [RuleSet.command] trigger so as to avoid pushing the 
@@ -19,7 +20,7 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				$sink.on("undo",function(event,cmd){
 					console.log("undo recieved!");
 					console.log(cmd);
-					var cmdObj=$sink.commandStack.undo(cmd);
+					var cmdObj=$sink.commandStack.undo(cmd,$sink);
 					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
 					if(cmdObj!=undefined){
 						var listenerCount=$sink.listeners.length;
@@ -37,7 +38,7 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				$sink.on("redo",function(event,cmd){
 					console.log("Redo recieved!");
 					console.log(cmd);
-					var cmdObj=$sink.commandStack.redo(cmd);
+					var cmdObj=$sink.commandStack.redo(cmd,$sink);
 					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
 					if(cmdObj!=undefined){
 						var listenerCount=$sink.listeners.length;
@@ -59,7 +60,9 @@ define(["bpm-modeler/js/m_jsfViewManager",
 					var temp;
 					var cmdClone=$.extend(true,{},cmd);/*Ensure we hide all refs to object on the stack*/
 					var listenerCount=$sink.listeners.length;
-					$sink.commandStack.push(cmdClone);
+					if(cmdClone.isUndoable){
+						$sink.commandStack.push(cmdClone);
+					}
 					while(listenerCount--){
 						temp=$sink.listeners[listenerCount];
 						if(cmd.event===temp.eventName){
