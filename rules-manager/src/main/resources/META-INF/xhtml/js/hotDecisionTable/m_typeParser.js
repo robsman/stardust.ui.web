@@ -115,7 +115,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
         		var childSchemaType = typeDecl.resolveElementType(obj.name);	
         	}
             
-            if (childSchemaType && childSchemaType.type) {
+            if (childSchemaType && childSchemaType.type && childSchemaType.type.body) {
             	console.log("Recursing");
             	console.log(childSchemaType.type);
             	temp.children=fx(childSchemaType.type.body, undefined, childSchemaType);
@@ -240,7 +240,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		return results;
   };
   
-  /*Utility function for parsing the results of fxTypeDecl to proper DRL formatted strings.
+  /* Utility function for parsing the results of fxTypeDecl to proper DRL formatted strings.
    * The input should only be the returned data from a call to fxTypeDecl.
    * */
   var parseToDRLStrings=function(val){
