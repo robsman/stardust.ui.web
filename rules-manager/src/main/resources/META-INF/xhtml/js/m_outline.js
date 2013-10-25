@@ -275,12 +275,6 @@ define(
 				}
 			};
 
-			var renameView = function(viewId, viewIdentifier, nameParamName,
-					newName) {
-				viewManager.updateView(viewId, nameParamName + "=" + newName,
-						viewIdentifier);
-			}
-
 			var refresh = function() {
 				if (parent.iPopupDialog) {
 					parent.iPopupDialog
@@ -1062,6 +1056,34 @@ define(
 					
 					m_i18nMapper.map(options,uiElements,true);
 					
+					/* Register redoImage button for messages from the commandStack in the sky
+					 * that the pointer on that stack has moved. When it does, we need to update
+					 * our tooltip text to indicate the next functio nwe will be performing if the
+					 * user clicks the redo Image button.*/
+					m_ruleSetCommandDispatcher.register(uiElements.redoChange,"CommandStack.Move.Pointer");
+					uiElements.redoChange.on("CommandStack.Move.Pointer",function(event,data){
+						var title;
+						var nextCmd = data.changes[0].value.before;
+						var prevCmd=data.changes[0].value.after;
+						if(nextCmd){
+							uiElements.redoChange.removeClass("toolDisabled");
+							title=nextCmd.description + " " + nextCmd.changes[0].value.after;
+							uiElements.redoChange.attr("title",title);
+						}
+						else{
+							uiElements.redoChange.addClass("toolDisabled");
+						}
+						if(prevCmd){
+							uiElements.undoChange.removeClass("toolDisabled");
+							title=prevCmd.description + " " + prevCmd.changes[0].value.after;
+							uiElements.undoChange.attr("title",title);
+						}
+						else{
+							uiElements.undoChange.addClass("toolDisabled");
+						}
+					});
+					
+					
 					if (newDisplayScope) {
 						displayScope = "#" + newDisplayScope + " ";
 					}
@@ -1139,36 +1161,5 @@ define(
 					/*save our virgin Rule Set to the server.*/
 					saveRuleSets(false,true);
 				}
-
-				/**
-				 * 
-				 */
-				Outline.prototype.processCommand = function(command) {
-					// TODO this should not be executed for operations like create / delete rule-sets that
-					// don't need explicit save
-					m_messageDisplay.markModified();
-					
-					// Handling renaming of nodes
-					var uuid;
-					if (command.name === "RuleSet.Rename") {
-						uuid = command.ruleSet.uuid;
-					} else if (command.name === "DecisionTable.Rename") {
-						uuid = command.decTable.uuid;
-					} else if (command.name === "TechnicalRule.Rename") {
-						uuid = command.techRule.uuid;
-					}
-					return;
-					if (uuid) {
-						var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
-						var node = m_utils.jQuerySelect("li#" + uuid);
-
-						// TODO - improve the command / changes structure						
-						if (node.attr("name") != command.changes[1]) {
-							node.attr("name", command.changes[1]);
-							var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
-							textElem.nodeValue = command.changes[1];
-						}
-					}
-				};
 			}
 		});
