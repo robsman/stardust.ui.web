@@ -318,23 +318,26 @@ define(
 						m_utils.jQuerySelect("#httpBasicAuthenticationDiv").show();
 						this.customSecurityTokenKeyInput.val("");
 						this.customSecurityTokenValueInput.val(""); 
-						this.customSecurityTokenUsingCVInputprop('checked', false);
+						this.customSecurityTokenUsingCVInput.prop('checked', false);
+						this.submitSingleAttributeChange("stardust:restServiceOverlay::httpHeaders", null);
 					} 
 					else if (securityMode === "customSecTok") 
 					{
 						m_utils.jQuerySelect("#customSecurityTokenDiv").show();
 						this.httpBasicAuthUserInput.val("");
 						this.httpBasicAuthPwdInput.val("");
-						this.httpBasicAuthUsingCVInputprop('checked', false);
+						this.httpBasicAuthUsingCVInput.prop('checked', false);
 					}
 					else
 					{
 						this.httpBasicAuthUserInput.val("");
 						this.httpBasicAuthPwdInput.val("");
-						this.httpBasicAuthUsingCVInputprop('checked', false);
+						this.httpBasicAuthUsingCVInput.prop('checked', false);
 						this.customSecurityTokenKeyInput.val("");
 						this.customSecurityTokenValueInput.val("");
-						this.customSecurityTokenUsingCVInputprop('checked', false);
+						this.customSecurityTokenUsingCVInput.prop('checked', false);
+						
+						this.submitSingleAttributeChange("stardust:restServiceOverlay::httpHeaders", null);
 					}
 				};
 				
@@ -490,12 +493,9 @@ define(
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 
 						if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
-								||
-								// TODO May collide with Configuration Variables
-								this.uriInput.val().indexOf(
-										"{" + accessPoint.id + "}") >= 0
-								|| accessPoint.id == this.inputBodyAccessPointInput
-										.val()) {
+								|| this.uriInput.val().indexOf("{" + accessPoint.id + "}") >= 0 
+								|| accessPoint.id == this.inputBodyAccessPointInput.val()) 
+						{
 							continue;
 						}
 
@@ -655,7 +655,7 @@ define(
 					if (this.securityModeSelect.val() === "customSecTok")
 					{
 						route += "<setHeader headerName='" + this.customSecurityTokenKeyInput.val() + "'>";
-						route += "<simple>";
+						route += "<constant>";
 						
 						if (this.customSecurityTokenUsingCVInput.prop("checked"))
 						{
@@ -667,10 +667,10 @@ define(
 						
 						if (this.customSecurityTokenUsingCVInput.prop("checked"))
 						{
-							route += "}"; 
+							route += ":Password}"; 
 						}
 						
-						route += "</simple>";
+						route += "</constant>";
 						route += "</setHeader>";
 
 						// TODO: JSON String should be stored as global variable?
@@ -686,7 +686,7 @@ define(
 						for (var h=0; h<httpHeaders.length; h++)
 						{
 							route += "<setHeader headerName='" + httpHeaders[h].headerName + "'>";
-							route += "<simple>" + httpHeaders[h].headerValue + "</simple>"; // TODO: verify if any encoding is required
+							route += "<constant>" + httpHeaders[h].headerValue + "</constant>"; // TODO: verify if any encoding is required
 							route += "</setHeader>";
 						}
 					}
@@ -731,7 +731,7 @@ define(
 						{
 							route += "${";
 							route += this.httpBasicAuthPwdInput.val(); // TODO: Verify if URL encoding is required.
-							route += "}"; // TODO: Add :password type information
+							route += ":Password}"; // TODO: Add :password type information
 						}
 						else
 						{
@@ -849,10 +849,12 @@ define(
 									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
 									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
 									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
-									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked"),
+									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
+										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
 									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
-									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked")
+									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked") 
+										? this.customSecurityTokenUsingCVInput.prop("checked") : null
 								}
 							});
 				};
@@ -881,10 +883,12 @@ define(
 									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
 									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
 									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
-									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked"),
+									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
+										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
 									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
-									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked")
+									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked") 
+										? this.customSecurityTokenUsingCVInput.prop("checked") : null
 								}
 							}, true);
 				};
