@@ -1,10 +1,10 @@
 define(
-		[ "bpm-reporting/js/AngularAdapter",
+		[ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/AngularAdapter",
 				"bpm-reporting/js/ReportingService",
 				"bpm-reporting/js/ReportRenderingController",
 				"bpm-reporting/js/SchedulingController" ],
-		function(AngularAdapter, ReportingService, ReportRenderingController,
-				SchedulingController) {
+		function(I18NUtils, AngularAdapter, ReportingService,
+				ReportRenderingController, SchedulingController) {
 			return {
 				create : function(angular, name, path) {
 					var controller = new ReportDefinitionController();
@@ -28,6 +28,13 @@ define(
 			 */
 			function ReportDefinitionController() {
 				this.reportingService = ReportingService.instance();
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.getI18N = function(key) {
+					return I18NUtils.getProperty(key);
+				};
 
 				/**
 				 * 
@@ -667,7 +674,8 @@ define(
 						});
 					}
 
-					if (this.report.dataSet.externalJoins) {
+					if (this.report.dataSet.joinExternalData
+							&& this.report.dataSet.externalJoins) {
 						for ( var l in this.report.dataSet.externalJoins) {
 							var join = this.report.dataSet.externalJoins[l];
 
@@ -782,7 +790,7 @@ define(
 					this.report.dataSet.columns = [];
 
 					var cumulatedDimensions = this.getCumulatedDimensions();
-					
+
 					for ( var k in cumulatedDimensions) {
 						var dimension = cumulatedDimensions[k];
 
@@ -804,7 +812,7 @@ define(
 					this.report.dataSet.columns = [];
 
 					var cumulatedDimensions = this.getCumulatedDimensions();
-					
+
 					for ( var k in cumulatedDimensions) {
 						var dimension = cumulatedDimensions[k];
 

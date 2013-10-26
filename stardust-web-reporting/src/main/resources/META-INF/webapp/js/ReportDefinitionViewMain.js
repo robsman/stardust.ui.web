@@ -33,7 +33,8 @@ require
 				'pointLabels' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.pointLabels.min' ],
 				'dataTables' : [ 'bpm-reporting/js/libs/datatables/jquery.dataTables.min' ],
 				'TableTools' : [ 'bpm-reporting/js/libs/datatables/extras/TableTools/TableTools.min' ],
-				'ckeditor' : [ 'bpm-reporting/js/libs/ckeditor/ckeditor' ]
+				'ckeditor' : [ 'bpm-reporting/js/libs/ckeditor/ckeditor' ],
+				'i18n' : 'common/InfinityBPMI18N'
 			},
 			shim : {
 				'jquery.url' : [ 'jquery' ],
@@ -61,8 +62,7 @@ require
 				'pieRenderer' : [ 'jquery.jqplot' ],
 				'pointLabels' : [ 'jquery.jqplot' ],
 				'dataTables' : [ 'jquery' ],
-				'TableTools' : [ 'dataTables' ],
-				'i18n' : 'common/InfinityBPMI18N'
+				'TableTools' : [ 'dataTables' ]
 			}
 		});
 

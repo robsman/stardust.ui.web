@@ -414,7 +414,7 @@ define(
 					link = portalWinDoc.doc
 							.getElementById(linkId);
 
-					var linkForm = portalWinDoc.win.contentWindow
+					var linkForm = portalWinDoc.win
 							.formOf(link);
 
 					console.debug("Link Form");
@@ -425,7 +425,7 @@ define(
 					linkForm['viewId'].value = viewId;
 					linkForm['viewIdentity'].value = viewIdentity;
 
-					portalWinDoc.win.contentWindow
+					portalWinDoc.win
 							.iceSubmit(linkForm, link);
 				};
 
@@ -433,12 +433,12 @@ define(
 				 * 
 				 */
 				ReportManagementController.prototype.getOutlineWindowAndDocument = function() {
-					return {
-						win : parent.document
-								.getElementById("modelerLaunchPanels"),
-						doc : parent.document
-								.getElementById("modelerLaunchPanels").contentDocument
-					};
+//					return {
+//						win : parent.document
+//								.getElementById("modelerLaunchPanels").contentWindow,
+//						doc : parent.document
+//								.getElementById("modelerLaunchPanels").contentDocument
+//					};
 					return {
 						win : window.top.frames['ippPortalMain'],
 						doc : window.top.frames['ippPortalMain'].document
