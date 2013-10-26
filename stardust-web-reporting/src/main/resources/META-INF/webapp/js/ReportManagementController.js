@@ -433,16 +433,16 @@ define(
 				 * 
 				 */
 				ReportManagementController.prototype.getOutlineWindowAndDocument = function() {
-//					return {
-//						win : parent.document
-//								.getElementById("modelerLaunchPanels").contentWindow,
-//						doc : parent.document
-//								.getElementById("modelerLaunchPanels").contentDocument
-//					};
 					return {
-						win : window.top.frames['ippPortalMain'],
-						doc : window.top.frames['ippPortalMain'].document
+						win : parent.document
+								.getElementById("modelerLaunchPanels").contentWindow,
+						doc : parent.document
+								.getElementById("modelerLaunchPanels").contentDocument
 					};
+//					return {
+//						win : window.top.frames['ippPortalMain'],
+//						doc : window.top.frames['ippPortalMain'].document
+//					};
 				};
 			}
 		});
