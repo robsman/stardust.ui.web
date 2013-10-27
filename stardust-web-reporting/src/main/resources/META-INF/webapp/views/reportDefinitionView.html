@@ -36,54 +36,50 @@ table.formTable td {
 						<ul id="propertiesTabsList">
 							<li><a href="#dataSetTab"><img
 									src="../css/images/report.png"></img><span class="tabLabel"
-									id="dataSet">{{getI18N("reporting.definitionView.dataSetTab.title")}}</span></a></li>
+									id="dataSet">{{getI18N('reporting.definitionView.dataSetTab.title')}}</span></a></li>
 							<li><a href="#layoutTab"><img
 									src="../css/images/report.png"></img><span class="tabLabel"
-									id="layout">{{getI18N("reporting.definitionView.layoutTab.title")}}</span></a></li>
+									id="layout">{{getI18N('reporting.definitionView.layoutTab.title')}}</span></a></li>
 							<li><a href="#previewTab"><img
 									src="../css/images/report.png"></img><span class="tabLabel"
-									id="preview">{{getI18N("reporting.definitionView.previewTab.title")}}</span></a></li>
+									id="preview">{{getI18N('reporting.definitionView.previewTab.title')}}</span></a></li>
 							<li><a href="#definitionTab"><img
 									src="../css/images/report.png"></img><span class="tabLabel"
-									id="definition">{{getI18N("reporting.definitionView.reportDefinitionTab.title")}}</span></a></li>
+									id="definition">{{getI18N('reporting.definitionView.reportDefinitionTab.title')}}</span></a></li>
 							<li><a href="#schedulingTab"><img
 									src="../css/images/report.png"></img><span class="tabLabel"
-									id="scheduling">{{getI18N("reporting.definitionView.schedulingTab.title")}}</span></a></li>
+									id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></a></li>
 						</ul>
 						<div id="dataSetTab">
 							<table cellpadding="0" cellspacing="0" class="formTable">
 								<tr>
-									<td><label>Retrieve data about</label></td>
+									<td><label>{{getI18N('reporting.definitionView.retrieveData.text')}}</label></td>
 									<td><select id="primaryObjectSelect">
 									</select></td>
 									<td><input ng-model="report.dataSet.type"
 										ng-click="changeDataSetType()" value="seriesGroup"
 										type="radio" style="margin-left: 10px;"></td>
-									<td><label>as a Series Group</label></td>
+									<td><label>{{getI18N('reporting.definitionView.seriesGroup.label')}}</label></td>
 									<td><input ng-model="report.dataSet.type"
 										ng-click="changeDataSetType()" value="recordSet" type="radio"></td>
-									<td><label>a Record Set</label></td>
-									<td><input ng-model="report.dataSet.type"
-										ng-click="changeDataSetType()" value="processHistory"
-										type="radio"></td>
-									<td><label>a Process History</label></td>
+									<td><label>{{getI18N('reporting.definitionView.recordSet.label')}}</label></td>
 								</tr>
 							</table>
-							<div class="heading">External Data</div>
+							<div class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</div>
 							<table cellpadding="0" cellspacing="0" class="formTable">
 								<tr>
 									<td><input type="checkbox"
 										ng-model="report.dataSet.joinExternalData"></td>
-									<td><label>Join external Data</label></td>
+									<td><label>{{getI18N('reporting.definitionView.joinExternalData.label')}}</label></td>
 									<td><div ng-show="report.dataSet.joinExternalData">
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
-													<td><label>as</label></td>
+													<td><label>{{getI18N('reporting.definitionView.as.label')}}</label></td>
 													<td><select
 														ng-model="report.dataSet.externalJoins[0].joinType"><option
 																value="inner">Inner Join</option>
 															<option value="outer">Outer Join</option></select></td>
-													<td><label>with internal Join Key</label></td>
+													<td><label>{{getI18N('reporting.definitionView.internalJoinKey.label')}}</label></td>
 													<td><select
 														ng-model="report.dataSet.externalJoins[0].internalKey"
 														ng-options="dimension.id as dimension.name for dimension in getInternalDimensions()">
@@ -98,15 +94,16 @@ table.formTable td {
 								<table cellpadding="0" cellspacing="0" class="formTable"
 									style="margin-top: 5px;">
 									<tr>
-										<td><label>REST URI</label></td>
+										<td><label>{{getI18N('reporting.definitionView.restUri.label')}}</label></td>
 										<td><input
 											ng-model="report.dataSet.externalJoins[0].restUri"
 											style="width: 450px;" /></td>
 									</tr>
 									<tr>
 										<td colspan="2"><a style="font-size: 9px;"
-											ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])" class="smallLink">Load
-												test data to obtain record structure &raquo;</a></td>
+											ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])"
+											class="smallLink">{{getI18N('reporting.definitionView.loadTestDataLink.label')}}
+												&raquo;</a></td>
 									</tr>
 								</table>
 								<table cellpadding="0" cellspacing="0" class="embeddedTable"
@@ -114,11 +111,11 @@ table.formTable td {
 									<thead>
 										<tr>
 											<td></td>
-											<td>Field Name</td>
-											<td>Use As</td>
-											<td>Display As</td>
-											<td>Type</td>
-											<td>External Join Key</td>
+											<td>{{getI18N('reporting.definitionView.fieldName.label')}}</td>
+											<td>{{getI18N('reporting.definitionView.useAs.label')}}</td>
+											<td>{{getI18N('reporting.definitionView.displayAs.label')}}</td>
+											<td>{{getI18N('reporting.definitionView.dataType.label')}}</td>
+											<td>{{getI18N('reporting.definitionView.externalJoinKey.label')}}</td>
 										</tr>
 									</thead>
 									<tbody>
@@ -150,9 +147,9 @@ table.formTable td {
 							<div ng-show="report.dataSet.type == 'recordSet'">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
-										<td><h2>Available Columns</h2></td>
+										<td><h2>{{getI18N('reporting.definitionView.availableColumns.label')}}</h2></td>
 										<td></td>
-										<td><h2>Selected Columns</h2></td>
+										<td><h2>{{getI18N('reporting.definitionView.selectedColumns.label')}}</h2></td>
 									</tr>
 									<tr>
 										<td><select id="availableDimensionsSelect"
@@ -183,13 +180,13 @@ table.formTable td {
 								</table>
 							</div>
 							<div ng-show="report.dataSet.type == 'seriesGroup'">
-								<div class="heading">Fact</div>
+								<div class="heading">{{getI18N('reporting.definitionView.fact.title')}}</div>
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
-										<td><label>Fact</label></td>
+										<td><label>{{getI18N('reporting.definitionView.fact.label')}}</label></td>
 										<td><select id="factSelect">
 										</select></td>
-										<td><label ng-show="isFactDuration()">Unit</label></td>
+										<td><label ng-show="isFactDuration()">{{getI18N('reporting.definitionView.unit.label')}}</label></td>
 										<td><select ng-model="report.dataSet.factDurationUnit"
 											ng-show="isFactDuration()"><option value="s">Seconds</option>
 												<option value="m">Minutes</option>
@@ -201,15 +198,14 @@ table.formTable td {
 										</select></td>
 									</tr>
 								</table>
-								<div class="heading">Dimensions</div>
+								<div class="heading">{{getI18N('reporting.definitionView.dimensions.label')}}</div>
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
 										<td valign="top">
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td><label
-														style="width: 100px; display: inline-block;">First
-															Dimension</label></td>
+														style="width: 100px; display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
 													<td><select ng-model="report.dataSet.firstDimension"
 														ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions()"
 														ng-change="changeFirstDimension()">
@@ -255,8 +251,8 @@ table.formTable td {
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = false;" class="smallLink"> Switch to
-														Start Date and Duration &raquo;</a>
+														ng-click="firstDimensionToFrom = false;" class="smallLink">
+														Switch to Start Date and Duration &raquo;</a>
 												</div>
 												<div ng-show="!firstDimensionToFrom"
 													style="margin-left: 10px;">
@@ -303,8 +299,8 @@ table.formTable td {
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = true;" class="smallLink">Switch to
-														Start and End Date &raquo;</a>
+														ng-click="firstDimensionToFrom = true;" class="smallLink">Switch
+														to Start and End Date &raquo;</a>
 												</div>
 											</div>
 											<div id="firstDimensionEnumerationSelectionPanel"
@@ -384,8 +380,7 @@ table.formTable td {
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td><label
-														style="width: 100px; display: inline-block;">Second
-															Dimension</label></td>
+														style="width: 100px; display: inline-block;">{{getI18N('reporting.definitionView.secondDimension.label')}}</label></td>
 													<td><select ng-model="report.dataSet.secondDimension"
 														ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions()"
 														ng-change="changeSecondDimension()">
@@ -418,7 +413,7 @@ table.formTable td {
 								</table>
 							</div>
 							<div ng-show="report.dataSet.type != 'processHistory'">
-								<div class="heading">Additional Filtering</div>
+								<div class="heading">{{getI18N('reporting.definitionView.additionalFiltering.title')}}</div>
 								<table cellpadding="0" cellspacing="0" class="formTable"
 									style="margin-top: 10px;">
 									<tr ng-repeat="x in report.dataSet.filters">
@@ -542,14 +537,14 @@ table.formTable td {
 										<td></td>
 									</tr>
 								</table>
-								<div class="heading">Grouping</div>
+								<div class="heading">{{getI18N('reporting.definitionView.grouping.title')}}</div>
 								<table cellpadding="0" cellspacing="0" class="layoutTable"
 									style="margin-top: 10px;">
 									<tr>
 										<td>
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
-													<td><label style="width: 250px;">Group By</label></td>
+													<td><label style="width: 250px;">{{getI18N('reporting.definitionView.groupBy.label')}}</label></td>
 													<td><select id="groupBySelect"
 														ng-model="report.dataSet.groupBy">
 													</select></td>
@@ -567,20 +562,19 @@ table.formTable td {
 									<td><input ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'seriesGroup'" value="chart"
 										type="radio"></td>
-									<td><label ng-show="report.dataSet.type == 'seriesGroup'">Chart</label></td>
+									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.chart.label')}}</label></td>
 									<td><input ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'recordSet'" value="table"
 										type="radio"></td>
-									<td><label ng-show="report.dataSet.type == 'recordSet'">Table</label></td>
+									<td><label ng-show="report.dataSet.type == 'recordSet'">{{getI18N('reporting.definitionView.table.label')}}</label></td>
 									<td><input ng-model="report.layout.type" value="document"
 										type="radio"></td>
-									<td><label>Document</label></td>
+									<td><label>{{getI18N('reporting.definitionView.composite.label')}}</label></td>
 									<td><input ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'processHistory'"
 										value="processDiagram" type="radio"></td>
 									<td><label
-										ng-show="report.dataSet.type == 'processHistory'">Process
-											Diagram</label></td>
+										ng-show="report.dataSet.type == 'processHistory'">{{getI18N('reporting.definitionView.processDiagram.label')}}</label></td>
 								</tr>
 							</table>
 							<div ng-show="report.layout.type == 'table'">
@@ -588,28 +582,28 @@ table.formTable td {
 									<tr>
 										<td><input type="checkbox"
 											ng-model="report.layout.table.options.showSearchInput" /></td>
-										<td><label>Show Search Input</label></td>
+										<td><label>{{getI18N('reporting.definitionView.showSearchInput.label')}}</label></td>
 									</tr>
 									<tr>
 										<td><input type="checkbox"
 											ng-model="report.layout.table.options.showVisibleRowCountSelector" />
 										</td>
-										<td><label>Show Visible Row Count Selector</label></td>
+										<td><label>{{getI18N('reporting.definitionView.showRowCountSelector.label')}}</label></td>
 									</tr>
 								</table>
 							</div>
 							<div ng-show="report.layout.type == 'chart'">
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
-										<td><label>Chart Type</label></td>
+										<td><label>{{getI18N('reporting.definitionView.chartType.label')}}</label></td>
 										<td><select id="chartTypeSelect">
 										</select></td>
 									</tr>
 								</table>
-								<div class="heading">Title</div>
+								<div class="heading">{{getI18N('reporting.definitionView.title.title')}}</div>
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
-										<td><label>Title</label></td>
+										<td><label>{{getI18N('reporting.definitionView.title.label')}}</label></td>
 										<td><input type="text"
 											ng-model="report.layout.chart.options.title"
 											style="width: 250px;" /></td>
@@ -619,61 +613,61 @@ table.formTable td {
 									<tr>
 										<td valign="top">
 											<div>
-												<div class="heading">Cursor</div>
+												<div class="heading">{{getI18N('reporting.definitionView.cursor.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.cursor.show" /></td>
-														<td><label>Show Cursor</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showCursor.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.cursor.showTooltip" /></td>
-														<td><label>Show Tooltip</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTooltip.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.cursor.zoom" /></td>
-														<td><label>Zoom</label></td>
+														<td><label>{{getI18N('reporting.definitionView.zoom.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
 										</td>
 										<td valign="top">
 											<div style="margin-left: 10px;">
-												<div class="heading">Highlighter</div>
+												<div class="heading">{{getI18N('reporting.definitionView.highlighter.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.highlighter.show" /></td>
-														<td><label>Show Highlighter</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showHighlighter.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
 										</td>
 										<td valign="top">
 											<div style="margin-left: 10px;">
-												<div class="heading">Legend</div>
+												<div class="heading">{{getI18N('reporting.definitionView.legend.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.legend.show" /></td>
-														<td><label>Show Legend</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showLegend.label')}}</label></td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>Legend Position</label></td>
+														<td><label>{{getI18N('reporting.definitionView.legendPosition.label')}}</label></td>
 														<td><select
 															ng-model="report.layout.chart.options.legend.location">
-																<option value="w" selected>West</option>
-																<option value="nw">North/West</option>
-																<option value="n">North</option>
-																<option value="ne">North/East</option>
-																<option value="e">East</option>
-																<option value="se">South/East</option>
-																<option value="s">South</option>
-																<option value="sw">South/West</option>
+																<option value="w" selected>{{getI18N('reporting.definitionView.west.label')}}</option>
+																<option value="nw">{{getI18N('reporting.definitionView.northWest.label')}}</option>
+																<option value="n">{{getI18N('reporting.definitionView.north.label')}}</option>
+																<option value="ne">{{getI18N('reporting.definitionView.northEast.label')}}</option>
+																<option value="e">{{getI18N('reporting.definitionView.east.label')}}</option>
+																<option value="se">{{getI18N('reporting.definitionView.southEast.label')}}</option>
+																<option value="s">{{getI18N('reporting.definitionView.south.label')}}</option>
+																<option value="sw">{{getI18N('reporting.definitionView.southWest.label')}}</option>
 														</select></td>
 													</tr>
 												</table>
@@ -681,12 +675,12 @@ table.formTable td {
 										</td>
 										<td valign="top">
 											<div style="margin-left: 10px;">
-												<div class="heading">Animation</div>
+												<div class="heading">{{getI18N('reporting.definitionView.animation.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.animation" /></td>
-														<td><label>Show Animation</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showAnimation.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
@@ -695,25 +689,25 @@ table.formTable td {
 									<tr>
 										<td valign="top">
 											<div ng-show="getChartType().hasAxes">
-												<div class="heading">X-Axis</div>
+												<div class="heading">{{getI18N('reporting.definitionView.xAxis.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>Minimum</label></td>
+														<td><label>{{getI18N('reporting.definitionView.minimum.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.min" /></td>
 													</tr>
 													<tr>
-														<td><label>Maximum</label></td>
+														<td><label>{{getI18N('reporting.definitionView.maximum.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.max" /></td>
 													</tr>
 													<tr>
-														<td><label>Label</label></td>
+														<td><label>{{getI18N('reporting.definitionView.label.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.axes.xaxis.label" /></td>
 													</tr>
 													<tr>
-														<td><label>Tick Position</label></td>
+														<td><label>{{getI18N('reporting.definitionView.tickPosition.label')}}</label></td>
 														<td><select
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.mark"><option
 																	value="inside">Inside</option>
@@ -721,17 +715,17 @@ table.formTable td {
 																<option value="cross">Cross</option></select></td>
 													</tr>
 													<tr>
-														<td><label>Mark Size</label></td>
+														<td><label>{{getI18N('reporting.definitionView.markSize.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.markSize" /></td>
 													</tr>
 													<tr>
-														<td><label>Label Format String</label></td>
+														<td><label>{{getI18N('reporting.definitionView.labelFormatString.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.formatString" /></td>
 													</tr>
 													<tr>
-														<td><label>Label Angle</label></td>
+														<td><label>{{getI18N('reporting.definitionView.labelAngle.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.angle" /></td>
 													</tr>
@@ -740,17 +734,17 @@ table.formTable td {
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.showGridline" /></td>
-														<td><label>Show Gridline</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showGridLine.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.showTickMarks" /></td>
-														<td><label>Show Tick Marks</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTickMarks.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.showTicks" /></td>
-														<td><label>Show Tick Labels</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTickLabels.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
@@ -758,25 +752,25 @@ table.formTable td {
 										<td valign="top">
 											<div ng-show="getChartType().hasAxes"
 												style="margin-left: 10px;">
-												<div class="heading">Y-Axis</div>
+												<div class="heading">{{getI18N('reporting.definitionView.xAxis.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>Minimum</label></td>
+														<td><label>{{getI18N('reporting.definitionView.minimum.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.min" /></td>
 													</tr>
 													<tr>
-														<td><label>Maximum</label></td>
+														<td><label>{{getI18N('reporting.definitionView.maximum.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.max" /></td>
 													</tr>
 													<tr>
-														<td><label>Label Y-Axis</label></td>
+														<td><label>{{getI18N('reporting.definitionView.label.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.axes.yaxis.label" /></td>
 													</tr>
 													<tr>
-														<td><label>Tick Position</label></td>
+														<td><label>{{getI18N('reporting.definitionView.tickPosition.label')}}</label></td>
 														<td><select
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.mark"><option
 																	value="inside">Inside</option>
@@ -784,17 +778,17 @@ table.formTable td {
 																<option value="cross">Cross</option></select></td>
 													</tr>
 													<tr>
-														<td><label>Mark Size</label></td>
+														<td><label>{{getI18N('reporting.definitionView.markSize.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.markSize" /></td>
 													</tr>
 													<tr>
-														<td><label>Label Format String</label></td>
+														<td><label>{{getI18N('reporting.definitionView.labelFormatString.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.formatString" /></td>
 													</tr>
 													<tr>
-														<td><label>Label Angle</label></td>
+														<td><label>{{getI18N('reporting.definitionView.labelAngle.label')}}</label></td>
 														<td><input type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.angle" /></td>
 													</tr>
@@ -803,17 +797,17 @@ table.formTable td {
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.showGridline" /></td>
-														<td><label>Show Gridline</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showGridline.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.showTickMarks" /></td>
-														<td><label>Show Tick Marks</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTickMarks.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.showTicks" /></td>
-														<td><label>Show Tick Labels</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTickLabels.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
@@ -821,16 +815,16 @@ table.formTable td {
 										<td valign="top">
 											<div ng-show="getChartType().hasDefaultSeries"
 												style="margin-left: 10px;">
-												<div class="heading">Series (Defaults)</div>
+												<div class="heading">{{getI18N('reporting.definitionView.seriesDefaults.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>Line Width</label></td>
+														<td><label>{{getI18N('reporting.definitionView.lineWidth.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.seriesDefaults.lineWidth" />
 														</td>
 													</tr>
 													<tr>
-														<td><label>Line Color (CSS)</label></td>
+														<td><label>{{getI18N('reporting.definitionView.lineColorCss.label')}}</label></td>
 														<td><input
 															ng-model="report.layout.chart.options.seriesDefaults.color" />
 														</td>
@@ -841,7 +835,7 @@ table.formTable td {
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.shadow" />
 														</td>
-														<td><label>Show Shadow</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showShadow.label')}}</label></td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
@@ -849,20 +843,20 @@ table.formTable td {
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.showMarker" />
 														</td>
-														<td><label>Show Marker</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showMarker.label')}}</label></td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>Marker Style</label></td>
+														<td><label>{{getI18N('reporting.definitionView.markerStyle.label')}}</label></td>
 														<td><select
 															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.style">
-																<option value="circle">Circle</option>
-																<option value="diamond">Diamond</option>
-																<option value="square">Square</option>
-																<option value="filledCircle">Filled Circle</option>
-																<option value="filledDiamond">Filled Diamond</option>
-																<option value="filledSquare">Filled Square</option>
+																<option value="circle">{{getI18N('reporting.definitionView.circle.label')}}</option>
+																<option value="diamond">{{getI18N('reporting.definitionView.diamond.label')}}</option>
+																<option value="square">{{getI18N('reporting.definitionView.square.label')}}</option>
+																<option value="filledCircle">{{getI18N('reporting.definitionView.filledCircle.label')}}</option>
+																<option value="filledDiamond">{{getI18N('reporting.definitionView.filledDiamond.label')}}</option>
+																<option value="filledSquare">{{getI18N('reporting.definitionView.filledSquare.label')}}</option>
 														</select></td>
 													</tr>
 												</table>
@@ -871,19 +865,19 @@ table.formTable td {
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.shadow" />
 														</td>
-														<td><label>Show Marker Shadow</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showMarkerShadow.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.pointLabels.show" />
 														</td>
-														<td><label>Show Point Label</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showPointLabel.label')}}</label></td>
 													</tr>
 													<tr>
 														<td><input type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.trendline.show" />
 														</td>
-														<td><label>Show Trendline</label></td>
+														<td><label>{{getI18N('reporting.definitionView.showTrendLine.label')}}</label></td>
 													</tr>
 												</table>
 											</div>
@@ -897,7 +891,7 @@ table.formTable td {
 						</div>
 						<div id="previewTab">
 							<div ng-show="hasParameters()">
-								<div class="heading">Parameters</div>
+								<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
 										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)
@@ -922,7 +916,7 @@ table.formTable td {
 								</table>
 							</div>
 							<div ng-show="report.layout.type == 'table'">
-								<div class="heading">Table</div>
+								<div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
 								<div style="padding-bottom: 20px; border: 3px solid #dddddd"
 									class="dataTableFrame">
 									<div class="dataTableControls">
@@ -951,7 +945,7 @@ table.formTable td {
 								</div>
 							</div>
 							<div ng-show="report.layout.type == 'chart'">
-								<div class="heading">Chart</div>
+								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
 								<table>
 									<tr>
 										<td><a href="" ng-click="refreshPreview()"> <img
@@ -971,7 +965,7 @@ table.formTable td {
 								</div>
 							</div>
 							<div ng-show="report.layout.type == 'document'">
-								<div class="heading">Document</div>
+								<div class="heading">{{getI18N('reporting.definitionView.composite.title')}}</div>
 								<table>
 									<tr>
 										<td><a href="" ng-click=""> <img
@@ -998,55 +992,53 @@ table.formTable td {
 								<tr>
 									<td valign="top">
 										<div ng-show="report.storage.state == 'created'">
-											<p>Save this Report Definition as a Report Template with
-												name</p>
+											<p>{{getI18N('reporting.definitionView.saveReport.text')}}</p>
 											<input type="text" ng-model="report.name"
 												style="width: 250px;"></input>
-											<p>with description</p>
+											<p>{{getI18N('reporting.definitionView.withDescription.text')}}</p>
 											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
 										</div>
 										<div ng-show="report.storage.state == 'saved'">
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
-													<td><label>Name</label></td>
+													<td><label>{{getI18N('reporting.definitionView.name.label')}}</label></td>
 													<td><input type="text" ng-model="report.name"
 														style="width: 250px;"></input></td>
 												</tr>
 											</table>
 											<table>
 												<tr>
-													<td><label>Description</label></td>
+													<td><label>{{getI18N('reporting.definitionView.description.label')}}</label></td>
 												</tr>
 												<tr>
 													<td><textarea rows="5" cols="60"
 															ng-model="report.description"></textarea></td>
 												</tr>
 											</table>
-
 										</div>
 									</td>
 								</tr>
 								<tr>
 									<td valign="top">
 										<div ng-show="report.storage.state == 'created'">
-											<p>for on-demand or scheduled repetetive execution as a</p>
+											<p>{{getI18N('reporting.definitionView.forOnDemand.text')}}</p>
 										</div>
 										<table>
 											<tr>
 												<td><input type="radio"
 													ng-model="report.storage.location" value="personalFolder" /></td>
-												<td colspan="2">Personal Report Template</td>
+												<td colspan="2">{{getI18N('reporting.definitionView.personalReportTemplate.label')}}</td>
 											</tr>
 											<tr>
 												<td><input type="radio"
 													ng-model="report.storage.location" value="publicFolder" /></td>
-												<td colspan="2">Globally available Report Template</td>
+												<td colspan="2">{{getI18N('reporting.definitionView.globalReportTemplate.label')}}</td>
 											</tr>
 											<tr>
 												<td><input type="radio"
 													ng-model="report.storage.location"
 													value="participantFolder" /></td>
-												<td>Report Template available for Organization/Role</td>
+												<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
 												<td><select ng-model="report.storage.participant"></select>
 												</td>
 											</tr>
@@ -1056,8 +1048,7 @@ table.formTable td {
 								<tr>
 									<td colspan="2">
 										<div ng-show="report.storage.state == 'created'">
-											<button ng-click="saveReport()" style="margin-top: 10px;">Save
-												as Template</button>
+											<button ng-click="saveReport()" style="margin-top: 10px;">{{getI18N('reporting.definitionView.saveAsTemplate.label')}}</button>
 										</div>
 									</td>
 								</tr>
@@ -1067,13 +1058,11 @@ table.formTable td {
 							<table>
 								<tr>
 									<td valign="top">
-										<div class="heading">Scheduling</div>
 										<table>
 											<tr>
 												<td><input type="checkbox"
 													ng-model="report.scheduling.active"></input></td>
-												<td>Schedule this Report Template to be executed with
-													one or more Recurrences</td>
+												<td>{{getI18N('reporting.definitionView.scheduleReport.text')}}</td>
 											</tr>
 										</table>
 										<div ng-show="report.scheduling.active">
