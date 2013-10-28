@@ -190,35 +190,42 @@ define(
 										m_utils
 												.debug(event.data.page.currentConfigurationVariable);
 										m_utils.debug(deleteOptions);
-
-										jQuery
-												.ajax(
-														{
-															type : "DELETE",
-															url : m_urlUtils
-																	.getModelerEndpointUrl()
-																	+ "/models/"
-																	+ encodeURIComponent(event.data.page.getModel().id)
-																	+ "/configurationVariables/"
-																	+ event.data.page.currentConfigurationVariable.name,
-															contentType : "application/json",
-															async : false,
-															data : JSON
-																	.stringify(deleteOptions)
-														})
-												.done(
-														function() {
-															m_utils.jQuerySelect(
-																	"#deleteConfigurationVariableDialog")
-																	.dialog(
-																			"close");
-															event.data.page.refreshConfigurationVariables();
-														}).fail(function(e) {
-															alert("Delete failed: " + e);
-												});
+										event.data.page.submitDeleteCommand(deleteOptions,event);
 									});
 				};
 
+				/**
+				 *
+				 */
+				ConfigurationVariablesPropertiesPage.prototype.submitDeleteCommand = function(deleteOptions,event) {
+					jQuery
+							.ajax(
+									{
+										type : "DELETE",
+										url : m_urlUtils
+												.getModelerEndpointUrl()
+												+ "/models/"
+												+ encodeURIComponent(event.data.page
+														.getModel().id)
+												+ "/configurationVariables/"
+												+ event.data.page.currentConfigurationVariable.name,
+										contentType : "application/json",
+										async : false,
+										data : JSON.stringify(deleteOptions)
+									})
+							.done(
+									function() {
+										m_utils
+												.jQuerySelect(
+														"#deleteConfigurationVariableDialog")
+												.dialog("close");
+										event.data.page
+												.refreshConfigurationVariables();
+									}).fail(function(e) {
+								alert("Delete failed: " + e);
+							});
+				};
+				
 				/**
 				 *
 				 */
@@ -280,16 +287,23 @@ define(
 										},
 										function(event) {
 											event.data.page.currentConfigurationVariable = event.data.configurationVariable;
-
-											m_utils.jQuerySelect(
-													"#deleteConfigurationVariableDialog #emptyLiteralRadio")
-													.prop(
-															"checked",
-															true);
-											m_utils.jQuerySelect(
-													"#deleteConfigurationVariableDialog")
-													.dialog(
-															"open");
+											if (event.data.page.currentConfigurationVariable.references.length > 0) {
+												m_utils
+														.jQuerySelect(
+																"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+														.prop("checked", true);
+												m_utils
+														.jQuerySelect(
+																"#deleteConfigurationVariableDialog")
+														.dialog("open");
+											}else{
+												var deleteOptions = {
+													mode : "emptyLiteral"
+												};
+												
+											event.data.page.submitDeleteCommand(deleteOptions,event);
+											}
+											
 										});
 
 						cell.append(button);
