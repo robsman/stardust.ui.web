@@ -2820,12 +2820,15 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (ApplicationType application : model.getApplication())
       {
-         if ( !application.getType()
-               .getId()
-               .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+
+         if (application.getType() != null
+               && application.getType()
+                     .getId()
+                     .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
          {
-            applicationsJson.add(application.getId(), toApplication(application));
+            continue;
          }
+         applicationsJson.add(application.getId(), toApplication(application));
       }
 
       JsonObject dataItemsJson = new JsonObject();
