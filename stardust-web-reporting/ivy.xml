@@ -14,7 +14,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="stardust-web-reporting" revision="${ipp.version.full}" />
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-web-reporting" revision="${ipp.version.full}" />
 
    <configurations>
       <conf name="stardust-web-reporting-compile" description="Stardust Web Reporting - Compile Scope" />
@@ -42,21 +42,21 @@
    </publications>
 
    <dependencies>
-      <dependency org="com.infinity.bpm" name="stardust-engine-base" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-base" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->stardust-engine-base-compile" />
-      <dependency org="com.infinity.bpm" name="infinity-process-engine" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->carnot-engine-compile" />
-      <dependency org="com.infinity.bpm" name="infinity-process-engine-module" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->logging-slf4j-log4j-module-compile" />
-      <dependency org="com.infinity.bpm" name="stardust-engine-ws-cxf" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-ws-cxf" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->stardust-engine-ws-cxf-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->ipp-portal-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->ipp-views-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}" 
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" 
          conf="stardust-web-reporting-compile->jsf-api-module-compile"/>
-      <dependency org="com.infinity.bpm" name="carnot-spring-module" rev="${ipp.version.full}" 
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" 
          conf="stardust-web-reporting-compile->spring-module-compile"/>
       
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
