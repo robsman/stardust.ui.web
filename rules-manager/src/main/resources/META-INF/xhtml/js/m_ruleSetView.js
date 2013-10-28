@@ -63,6 +63,7 @@ define(
 						typeDecl,         /*instance of a typeDeclaration*/
 						typeBody,         /*result of a typeDecl.getBody() call*/
 						$descriptionTextArea,
+						cnstCmd,		  /*enum of our commands from the command Factory.*/
 						codeEditSelector; /*selector for the Ace Code editor linked to the decision table*/
 					
 					var uiElements={
@@ -87,7 +88,10 @@ define(
 					this.parameterMappingsPanelAnchor = m_utils.jQuerySelect("#parameterMappingsPanelAnchor");
 					
 					codeEditSelector="ruleSetCodeEditor";
-
+					
+					/*For brevity , access command constants using shorthand*/
+					cnstCMD=m_ruleSetCommand.commands;
+					
 				    //initialize tabs control
 					m_utils.jQuerySelect("#ruleSetTabs").tabs();
 					
@@ -108,8 +112,8 @@ define(
 					});
 					
 					/*Bind our description textarea to incoming events from our top level processor.*/
-					m_ruleSetCommandDispatcher.register($descriptionTextArea,"RuleSet.Description.Change");
-					$descriptionTextArea.on("RuleSet.Description.Change",function(event,data){
+					m_ruleSetCommandDispatcher.register($descriptionTextArea,cnstCMD.ruleSetDescriptionCmd);
+					$descriptionTextArea.on(cnstCMD.ruleSetDescriptionCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(ruleSet.uuid ===uuid && $descriptionTextArea.val()!=newVal){
@@ -118,9 +122,9 @@ define(
 					});
 					
 					/*Bind our nameInput field to incoming events from our top level processor.*/
-					m_ruleSetCommandDispatcher.register(this.nameInput,"RuleSet.Name.Change");
+					m_ruleSetCommandDispatcher.register(this.nameInput,cnstCMD.ruleSetRenameCmd);
 					var $nameInput=this.nameInput;
-					this.nameInput.on("RuleSet.Name.Change",function(event,data){
+					this.nameInput.on(cnstCMD.ruleSetRenameCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(ruleSet.uuid ===uuid && $nameInput.val()!=newVal){
@@ -130,8 +134,8 @@ define(
 					
 					/*Bind our Parameter Definition panel  to incoming events from our top level processor.*/
 					var $that=$(this);
-					m_ruleSetCommandDispatcher.register($that,"RuleSet.Fact.Change");
-					$that.on("RuleSet.Fact.Change",function(event,data){
+					m_ruleSetCommandDispatcher.register($that,cnstCMD.ruleSetFactCmd);
+					$that.on(cnstCMD.ruleSetFactCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(ruleSet.uuid ===uuid){

@@ -536,6 +536,8 @@ define(
 			}
 
 			var setupEventHandling = function() {
+				var cnstCmd; /*Shorthand accessor for our commandFactory constatns*/
+				cnstCmd=m_ruleSetCommand.commands;
 				/* Listen to toolbar events */
 				jQuery(document).bind('TOOL_CLICKED_EVENT',
 						function(event, data) {
@@ -575,16 +577,20 @@ define(
 				
 				/*Set up command processing for our jsTree instance*/
 				var jsTreeRegisterHooks=[
-				                   "DecisionTable.Name.Change",
-				                   "DecisionTable.Description.Change",
-				                   "RuleSet.Name.Change",
-				                   "RuleSet.Description.Change",
-				                   "Rule.Name.Change",
-				                   "Rule.Description.Change"];
-				
+				                   cnstCmd.decTableRenameCmd,
+				                   cnstCmd.decTableDescriptionCmd,
+				                   cnstCmd.ruleSetRenameCmd,
+				                   cnstCmd.ruleSetDescriptionCmd,
+				                   cnstCmd.ruleRenameCmd,
+				                   cnstCmd.ruleDescriptionCmd,
+				                   cnstCmd.ruleDeleteCmd,
+				                   cnstCmd.ruleCreateCmd,
+				                   cnstCmd.decTableCreateCmd,
+				                   cnstCmd.decTableDeleteCmd];
 				m_ruleSetCommandDispatcher.register(jsOutlineTree,jsTreeRegisterHooks);
 				
-				jsOutlineTree.on("DecisionTable.Name.Change RuleSet.Name.Change Rule.Name.Change",function(event,data){
+				var renameCmds=[cnstCmd.decTableRenameCmd,cnstCmd.ruleSetRenameCmd,cnstCmd.ruleRenameCmd];
+				jsOutlineTree.on(renameCmds.join(" "), function(event,data){
 					var elementID=data.elementID;
 					var link = m_utils.jQuerySelect("li#" + elementID + " a")[0];
 					var node = m_utils.jQuerySelect("li#" + elementID);
@@ -597,7 +603,11 @@ define(
 					}
 				});
 				
-				jsOutlineTree.on("DecisionTable.Description.Change RuleSet.Description.Change Rule.Description.Change",function(event,data){
+				var descriptionChangeCmds=[cnstCmd.ruleSetDescriptionCmd,
+				                           cnstCmd.ruleDescriptionCmd,
+				                           cnstCmd.decTableDescriptionCmd];
+				
+				jsOutlineTree.on(descriptionChangeCmds.join(" "),function(event,data){
 					var elementID=data.elementID;
 					var link = m_utils.jQuerySelect("li#" + elementID + " a")[0];
 					var node = m_utils.jQuerySelect("li#" + elementID);
@@ -605,6 +615,51 @@ define(
 					
 					if (node.attr("title") != newVal) {
 						node.attr("title", newVal);
+					}
+				});
+				
+				jsOutlineTree.on(cnstCmd.ruleDeleteCmd,function(event,data){
+					var elementUUID=data.elementID;
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					viewManager.closeViewsForElement(data.elementID);
+					ruleSet.deleteTechnicalRule(data.elementID);
+					jsOutlineTree.jstree("delete_node","#"+ data.elementID);
+				});
+				
+				jsOutlineTree.on(cnstCmd.ruleCreateCmd,function(event,data){
+					var elementUUID=data.elementID;
+					var techRule=data.changes[0].value.after;
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					
+					/*filter duplicates, guranteed to occur as we receive the echo of
+					 *our own techrule create events.*/
+					if(ruleSet.technicalRules.hasOwnProperty(data.elementID)===false){
+						createTechinicalRuleNode(ruleSet,techRule);
+						ruleSet.technicalRules[data.elementID]=techRule;						
+					}
+				});
+				
+				jsOutlineTree.on(cnstCmd.decTableDeleteCmd,function(event,data){
+					var elementUUID=data.elementID;
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					/*Only delete if we actually have something to delete*/
+					if(ruleSet.decisionTables.hasOwnProperty(data.elementID)===true){						
+						viewManager.closeViewsForElement(data.elementID);
+						ruleSet.deleteDecisionTable(data.elementID);
+						jsOutlineTree.jstree("delete_node","#"+ data.elementID);
+					}
+				});
+				
+				jsOutlineTree.on(cnstCmd.decTableCreateCmd,function(event,data){
+					var elementUUID=data.elementID;
+					var decTable=data.changes[0].value.after;
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					
+					/*If the decision table is already present (which it will be in cases
+					 * where we subscribe to our own create events, then ignore.)*/
+					if(ruleSet.decisionTables.hasOwnProperty(data.elementID)===false){
+						createDecisionTableNode(ruleSet, decTable);
+						ruleSet.decisionTables[data.elementID]=decTable;						
 					}
 				});
 				
@@ -989,8 +1044,11 @@ define(
 					var	name =decName + " " + decTableCount;
 					var	id=decName.replace(/\s/g,"") + decTableCount;
 					var decTable=ruleSet.addDecisionTable(id,name);
+					var cmd;
 					
-					//CommandsDispatcher.submitCommand();					
+					cmd=m_ruleSetCommand.decTableCreateCmd(ruleSet,decTable,decTable,undefined);
+					m_ruleSetCommandDispatcher.trigger(cmd);
+					
 					createDecisionTableNode(ruleSet, decTable);
 					
 					viewManager.openView("decisionTableView", "id="
@@ -1009,10 +1067,12 @@ define(
 					var	name =trName + " " + techRuleCount;
 					var	id=trName.replace(/\s/g,"") + techRuleCount;
 					var techRule=ruleSet.addTechnicalRule(id,name);
+					var cmd;
 					
-					//CommandsDispatcher.submitCommand();					
+					cmd=m_ruleSetCommand.ruleCreateCmd(ruleSet,techRule,techRule,undefined);
+					m_ruleSetCommandDispatcher.trigger(cmd);
 					createTechinicalRuleNode(ruleSet, techRule);
-					
+					console.log("creating technical rule");
 					viewManager.openView("technicalRuleView", "id="
 							+ techRule.id + "&ruleSetId="
 							+ ruleSet.id + "&name="

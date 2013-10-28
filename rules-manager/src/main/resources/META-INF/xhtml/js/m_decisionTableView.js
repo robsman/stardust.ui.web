@@ -48,6 +48,7 @@ define(
 						codeEditSelector, /*selector for the Ace Code editor linked to the decision table*/
 						newID,            /*because I don't trust HoT, Lets make a unique ID for the instance rootElement*/
 						lastCmdID,        /*ID of the last DecisionTable.data.cmd sent to the $sink*/
+						cnstCMD,		  /*Constant value commands from our command factory*/
 						decTblInstance;   /*instance of handsontable/dectbl with methods etc..*/
 					
 					
@@ -87,6 +88,9 @@ define(
 					this.nameInput = m_utils.jQuerySelect("#DecisionTableView #nameInput");
 					this.lastModificationDateOutput = m_utils.jQuerySelect("#DecisionTableView #lastModificationDateOutput");
 					
+					/*For brevity , access command constants using shorthand*/
+					cnstCMD=m_ruleSetCommand.commands;
+					
 					/*Compute a new ID for our HoT instance rootElement based off of our decisiontable uuid*/
 					newID=uiElements.decisionTable.attr("id") + "_" + decTable.uuid;
 					options.selectors.decisionTable="#" + newID;
@@ -113,8 +117,8 @@ define(
 				    uiElements.decisionTableInstance= uiElements.decisionTable.handsontable('getInstance');
 
 				    /*bind UIElements to events from our top level command processor*/
-				    m_ruleSetCommandDispatcher.register(uiElements.nameInput,"DecisionTable.Name.Change");
-				    uiElements.nameInput.on("DecisionTable.Name.Change",function(event,data){
+				    m_ruleSetCommandDispatcher.register(uiElements.nameInput,cnstCMD.decTableRenameCmd);
+				    uiElements.nameInput.on(cnstCMD.decTableRenameCmd,function(event,data){
 				    	var elementID=data.elementID;
 				    	var newVal=data.changes[0].value.after;
 				    	if (elementID === decTable.uuid && newVal !=uiElements.nameInput.val) {
@@ -123,8 +127,8 @@ define(
 				    });
 				    
 				    /*bind UIElements to events from our top level command processor*/
-				    m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,"DecisionTable.Description.Change");
-				    uiElements.descriptionTextarea.on("DecisionTable.Description.Change",function(event,data){
+				    m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,cnstCMD.decTableDescriptionCmd);
+				    uiElements.descriptionTextarea.on(cnstCMD.decTableDescriptionCmd,function(event,data){
 				    	var elementID=data.elementID;
 				    	var newVal=data.changes[0].value.after;
 				    	if (elementID === decTable.uuid && newVal !=uiElements.descriptionTextarea.val) {
@@ -167,8 +171,8 @@ define(
 						uiElements.decisionTableInstance.setColumnWidth
 					});
 				    /*bind UIElements to events from our top level command processor*/
-				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,"DecisionTable.Data.Change");
-				    uiElements.decisionTableInstance.rootElement.on("DecisionTable.Data.Change",function(event,data){
+				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,cnstCMD.decTableDataCmd);
+				    uiElements.decisionTableInstance.rootElement.on(cnstCMD.decTableDataCmd,function(event,data){
 				    	var elementID=data.elementID;
 				    	var newVal=data.changes[0].value.after;
 				    	console.log("DecisionTable.Data.Change received from sink");

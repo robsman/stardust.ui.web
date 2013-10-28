@@ -52,9 +52,27 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 			return chng;
 		};
 		
-		/* Return individual functions for each command we require for our RuleSet perspecitve,
+		var constants={
+				ruleSetRedoCmd:"redo",
+				ruleSetUndoCmd:"undo",
+				decTableRenameCmd:"DecisionTable.Name.Change",
+				decTableDescriptionCmd:"DecisionTable.Description.Change",
+				decTableDataCmd:"DecisionTable.Data.Change",
+				ruleSetRenameCmd:"RuleSet.Name.Change",
+				ruleSetDescriptionCmd:"RuleSet.Description.Change",
+				ruleSetFactCmd:"RuleSet.Fact.Change",
+				ruleCreateCmd: "Rule.Create",
+				ruleDeleteCmd: "Rule.Delete",
+				ruleRenameCmd:"Rule.Name.Change",
+				ruleDescriptionCmd:"Rule.Description.Change",
+				ruleScriptChangeCmd:"Rule.Script.Change",
+				decTableCreateCmd: "DecisionTable.Create",
+				decTableDeleteCmd: "DecisionTable.Delete"
+		};
+		/*Return individual functions for each command we require for our RuleSet perspecitve,
 		 * as well as the two base functions used to create all commands.*/
 		return {
+			"commands":constants,
 			"createCommand": createCommand,
 			"createChangeObj" :createChangeObj,
 			"ruleSetRedoCmd" : function(ruleSetUUID,elementType,elementID){
@@ -65,7 +83,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				}else if(elementType==="technicalRuleView"){
 					elementType="rule";
 				}
-				var cmd=createCommand("redo",false,undefined,"Redo event",undefined,ruleSetUUID,elementID,elementType);
+				var cmd=createCommand(constants.ruleSetRedoCmd,false,undefined,"Redo event",undefined,ruleSetUUID,elementID,elementType);
 				cmd.nameSpace="redo";
 				return cmd;
 			},
@@ -77,70 +95,98 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				}else if(elementType==="technicalRuleView"){
 					elementType="rule";
 				}
-				var cmd=createCommand("undo",false,undefined,"Undo event",undefined,ruleSetUUID,elementID,elementType);
+				var cmd=createCommand(constants.ruleSetUndoCmd,false,undefined,"Undo event",undefined,ruleSetUUID,elementID,elementType);
 				cmd.nameSpace="undo";
 				return cmd;
 			},
 			"decTableRenameCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
-						"DecisionTable.Name.Change",true,changeObj,
+						constants.decTableRenameCmd,true,changeObj,
 						"Changed Name of description of decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+				return cmd;
+			},
+			"decTableCreateCmd" : function(ruleSet,decTable,newVal,baseEvent){
+				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
+				var cmd=createCommand(
+						constants.decTableCreateCmd,true,changeObj,
+						"Created decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+				return cmd;
+			},
+			"decTableDeleteCmd" : function(ruleSet,decTable,newVal,baseEvent){
+				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
+				var cmd=createCommand(
+						constants.decTableDeleteCmd,true,changeObj,
+						"Deleted decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableDescriptionCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
-						"DecisionTable.Description.Change",true,changeObj,
+						constants.decTableDescriptionCmd,true,changeObj,
 						"Changed description of decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableDataCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
-						"DecisionTable.Data.Change",true,changeObj,
+						constants.decTableDataCmd,true,changeObj,
 						"Data or configuration of the table changed.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"ruleSetRenameCmd" : function(ruleSet,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
-						"RuleSet.Name.Change",true,changeObj,
+						constants.ruleSetRenameCmd,true,changeObj,
 						"Changed the Name of a ruleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
 			"ruleSetDescriptionCmd" : function(ruleSet,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
-						"RuleSet.Description.Change",true,changeObj,
+						constants.ruleSetDescriptionCmd,true,changeObj,
 						"Changed the Description of a ruleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
 			"ruleSetFactCmd" : function(ruleSet,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
-						"RuleSet.Fact.Change",true,changeObj,
+						constants.ruleSetFactCmd,true,changeObj,
 						"Changed the Underlying Facts for a RuleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
+				return cmd;
+			},
+			"ruleCreateCmd" : function(ruleSet,rule,newVal,baseEvent){
+				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
+				var cmd=createCommand(
+						constants.ruleCreateCmd,true,changeObj,
+						"Created new Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+				return cmd;
+			},
+			"ruleDeleteCmd" : function(ruleSet,rule,newVal,baseEvent){
+				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
+				var cmd=createCommand(
+						constants.ruleDeleteCmd,true,changeObj,
+						"Deleted existing Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleRenameCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
-						"Rule.Name.Change",true,changeObj,
+						constants.ruleRenameCmd,true,changeObj,
 						"Changed Name of Scripted Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleDescriptionCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
-						"Rule.Description.Change",true,changeObj,
+						constants.ruleDescriptionCmd,true,changeObj,
 						"Changed description of rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleScriptChangeCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
-						"Rule.Script.Change",true,changeObj,
+						constants.ruleScriptChangeCmd,true,changeObj,
 						"Changed Scripted Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			}

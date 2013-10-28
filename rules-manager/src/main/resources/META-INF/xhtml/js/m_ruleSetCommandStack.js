@@ -20,6 +20,22 @@ define(["rules-manager/js/m_ruleSet",
 			}
 	};
 	
+	/*technicalRuleView*/
+	var openView=function(cmdObj,viewType){
+		var elementUUID=cmdObj.elementID;
+		var obj=cmdObj.changes[0].value.after;
+		var ruleSet = m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
+		m_jsfViewManager.create().openView(viewType, "id="
+				+ obj.id + "&ruleSetId="
+				+ ruleSet.id + "&name="
+				+ obj.name + "&uuid="
+				+ obj.uuid + "&ruleSetUuid="
+				+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, obj.uuid);
+	};
+	
+	var closeView=function(cmsObj){
+		
+	};
 	/*Helper function to mediate changes to our portal tab name.*/
 	var renameView=function(cmdObj){
 		var viewType,
@@ -60,6 +76,10 @@ define(["rules-manager/js/m_ruleSet",
 			console.log(cmdObj);
 			console.log(rSet);
 			switch (cmdObj.event){
+			case "DecisionTable.Create":
+				openView(cmdObj,"decisionTableView");
+				rSet.isDirty=true;
+				break;
 			case "DecisionTable.Name.Change":
 				tempObj=rSet.findDecisionTableByUuid(cmdObj.elementID);
 				tempObj.name=cmdVal;
@@ -87,6 +107,11 @@ define(["rules-manager/js/m_ruleSet",
 				break;
 			case "RuleSet.Fact.Change":
 				rSet.parameterDefinitions=cmdVal.slice(0);
+				rSet.isDirty=true;
+				break;
+			case "Rule.Create":
+				/*add technical rule?*/
+				openView(cmdObj,"technicalRuleView");
 				rSet.isDirty=true;
 				break;
 			case "Rule.Name.Change":
@@ -137,6 +162,7 @@ define(["rules-manager/js/m_ruleSet",
 		  this.undo=function(obj){
 			  var commandStack;
 			  var cmdObj;
+			  var bizarroCmdObj; /* mirrored commandObjects for Create and Delete undos.*/
 			  if(this.stack[obj.ruleSetUUID] && 
 				 this.stack[obj.ruleSetUUID][obj.elementType] && 
 				 this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID]){
@@ -147,7 +173,9 @@ define(["rules-manager/js/m_ruleSet",
 					  cmdObj=commandStack.commands[commandStack.pointer];
 				  }
 			  }
-			  return cmdObj;
+			  console.log(cmdObj);
+			  
+			  return retObj;
 		  };
 		  
 		  /*Push a command object onto the appropriate stack and move pointer to the top.*/
@@ -191,7 +219,7 @@ define(["rules-manager/js/m_ruleSet",
 			  };	
 			  
 			this.undo=function(obj){
-				  var cmdObj;
+				  var cmdObj,retObj;
 				  if(this.pointer >0){
 					  this.pointer=this.pointer-1;
 					  cmdObj=this.stack[this.pointer];
@@ -201,7 +229,20 @@ define(["rules-manager/js/m_ruleSet",
 					  $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
 				  }
 				  applyToRuleSet(cmdObj);
-				  return cmdObj;
+				  retObj=cmdObj;
+				  if(cmdObj.event==="Rule.Create"){
+					  var ruleSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
+					  var rule=ruleSet.technicalRules[cmdObj.elementID];
+					  bizarroCmdObj=m_ruleSetCommand.ruleDeleteCmd(ruleSet,rule,undefined,undefined);
+					  retObj=bizarroCmdObj;
+				  }
+				  else if(cmdObj.event==="DecisionTable.Create"){
+					  var ruleSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
+					  var decTable=ruleSet.decisionTables[cmdObj.elementID];
+					  bizarroCmdObj=m_ruleSetCommand.decTableDeleteCmd(ruleSet,decTable,undefined,undefined);
+					  retObj=bizarroCmdObj;
+				  }
+				  return retObj;
 			  };
 			  
 			 this.push=function(obj){

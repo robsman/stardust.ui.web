@@ -44,6 +44,7 @@ define(
 						fontSizeMenu,       /*string-domFrag for our fontsize options for ACE*/
 						$fontSizeMenu,      /*Menu containing font size options for the drlEditor*/
 						$drlEditorTextArea, /*JQUERY wrapped textarea of our DRLeditor.*/
+						cnstCmd,            /*enumeration of our Contants representing command Factory events*/
 						fontSizeMenuHandler;/*handler for click events on $fontSizeMenu*/
 					
 					
@@ -87,6 +88,9 @@ define(
 					
 					/*Map uiElements to their resource text values*/
 					m_i18nMapper.map(options,uiElements,true);
+					
+					/*For brevity , access command constants using shorthand*/
+					cnstCMD=m_ruleSetCommand.commands;
 					
 				    /*initialize tabs control*/
 					uiElements.drlTabControl= m_utils.jQuerySelect(options.selectors.tabs).tabs();
@@ -223,8 +227,8 @@ define(
 					var view = this;
 					
 					/*Binding UIElement to incoming events from our top level command processor*/
-					m_ruleSetCommandDispatcher.register(uiElements.nameInput,"Rule.Name.Change");
-					uiElements.nameInput.on("Rule.Name.Change",function(event,data){
+					m_ruleSetCommandDispatcher.register(uiElements.nameInput,cnstCMD.ruleRenameCmd);
+					uiElements.nameInput.on(cnstCMD.ruleRenameCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(techRule.uuid ===uuid && uiElements.nameInput.val()!=newVal){
@@ -234,8 +238,8 @@ define(
 					
 					/*Binding UIElement to incoming events from our top level command processor*/
 					$drlEditorTextArea=$(uiElements.drlEditorTextArea);
-					m_ruleSetCommandDispatcher.register($drlEditorTextArea,"Rule.Script.Change");
-					$drlEditorTextArea.on("Rule.Script.Change",function(event,data){
+					m_ruleSetCommandDispatcher.register($drlEditorTextArea,cnstCMD.ruleScriptChangeCmd);
+					$drlEditorTextArea.on(cnstCMD.ruleScriptChangeCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(techRule.uuid ===uuid && $drlEditorTextArea.val()!=newVal){
@@ -244,8 +248,8 @@ define(
 					});
 					
 					/*Binding UIElement to incoming events from our top level command processor*/
-					m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,"Rule.Description.Change");
-					uiElements.descriptionTextarea.on("Rule.Description.Change",function(event,data){
+					m_ruleSetCommandDispatcher.register(uiElements.descriptionTextarea,cnstCMD.ruleDescriptionCmd);
+					uiElements.descriptionTextarea.on(cnstCMD.ruleDescriptionCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(techRule.uuid ===uuid && uiElements.descriptionTextarea.val()!=newVal){

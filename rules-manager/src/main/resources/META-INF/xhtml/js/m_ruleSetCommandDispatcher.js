@@ -17,7 +17,7 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				 *command object retrieved from the command stack onto the top 
 				 *of the commandstack as a duplicate (and resetting the stack pointer).
 				 */
-				$sink.on("undo",function(event,cmd){
+				$sink.on("undo.Ruleset",function(event,cmd){
 					console.log("undo recieved!");
 					console.log(cmd);
 					var cmdObj=$sink.commandStack.undo(cmd,$sink);
