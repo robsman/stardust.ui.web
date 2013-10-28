@@ -1039,7 +1039,7 @@ define(
 				
 				function createDecisionTable(ruleSetUuid) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
-					var	decTableCount=ruleSet.getDecisionTableCount();
+					var	decTableCount=1 + ruleSet.getDecisionTableCount();
 					var decName =m_i18nUtils.getProperty("rules.object.decisiontable.name","Decision Table");
 					var	name =decName + " " + decTableCount;
 					var	id=decName.replace(/\s/g,"") + decTableCount;
