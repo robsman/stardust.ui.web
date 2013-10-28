@@ -294,11 +294,14 @@ body, table {
 
 .sg-sidebar-pin {
 	float: right;
-	background: url('../../../plugins/common/images/icons/toggle-small.png') no-repeat center;
+	/* background: url('../../../plugins/common/images/icons/toggle-small.png') no-repeat center; */
 	cursor: pointer;
 	margin-top: 1px;
+	margin-left: 9px;
 	width: 18px;
 	height: 18px;
+	font-size: small;
+	font-weight: bold;
 }
 
 .sg-sidebar-toggle {
@@ -311,10 +314,13 @@ body, table {
 }
 
 .sg-sidebar-toggle-icon {
-	background: url('../../../plugins/common/images/icons/toggle-small-expand.png') no-repeat center;
+	/* background: url('../../../plugins/common/images/icons/toggle-small-expand.png') no-repeat center; */
 	width: 28px;
 	height: 28px;
 	cursor: pointer;
+	color: black;
+	font-size: small;
+	font-weight: bold;
 }
 
 .view-panels-no-sidebar {
