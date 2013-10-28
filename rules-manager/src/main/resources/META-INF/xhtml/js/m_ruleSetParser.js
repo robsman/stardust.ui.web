@@ -1,12 +1,9 @@
-define(["rules-manager/js/hotDecisionTable/m_operators",
-        "rules-manager/js/hotDecisionTable/m_utilities",
-        "rules-manager/js/m_ruleSet",
+define(["rules-manager/js/m_ruleSet",
         "rules-manager/js/m_technicalRule",
         "rules-manager/js/m_decisionTable",
-        "rules-manager/js/hotDecisionTable/m_operators",
         "rules-manager/js/m_stateFactory"],
-        function(operators,utils,m_RuleSet,m_TechnicalRule,
-        		m_DecisionTable,m_operators,m_stateFactory){
+        function(m_RuleSet,m_TechnicalRule,
+        		m_DecisionTable,m_stateFactory){
 		
 	/* m_RuleSet is not being injected through the define function. Current
 	 * workaround is to simply inject the object we need through our function call(s)*/
@@ -118,7 +115,7 @@ define(["rules-manager/js/hotDecisionTable/m_operators",
 					name: rSet.name,
 					description: rSet.description,
 					creationDate: rSet.creationDate,
-					lastModificationDate: rSet.lastModificationDate,
+					lastModificationDate: (new Date()).toString(),
 					facts: {},
 					rules: {},
 					decisionTables: {}
