@@ -35,13 +35,13 @@ define(
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
-			"rules-manager/js/m_ruleSetCommand"],
+			"rules-manager/js/m_ruleSetCommand","rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
 				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
 				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,ace2,
 				hotDecisionTable,tableConfig,renderEngines,dataFactory,chFactory,
 				images,treeFactory,ht2,popoverFactory,typeParser,m_i18nMapper,
-				m_ruleSetCommandDispatcher,m_ruleSetCommand) {
+				m_ruleSetCommandDispatcher,m_ruleSetCommand,m_utilities) {
 			return {
 				initialize : function(uuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -315,9 +315,9 @@ define(
 					this.idOutput.append(this.ruleSet.id);
 					this.nameInput.val(this.ruleSet.name);
 					this.creationDateOutput.empty();
-					this.creationDateOutput.append("" + this.ruleSet.creationDate);
+					this.creationDateOutput.append("" + m_utilities.formatDate(this.ruleSet.creationDate,"MM/dd/yy hh:mm meridian"));
 					this.lastModificationDateOutput.empty();
-					this.lastModificationDateOutput.append("" + this.ruleSet.lastModificationDate);
+					this.lastModificationDateOutput.append("" + m_utilities.formatDate( this.ruleSet.lastModificationDate,"MM/dd/yy hh:mm meridian"));
 					drlText +=this.ruleSet.generateDrl();
 					this.parameterMappingsPanel.setScopeModel(null);
 					this.parameterMappingsPanel
