@@ -1,6 +1,6 @@
 define(["jquery","Handsontable","jstree","./m_typeMapper",
-        "bpm-modeler/js/m_utils","rules-manager/js/m_i18nUtils"],
-		function($,Handsontable,jstree,typeMapper,m_utils,m_i18nUtils){
+        "bpm-modeler/js/m_utils","rules-manager/js/m_i18nUtils","bpm-modeler/js/m_urlUtils"],
+		function($,Handsontable,jstree,typeMapper,m_utils,m_i18nUtils,m_urlUtils){
   
   var modelTreeFactory={
     getTree : function(category,hotInstanceSelector,treeData){
@@ -27,7 +27,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
         jsTreeInstance=$well.jstree({ 
     		  "json_data" : {data: treeData},
     		  "plugins" : [ "themes", "json_data", "ui", "search" ],
-    		  "themes" :{"theme" : "classic",icons:true}
+    		  "themes" :{"theme" : "custom","url" : "plugins/rules-manager/css/jsTreeCustom/style.css","icons":true}
   	  	}).bind("select_node.jstree", function (e, data) { 
     	   var settings=instance.getSettings(),
              model,index,
