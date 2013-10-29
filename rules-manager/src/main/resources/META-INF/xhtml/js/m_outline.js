@@ -931,7 +931,7 @@ define(
 									},
 									"themes" : {
 										"theme" : "custom",
-										"url" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/css/jsTreeCustom/style.css"
+										"url" : m_urlUtils.getPlugsInRoot() + "rules-manager/css/jsTreeCustom/style.css"
 									}
 								});
 				// "themes" : {

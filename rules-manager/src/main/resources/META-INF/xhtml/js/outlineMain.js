@@ -11,14 +11,6 @@ require
 						'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
 				'json' : [ 'bpm-modeler/js/libs/json/json2',
 						'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
-				'raphael' : [ 'bpm-modeler/js/libs/raphael/2.0.1/raphael',
-						'//cdnjs.cloudflare.com/ajax/libs/raphael/2.0.1/raphael-min' ],
-				'angularjs' : [ 'bpm-modeler/js/libs/angular/angular-1.0.2',
-						'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
-				'mustache' : [
-						'bpm-modeler/js/libs/mustache/mustache',
-						'https://raw.github.com/janl/mustache.js/6d1954cb5c125c40548c9952efe79a4534c6760a/mustache' ],
-
 				'jquery-ui' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
 						'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min' ],
@@ -35,17 +27,11 @@ require
 						'bpm-modeler/js/libs/jquery/plugins/jquery.form',
 						'https://raw.github.com/malsup/form/5d413a0169b673c9ee81d5f458b1c955ff1b8027/jquery.form' ],
 				'jquery.jstree' : [
-						'rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree',
+						'rules-manager/js/libs/jquery/plugins/jquery.jstree',
 						'https://jstree.googlecode.com/svn-history/r191/trunk/jquery.jstree' ],
 				'jquery.simplemodal' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
 						'//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.1.min' ],
-				'jquery.tablescroll' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.tablescroll',
-						'https://raw.github.com/farinspace/jquery.tableScroll/master/jquery.tablescroll' ],
-				'jquery.treeTable' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.treeTable',
-						'https://raw.github.com/ludo/jquery-treetable/f98c6d07a02cb48052e9d4e033ce7dcdf64218e1/src/javascripts/jquery.treeTable' ],
 				'jquery.url' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery.url',
 						'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url' ],
@@ -54,9 +40,6 @@ require
 				'i18n' : 'common/InfinityBPMI18N'
 			},
 			shim : {
-				'raphael' : {
-					exports : "Raphael"
-				},
 				'i18n' : {
 					exports : "InfinityBPMI18N"
 				},
