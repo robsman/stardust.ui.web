@@ -56,6 +56,10 @@ define(
 				case m_constants.STRUCTURED_DATA_TYPE:
 					var typeDeclaration = m_model.findTypeDeclaration(data.structuredDataTypeFullId);
 					if (typeDeclaration) {
+						var schemaType = typeDeclaration.asSchemaType();
+						if (!schemaType) {
+							m_utils.debug("Warning: Invalid Schema Type for Type Declaration: " + typeDeclaration.name);
+						}
 						obj = createObject(typeDeclaration.asSchemaType());
 					}
 					break;
@@ -81,7 +85,7 @@ define(
 
 				var elements, facets;
 
-				if (schemaType.isStructure()) {
+				if (schemaType && schemaType.isStructure()) {
 					elements = schemaType.getElements();
 					for (var i in elements) {
 						var name = elements[i].name;
