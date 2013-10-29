@@ -36,7 +36,6 @@ import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
-import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
@@ -44,7 +43,6 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatisticsQuery;
@@ -52,6 +50,7 @@ import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityPropert
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.core.PartitionPreferenceCache;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -406,21 +405,11 @@ public class UserUtils
     */
    public static void saveDefaultUserNameDisplayFormat(String defaultDisplayFormat)
    {
-      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
-            .getAdministrationService();
-      Preferences retrievedPrefs = adminService.getPreferences(PreferenceScope.PARTITION,
+      PartitionPreferenceCache cachePreferenceMap = PartitionPreferenceCache.getCurrent();
+      String defualtUserNameFormatKey = getDefaultUserNameFormatPrefKey();
+      
+      cachePreferenceMap.setObject(defualtUserNameFormatKey, defaultDisplayFormat,
             UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCES_ID);
-
-      if (null == retrievedPrefs)
-      {
-         Map<String, Serializable> prefMap = new HashMap<String, Serializable>();
-         retrievedPrefs = new Preferences(PreferenceScope.PARTITION, UserPreferencesEntries.M_ADMIN_PORTAL,
-               PREFERENCES_ID, prefMap);
-      }
-      retrievedPrefs.getPreferences().put(getDefaultUserNameFormatPrefKey(),
-            defaultDisplayFormat);
-
-      adminService.savePreferences(retrievedPrefs);
    }
 
    
@@ -429,17 +418,13 @@ public class UserUtils
     */
    public static String getDefaultUserNameDisplayFormat()
    {
-      String defaultdispFormat = USER_NAME_DISPLAY_FORMAT_0;
-      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory().getAdministrationService();
-      Preferences retrievedPrefs = adminService.getPreferences(PreferenceScope.PARTITION,
-            UserPreferencesEntries.M_ADMIN_PORTAL,
-            PREFERENCES_ID);
-      if (null != retrievedPrefs && !CollectionUtils.isEmpty(retrievedPrefs.getPreferences()))
-      {
-         defaultdispFormat = (String) retrievedPrefs.getPreferences().get(getDefaultUserNameFormatPrefKey());
-         defaultdispFormat = StringUtils.isEmpty(defaultdispFormat) ? USER_NAME_DISPLAY_FORMAT_0 : defaultdispFormat;
-      }
-      
+      String defaultdispFormat = null;
+      String prefKey = getDefaultUserNameFormatPrefKey();
+      // Search the preference key in cache
+      PartitionPreferenceCache cachePreferenceMap = PartitionPreferenceCache.getCurrent();
+      defaultdispFormat = (String) cachePreferenceMap.getObject(prefKey,
+            UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCES_ID, USER_NAME_DISPLAY_FORMAT_0);
+
       return defaultdispFormat;
    }
    

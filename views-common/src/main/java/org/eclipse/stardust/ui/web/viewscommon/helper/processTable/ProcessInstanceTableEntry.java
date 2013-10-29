@@ -126,12 +126,13 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       this.startTime = processInstance.getStartTime();
       this.duration = ProcessInstanceUtils.getDuration(processInstance);
       this.processInstanceName = I18nUtils.getProcessName(processDefinition);
-      this.createUser = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
+      String startingUserLabel = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
+      this.createUser = startingUserLabel;
       this.descriptorValues = ((ProcessInstanceDetails) processInstance).getDescriptors();
       this.processDescriptorsList = getProcessDescriptor(processInstance, processDefinition);
       
       this.endTime = processInstance.getTerminationTime();
-      this.startingUser = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
+      this.startingUser = startingUserLabel;
       this.status = ProcessInstanceUtils.getProcessStateLabel(processInstance);
       this.enableTerminate = ProcessInstanceUtils.isAbortable(processInstance);
       this.enableRecover = true;
