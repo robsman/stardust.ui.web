@@ -8,13 +8,14 @@ define([ "bpm-modeler/js/m_utils",
 		 "bpm-modeler/js/m_dialog", 
 		 "bpm-modeler/js/m_urlUtils", 
 		 "bpm-modeler/js/m_communicationController",
+		 "rules-manager/js/m_i18nUtils",
 		 "rules-manager/js/hotDecisionTable/m_utilities", 
 		 "rules-manager/js/m_technicalRule",
 		 "rules-manager/js/m_decisionTable","bpm-modeler/js/m_model",
 		 "rules-manager/js/hotDecisionTable/m_typeParser",
 		 "rules-manager/js/m_ruleSetParser",
 		 "rules-manager/js/m_stateFactory"], function(m_utils, m_constants, m_command,
-		m_commandsController, m_dialog, m_urlUtils, m_communicationController,
+		m_commandsController, m_dialog, m_urlUtils, m_communicationController, m_i18nUtils,
 		m_utils,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
@@ -49,6 +50,25 @@ define([ "bpm-modeler/js/m_utils",
 				count++;
 			}
 			return count;
+		},
+		getNextRuleSetNamePostfix : function() {
+			var index = 0;
+			var matchFound = true;
+			var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+			while (matchFound) {
+				index++;
+				var name = rsName + " " + index;
+				var id = name.replace(/\s/g,"");
+				matchFound = false;
+				for ( var i in getRuleSets()) {
+					var rs = getRuleSets()[i];
+					if (rs.id == id || rs.name == name) {
+						matchFound = true;
+						break;
+					}
+				}
+			}
+			return index;
 		},
 		findRuleSetByUuid : function(uuid) {
 			return getRuleSets()[uuid];

@@ -1208,9 +1208,9 @@ define(
 				 * 
 				 */
 				Outline.prototype.createRuleSet = function() {
-					var rsName=m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
-					var name = rsName + " " + RuleSet.getRuleSetsCount();
-					var id = rsName.replace(/\s/g,"") + RuleSet.getRuleSetsCount();
+					var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+					var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
+					var id = name.replace(/\s/g,"");
 					var ruleSet = RuleSet.create(id, name);
 					//CommandsDispatcher.submitCommand();
 					createRuleSetNode(ruleSet);
