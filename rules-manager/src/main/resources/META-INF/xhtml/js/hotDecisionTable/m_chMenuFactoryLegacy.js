@@ -1,4 +1,4 @@
-define(["./m_images","./m_menuFactory","./m_operators"],function(images,menuFactory,operators){
+define(["./m_operators"],function(operators){
     var chFactory={
           AttributeHeader: function(meta,col,instance,th){
               var metaData=meta.split("|"),

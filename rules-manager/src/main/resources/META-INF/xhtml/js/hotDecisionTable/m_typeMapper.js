@@ -3,13 +3,13 @@
  * */
 define(["jquery"],function($){
 
-	var format="yy-mm-dd",
+	var format="mm/dd/y",
 	    today = new Date();
 	/*dependency on jqueryui datepicker for formatting.*/
 	try{
-	today=$.datepicker.formatDate(format, new Date());
-	console.log("Calcualting today...");
-	console.log(today);
+		today=$.datepicker.formatDate(format, new Date());
+		console.log("Calcualting today...");
+		console.log(today);
 	}catch (err){
 		console.log("Error formatting default date. " + err);
 	}

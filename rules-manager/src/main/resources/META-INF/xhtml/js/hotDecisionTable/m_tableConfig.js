@@ -1,6 +1,6 @@
-define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
-        "./m_images","./m_chMenuFactoryLegacy","./m_utilities","./m_operators","rules-manager/js/m_i18nUtils"],
-      function($,renderEngines,dataFactory,colHdrFactory,images,chMenuFactory,utils,operators,m_i18nUtils){
+define(["jquery","./m_chMenuFactoryLegacy",
+        "./m_utilities","./m_operators","rules-manager/js/m_i18nUtils"],
+      function($,chMenuFactory,utils,operators,m_i18nUtils){
 	  
 	  /*Maps column header category text to its i18n resource value*/
 	  var categoryTextMapper=function(category){
@@ -183,21 +183,8 @@ define(["jquery","./m_renderEngines","./m_dataFactory","./m_chFactory",
             if(category.toLowerCase() !="header"){
               $categoryLabel=$("<div class='hot-splithdr-label'>" + categoryTextMapper(category) +"</div>");
               $colObj.prepend( $categoryLabel);
-               $img=$(images.remove).on("click",function(event){
-                var settings=instance.getSettings();
-                settings.helperFunctions.removeColumn(instance,col);
-                instance.rootElement.trigger({
-                	type:"column_removed",
-                	"category":category,
-                	colValue: $colHeader.split("|")[0]});
-              }
-            );
-            $img.addClass("pull-right");
-            $img.css("margin-right","2px");
-            $img.css("margin-top","4px");
             }
           }
-         
         },
         minRows: 1,
         fillHandle : true,
