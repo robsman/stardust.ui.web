@@ -341,6 +341,11 @@
 		class="org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap"
 		scope="session">
 	</bean>
+	
+	<bean name="partitionPreferenceCache"
+		class="org.eclipse.stardust.ui.web.viewscommon.core.PartitionPreferenceCache"
+		scope="session">
+	</bean>
 
 	<bean name="archiveReportDialog"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.reports.ArchiveReportDialog"
