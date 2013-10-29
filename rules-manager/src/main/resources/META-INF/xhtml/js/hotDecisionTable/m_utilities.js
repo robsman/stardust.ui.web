@@ -13,29 +13,44 @@ define([],function(){
 	 *will hash into the datePartObjects hashmap.*/
 	var buildDatePartObject = function(dateString) {
 		var oDate = new Date(dateString),
+	    	oDay=oDate.getDay(),
 	    	month=	oDate.getMonth()+1,
 	    	year=oDate.getFullYear(),
 	    	dateOfMonth=oDate.getDate(),
 	    	hour=oDate.getHours(),
 	    	minutes=oDate.getMinutes(),
+	    	seconds=oDate.getSeconds(),
+	    	milliseconds=oDate.getMilliseconds(),
+	    	tzo=oDate.getTimezoneOffset(),
 	    	meridian=(hour<12)?"AM":"PM",
-	    	dpObj={};
+	    			dpObj={};
+		
+		var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+		var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 		
 		dpObj.yy=(year %1000)+"";
 		dpObj.yyyy=year+"";
 		dpObj.M=month+"";
 		dpObj.MM=(month <10)?"0"+month:month+"";
+		dpObj.MMM=months[month-1].slice(0,3);
+		dpObj.MMMM=months[month-1];
 		dpObj.d=dateOfMonth+"";
 		dpObj.dd=(dateOfMonth <10)?"0"+dateOfMonth:dateOfMonth+"";
+		dpObj.ddd=days[oDay].slice(0,3),
+		dpObj.dddd=days[oDay],
 		dpObj.H=hour+"";
 		dpObj.HH=(hour <12)?"0" + hour:hour+"";
-		hour=hour %12;
-		dpObj.h=hour+"";
-		dpObj.hh=(hour===0)?12:hour;
+		dpObj.h=hour%12+"";
+		dpObj.hh=(hour%12===0)?12:hour;
 		dpObj.hh=(dpObj.hh < 12)?"0" + dpObj.hh:dpObj.hh+"";
 		dpObj.m=minutes+"";
 		dpObj.mm=(minutes<10)?"0"+minutes:minutes+"";
-		dpObj.meridian=meridian;
+		dpObj.s=seconds +"";
+		dpObj.ss=(seconds < 10)?"0"+seconds:seconds+"";
+		dpObj.sss=milliseconds;
+		dpObj.K=tzo/60;
+		dpObj.t=meridian.slice(0,1);
+		dpObj.tt=meridian;
 		return dpObj;
 	};
 	
@@ -43,24 +58,19 @@ define([],function(){
 	 * to build a string corresponding to the format.
 	 * Caveats: A pipe in the format string will break everything as we inject pipes to find our delimiters.
 	 * 		    Each piece in the formatString must be mappable into datePartObjects hashmap.
-	 * 			Delimiters must be a single character, this includes whitespace.
+	 * 			
 	 **/
 	var formatDate=function(dpo,format){
-		  var pattern=/meridian|yyyy|yy|MM|M|HH|H|hh|h|dd|d|mm|m/g;
-		  var matches=format.match(pattern);
-		  var delimiters=format.replace(pattern,"|").match(/[^|]/g);
-		  var matchCount=matches.length;
-		  var sDate="";
-		  var i=0;
-		  
-		  while(i<matches.length){
-		    sDate+=dpo[matches[i]];
-		    if(i < delimiters.length){
-		      sDate+=delimiters[i];
-		    }
-		    i=i+1;
-		  }
-		  return sDate;
+	    var pattern=/yyyy|yy|MMMM|MMM|MM|M|HH|H|hh|h|dddd|ddd|dd|d|mm|m|sss|ss|s|tt|t|K/g;
+	    var matches=format.match(pattern);
+	    var delimiters=format.replace(pattern,"|").split(/\|/g);
+	    var sDate="";
+	    var i=0;
+	
+	    while(i<matches.length){
+	      sDate +=delimiters[i] + dpo[matches[i++]];
+	    }
+	    return sDate;
 	};
 	
 	return {
