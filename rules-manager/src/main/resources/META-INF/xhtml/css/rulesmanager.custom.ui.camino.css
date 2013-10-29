@@ -1,6 +1,6 @@
 /* These styles are designed to override the JQUERYUI dialog widgets' styling when included as 
    as the dialogClass option upon creation of the widget {dialogClass: 'ui-camino-dialog'}. 
-   All styles save .ui-dialog are dependent upon .ui-camino-dialog existing as a parent class.
+   All styles are dependent upon .ui-camino-dialog existing as a parent class.
 */
 .ui-camino-dialog {
 	padding: 0px 0px 0px 0px !important;
