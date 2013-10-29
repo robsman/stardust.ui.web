@@ -450,7 +450,7 @@ define(["jquery","./m_chMenuFactoryLegacy",
         	      
         	  while(colHdrCount--){
         		  colHdr=colHdrs[colHdrCount].split("|");
-        		  if(colHdr[2]==="Attribute" || (colHdr[2]==="Header" && colHdr[0]==="Description")){
+        		  if(colHdr[2]==="Attribute"){
         			  if(colWidths[colHdrCount]==1){
         				  if(snapShots.hiddenColumns["COL_" + colHdr[0]]){
         					  colWidths[colHdrCount]=snapShots.hiddenColumns["COL_" + colHdr[0] ];
