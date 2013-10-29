@@ -16,7 +16,6 @@ define(
 			"rules-manager/js/m_ruleSet", 
 			"rules-manager/js/hotDecisionTable/m_decisionTable",
 			"rules-manager/js/hotDecisionTable/m_tableConfig",
-			"rules-manager/js/hotDecisionTable/m_images",
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory",
@@ -24,7 +23,7 @@ define(
 			"rules-manager/js/m_ruleSetCommandDispatcher",
 			"rules-manager/js/m_ruleSetCommand"],
 		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
-				hotDecisionTable,tableConfig,images,treeFactory,
+				hotDecisionTable,tableConfig,treeFactory,
 				typeParser,operatorMenuFactory,m_i18nMapper,
 				m_ruleSetCommandDispatcher,m_ruleSetCommand) {
 			return {
@@ -332,21 +331,6 @@ define(
 			        	ruleSet.state.isDirty=true;
 			        });
 				    
-				    //add source image for all matched elements
-				    uiElements.exportBtn.each(function(){
-				      $(this).attr("src",images.export);
-				    });
-
-				    //add source image for all matched elements
-				    uiElements.addIcons.each(function(){
-				      $(this).attr("src",images.addsrc);
-				    });
-				    
-				    //add source image for all images with a class of import-icon
-				    uiElements.importIcons.each(function(){
-				      $(this).attr("src",images.import);
-				    });
-					
 				    //initialize main tabs control for the view
 					uiElements.decisionTableTabs.tabs();
 					
