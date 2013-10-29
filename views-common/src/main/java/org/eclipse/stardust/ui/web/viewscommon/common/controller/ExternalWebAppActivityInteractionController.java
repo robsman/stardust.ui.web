@@ -173,9 +173,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
       }
 
+      String requestLocalName = req.getLocalName();
+
       servicesBaseUri = servicesBaseUri.replace("${request.scheme}", req.getScheme());
       servicesBaseUri = servicesBaseUri.replace("${request.serverName}", req.getServerName());
-      servicesBaseUri = servicesBaseUri.replace("${request.serverLocalName}", req.getLocalName());
+      if (requestLocalName != null)
+      {
+         servicesBaseUri = servicesBaseUri.replace("${request.serverLocalName}", requestLocalName);
+      }
       servicesBaseUri = servicesBaseUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
       servicesBaseUri = servicesBaseUri.replace("${request.serverLocalPort}", Integer.toString(req.getLocalPort()));
       servicesBaseUri = servicesBaseUri.replace("/${request.contextPath}", req.getContextPath());
@@ -188,7 +193,10 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       portalBaseUri = portalBaseUri.replace("${request.scheme}", req.getScheme());
       portalBaseUri = portalBaseUri.replace("${request.serverName}", req.getServerName());
-      portalBaseUri = portalBaseUri.replace("${request.serverLocalName}", req.getLocalName());
+      if (requestLocalName != null)
+      {
+         portalBaseUri = portalBaseUri.replace("${request.serverLocalName}", requestLocalName);
+      }
       portalBaseUri = portalBaseUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
       portalBaseUri = portalBaseUri.replace("${request.serverLocalPort}", Integer.toString(req.getLocalPort()));
       portalBaseUri = portalBaseUri.replace("/${request.contextPath}", req.getContextPath());
