@@ -39,10 +39,10 @@ define([],function(){
 		dpObj.ddd=days[oDay].slice(0,3),
 		dpObj.dddd=days[oDay],
 		dpObj.H=hour+"";
-		dpObj.HH=(hour <12)?"0" + hour:hour+"";
+		dpObj.HH=(hour <10)?"0" + hour:hour+"";
 		dpObj.h=hour%12+"";
 		dpObj.hh=(hour%12===0)?12:hour;
-		dpObj.hh=(dpObj.hh < 12)?"0" + dpObj.hh:dpObj.hh+"";
+		dpObj.hh=(dpObj.hh < 10)?"0" + dpObj.hh:dpObj.hh+"";
 		dpObj.m=minutes+"";
 		dpObj.mm=(minutes<10)?"0"+minutes:minutes+"";
 		dpObj.s=seconds +"";
@@ -57,8 +57,8 @@ define([],function(){
 	/* Given a datePartObject and a corresponding format we hash the format string against the datePartObject
 	 * to build a string corresponding to the format.
 	 * Caveats: A pipe in the format string will break everything as we inject pipes to find our delimiters.
-	 * 		    Each piece in the formatString must be mappable into datePartObjects hashmap.
-	 * 			
+	 * 			Literal text following the last matched pattern will not be included in the format.
+	 * 			Escape sequences are not supported (but would be a worthwhile effort).
 	 **/
 	var formatDate=function(dpo,format){
 	    var pattern=/yyyy|yy|MMMM|MMM|MM|M|HH|H|hh|h|dddd|ddd|dd|d|mm|m|sss|ss|s|tt|t|K/g;
