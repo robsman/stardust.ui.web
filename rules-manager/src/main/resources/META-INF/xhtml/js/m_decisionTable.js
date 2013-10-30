@@ -56,10 +56,6 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.tableData={
 							columns:[{type:"text"}],
 					        data:[
-					               [''],
-					               [''],
-					               [''],
-					               [''],
 					               ['']
 					           ],
 					        colWidths:[90],

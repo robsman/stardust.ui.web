@@ -17,10 +17,28 @@ define(["rules-manager/js/m_ruleSet",
 						"Stack Pointer Moved.",
 						undefined,"","","");
 				return cmd;
+			},
+			stackChangeCommand: function(nextCmd,previousCmd){
+				var cmd,changeObj;
+				changeObj=m_ruleSetCommand.createChangeObj("","","",nextCmd,previousCmd);
+				cmd=m_ruleSetCommand.createCommand(
+						"CommandStack.Change.Stacks",
+						false,changeObj,
+						"A change has occured in the undo/redo stacks.",
+						undefined,"","","");
+				return cmd;
+			},
+			noopCommand: function(){
+				cmd=m_ruleSetCommand.createCommand(
+						"NOOP",
+						false,{},
+						"No Operation To Perform.",
+						undefined,"","","");
+				return cmd;
 			}
 	};
 	
-	/*technicalRuleView*/
+	/*Helper function to openViews.*/
 	var openView=function(cmdObj,viewType){
 		var elementUUID=cmdObj.elementID;
 		var obj=cmdObj.changes[0].value.after;
@@ -34,9 +52,14 @@ define(["rules-manager/js/m_ruleSet",
 	};
 	
 	var closeView=function(cmsObj){
-		
+		//TODO:[ZZM] - stubbed
 	};
-	/*Helper function to mediate changes to our portal tab name.*/
+	
+	/*Helper function to mediate changes to our portal tab name.
+	 * It will filter the event associated with the command object
+	 * to determine if it should rename a view, and (if so) how it should
+	 * construct the call to the viewManager.
+	 * */
 	var renameView=function(cmdObj){
 		var viewType,
 			newVal,
@@ -131,138 +154,168 @@ define(["rules-manager/js/m_ruleSet",
 		}
 	};
 	
-	/* Three level hashmap where each leaf is an array of commands affecting the
-	 * element as mapped via its hashmap path. 
-	 * Structure:
-	 * 			 [ruleSetUUID]
-	 * 					|_
-	 * 					  ['decisionTable' || 'technicalRule' || 'RuleSet']
-	 * 								|_
-	 * 								  [elementID]-[commands[]]
-	 * 
+	/* Simple stack with no hashing. Incoming commands are put on this.stack.
+	 * On an undo event the command on top of the the stack is moved to the redo stack.
+	 * Likewise, on a redo command the command on top of the redo stack is moved to undo stack.
+	 * Then (with several caveats-the command on top of the undo stack is triggered.) 
+	 * For a command to be placed on the stack (in the first place) the cmd object must be marked as
+	 * .isUndoable=true. All commands placed on the stack have this property set to false so that
+	 * when they are re-triggered on undo/redo they do not filter back onto our stack as an echo.
 	 * */
-	var ruleSetStack =function(){
-		  this.stack={};
-		  this.redo=function(obj){
-			  var commandStack;
-			  var cmdObj;
-			  if(this.stack[obj.ruleSetUUID] && 
-				 this.stack[obj.ruleSetUUID][obj.elementType] && 
-				 this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID]){
-				  
-				  commandStack=this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID];
-				  if(commandStack.pointer < commandStack.commands.length-1){
-					  commandStack.pointer=commandStack.pointer+1;
-					  cmdObj=commandStack.commands[commandStack.pointer];
-				  }
-			  }
-			  return cmdObj;
-		  };
-		  
-		  this.undo=function(obj){
-			  var commandStack;
-			  var cmdObj;
-			  var bizarroCmdObj; /* mirrored commandObjects for Create and Delete undos.*/
-			  if(this.stack[obj.ruleSetUUID] && 
-				 this.stack[obj.ruleSetUUID][obj.elementType] && 
-				 this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID]){
-				  
-				  commandStack=this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID];
-				  if(commandStack.pointer > 0){
-					  commandStack.pointer=commandStack.pointer-1;
-					  cmdObj=commandStack.commands[commandStack.pointer];
-				  }
-			  }
-			  console.log(cmdObj);
-			  
-			  return retObj;
-		  };
-		  
-		  /*Push a command object onto the appropriate stack and move pointer to the top.*/
-		  this.push=function(obj){
-		    if(this.stack.hasOwnProperty(obj.ruleSetUUID)===false){
-		      this.stack[obj.ruleSetUUID]={};
-		    }
-		    
-		    if(this.stack[obj.ruleSetUUID].hasOwnProperty(obj.elementType)===false){
-		      this.stack[obj.ruleSetUUID][obj.elementType]={};
-		    }
-		    
-		    if(this.stack[obj.ruleSetUUID][obj.elementType].hasOwnProperty(obj.elementID)===false){
-		      this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID]={"commands":[],pointer:0};
-		    }
-		     this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID].commands.push(obj);
-		     this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID].pointer=this.stack[obj.ruleSetUUID][obj.elementType][obj.elementID].commands.length-1;
-		  };
+	var globalRuleSetStack=function($sink){
+		var $sinkRef=$sink; /*Reference to the commandDispatcher we are associated with.*/
+		this.stack=[];		/*our commandStack (Undo), barren as a desert, for now.*/
+		this.redoStack=[];		/*Our redo stack, commands undone will push to here*/
+		
+		/*Given a Create command this function will generate a corresponding Delete command
+		 *and vice versa. In short, the undo operation is bizarre when considering creates and 
+		 *deletes. The corresponding command for each will not be on our stack. Rather, we will have
+		 *to generate these reverse commands when we come across a Create or Delete command in the context
+		 *of an undo event. Care most also be taken that listeners for these inverse commands do not
+		 *echo them back up to us as we really wish to pretend these reverse commands never happened after
+		 *we send them down to the listeners. If they were to echo back to our commandStack it would cause quite
+		 *a bit of confusion.*/
+		var bizarroObjGenerator=function(cmdFuncName,cmdObj){
+			ruleSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
+			obj=$.extend(true,{},cmdObj.changes[0].value.after);
+			bizarroCmdObj=m_ruleSetCommand[cmdFuncName](ruleSet,obj,obj,undefined);
+			bizarroCmdObj.isUndoable=false;/*These commands must not go onto our stack.*/
+			return bizarroCmdObj;
 		};
 		
-		/*Simple stack with no hashing.All commands go on the same stack
-		 * 	[cmd,cmd,cmd,cmd,...n]
+		/*Returns the next commands that would be triggered on either an undo or redo operation.
+		 * In cases where the next command is a NOOP we will keep moving down the stack until 
+		 * the next command is not a NOOP or there are no more next commands.
 		 * */
-		var globalRuleSetStack=function($sink){
-			var $sinkRef=$sink;
-			this.stack=[];
-			this.pointer=0;
-			/*TODO: [ZZM] Extract and normalize common code between undo and redo functions*/
-			this.redo=function(obj){
-				  var cmdObj,nextCmd, prevCmd;
-				  if(this.pointer < this.stack.length-1){
-					  this.pointer=this.pointer+1;
-					  cmdObj=this.stack[this.pointer];
-					  nextCmd=this.stack[this.pointer+1];/*allow undefined on out of bounds*/
-					  prevCmd=this.stack[this.pointer-2];/*allow undefined on out of bounds*/
-					  pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
-					  $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
-				  }
-				  applyToRuleSet(cmdObj);
-				  return cmdObj;
-			  };	
-			  
-			this.undo=function(obj){
-				  var cmdObj,retObj;
-				  if(this.pointer >0){
-					  this.pointer=this.pointer-1;
-					  cmdObj=this.stack[this.pointer];
-					  nextCmd=this.stack[this.pointer+2];/*allow undefined on out of bounds*/
-					  prevCmd=this.stack[this.pointer-1];/*allow undefined on out of bounds*/
-					  pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
-					  $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
-				  }
-				  applyToRuleSet(cmdObj);
-				  retObj=cmdObj;
-				  if(cmdObj.event==="Rule.Create"){
-					  var ruleSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
-					  var rule=ruleSet.technicalRules[cmdObj.elementID];
-					  bizarroCmdObj=m_ruleSetCommand.ruleDeleteCmd(ruleSet,rule,undefined,undefined);
-					  retObj=bizarroCmdObj;
-				  }
-				  else if(cmdObj.event==="DecisionTable.Create"){
-					  var ruleSet=m_ruleSet.findRuleSetByUuid(cmdObj.ruleSetUUID);
-					  var decTable=ruleSet.decisionTables[cmdObj.elementID];
-					  bizarroCmdObj=m_ruleSetCommand.decTableDeleteCmd(ruleSet,decTable,undefined,undefined);
-					  retObj=bizarroCmdObj;
-				  }
-				  return retObj;
-			  };
-			  
-			 this.push=function(obj){
-				 this.stack.push($.extend({},obj));
-				 renameView(obj);
-				 this.pointer=this.stack.length-1;
-				 nextCmd=undefined;
-				 prevCmd=this.stack[this.pointer-1];/*allow undefined on out of bounds*/
-				 pntrCmd=stackCommandFactory.pointerMoveCommand(nextCmd,prevCmd);
-				 $sinkRef.trigger(pntrCmd.nameSpace,[pntrCmd]);
-			 };
+		this.retrieveHotStackItems=function(){
+			var nextCmd,prevCmd,stackChangeCmd,i=1;
+			nextCmd=this.redoStack[this.redoStack.length-1];
+			prevCmd=this.stack[this.stack.length-2];
+			while(prevCmd && prevCmd.event ==="NOOP"){
+				prevCmd=this.stack[this.stack.length-(2+i)];
+				i=i+1;
+			}
+			return {"redoNext":nextCmd , "undoNext":prevCmd};
 		};
 		
-		return {
-			createHashStack: function(){
-				return new ruleSetStack();
-			},
-			createSimpleStack: function($sink){
-				return new globalRuleSetStack($sink);
+		/*Pops a command from our redo stack and pushes it to our undo stack. 
+		 *Finally signal listeners that our command stacks (undo/redo) have changed.
+		 **/
+		this.popRedoStack=function(){
+			var redoTop=this.redoStack.pop();
+			var nextCmds,stackChangeCmd;
+			if(redoTop){
+				this.stack.push(redoTop);
+				redoTop.isUndoable=false;/*command is on stack already, do not push again on trigger..*/
+				$sinkRef.trigger(redoTop.nameSpace,[redoTop]);
+				nextCmds=this.retrieveHotStackItems();
+				stackChangeCmd=stackCommandFactory.stackChangeCommand(nextCmds.undoNext,nextCmds.redoNext);
+				$sinkRef.trigger(stackChangeCmd.nameSpace,[stackChangeCmd]);
 			}
 		};
+		
+		/*Pops a command from our undo stack and pushes it to our redo stack.
+		 *Afterwards, it will trigger the command on top of the undo stack, with
+		 *a few caveats. Finally signal listeners that our command stacks (undo/redo)
+		 *have changed.
+		 * */
+		this.popUndoStack=function(){
+			var poppedCmd;
+			var noopCmd;
+			var inverseObject;
+			var doTrigger =false;
+			var undoTopIndex;
+			var undoTopEvent;
+			var retObj;
+			var nextCmds,stackChangeCmd;
+			var pattern= /(\.Create|\.Delete)/;
+			if(this.stack.length===0){return;}
+			
+			poppedCmd=this.stack.pop();
+			if(poppedCmd){
+				if(pattern.test(poppedCmd.event)){
+					//1.Create inverse command object
+					if(poppedCmd.event==="Rule.Create"){
+					  inverseObject=bizarroObjGenerator("ruleDeleteCmd",poppedCmd);
+					}
+					else if(poppedCmd.event==="Rule.Delete"){
+					  inverseObject=bizarroObjGenerator("ruleCreateCmd",poppedCmd);
+					}
+				 	else if(poppedCmd.event==="DecisionTable.Create"){
+				 	  inverseObject=bizarroObjGenerator("decTableDeleteCmd",poppedCmd);
+				 	}
+				 	else if(poppedCmd.event==="DecisionTable.Delete"){
+				 	  inverseObject=bizarroObjGenerator("decTableCreateCmd",poppedCmd);
+				 	}
+					//2.Trigger inverse command on sink
+					$sinkRef.trigger(inverseObject.nameSpace,[inverseObject]);
+					//3.Push original command to redo stack.
+					this.redoStack.push(poppedCmd);
+					//4.Generate NOOP command
+					noopCmd=stackCommandFactory.noopCommand();
+					//5.Push Noop command to undo stack
+					this.stack.push(noopCmd);
+					//6. Set doTrigger===false as we are not going to trigger undoTop in this case
+					doTrigger=false;
+				}
+				else if(poppedCmd.event !=="NOOP"){
+					//We have a pure data mod event (!Create,!Delete,!NOOP)
+					//1.Push command to redo stack.
+					this.redoStack.push(poppedCmd);
+					//2.Set doTrigger===true as we are going to trigger undoTop
+					doTrigger=true;
+				}
+				
+				if(doTrigger){
+					//1.Inspect cmd currently on undoTop.
+					//2.while cmd currently on undoTop is===NOOP, pop and loop
+					undoTopIndex=this.stack.length-1;
+					if(undoTopIndex > -1){
+						undoTopEvent=this.stack[undoTopIndex].event;
+						while(undoTopEvent==="NOOP"){
+							this.stack.pop();//Pop and forget
+							undoTopIndex=this.stack.length-1;
+							undoTopEvent=this.stack[undoTopIndex].event;
+						}
+						//3.Now we have a non NOOP command so if it is a create or delete command recurse.
+						if(pattern.test(undoTopEvent)){
+							this.popUndoStack();
+						}//4.If not a Create or Delete command then trigger the command
+						else{
+							undoTopEvent=this.stack[undoTopIndex];
+							undoTopEvent.isUndoable=false;
+							$sinkRef.trigger(undoTopEvent.nameSpace,[undoTopEvent]);
+						}
+					}
+				}
+				nextCmds=this.retrieveHotStackItems();
+				stackChangeCmd=stackCommandFactory.stackChangeCommand(nextCmds.undoNext,nextCmds.redoNext);
+				$sinkRef.trigger(stackChangeCmd.nameSpace,[stackChangeCmd]);
+			}
+		};	
+		
+		/*Basic push operation which places a command onto our stack.
+		 *Ensure all commands pushed on our stack are toggled off (obj.isUndoable=false) 
+		 *so that if our sink sees them again it will not push them back onto 
+		 *our stack as a duplicate. Undo/Redo events will cause
+		 *the sink to process commands already on our stack. After the push we signal StackChange
+		 *listeners that our stacks have been modified.
+		 * */
+		this.push=function(obj){
+			var nextCmds;
+			obj.isUndoable=false;
+			this.stack.push($.extend({},obj));
+			renameView(obj);/*function filters events to ignore*/
+			nextCmds=this.retrieveHotStackItems();
+			stackChangeCmd=stackCommandFactory.stackChangeCommand(nextCmds.undoNext,nextCmds.redoNext);
+			$sinkRef.trigger(stackChangeCmd.nameSpace,[stackChangeCmd]);
+		};
+	};
+	
+	return {
+		createSimpleStack: function($sink){
+			return new globalRuleSetStack($sink);
+		}
+	};
 	
 });

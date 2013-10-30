@@ -52,6 +52,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 			return chng;
 		};
 		
+		/*Constants mapped to the event name we will trigger via the command object.*/
 		var constants={
 				ruleSetRedoCmd:"redo",
 				ruleSetUndoCmd:"undo",
@@ -70,7 +71,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				decTableDeleteCmd: "DecisionTable.Delete"
 		};
 		/*Return individual functions for each command we require for our RuleSet perspecitve,
-		 * as well as the two base functions used to create all commands.*/
+		 *as well as the two base functions used to create all commands.*/
 		return {
 			"commands":constants,
 			"createCommand": createCommand,
@@ -103,35 +104,50 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableRenameCmd,true,changeObj,
-						"Changed Name of description of decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+						"Ruleset       : " + ruleSet.name + "\r" +
+						"Decision Table: " + decTable.name + "\r" +
+						"Renamed decision table - " + newVal,
+						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableCreateCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableCreateCmd,true,changeObj,
-						"Created decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+						"Ruleset       : " + ruleSet.name + "\r" +
+						"Decision Table: " + decTable.name + "\r" +
+						"Created decision table.",
+						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableDeleteCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDeleteCmd,true,changeObj,
-						"Deleted decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+						"Ruleset       : " + ruleSet.name + "\r" +
+						"Decision Table: " + decTable.name + "\r" +
+						"Deleted decision table.",
+						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableDescriptionCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDescriptionCmd,true,changeObj,
-						"Changed description of decision table.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+						"Ruleset       : " + ruleSet.name + "\r" +
+						"Decision Table: " + decTable.name + "\r" +
+						"Changed description of decision table to " + newVal,
+						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"decTableDataCmd" : function(ruleSet,decTable,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDataCmd,true,changeObj,
-						"Data or configuration of the table changed.",baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
+						"Ruleset       : " + ruleSet.name + "\r" +
+						"Decision Table: " + decTable.name + "\r" +
+						"Data or configuration changed.",
+						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
 			"ruleSetRenameCmd" : function(ruleSet,newVal,baseEvent){

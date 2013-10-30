@@ -622,8 +622,10 @@ define(
 					var elementUUID=data.elementID;
 					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
 					viewManager.closeViewsForElement(data.elementID);
-					ruleSet.deleteTechnicalRule(data.elementID);
-					jsOutlineTree.jstree("delete_node","#"+ data.elementID);
+					if(ruleSet.technicalRules.hasOwnProperty(data.elementID)){
+						ruleSet.deleteTechnicalRule(data.elementID);
+						jsOutlineTree.jstree("delete_node","#"+ data.elementID);
+					}
 				});
 				
 				jsOutlineTree.on(cnstCmd.ruleCreateCmd,function(event,data){
@@ -816,14 +818,25 @@ define(
 													"delete":{
 														"label":m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.delete","Delete"),
 														"action": function(obj){
+															var techRule,decTable;
 															deleteElementAction(obj.context.lastChild.data,
 																function(){
 																	var ruleSet = RuleSet.findRuleSetByUuid(obj.attr("ruleSetUuid")),
 																	    id=obj.attr("id");
 																	if(nodeType==="DecisionTable"){
-																		ruleSet.deleteDecisionTable(id);
+																		decTable=ruleSet.decisionTables[id];
+																		if(decTable){
+																			cmd=m_ruleSetCommand.decTableDeleteCmd(ruleSet,decTable,decTable,undefined);
+																			m_ruleSetCommandDispatcher.trigger(cmd);
+																			ruleSet.deleteDecisionTable(id);
+																		}
 																	}else if(nodeType==="TechnicalRule"){
-																		ruleSet.deleteTechnicalRule(id);
+																		techRule=ruleSet.technicalRules[id];
+																		if(techRule){
+																			cmd=m_ruleSetCommand.ruleDeleteCmd(ruleSet,techRule,techRule,undefined);
+																			m_ruleSetCommandDispatcher.trigger(cmd);
+																			ruleSet.deleteTechnicalRule(id);
+																		}
 																	}
 																	viewManager.closeViewsForElement(obj.attr("id"));
 																	jQuery(displayScope + "#outline")
@@ -1118,13 +1131,14 @@ define(
 					
 					/* Register redoImage button for messages from the commandStack in the sky
 					 * that the pointer on that stack has moved. When it does, we need to update
-					 * our tooltip text to indicate the next functio nwe will be performing if the
+					 * our tooltip text to indicate the next function we will be performing if the
 					 * user clicks the redo Image button.*/
-					m_ruleSetCommandDispatcher.register(uiElements.redoChange,"CommandStack.Move.Pointer");
-					uiElements.redoChange.on("CommandStack.Move.Pointer",function(event,data){
+					m_ruleSetCommandDispatcher.register(uiElements.redoChange,"CommandStack.Change.Stacks");
+					uiElements.redoChange.on("CommandStack.Change.Stacks",function(event,data){
+						console.log("Stack change event received.");
 						var title;
-						var nextCmd = data.changes[0].value.before;
-						var prevCmd=data.changes[0].value.after;
+						var nextCmd = data.changes[0].value.after;
+						var prevCmd=data.changes[0].value.before;
 						if(nextCmd){
 							uiElements.redoChange.removeClass("toolDisabled");
 							title=nextCmd.description + " " + nextCmd.changes[0].value.after;
@@ -1132,6 +1146,7 @@ define(
 						}
 						else{
 							uiElements.redoChange.addClass("toolDisabled");
+							uiElements.redoChange.attr("title","");
 						}
 						if(prevCmd){
 							uiElements.undoChange.removeClass("toolDisabled");
@@ -1140,6 +1155,7 @@ define(
 						}
 						else{
 							uiElements.undoChange.addClass("toolDisabled");
+							uiElements.undoChange.attr("title","");
 						}
 					});
 					

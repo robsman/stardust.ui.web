@@ -20,6 +20,8 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				$sink.on("undo.Ruleset",function(event,cmd){
 					console.log("undo recieved!");
 					console.log(cmd);
+					$sink.commandStack.popUndoStack();
+					return;
 					var cmdObj=$sink.commandStack.undo(cmd,$sink);
 					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
 					if(cmdObj!=undefined){
@@ -38,6 +40,8 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				$sink.on("redo",function(event,cmd){
 					console.log("Redo recieved!");
 					console.log(cmd);
+					$sink.commandStack.popRedoStack();
+					return;
 					var cmdObj=$sink.commandStack.redo(cmd,$sink);
 					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
 					if(cmdObj!=undefined){
