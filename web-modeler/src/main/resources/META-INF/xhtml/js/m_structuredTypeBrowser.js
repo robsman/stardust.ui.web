@@ -101,6 +101,41 @@ define(
 				return childRow;
 			}
 
+			/**
+			 * Returns a boolean indicating whether type represented by the passed row
+			 * has any child elements.
+			 * It's consequential in determining weather to insert a dummy row as a child of this row.
+			 * (The function is used thus in the import XSD dialog)
+			 */
+			function hasChildElements(parent) {
+				var parentRow = m_utils.jQuerySelect(parent);
+				if ( !parentRow.data("elements-initialized")) {
+					var parentPath = parent.id;
+					var schemaTypeOrElements = parentRow.data("schemaType");
+				}
+					
+				var isStruct = false;
+				var isEnum = false;
+				var elements = [];
+				if (schemaTypeOrElements) {
+					if ((typeof schemaTypeOrElements.getElements === "function")
+							&& (typeof schemaTypeOrElements.isStructure === "function")
+							&& (typeof schemaTypeOrElements.isEnumeration === "function")) {
+						isStruct = schemaTypeOrElements.isStructure();
+						isEnum = schemaTypeOrElements.isEnumeration();
+						elements = (isStruct || isEnum) ? schemaTypeOrElements.getElements() : [];
+					} else {
+						isStruct = true;
+						elements = schemaTypeOrElements;
+					}
+				}
+				if (elements && elements.length > 0) {
+					return true;
+				}
+
+				return false;
+			}
+			
 			function generateChildElementRows(parentPath, schemaTypeOrElements, rowInitializer) {
 				var childRows = [];
 
@@ -136,6 +171,39 @@ define(
 				return childRows;
 			}
 
+			/**
+			 * Inserts a dummy row (generated using generateDummyChildElementRow())
+			 * as a child of the passed row.
+			 */
+			function insertDummyChildRow(parent) {
+				var parentRow = m_utils.jQuerySelect(parent);
+				var parentPath = parent.id;
+				var schemaType = parentRow.data("schemaType");
+
+				var childRow = generateDummyChildElementRow(parentPath);
+				childRow.addClass("child-of-" + parentPath);
+				if (parentRow.hasClass("locked")) {
+					childRow.addClass("locked");
+				}
+				parentRow.after(childRow);
+			}
+			
+			/**
+			 * Generates a dummy row that could be inserted as a child row so that the 
+			 * expand / collapse icon is generated for parent row.
+			 * This row should be deleted after the actual child rows are loaded lazily.
+			 * (The function is used thus in the import XSD dialog)
+			 */
+			function generateDummyChildElementRow(parentPath) {
+				var childPath = (parentPath || "") + "-DUMMY_ROW";
+				var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+				jQuery("<td></td>").appendTo(childRow);
+				jQuery("<td></td>").appendTo(childRow);
+				jQuery("<td></td>").appendTo(childRow);
+				
+				return childRow;
+			}
+			
 			/**
 			 * To be used before jquery.treeTable was initialized.
 			 */
@@ -187,6 +255,41 @@ define(
 					}
 				});
 			}
+			
+			/**
+			 * Generates child element rows for the passed row, checks if the child element row has
+			 * further children and if yes inserts a dummy row as their children
+			 * (to get the expand icon on row of the tree table - used thus in import xsd dialog).
+			 */
+			function insertChildElementRowsWithDummyOffsprings(parentRows, rowInitializer) {
+				jQuery.each(parentRows, function() {
+					var parentRow = m_utils.jQuerySelect(this);
+					if ( !parentRow.data("elements-initialized")) {
+						var parentPath = this.id;
+						var schemaType = parentRow.data("schemaType");
+
+						// trick to trigger initialization of child rows
+						// first append at root ...
+						var childRows = generateChildElementRows(parentPath, schemaType, rowInitializer);
+						// reverse, to ensure child rows will end up in correct order in the table
+						childRows.reverse();
+						jQuery.each(childRows, function(i, childRow) {
+							// ... then move to the proper location
+							if (parentRow.hasClass("locked")) {
+								childRow.addClass("locked");
+							}
+							parentRow.after(childRow);
+							childRow.appendBranchTo(parentRow[0]);
+							if (hasChildElements(childRow.get(0))) {
+								insertDummyChildRow(childRow.get(0));
+							}
+						});
+						parentRow.collapse();
+
+						parentRow.data("elements-initialized", true);
+					}
+				});
+			}
 
 			return {
 				/**
@@ -201,6 +304,12 @@ define(
 				 * @returns {string} the cardinality's label (either from a resource bundle, otherwise simple the cardinality)
 				 */
 				getCardinalityLabel: getCardinalityLabel,
+				
+				hasChildElements : hasChildElements,
+				
+				insertDummyChildRow : insertDummyChildRow,
+				
+				insertChildElementRowsWithDummyOffsprings : insertChildElementRowsWithDummyOffsprings,
 
 				generateChildElementRow: function(parentPath, element, schemaType, rowInitializer) {
 					return generateChildElementRow(parentPath, element, schemaType, rowInitializer);

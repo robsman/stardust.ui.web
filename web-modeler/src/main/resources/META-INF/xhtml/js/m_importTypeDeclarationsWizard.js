@@ -205,16 +205,13 @@ define(
 				 *
 				 */
 				ImportTypeDeclarationsWizard.prototype.setSchema = function(schema) {
+					console.time("@@@@@@@@@@@@@@@@@@@@@@@@@@@ XSD load time");
 					m_utils.showWaitCursor();
-					var timeStart = new Date().getTime();
 					this.schema = schema;
 					m_utils.debug("===> Type Declarations");
 					m_utils.debug(schema);
 
-					if (this.tableBody) {
-						this.tableBody.remove();
-					}
-					this.tableBody = document.createElement("tbody");
+					this.tableBody.empty();
 					
 					for ( var name in this.schema.elements) {
 						var element = this.schema.elements[name];
@@ -234,15 +231,13 @@ define(
 						row.data("element", element);
 
 						row.addClass("top-level");
-						
-						var view = this;
-						jQuery.each(row, function() {
-							view.tableBody.appendChild(this);
-						});
+						this.tableBody.append(row);
 						
 						// drill into elements, too (requires element's schemaType, see above)
 						if (schemaType) {
-							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
+							if (m_structuredTypeBrowser.hasChildElements(row.get(0))) {
+								m_structuredTypeBrowser.insertDummyChildRow(row.get(0));
+							}
 						}
 					}
 					var view = this;
@@ -264,15 +259,13 @@ define(
 							});
 							row.addClass("top-level");
 
-							jQuery.each(row, function() {
-								view.tableBody.appendChild(this);
-							});
+							view.tableBody.append(row);
 
-							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
+							if (m_structuredTypeBrowser.hasChildElements(row.get(0))) {
+								m_structuredTypeBrowser.insertDummyChildRow(row.get(0));
+							}
 						});
 					}
-					
-					this.tree.append(this.tableBody);
 
 					this.tree.tableScroll({
 						height : 170
@@ -285,7 +278,26 @@ define(
 					this.tree.treeTable({
 						indent: 14,
 						onNodeShow: function() {
-							m_structuredTypeBrowser.insertChildElementRowsLazily(m_utils.jQuerySelect(this));
+							var thisRow = m_utils.jQuerySelect(this);
+							if (thisRow.get(0).id.indexOf("DUMMY_ROW") >= 0) {
+								var classList = thisRow.get(0).className.split(/\s+/);
+								var parentId;
+								for (var i in classList) {
+									if (classList[i].indexOf("child-of-") >= 0) {
+										parentId = classList[i].substring("child-of-".length);
+									}
+								}
+								
+								if (parentId) {
+									m_utils.showWaitCursor();
+									var parentRow = m_utils.jQuerySelect("tr#" + parentId);
+									m_structuredTypeBrowser.insertChildElementRowsWithDummyOffsprings(parentRow);
+//									jQuery("tr.child-of-" + parentId).removeClass("ui-helper-hidden");
+									jQuery("tr#" + parentId + "-DUMMY_ROW").remove();
+									m_utils.jQuerySelect("tr#" + parentId + " td a").click();
+									m_utils.hideWaitCursor();
+								}
+							}
 						}
 					});
 
@@ -293,8 +305,7 @@ define(
 						// allow multi-select, but restrict to top-level entries
 						m_utils.jQuerySelect(this).toggleClass("selected");
 					});
-					var timeEnd = new Date().getTime();
-					m_utils.debug("Total Time to render the tree===> " + (timeEnd - timeStart));
+					console.timeEnd("@@@@@@@@@@@@@@@@@@@@@@@@@@@ XSD load time");
 					m_utils.hideWaitCursor();
 				};
 
