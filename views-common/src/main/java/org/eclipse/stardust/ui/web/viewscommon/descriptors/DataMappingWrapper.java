@@ -19,8 +19,10 @@ import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelElement;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.IDescriptorProvider;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -53,6 +56,9 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.xsd.XSDConstrainingFacet;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDSimpleTypeDefinition;
 
 
 
@@ -68,6 +74,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    private String type;
    private DateRange dateRangeValue;
    private String distinctiveId = null;
+   private List<SelectItem> enumList = CollectionUtils.newArrayList();
 
    // these are only set in case of structured data (collection values: List, Map)
    private transient ComplexTypeWrapper structuredValue;
@@ -163,7 +170,16 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       }
       else if(dataClass == String.class || dataClass == Character.class)
       {
-         type = ProcessPortalConstants.STRING_TYPE;
+         Object carnotType = getDataDetails().getAttribute("carnot:engine:type");
+         if (carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+         {
+            populateEnumList();
+            type = ProcessPortalConstants.ENUM_TYPE;
+         }
+         else
+         {
+            type = ProcessPortalConstants.STRING_TYPE;            
+         }
       }
       else if (dataClass == Map.class || dataClass == List.class
             || Resource.class.isAssignableFrom(dataClass))
@@ -178,6 +194,26 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       return type;
    }
 
+   /**
+    * 
+    */
+   private void populateEnumList()
+   {
+      String typeDeclarationId = (String) getDataDetails().getAttribute("carnot:engine:dataType");
+      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+      TypeDeclaration typeDeclaration = model.getTypeDeclaration(typeDeclarationId);
+      XSDSchema schema = StructuredTypeRtUtils.getXSDSchema(model, typeDeclaration);
+      XSDSimpleTypeDefinition component = (XSDSimpleTypeDefinition) StructuredTypeRtUtils.findElementOrTypeDeclaration(
+            schema, typeDeclaration.getId(), true);
+      for (XSDConstrainingFacet facet : component.getFacetContents())
+      {
+         if (facet.getFacetName().equalsIgnoreCase(ProcessPortalConstants.ENUM_TYPE))
+         {
+            enumList.add(new SelectItem(facet.getLexicalValue(), facet.getLexicalValue()));
+         }
+      }
+   }
+   
    private DataDetails getDataDetails()
    {
       Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
@@ -327,6 +363,46 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       trace.debug("set String: " + castedValue);
    }
 
+   public List<SelectItem> getEnumList()
+   {
+      return enumList;
+   }
+
+   public void enumValueChangeListener(ValueChangeEvent event)
+   {
+      if (event.getNewValue() != null)
+      {
+         setEnumValueStr(event.getNewValue().toString());
+      }
+      else
+      {
+         setEnumValueStr(null);
+      }
+   }
+
+   public String getEnumValueStr()
+   {
+      if (this.value != null)
+      {
+         return this.value.toString();
+      }
+      return "";
+   }
+
+   public void setEnumValueStr(String value)
+   {
+      if (StringUtils.isNotEmpty(value))
+      {
+         this.value = value;
+         broadcastChange(this.value);
+      }
+      else
+      {
+         this.value = null;
+      }
+      trace.debug("set ENUM: " + this.value);
+   }
+   
    public Long getLongValue()
    {
       try

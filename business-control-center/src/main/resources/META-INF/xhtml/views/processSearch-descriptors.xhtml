@@ -106,6 +106,24 @@
 								</ice:panelGroup>
 								
 								 <ice:panelGroup
+									rendered="#{descriptorItem.type eq 'Enumeration'}">
+									<ice:selectOneMenu
+										value="#{descriptorItem.enumValueStr}" partialSubmit="true">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-OnOffFilter"
+											standAlone="false" />
+										<f:selectItem itemValue="" itemLabel="" />
+										<c:forEach
+											items="#{descriptorItem.enumList}"
+											var="source">
+											<f:selectItem itemLabel="#{source.label}"
+												itemValue="#{source.value}" />
+										</c:forEach>
+									</ice:selectOneMenu>
+								</ice:panelGroup>
+								
+								
+								 <ice:panelGroup
 									rendered="#{descriptorItem.type eq 'Structured'}">
 									<ice:inputText partialSubmit="true"
 										id="Str#{descriptorItem.id}"

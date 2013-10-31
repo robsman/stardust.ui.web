@@ -37,6 +37,6 @@ public interface ProcessPortalConstants
    public final static String PRIORITY_TYPE = "Priority";
    public final static String TIME_TYPE = "Time";
    public final static String DATE_TYPE = "date";
-
+   public final static String ENUM_TYPE = "Enumeration";
    public static final String XSD_TIME_TYPE_NAME = "time";
 }
