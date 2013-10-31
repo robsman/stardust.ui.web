@@ -785,20 +785,21 @@ define(
 
 					jQuery.ajax({
 						type : "GET",
-						// beforeSend : function(request) {
-						// request
-						// .setRequestHeader(
-						// "Authentication",
-						// self
-						// .getBasicAuthenticationHeader());
-						// },
+						beforeSend : function(request) {
+							// request
+							// .setRequestHeader(
+							// "Authentication",
+							// self
+							// .getBasicAuthenticationHeader());
+						},
 						url : uri,
 						contentType : "application/json"
 					}).done(function(response) {
 						console.debug("Retrieved external data");
 						console.debug(response);
 
-						// Use heuristics to obtain records - first element is
+						// Use heuristics to obtain records - first
+						// element is
 						// the record set
 						// TODO Fine tune
 
@@ -958,7 +959,7 @@ define(
 							this.metadata.decimalType,
 							this.metadata.decimalType, this.metadata.countType,
 							this.metadata.timestampType,
-							this.metadata.durationType];
+							this.metadata.durationType ];
 				};
 			}
 		});

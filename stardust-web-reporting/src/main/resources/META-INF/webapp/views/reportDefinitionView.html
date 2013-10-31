@@ -222,57 +222,57 @@ table.formTable td {
 													style="margin-left: 10px;">
 													<table cellpadding="0" cellspacing="0" class="formTable">
 														<tr>
-															<td><label>From</label></td>
+															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 															<td><input type="text"
 																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
 																	src="../css/images/parameter.png"
-																	title="Parameter (firstDimensionFrom)" /> <a href=""
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" /> <a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter (firstDimensionFrom)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" /> </a> </a></td>
 														</tr>
 														<tr>
-															<td><label>To</label></td>
+															<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
 															<td><input type="text"
 																ng-model="report.dataSet.firstDimensionTo" sd-date /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionTo')"
 																ng-show="existsParameter('firstDimensionTo')"><img
-																	src="../css/images/parameter.png" title="Parameter" />
+																	src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionTo)" />
 																	<a href=""
 																	ng-click="addParameter('firstDimensionTo', getFirstDimension().name + ' To', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionTo')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionTo)" /> </a> </a></td>
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
 														ng-click="firstDimensionToFrom = false;" class="smallLink">
-														Switch to Start Date and Duration &raquo;</a>
+														{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}} &raquo;</a>
 												</div>
 												<div ng-show="!firstDimensionToFrom"
 													style="margin-left: 10px;">
 													<table cellpadding="0" cellspacing="0" class="formTable">
 														<tr>
-															<td><label>From</label></td>
+															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 															<td colspan="2"><input type="text"
 																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
 																	src="../css/images/parameter.png"
-																	title="Parameter (firstDimensionFrom)" /> <a href=""
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" /> <a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter (firstDimensionFrom)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" /> </a> </a></td>
 														</tr>
 														<tr>
-															<td><label>Duration</label></td>
+															<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
 															<td><input type="number"
 																ng-model="report.dataSet.firstDimensionDurationCount"
 																style="width: 50px;" /></td>
@@ -289,18 +289,17 @@ table.formTable td {
 															<td><a href=""
 																ng-click="removeParameters(['firstDimensionDurationCount', 'firstDimensionDurationUnit'])"
 																ng-show="existsParameter('firstDimensionDurationCount')"><img
-																	src="../css/images/parameter.png" title="Parameter" />
+																	src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionDuration)" />
 																	<a href=""
 																	ng-click="addParameters([{id: 'firstDimensionDurationCount', name: getFirstDimension().name + ' Duration Count', type: getMetadata().integerType.id},
 																	{id: 'firstDimensionDurationUnit', name: getFirstDimension().name + ' Duration Unit', type: getMetadata().enumerationType.id}])"
 																	ng-show="!existsParameter('firstDimensionDurationCount')"><img
 																		src="../css/images/no-parameter.png"
-																		title="No Parameter" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionDuration)" /> </a> </a></td>
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = true;" class="smallLink">Switch
-														to Start and End Date &raquo;</a>
+														ng-click="firstDimensionToFrom = true;" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}} &raquo;</a>
 												</div>
 											</div>
 											<div id="firstDimensionEnumerationSelectionPanel"
@@ -316,12 +315,12 @@ table.formTable td {
 														<td valign="top"><a href=""
 															ng-click="firstDimensionEnumerationParameter = false"
 															ng-show="firstDimensionEnumerationParameter"><img
-																src="../css/images/parameter.png" title="Parameter" />
+																src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}}" />
 																<a href=""
 																ng-click="firstDimensionEnumerationParameter = true"
 																ng-show="!firstDimensionEnumerationParameter"><img
 																	src="../css/images/no-parameter.png"
-																	title="No Parameter" /> </a> </a></td>
+																	title="{{getI18N('reporting.definitionView.noParameter.label')}}" /> </a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -331,20 +330,19 @@ table.formTable td {
 												ng-show="getFirstDimension().type == reportingService.metadata.timestampType">
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td style="padding-left: 20px;"><label>Cumulation
-																Interval</label></td>
+														<td style="padding-left: 20px;"><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
 														<td><input type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
 														<td><select
 															ng-model="report.dataSet.firstDimensionCumulationIntervalUnit">
-																<option value="s">Second(s)</option>
-																<option value="m">Minutes(s)</option>
-																<option value="h">Hour(s)</option>
-																<option value="d">Day(s)</option>
-																<option value="w">Week(s)</option>
-																<option value="M">Month(s)</option>
-																<option value="Y">Year(s)</option>
+																<option value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
+																<option value="m">{{getI18N('reporting.definitionView.minutes.label')}}</option>
+																<option value="h">{{getI18N('reporting.definitionView.hours.label')}}</option>
+																<option value="d">{{getI18N('reporting.definitionView.days.label')}}</option>
+																<option value="w">{{getI18N('reporting.definitionView.weeks.label')}}</option>
+																<option value="M">{{getI18N('reporting.definitionView.months.label')}}</option>
+																<option value="Y">{{getI18N('reporting.definitionView.years.label')}}</option>
 														</select></td>
 													</tr>
 												</table>
@@ -1132,7 +1130,7 @@ table.formTable td {
 																		ng-model="report.scheduling.dailyRecurrenceOptions.daysIntervalCount"
 																		ng-disabled="report.scheduling.dailyRecurrenceOptions.daysRecurrence != 'interval'" />
 																	</td>
-																	<td><label>{{getI18N('reporting.definitionView.days.label')}}</label></td>
+																	<td><label>{{getI18N('reporting.definitionView.day.label')}}</label></td>
 																</tr>
 																<tr>
 																	<td><input type="radio"
@@ -1261,7 +1259,7 @@ table.formTable td {
 																							<td><label>{{getI18N('reporting.definitionView.ofEvery.label')}}</label></td>
 																							<td><input type="number"
 																								style="width: 50px;"></input></td>
-																							<td><label>{{getI18N('reporting.definitionView.months.label')}}</label>
+																							<td><label>{{getI18N('reporting.definitionView.month.label')}}</label>
 																						</tr>
 																					</table></td>
 																			</tr>

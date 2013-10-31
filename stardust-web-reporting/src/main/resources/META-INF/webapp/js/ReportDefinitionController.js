@@ -321,7 +321,7 @@ define(
 								primaryObject : "processInstance",
 								externalJoins : [ {
 									joinType : "outer",
-									restUri : "http://localhost:9090/server/services/rest/bpm-reporting/test-external-data"
+									restUri : "http://localhost:1337/"
 								} ],
 								columns : [],
 								filters : [],

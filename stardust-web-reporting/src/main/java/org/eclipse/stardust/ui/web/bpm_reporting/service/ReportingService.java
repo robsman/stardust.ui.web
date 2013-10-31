@@ -11,6 +11,12 @@
 
 package org.eclipse.stardust.ui.web.bpm_reporting.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -51,7 +57,6 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.ReportingResource;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -418,6 +423,49 @@ public class ReportingService {
 
 			long firstDimensionCumulationInterval = firstDimensionCumulationIntervalCount
 					* convertDurationUnit(firstDimensionCumulationIntervalUnit);
+
+			// Obtain external data
+			// TODO Move to retrieval function
+
+			JsonArray externalJoinsJson = dataSetJson.get("externalJoins")
+					.getAsJsonArray();
+
+			Map<String, Map<String, String>> externalData = new HashMap<String, Map<String, String>>();
+
+			// dataSet.joinExternalData == true
+
+			if (!externalJoinsJson.get(0).isJsonNull()) {
+				JsonObject externalJoinJson = externalJoinsJson.get(0).getAsJsonObject();
+				trace.info("External Data:");
+
+				JsonArray externalDataJson = retrieveExternalData(externalJoinsJson
+						.get(0).getAsJsonObject().get("restUri").getAsString());
+				trace.info(externalDataJson.toString());
+
+				for (int n = 0; n < externalDataJson.size(); n++) {
+					JsonObject recordJson = externalDataJson.get(n)
+							.getAsJsonObject();
+					Map<String, String> record = new HashMap<String, String>();
+
+					for (Map.Entry<String, JsonElement> entry : recordJson
+							.entrySet()) {
+						if (entry.getKey().equals(
+								externalJoinJson.get("externalKey")
+										.getAsString())) {
+							externalData.put(entry.getValue().getAsString(),
+									record);
+						}
+
+						record.put(entry.getKey(), entry.getValue()
+								.getAsString());
+					}
+				}
+
+				trace.info("Map");
+				trace.info(externalData);
+			}
+
+			// Obtain BPM data
 
 			if (primaryObject.equals("processInstance")) {
 				ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
@@ -1262,12 +1310,12 @@ public class ReportingService {
 
 			if (StringUtils.isEmpty(parentPath)) {
 				// Top-level reached
-				
+
 				return getDocumentManagementService().createFolder("/",
 						DmsUtils.createFolderInfo(childName));
 			} else {
 				Folder parentFolder = findOrCreateFolder(parentPath);
-				
+
 				return getDocumentManagementService().createFolder(
 						parentFolder.getId(),
 						DmsUtils.createFolderInfo(childName));
@@ -1462,27 +1510,48 @@ public class ReportingService {
 
 	/**
 	 * 
+	 * @param urlString
 	 * @return
 	 */
-	public Object testExternalDataRetrieval() {
-		JsonObject returnObject = new JsonObject();
-		
-		JsonArray list = new JsonArray();
-		
-		for (int n = 0; n < 100; ++n)
-		{
-			JsonObject record = new JsonObject();
-			
-			record.addProperty("firstName", "FirstName" + n);
-			record.addProperty("lastName", "LastName" + n);
-			record.addProperty("known", true);
-			record.addProperty("numberOfDependents", n);
-			
-			list.add(record);
+	public JsonArray retrieveExternalData(String urlString) {
+		try {
+			URL url = new URL(urlString);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("Accept", "application/json");
+
+			if (connection.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ connection.getResponseCode());
+			}
+
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader((connection.getInputStream())));
+
+			String output;
+			StringBuffer buffer = new StringBuffer();
+
+			while ((output = bufferedReader.readLine()) != null) {
+				buffer.append(output);
+			}
+
+			connection.disconnect();
+
+			// TODO Add heuristics on objects or arrays
+
+			return jsonIo.readJsonObject(buffer.toString()).get("list")
+					.getAsJsonArray();
+
+		} catch (MalformedURLException e) {
+			trace.error(e);
+
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			trace.error(e);
+
+			throw new RuntimeException(e);
 		}
-		
-		returnObject.add("list", list);
-		
-		return returnObject;
 	}
 }

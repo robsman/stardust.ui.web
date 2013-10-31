@@ -17,8 +17,8 @@ import java.util.Map;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,9 +33,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
 
 // TODO Reuse already available marshaller; this is copy and paste
 
