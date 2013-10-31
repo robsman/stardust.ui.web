@@ -367,7 +367,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
                   taskType);
             ApplicationType rulesApp = null;
-            if (activity.getApplication() != null)
+            if (activity.getApplication() != null
+                  && activity.getApplication().getType() != null)
             {
                if (activity.getApplication()
                      .getType()

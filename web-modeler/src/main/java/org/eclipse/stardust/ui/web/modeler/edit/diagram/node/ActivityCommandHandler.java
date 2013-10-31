@@ -79,16 +79,16 @@ public class ActivityCommandHandler
          ActivityType activity = getModelBuilderFacade().createActivity(model,
                processDefinition, activityType, taskType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
-         
+
          mapper.map(activity);
-         
+
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
          ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(
                model, activity, processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
-         
+
          mapper.map(activitySymbol);
       }
    }
@@ -120,9 +120,10 @@ public class ActivityCommandHandler
          if (activity.getApplication() != null)
          {
             ApplicationType applicationType = activity.getApplication();
-            if (applicationType.getType()
-                  .getId()
-                  .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+            if (applicationType.getType() != null
+                  && applicationType.getType()
+                        .getId()
+                        .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
             {
                model.getApplication().remove(applicationType);
             }
@@ -139,7 +140,7 @@ public class ActivityCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);

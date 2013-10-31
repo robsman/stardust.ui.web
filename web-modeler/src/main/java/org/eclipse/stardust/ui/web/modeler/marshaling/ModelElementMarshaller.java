@@ -135,7 +135,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
       else if (modelElement instanceof ApplicationType)
       {
-         jsResult = toApplication((ApplicationType) modelElement);
+         ApplicationType application = (ApplicationType) modelElement;
+         if (application.getType() != null
+               && application.getType()
+                     .getId()
+                     .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+         {
+            jsResult = null;
+         }
+         else
+         {
+            jsResult = toApplication((ApplicationType) modelElement);
+         }
       }
       else if (modelElement instanceof TransitionConnectionType)
       {

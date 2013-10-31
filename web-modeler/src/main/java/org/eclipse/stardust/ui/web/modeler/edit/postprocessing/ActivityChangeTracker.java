@@ -49,10 +49,10 @@ public class ActivityChangeTracker implements ChangePostprocessor
       if (model != null)
       {
          ActivityType activityType = (ActivityType) candidate;
-         if (activityType.getApplication() != null)
+         if (activityType.getExternalRef() == null && activityType.getApplication() != null)
          {
             ApplicationType applicationType = activityType.getApplication();
-            if (applicationType.getType()
+            if (applicationType.getType() != null && applicationType.getType()
                   .getId()
                   .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
             {
