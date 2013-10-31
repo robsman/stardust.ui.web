@@ -292,9 +292,18 @@ define(
 									m_utils.showWaitCursor();
 									var parentRow = m_utils.jQuerySelect("tr#" + parentId);
 									m_structuredTypeBrowser.insertChildElementRowsWithDummyOffsprings(parentRow);
-//									jQuery("tr.child-of-" + parentId).removeClass("ui-helper-hidden");
+
+									// Remove the dummy row
 									jQuery("tr#" + parentId + "-DUMMY_ROW").remove();
+
+									// TODO - see if this there is a cleaner way to do this
+									// Only adding the child rows to the parent row and expanding the parent
+									// doesn't work well, as in this case the child rows don't appear to be initialized
+									// correctly cuusing the expand arrows to be missing for child rows which had children
+									// As a work around I am invoking a click on the parent row expand button after the
+									// child rows are added and this initialized the child rows correctly.
 									m_utils.jQuerySelect("tr#" + parentId + " td a").click();
+
 									m_utils.hideWaitCursor();
 								}
 							}
