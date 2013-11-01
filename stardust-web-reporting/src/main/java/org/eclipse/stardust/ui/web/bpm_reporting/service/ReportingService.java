@@ -425,47 +425,22 @@ public class ReportingService {
 					* convertDurationUnit(firstDimensionCumulationIntervalUnit);
 
 			// Obtain external data
-			// TODO Move to retrieval function
 
-			JsonArray externalJoinsJson = dataSetJson.get("externalJoins")
-					.getAsJsonArray();
+			Map<String, Map<String, String>> externalData = null;
+			JsonObject externalJoinJson = null;
+			String internalKey = null;
 
-			Map<String, Map<String, String>> externalData = new HashMap<String, Map<String, String>>();
+			if (dataSetJson.get("joinExternalData").getAsBoolean()) {
+				JsonArray externalJoinsJson = dataSetJson.get("externalJoins")
+						.getAsJsonArray();
+				externalJoinJson = externalJoinsJson.get(0).getAsJsonObject();
+				internalKey = externalJoinJson.get("internalKey").getAsString();
+				externalData = retrieveExternalData(externalJoinJson);
 
-			// dataSet.joinExternalData == true
-
-			if (!externalJoinsJson.get(0).isJsonNull()) {
-				JsonObject externalJoinJson = externalJoinsJson.get(0).getAsJsonObject();
-				trace.info("External Data:");
-
-				JsonArray externalDataJson = retrieveExternalData(externalJoinsJson
-						.get(0).getAsJsonObject().get("restUri").getAsString());
-				trace.info(externalDataJson.toString());
-
-				for (int n = 0; n < externalDataJson.size(); n++) {
-					JsonObject recordJson = externalDataJson.get(n)
-							.getAsJsonObject();
-					Map<String, String> record = new HashMap<String, String>();
-
-					for (Map.Entry<String, JsonElement> entry : recordJson
-							.entrySet()) {
-						if (entry.getKey().equals(
-								externalJoinJson.get("externalKey")
-										.getAsString())) {
-							externalData.put(entry.getValue().getAsString(),
-									record);
-						}
-
-						record.put(entry.getKey(), entry.getValue()
-								.getAsString());
-					}
-				}
-
-				trace.info("Map");
-				trace.info(externalData);
+				trace.info("Internal Key: " + internalKey);
 			}
 
-			// Obtain BPM data
+			// Obtain Audit Trail data
 
 			if (primaryObject.equals("processInstance")) {
 				ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
@@ -666,6 +641,30 @@ public class ReportingService {
 							} else {
 								processInstanceJson.addProperty(key,
 										value.toString());
+							}
+						}
+
+						// Join external data
+
+						if (internalKey != null) {
+							String internalKeValue = processInstanceJson.get(
+									internalKey).getAsString();
+
+							trace.info("Internal Key Value: " + internalKeValue);
+							
+							Map<String, String> record = externalData
+									.get(internalKeValue);
+
+							trace.info("Record: " + record);
+
+							if (record != null) {
+								for (String key : record.keySet()) {
+									trace.info("Key: " + key);
+									trace.info("Value: " + record.get(key));
+
+									processInstanceJson.addProperty(key,
+											record.get(key));
+								}
 							}
 						}
 					}
@@ -1509,13 +1508,17 @@ public class ReportingService {
 	}
 
 	/**
+	 * Retrieves external join data via REST and creates a map with the join key
+	 * as key and a map with all external fields and their 'useAs' field names
+	 * as keys and their values as values.
 	 * 
-	 * @param urlString
+	 * @param externalJoinJson
 	 * @return
 	 */
-	public JsonArray retrieveExternalData(String urlString) {
+	public Map<String, Map<String, String>> retrieveExternalData(
+			JsonObject externalJoinJson) {
 		try {
-			URL url = new URL(urlString);
+			URL url = new URL(externalJoinJson.get("restUri").getAsString());
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 
@@ -1541,9 +1544,51 @@ public class ReportingService {
 
 			// TODO Add heuristics on objects or arrays
 
-			return jsonIo.readJsonObject(buffer.toString()).get("list")
+			JsonArray recordsJson = jsonIo.readJsonObject(buffer.toString())
+					.get("list").getAsJsonArray();
+
+			trace.info("External Data:");
+			trace.info(recordsJson.toString());
+
+			Map<String, Map<String, String>> externalData = new HashMap<String, Map<String, String>>();
+			JsonArray externalJoinFieldsJson = externalJoinJson.get("fields")
 					.getAsJsonArray();
 
+			for (int n = 0; n < recordsJson.size(); n++) {
+				JsonObject recordJson = recordsJson.get(n).getAsJsonObject();
+				Map<String, String> record = new HashMap<String, String>();
+
+				for (int m = 0; m < externalJoinFieldsJson.size(); m++) {
+					JsonObject externalJoinFieldJson = externalJoinFieldsJson
+							.get(m).getAsJsonObject();
+
+					if (externalJoinFieldJson
+							.get("id")
+							.getAsString()
+							.equals(externalJoinJson.get("externalKey")
+									.getAsString())) {
+						externalData.put(
+								recordJson.get(
+										externalJoinFieldJson.get("id")
+												.getAsString()).getAsString(),
+								record);
+					}
+
+					// TODO Other type mapping than string (central mapping
+					// function f(type,object, container))
+
+					record.put(
+							externalJoinFieldJson.get("useAs").getAsString(),
+							recordJson.get(
+									externalJoinFieldJson.get("id")
+											.getAsString()).getAsString());
+				}
+			}
+
+			trace.info("Map");
+			trace.info(externalData);
+
+			return externalData;
 		} catch (MalformedURLException e) {
 			trace.error(e);
 

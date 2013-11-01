@@ -306,6 +306,9 @@ define(
 
 				this.loadedReportDefinitions = {};
 
+				/**
+				 * 
+				 */
 				ReportingService.prototype.getPrimaryObject = function(
 						primaryObject) {
 					return this.metadata.objects[primaryObject];
@@ -960,6 +963,126 @@ define(
 							this.metadata.decimalType, this.metadata.countType,
 							this.metadata.timestampType,
 							this.metadata.durationType ];
+				};
+
+				/**
+				 * Returns a consolidated list of possible dimensions including
+				 * joined data from external data sources.
+				 */
+				ReportingService.prototype.getCumulatedDimensions = function(
+						report) {
+					var dimensions = [];
+
+					console.log("Cumulated columns from report");
+					console.log(report);
+
+					for ( var m in this
+							.getPrimaryObject(report.dataSet.primaryObject).dimensions) {
+						dimensions
+								.push(this
+										.getPrimaryObject(report.dataSet.primaryObject).dimensions[m]);
+					}
+
+					// Joined external data
+
+					if (report.dataSet.joinExternalData
+							&& report.dataSet.externalJoins) {
+						for ( var l in report.dataSet.externalJoins) {
+							var join = report.dataSet.externalJoins[l];
+
+							for ( var k in join.fields) {
+								var field = join.fields[k];
+
+								dimensions.push({
+									id : field.name,
+									name : field.name,
+									type : this.metadata[field.type]
+								});
+							}
+						}
+					}
+
+					// Computed columns
+
+					console.log("Computed Columns");
+					console.log(report.dataSet.computedColumns);
+
+					for ( var n in report.dataSet.computedColumns) {
+						console.log("n = " + n);
+
+						var column = report.dataSet.computedColumns[n];
+
+						dimensions.push({
+							id : column.id,
+							name : column.name,
+							type : this.metadata[column.type]
+						});
+					}
+
+					return dimensions;
+				};
+
+				/**
+				 * 
+				 */
+				ReportingService.prototype.getExternalJoinField = function(report, id) {
+					console.log("getExternalJoinField");
+					console.log(id);
+
+					for ( var l in report.dataSet.externalJoins) {
+						var join = report.dataSet.externalJoins[l];
+
+						for ( var k in join.fields) {
+							var field = join.fields[k];
+
+							console.log("Field ID: " + field.id);
+
+							if (field.id === id) {
+								return {
+									id : field.name,
+									name : field.name,
+									type : this.metadata[field.type]
+								};
+							}
+						}
+					}
+					
+					// TODO Add computed columns
+					
+					return null;
+				};
+
+				/**
+				 * Get dimension objects for report columns.
+				 */
+				ReportingService.prototype.getColumnDimensions = function(
+						report) {
+					var dimensions = [];
+
+					for ( var m in report.dataSet.columns) {
+						console.log("Column IDlala");
+						console.log(report.dataSet.columns[m]);
+						console.log("Dimension");
+						console.log(this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m]]);
+
+						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m]] != null) {
+							console.log("Found regular columns");
+							console.log(this
+									.getDimension(report.dataSet.primaryObject, report.dataSet.columns[m]));
+							dimensions
+									.push(this
+											.getDimension(report.dataSet.primaryObject, report.dataSet.columns[m]));
+						} else {
+							// Must be a joined field or computed column
+
+							dimensions.push(this.getExternalJoinField(report, report.dataSet.columns[m]));
+						}
+					}
+
+					console.log("Column Dimensions");
+					console.log(dimensions);
+
+					return dimensions;
 				};
 			}
 		});

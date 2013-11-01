@@ -34,116 +34,222 @@ table.formTable td {
 				<td height="500px" valign="top">
 					<div id="propertiesTabs">
 						<ul id="propertiesTabsList">
-							<li><a href="#dataSetTab"><img
-									src="../css/images/report.png"></img><span class="tabLabel"
-									id="dataSet">{{getI18N('reporting.definitionView.dataSetTab.title')}}</span></a></li>
-							<li><a href="#layoutTab"><img
-									src="../css/images/report.png"></img><span class="tabLabel"
-									id="layout">{{getI18N('reporting.definitionView.layoutTab.title')}}</span></a></li>
-							<li><a href="#previewTab"><img
-									src="../css/images/report.png"></img><span class="tabLabel"
-									id="preview">{{getI18N('reporting.definitionView.previewTab.title')}}</span></a></li>
-							<li><a href="#definitionTab"><img
-									src="../css/images/report.png"></img><span class="tabLabel"
-									id="definition">{{getI18N('reporting.definitionView.reportDefinitionTab.title')}}</span></a></li>
-							<li><a href="#schedulingTab"><img
-									src="../css/images/report.png"></img><span class="tabLabel"
-									id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></a></li>
+							<li><a href="#dataSourcesTab"><table>
+										<tr>
+											<td><img src="../css/images/database.png"></img>
+											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSourcesTab.title')}}</span></td>
+										</tr>
+									</table></a></li>
+							<li><a href="#dataSetTab"><table>
+										<tr>
+											<td><img src="../css/images/table.png"></img>
+											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSetTab.title')}}</span></td>
+										</tr>
+									</table></a></li>
+							<li><a href="#layoutTab"><table>
+										<tr>
+											<td><img src="../css/images/layout.png"></img>
+											<td><span class="tabLabel" id="layout">{{getI18N('reporting.definitionView.layoutTab.title')}}</span></td>
+										</tr>
+									</table></a></li>
+							<li><a href="#previewTab"><table>
+										<tr>
+											<td><img src="../css/images/chart-bar.png"></img>
+											<td><span class="tabLabel" id="preview">{{getI18N('reporting.definitionView.previewTab.title')}}</span></td>
+										</tr>
+									</table></a></li>
+							<li><a href="#definitionTab"><table>
+										<tr>
+											<td><img src="../css/images/drive.png"></img>
+											<td><span class="tabLabel" id="definition">{{getI18N('reporting.definitionView.reportDefinitionTab.title')}}</span></td>
+										</tr>
+									</table></a></li>
+							<li><a href="#schedulingTab"><table>
+										<tr>
+											<td><img src="../css/images/date.png"></img>
+											<td><span class="tabLabel" id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></a></td>
+										</tr>
+									</table></li>
 						</ul>
-						<div id="dataSetTab">
+						<div id="dataSourcesTab">
 							<table cellpadding="0" cellspacing="0" class="formTable">
 								<tr>
 									<td><label>{{getI18N('reporting.definitionView.retrieveData.text')}}</label></td>
 									<td><select id="primaryObjectSelect">
 									</select></td>
+								</tr>
+							</table>
+							<div class="heading">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td style="padding-right: 5px;"><a href="#"
+											ng-show="showExternalDataPanel"
+											ng-click="showExternalDataPanel = false"><img
+												src="../css/images/arrow-down.png" /></a> <a href="#"
+											ng-show="!showExternalDataPanel"
+											ng-click="showExternalDataPanel = true"><img
+												src="../css/images/arrow-right.png" /></a></td>
+										<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="showExternalDataPanel">
+								<table cellpadding="0" cellspacing="0" class="formTable">
+									<tr>
+										<td><input type="checkbox"
+											ng-model="report.dataSet.joinExternalData"></td>
+										<td><label>{{getI18N('reporting.definitionView.joinExternalData.label')}}</label></td>
+										<td><div ng-show="report.dataSet.joinExternalData">
+												<table cellpadding="0" cellspacing="0" class="formTable">
+													<tr>
+														<td><label>{{getI18N('reporting.definitionView.as.label')}}</label></td>
+														<td><select
+															ng-model="report.dataSet.externalJoins[0].joinType"><option
+																	value="inner">Inner Join</option>
+																<option value="outer">Outer Join</option></select></td>
+														<td><label>{{getI18N('reporting.definitionView.internalJoinKey.label')}}</label></td>
+														<td><select
+															ng-model="report.dataSet.externalJoins[0].internalKey"
+															ng-options="dimension.id as dimension.name for dimension in getInternalDimensions()">
+																<option value=""></option>
+														</select></td>
+													</tr>
+												</table>
+											</div></td>
+									</tr>
+								</table>
+								<div ng-show="report.dataSet.joinExternalData">
+									<table cellpadding="0" cellspacing="0" class="formTable"
+										style="margin-top: 5px;">
+										<tr>
+											<td><label>{{getI18N('reporting.definitionView.restUri.label')}}</label></td>
+											<td><input
+												ng-model="report.dataSet.externalJoins[0].restUri"
+												style="width: 450px;" /></td>
+										</tr>
+										<tr>
+											<td colspan="2"><a style="font-size: 9px;"
+												ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])"
+												class="smallLink">{{getI18N('reporting.definitionView.loadTestDataLink.label')}}
+													&raquo;</a></td>
+										</tr>
+									</table>
+									<table cellpadding="0" cellspacing="0" class="embeddedTable"
+										style="margin-top: 5px;">
+										<thead>
+											<tr>
+												<td></td>
+												<td>{{getI18N('reporting.definitionView.fieldName.label')}}</td>
+												<td>{{getI18N('reporting.definitionView.useAs.label')}}</td>
+												<td>{{getI18N('reporting.definitionView.displayAs.label')}}</td>
+												<td>{{getI18N('reporting.definitionView.dataType.label')}}</td>
+												<td>{{getI18N('reporting.definitionView.externalJoinKey.label')}}</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												ng-repeat="field in report.dataSet.externalJoins[0].fields">
+												<td><a href="" ng-click=""><img
+														src="../css/images/delete.png" /> </a></td>
+												<td><input type="text" ng-model="field.id" /></td>
+												<td><input type="text" ng-model="field.useAs" /></td>
+												<td><input type="text" ng-model="field.name" /></td>
+												<td><select ng-model="field.type"
+													ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option></option></select></td>
+												<td style="text-align: center;"><input type="radio"
+													value="{{field.id}}"
+													ng-model="report.dataSet.externalJoins[0].externalKey" /></td>
+											</tr>
+											<tr>
+												<td><a href="" ng-click=""><img
+														src="../css/images/add.png" /> </a></td>
+												<td></td>
+												<td></td>
+												<td></td>
+												<td></td>
+												<td></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="heading">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td style="padding-right: 5px;"><a href="#"
+											ng-show="showComputedColumnsPanel"
+											ng-click="showComputedColumnsPanel = false"><img
+												src="../css/images/arrow-down.png" /></a> <a href="#"
+											ng-show="!showComputedColumnsPanel"
+											ng-click="showComputedColumnsPanel = true"><img
+												src="../css/images/arrow-right.png" /></a></td>
+										<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
+									</tr>
+								</table>
+							</div>
+							<div ng-show="showComputedColumnsPanel">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td valign="top">
+											<table cellpadding="0" cellspacing="0" class="embeddedTable"
+												style="margin-top: 5px;">
+												<thead>
+													<tr>
+														<td></td>
+														<td>{{getI18N('reporting.definitionView.fieldName.label')}}</td>
+														<td>{{getI18N('reporting.definitionView.displayAs.label')}}</td>
+														<td>{{getI18N('reporting.definitionView.dataType.label')}}</td>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="column in report.dataSet.computedColumns">
+														<td><a href="" ng-click=""><img
+																src="../css/images/delete.png" /> </a></td>
+														<td><input type="text" ng-model="column.id"
+															ng-click="selectComputedColumn(column)" /></td>
+														<td><input type="text" ng-model="column.name"
+															ng-click="selectComputedColumn(column)" /></td>
+														<td><select ng-model="column.type"
+															ng-click="selectComputedColumn(column)"
+															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option></option></select></td>
+													</tr>
+													<tr>
+														<td><a href="" ng-click="addComputedColumn()"><img
+																src="../css/images/add.png" /> </a></td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+										<td valign="top" style="padding-left: 10px;"><table
+												cellpadding="0" cellspacing="0" class="formTable">
+												<tr>
+													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
+												</tr>
+												<tr>
+													<td><textarea rows="15" cols="80"
+															ng-model="selectedComputedColumn.formula"></textarea></td>
+												</tr>
+											</table></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="dataSetTab">
+							<table cellpadding="0" cellspacing="0" class="formTable">
+								<tr>
 									<td><input ng-model="report.dataSet.type"
 										ng-click="changeDataSetType()" value="seriesGroup"
-										type="radio" style="margin-left: 10px;"></td>
+										type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.seriesGroup.label')}}</label></td>
 									<td><input ng-model="report.dataSet.type"
 										ng-click="changeDataSetType()" value="recordSet" type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.recordSet.label')}}</label></td>
 								</tr>
 							</table>
-							<div class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</div>
-							<table cellpadding="0" cellspacing="0" class="formTable">
-								<tr>
-									<td><input type="checkbox"
-										ng-model="report.dataSet.joinExternalData"></td>
-									<td><label>{{getI18N('reporting.definitionView.joinExternalData.label')}}</label></td>
-									<td><div ng-show="report.dataSet.joinExternalData">
-											<table cellpadding="0" cellspacing="0" class="formTable">
-												<tr>
-													<td><label>{{getI18N('reporting.definitionView.as.label')}}</label></td>
-													<td><select
-														ng-model="report.dataSet.externalJoins[0].joinType"><option
-																value="inner">Inner Join</option>
-															<option value="outer">Outer Join</option></select></td>
-													<td><label>{{getI18N('reporting.definitionView.internalJoinKey.label')}}</label></td>
-													<td><select
-														ng-model="report.dataSet.externalJoins[0].internalKey"
-														ng-options="dimension.id as dimension.name for dimension in getInternalDimensions()">
-															<option value=""></option>
-													</select></td>
-												</tr>
-											</table>
-										</div></td>
-								</tr>
-							</table>
-							<div ng-show="report.dataSet.joinExternalData">
-								<table cellpadding="0" cellspacing="0" class="formTable"
-									style="margin-top: 5px;">
-									<tr>
-										<td><label>{{getI18N('reporting.definitionView.restUri.label')}}</label></td>
-										<td><input
-											ng-model="report.dataSet.externalJoins[0].restUri"
-											style="width: 450px;" /></td>
-									</tr>
-									<tr>
-										<td colspan="2"><a style="font-size: 9px;"
-											ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])"
-											class="smallLink">{{getI18N('reporting.definitionView.loadTestDataLink.label')}}
-												&raquo;</a></td>
-									</tr>
-								</table>
-								<table cellpadding="0" cellspacing="0" class="embeddedTable"
-									style="margin-top: 5px;">
-									<thead>
-										<tr>
-											<td></td>
-											<td>{{getI18N('reporting.definitionView.fieldName.label')}}</td>
-											<td>{{getI18N('reporting.definitionView.useAs.label')}}</td>
-											<td>{{getI18N('reporting.definitionView.displayAs.label')}}</td>
-											<td>{{getI18N('reporting.definitionView.dataType.label')}}</td>
-											<td>{{getI18N('reporting.definitionView.externalJoinKey.label')}}</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											ng-repeat="field in report.dataSet.externalJoins[0].fields">
-											<td><a href="" ng-click=""><img
-													src="../css/images/delete.png" /> </a></td>
-											<td><input type="text" ng-model="field.id" /></td>
-											<td><input type="text" ng-model="field.useAs" /></td>
-											<td><input type="text" ng-model="field.name" /></td>
-											<td><select ng-model="field.type"
-												ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option></option></select></td>
-											<td style="text-align: center;"><input type="radio"
-												value="{{field.id}}"
-												ng-model="report.dataSet.externalJoins[0].externalKey" /></td>
-										</tr>
-										<tr>
-											<td><a href="" ng-click=""><img
-													src="../css/images/add.png" /> </a></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
 							<div ng-show="report.dataSet.type == 'recordSet'">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
@@ -152,9 +258,10 @@ table.formTable td {
 										<td><h2>{{getI18N('reporting.definitionView.selectedColumns.label')}}</h2></td>
 									</tr>
 									<tr>
-										<td><select id="availableDimensionsSelect"
-											multiple="multiple" style="height: 100px; width: 250px;"
-											ng-model="report.dataSet.columns"></select></td>
+										<td><select multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="availableColumns"
+											ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions() "><option></option></select></td>
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
@@ -169,13 +276,14 @@ table.formTable td {
 													</td>
 												</tr>
 												<tr>
-													<td><button ng-click="selectAllDimensionsForColumns()">&gt;&gt;</button>
+													<td><button ng-click="selectAllDimensionsForColumns()">&raquo;</button>
 													</td>
 												</tr>
 											</table></td>
-										<td><select id="selectedDimensionsSelect"
-											multiple="multiple" style="height: 100px; width: 250px;"
-											ng-model="report.dataSet.columns"></select></td>
+										<td><select multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="selectedColumns"
+											ng-options="dimension.id as dimension.name for dimension in getColumnDimensions()"><option></option></select></td>
 									</tr>
 								</table>
 							</div>
@@ -229,11 +337,13 @@ table.formTable td {
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
 																	src="../css/images/parameter.png"
-																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" /> <a href=""
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" />
+																	<a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" />
+																</a> </a></td>
 														</tr>
 														<tr>
 															<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
@@ -242,17 +352,20 @@ table.formTable td {
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionTo')"
 																ng-show="existsParameter('firstDimensionTo')"><img
-																	src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionTo)" />
+																	src="../css/images/parameter.png"
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionTo)" />
 																	<a href=""
 																	ng-click="addParameter('firstDimensionTo', getFirstDimension().name + ' To', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionTo')"><img
 																		src="../css/images/no-parameter.png"
-																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionTo)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionTo)" />
+																</a> </a></td>
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
 														ng-click="firstDimensionToFrom = false;" class="smallLink">
-														{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}} &raquo;</a>
+														{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
+														&raquo;</a>
 												</div>
 												<div ng-show="!firstDimensionToFrom"
 													style="margin-left: 10px;">
@@ -265,11 +378,13 @@ table.formTable td {
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
 																	src="../css/images/parameter.png"
-																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" /> <a href=""
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionFrom)" />
+																	<a href=""
 																	ng-click="addParameter('firstDimensionFrom', getFirstDimension().name + ' From', getMetadata().timestampType.id)"
 																	ng-show="!existsParameter('firstDimensionFrom')"><img
 																		src="../css/images/no-parameter.png"
-																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionFrom)" />
+																</a> </a></td>
 														</tr>
 														<tr>
 															<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
@@ -289,17 +404,20 @@ table.formTable td {
 															<td><a href=""
 																ng-click="removeParameters(['firstDimensionDurationCount', 'firstDimensionDurationUnit'])"
 																ng-show="existsParameter('firstDimensionDurationCount')"><img
-																	src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionDuration)" />
+																	src="../css/images/parameter.png"
+																	title="{{getI18N('reporting.definitionView.parameter.label')}} (firstDimensionDuration)" />
 																	<a href=""
 																	ng-click="addParameters([{id: 'firstDimensionDurationCount', name: getFirstDimension().name + ' Duration Count', type: getMetadata().integerType.id},
 																	{id: 'firstDimensionDurationUnit', name: getFirstDimension().name + ' Duration Unit', type: getMetadata().enumerationType.id}])"
 																	ng-show="!existsParameter('firstDimensionDurationCount')"><img
 																		src="../css/images/no-parameter.png"
-																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionDuration)" /> </a> </a></td>
+																		title="{{getI18N('reporting.definitionView.noParameter.label')}} (firstDimensionDuration)" />
+																</a> </a></td>
 														</tr>
 													</table>
 													<a style="font-size: 9px;"
-														ng-click="firstDimensionToFrom = true;" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}} &raquo;</a>
+														ng-click="firstDimensionToFrom = true;" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+														&raquo;</a>
 												</div>
 											</div>
 											<div id="firstDimensionEnumerationSelectionPanel"
@@ -315,12 +433,14 @@ table.formTable td {
 														<td valign="top"><a href=""
 															ng-click="firstDimensionEnumerationParameter = false"
 															ng-show="firstDimensionEnumerationParameter"><img
-																src="../css/images/parameter.png" title="{{getI18N('reporting.definitionView.parameter.label')}}" />
+																src="../css/images/parameter.png"
+																title="{{getI18N('reporting.definitionView.parameter.label')}}" />
 																<a href=""
 																ng-click="firstDimensionEnumerationParameter = true"
 																ng-show="!firstDimensionEnumerationParameter"><img
 																	src="../css/images/no-parameter.png"
-																	title="{{getI18N('reporting.definitionView.noParameter.label')}}" /> </a> </a></td>
+																	title="{{getI18N('reporting.definitionView.noParameter.label')}}" />
+															</a> </a></td>
 													</tr>
 												</table>
 											</div>
@@ -1325,8 +1445,8 @@ table.formTable td {
 																									<option>{{getI18N('reporting.definitionView.october.label')}}</option>
 																									<option>{{getI18N('reporting.definitionView.november.label')}}</option>
 																									<option>{{getI18N('reporting.definitionView.december.label')}}</option>
-																							<td><input type="number"
-																								style="width: 50px;"></input></td>
+																									<td><input type="number"
+																										style="width: 50px;"></input></td>
 																						</tr>
 																					</table></td>
 																			</tr>

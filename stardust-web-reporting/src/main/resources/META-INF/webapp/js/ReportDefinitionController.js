@@ -319,10 +319,12 @@ define(
 							dataSet : {
 								type : "seriesGroup",
 								primaryObject : "processInstance",
+								joinExternalData : false,
 								externalJoins : [ {
 									joinType : "outer",
-									restUri : "http://localhost:1337/"
+									restUri : "http://127.0.0.1:1337/"
 								} ],
+								computedColumns : [],
 								columns : [],
 								filters : [],
 								factDurationUnit : "d",
@@ -491,18 +493,6 @@ define(
 								+ fact.name + "</option>");
 					}
 
-					jQuery("#availableDimensionsSelect").empty();
-
-					for ( var k in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[k];
-
-						jQuery("#availableDimensionsSelect").append(
-								"<option value='" + k + "'>" + dimension.name
-										+ "</option>");
-					}
-
-					jQuery("#selectedDimensionsSelect").empty();
-
 					this.populateChartTypes();
 					this.populateGroupBy();
 
@@ -663,34 +653,16 @@ define(
 				 * joined data from external data sources.
 				 */
 				ReportDefinitionController.prototype.getCumulatedDimensions = function() {
-					var dimensions = [];
+					return this.reportingService
+							.getCumulatedDimensions(this.report);
+				};
 
-					for ( var m in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[m];
-
-						dimensions.push({
-							id : dimension.id,
-							name : dimension.name
-						});
-					}
-
-					if (this.report.dataSet.joinExternalData
-							&& this.report.dataSet.externalJoins) {
-						for ( var l in this.report.dataSet.externalJoins) {
-							var join = this.report.dataSet.externalJoins[l];
-
-							for ( var k in join.fields) {
-								var field = join.fields[k];
-
-								dimensions.push({
-									id : field.name,
-									name : field.name
-								});
-							}
-						}
-					}
-
-					return dimensions;
+				/**
+				 * Get dimension objects for report columns.
+				 */
+				ReportDefinitionController.prototype.getColumnDimensions = function() {
+					return this.reportingService
+							.getColumnDimensions(this.report);
 				};
 
 				/**
@@ -784,21 +756,15 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.selectAllDimensionsForColumns = function() {
-					jQuery("#availableDimensionsSelect").empty();
-					jQuery("#selectedDimensionsSelect").empty();
-
 					this.report.dataSet.columns = [];
 
 					var cumulatedDimensions = this.getCumulatedDimensions();
 
 					for ( var k in cumulatedDimensions) {
-						var dimension = cumulatedDimensions[k];
+						console.log(cumulatedDimensions[k]);
 
-						this.report.dataSet.columns.push(k);
-
-						jQuery("#selectedDimensionsSelect").append(
-								"<option value='" + k + "'>" + dimension.name
-										+ "</option>");
+						this.report.dataSet.columns
+								.push(cumulatedDimensions[k].id);
 					}
 				};
 
@@ -806,20 +772,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.deselectAllDimensionsForColumns = function() {
-					jQuery("#availableDimensionsSelect").empty();
-					jQuery("#selectedDimensionsSelect").empty();
-
 					this.report.dataSet.columns = [];
-
-					var cumulatedDimensions = this.getCumulatedDimensions();
-
-					for ( var k in cumulatedDimensions) {
-						var dimension = cumulatedDimensions[k];
-
-						jQuery("#availableDimensionsSelect").append(
-								"<option value='" + k + "'>" + dimension.name
-										+ "</option>");
-					}
 				};
 
 				/**
@@ -1129,5 +1082,27 @@ define(
 							});
 				};
 
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.addComputedColumn = function() {
+					this.selectedComputedColumn = {
+							id : null,
+							name : null,
+							type : this.reportingService.metadata.stringType,
+							formula : "Nasenfurz"
+						};
+
+					this.report.dataSet.computedColumns.push(this.selectedComputedColumn);
+				};
+				
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.selectComputedColumn = function(column) {
+					this.selectedComputedColumn = column;
+					
+					console.log(this.selectedComputedColumn);					
+				};
 			}
 		});

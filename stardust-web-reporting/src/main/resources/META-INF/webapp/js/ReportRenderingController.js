@@ -354,7 +354,7 @@ define(
 										}
 
 										// Clean rendering area
-										
+
 										jQuery("#chartView").empty();
 
 										window
@@ -534,29 +534,7 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.getReportTableColumns = function() {
-					var columns = [];
-
-					for ( var k = 0; k < this.report.dataSet.columns.length; ++k) {
-						var dimension = this.getPrimaryObject().dimensions[this.report.dataSet.columns[k]];
-
-						columns.push(dimension);
-					}
-
-					// TODO Remove?
-					// if (this.getPrimaryObject().supportsDescriptors) {
-					// for ( var l in
-					// this.reportingService.modelData.descriptors) {
-					// var descriptor =
-					// this.reportingService.modelData.descriptors[l];
-					//
-					// columns.push({
-					// id : l,
-					// name : descriptor.name
-					// });
-					// }
-					// }
-
-					return columns;
+					return this.reportingService.getColumnDimensions(this.report);
 				};
 
 				/**
@@ -571,6 +549,9 @@ define(
 							+ this.pad(dateTime.getUTCMinutes(), 2);
 				};
 
+				/**
+				 * 
+				 */
 				ReportRenderingController.prototype.pad = function(number,
 						characters) {
 					return (1e15 + number + // combine with large number
