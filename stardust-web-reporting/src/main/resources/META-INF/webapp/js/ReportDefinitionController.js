@@ -116,6 +116,14 @@ define(
 								} ]
 					});
 
+//					this.computedColumnExpressionEditor = Ace
+//							.edit(jQuery("#computedColumnExpressionEditor"));
+//
+//					this.computedColumnExpressionEditor.getSession().setMode(
+//							"ace/mode/javascript");
+//					this.computedColumnExpressionEditor
+//							.setTheme("ace/theme/chrome");
+
 					CKEDITOR.instances["documentTemplateEditor"]
 							.on(
 									'blur',
@@ -322,7 +330,8 @@ define(
 								joinExternalData : false,
 								externalJoins : [ {
 									joinType : "outer",
-									restUri : "http://127.0.0.1:1337/"
+									restUri : "http://127.0.0.1:1337/",
+									fields : []
 								} ],
 								computedColumns : [],
 								columns : [],
@@ -1044,6 +1053,36 @@ define(
 				/**
 				 * 
 				 */
+				ReportDefinitionController.prototype.addExternalJoinField = function() {
+					this.report.dataSet.externalJoins[0].fields.push({
+						id : null,
+						name : null,
+						useAs : null,
+						type : this.reportingService.metadata.stringType.id,
+					});
+				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.deleteExternalJoinField = function(
+						field) {
+					console.log("Delete");
+					console.log(field);
+
+					for ( var n = 0; n < this.report.dataSet.externalJoins[0].fields.length; ++n) {
+						if (this.report.dataSet.externalJoins[0].fields[n].$$hashKey === field.$$hashKey) {
+							this.report.dataSet.externalJoins[0].fields.splice(
+									n, 1);
+
+							return;
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
 				ReportDefinitionController.prototype.evaluateExternalTestdata = function(
 						externalJoin) {
 					var self = this;
@@ -1087,22 +1126,41 @@ define(
 				 */
 				ReportDefinitionController.prototype.addComputedColumn = function() {
 					this.selectedComputedColumn = {
-							id : null,
-							name : null,
-							type : this.reportingService.metadata.stringType,
-							formula : "Nasenfurz"
-						};
+						id : null,
+						name : null,
+						type : this.reportingService.metadata.stringType,
+						formula : "firstName + lastName"
+					};
 
-					this.report.dataSet.computedColumns.push(this.selectedComputedColumn);
+					this.report.dataSet.computedColumns
+							.push(this.selectedComputedColumn);
 				};
-				
+
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.selectComputedColumn = function(column) {
+				ReportDefinitionController.prototype.deleteComputedColumn = function(
+						column) {
+					console.log("Delete");
+					console.log(column);
+
+					for ( var n = 0; n < this.report.dataSet.computedColumns.length; ++n) {
+						if (this.report.dataSet.computedColumns[n].$$hashKey === column.$$hashKey) {
+							this.report.dataSet.computedColumns.splice(n, 1);
+
+							return;
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.selectComputedColumn = function(
+						column) {
 					this.selectedComputedColumn = column;
-					
-					console.log(this.selectedComputedColumn);					
+
+					console.log(this.selectedComputedColumn);
 				};
 			}
 		});

@@ -80,18 +80,25 @@ table.formTable td {
 								</tr>
 							</table>
 							<div class="heading">
-								<table cellpadding="0" cellspacing="0" class="layoutTable">
-									<tr>
-										<td style="padding-right: 5px;"><a href="#"
-											ng-show="showExternalDataPanel"
-											ng-click="showExternalDataPanel = false"><img
-												src="../css/images/arrow-down.png" /></a> <a href="#"
-											ng-show="!showExternalDataPanel"
-											ng-click="showExternalDataPanel = true"><img
-												src="../css/images/arrow-right.png" /></a></td>
-										<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
-									</tr>
-								</table>
+								<a href="#" ng-show="showExternalDataPanel"
+									ng-click="showExternalDataPanel = false">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-right: 5px;"><img
+												src="../css/images/arrow-down.png" /></td>
+											<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
+										</tr>
+									</table>
+								</a> <a href="#" ng-show="!showExternalDataPanel"
+									ng-click="showExternalDataPanel = true">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-right: 5px;"><img
+												src="../css/images/arrow-right.png" /></td>
+											<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
+										</tr>
+									</table>
+								</a>
 							</div>
 							<div ng-show="showExternalDataPanel">
 								<table cellpadding="0" cellspacing="0" class="formTable">
@@ -149,7 +156,7 @@ table.formTable td {
 										<tbody>
 											<tr
 												ng-repeat="field in report.dataSet.externalJoins[0].fields">
-												<td><a href="" ng-click=""><img
+												<td><a href="" ng-click="deleteExternalJoinField(field)"><img
 														src="../css/images/delete.png" /> </a></td>
 												<td><input type="text" ng-model="field.id" /></td>
 												<td><input type="text" ng-model="field.useAs" /></td>
@@ -161,7 +168,7 @@ table.formTable td {
 													ng-model="report.dataSet.externalJoins[0].externalKey" /></td>
 											</tr>
 											<tr>
-												<td><a href="" ng-click=""><img
+												<td><a href="" ng-click="addExternalJoinField()"><img
 														src="../css/images/add.png" /> </a></td>
 												<td></td>
 												<td></td>
@@ -174,18 +181,25 @@ table.formTable td {
 								</div>
 							</div>
 							<div class="heading">
-								<table cellpadding="0" cellspacing="0" class="layoutTable">
-									<tr>
-										<td style="padding-right: 5px;"><a href="#"
-											ng-show="showComputedColumnsPanel"
-											ng-click="showComputedColumnsPanel = false"><img
-												src="../css/images/arrow-down.png" /></a> <a href="#"
-											ng-show="!showComputedColumnsPanel"
-											ng-click="showComputedColumnsPanel = true"><img
-												src="../css/images/arrow-right.png" /></a></td>
-										<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
-									</tr>
-								</table>
+								<a href="#" ng-show="showComputedColumnsPanel"
+									ng-click="showComputedColumnsPanel = false">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-right: 5px;"><img
+												src="../css/images/arrow-down.png" /></td>
+											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
+										</tr>
+									</table>
+								</a> <a href="#" ng-show="!showComputedColumnsPanel"
+									ng-click="showComputedColumnsPanel = true">
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-right: 5px;"><img
+												src="../css/images/arrow-right.png" /></td>
+											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
+										</tr>
+									</table>
+								</a>
 							</div>
 							<div ng-show="showComputedColumnsPanel">
 								<table cellpadding="0" cellspacing="0" class="layoutTable">
@@ -203,7 +217,7 @@ table.formTable td {
 												</thead>
 												<tbody>
 													<tr ng-repeat="column in report.dataSet.computedColumns">
-														<td><a href="" ng-click=""><img
+														<td><a href="" ng-click="deleteComputedColumn(column)"><img
 																src="../css/images/delete.png" /> </a></td>
 														<td><input type="text" ng-model="column.id"
 															ng-click="selectComputedColumn(column)" /></td>
@@ -230,7 +244,7 @@ table.formTable td {
 													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
 												</tr>
 												<tr>
-													<td><textarea rows="15" cols="80"
+													<td><textarea id="computedColumnExpressionEditor" rows="10" cols="80"
 															ng-model="selectedComputedColumn.formula"></textarea></td>
 												</tr>
 											</table></td>
@@ -272,7 +286,7 @@ table.formTable td {
 												</tr>
 												<tr>
 													<td><button
-															ng-click="deselectAllDimensionsForColumns()">&lt;&lt;</button>
+															ng-click="deselectAllDimensionsForColumns()">&laquo;</button>
 													</td>
 												</tr>
 												<tr>

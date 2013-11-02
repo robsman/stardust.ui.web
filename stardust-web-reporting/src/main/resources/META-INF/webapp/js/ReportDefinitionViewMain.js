@@ -33,6 +33,8 @@ require
 				'pointLabels' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.pointLabels.min' ],
 				'dataTables' : [ 'bpm-reporting/js/libs/datatables/jquery.dataTables.min' ],
 				'TableTools' : [ 'bpm-reporting/js/libs/datatables/extras/TableTools/TableTools.min' ],
+				'ace' : [ 'bpm-reporting/js/libs/ace/ace',
+						'https://github.com/ajaxorg/ace-builds/blob/master/src/ace' ],
 				'ckeditor' : [ 'bpm-reporting/js/libs/ckeditor/ckeditor' ],
 				'i18n' : 'common/InfinityBPMI18N'
 			},
@@ -66,29 +68,35 @@ require
 			}
 		});
 
-require([ "require", "jquery", "jquery.url", "jquery-ui", "json", "angularjs",
-		"jquery.base64", "jquery.jqplot", "barRenderer", "bubbleRenderer",
-		"canvasTextRenderer", "canvasAxisLabelRenderer",
-		"canvasAxisTickRenderer", "categoryAxisRenderer", "dateAxisRenderer",
-		"cursor", "highlighter", "trendline", "ohlcRenderer", "pieRenderer",
-		"pointLabels", "bpm-reporting/js/ReportDefinitionController",
-		"dataTables", "TableTools", "ckeditor" ], function(require, jquery,
-		jqueryUrl, jqueryUi, json, angularjs, jqueryBase64, jqueryJqPlot,
-		barRenderer, bubbleRenderer, canvasTextRenderer,
-		canvasAxisLabelRenderer, canvasAxisTickRenderer, categoryAxisRenderer,
-		dateAxisRenderer, cursor, highlighter, trendline, ohlcRenderer,
-		pieRenderer, pointLabels, ReportDefinitionController, dataTables,
-		TableTools, ChkEditor) {
-	jQuery(document).ready(
-			function() {
-				console.log("===> URL" + window.location);
-				console.log("===> Name" + jQuery.url(
-						window.location.search).param("name"));
-				console.log("===> Path" + jQuery.url(
-						window.location.search).param("path"));
+require(
+		[ "require", "jquery", "jquery.url", "jquery-ui", "json", "angularjs",
+				"jquery.base64", "jquery.jqplot", "barRenderer",
+				"bubbleRenderer", "canvasTextRenderer",
+				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
+				"categoryAxisRenderer", "dateAxisRenderer", "cursor",
+				"highlighter", "trendline", "ohlcRenderer", "pieRenderer",
+				"pointLabels", "bpm-reporting/js/ReportDefinitionController",
+				"dataTables", "TableTools", "bpm-reporting/js/libs/ace/ace",
+				"ckeditor" ], function(require, jquery, jqueryUrl, jqueryUi,
+				json, angularjs, jqueryBase64, jqueryJqPlot, barRenderer,
+				bubbleRenderer, canvasTextRenderer, canvasAxisLabelRenderer,
+				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
+				cursor, highlighter, trendline, ohlcRenderer, pieRenderer,
+				pointLabels, ReportDefinitionController, dataTables,
+				TableTools, Ace, CkEditor) {
+			jQuery(document).ready(
+					function() {
+						console.log("===> URL" + window.location);
+						console.log("===> Name"
+								+ jQuery.url(window.location.search).param(
+										"name"));
+						console.log("===> Path"
+								+ jQuery.url(window.location.search).param(
+										"path"));
 
-				ReportDefinitionController.create(angularjs, jQuery.url(
-						window.location.search).param("name"), jQuery.url(
-						window.location.search).param("path"));
-			});
-});
+						ReportDefinitionController.create(angularjs, jQuery
+								.url(window.location.search).param("name"),
+								jQuery.url(window.location.search)
+										.param("path"));
+					});
+		});
