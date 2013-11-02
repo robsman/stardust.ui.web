@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -619,6 +625,8 @@ public class ReportingService {
 
 						// Map descriptors
 
+						// TODO Externalize in central function
+
 						for (String key : descriptorMap.keySet()) {
 							Object value = ((ProcessInstanceDetails) processInstance)
 									.getDescriptorValue(key);
@@ -646,12 +654,15 @@ public class ReportingService {
 
 						// Join external data
 
-						if (internalKey != null) {
+						if (internalKey != null
+								&& processInstanceJson.has(internalKey)
+								&& !processInstanceJson.get(internalKey)
+										.isJsonNull()) {
 							String internalKeValue = processInstanceJson.get(
 									internalKey).getAsString();
 
 							trace.info("Internal Key Value: " + internalKeValue);
-							
+
 							Map<String, String> record = externalData
 									.get(internalKeValue);
 
@@ -667,6 +678,11 @@ public class ReportingService {
 								}
 							}
 						}
+
+						// Add computed columns
+
+						addComputedColumns(dataSetJson.get("computedColumns")
+								.getAsJsonArray(), processInstanceJson);
 					}
 				} else {
 					TimestampSeriesCumulator cumulator = new TimestampSeriesCumulator(
@@ -1594,6 +1610,51 @@ public class ReportingService {
 
 			throw new RuntimeException(e);
 		} catch (IOException e) {
+			trace.error(e);
+
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static void addComputedColumns(JsonArray computedColumns,
+			JsonObject recordJson) {
+		for (int n = 0; n < computedColumns.size(); ++n) {
+			JsonObject computedColumn = computedColumns.get(n)
+					.getAsJsonObject();
+
+			// TODO Type conversion
+
+			recordJson.addProperty(
+					computedColumn.get("id").getAsString(),
+					evaluateComputedColumn(recordJson,
+							computedColumn.get("formula").getAsString())
+							.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private static Object evaluateComputedColumn(JsonObject input,
+			String expression) {
+		try {
+			ScriptEngineManager manager = new ScriptEngineManager();
+			ScriptEngine engine = manager.getEngineByName("JavaScript");
+			ScriptContext context = new SimpleScriptContext();
+			Bindings scope = context.getBindings(ScriptContext.ENGINE_SCOPE);
+
+			// Add column values to scope
+
+			for (Map.Entry<String, JsonElement> entry : input.entrySet()) {
+				scope.put(entry.getKey(), entry.getValue().getAsString());
+			}
+
+			// Execute script
+
+			return engine.eval(expression, context);
+		} catch (ScriptException e) {
 			trace.error(e);
 
 			throw new RuntimeException(e);

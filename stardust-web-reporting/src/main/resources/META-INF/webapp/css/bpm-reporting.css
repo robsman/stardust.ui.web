@@ -24,11 +24,11 @@ select {
 	color: #4d4d4d;
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
-	background-image: -webkit-linear-gradient(top, #ffffff, #f4f4f4);
+	/*background-image: -webkit-linear-gradient(top, #ffffff, #f4f4f4);
 	background-image: -moz-linear-gradient(top, #ffffff, #f4f4f4);
 	background-image: -ms-linear-gradient(top, #ffffff, #f4f4f4);
 	background-image: -o-linear-gradient(top, #ffffff, #f4f4f4);
-	border: 1px solid #9c9c9c; /*Gradient #C9C9C9 - #9C9C9C*/
+	border: 1px solid #9c9c9c; Gradient #C9C9C9 - #9C9C9C*/
 	border-radius: 2px;
 	-moz-border-radius: 2px;
 }
@@ -177,6 +177,10 @@ img {
 	font-weight: bold;
 	color: #2f6871;
 	line-height: 20px;
+	text-decoration: none;
+}
+
+div.heading {
 	margin-top: 10px;
 	margin-bottom: 5px;
 	border-bottom: 1px solid #CCCCCC;
@@ -264,8 +268,10 @@ div.right {
 }
 
 .embeddedTable thead td {
-	font-weight: bold;
+	color: #AFD7ED;
 	border: none;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 .embeddedTable td input {
