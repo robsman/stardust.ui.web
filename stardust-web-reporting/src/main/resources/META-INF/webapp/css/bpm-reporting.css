@@ -262,8 +262,13 @@ div.right {
 	border: 1px solid #AFD7ED;
 }
 
+.embeddedTable tr.selected {
+	background-color: #AFD7ED;
+}
+
 .embeddedTable td {
-	padding: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
 	border-top: 1px solid #AFD7ED;
 }
 
@@ -282,8 +287,7 @@ div.right {
 	border: none;
 }
 
-.smallLink
-{
+.smallLink {
 	font-size: 9px;
 	text-decoration: none;
 	color: #AFD7ED;
