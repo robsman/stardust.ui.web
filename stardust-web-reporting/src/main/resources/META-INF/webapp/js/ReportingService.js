@@ -959,7 +959,6 @@ define(
 				ReportingService.prototype.getPrimitiveTypes = function() {
 					return [ this.metadata.stringType,
 							this.metadata.integerType,
-							this.metadata.decimalType,
 							this.metadata.decimalType, this.metadata.countType,
 							this.metadata.timestampType,
 							this.metadata.durationType ];
@@ -972,9 +971,6 @@ define(
 				ReportingService.prototype.getCumulatedDimensions = function(
 						report) {
 					var dimensions = [];
-
-					console.log("Cumulated columns from report");
-					console.log(report);
 
 					for ( var m in this
 							.getPrimaryObject(report.dataSet.primaryObject).dimensions) {
@@ -1004,12 +1000,7 @@ define(
 
 					// Computed columns
 
-					console.log("Computed Columns");
-					console.log(report.dataSet.computedColumns);
-
 					for ( var n in report.dataSet.computedColumns) {
-						console.log("n = " + n);
-
 						var column = report.dataSet.computedColumns[n];
 
 						dimensions.push({
@@ -1025,17 +1016,15 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.getExternalJoinField = function(report, id) {
-					console.log("getExternalJoinField");
-					console.log(id);
+				ReportingService.prototype.getUserDefinedField = function(
+						report, id) {
+					// Joined data
 
 					for ( var l in report.dataSet.externalJoins) {
 						var join = report.dataSet.externalJoins[l];
 
 						for ( var k in join.fields) {
 							var field = join.fields[k];
-
-							console.log("Field ID: " + field.id);
 
 							if (field.id === id) {
 								return {
@@ -1046,9 +1035,21 @@ define(
 							}
 						}
 					}
-					
-					// TODO Add computed columns
-					
+
+					// Computed columns
+
+					for ( var m in report.dataSet.computedColumns) {
+						var field = report.dataSet.computedColumns[m];
+
+						if (field.id === id) {
+							return {
+								id : field.name,
+								name : field.name,
+								type : this.metadata[field.type]
+							};
+						}
+					}
+
 					return null;
 				};
 
@@ -1060,27 +1061,17 @@ define(
 					var dimensions = [];
 
 					for ( var m in report.dataSet.columns) {
-						console.log("Column IDlala");
-						console.log(report.dataSet.columns[m]);
-						console.log("Dimension");
-						console.log(this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m]]);
-
 						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m]] != null) {
-							console.log("Found regular columns");
-							console.log(this
-									.getDimension(report.dataSet.primaryObject, report.dataSet.columns[m]));
-							dimensions
-									.push(this
-											.getDimension(report.dataSet.primaryObject, report.dataSet.columns[m]));
+							dimensions.push(this.getDimension(
+									report.dataSet.primaryObject,
+									report.dataSet.columns[m]));
 						} else {
 							// Must be a joined field or computed column
 
-							dimensions.push(this.getExternalJoinField(report, report.dataSet.columns[m]));
+							dimensions.push(this.getUserDefinedField(report,
+									report.dataSet.columns[m]));
 						}
 					}
-
-					console.log("Column Dimensions");
-					console.log(dimensions);
 
 					return dimensions;
 				};
