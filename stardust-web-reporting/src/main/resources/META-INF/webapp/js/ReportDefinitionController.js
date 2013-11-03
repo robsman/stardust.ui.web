@@ -116,13 +116,13 @@ define(
 								} ]
 					});
 
-//					this.computedColumnExpressionEditor = Ace
-//							.edit(jQuery("#computedColumnExpressionEditor"));
-//
-//					this.computedColumnExpressionEditor.getSession().setMode(
-//							"ace/mode/javascript");
-//					this.computedColumnExpressionEditor
-//							.setTheme("ace/theme/chrome");
+					// this.computedColumnExpressionEditor = Ace
+					// .edit(jQuery("#computedColumnExpressionEditor"));
+					//
+					// this.computedColumnExpressionEditor.getSession().setMode(
+					// "ace/mode/javascript");
+					// this.computedColumnExpressionEditor
+					// .setTheme("ace/theme/chrome");
 
 					CKEDITOR.instances["documentTemplateEditor"]
 							.on(
@@ -287,6 +287,19 @@ define(
 										jQuery("#reportDefinitionView").css(
 												"visibility", "visible");
 									});
+				};
+
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.getDefaultValueForEmptyString = function(
+						value, defaultValue) {
+
+					if (value == null || value.trim().length == 0) {
+						return defaultValue;
+					}
+
+					return value;
 				};
 
 				/**
@@ -1058,7 +1071,7 @@ define(
 						id : null,
 						name : null,
 						useAs : null,
-						type : this.reportingService.metadata.stringType.id,
+						type : this.reportingService.metadata.stringType.id
 					});
 				};
 
@@ -1128,8 +1141,8 @@ define(
 					this.selectedComputedColumn = {
 						id : null,
 						name : null,
-						type : this.reportingService.metadata.stringType,
-						formula : "firstName + lastName"
+						type : this.reportingService.metadata.stringType.id,
+						formula : null
 					};
 
 					this.report.dataSet.computedColumns
@@ -1141,12 +1154,15 @@ define(
 				 */
 				ReportDefinitionController.prototype.deleteComputedColumn = function(
 						column) {
-					console.log("Delete");
-					console.log(column);
-
 					for ( var n = 0; n < this.report.dataSet.computedColumns.length; ++n) {
 						if (this.report.dataSet.computedColumns[n].$$hashKey === column.$$hashKey) {
 							this.report.dataSet.computedColumns.splice(n, 1);
+
+							if (this.report.dataSet.computedColumns.length) {
+								this.selectedComputedColumn = this.report.dataSet.computedColumns[0];
+							} else {
+								this.selectedComputedColumn = null;
+							}
 
 							return;
 						}
@@ -1160,7 +1176,22 @@ define(
 						column) {
 					this.selectedComputedColumn = column;
 
+					console.log("Selected Column");
 					console.log(this.selectedComputedColumn);
+				};
+
+				/**
+				 * Auxiliary method because Angular does not support ternary
+				 * operators.
+				 */
+				ReportDefinitionController.prototype.getComputedColumnStyleClass = function(
+						column) {
+					if (this.selectedComputedColumn
+							&& this.selectedComputedColumn.$$hashKey === column.$$hashKey) {
+						return "selected";
+					}
+
+					return "";
 				};
 			}
 		});

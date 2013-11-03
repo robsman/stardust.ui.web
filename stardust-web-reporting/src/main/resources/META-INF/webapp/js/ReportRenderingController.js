@@ -194,14 +194,16 @@ define(
 					chartOptions.seriesDefaults.shadow = this.report.layout.chart.options.seriesDefaults.shadow;
 					chartOptions.seriesDefaults.pointLabels.show = this.report.layout.chart.options.seriesDefaults.pointLabels.show;
 					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
+					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
+					chartOptions.seriesDefaults.rendererOptions = {
+						animation : {
+							speed : 2500
+						}
+					};
 
 					// TODO There is more
 
 					if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.xyPlot.id) {
-						console.log(this.getFirstDimension().type);
-						console
-								.log(this.getFirstDimension().type == this.reportingService.metadata.timestampType);
-
 						// Use default series renderer
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
@@ -217,6 +219,9 @@ define(
 						chartOptions.series = [ {
 							renderer : $.jqplot.OHLCRenderer,
 							rendererOptions : {
+								animation : {
+									speed : 2500
+								},
 								candleStick : true
 							}
 						} ];
@@ -236,6 +241,9 @@ define(
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
+							animation : {
+								speed : 2500
+							},
 							fillToZero : true
 						};
 
@@ -364,6 +372,10 @@ define(
 																	.debug("Chart Data");
 															console
 																	.debug(data.seriesGroup);
+															console
+																	.debug("Chart Options");
+															console
+																	.debug(chartOptions);
 
 															if (data.seriesGroup.length) {
 																self.chart = jQuery
@@ -534,7 +546,8 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.getReportTableColumns = function() {
-					return this.reportingService.getColumnDimensions(this.report);
+					return this.reportingService
+							.getColumnDimensions(this.report);
 				};
 
 				/**

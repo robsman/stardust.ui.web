@@ -118,7 +118,8 @@ table.formTable td {
 														<td><select
 															ng-model="report.dataSet.externalJoins[0].internalKey"
 															ng-options="dimension.id as dimension.name for dimension in getInternalDimensions()">
-																<option value=""></option>
+																<option value=""
+																	ng-hide="report.dataSet.externalJoins[0].internalKey">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option>
 														</select></td>
 													</tr>
 												</table>
@@ -156,7 +157,8 @@ table.formTable td {
 										<tbody>
 											<tr
 												ng-repeat="field in report.dataSet.externalJoins[0].fields">
-												<td><a href="" ng-click="deleteExternalJoinField(field)"><img
+												<td><a href=""
+													ng-click="deleteExternalJoinField(field)"><img
 														src="../css/images/delete.png" /> </a></td>
 												<td><input type="text" ng-model="field.id" /></td>
 												<td><input type="text" ng-model="field.useAs" /></td>
@@ -216,21 +218,23 @@ table.formTable td {
 													</tr>
 												</thead>
 												<tbody>
-													<tr ng-repeat="column in report.dataSet.computedColumns">
-														<td><a href="" ng-click="deleteComputedColumn(column)"><img
+													<tr ng-repeat="column in report.dataSet.computedColumns"
+														class="{{$parent.getComputedColumnStyleClass(column)}}">
+														<td><a href=""
+															ng-click="$parent.deleteComputedColumn(column)"><img
 																src="../css/images/delete.png" /> </a></td>
 														<td><input type="text" ng-model="column.id"
-															ng-click="selectComputedColumn(column)" /></td>
+															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><input type="text" ng-model="column.name"
-															ng-click="selectComputedColumn(column)" /></td>
+															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><select ng-model="column.type"
-															ng-click="selectComputedColumn(column)"
-															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option></option></select></td>
+															ng-click="$parent.selectComputedColumn(column)"
+															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option
+																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>
 														<td><a href="" ng-click="addComputedColumn()"><img
 																src="../css/images/add.png" /> </a></td>
-														<td></td>
 														<td></td>
 														<td></td>
 														<td></td>
@@ -244,7 +248,8 @@ table.formTable td {
 													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
 												</tr>
 												<tr>
-													<td><textarea id="computedColumnExpressionEditor" rows="10" cols="80"
+													<td><textarea id="computedColumnExpressionEditor"
+															rows="10" cols="80"
 															ng-model="selectedComputedColumn.formula"></textarea></td>
 												</tr>
 											</table></td>
@@ -811,7 +816,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><input type="checkbox"
-															ng-model="report.layout.chart.options.animation" /></td>
+															ng-model="report.layout.chart.options.animate" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showAnimation.label')}}</label></td>
 													</tr>
 												</table>

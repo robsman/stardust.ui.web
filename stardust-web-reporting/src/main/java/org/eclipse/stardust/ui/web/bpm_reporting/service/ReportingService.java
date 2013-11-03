@@ -331,6 +331,54 @@ public class ReportingService {
 
 	/**
 	 * 
+	 * @param jsonObject
+	 * @param primitiveObject
+	 */
+	private static void addPrimitiveObjectToJsonObject(JsonObject jsonObject,
+			String key, Object value) {
+		if (value == null) {
+			jsonObject.addProperty(key, (String) null);
+		} else if (value instanceof Boolean) {
+			jsonObject.addProperty(key, (Boolean) value);
+
+		} else if (value instanceof Character) {
+			jsonObject.addProperty(key, (Character) value);
+
+		} else if (value instanceof Number) {
+			jsonObject.addProperty(key, (Number) value);
+
+		} else {
+			jsonObject.addProperty(key, value.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param jsonElement
+	 * @return
+	 */
+	private static Object convertJsonPrimitiveToObject(JsonElement jsonElement) {
+		if (jsonElement.isJsonNull()) {
+			return null;
+		} else if (jsonElement.isJsonPrimitive()) {
+			if (jsonElement.getAsJsonPrimitive().isString()) {
+				return jsonElement.getAsString();
+			} else if (jsonElement.getAsJsonPrimitive().isBoolean()) {
+				return jsonElement.getAsBoolean();
+			} else if (jsonElement.getAsJsonPrimitive().isNumber()) {
+				return jsonElement.getAsNumber();
+			} else {
+				throw new RuntimeException("JSON entry " + jsonElement
+						+ " has an unknown primitive type.");
+			}
+		} else {
+			throw new RuntimeException("JSON entry " + jsonElement
+					+ " is not a primitive.");
+		}
+	}
+
+	/**
+	 * 
 	 * @return
 	 */
 	public ValueProvider getValueProvider(String primaryObject,
@@ -625,31 +673,11 @@ public class ReportingService {
 
 						// Map descriptors
 
-						// TODO Externalize in central function
-
 						for (String key : descriptorMap.keySet()) {
-							Object value = ((ProcessInstanceDetails) processInstance)
-									.getDescriptorValue(key);
-
-							if (value == null) {
-								processInstanceJson.addProperty(key,
-										(String) null);
-							} else if (value instanceof Boolean) {
-								processInstanceJson.addProperty(key,
-										(Boolean) value);
-
-							} else if (value instanceof Character) {
-								processInstanceJson.addProperty(key,
-										(Character) value);
-
-							} else if (value instanceof Number) {
-								processInstanceJson.addProperty(key,
-										(Number) value);
-
-							} else {
-								processInstanceJson.addProperty(key,
-										value.toString());
-							}
+							addPrimitiveObjectToJsonObject(processInstanceJson,
+									key,
+									((ProcessInstanceDetails) processInstance)
+											.getDescriptorValue(key));
 						}
 
 						// Join external data
@@ -1616,6 +1644,11 @@ public class ReportingService {
 		}
 	}
 
+	/**
+	 * 
+	 * @param computedColumns
+	 * @param recordJson
+	 */
 	private static void addComputedColumns(JsonArray computedColumns,
 			JsonObject recordJson) {
 		for (int n = 0; n < computedColumns.size(); ++n) {
@@ -1624,11 +1657,11 @@ public class ReportingService {
 
 			// TODO Type conversion
 
-			recordJson.addProperty(
+			addPrimitiveObjectToJsonObject(
+					recordJson,
 					computedColumn.get("id").getAsString(),
 					evaluateComputedColumn(recordJson,
-							computedColumn.get("formula").getAsString())
-							.toString());
+							computedColumn.get("formula").getAsString()));
 		}
 	}
 
@@ -1648,7 +1681,8 @@ public class ReportingService {
 			// Add column values to scope
 
 			for (Map.Entry<String, JsonElement> entry : input.entrySet()) {
-				scope.put(entry.getKey(), entry.getValue().getAsString());
+				scope.put(entry.getKey(),
+						convertJsonPrimitiveToObject(entry.getValue()));
 			}
 
 			// Execute script
@@ -1657,7 +1691,9 @@ public class ReportingService {
 		} catch (ScriptException e) {
 			trace.error(e);
 
-			throw new RuntimeException(e);
+			// Any scripting error result in a non-calulated value
+
+			return null;
 		}
 	}
 }
