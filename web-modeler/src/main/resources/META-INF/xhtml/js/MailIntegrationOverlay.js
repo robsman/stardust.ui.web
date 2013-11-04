@@ -933,8 +933,12 @@ define(
 
 					// execute smpt endpoint
 					route += "<to uri=\"smtp://" + this.serverInput.val()
-							+ "?username=" + this.userInput.val()
-							+ "&amp;password=" + this.passwordInput.val();
+					if(!m_utils.isEmptyString(this.userInput.val()) && !m_utils.isEmptyString(this.passwordInput.val())){
+						+ "?username=" + this.userInput.val()
+						+ "&amp;password=" + this.passwordInput.val();
+					}else if(!m_utils.isEmptyString(this.userInput.val()) ){
+						+ "?username=" + this.userInput.val()
+					}
 					route += "\"/>";
 
 					m_utils.debug(route);
