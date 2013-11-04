@@ -16,10 +16,11 @@ define(
 			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
-			"rules-manager/js/m_ruleSetCommand"],
+			"rules-manager/js/m_ruleSetCommand",
+			"rules-manager/js/hotDecisionTable/m_typeParser"],
 		function(m_utils,CommandsDispatcher, 
 				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper,
-				 m_ruleSetCommandDispatcher,m_ruleSetCommand) {
+				 m_ruleSetCommandDispatcher,m_ruleSetCommand,m_typeParser) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -99,6 +100,50 @@ define(
 					//Take note on the next line we are grabbing the DOM element, not the JQUERY object.
 					uiElements.drlEditorTextArea=m_utils.jQuerySelect(options.selectors.drlEditor)[0];
 					uiElements.drlEditor=ace2.getDrlEditor(uiElements.drlEditorTextArea);
+					
+					var pDef,k,completerStrings=[];
+					for( k in ruleSet.parameterDefinitions){
+						if(ruleSet.parameterDefinitions.hasOwnProperty(k)){
+							pDef=ruleSet.parameterDefinitions[k];
+							completerStrings=completerStrings.concat(m_typeParser.parseParamDefToStringFrags(pDef));
+						}
+					}
+					console.log(completerStrings);
+					var drlSession=uiElements.drlEditor.editor.getSession();
+					/*tagging keywords to our session object so we keep them distinct
+					 * per session.*/
+					drlSession.ruleSetKeywords=completerStrings;
+					/**testing***/
+					var testCompleter = {
+						    getCompletions: function(editor, session, pos, prefix, callback) {
+						        var keywords = session.ruleSetKeywords;
+						        var t=session.getTextRange({
+						        	"start":{row: pos.row,column:pos.column-1},
+						        	"end":{row: pos.row,column:pos.column}
+						        });
+						        keywords = keywords.filter(function(w) {
+						            return w.lastIndexOf(prefix, 0) == 0;
+						        });
+						        callback(null, keywords.map(function(word) {
+						            return {
+						                name: word,
+						                value: word,
+						                score: 9999,
+						                meta: "Model"
+						            };
+						        }));
+						    }
+					};
+					
+					/*Listen for our module loaded events. Specifically, for our
+					 *language tools being loaded as only after this occurs can we add
+					 *our custom completer.*/
+					$(uiElements.drlEditor).on("moduleLoaded",function(event,module){
+						console.log("module loaded.")
+						if(module.name==="ace/ext/language_tool"){
+							module.reference.addCompleter(testCompleter);
+						}
+					});
 
 					/*****Menu Building Section for our DRL editors associated toolbar*****/
 					
