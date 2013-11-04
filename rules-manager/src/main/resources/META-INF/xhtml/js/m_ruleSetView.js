@@ -134,6 +134,7 @@ define(
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
 						if(ruleSet.uuid ===uuid){
+							$that[0].ruleSet.parameterDefinitions=newVal;
 							$that[0].parameterMappingsPanel
 							.setParameterDefinitions($that[0].ruleSet.parameterDefinitions);
 						}
