@@ -40,20 +40,25 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
              rootModel,
              colType,
              $rootNode,
+             $paramDefNode,
+             paramDefRef,
              category;
     	   
 	      colType=data.rslt.obj.data("type") || data.rslt.obj.data("jstree").type;
           path=$(this).jstree("get_path");
           category=path[0].replace("s","");
           $rootNode=data.rslt.obj.parents("li").filter(":last");
+          $paramDefNode=data.rslt.obj.parents("li");
+          $paramDefNode=$($paramDefNode[$paramDefNode.length-2]);
           category = $rootNode.attr("category");
-         
+        
           /*TODO:compute path from object hierarchy rather than node names*/
           model=path.slice(1).join(".");
           colType=typeMapper.ippToHoTTable(colType);
           refObj=data.rslt.obj.data("ref") || data.rslt.obj.data("jstree").ref;
+          paramDefRef=$paramDefNode.data("ref") || $paramDefNode.data("jstree").ref;
           var parent=$.jstree._reference(this)._get_parent(data.rslt.obj);
-          
+
           /*Autocomplete types have a source list of values we must pass along*/
           if(colType.type==="autocomplete"){
 	    	  colType.source=refObj.enumeration;
@@ -83,6 +88,7 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
            obj.hdr=model + "|EqualTo|" + category;
            obj.type=colType;
            obj.type.ref=refObj;
+           obj.type.parameterDefinition=paramDefRef;
            obj.category=category;
            obj.model=model;
            

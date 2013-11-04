@@ -118,6 +118,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
             if (childSchemaType && childSchemaType.type && childSchemaType.type.body) {
             	console.log("Recursing");
             	console.log(childSchemaType.type);
+            	temp.data.icon=seqImage;
             	temp.children=fx(childSchemaType.type.body, undefined, childSchemaType);
             }
         }
