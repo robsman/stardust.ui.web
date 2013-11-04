@@ -174,11 +174,14 @@ define(
 				    uiElements.decisionTableInstance.rootElement.on(cnstCMD.decTableDataCmd,function(event,data){
 				    	var elementID=data.elementID;
 				    	var newVal=data.changes[0].value.after;
+				    	var snapShot;
 				    	console.log("DecisionTable.Data.Change received from sink");
 				    	if (elementID === decTable.uuid) {
-							console.log(newVal);
 							uiElements.decisionTableInstance.removeHook("afterChange",afterChangeFunc);
-							uiElements.decisionTableInstance.updateSettings(snapshotBuilder(newVal)());
+							snapShot=snapshotBuilder(newVal)();
+							decTable.setTableData(snapShot);
+							uiElements.decisionTableInstance.updateSettings(decTable.getTableData());
+							uiElements.decisionTableInstance.render();
 							uiElements.decisionTableInstance.addHook("afterChange",afterChangeFunc);
 						}
 				    });

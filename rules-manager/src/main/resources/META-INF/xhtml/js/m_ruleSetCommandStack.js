@@ -206,6 +206,7 @@ define(["rules-manager/js/m_ruleSet",
 			var nextCmds,stackChangeCmd;
 			if(redoTop){
 				this.stack.push(redoTop);
+				//applyToRuleSet(redoTop);
 				redoTop.isUndoable=false;/*command is on stack already, do not push again on trigger..*/
 				$sinkRef.trigger(redoTop.nameSpace,[redoTop]);
 				nextCmds=this.retrieveHotStackItems();
@@ -284,6 +285,7 @@ define(["rules-manager/js/m_ruleSet",
 						else{
 							undoTopEvent=this.stack[undoTopIndex];
 							undoTopEvent.isUndoable=false;
+							//applyToRuleSet(undoTopEvent);
 							$sinkRef.trigger(undoTopEvent.nameSpace,[undoTopEvent]);
 						}
 					}
@@ -303,8 +305,11 @@ define(["rules-manager/js/m_ruleSet",
 		 * */
 		this.push=function(obj){
 			var nextCmds;
+			var cmdClone;
 			obj.isUndoable=false;
-			this.stack.push($.extend({},obj));
+			cmdClone=$.extend(true,{},obj);
+			this.stack.push(cmdClone);
+			//applyToRuleSet(cmdClone);
 			renameView(obj);/*function filters events to ignore*/
 			nextCmds=this.retrieveHotStackItems();
 			stackChangeCmd=stackCommandFactory.stackChangeCommand(nextCmds.undoNext,nextCmds.redoNext);

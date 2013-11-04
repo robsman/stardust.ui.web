@@ -18,43 +18,11 @@ define(["bpm-modeler/js/m_jsfViewManager",
 				 *of the commandstack as a duplicate (and resetting the stack pointer).
 				 */
 				$sink.on("undo.Ruleset",function(event,cmd){
-					console.log("undo recieved!");
-					console.log(cmd);
 					$sink.commandStack.popUndoStack();
-					return;
-					var cmdObj=$sink.commandStack.undo(cmd,$sink);
-					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
-					if(cmdObj!=undefined){
-						var listenerCount=$sink.listeners.length;
-						while(listenerCount--){
-							temp=$sink.listeners[listenerCount];
-							if(cmdObj.event===temp.eventName){
-								temp.ref.trigger(cmdClone.event,cmdClone);
-							}
-						}
-					}
-					console.log("UNDO STACK Command object");
-					console.log(cmdObj.changes[0].value.after);
 				});
 				
 				$sink.on("redo",function(event,cmd){
-					console.log("Redo recieved!");
-					console.log(cmd);
 					$sink.commandStack.popRedoStack();
-					return;
-					var cmdObj=$sink.commandStack.redo(cmd,$sink);
-					var cmdClone=$.extend(true,{},cmdObj);/*Ensure we hide all refs to object on the stack*/
-					if(cmdObj!=undefined){
-						var listenerCount=$sink.listeners.length;
-						while(listenerCount--){
-							temp=$sink.listeners[listenerCount];
-							if(cmdObj.event===temp.eventName){
-								temp.ref.trigger(cmdClone.event,cmdClone);
-							}
-						}
-					}
-					console.log("Redo STACK Command object");
-					console.log(cmdObj.changes[0].value.after);
 				});
 				
 				/*Generic handler for all ruleSet commands. Objects registered with us

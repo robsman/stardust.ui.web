@@ -105,7 +105,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var cmd=createCommand(
 						constants.decTableRenameCmd,true,changeObj,
 						"Ruleset       : " + ruleSet.name + "\r" +
-						"Decision Table: " + decTable.name + "\r" +
+						"Decision Table ID : " + decTable.id + "\r" +
 						"Renamed decision table - " + newVal,
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
@@ -115,7 +115,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var cmd=createCommand(
 						constants.decTableCreateCmd,true,changeObj,
 						"Ruleset       : " + ruleSet.name + "\r" +
-						"Decision Table: " + decTable.name + "\r" +
+						"Decision Table ID : " + decTable.id + "\r" +
 						"Created decision table.",
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
@@ -124,8 +124,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDeleteCmd,true,changeObj,
-						"Ruleset       : " + ruleSet.name + "\r" +
-						"Decision Table: " + decTable.name + "\r" +
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Decision Table ID : " + decTable.id + "\r" +
 						"Deleted decision table.",
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
@@ -134,8 +134,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDescriptionCmd,true,changeObj,
-						"Ruleset       : " + ruleSet.name + "\r" +
-						"Decision Table: " + decTable.name + "\r" +
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Decision Table ID : " + decTable.id + "\r" +
 						"Changed description of decision table to " + newVal,
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
@@ -144,8 +144,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var changeObj=createChangeObj(ruleSet.uuid,"decisionTable",decTable.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.decTableDataCmd,true,changeObj,
-						"Ruleset       : " + ruleSet.name + "\r" +
-						"Decision Table: " + decTable.name + "\r" +
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Decision Table ID : " + decTable.id+ "\r" +
 						"Data or configuration changed.",
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
