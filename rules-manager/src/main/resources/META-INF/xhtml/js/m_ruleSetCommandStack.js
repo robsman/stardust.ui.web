@@ -51,6 +51,7 @@ define(["rules-manager/js/m_ruleSet",
 				+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, obj.uuid);
 	};
 	
+	/*Wrap jsf_viewmanager functionality and centralize in our commandStack*/
 	var closeView=function(cmsObj){
 		//TODO:[ZZM] - stubbed
 	};
