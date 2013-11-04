@@ -8,7 +8,6 @@ define(["bpm-modeler/js/m_jsfViewManager",
 			if(window.top.ruleSetCommandSink===undefined){
 				$sink= $({});
 				$sink.listeners=[];
-				//$sink.commandStack=m_ruleSetCommandStack.createHashStack();
 				$sink.commandStack=m_ruleSetCommandStack.createSimpleStack($sink);
 				
 				/*Special handler for Undo operations on our ruleSet commandStack.
@@ -52,6 +51,9 @@ define(["bpm-modeler/js/m_jsfViewManager",
 	
 	return {
 		sink: getSinkObject(),
+		commandStack: function(){
+			return getSinkObject().commandStack;
+		},
 		register: function(listener,eventName){
 			var count;
 			var listeners=getSinkObject().listeners;

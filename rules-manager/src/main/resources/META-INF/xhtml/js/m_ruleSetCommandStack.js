@@ -216,6 +216,16 @@ define(["rules-manager/js/m_ruleSet",
 			}
 		};
 		
+		/*Dump our undo and redo stack and send a stackChange command to all listeners
+		 *with undefined for nextCmd and prevCmd*/
+		this.purgeStacks=function(){
+			var stackChangeCmd;
+			this.stack=[];
+			this.redoStack=[];
+			stackChangeCmd=stackCommandFactory.stackChangeCommand(undefined,undefined);
+			$sinkRef.trigger(stackChangeCmd.nameSpace,[stackChangeCmd]);
+		};
+		
 		/*Pops a command from our undo stack and pushes it to our redo stack.
 		 *Afterwards, it will trigger the command on top of the undo stack, with
 		 *a few caveats. Finally signal listeners that our command stacks (undo/redo)
