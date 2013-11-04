@@ -26,6 +26,8 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(jquery,m_utils) {
 	
 	function CodeEditor(textArea, mode,options) {
 		var editorRef;
+		var that=this;
+		
 		this.editor = null;
 		this.disabled = false;
 		this.globalVariables = null;
@@ -35,12 +37,21 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(jquery,m_utils) {
 		this.editor.setTheme("ace/theme/chrome");
 		
 		editorRef=this.editor;
-		ace.config.loadModule("ace/ext/language_tools", function() {
+		
+		/*Load our module to support snippets and autocomplete.
+		 *As we need to inject our completer into the extension,
+		 *trigger a moduleLoaded event to let listeners know the
+		 *module is now available and they can use the extension.*/
+		ace.config.loadModule("ace/ext/language_tools", function(aceExt) {
 			editorRef.setOptions({
 	            enableSnippets: true,
 	            enableBasicAutocompletion: true
 	        });
+			$(that).trigger("moduleLoaded",{
+				"name": "ace/ext/language_tool",
+				"reference": aceExt});
 	    });
+		
 		
 		CodeEditor.prototype.getEditor = function() {
 			return this.editor;
