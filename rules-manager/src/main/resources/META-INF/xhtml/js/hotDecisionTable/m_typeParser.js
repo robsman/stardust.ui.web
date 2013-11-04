@@ -165,6 +165,30 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 	  return result;
   };
   
+  /* Given a type declaration and a name root, parse the type declaration into an
+   * array of strings representing the distinct dot-notation path to each element.
+   * For Example: Person.Name,Person.Name.Firts,Person.Name.Last etc...*/
+  var parseTypeToStringFrags=function(typeDecl,name){
+	  var elements=typeDecl.getElements();
+	  var elementCount=elements.length;
+	  var results=[];
+	  while(elementCount--){
+			temp=elements[elementCount];
+			results.push(name + "." + temp.name);
+			if (typeof typeDecl.asSchemaType === "function") {
+        		var childSchemaType = typeDecl.asSchemaType().resolveElementType(temp.name);	
+        	} else if (typeof typeDecl.resolveElementType === "function") {
+        		var childSchemaType = typeDecl.resolveElementType(temp.name);	
+        	}
+            
+            if (childSchemaType && childSchemaType.type) {
+            	results=results.concat(parseTypeToStringFrags(childSchemaType, name + "." + temp.name));
+            }
+	  }
+	  return results;
+  };
+  
+  
   /*Recursive function to flatten Type Declarations and put them in a format primed for conversion into a DRL type...
    DESCRIPTION: in order to represent the typeDeclaration in DRL we must have each nested type in the declaration extracted
    and flattened our to the same level as our parent object. These nested types must be declared as their own types
@@ -299,6 +323,10 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		var parsedTypes;
 		parsedTypes=fxTypeDecl(typeDecl,typeDecl.getElements());
 		return parsedTypes;
+	},
+	parseParamDefToStringFrags:function(paramDef){
+		var typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+		return parseTypeToStringFrags(typeDecl,paramDef.name);
 	},
 	parseTypeDeclToDRL: function(typeDecls){
 		var parsedTypes=[],   /*stage 1 of our parsing*/
