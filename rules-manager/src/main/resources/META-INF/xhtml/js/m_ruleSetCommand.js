@@ -154,56 +154,80 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleSetRenameCmd,true,changeObj,
-						"Changed the Name of a ruleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Ruleset ID : " + ruleSet.id+ "\r" +
+						"Ruleset renamed to " + newVal +"."
+						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
 			"ruleSetDescriptionCmd" : function(ruleSet,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleSetDescriptionCmd,true,changeObj,
-						"Changed the Description of a ruleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Ruleset ID : " + ruleSet.id+ "\r" +
+						"Ruleset description changed to " + newVal +"."
+						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
 			"ruleSetFactCmd" : function(ruleSet,newVal,baseEvent){
 				var changeObj=createChangeObj(ruleSet.uuid,"ruleSet",ruleSet.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleSetFactCmd,true,changeObj,
-						"Changed the Underlying Facts for a RuleSet.",baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Ruleset ID : " + ruleSet.id+ "\r" +
+						"Ruleset parameter definitions modified."
+						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
 			"ruleCreateCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleCreateCmd,true,changeObj,
-						"Created new Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Rule ID : " + rule.id+ "\r" +
+						"Rule created."
+						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleDeleteCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleDeleteCmd,true,changeObj,
-						"Deleted existing Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Rule ID : " + rule.id+ "\r" +
+						"Rule deleted."
+						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleRenameCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleRenameCmd,true,changeObj,
-						"Changed Name of Scripted Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Rule ID : " + rule.id+ "\r" +
+						"Rule renamed to " + newVal + "."
+						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleDescriptionCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleDescriptionCmd,true,changeObj,
-						"Changed description of rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Rule ID : " + rule.id+ "\r" +
+						"Rule description changed to " + newVal + "."
+						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
 			"ruleScriptChangeCmd" : function(ruleSet,rule,newVal,baseEvent){
 				var changeObj=createChangeObj(rule.uuid,"rule",rule.uuid,"",newVal);
 				var cmd=createCommand(
 						constants.ruleScriptChangeCmd,true,changeObj,
-						"Changed Scripted Rule.",baseEvent,ruleSet.uuid,rule.uuid,"rule");
+						"Ruleset : " + ruleSet.name + "\r" +
+						"Rule ID : " + rule.id+ "\r" +
+						"Rule script modified."
+						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			}
 		};
