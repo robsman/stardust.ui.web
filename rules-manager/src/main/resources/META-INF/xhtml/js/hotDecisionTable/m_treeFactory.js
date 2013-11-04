@@ -47,15 +47,21 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
 	      colType=data.rslt.obj.data("type") || data.rslt.obj.data("jstree").type;
           path=$(this).jstree("get_path");
           category=path[0].replace("s","");
-          $rootNode=data.rslt.obj.parents("li").filter(":last");
-          $paramDefNode=data.rslt.obj.parents("li");
-          $paramDefNode=$($paramDefNode[$paramDefNode.length-2]);
+          $rootNode=data.rslt.obj.parents("li").filter(":last");//category comes from here
+          $paramDefNode=data.rslt.obj.parents("li");//
+          if($paramDefNode.length==1){
+        	  $paramDefNode=data.rslt.obj;
+          }else{
+        	  $paramDefNode=$($paramDefNode[$paramDefNode.length-2]);
+          }
           category = $rootNode.attr("category");
         
           /*TODO:compute path from object hierarchy rather than node names*/
           model=path.slice(1).join(".");
           colType=typeMapper.ippToHoTTable(colType);
+          /*Compute reference object for our leaf node (its IPP type)*/
           refObj=data.rslt.obj.data("ref") || data.rslt.obj.data("jstree").ref;
+          /*Compute the parameterDefinition this leaf node belongs to.*/
           paramDefRef=$paramDefNode.data("ref") || $paramDefNode.data("jstree").ref;
           var parent=$.jstree._reference(this)._get_parent(data.rslt.obj);
 
