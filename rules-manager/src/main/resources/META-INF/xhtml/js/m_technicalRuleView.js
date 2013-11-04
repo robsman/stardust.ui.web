@@ -17,10 +17,12 @@ define(
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
 			"rules-manager/js/m_ruleSetCommand",
-			"rules-manager/js/hotDecisionTable/m_typeParser"],
+			"rules-manager/js/hotDecisionTable/m_typeParser",
+			"rules-manager/js/m_autoCompleters"],
 		function(m_utils,CommandsDispatcher, 
 				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper,
-				 m_ruleSetCommandDispatcher,m_ruleSetCommand,m_typeParser) {
+				 m_ruleSetCommandDispatcher,m_ruleSetCommand,
+				 m_typeParser,m_autoCompleters) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -46,6 +48,8 @@ define(
 						$fontSizeMenu,      /*Menu containing font size options for the drlEditor*/
 						$drlEditorTextArea, /*JQUERY wrapped textarea of our DRLeditor.*/
 						cnstCmd,            /*enumeration of our Contants representing command Factory events*/
+						drlSession,         /*Instance of our DRL editors session, used to tag keywords to*/
+						sessionCompleter,   /*Instance of a autocompleter from m_autoCompleters*/
 						fontSizeMenuHandler;/*handler for click events on $fontSizeMenu*/
 					
 					
@@ -109,39 +113,24 @@ define(
 						}
 					}
 					console.log(completerStrings);
-					var drlSession=uiElements.drlEditor.editor.getSession();
-					/*tagging keywords to our session object so we keep them distinct
-					 * per session.*/
+					/*Get the current instance of our drlEditor session and tag our keywords to it for
+					 *use by our session based auto-completer.*/
+					drlSession=uiElements.drlEditor.editor.getSession();
 					drlSession.ruleSetKeywords=completerStrings;
-					/**testing***/
-					var testCompleter = {
-						    getCompletions: function(editor, session, pos, prefix, callback) {
-						        var keywords = session.ruleSetKeywords;
-						        var t=session.getTextRange({
-						        	"start":{row: pos.row,column:pos.column-1},
-						        	"end":{row: pos.row,column:pos.column}
-						        });
-						        keywords = keywords.filter(function(w) {
-						            return w.lastIndexOf(prefix, 0) == 0;
-						        });
-						        callback(null, keywords.map(function(word) {
-						            return {
-						                name: word,
-						                value: word,
-						                score: 9999,
-						                meta: "Model"
-						            };
-						        }));
-						    }
-					};
+					
+					/*retrieve an instance of sessionCompleter*/
+					sessionCompleter=m_autoCompleters.getSessionCompleter({metaName:"Data",score:9999});
 					
 					/*Listen for our module loaded events. Specifically, for our
 					 *language tools being loaded as only after this occurs can we add
-					 *our custom completer.*/
+					 *our custom completer. Note: this will only occur a single time 
+					 *(per ace module)across all our views, as the module only loads 
+					 *once per scope. Our business is accomplished by ensuring we have 
+					 *the proper keywords attached to our session.*/
 					$(uiElements.drlEditor).on("moduleLoaded",function(event,module){
 						console.log("module loaded.")
 						if(module.name==="ace/ext/language_tool"){
-							module.reference.addCompleter(testCompleter);
+							module.reference.addCompleter(sessionCompleter);
 						}
 					});
 
