@@ -155,7 +155,7 @@ define(
 
 											jQuery(this).append(msg);
 										} else {
-											view.parameterMappingsPanel = m_parameterDefinitionsPanel
+											view.parameterMappingsPanel =  m_parameterDefinitionsPanel
 													.create({
 														scope : view.id,
 														submitHandler : view,
@@ -165,7 +165,8 @@ define(
 														supportsDescriptors : false,
 														supportsDataTypeSelection : true,
 														readOnlyParameterList : false,
-														supportsInOutDirection : true
+														supportsInOutDirection : true,
+														displayParameterId: true
 													});
 											// TODO Not very elegant, only works
 											// because the
@@ -315,8 +316,7 @@ define(
 					this.lastModificationDateOutput.append("" + m_utilities.formatDate( this.ruleSet.lastModificationDate,"MM/dd/yy hh:mm tt"));
 					drlText +=this.ruleSet.generateDrl();
 					this.parameterMappingsPanel.setScopeModel(null);
-					this.parameterMappingsPanel
-							.setParameterDefinitions(this.ruleSet.parameterDefinitions);					
+					this.parameterMappingsPanel.setParameterDefinitions(this.ruleSet.parameterDefinitions);					
 				};
 
 				/**
@@ -365,7 +365,6 @@ define(
 					
 					m_utils.debug("Facts:");
 					m_utils.debug(parameterDefinitions);
-
 					this.activate(this.ruleSet);
 				};
 
