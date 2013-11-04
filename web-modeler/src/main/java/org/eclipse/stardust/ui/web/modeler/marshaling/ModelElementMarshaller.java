@@ -461,7 +461,9 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.SWIMLANE_SYMBOL);
+            ModelerConstants.SWIMLANE_SYMBOL);      
+      laneSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(laneSymbol));
 
       IModelParticipant participant = LaneParticipantUtil.getParticipant(laneSymbol);
       if (null != participant)
