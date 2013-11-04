@@ -1,14 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
-   xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
-   xmlns:ice="http://www.icesoft.com/icefaces/component"
-   xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>SQL Overlay</title>
-<!-- <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" /> -->
 <style>
 .codeEditorDivClass {
 	position: relative;
@@ -18,145 +17,195 @@
 </style>
 </head>
 <body>
-   <div id="sqlIntegrationOverlay">
-      <table cellpadding="0" cellspacing="0" class="layoutTable"
-         style="width: 100%; margin-top: 10px;">
-         <tr>
-            <td><div id="Configuration" class="heading" style="width: 700px;">Configuration</div>
-            </td>
-         </tr>
-         <tr>
-            <td>
-               <table cellpadding="0" cellspacing="0" class="layoutTable">
-                  <tr>
-                     <td><label for="dataSourceNameInput"></label></td>
-                     <td><input id="dataSourceNameInput" type="text"></input></td>
-                  </tr>
-               </table>
-         </tr>
-         <tr>
-            <td><div id="sqlQueryHeading" class="heading" style="width: 700px;">SQL
-                  Query</div></td>
-         </tr>
-         <tr>
-            <td><div id="codeEditorDiv" class="codeEditorDivClass" />
-            </td>
-         </tr>
-      </table>
-      <div id="parametersTab">
-         <table cellpadding="0" cellspacing="0" class="layoutTable">
-            <tr>
-               <td>
-                  <div class="heading" id="paramDef">Parameter Definitions</div>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <table>
-                     <tr>
-                        <td><label for="inputBodyAccessPointInput" id="direction">Body
-                              Input Access Point</label>
-                        </td>
-                        <td><select id="inputBodyAccessPointInput">
-                        </select>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><label for="outputBodyAccessPointInput" id="direction">Body
-                              Output Access Point</label></td>
-                        <td><select id="outputBodyAccessPointInput">
-                        </select></td>
-                     </tr>
-                  </table></td>
-            </tr>
+	<div id="sqlIntegrationOverlay">
+		<div id="configurationTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<div id="sqlQueryHeading" class="heading" style="width: 700px;">SQL
+							Query</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="codeEditorDiv" class="codeEditorDivClass" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="dataSourceTab">
+			<div style="width: 100%;" class="heading">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td><label for="connectionTypeSelect" id="connection">Connection</label>
+						</td>
+						<td><select id="connectionTypeSelect"></select></td>
+					</tr>
+				</table>
+			</div>
+			<div id="directConfigTab" style="width: 100%;">
+				<table cellpadding="2" cellspacing="2" class="layoutTable"
+					style="width: 100%;">
+					<tr>
+						<td><label for="databaseTypeSelect">Type</label>
+						</td>
+						<td><select id="databaseTypeSelect"></select>
+						</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="othersDbConfig">
+						<td><label for="urlInput">URL</label></td>
+						<td><input id="urlInput" type="text"></input></td>
+						<td><label for="driverInput">Driver</label></td>
+						<td><input id="driverInput" type="text"></input></td>
+					</tr>
+					<tr id="commonDbConfig">
+						<td><label for="hostInput">Host</label></td>
+						<td><input id="hostInput" type="text"></input></td>
+						<td><label for="portInput">Port</label></td>
+						<td><input id="portInput" type="text"></input></td>
+						<td><label for="dataBaseNameInput">Name</label></td>
+						<td><input id="dataBaseNameInput" type="text"></input></td>
+					</tr>
+					<tr>
+						<td><label for="userNameInput">User Name</label></td>
+						<td><input id="userNameInput" type="text"></input></td>
+						<td><label for="passwordInput">Password</label></td>
+						<td><input id="passwordInput" type="text"></input></td>
+						<td><input id="useCVforPassowrdInput" type="checkbox"></input>
+						</td>
+						<td><label for="useCVforPassowrdInput">Use
+								Configuration Variable for Password</label>
+						</td>
 
+					</tr>
+				</table>
 
-            <tr>
-               <td>
-                  <div class="panelBorder" style="width: 400px; margin-top: 10px;">
-                     <table cellpadding="0" cellspacing="0" width="100%"
-                        class="layoutTable">
-                        <tr>
-                           <td><div class="toolBar">
-                                 <table>
-                                    <tr>
-                                       <td><input
-                                          id="deleteParameterDefinitionButton"
-                                          type="image"
-                                          src="plugins/bpm-modeler/images/icons/delete.png"
-                                          title="Delete" alt="Delete"
-                                          class="toolbarButton" />
-                                       </td>
-                                    </tr>
-                                 </table>
-                              </div></td>
-                        </tr>
-                        <tr>
-                           <td>
-                              <div class="dataTable">
-                                 <table id="parameterDefinitionsTable" cellpadding="0"
-                                    cellspacing="0">
-                                    <tbody />
-                                 </table>
-                              </div>
-                           </td>
-                        </tr>
-                     </table>
-                  </div></td>
-            </tr>
-            <tr>
-               <td>
-                  <table id="parameterDefinitionTypeSelector" class="fieldSetTable"
-                     style="margin-top: 10px;">
-                     <tr>
-                        <td><input id="addParameterDefinitionButton" type="image"
-                           src="plugins/bpm-modeler/images/icons/add.png" title="Add"
-                           alt="Add" class="toolbarButton" /></td>
-                        <td></td>
-                     </tr>
-                     <tr>
-                        <td><label for="parameterDefinitionNameInput" id="name">Name</label>
-                        </td>
-                        <td><input id="parameterDefinitionNameInput" type="text" />
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><label for="parameterDefinitionDirectionSelect"
-                           id="direction">Direction</label></td>
-                        <td><select id="parameterDefinitionDirectionSelect">
-                              <option value="IN">In</option>
-                              <option value="OUT">Out</option>
-                        </select></td>
-                     </tr>
-                     <tr>
-                        <td><label for="dataTypeSelect" id="dataType">Data
-                              Type</label>
-                        </td>
-                        <td><select id="dataTypeSelect" size="1">
-                        </select></td>
-                     </tr>
-                     <tr id="primitiveDataTypeRow">
-                        <td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
-                              Type</label>
-                        </td>
-                        <td><select id="primitiveDataTypeSelect" size="1">
-                        </select>
-                        </td>
-                     </tr>
-                     <tr id="structuredDataTypeRow">
-                        <td><label for="structuredDataTypeSelect">Data
-                              Structure</label></td>
-                        <td><select id="structuredDataTypeSelect" size="1">
-                        </select></td>
-                     </tr>
-                     <tr id="documentTypeRow">
-                        <td><label for="documentTypeSelect">Document Type</label></td>
-                        <td><select id="documentTypeSelect" size="1">
-                        </select></td>
-                  </table></td>
-            </tr>
-         </table>
-      </div>
-   </div>
+			</div>
+			<div id="jndiConfigTab" style="width: 700px;"></div>
+
+		</div>
+
+		<div id="parametersTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<div class="heading" id="paramDef">Parameter Definitions</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td><label for="inputBodyAccessPointInput" id="direction">Parameter
+										Data</label>
+								</td>
+								<td><select id="inputBodyAccessPointInput"></select>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="outputBodyAccessPointInput" id="direction">Result
+										Set Data</label>
+								</td>
+								<td><select id="outputBodyAccessPointInput"></select>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="panelBorder" style="width: 400px; margin-top: 10px;">
+							<table cellpadding="0" cellspacing="0" width="100%"
+								class="layoutTable">
+								<tr>
+									<td><div class="toolBar">
+											<table>
+												<tr>
+													<td><input id="deleteParameterDefinitionButton"
+														type="image"
+														src="plugins/bpm-modeler/images/icons/delete.png"
+														title="Delete" alt="Delete" class="toolbarButton" /></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="dataTable">
+											<table id="parameterDefinitionsTable" cellpadding="0"
+												cellspacing="0">
+												<tbody />
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table id="parameterDefinitionTypeSelector" class="fieldSetTable"
+							style="margin-top: 10px;">
+							<tr>
+								<td><input id="addParameterDefinitionButton" type="image"
+									src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+									alt="Add" class="toolbarButton" />
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionNameInput" id="name">Name</label>
+								</td>
+								<td><input id="parameterDefinitionNameInput" type="text" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="parameterDefinitionDirectionSelect"
+									id="direction">Direction</label>
+								</td>
+								<td><select id="parameterDefinitionDirectionSelect">
+										<option value="IN">In</option>
+										<!-- option value="OUT">Out</option-->
+								</select>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="dataTypeSelect" id="dataType">Data
+										Type</label>
+								</td>
+								<td><select id="dataTypeSelect" size="1"></select>
+								</td>
+							</tr>
+							<tr id="primitiveDataTypeRow">
+								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
+										Type</label>
+								</td>
+								<td><select id="primitiveDataTypeSelect" size="1"></select>
+								</td>
+							</tr>
+							<tr id="structuredDataTypeRow">
+								<td><label for="structuredDataTypeSelect">Data
+										Structure</label>
+								</td>
+								<td><select id="structuredDataTypeSelect" size="1"></select>
+								</td>
+							</tr>
+							<tr id="documentTypeRow">
+								<td><label for="documentTypeSelect">Document Type</label>
+								</td>
+								<td><select id="documentTypeSelect" size="1"></select>
+								</td>
+							</tr>
+						</table></td>
+				</tr>
+			</table>
+		</div>
+	</div>
 </body>
 </html>
