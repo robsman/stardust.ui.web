@@ -480,7 +480,9 @@ define(
 											console.log(data);
 											var failures=[]; /*ruleSets which reported success=false from the server*/
 											m_messageDisplay.markSaved();
-											hasUnsavedModifications = false;/*TODO,[ZZM]is this used*/
+											/*Purge all command history*/
+											m_ruleSetCommandDispatcher.commandStack().purgeStacks();
+											hasUnsavedModifications = false;
 											jQuery.each(data,function(){
 												var rsRef;
 												if(this.operation==="DELETE"){
@@ -1141,7 +1143,7 @@ define(
 						var prevCmd=data.changes[0].value.before;
 						if(nextCmd){
 							uiElements.redoChange.removeClass("toolDisabled");
-							title=nextCmd.description + " " + nextCmd.changes[0].value.after;
+							title=nextCmd.description;
 							uiElements.redoChange.attr("title",title);
 						}
 						else{
@@ -1150,7 +1152,7 @@ define(
 						}
 						if(prevCmd){
 							uiElements.undoChange.removeClass("toolDisabled");
-							title=prevCmd.description + " " + prevCmd.changes[0].value.after;
+							title=prevCmd.description;
 							uiElements.undoChange.attr("title",title);
 						}
 						else{
