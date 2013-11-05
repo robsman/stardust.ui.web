@@ -25,8 +25,7 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(jquery,m_utils) {
 	};
 	
 	function CodeEditor(textArea, mode,options) {
-		var editorRef;
-		var that=this;
+		var that=this; /*For times when this isn't good enough!*/
 		
 		this.editor = null;
 		this.disabled = false;
@@ -36,22 +35,51 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(jquery,m_utils) {
 		this.editor.getSession().setMode(mode);
 		this.editor.setTheme("ace/theme/chrome");
 		
-		editorRef=this.editor;
 		
-		/*Load our module to support snippets and autocomplete.
-		 *As we need to inject our completer into the extension,
-		 *trigger a moduleLoaded event to let listeners know the
-		 *module is now available and they can use the extension.*/
-		ace.config.loadModule("ace/ext/language_tools", function(aceExt) {
-			editorRef.setOptions({
-	            enableSnippets: true,
-	            enableBasicAutocompletion: true
-	        });
-			$(that).trigger("moduleLoaded",{
-				"name": "ace/ext/language_tool",
-				"reference": aceExt});
-	    });
 		
+		/*Base/Wrapper function to load any ace module through the ace.config.loadModule
+		 *mechanism. Multiple calls to this with the same module name will only result in
+		 *the callback being fired once (the first time the moduel is loaded).*/
+		CodeEditor.prototype.loadModule=function(module,callback){
+			ace.config.loadModule(module,callback);
+		};
+		
+		/*Tagging a hashMap to our session object to coordinate anything
+		 *we may wish to append to our session. Keep in mind that modules are loaded
+		 *once per scope of the ace library, so data which you want available to the ace internals
+		 *must be scoped by session unless you want that data to be global to all sessions.*/
+		CodeEditor.prototype.setSessionData=function(key,val){
+			var session=this.editor.getSession();
+			if(session.hasOwnProperty("ext_userDefined")===false){
+				session["ext_userDefined"]={};
+			}
+			session["ext_userDefined"][key]=val;
+		};
+		
+		/*Simple retrieval function to get data set by our setSessionData function*/
+		CodeEditor.prototype.getSessionData=function(key){
+			var session=this.editor.getSession();
+			var ret=undefined;
+			if(session.hasOwnProperty("ext_userDefined")){
+				ret=session["ext_userDefined"][key];
+			}
+			return ret;
+		};
+		
+		/*Wrap our loadModule function to support easy loading of language tools*/
+		CodeEditor.prototype.loadLanguageTools=function(options){
+			var defOptions={
+					"enableSnippets": true,
+					"enableBasicAutocompletion": true
+            };
+			options=$.extend(defOptions,options);
+			this.loadModule("ace/ext/language_tools", function(aceExt) {
+				that.editor.setOptions(options);
+				$(that).trigger("moduleLoaded",{
+					"name": "ace/ext/language_tool",
+					"reference": aceExt});
+		    });
+		};
 		
 		CodeEditor.prototype.getEditor = function() {
 			return this.editor;
