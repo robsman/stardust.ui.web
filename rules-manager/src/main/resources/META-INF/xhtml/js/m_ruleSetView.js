@@ -22,7 +22,6 @@ define(
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/m_ruleSet", 
 			"rules-manager/js/m_decisionTable",
-			"rules-manager/js/m_drlAceEditor",
 			"rules-manager/js/hotDecisionTable/m_decisionTable",
 			"rules-manager/js/hotDecisionTable/m_tableConfig",
 			"rules-manager/js/hotDecisionTable/m_treeFactory",
@@ -33,7 +32,7 @@ define(
 			"rules-manager/js/m_ruleSetCommand","rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
 				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
-				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,ace2,
+				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,
 				hotDecisionTable,tableConfig,treeFactory,ht2,
 				typeParser,m_i18nMapper,
 				m_ruleSetCommandDispatcher,m_ruleSetCommand,m_utilities) {
