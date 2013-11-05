@@ -14,8 +14,10 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
@@ -33,7 +35,6 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelElement;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.IDescriptorProvider;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -42,7 +43,9 @@ import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
 import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.AuditTrailUtils;
+import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
@@ -56,10 +59,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.xsd.XSDConstrainingFacet;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 
 public class DataMappingWrapper implements IGenericInputField, Serializable
@@ -113,7 +113,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          value = defaultValue;
       }
    }
-
+   
    public String getType()
    {
       return this.type;
@@ -178,7 +178,23 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          }
          else
          {
-            type = ProcessPortalConstants.STRING_TYPE;            
+            if (dataTypeId.equals("struct"))
+            {
+               populateEnumList();
+               if(!enumList.isEmpty())
+               {
+                  type = ProcessPortalConstants.ENUM_TYPE;   
+               }
+               else
+               {
+                  type = ProcessPortalConstants.STRING_TYPE;
+               }
+            }
+            else
+            {
+               type = ProcessPortalConstants.STRING_TYPE;
+            }
+                        
          }
       }
       else if (dataClass == Map.class || dataClass == List.class
@@ -199,17 +215,20 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
     */
    private void populateEnumList()
    {
-      String typeDeclarationId = (String) getDataDetails().getAttribute("carnot:engine:dataType");
-      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
-      TypeDeclaration typeDeclaration = model.getTypeDeclaration(typeDeclarationId);
-      XSDSchema schema = StructuredTypeRtUtils.getXSDSchema(model, typeDeclaration);
-      XSDSimpleTypeDefinition component = (XSDSimpleTypeDefinition) StructuredTypeRtUtils.findElementOrTypeDeclaration(
-            schema, typeDeclaration.getId(), true);
-      for (XSDConstrainingFacet facet : component.getFacetContents())
+      enumList.clear();
+      Set<TypedXPath> xpathMap = XPathUtils.getXPaths(ModelCache.findModelCache().getModel(dataMapping.getModelOID()),
+            dataMapping);
+      Iterator<TypedXPath> xpathIterator = xpathMap.iterator();
+      while (xpathIterator.hasNext())
       {
-         if (facet.getFacetName().equalsIgnoreCase(ProcessPortalConstants.ENUM_TYPE))
+         TypedXPath xPath = xpathIterator.next();
+         if (xPath.isEnumeration())
          {
-            enumList.add(new SelectItem(facet.getLexicalValue(), facet.getLexicalValue()));
+            List<String> enumValList = xPath.getEnumerationValues();
+            for (String enumVal : enumValList)
+            {
+               enumList.add(new SelectItem(enumVal, enumVal));
+            }
          }
       }
    }
