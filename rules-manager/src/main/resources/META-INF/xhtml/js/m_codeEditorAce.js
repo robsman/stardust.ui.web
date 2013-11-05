@@ -9,13 +9,12 @@
  * documentation
  ******************************************************************************/
 
-define([ "jquery" ], function(jquery) {
+define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 	// Interface
 	return {
 		getCodeEditor : function(textArea) {
 			return new CodeEditor(textArea, "ace/mode/html");
-//			jQuery("#" + textArea).css("display", "none");
-//			return new TextAreaEditor(textArea.substring(0, textArea.indexOf("Div")));
+
 		},
 		getDrlEditor : function(textArea) {
 			return new CodeEditor(textArea, "ace/mode/drl");
@@ -25,8 +24,9 @@ define([ "jquery" ], function(jquery) {
 		}
 	};
 	
-	function CodeEditor(textArea, mode) {
-
+	function CodeEditor(textArea, mode,options) {
+		var that=this; /*For times when this isn't good enough!*/
+		
 		this.editor = null;
 		this.disabled = false;
 		this.globalVariables = null;
@@ -34,11 +34,63 @@ define([ "jquery" ], function(jquery) {
 		this.editor = ace.edit(textArea);
 		this.editor.getSession().setMode(mode);
 		this.editor.setTheme("ace/theme/chrome");
-
+		
+		
+		
+		/*Base/Wrapper function to load any ace module through the ace.config.loadModule
+		 *mechanism. Multiple calls to this with the same module name will only result in
+		 *the callback being fired once (the first time the moduel is loaded).*/
+		CodeEditor.prototype.loadModule=function(module,callback){
+			ace.config.loadModule(module,callback);
+		};
+		
+		/*Tagging a hashMap to our session object to coordinate anything
+		 *we may wish to append to our session. Keep in mind that modules are loaded
+		 *once per scope of the ace library, so data which you want available to the ace internals
+		 *must be scoped by session unless you want that data to be global to all sessions.*/
+		CodeEditor.prototype.setSessionData=function(key,val){
+			var session=this.editor.getSession();
+			if(session.hasOwnProperty("ext_userDefined")===false){
+				session["ext_userDefined"]={};
+			}
+			session["ext_userDefined"][key]=val;
+		};
+		
+		/*Simple retrieval function to get data set by our setSessionData function*/
+		CodeEditor.prototype.getSessionData=function(key){
+			var session=this.editor.getSession();
+			var ret=undefined;
+			if(session.hasOwnProperty("ext_userDefined")){
+				ret=session["ext_userDefined"][key];
+			}
+			return ret;
+		};
+		
+		/*Wrap our loadModule function to support easy loading of language tools*/
+		CodeEditor.prototype.loadLanguageTools=function(options){
+			var defOptions={
+					"enableSnippets": true,
+					"enableBasicAutocompletion": true
+            };
+			if(options){
+				defOptions.enableSnippets=options.enableSnippets || 
+				                          defOptions.enableSnippets;
+				defOptions.enableBasicAutocompletion=options.enableBasicAutocompletion || 
+													defOptions.enableBasicAutocompletion;
+			}
+			this.loadModule("ace/ext/language_tools", function(aceExt) {
+				that.editor.setOptions(defOptions);
+				JQuery(that).trigger("moduleLoaded",{
+					"name": "ace/ext/language_tool",
+					"reference": aceExt});
+		    });
+		};
+		
 		CodeEditor.prototype.getEditor = function() {
 			return this.editor;
 		};
-
+		
+		
 		CodeEditor.prototype.getValue = function() {
 			return this.editor.getSession().getDocument().getValue();
 		};
@@ -93,7 +145,7 @@ define([ "jquery" ], function(jquery) {
 	 * Here we return a simple text area wrapped as an editor.
 	 */
 	function TextAreaEditor(textAreaId) {
-		var textArea = jQuery("#" + textAreaId);
+		var textArea = m_utils.jQuerySelect("#" + textAreaId);
 		textArea.css("display", "inline");
 		
 		TextAreaEditor.prototype.getValue = function() {
