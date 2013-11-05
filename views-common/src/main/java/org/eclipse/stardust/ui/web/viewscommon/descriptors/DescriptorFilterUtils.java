@@ -480,6 +480,10 @@ public class DescriptorFilterUtils
                }
             }
          }
+         else if(filterValue instanceof Integer)
+         {
+            dataFilter = DataFilter.isEqual(dataId, (Integer) filterValue);
+         }
       }
       return dataFilter;
    }

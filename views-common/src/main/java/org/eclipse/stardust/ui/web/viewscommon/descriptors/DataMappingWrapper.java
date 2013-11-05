@@ -59,7 +59,6 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 
 public class DataMappingWrapper implements IGenericInputField, Serializable
@@ -67,7 +66,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    protected final static Logger trace = LogManager.getLogger(DataMappingWrapper.class);
 
    private static final long serialVersionUID = 1l;
-
+   
    private DataMapping dataMapping;
    private boolean readOnly;
    private Object value;
@@ -225,9 +224,11 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          if (xPath.isEnumeration())
          {
             List<String> enumValList = xPath.getEnumerationValues();
+            Integer i = 0;
             for (String enumVal : enumValList)
             {
-               enumList.add(new SelectItem(enumVal, enumVal));
+               enumList.add(new SelectItem(i.toString(), enumVal));
+               i++;
             }
          }
       }
@@ -412,7 +413,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    {
       if (StringUtils.isNotEmpty(value))
       {
-         this.value = value;
+         this.value = Integer.valueOf(value);
          broadcastChange(this.value);
       }
       else

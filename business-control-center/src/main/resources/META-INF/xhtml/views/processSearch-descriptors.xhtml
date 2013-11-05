@@ -107,15 +107,14 @@
 								
 								 <ice:panelGroup
 									rendered="#{descriptorItem.type eq 'Enumeration'}">
-									<ice:selectOneMenu
-										value="#{descriptorItem.enumValueStr}" partialSubmit="true">
+									<ice:selectOneMenu value="#{descriptorItem.enumValueStr}"
+										partialSubmit="true"
+										valueChangeListener="#{descriptorItem.enumValueChangeListener}">
 										<pc:automationTag
-											value="auto-BCC-ProcSrch-Descriptors-OnOffFilter"
+											value="auto-BCC-ProcSrch-Descriptors-EnumVal"
 											standAlone="false" />
 										<f:selectItem itemValue="" itemLabel="" />
-										<c:forEach
-											items="#{descriptorItem.enumList}"
-											var="source">
+										<c:forEach items="#{descriptorItem.enumList}" var="source">
 											<f:selectItem itemLabel="#{source.label}"
 												itemValue="#{source.value}" />
 										</c:forEach>
