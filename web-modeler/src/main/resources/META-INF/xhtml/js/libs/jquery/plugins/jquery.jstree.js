@@ -3613,7 +3613,7 @@
 		exec	: function (i) {
 			if($.isFunction($.vakata.context.func[i])) {
 				// if is string - eval and call it!
-				$.vakata.context.func[i].call($.vakata.context.data, $.vakata.context.par);
+				$.vakata.context.func[i].call($.vakata.context.data, $.vakata.context.par,i);
 				return true;
 			}
 			else { return false; }
