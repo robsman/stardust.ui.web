@@ -13,14 +13,14 @@ define(
 			"rules-manager/js/m_commandsDispatcher", 
 			"bpm-modeler/js/m_jsfViewManager",
 			"rules-manager/js/m_ruleSet", 
-			"rules-manager/js/m_drlAceEditor",
+			"rules-manager/js/m_codeEditorAce",
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
 			"rules-manager/js/m_ruleSetCommand",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/m_autoCompleters"],
 		function(m_utils,CommandsDispatcher, 
-				 m_jsfViewManager, RuleSet,ace2,m_i18nMapper,
+				 m_jsfViewManager, RuleSet,m_codeEditorAce,m_i18nMapper,
 				 m_ruleSetCommandDispatcher,m_ruleSetCommand,
 				 m_typeParser,m_autoCompleters) {
 			return {
@@ -103,8 +103,10 @@ define(
 					//initialize ACE editor for expert mode drl scripting
 					//Take note on the next line we are grabbing the DOM element, not the JQUERY object.
 					uiElements.drlEditorTextArea=m_utils.jQuerySelect(options.selectors.drlEditor)[0];
-					uiElements.drlEditor=ace2.getDrlEditor(uiElements.drlEditorTextArea);
+					uiElements.drlEditor=m_codeEditorAce.getDrlEditor(uiElements.drlEditorTextArea);
 					
+					/*Loop through each Fact/ParameterDefinition and construct Keywords 
+					 *for each path within the model hierarchy.*/
 					var pDef,k,completerStrings=[];
 					for( k in ruleSet.parameterDefinitions){
 						if(ruleSet.parameterDefinitions.hasOwnProperty(k)){
@@ -112,28 +114,30 @@ define(
 							completerStrings=completerStrings.concat(m_typeParser.parseParamDefToStringFrags(pDef));
 						}
 					}
-					console.log(completerStrings);
-					/*Get the current instance of our drlEditor session and tag our keywords to it for
-					 *use by our session based auto-completer.*/
-					drlSession=uiElements.drlEditor.editor.getSession();
-					drlSession.ruleSetKeywords=completerStrings;
 					
-					/*retrieve an instance of sessionCompleter*/
-					sessionCompleter=m_autoCompleters.getSessionCompleter({metaName:"Data",score:9999});
+					/*Set the data our autoCompleter will need.*/
+					uiElements.drlEditor.setSessionData("ruleSetKeywords",completerStrings);
+					
+					/*retrieve an instance of our autocompleter*/
+					sessionCompleter=m_autoCompleters.getSessionCompleter(
+							"ruleSetKeywords",
+							{metaName:"Data",score:9999});
 					
 					/*Listen for our module loaded events. Specifically, for our
 					 *language tools being loaded as only after this occurs can we add
 					 *our custom completer. Note: this will only occur a single time 
 					 *(per ace module)across all our views, as the module only loads 
 					 *once per scope. Our business is accomplished by ensuring we have 
-					 *the proper keywords attached to our session.*/
+					 *the proper keywords attached to our session. (see sessionCompleter)*/
 					$(uiElements.drlEditor).on("moduleLoaded",function(event,module){
-						console.log("module loaded.")
-						if(module.name==="ace/ext/language_tool"){
-							module.reference.addCompleter(sessionCompleter);
+						if(module.name==="ace/ext/language_tools"){
+							uiElements.drlEditor.addCompleter(sessionCompleter);
 						}
 					});
-
+					
+					/*Now, load our language tools extension. This will enable snippets and autocomplete*/
+					uiElements.drlEditor.loadLanguageTools();
+					
 					/*****Menu Building Section for our DRL editors associated toolbar*****/
 					
 					/*Add menu for text replacement options (all||current)*/

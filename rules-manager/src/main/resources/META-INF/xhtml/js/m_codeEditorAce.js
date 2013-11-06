@@ -35,8 +35,42 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 		this.editor.getSession().setMode(mode);
 		this.editor.setTheme("ace/theme/chrome");
 		
+		/*Hanging an object off of window.top.ace that we can use 
+		 *for global state related to our module.*/
+		if(ace.hasOwnProperty("ext_userDefined")===false){
+			ace["ext_userDefined"]={};/*collect here for sameness*/
+			ace.ext_userDefined.completers=[]; /*collection to keep track of completers we add*/
+		}
 		
-		
+		/*Wrapper to addCompleters through our language tools extension.
+		 *Any completer added through this mechanism will be stringified and tagged
+		 *to our top level ace object. All completers which come through this function
+		 *will have their string compared against the completers already added. Duplicates 
+		 *are not passed onwards to the extension.*/
+		CodeEditor.prototype.addCompleter=function(completer){
+			var isPresent=false,
+				temp,
+				compString=completer.getCompletions.toString(),
+				langTools,
+				compLength=ace.ext_userDefined.completers.length;
+			
+			while(compLength--){
+				temp=ace.ext_userDefined.completers[compLength];
+				if(temp===compString){
+					isPresent=true;
+					console.log("Repeater found, will not be added.");
+					break;
+				}
+			}
+			if(isPresent===false){
+				langTools=ace.define.modules["ace/ext/language_tools"];
+				if(langTools){
+					langTools.addCompleter(completer);
+					ace.ext_userDefined.completers.push(completer.getCompletions.toString());
+				}
+			}
+			
+		};
 		/*Base/Wrapper function to load any ace module through the ace.config.loadModule
 		 *mechanism. Multiple calls to this with the same module name will only result in
 		 *the callback being fired once (the first time the moduel is loaded).*/
@@ -66,8 +100,12 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 			return ret;
 		};
 		
-		/*Wrap our loadModule function to support easy loading of language tools*/
+		/*Wrap our loadModule function to support easy loading of language tools. 
+		 *If a module is not loaded, the function will load it using ace.config. If the module
+		 *is already loaded, the module will not be reloaded. However, in both cases a moduleLoaded
+		 *event will be triggered to indicate that the module is ready for use */
 		CodeEditor.prototype.loadLanguageTools=function(options){
+			var langModule="ace/ext/language_tools";
 			var defOptions={
 					"enableSnippets": true,
 					"enableBasicAutocompletion": true
@@ -78,12 +116,20 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 				defOptions.enableBasicAutocompletion=options.enableBasicAutocompletion || 
 													defOptions.enableBasicAutocompletion;
 			}
-			this.loadModule("ace/ext/language_tools", function(aceExt) {
+			if(ace.define.modules.hasOwnProperty(langModule)===false){
+				this.loadModule(langModule, function(aceExt) {
+					that.editor.setOptions(defOptions);
+					JQuery(that).trigger("moduleLoaded",{
+						"name": langModule,
+						"reference": aceExt});
+			    });
+			}
+			else{
 				that.editor.setOptions(defOptions);
 				JQuery(that).trigger("moduleLoaded",{
-					"name": "ace/ext/language_tool",
-					"reference": aceExt});
-		    });
+					"name": langModule,
+					"reference": ace.define.modules[langModule]});
+			}
 		};
 		
 		CodeEditor.prototype.getEditor = function() {
