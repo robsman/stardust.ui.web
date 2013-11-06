@@ -116,12 +116,10 @@ define(
 					}
 					
 					/*Set the data our autoCompleter will need.*/
-					uiElements.drlEditor.setSessionData("ruleSetKeywords",completerStrings);
+					uiElements.drlEditor.setSessionData("$keywordList",completerStrings);
 					
 					/*retrieve an instance of our autocompleter*/
-					sessionCompleter=m_autoCompleters.getSessionCompleter(
-							"ruleSetKeywords",
-							{metaName:"Data",score:9999});
+					sessionCompleter=m_autoCompleters.getSessionCompleter({metaName:"Data",score:9999});
 					
 					/*Listen for our module loaded events. Specifically, for our
 					 *language tools being loaded.*/
