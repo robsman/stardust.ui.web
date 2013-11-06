@@ -78,6 +78,14 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 			ace.config.loadModule(module,callback);
 		};
 		
+		/*Quick injection point for users to add custom keyWords which will be subject
+		 *to the languageTools default keyWord completer and its logic. Note these keywords are added
+		 *to $mode. This means they will be available across all editors sharing the same $mode.*/
+		CodeEditor.prototype.addKeywords=function(val){
+			var session=this.editor.getSession();
+			session.$mode.$keywordList=session.$mode.$keywordList.concat(val);
+		};
+		
 		/*Tagging a hashMap to our session object to coordinate anything
 		 *we may wish to append to our session. Keep in mind that modules are loaded
 		 *once per scope of the ace library, so data which you want available to the ace internals
