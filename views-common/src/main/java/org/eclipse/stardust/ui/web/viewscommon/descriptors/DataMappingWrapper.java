@@ -70,6 +70,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    private DataMapping dataMapping;
    private boolean readOnly;
    private Object value;
+   private Set<Object> values;
    private String type;
    private DateRange dateRangeValue;
    private String distinctiveId = null;
@@ -89,6 +90,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    public DataMappingWrapper(DataMapping dataMapping, Object defaultValue, boolean readOnly)
    {
+      this.values = CollectionUtils.newHashSet();
       this.dataMapping = dataMapping;
       this.readOnly = readOnly;
       // since finding out the type requires iterations, cache the result of determineType()
@@ -244,6 +246,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          {
             List<String> enumValList = xPath.getEnumerationValues();
             Integer i = 0;
+            enumList.add(new SelectItem("-1", "None"));
             for (String enumVal : enumValList)
             {
                enumList.add(new SelectItem(i.toString(), enumVal));
@@ -300,6 +303,15 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          return value;
       }
+   }
+   
+   public Set<Object> getValueList()
+   {
+      if (values.isEmpty())
+      {
+         values.add(getValue());
+      }
+      return values;
    }
 
    public String getMappedType()
@@ -411,33 +423,56 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    {
       if (event.getNewValue() != null)
       {
-         setEnumValueStr(event.getNewValue().toString());
+         setEnumValueList((String[]) event.getNewValue());
       }
       else
       {
-         setEnumValueStr(null);
+         setEnumValueList(null);
       }
    }
 
-   public String getEnumValueStr()
+   public String[] getEnumValueList()
    {
-      if (this.value != null)
+      if (this.values != null && this.values.size()>0)
       {
-         return this.value.toString();
+         Object[] objectArray = values.toArray();
+         String strArr[]=new String[objectArray.length];
+         int index = 0;
+         for(Object obj:objectArray)
+         {
+            strArr[index] = String.valueOf(obj);
+            index++;
+         }
+         return strArr;
       }
-      return "";
+      return null;
    }
 
-   public void setEnumValueStr(String value)
+   public void setEnumValueList(String[] valueList)
    {
-      if (StringUtils.isNotEmpty(value))
+      values.clear();
+      if (valueList != null && valueList.length > 0)
       {
-         this.value = Integer.valueOf(value);
-         broadcastChange(this.value);
-      }
-      else
-      {
-         this.value = null;
+         // When multiple ENUM values, store in List
+         if (valueList.length > 1)
+         {
+            for (String val : valueList)
+            {
+               values.add(Integer.valueOf(val));
+            }
+         }
+         else
+         {
+            // when there is only single ENUM value filter, using direct approach of
+            // this.value like other descriptors
+            int intVal = Integer.valueOf(valueList[0].toString());
+            if (intVal >= 0)
+            {
+               this.value = intVal;
+            }
+            this.values.add(intVal); // Set for showing selection on UI
+         }
+         broadcastChange(value != null ? value : this.values);
       }
       trace.debug("set ENUM: " + this.value);
    }

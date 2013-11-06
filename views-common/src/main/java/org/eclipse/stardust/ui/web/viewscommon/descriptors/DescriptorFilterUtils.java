@@ -11,9 +11,11 @@
 package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
@@ -228,11 +231,28 @@ public class DescriptorFilterUtils
                   }
 
                   DataFilter dataFilter = null;
+                  DataFilter dataFilterOrTerm=null;
 
                   // for String
                   if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
                   {
-                     dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                     if(filterValue instanceof Collection<?>)
+                     {
+                        FilterOrTerm term = predicate.addOrTerm();
+                        if(filterValue instanceof Set<?>)
+                        {
+                           Set<Object> vals= (Set<Object>) filterValue;
+                           for(Object obj:vals)
+                           {
+                              dataFilterOrTerm = getStringFilter(dataPath, Integer.valueOf(obj.toString()), caseSensitive);
+                              term.add(dataFilterOrTerm);
+                           }
+                        }
+                     }
+                     else
+                     {
+                        dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                     }
                   }// for boolean
                   else if (Boolean.class.equals(dataPath.getMappedType()))
                   {
@@ -323,7 +343,10 @@ public class DescriptorFilterUtils
                            dataFilter = DataFilter.isEqual(mapping.getDataId(), filterValue);
                         }
                      }
-                     predicate.add(dataFilter);
+                     if(dataFilter != null)
+                     {
+                        predicate.add(dataFilter);   
+                     }
                   }
                }
                else
@@ -372,7 +395,12 @@ public class DescriptorFilterUtils
             {
                dataFilter = new GenericDataMapping(dataFilter);
             }
-            if (dmWrapper.getValue() != null)
+            // For ENUM, Set of descriptor values are set for dataId, create Filter using List
+            if (dmWrapper.getValueList().size() > 1)
+            {
+               filterModel.setFilterValues(dataFilter.getId(), dmWrapper.getValueList());
+            }
+            else if (dmWrapper.getValue() != null)
             {
                filterModel.setFilterValue(dataFilter.getId(), (Serializable) dmWrapper.getValue());
             }
