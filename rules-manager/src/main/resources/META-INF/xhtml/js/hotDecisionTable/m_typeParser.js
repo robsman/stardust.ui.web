@@ -326,8 +326,15 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		return parsedTypes;
 	},
 	parseParamDefToStringFrags:function(paramDef){
-		var typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
-		return parseTypeToStringFrags(typeDecl,paramDef.name);
+		var typeDecl;
+		var data;
+		if(paramDef.dataType==="primitive"){
+			data= [paramDef.name];
+		}else{
+			typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+			data=parseTypeToStringFrags(typeDecl,paramDef.name);
+		}
+		return data;
 	},
 	parseTypeDeclToDRL: function(typeDecls){
 		var parsedTypes=[],   /*stage 1 of our parsing*/
