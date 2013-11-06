@@ -124,18 +124,16 @@ define(
 							{metaName:"Data",score:9999});
 					
 					/*Listen for our module loaded events. Specifically, for our
-					 *language tools being loaded as only after this occurs can we add
-					 *our custom completer. Note: this will only occur a single time 
-					 *(per ace module)across all our views, as the module only loads 
-					 *once per scope. Our business is accomplished by ensuring we have 
-					 *the proper keywords attached to our session. (see sessionCompleter)*/
+					 *language tools being loaded.*/
 					$(uiElements.drlEditor).on("moduleLoaded",function(event,module){
 						if(module.name==="ace/ext/language_tools"){
 							uiElements.drlEditor.addCompleter(sessionCompleter);
 						}
 					});
 					
-					/*Now, load our language tools extension. This will enable snippets and autocomplete*/
+					/*Now, load our language tools extension. This will enable snippets and autocomplete.
+					 *This will generate a moduleLoaded event for ace/ext/language_tools 
+					 *even if the module is already loaded.*/
 					uiElements.drlEditor.loadLanguageTools();
 					
 					/*****Menu Building Section for our DRL editors associated toolbar*****/
