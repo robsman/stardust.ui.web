@@ -451,6 +451,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    public void setEnumValueList(String[] valueList)
    {
       values.clear();
+      this.value =null;
       if (valueList != null && valueList.length > 0)
       {
          // When multiple ENUM values, store in List
