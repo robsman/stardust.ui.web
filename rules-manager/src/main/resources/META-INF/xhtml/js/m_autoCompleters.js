@@ -12,7 +12,10 @@ define([],function(){
 				}
 				return {
 				    getCompletions: function(editor, session, pos, prefix, callback) {
-				        var keywords = session.ext_userDefined[extKey];
+				        var keywords="";
+				        if(session.ext_userDefined && session.ext_userDefined[extKey]){
+				        	keywords=session.ext_userDefined[extKey];
+				        }
 				        var t=session.getTextRange({
 				        	"start":{row: pos.row,column:pos.column-1},
 				        	"end":{row: pos.row,column:pos.column}
