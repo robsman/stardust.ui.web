@@ -74,6 +74,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    private DateRange dateRangeValue;
    private String distinctiveId = null;
    private List<SelectItem> enumList = CollectionUtils.newArrayList();
+   private Set<TypedXPath> xpaths;
 
    // these are only set in case of structured data (collection values: List, Map)
    private transient ComplexTypeWrapper structuredValue;
@@ -170,24 +171,18 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       else if(dataClass == String.class || dataClass == Character.class)
       {
          Object carnotType = getDataDetails().getAttribute("carnot:engine:type");
+         Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
          if (carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
          {
-            populateEnumList();
+            populateEnumValues(model, dataMapping);
             type = ProcessPortalConstants.ENUM_TYPE;
          }
          else
          {
-            if (dataTypeId.equals("struct"))
+            if (dataTypeId.equals("struct") && isEnumerationType(model, dataMapping))
             {
-               populateEnumList();
-               if(!enumList.isEmpty())
-               {
-                  type = ProcessPortalConstants.ENUM_TYPE;   
-               }
-               else
-               {
-                  type = ProcessPortalConstants.STRING_TYPE;
-               }
+               populateEnumValues(model, dataMapping);
+               type = ProcessPortalConstants.ENUM_TYPE;   
             }
             else
             {
@@ -211,13 +206,37 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    /**
     * 
+    * @param model
+    * @param dataMapping
+    * @return
     */
-   private void populateEnumList()
+   private boolean isEnumerationType(Model model, DataMapping dataMapping)
+   {
+      boolean isEnum = false;
+      xpaths = XPathUtils.getXPaths(model, dataMapping);
+      for (TypedXPath path : xpaths)
+      {
+         if (path.getParentXPath() == null)
+         {
+            isEnum = path.isEnumeration();
+            break;
+         }
+      }
+      return isEnum;
+   }
+   
+   /**
+    * 
+    */
+   private void populateEnumValues(Model model, DataMapping dataMapping)
    {
       enumList.clear();
-      Set<TypedXPath> xpathMap = XPathUtils.getXPaths(ModelCache.findModelCache().getModel(dataMapping.getModelOID()),
-            dataMapping);
-      Iterator<TypedXPath> xpathIterator = xpathMap.iterator();
+      if(null == xpaths || xpaths.isEmpty())
+      {
+         xpaths = XPathUtils.getXPaths(ModelCache.findModelCache().getModel(dataMapping.getModelOID()),
+               dataMapping);   
+      }
+      Iterator<TypedXPath> xpathIterator = xpaths.iterator();
       while (xpathIterator.hasNext())
       {
          TypedXPath xPath = xpathIterator.next();
