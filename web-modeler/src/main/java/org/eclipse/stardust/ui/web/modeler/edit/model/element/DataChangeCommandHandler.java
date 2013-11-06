@@ -29,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -77,6 +78,7 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "typeDeclaration.create")
    public void createTypeDeclaration(ModelType model, JsonObject request)
    {
+      boolean duplicate = false;
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       if (isEmpty(id))
@@ -94,8 +96,7 @@ public class DataChangeCommandHandler
       }
       else if (declarations.getTypeDeclaration(id) != null)
       {
-         // TODO: change to error case ?
-         throw new PublicException("Duplicate type declaration id '" + id + "'.");
+         duplicate = true;
       }
 
       if (trace.isDebugEnabled())
@@ -106,6 +107,12 @@ public class DataChangeCommandHandler
       TypeDeclarationType declaration = XpdlFactory.eINSTANCE.createTypeDeclarationType();
       declarations.getTypeDeclaration().add(declaration);
 
+      if(duplicate)
+      {
+         id = NameIdUtils.createIdFromName(null, declaration, id);    
+         name = id;
+      }
+      
       declaration.setId(id);
       declaration.setName(name);
 
