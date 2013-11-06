@@ -207,3 +207,11 @@ a.jstree-search.ipp-disabled-text{
 a.jstree-search.ipp-disabled-text:hover{
 	color:#dddddd;
 }
+.ace_autocomplete {
+    width: 300px; !important;
+    z-index: 200000;
+    background: #f8f8f8;
+    border: 1px lightgray solid;
+    position: fixed;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+}
