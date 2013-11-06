@@ -74,11 +74,12 @@ var drlHighlightRules = function() {
     var builtinConstants=/(true|false|null)(\s|$)/;
     var numericRe=/\b[+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b/;
     var keywordMapper = this.createKeywordMapper({
-        "keyword" : "(entry-point|package|import|" +
+        "keyword"   : "entry-point|package|import|" +
                     "attributes|rule|extend|when|then|template|query|declare|" +
                     "function|global|eval|not|in|or|and|exists|forall|accumulate|" +
-                    "collect|from|action|reverse|result|end|over|init)",
-        "attribute" : "(no-loop|lock-on-active|salience|enabled|duration)"
+                    "collect|from|action|reverse|result|end|over|init",
+        "attribute" : "no-loop|lock-on-active|salience|enabled|duration",
+        "opWords" :"not|contains|matches|memberof|soundslike|in|instanceof|and"
       },"identifier");
     
      this.$rules = { 
