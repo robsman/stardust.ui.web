@@ -24,7 +24,7 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 		}
 	};
 	
-	function CodeEditor(textArea, mode,options) {
+	function CodeEditor(textArea, mode, options) {
 		var that=this; /*For times when this isn't good enough!*/
 		
 		this.editor = null;
@@ -71,9 +71,8 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 			}
 			
 		};
-		/*Base/Wrapper function to load any ace module through the ace.config.loadModule
-		 *mechanism. Multiple calls to this with the same module name will only result in
-		 *the callback being fired once (the first time the moduel is loaded).*/
+		/*Base-Wrapper function to load any ace module through the ace.config.loadModule
+		 *mechanism.*/
 		CodeEditor.prototype.loadModule=function(module,callback){
 			ace.config.loadModule(module,callback);
 		};
