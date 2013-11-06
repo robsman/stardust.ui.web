@@ -95,7 +95,7 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 			if(session.hasOwnProperty("ext_userDefined")===false){
 				session["ext_userDefined"]={};
 			}
-			session["ext_userDefined"][key]=val;
+			session["ext_userDefined"].$keywordList=val;
 		};
 		
 		/*Simple retrieval function to get data set by our setSessionData function*/
@@ -103,7 +103,7 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 			var session=this.editor.getSession();
 			var ret=undefined;
 			if(session.hasOwnProperty("ext_userDefined")){
-				ret=session["ext_userDefined"][key];
+				ret=session["ext_userDefined"].$keywordList;
 			}
 			return ret;
 		};

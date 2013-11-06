@@ -4,7 +4,7 @@ define([],function(){
 			/*Completer which allows the user to specify a keyword list attached
 			 *to a drlEditor session via session.ext_userDefined[key]
 			 *@Param: extKey - Hash key where we can find our keywords.*/
-			getSessionCompleter: function(extKey,options){
+			getSessionCompleter: function(options){
 				var metaName="Data",score=0;
 				if(options){
 					metaName=options.metaName || metaName;
@@ -13,8 +13,8 @@ define([],function(){
 				return {
 				    getCompletions: function(editor, session, pos, prefix, callback) {
 				        var keywords="";
-				        if(session.ext_userDefined && session.ext_userDefined[extKey]){
-				        	keywords=session.ext_userDefined[extKey];
+				        if(session.ext_userDefined && session.ext_userDefined.$keywordList){
+				        	keywords=session.ext_userDefined.$keywordList;
 				        }
 				        var t=session.getTextRange({
 				        	"start":{row: pos.row,column:pos.column-1},
