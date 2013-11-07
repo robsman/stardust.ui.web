@@ -246,7 +246,6 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          {
             List<String> enumValList = xPath.getEnumerationValues();
             Integer i = 0;
-            enumList.add(new SelectItem("-1", "None"));
             for (String enumVal : enumValList)
             {
                enumList.add(new SelectItem(i.toString(), enumVal));
@@ -467,10 +466,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             // when there is only single ENUM value filter, using direct approach of
             // this.value like other descriptors
             int intVal = Integer.valueOf(valueList[0].toString());
-            if (intVal >= 0)
-            {
-               this.value = intVal;
-            }
+            this.value = intVal;
             this.values.add(intVal); // Set for showing selection on UI
          }
          broadcastChange(value != null ? value : this.values);
