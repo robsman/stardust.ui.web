@@ -1677,6 +1677,9 @@ public class ModelService
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
       uuidMapper().map(processDefinition);
+      
+      ModelBuilderFacade.setBooleanAttribute(processDefinition, PredefinedConstants.PROCESS_IS_AUXILIARY_ATT, true);
+      
       ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
             extractString(json, "processFullId"));
 
