@@ -12,8 +12,12 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_codeEditorAce" ],
-		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, m_codeEditorAce) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", 
+		  "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", 
+		  "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_parsingUtils",
+		  "bpm-modeler/js/m_autoCompleters" ],
+		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, 
+				 m_codeEditorAce,m_parsingUtils,m_autoCompleters) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -40,20 +44,39 @@ define(
 				 * Override base class PropertiesPage#show() method so that codeEditor.refresh() can be called
 				 */
 				ControlFlowBasicPropertiesPage.prototype.show = function() {
+					var key,
+						temp,
+						completerStrings=[];
+					
 					this.propertiesPage.show();
 
 					// TODO - ace code editor doesn't have refresh at present
 					//this.conditionExpressionInputEditor.refresh();
-
-					// Global variables for Code Editor auto-complete / validation
+					
+					/*Extract our data as JS objects and parse them into unique dot-delimited string paths which
+					 *we will supply to our editors session for use by autoCompleters.*/
 					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
+					for(key in globalVariables){
+						if(globalVariables.hasOwnProperty(key)){
+							temp=globalVariables[key];
+							if(typeof(temp)==="object"){
+								completerStrings=completerStrings.concat(m_parsingUtils.parseJSObjToStringFrags(temp,key));
+							}else{
+								completerStrings.push(key);
+							}
+						}
+					}
+					this.conditionExpressionInputEditor.setSessionData("$keywordList",completerStrings);
 				};
 
 				/**
 				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
+					var typeKey;
+					var typeDecl;
+					var completerStrings;
+					var that=this;
 					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
 					
@@ -64,7 +87,23 @@ define(
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
 					var page = this;
+					
+					/*Retrieve a javascript code editor for our condition panel*/
 					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor(this.conditionExpressionDiv.id);
+					
+					/*listen for a module loaded event indicating we are ready to add completers to our editor.
+					 *We will load a session based completer which will provide us with autocomplete for the data
+					 *defined in our model*/
+					$(this.conditionExpressionInputEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter();
+							that.conditionExpressionInputEditor.addCompleter(sessionCompleter);
+						}
+					});
+					/*Load languageTools,'ace/ext/language_tools', this will trigger a moduleLoaded event.*/
+					this.conditionExpressionInputEditor.loadLanguageTools();
+					
 					this.conditionExpressionInputEditor.getEditor().on('blur', function(e){
 						var property = "conditionExpression";
 						if (!page.validate()) {

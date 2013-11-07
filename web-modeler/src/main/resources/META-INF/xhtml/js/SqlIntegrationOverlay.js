@@ -70,8 +70,9 @@ define(
 							+ Math.floor((Math.random() * 100000) + 1);
 
 					this.codeEditor = m_codeEditorAce
-							.getJSCodeEditor(this.editorAnchor.id);
-
+							.getSQLCodeEditor(this.editorAnchor.id);
+					this.codeEditor.loadLanguageTools();
+					
 					this.connectionTypeSelect = m_utils
 							.jQuerySelect("#dataSourceTab #connectionTypeSelect");
 					this.databaseTypeSelect = m_utils
@@ -574,7 +575,7 @@ define(
 
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-
+					
 					this.codeEditor
 							.getEditor()
 							.getSession()

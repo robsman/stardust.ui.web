@@ -12,10 +12,11 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_parameterDefinitionsPanel",],
+				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_parsingUtils","bpm-modeler/js/m_autoCompleters"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
-				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel) {
+				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel,
+				m_parsingUtils,m_autoCompleters) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -362,7 +363,16 @@ define(
 					this.editorAnchor.id = "expressionText" + Math.floor((Math.random()*100000) + 1) + "Div";
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor.id);
 					this.expressionEditor.disable();
-
+					var that=this;
+					$(this.expressionEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter();
+							that.expressionEditor.addCompleter(sessionCompleter);
+						}
+					});
+					this.expressionEditor.loadLanguageTools();
+					
 					this.bindEventHandlers();
 
 					this.initializeModelElementView(application);
@@ -476,30 +486,23 @@ define(
 					}
 
 					// Global variables for Code Editor auto-complete / validation
-					var globalVariables = {};
+					//var globalVariables = {};
+					var completerStrings=[];
 					var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
-						if (typeDeclaration != null) {
-							globalVariables[id] = typeDeclaration.createInstance();
-						}
-						else {
-							globalVariables[id] = "";
-						}
+						completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
 					}
 
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
-						if (typeDeclaration != null) {
-							globalVariables[id] = typeDeclaration.createInstance();
-						}
-						else {
-							globalVariables[id] = "";
-						}
+						completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
 					}
-
-					this.expressionEditor.setGlobalVariables(globalVariables);
-
+					this.expressionEditor.setSessionData("$keywordList",completerStrings);
+					var that=this;
+					
+					
+					
 					// TODO - these things below were possible with CodeMirror editor out of box
 					// But not in case of Ace editor hence temporarily commented out
 

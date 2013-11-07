@@ -53,6 +53,8 @@ define(
 					
 					this.codeEditor = m_codeEditorAce
 							.getJSCodeEditor(this.editorAnchor.id);
+					this.codeEditor.loadLanguageTools();
+					
 					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
 					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
 					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -81,12 +83,12 @@ define(
 											.getJSCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Python") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor(self.editorAnchor.id);
+											.getPythonCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Groovy") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor(self.editorAnchor.id);
+											.getGroovyCodeEditor(self.editorAnchor.id);
 								}
-
+								
 								self.codeEditor.getEditor().getSession()
 										.setValue(code);
 								self.submitChanges();
