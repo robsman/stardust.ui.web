@@ -370,7 +370,30 @@ define(
 					var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
 					code += "function convertStringToDate(format, input){\nreturn new java.text.SimpleDateFormat(format).parse(input);\n}\n";
 					
-
+					code += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
+					
+					code += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
+					code += "for(; i < length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
+					code += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
+					
+					code += "function recursiveFunction(key, val) {\n";
+					code += "\tif (val instanceof Object || isArray(val)) {\n";
+					code += "\t\treturn visitMembers(val, recursiveFunction);\n";
+					code += "\t} else {\n";
+					code += "\t\treturn actualFunction(val, typeof val);\n";
+					code += "\t}\n";
+					code += "}\n";
+					
+					code += "function actualFunction(value, type) {\n";
+					code += "\tvar dataAsLong;\n";
+					code += "\tif (type === 'string') {\n";
+					code += "\t\tdataAsLong =/\\/Date\\((\\d*)\\)\\//.exec(value);\n";
+					code += "\tif (dataAsLong) {\n";
+					code += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
+					code += "\t}\n";
+					code += "}\n";
+					code += "return value;\n";
+					code += "}\n";
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
@@ -390,9 +413,8 @@ define(
 								code += accessPoint.id
 										+ " =  eval('(' + request.headers.get('"
 										+ accessPoint.id + "')+ ')');\n";
+								code +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
 								code += "}\n";
-								var typeDeclaration = m_model.findTypeDeclaration(accessPoint.structuredDataTypeFullId);
-								code+=this.loopRecursivelyThroughSdt(typeDeclaration,null,accessPoint.id);
 							}
 						}
 					}
@@ -462,71 +484,6 @@ define(
 
 					return route;
 				};
-
-				
-				ScriptingIntegrationOverlay.prototype.loopRecursivelyThroughSdt=function(typeDeclarations, parentId, childId){
-				var code="";
-				var childPath="";
-				if((parentId!=null && parentId!="") && (childId !=null &&childId!="" ))
-				    childPath=  parentId+"."+childId;
-				else if (parentId!=null && parentId!="")
-				    	childPath=  parentId;
-					else
-					    childPath=  childId;    
-				
-				for ( var i = 0; i < typeDeclarations.getElementCount(); i++) {
-										var element = typeDeclarations.getElements()[i];
-
-										var type = element.type;
-										if(element.cardinality == "many" ||element.cardinality == "atLeastOne"){
-											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){//LIST of date
-												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
-												code+="for ( var j = 0; j < "+parentId+"."+element.name+".length; j++) {"
-												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"[j]!=null){\n";
-												code+=childPath+"."+element.name+"[j]=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+childPath+"."+element.name+"[j]);\n";
-												code+="}\n";
-												code+="}\n";
-												code+="}\n";
-											}else{
-											if (element.type.indexOf(':') !== -1) {
-													type = element.type.split(":")[1];
-												}
-
-												var childTypeDeclaration = typeDeclarations.model
-														.findTypeDeclarationBySchemaName(type);
-														
-												if (childTypeDeclaration != null) {
-												//complex type
-												code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
-												code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,childPath,element.name);
-												code+="}\n";
-												}
-											}
-										}
-										else{
-											if (type == "xsd:date" || type == "xsd:time" || type == "xsd:dateTime"){
-													code+="if("+childPath+"!=null && "+childPath+"."+element.name+"!=null){\n";
-													code+=childPath+"."+element.name+"=convertStringToDate(\"yyyy-MM-dd'T'HH:mm:ss.SSS\","+childPath+"."+element.name+");\n";
-													code+="}\n"
-											}else{
-												if (element.type.indexOf(':') !== -1) {
-													type = element.type.split(":")[1];
-												}
-
-												var childTypeDeclaration = typeDeclarations.model
-														.findTypeDeclarationBySchemaName(type);
-														
-												if (childTypeDeclaration != null) {
-												//complex type
-												    code+=this.loopRecursivelyThroughSdt(childTypeDeclaration,childPath,element.name);
-												}
-												
-											}
-										}
-				};
-									return code;
-
-}
 				/**
 				 *
 				 */
