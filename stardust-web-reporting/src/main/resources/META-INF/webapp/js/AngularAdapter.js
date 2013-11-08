@@ -311,6 +311,7 @@ if (!window.bpm.portal.AngularAdapter) {
 				};
 			});
 			
+
 			/*Angular directive to wrap the ace code editor and provide
 			 *a basic set of functionality.
 			 *Supports via attributes:
@@ -323,6 +324,80 @@ if (!window.bpm.portal.AngularAdapter) {
 			    /*Check for our global ace object, if it isn't there then bail.*/
 			    if(!ace){return;}
 			    
+				/*Hanging an object off of window.top.ace that we can use 
+				 *for global state related to our module.*/
+				if(ace.hasOwnProperty("ext_userDefined")===false){
+					ace["ext_userDefined"]={};/*collect here for sameness*/
+					ace.ext_userDefined.completers=[]; /*collection to keep track of completers we add*/
+				}
+				
+				/*Our session completer with ace language utils compatible interface.*/
+				var completerFac={
+						/*Completer which allows the user to specify a keyword list attached
+						 *to a drlEditor session via session.ext_userDefined.$keywordList*/
+						getSessionCompleter: function(options){
+							var metaName="Data",score=9999;
+							if(options){
+								metaName=options.metaName || metaName;
+								score=options.score || score;
+							}
+							return {
+							    getCompletions: function(editor, session, pos, prefix, callback) {
+							        var keywords=[];
+							        if(session.ext_userDefined && session.ext_userDefined.$keywordList){
+							        	keywords=session.ext_userDefined.$keywordList;
+							        }
+							        var t=session.getTextRange({
+							        	"start":{row: pos.row,column:pos.column-1},
+							        	"end":{row: pos.row,column:pos.column}
+							        });
+							        keywords = keywords.filter(function(w) {
+							            return w.lastIndexOf(prefix, 0) == 0;
+							        });
+							        callback(null, keywords.map(function(word) {
+							            return {
+							                "name": word,
+							                "value": word,
+							                "score": score,
+							                "meta": metaName
+							            };
+							        }));
+							    }
+							};
+						}
+				};
+				var completer=completerFac.getSessionCompleter();
+				var isPresent=false,
+					temp,
+					compString=completer.getCompletions.toString(),
+					langTools,
+					compLength=ace.ext_userDefined.completers.length;
+				
+				while(compLength--){
+					temp=ace.ext_userDefined.completers[compLength];
+					if(temp===compString){
+						isPresent=true;
+						console.log("Repeater found, will not be added.");
+						break;
+					}
+				}
+				
+				if(isPresent===false){
+					langTools=ace.define.modules["ace/ext/language_tools"];
+					if(langTools){
+						langTools.addCompleter(completer);
+						ace.ext_userDefined.completers.push(completer.getCompletions.toString());
+					}
+					else{
+						ace.config.loadModule("ace/ext/language_tools",function(){
+							langTools=ace.define.modules["ace/ext/language_tools"];	
+							langTools.addCompleter(completer);
+							ace.ext_userDefined.completers.push(completer.getCompletions.toString());
+						});
+					}
+				}
+
+				
 			    return {
 			      restrict: 'EA', /*Elements and attributes*/
 			      require: '?ngModel',
@@ -330,7 +405,8 @@ if (!window.bpm.portal.AngularAdapter) {
 			          var options, 
 			          	  editor, 
 			          	  session, 
-			          	  langTools;
+			          	  langTools,
+			          	  keywords;
 			          
 			          /*Setting up language tool options for editor*/
 			          options={
@@ -344,6 +420,17 @@ if (!window.bpm.portal.AngularAdapter) {
 			          session.setMode("ace/mode/" + attrs.mode);
 			          editor.setTheme("ace/theme/" + attrs.theme);
 			          
+			          /*Set our session keywords, we support either an array or comma-delimited string*/
+			          keywords=attrs.keywords;
+			          if(keywords){
+				          if( Object.prototype.toString.call( keywords ) !== '[object Array]' ) {
+				        	    keywords=keywords.split(",");
+				          }
+				          if(session.hasOwnProperty("ext_userDefined")===false){
+								session["ext_userDefined"]={};
+							}
+						  session["ext_userDefined"].$keywordList=keywords;
+			          }
 			          /*Get a reference to languageTools module, if it exists*/
 			          langTools=ace.define.modules["ace/ext/language_tools"];
 			          
