@@ -98,6 +98,18 @@ define(
 								return true;
 							}
 						}
+					} else if (this.isComplexTypeWithSimpleContent()) {
+						return true;
+					}
+
+					return false;
+				};
+				
+				TypeDeclaration.prototype.isComplexTypeWithSimpleContent = function() {
+					if (this.getTypeDeclaration()
+							&& this.getTypeDeclaration().primitiveType
+							&& this.getTypeDeclaration().attributes) {
+						return true;
 					}
 
 					return false;
@@ -618,13 +630,17 @@ define(
 				} else if (this.schema && this.schema.types) {
 					var type = this.schema.types[0];
 				}
-				if (type && type.body) {
-					for (i in type.body) {
-						if (!type.body[i].inherited
-								&& (type.body[i].classifier === 'sequence'
-										|| type.body[i].classifier === 'all' || type.body[i].classifier === 'choice')) {
-							return true;
+				if (type) {
+					if (type.body) {
+						for (i in type.body) {
+							if (!type.body[i].inherited
+									&& (type.body[i].classifier === 'sequence'
+											|| type.body[i].classifier === 'all' || type.body[i].classifier === 'choice')) {
+								return true;
+							}
 						}
+					} else if (type.primitiveType && type.attributes) {
+						return true;
 					}
 				}
 
@@ -682,6 +698,30 @@ define(
 					}
 
 					return facets;
+				}
+			};
+			
+
+			/**
+			 * @returns {Array}
+			 */
+			SchemaType.prototype.getAttributes = function() {
+				// TODO - check
+				if (this.isStructure()) {
+					var attributes = [];
+					if (this.type) {
+						var type = this.type
+					} else if (this.schema && this.schema.types) {
+						var type = this.schema.types[0];
+					}
+
+					if (type && type.attributes) {
+						attributes = type.attributes;
+					}
+
+					return attributes;
+				} else {
+					// TODO
 				}
 			};
 

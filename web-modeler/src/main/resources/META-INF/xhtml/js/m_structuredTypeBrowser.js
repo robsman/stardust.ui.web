@@ -69,7 +69,22 @@ define(
 					} else {
 						typeLabel = getSchemaTypeLabel(element.type);
 					}
-					var cardinalityLabel = getCardinalityLabel(element.cardinality);
+					
+					// Assumes element is of anonymous type and
+					// displays the element name as its type too. 
+					if (!typeLabel && element.classifier === "element") {
+						typeLabel = element.name;
+					}
+					
+					if (!typeLabel && element.classifier === "attribute" && element.primitiveType) {
+						typeLabel = getSchemaTypeLabel(element.primitiveType);
+					}
+
+					if (element.classifier === "attribute") {
+						var cardinalityLabel = element.cardinality;
+					} else {
+						var cardinalityLabel = getCardinalityLabel(element.cardinality);
+					}
 
 					m_utils.jQuerySelect("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
 					m_utils.jQuerySelect("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
@@ -96,6 +111,11 @@ define(
 					childRow.data("schemaType", schemaType);
 				} else if (element.body && element.body[0].classifier == "sequence") {
 					childRow.data("schemaType", element.body[0].body);
+				} else if (element.classifier === "element") {
+					childRow.data("schemaType", element);
+				}
+				if (element.attributes) {
+					childRow.data("attributes", element.attributes);
 				}
 
 				return childRow;
@@ -112,6 +132,7 @@ define(
 				if ( !parentRow.data("elements-initialized")) {
 					var parentPath = parent.id;
 					var schemaTypeOrElements = parentRow.data("schemaType");
+					var attributes = parentRow.data("attributes");
 				}
 					
 				var isStruct = false;
@@ -129,7 +150,7 @@ define(
 						elements = schemaTypeOrElements;
 					}
 				}
-				if (elements && elements.length > 0) {
+				if ((elements && elements.length > 0) || (attributes && attributes.length > 0)) {
 					return true;
 				}
 
@@ -142,6 +163,7 @@ define(
 				var isStruct = false;
 				var isEnum = false;
 				var elements = [];
+				var attributes = [];
 				if (schemaTypeOrElements) {
 					if ((typeof schemaTypeOrElements.getElements === "function")
 							&& (typeof schemaTypeOrElements.isStructure === "function")
@@ -149,15 +171,40 @@ define(
 						isStruct = schemaTypeOrElements.isStructure();
 						isEnum = schemaTypeOrElements.isEnumeration();
 						elements = (isStruct || isEnum) ? schemaTypeOrElements.getElements() : [];
-					} else {
+						attributes = (isStruct || isEnum) ? schemaTypeOrElements.getAttributes() : [];
+					} else if (Array.isArray(schemaTypeOrElements)) {
 						isStruct = true;
 						elements = schemaTypeOrElements;
+						if (schemaTypeOrElements.attributes) {
+							attributes = schemaTypeOrElements.attributes;
+						}
+					} else if (schemaTypeOrElements.classifier = "element") {
+						if (schemaTypeOrElements.attributes) {
+							attributes = schemaTypeOrElements.attributes;
+						}						
+						// TODO check if this has child elements
 					}
+				}
+				if (attributes) {
+					// append child rows
+					jQuery.each(attributes, function(i, attribute) {
+						var childRow = generateChildElementRow(parentPath, attribute, null, rowInitializer);
+						childRow.css("fontStyle", "italic");
+						childRows.push(childRow);
+					});
 				}
 				if (elements) {
 					// append child rows
 					jQuery.each(elements, function(i, element) {
 
+						if (elements.attributes) {
+							jQuery.each(elements.attributes, function(i, attribute) {
+								var childRow = generateChildElementRow(parentPath, attribute, null, rowInitializer);
+								childRow.css("fontStyle", "italic");
+								childRows.push(childRow);
+							});
+						}
+						
 						var childSchemaType = undefined;
 						if(isStruct && (typeof schemaTypeOrElements.resolveElementType === "function")){
 							childSchemaType = schemaTypeOrElements.resolveElementType(element.name);

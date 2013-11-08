@@ -346,7 +346,8 @@ define(
 					var baseTypeDeclaration = null;
 
 					if (typeDeclaration
-							&& "enumStructuredDataType" !== typeDeclaration.getType()) {
+							&& "enumStructuredDataType" !== typeDeclaration.getType()
+							&& !typeDeclaration.isComplexTypeWithSimpleContent()) {
 						if (typeDeclaration.getTypeDeclaration()
 								&& typeDeclaration.getTypeDeclaration().base) {
 							baseTypeDeclaration = this
@@ -713,7 +714,7 @@ define(
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
 					var nameColumn = m_utils.jQuerySelect("<td class='elementCell'></td>").appendTo(row);
-					if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+					if (this.isRowEditable(element)) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
 						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
@@ -722,26 +723,52 @@ define(
 					var typeColumn = m_utils.jQuerySelect("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
-						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+						if (this.isRowEditable(element)) {
 							typeColumn.append(this.getTypeSelectList(schemaType, element));
 						} else {
-							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : (element.type ? element.type : "")));
+							var type = schemaType ? schemaType.name : (element.type ? element.type : "");
+							if (!type) {
+								if (element.primitiveType && !element.attributes) {
+									type = m_structuredTypeBrowser.getSchemaTypeLabel(element.primitiveType);
+								} else {
+									// Assumes that this is an element of anonymous type
+									// and sets the element name as its type
+									type = element.name;
+								}
+							}
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(type));
 						}
 					}
 
 					var cardinalityColumn = m_utils.jQuerySelect("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
-						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+						if (this.isRowEditable(element)) {
 							var cardinalityBox = m_utils.jQuerySelect("<select size='1' class='cardinalitySelect'></select>");
 							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
 								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
 							});
 							cardinalityColumn.append(cardinalityBox);
 						} else {
-							cardinalityColumn.append(m_structuredTypeBrowser.getCardinalityLabel(element.cardinality));
+							if (element.classifier === "attribute") {
+								// Cardinality not displayed for attributes
+								cardinalityColumn.append(element.cardinality);
+							} else {
+								cardinalityColumn.append(m_structuredTypeBrowser.getCardinalityLabel(element.cardinality));
+							}
 						}
 					}
 				};
+				
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.isRowEditable = function(element) {
+					if ( !this.typeDeclaration.isExternalReference() && !element.inherited && (element.classifier !== "attribute")) {
+						return true;
+					}
+					
+					return false;
+				}
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
 					var selectedRowIndex = m_utils.jQuerySelect("table#typeDeclarationsTable tr.selected").first().index();
@@ -762,6 +789,7 @@ define(
 					jQuery.each(roots, function(i, parentRow) {
 						var parentPath = parentRow.data("path");
 						var schemaType = parentRow.data("schemaType");
+						var attributes = parentRow.data("attributes");
 						var childRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, schemaType);
 
 						parentRow.appendTo(view.tableBody);
