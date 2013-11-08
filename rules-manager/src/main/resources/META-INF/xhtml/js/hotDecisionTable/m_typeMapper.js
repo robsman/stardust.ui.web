@@ -3,7 +3,7 @@
  * */
 define(["jquery"],function($){
 
-	var format="mm/dd/y",
+	var format="yy-mm-dd",
 	    today = new Date();
 	/*dependency on jqueryui datepicker for formatting.*/
 	try{
