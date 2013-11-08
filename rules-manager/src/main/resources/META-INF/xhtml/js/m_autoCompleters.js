@@ -5,14 +5,14 @@ define([],function(){
 			 *to a drlEditor session via session.ext_userDefined[key]
 			 *@Param: extKey - Hash key where we can find our keywords.*/
 			getSessionCompleter: function(options){
-				var metaName="Data",score=0;
+				var metaName="Data",score=9999;
 				if(options){
 					metaName=options.metaName || metaName;
 					score=options.score || score;
 				}
 				return {
 				    getCompletions: function(editor, session, pos, prefix, callback) {
-				        var keywords="";
+				        var keywords=[];
 				        if(session.ext_userDefined && session.ext_userDefined.$keywordList){
 				        	keywords=session.ext_userDefined.$keywordList;
 				        }
