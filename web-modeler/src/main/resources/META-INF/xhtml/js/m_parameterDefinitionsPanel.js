@@ -902,7 +902,9 @@ define(
 					var changedParameterDefinitions = [];
 
 					for ( var n = 0; n < this.parameterDefinitions.length; ++n) {
-						if (this.parameterDefinitions[n].id != this.currentParameterDefinition.id) {
+						if (!((this.parameterDefinitions[n].id == this.currentParameterDefinition.id) 
+						   &&
+						   (this.parameterDefinitions[n].direction == this.currentParameterDefinition.direction))) {
 							changedParameterDefinitions
 									.push(this.parameterDefinitions[n]);
 						}

@@ -1112,8 +1112,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString();
             String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString();
-            String dataPathDirection = dataPathJson.get(
-                  ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
             DataPathType dataPathType = getModelBuilderFacade().createDataPath();
 
@@ -1133,8 +1131,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
             dataPathType.setId(dataPathID);
             dataPathType.setName(dataPathName);
-
-
 
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
             {
