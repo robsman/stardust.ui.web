@@ -100,13 +100,7 @@
          <filterset refid="filter.product" />
       </copy>
       <replace file="${build.src.doc}/toc.html" token="handbooks" value="bpm" /> 
-      <copy todir="${build.src.bpmdoc}" >
-         <fileset dir="${bpm.doc.path}/html/handbooks">
-            <include name="**/*.html"/>
-            <include name="**/*.htm"/>
-         </fileset>
-         <filterset refid="filter.product" />
-      </copy>
+      <!-- copy images without filtering -->
       <copy todir="${build.src.bpmdoc}" >
          <fileset dir="${bpm.doc.path}/html/handbooks">
             <include name="**/*.png"/>
@@ -114,32 +108,40 @@
             <include name="**/*.jpg"/>
          </fileset>
       </copy>
+      <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+      <!-- level 1 -->
+            <copy todir="${build.src.bpmdoc}" >
+               <fileset dir="${bpm.doc.path}/html/handbooks">
+                  <include name="*/*.html"/>
+                  <include name="*/*.htm"/>
+               </fileset>
+               <filterset refid="filter.product" />
+               <filterchain>
+                   <tokenfilter>
+                      <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../portal/"/>
+                      <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                   </tokenfilter>
+               </filterchain>
+            </copy>
 
+      <!-- level 2 -->
+            <copy todir="${build.src.bpmdoc}" >
+               <fileset dir="${bpm.doc.path}/html/handbooks">
+                  <include name="*/*/*.html"/>
+                  <include name="*/*/*.htm"/>
+               </fileset>
+               <filterset refid="filter.product" />
+               <filterchain>
+                   <tokenfilter>
+                       <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../../portal/"/>
+                      <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                   </tokenfilter>
+               </filterchain>
+            </copy>
+ 
       <!-- copy end user doc -->
-      <copy todir="${build.src.portaldoc}" overwrite="true">
-         <fileset dir="${enduser.doc.path}/html/handbooks">
-            <include name="**/*.html"/>
-            <include name="**/*.htm"/>
-         </fileset>
-         <filterset refid="filter.product" />
-         <!-- only for navigation to components chapters moved to misc plugins -->
-         <filterchain>
-             <tokenfilter>
-                 <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
-             </tokenfilter>
-         </filterchain>
-      </copy>
-      <!-- replace components level specific navigation to misc plugins -->
-      <copy todir="${build.src.portaldoc}/execution-clients/components" overwrite="true">
-         <fileset dir="${enduser.doc.path}/html/handbooks/execution-clients/components">
-            <include name="*.html"/>
-         </fileset>
-         <filterchain>
-             <tokenfilter>
-                 <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
-             </tokenfilter>
-         </filterchain>
-      </copy>
+      
+      <!-- copy images without filtering -->
       <copy todir="${build.src.portaldoc}" >
          <fileset dir="${enduser.doc.path}/html/handbooks">
             <include name="**/*.png"/>
@@ -147,8 +149,56 @@
             <include name="**/*.jpg"/>
          </fileset>
       </copy>
+      <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+      <!-- level 1 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*.html"/>
+            <include name="*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
       
-      <!-- copy portal issues residing in misc plugins -->
+      <!-- level 2 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*/*.html"/>
+            <include name="*/*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
+      
+      <!-- level 3 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*/*/*.html"/>
+            <include name="*/*/*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
+
+	   <!-- copy portal issues residing in misc plugins -->
       <copy todir="${build.src.miscdoc}" overwrite="true">
          <fileset dir="${misc.doc.path}">
             <include name="**/*.html"/>
@@ -158,10 +208,12 @@
          <filterset refid="filter.product" />
          <filterchain>
              <tokenfilter>
-                 <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../toc.html"/>
              </tokenfilter>
          </filterchain>
-      </copy>
+     </copy>
       <copy todir="${build.src.miscdoc}" >
          <fileset dir="${misc.doc.path}">
             <include name="**/*.png"/>
