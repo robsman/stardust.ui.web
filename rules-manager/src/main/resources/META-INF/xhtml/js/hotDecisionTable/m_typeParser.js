@@ -325,7 +325,8 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		parsedTypes=fxTypeDecl(typeDecl,typeDecl.getElements());
 		return parsedTypes;
 	},
-	parseParamDefToStringFrags:function(paramDef){
+	"parseTypeToStringFrags": parseTypeToStringFrags,
+	"parseParamDefToStringFrags":function(paramDef){
 		var typeDecl;
 		var data;
 		if(paramDef.dataType==="primitive"){
@@ -336,7 +337,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		}
 		return data;
 	},
-	parseTypeDeclToDRL: function(typeDecls){
+	"parseTypeDeclToDRL": function(typeDecls){
 		var parsedTypes=[],   /*stage 1 of our parsing*/
 			typeCounter,
 			temp,
@@ -351,10 +352,10 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		drlStrings=parseToDRLStrings(parsedTypes);
 		return drlStrings;
 	},
-    parsetoJsTree: function(typeBody,paramDef){
+    "parsetoJsTree": function(typeBody,paramDef){
       return fx(typeBody,paramDef);
     },
-    parseParamDefinitonsToJsTree: function(paramDefs){
+    "parseParamDefinitonsToJsTree": function(paramDefs){
     	var paramDefCount=paramDefs.length,
 	        jsonTreeData=[],
 	        paramDef,
