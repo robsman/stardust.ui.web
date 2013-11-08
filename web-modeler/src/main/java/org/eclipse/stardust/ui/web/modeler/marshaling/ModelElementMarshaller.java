@@ -353,59 +353,98 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       DataTypeType dataType = formalParameter.getDataType();
       final ModelType model = ModelUtils.findContainingModel(formalParameter);
-      if (model != null && dataType.getCarnotType() != null)
+      if (model != null)
       {
-         if (dataType.getCarnotType().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
+         if(dataType.getCarnotType() != null)
          {
-            formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
-
-            ModelType typeModel = model;
-            XpdlTypeType xpdlType = dataType.getDataType();
-            String typeDeclarationId = null;
-            if (xpdlType instanceof DeclaredTypeType)
+            if (dataType.getCarnotType().equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
             {
-               typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+   
+               ModelType typeModel = model;
+               XpdlTypeType xpdlType = dataType.getDataType();
+               String typeDeclarationId = null;
+               if (xpdlType instanceof DeclaredTypeType)
+               {
+                  typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+               }
+               else if (xpdlType instanceof ExternalReferenceType)
+               {
+                  String modelId = ((ExternalReferenceType) xpdlType).getLocation();
+                  typeModel = getModelBuilderFacade().findModel(modelId);
+                  typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
+               }
+   
+               TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+   
+               String fullId = getModelBuilderFacade().createFullId(typeModel, typeDeclaration);
+   
+               formalParameterJson.addProperty(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
             }
-            else if (xpdlType instanceof ExternalReferenceType)
+            else if (dataType.getCarnotType().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
             {
-               String modelId = ((ExternalReferenceType) xpdlType).getLocation();
-               typeModel = getModelBuilderFacade().findModel(modelId);
-               typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
+   
+               String typeDeclarationId = dataType.getDeclaredType().getId();
+   
+               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+   
+               formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
+                     getModelBuilderFacade().createFullId(model, typeDeclaration));
             }
-
-            TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
-                  .getTypeDeclaration(typeDeclarationId);
-
-            String fullId = getModelBuilderFacade().createFullId(typeModel, typeDeclaration);
-
-            formalParameterJson.addProperty(
-                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+            else if (dataType.getCarnotType().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+   
+               String type = getPrimitiveType(formalParameter, changeDescriptions);
+               if (type != null)
+               {
+                  formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+               }
+            }
          }
-         else if (dataType.getCarnotType().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+         else
          {
-            formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
-
-            String typeDeclarationId = dataType.getDeclaredType().getId();
-
-            TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
-                  .getTypeDeclaration(typeDeclarationId);
-
-            formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
-                  getModelBuilderFacade().createFullId(model, typeDeclaration));
-         }
-         else if (dataType.getCarnotType().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-         {
-            formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-
-            String type = getPrimitiveType(formalParameter, changeDescriptions);
-            if (type != null)
+            if (dataType.getBasicType() != null)
             {
-               formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+               
+               String type = getPrimitiveType(formalParameter, changeDescriptions);
+               if (type != null)
+               {
+                  formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+               }
             }
-         }
+            if (dataType.getDeclaredType() != null)
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
+               
+               String dataId = dataType.getDeclaredType().getId();
+               if(StringUtils.isEmpty(dataId))
+               {                  
+                  dataId = formalParameter.getId();
+               }
+               DataType structuredData = ModelUtils.findElementById(model.getData(), dataId);                  
+               if(structuredData != null)
+               {
+                  String tdId = AttributeUtil.getAttributeValue(structuredData,
+                        StructuredDataConstants.TYPE_DECLARATION_ATT);
+                  
+                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(tdId);   
+                  
+                  formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
+                        getModelBuilderFacade().createFullId(model, typeDeclaration));
+               }               
+            }         
+         }         
 
          FormalParameterMappingsType mappingsType = getFormalParameterMappings(formalParameter);
          if (mappingsType != null)
@@ -2911,8 +2950,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                JsonObject referenceJson = new JsonObject();
 
                referencesJson.add(referenceJson);
-
-               String info = "";
 
                if (reference instanceof AttributeType)
                {
