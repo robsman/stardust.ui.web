@@ -139,6 +139,18 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				changes : changes
 			} ]);
 		},
+		createDeleteConfigVariableCommand : function(modelId, uuid, changes) {
+			return new ChangeDescriptor("configVariable.delete", modelId, [ {
+				uuid : uuid,
+				changes : changes
+			} ]);
+		},
+		createUpdateConfigVariableCommand : function(modelId, uuid, changes) {
+			return new ChangeDescriptor("configVariable.update", modelId, [ {
+				uuid : uuid,
+				changes : changes
+			} ]);
+		},
 		createUpdateModelLockStatusCommand : function(uuid, modelId, changes) {
 			return new ChangeDescriptor("modelLockStatus.update", modelId, [ {
 				uuid : uuid,

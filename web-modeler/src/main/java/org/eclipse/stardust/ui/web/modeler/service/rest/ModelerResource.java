@@ -616,55 +616,6 @@ public class ModelerResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/configurationVariables/{variableName}")
-   public Response updateConfigurationVariable(@PathParam("modelId") String modelId,
-         String postedData)
-   {
-      try
-      {
-         return Response.ok(
-               modelService.updateConfigurationVariable(modelId,
-                     jsonIo.readJsonObject(postedData)).toString(), APPLICATION_JSON_TYPE)
-               .build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @DELETE
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/configurationVariables/{variableName}")
-   public Response deleteConfigurationVariable(@PathParam("modelId") String modelId,
-         @PathParam("variableName") String variableName, String postedData)
-   {
-      try
-      {
-         System.out.println("Delete parameter: " + postedData);
-
-         variableName = URLDecoder.decode(variableName);
-         JsonObject json = jsonIo.readJsonObject(postedData);
-         modelService.deleteConfigurationVariable(modelId, variableName, json);
-
-         return Response.ok(
-               modelService.getConfigurationVariables(modelId).toString(),
-               APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
    @Path("models/{modelId}/processes/{processId}/decorations/{decorationId}")
    public Response getDecoration(@PathParam("modelId") String modelId,
          @PathParam("processId") String processId,

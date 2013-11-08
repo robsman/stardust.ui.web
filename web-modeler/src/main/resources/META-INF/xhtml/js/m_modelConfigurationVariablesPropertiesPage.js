@@ -195,42 +195,37 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
-				ConfigurationVariablesPropertiesPage.prototype.submitDeleteCommand = function(deleteOptions,event) {
-					jQuery
-							.ajax(
-									{
-										type : "DELETE",
-										url : m_urlUtils
-												.getModelerEndpointUrl()
-												+ "/models/"
-												+ encodeURIComponent(event.data.page
-														.getModel().id)
-												+ "/configurationVariables/"
-												+ event.data.page.currentConfigurationVariable.name,
-										contentType : "application/json",
-										async : false,
-										data : JSON.stringify(deleteOptions)
-									})
-							.done(
-									function() {
-										m_utils
-												.jQuerySelect(
-														"#deleteConfigurationVariableDialog")
-												.dialog("close");
-										event.data.page
-												.refreshConfigurationVariables();
-									}).fail(function(e) {
-								alert("Delete failed: " + e);
-							});
+				ConfigurationVariablesPropertiesPage.prototype.submitDeleteCommand = function(
+						deleteOptions, event) {
+					var changes = {
+						variableName : event.data.page.currentConfigurationVariable.name,
+						deleteOptions : deleteOptions
+					};
+					var command = m_command.createDeleteConfigVariableCommand(
+							event.data.page.getModel().id, event.data.page
+									.getModel().uuid, changes);
+					var deleteStatus = m_commandsController
+							.submitCommand(command);
+
+					deleteStatus.fail(function(e) {
+						alert("Delete failed: " + e);
+					});
+
+					deleteStatus.done(function() {
+						m_utils.jQuerySelect(
+								"#deleteConfigurationVariableDialog").dialog(
+								"close");
+					});
+
 				};
 				
 				/**
 				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.setElement = function() {
-					this.refreshConfigurationVariables();
+					this.refreshConfigurationVariablesTable(this.propertiesPanel.model.configVariables);
 				};
 
 				/**
@@ -335,12 +330,11 @@ define(
 											variableName : variables[n].name
 										},
 										function(event) {
-											event.data.page
-													.modifyConfigurationVariable(
-															event.data.variableName,
-															m_utils.jQuerySelect(
-																	this)
-																	.val());
+											var changes = {
+													variableName : event.data.variableName,
+													defaultValue : m_utils.jQuerySelect(this).val()
+											};
+											event.data.page.modifyConfigurationVariable(event, changes);
 										});
 
 						cell = m_utils.jQuerySelect("<td></td>");
@@ -360,12 +354,11 @@ define(
 											variableName : variables[n].name
 										},
 										function(event) {
-											event.data.page
-													.modifyConfigurationVarDescription(
-															event.data.variableName,
-															m_utils.jQuerySelect(
-																	this)
-																	.val());
+											var changes = {
+													variableName : event.data.variableName,
+													description : m_utils.jQuerySelect(this).val()
+											};
+											 event.data.page.modifyConfigurationVariable(event, changes);
 										});
 						
 						cell = m_utils.jQuerySelect("<td></td>");
@@ -454,43 +447,13 @@ define(
 				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVariable = function(
-						variableName, defaultValue) {
-					m_communicationController.postData({
-						url : m_communicationController.getEndpointUrl()
-								+ "/models/" + encodeURIComponent(this.getModel().id)
-								+ "/configurationVariables/" + variableName
-					}, JSON.stringify({
-						variableName : variableName,
-						defaultValue : defaultValue
-					}), {
-						"success" : function() {
-						},
-						"error" : function() {
-							m_utils.debug("Error");
-						}
-					});
+						event, changes) {
+					var command = m_command.createUpdateConfigVariableCommand(
+							event.data.page.getModel().id, event.data.page
+									.getModel().uuid, changes);
+					var deleteStatus = m_commandsController.submitCommand(command);
 				};
 				
-				/**
-				 *
-				 */
-				ConfigurationVariablesPropertiesPage.prototype.modifyConfigurationVarDescription = function(
-						variableName, description) {
-					m_communicationController.postData({
-						url : m_communicationController.getEndpointUrl()
-								+ "/models/" + encodeURIComponent(this.getModel().id)
-								+ "/configurationVariables/" + variableName
-					}, JSON.stringify({
-						variableName : variableName,
-						description : description
-					}), {
-						"success" : function() {
-						},
-						"error" : function() {
-							m_utils.debug("Error");
-						}
-					});
-				};
 			}
 
 			/**

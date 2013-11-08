@@ -2931,56 +2931,11 @@ public class ModelService
     */
 
    /**
-    * @return
-    *
-    */
-   public void deleteConfigurationVariable(String modelId, String variableName,
-         JsonObject json)
-   {
-      System.out.println("Configuration Variable:");
-
-      ModelType model = findModel(modelId);
-      VariableContext variableContext = new VariableContext();
-      variableContext.initializeVariables(model);
-      variableContext.refreshVariables(model);
-      variableContext.saveVariables();
-
-      JsonElement jsonMode = json.get("mode");
-      String mode = jsonMode.getAsString();
-
-      ModelVariable modelVariableByName = variableContext.getModelVariableByName(variableName);
-      if (modelVariableByName != null)
-      {
-         modelVariableByName.setRemoved(true);
-         String newValue = null;
-
-         if (mode.equals("withLiteral"))
-         {
-            JsonElement jsonValue = json.get("literalValue");
-            newValue = jsonValue.getAsString();
-         }
-         else if (mode.equals("defaultValue"))
-         {
-            newValue = modelVariableByName.getDefaultValue();
-         }
-         else
-         {
-            newValue = "";
-         }
-
-         variableContext.replaceVariable(modelVariableByName, newValue);
-         variableContext.saveVariables();
-      }
-   }
-
-   /**
     *
     */
    public JsonArray getConfigurationVariables(String modelId)
    {
       JsonArray variablesJson = new JsonArray();
-
-      System.out.println("Configuration Variables:");
 
       ModelType model = findModel(modelId);
 
@@ -3077,35 +3032,6 @@ public class ModelService
       }
 
       return variablesJson;
-   }
-
-   /**
-    *
-    */
-   public JsonObject updateConfigurationVariable(String modelId, JsonObject postedData)
-   {
-      ModelType model = findModel(modelId);
-      VariableContext variableContext = new VariableContext();
-
-      variableContext.initializeVariables(model);
-      variableContext.refreshVariables(model);
-      variableContext.saveVariables();
-
-      ModelVariable modelVariable = variableContext.getModelVariableByName(postedData.get(
-            "variableName")
-            .getAsString());
-
-      if(postedData.has("defaultValue"))
-      {
-         modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
-      }
-      if(postedData.has("description"))
-      {
-         modelVariable.setDescription(postedData.get("description").getAsString());
-      }
-      variableContext.saveVariables();
-
-      return postedData;
    }
 
    /**
