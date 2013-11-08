@@ -54,12 +54,13 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.lastModificationDate=currentDateTime;
 					this.creationDate=currentDateTime;
 					this.tableData={
-							columns:[{type:"text"}],
+							columns:[{type:"text"},{type:"checkbox","default":true}],
 					        data:[
-					               ['']
+					               ['',true]
 					           ],
-					        colWidths:[90],
-					        colHeaders:["Description|NA|Header"]
+					        colWidths:[90,90],
+					        colHeaders:["Description|NA|Header",
+					                    "lock-on-active|NA|Attribute"]
 					};
 				};
 				
