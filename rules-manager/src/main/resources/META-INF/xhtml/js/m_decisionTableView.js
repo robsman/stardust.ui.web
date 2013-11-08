@@ -160,7 +160,7 @@ define(
 						};
 						console.log(dataSnapshot)
 						var cmd=m_ruleSetCommand.decTableDataCmd(
-								ruleSet,decTable,snapshotBuilder(settings)(),event);
+								ruleSet,decTable,snapshotBuilder(settings)(),undefined);
 						lastCmdID=cmd.id;
 						m_ruleSetCommandDispatcher.trigger(cmd);
 						ruleSet.state.isDirty=true;
@@ -357,7 +357,7 @@ define(
 						ruleSet.state.isDirty=true;	
 						/*Communciate event to our dispatcher in the sky.*/
 						var cmd=m_ruleSetCommand.decTableDescriptionCmd(
-								ruleSet,decTable,decTable.description,event);
+								ruleSet,decTable,decTable.description,undefined);
 						m_ruleSetCommandDispatcher.trigger(cmd);
 					});
 					
@@ -368,7 +368,7 @@ define(
 						ruleSet.state.isDirty=true;
 						/*Communciate event to our dispatcher in the sky.*/
 						var cmd=m_ruleSetCommand.decTableRenameCmd(
-								ruleSet,decTable,decTable.name,event);
+								ruleSet,decTable,decTable.name,undefined);
 						m_ruleSetCommandDispatcher.trigger(cmd);
 
 					});
