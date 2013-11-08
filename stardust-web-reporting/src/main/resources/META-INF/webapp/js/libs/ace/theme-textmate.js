@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/textmate', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
+ace.define('ace/theme/textmate', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
 
 
 exports.isDark = false;
@@ -44,7 +44,7 @@ background: #e8e8e8;\
 .ace-tm .ace_fold {\
 background-color: #6B72E6;\
 }\
-.ace-tm .ace_scroller {\
+.ace-tm {\
 background-color: #FFFFFF;\
 }\
 .ace-tm .ace_cursor {\
@@ -114,10 +114,10 @@ color: rgb(104, 104, 91);\
 .ace-tm .ace_entity.ace_name.ace_function {\
 color: #0000A2;\
 }\
-.ace-tm .ace_markup.ace_heading {\
+.ace-tm .ace_heading {\
 color: rgb(12, 7, 255);\
 }\
-.ace-tm .ace_markup.ace_list {\
+.ace-tm .ace_list {\
 color:rgb(185, 6, 144);\
 }\
 .ace-tm .ace_meta.ace_tag {\

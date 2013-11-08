@@ -115,15 +115,7 @@ define(
 									name : 'colors'
 								} ]
 					});
-
-					// this.computedColumnExpressionEditor = Ace
-					// .edit(jQuery("#computedColumnExpressionEditor"));
-					//
-					// this.computedColumnExpressionEditor.getSession().setMode(
-					// "ace/mode/javascript");
-					// this.computedColumnExpressionEditor
-					// .setTheme("ace/theme/chrome");
-
+					
 					CKEDITOR.instances["documentTemplateEditor"]
 							.on(
 									'blur',

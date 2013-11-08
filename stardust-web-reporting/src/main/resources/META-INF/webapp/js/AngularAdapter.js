@@ -310,6 +310,71 @@ if (!window.bpm.portal.AngularAdapter) {
 					});
 				};
 			});
+			
+			/*Angular directive to wrap the ace code editor and provide
+			 *a basic set of functionality.
+			 *Supports via attributes:
+			 *	mode: defines the language we will support
+			 *	theme: defines the css for the syntax highlighter
+			 *	snippets: whether or not to support snippets (if available)
+			 *	ng-Model: model we will bind our value to.*/
+			this.angularModule.directive("ippAce",function(){
+				
+			    /*Check for our global ace object, if it isn't there then bail.*/
+			    if(!ace){return;}
+			    
+			    return {
+			      restrict: 'EA', /*Elements and attributes*/
+			      require: '?ngModel',
+			      link: function (scope, elm, attrs, ngModel) {
+			          var options, 
+			          	  editor, 
+			          	  session, 
+			          	  langTools;
+			          
+			          /*Setting up language tool options for editor*/
+			          options={
+			  					"enableSnippets": !!attrs.snippets,
+			  					"enableBasicAutocompletion": !!attrs.autocomplete
+			          };
+
+			          /*Setting options from user attributes*/
+			          editor = window.ace.edit(elm[0]); 
+			          session = editor.getSession();
+			          session.setMode("ace/mode/" + attrs.mode);
+			          editor.setTheme("ace/theme/" + attrs.theme);
+			          
+			          /*Get a reference to languageTools module, if it exists*/
+			          langTools=ace.define.modules["ace/ext/language_tools"];
+			          
+			          /*if module is loaded go ahead and set our options, otherwise load it 
+			           *and set options on the callback.*/
+			          if(langTools){
+			              editor.setOptions(options);
+			          }
+			          else{
+			            ace.config.loadModule("ace/ext/language_tools",function(){
+			              editor.setOptions(options);
+			            });
+			          }
+			          
+			          /*set our initial value to that of our bound model*/
+			          ngModel.$render = function () {
+			            session.setValue(ngModel.$viewValue);
+			          };
+			          
+			          /*any time our editors session registers a change event,
+			           *set the resultant value on our bound model.*/
+			          session.on('change',function(){
+			            scope.$apply(function(){
+			              ngModel.$setViewValue(session.getValue());
+			            });
+			          });
+			        }
+			      };
+			});
+			/****Angular Ace Directive END *****/
+			
 		};
 	}
 }

@@ -300,3 +300,10 @@ div.right {
 	font-weight: normal !important;
 	font-family: Helvetica, Arial, sans-serif !important;
 }
+
+/*ipp-Ace styling for our directive*/
+[ipp-Ace] {
+	width:500px;
+	height:80px;"
+	border:solid 1px #555555;
+}

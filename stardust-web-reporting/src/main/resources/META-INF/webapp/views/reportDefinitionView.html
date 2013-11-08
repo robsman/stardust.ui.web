@@ -248,9 +248,16 @@ table.formTable td {
 													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
 												</tr>
 												<tr>
-													<td><textarea id="computedColumnExpressionEditor"
-															rows="10" cols="80"
-															ng-model="selectedComputedColumn.formula"></textarea></td>
+													<td>
+														<div 
+												          ipp-Ace 
+												          mode="javascript" 
+												          theme="chrome" 
+												          snippets="true"
+												          autocomplete="true"
+												          ng-model="selectedComputedColumn.formula">
+												        </div>
+													</td>
 												</tr>
 											</table></td>
 									</tr>
