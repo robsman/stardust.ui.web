@@ -48,7 +48,7 @@ define(["jquery","./m_chMenuFactoryLegacy",
         		
         		switch(key){
         		case "override_insert_rowBelow":
-        			selectedRow =selectedRow+1;
+        			selectedRow =selectedRow + 1;
         		case "override_insert_rowAbove":
         			settings.helperFunctions.addDefaultRow(instance,selectedRow);
         			break;
@@ -199,7 +199,7 @@ define(["jquery","./m_chMenuFactoryLegacy",
         	  var settings=instance.getSettings(),
         	      data=settings.data,
         	      rowCount=settings.data.length;
-        	  if(to < 1 || to > rowCount){return;}
+        	  if(to < 0 || to > rowCount){return;}
         	  data.splice(to,0,data.splice(from,1)[0]);
         	  instance.updateSettings({"data":data});
         	  instance.runHooks('afterChange');
@@ -440,6 +440,47 @@ define(["jquery","./m_chMenuFactoryLegacy",
             });
     	    instance.runHooks('afterChange');
           },
+          hideAttributeColumns: function(instance){
+        	  var settings=instance.getSettings(),
+	    	  	  snapShots=settings.snapShots,
+	    	      colHdrs=settings.colHeaders,
+	    	      colWidths=settings.colWidths,
+	    	      colHdrCount=colHdrs.length,
+	    	      colHdr;
+	    	      
+	    	  while(colHdrCount--){
+	    		  colHdr=colHdrs[colHdrCount].split("|");
+	    		  if(colHdr[2]==="Attribute"){
+	    				  snapShots.hiddenColumns["COL_" + colHdr[0] ]=colWidths[colHdrCount];
+	    				  colWidths[colHdrCount]=1;
+	    			  }
+	    		  }
+	    		  instance.updateSettings({
+	    			  "colWidths":colWidths,
+	    			  "snapShots":snapShots});
+          },
+          showAttributeColumns: function(instance){
+        	  var settings=instance.getSettings(),
+	    	  	  snapShots=settings.snapShots,
+	    	      colHdrs=settings.colHeaders,
+	    	      colWidths=settings.colWidths,
+	    	      colHdrCount=colHdrs.length,
+	    	      colHdr;
+    	      
+	    	  while(colHdrCount--){
+	    		  colHdr=colHdrs[colHdrCount].split("|");
+	    		  if(colHdr[2]==="Attribute"){
+	    			  if(colWidths[colHdrCount]==1){
+	    				  if(snapShots.hiddenColumns["COL_" + colHdr[0]]){
+	    					  colWidths[colHdrCount]=snapShots.hiddenColumns["COL_" + colHdr[0] ];
+	    				  }
+	    			  }
+	    		  }
+	    	  }
+	    	  instance.updateSettings({
+    			  "colWidths":colWidths,
+    			  "snapShots":snapShots});
+          },
           toggleNonDataColumns: function(instance){
         	  var settings=instance.getSettings(),
         	  	  snapShots=settings.snapShots,
@@ -460,11 +501,11 @@ define(["jquery","./m_chMenuFactoryLegacy",
         				  snapShots.hiddenColumns["COL_" + colHdr[0] ]=colWidths[colHdrCount];
         				  colWidths[colHdrCount]=1;
         			  }
-        		  }
-        		  instance.updateSettings({
-        			  "colWidths":colWidths,
-        			  "snapShots":snapShots});
+        		  }	  
         	  }
+        	  instance.updateSettings({
+    			  "colWidths":colWidths,
+    			  "snapShots":snapShots});
           },
           setColumnWidth: function(instance,index,width){
             var settings=instance.getSettings();
