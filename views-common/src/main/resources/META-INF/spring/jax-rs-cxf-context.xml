@@ -14,10 +14,14 @@
 	<jaxrs:server id="views-common" address="/views-common">
 		<jaxrs:serviceBeans>
 			<ref bean="documentRepositoryRestletBean" />
+            <ref bean="ippMashupConfigCallbackController" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
 
 	<bean id="documentRepositoryRestletBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentRepositoryRestlet" />
+
+    <bean id="ippMashupConfigCallbackController"
+        class="org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController" />
 
 </beans>

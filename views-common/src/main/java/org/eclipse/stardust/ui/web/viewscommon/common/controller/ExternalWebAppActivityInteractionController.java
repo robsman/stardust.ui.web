@@ -16,6 +16,7 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.Properties;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -35,9 +36,11 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
+import org.eclipse.stardust.engine.core.runtime.internal.SessionManager;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
@@ -165,7 +168,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
-      
+
       // allow base URI override via parameter
       String servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
       if (isEmpty(servicesBaseUri))
@@ -173,17 +176,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
       }
 
-      String requestLocalName = req.getLocalName();
-
-      servicesBaseUri = servicesBaseUri.replace("${request.scheme}", req.getScheme());
-      servicesBaseUri = servicesBaseUri.replace("${request.serverName}", req.getServerName());
-      if (requestLocalName != null)
-      {
-         servicesBaseUri = servicesBaseUri.replace("${request.serverLocalName}", requestLocalName);
-      }
-      servicesBaseUri = servicesBaseUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
-      servicesBaseUri = servicesBaseUri.replace("${request.serverLocalPort}", Integer.toString(req.getLocalPort()));
-      servicesBaseUri = servicesBaseUri.replace("/${request.contextPath}", req.getContextPath());
+      servicesBaseUri = expandUriTemplate(servicesBaseUri, req);
 
       String portalBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.PortalBaseUri");
       if (isEmpty(portalBaseUri))
@@ -191,15 +184,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
       }
 
-      portalBaseUri = portalBaseUri.replace("${request.scheme}", req.getScheme());
-      portalBaseUri = portalBaseUri.replace("${request.serverName}", req.getServerName());
-      if (requestLocalName != null)
-      {
-         portalBaseUri = portalBaseUri.replace("${request.serverLocalName}", requestLocalName);
-      }
-      portalBaseUri = portalBaseUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
-      portalBaseUri = portalBaseUri.replace("${request.serverLocalPort}", Integer.toString(req.getLocalPort()));
-      portalBaseUri = portalBaseUri.replace("/${request.contextPath}", req.getContextPath());
+      portalBaseUri = expandUriTemplate(portalBaseUri, req);
 
       String uri = "";
       Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
@@ -219,7 +204,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             trace.info("Overriding external Web App URI to " + uri);
          }
       }
-      
+
       // Take out Hash if any to append at the end
       String uriHash = "";
       if (uri.contains("#"))
@@ -245,7 +230,60 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       // Append Hash
       uriBuilder.append(uriHash);
       
-      return fc.getExternalContext().encodeResourceURL(uriBuilder.toString());
+      String panelUri = uriBuilder.toString();
+
+      if (Parameters.instance().getBoolean("org.eclipse.stardust.ui.web.feature.mashupCredentialsPropagation", false));
+      {
+         MashupContextConfigRestController contextConfigController = (MashupContextConfigRestController) ManagedBeanUtils
+               .getManagedBean(fc, "ippMashupConfigCallbackController");
+         if (null != contextConfigController)
+         {
+            // retrieve real credentials
+            Map<String, String> credentials = SessionManager.instance().getSessionTokens();
+
+            panelUri = contextConfigController.obtainMashupPanelBootstrapUri(panelUri, credentials,
+                  URI.create(servicesBaseUri + "rest/views-common/"));
+         }
+         else
+         {
+            trace.error("Missing mashup context config controller, unable to propagate credentials.");
+         }
+      }
+
+      return fc.getExternalContext().encodeResourceURL(panelUri);
+   }
+
+   private String expandUriTemplate(String uriTemplate, HttpServletRequest req)
+   {
+      String uri = uriTemplate;
+
+      if (uri.contains("${request.scheme}"))
+      {
+         uri = uri.replace("${request.scheme}", req.getScheme());
+      }
+      if (uri.contains("${request.serverName}"))
+      {
+         uri = uri.replace("${request.serverName}", req.getServerName());
+      }
+      if (uri.contains("${request.serverLocalName}") && !isEmpty(req.getLocalName()))
+      {
+         uri = uri.replace("${request.serverLocalName}", req.getLocalName());
+      }
+      if (uri.contains("${request.serverPort}"))
+      {
+         uri = uri
+               .replace("${request.serverPort}", Integer.toString(req.getServerPort()));
+      }
+      if (uri.contains("${request.serverLocalPort}"))
+      {
+         uri = uri.replace("${request.serverLocalPort}",
+               Integer.toString(req.getLocalPort()));
+      }
+      if (uri.contains("/${request.contextPath}"))
+      {
+         uri = uri.replace("/${request.contextPath}", req.getContextPath());
+      }
+      return uri;
    }
 
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)

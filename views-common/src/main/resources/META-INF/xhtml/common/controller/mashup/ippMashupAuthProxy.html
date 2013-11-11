@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Initiate authenticated request</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
+<script
+	src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.js"></script>
+<script>
+  $(document).ready(
+      function() {
+        var callbackUriMatcher = RegExp('[?&]contextConfigCallback=([^&]*)').exec(
+            window.location.search);
+        var callbackUri = callbackUriMatcher
+            && decodeURIComponent(callbackUriMatcher[1].replace(/\+/g, ' '));
+
+        $("ul").append("<li>Initiating request ...</li>");
+        $.ajax({
+          type : "GET",
+          crossDomain : true,
+          url : callbackUri,
+          dataType : $.support.cors ? "json" : "jsonp",
+          success : function(result, status) {
+            $("ul").append("<li>Successfully retrieved context config ...</li>");
+
+            $.each(result.cookies || [], function(i, cookieCfg) {
+              $.cookie(cookieCfg.name, cookieCfg.value, cookieCfg);
+            });
+
+            $("ul").append("<li>Initiating load of " + result.uri + " ...</li>");
+
+            window.location.replace(result.uri);
+          },
+          complete : function(jqXhr, status) {
+            if ("success" !== status) {
+              $("ul").append("<li>Failed completing request: " + status + " (" + jqXhr.statusText + ")");
+            }
+          }
+        });
+      });
+</script>
+</head>
+<body>
+	<ul></ul>
+</body>
+</html>
