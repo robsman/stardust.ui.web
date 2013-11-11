@@ -797,7 +797,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (itemDefinition.getStructureRef() instanceof InternalEObject)
       {
          URI proxyURI = ((InternalEObject) itemDefinition.getStructureRef()).eProxyURI();
-         if (proxyURI.hasFragment())
+         if ((null != proxyURI) && proxyURI.hasFragment())
          {
             schemaLocation = proxyURI.trimFragment().toString();
             typeId = proxyURI.fragment();
