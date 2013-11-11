@@ -6,10 +6,13 @@ define(
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_typeDeclaration",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce" ],
+				"bpm-modeler/js/m_codeEditorAce",
+				"bpm-modeler/js/m_parsingUtils",
+				"bpm-modeler/js/m_autoCompleters"],
 		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
-				m_parameterDefinitionsPanel, m_codeEditorAce) {
+				m_parameterDefinitionsPanel, m_codeEditorAce,
+				m_parsingUtils,m_autoCompleters) {
 			return {
 				create : function(view) {
 					var overlay = new ScriptingIntegrationOverlay();
@@ -53,6 +56,20 @@ define(
 					
 					this.codeEditor = m_codeEditorAce
 							.getJSCodeEditor(this.editorAnchor.id);
+					
+					/*Listen for our module loaded events. Specifically, for our
+					 *language tools being loaded. When we receive it load our sessionCompleter*/
+					var that=this; /*for reference in our callback*/
+					$(this.codeEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter({metaName:"Data",score:9999});
+							that.codeEditor.addCompleter(sessionCompleter);
+						}
+					});
+					
+					/*Load our languageTools extension into ACE, this will fire a 
+					 * moduleLoaded event on completion.*/
 					this.codeEditor.loadLanguageTools();
 					
 					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
@@ -350,17 +367,27 @@ define(
 				 *
 				 */
 				ScriptingIntegrationOverlay.prototype.update = function() {
+					var completerStrings=[],pDef,key;
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getScopeModel());
 					this.parameterDefinitionsPanel
 							.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
 					this.languageSelect
-							.val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);
+							.val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);			
 					this.codeEditor
 							.getEditor()
 							.getSession()
 							.setValue(
 									this.getApplication().attributes["stardust:scriptingOverlay::scriptCode"]);
+					
+					for(key in this.parameterDefinitionsPanel.parameterDefinitions){
+						if(this.parameterDefinitionsPanel.parameterDefinitions.hasOwnProperty(key)){
+							pDef=this.parameterDefinitionsPanel.parameterDefinitions[key];
+							completerStrings=completerStrings.concat(m_parsingUtils.parseParamDefToStringFrags(pDef));
+							this.codeEditor.setSessionData("$keywordList",completerStrings);
+						}
+					}			
+					
 				};
 
 				/**
