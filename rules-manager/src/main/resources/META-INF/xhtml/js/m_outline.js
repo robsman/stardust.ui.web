@@ -1144,20 +1144,20 @@ define(
 						if(nextCmd){
 							uiElements.redoChange.removeClass("toolDisabled");
 							title=nextCmd.description;
-							uiElements.redoChange.attr("title",title);
+							uiElements.redoChange.attr("title","Redo: " + title);
 						}
 						else{
 							uiElements.redoChange.addClass("toolDisabled");
-							uiElements.redoChange.attr("title","");
+							uiElements.redoChange.attr("title","Redo");
 						}
 						if(prevCmd){
 							uiElements.undoChange.removeClass("toolDisabled");
 							title=prevCmd.description;
-							uiElements.undoChange.attr("title",title);
+							uiElements.undoChange.attr("title","Undo: " + title);
 						}
 						else{
 							uiElements.undoChange.addClass("toolDisabled");
-							uiElements.undoChange.attr("title","");
+							uiElements.undoChange.attr("title","Undo");
 						}
 					});
 					
