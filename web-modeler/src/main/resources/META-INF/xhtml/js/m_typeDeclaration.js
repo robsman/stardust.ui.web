@@ -797,7 +797,8 @@ define(
 											if ((null != declaration.typeDeclaration)
 													&& (null != declaration.typeDeclaration.schema)
 													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-													&& (declaration.id === parsedName.name)) {
+													&& (null != declaration.typeDeclaration.type)
+													&& (declaration.typeDeclaration.type.xref === sqName)) {
 												schema = declaration.typeDeclaration.schema;
 												return false;
 											}
@@ -831,7 +832,8 @@ define(
 													if ((null != declaration.typeDeclaration)
 															&& (null != declaration.typeDeclaration.schema)
 															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-															&& (declaration.id === parsedName.name)) {
+															&& (null != declaration.typeDeclaration.type)
+															&& (declaration.typeDeclaration.type.xref === sqName)) {
 														schema = declaration.typeDeclaration.schema;
 														return false;
 													}
