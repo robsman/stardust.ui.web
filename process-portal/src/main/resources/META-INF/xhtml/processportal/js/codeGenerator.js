@@ -195,16 +195,18 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function generateStruct(parent, path) {
-			var elemMain = htmlElement.create("div", {parent: parent});
+			var elemMain = htmlElement.create("div", {parent: parent, attributes: {class: 'panel-struct'}});
 
 			// Header
-			htmlElement.create("div", {parent: elemMain, value: getI18NLabel(path)});
+			htmlElement.create("div", {parent: elemMain, value: getI18NLabel(path), attributes: {class: 'panel-struct-header'}});
+			
+			var elemContainer = htmlElement.create("div", {parent: elemMain, attributes: {class: 'panel-struct-container'}});
 			
 			// Contents
-			var elemPrimTbl = htmlElement.create("table", {parent: elemMain});
+			var elemPrimTbl = htmlElement.create("table", {parent: elemContainer});
 			var elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
 			
-			var elemContents = htmlElement.create("div", {parent: elemMain});
+			var elemContents = htmlElement.create("div", {parent: elemContainer});
 			
 			for (var i in path.children) {
 				if (path.children[i].isPrimitive && !path.children[i].isList) {
