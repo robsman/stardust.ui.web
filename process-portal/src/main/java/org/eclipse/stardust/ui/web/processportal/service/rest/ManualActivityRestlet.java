@@ -210,6 +210,7 @@ public class ManualActivityRestlet
       catch (Exception e)
       {
          trace.warn("Unsupported Data Type: " + value.getClass().getName(), e);
+         ret = new JsonPrimitive(value.toString());
       }
       
       return ret;
