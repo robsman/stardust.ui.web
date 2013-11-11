@@ -18,6 +18,7 @@ import static org.eclipse.stardust.engine.core.interactions.Interaction.getInter
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +35,22 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
+import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
 import org.eclipse.stardust.engine.core.runtime.internal.SessionManager;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController.ExtractSessionInfoCommand.SessionInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
 
@@ -239,10 +245,11 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          if (null != contextConfigController)
          {
             // retrieve real credentials
-            Map<String, String> credentials = SessionManager.instance().getSessionTokens();
+            SessionInfo sessionInfo = (SessionInfo) ServiceFactoryUtils
+                  .getWorkflowService().execute(new ExtractSessionInfoCommand());
 
-            panelUri = contextConfigController.obtainMashupPanelBootstrapUri(panelUri, credentials,
-                  URI.create(servicesBaseUri + "rest/views-common/"));
+            panelUri = contextConfigController.obtainMashupPanelBootstrapUri(panelUri,
+                  sessionInfo.tokens, URI.create(servicesBaseUri + "rest/views-common/"));
          }
          else
          {
@@ -359,4 +366,29 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return outData;
    }
 
+   public static class ExtractSessionInfoCommand implements ServiceCommand
+   {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public Serializable execute(ServiceFactory sf)
+      {
+         Map<String, String> credentials = SessionManager.instance().getSessionTokens();
+         return new SessionInfo(credentials);
+      }
+
+      public static class SessionInfo implements Serializable
+      {
+         private static final long serialVersionUID = 1L;
+
+         public final Map<String, String> tokens;
+
+         public SessionInfo(Map<String, String> tokens)
+         {
+            this.tokens = (null != tokens) //
+                  ? tokens
+                  : Collections.<String, String> emptyMap();
+         }
+      }
+   }
 }
