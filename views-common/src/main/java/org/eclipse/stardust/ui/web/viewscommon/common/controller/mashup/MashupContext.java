@@ -1,9 +1,9 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup;
 
-import static edu.emory.mathcs.backport.java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class MashupContext
@@ -17,6 +17,6 @@ public class MashupContext
       this.uri = mashupUri;
       this.credentials = !isEmpty(credentials)
             ? unmodifiableMap(credentials)
-            : emptyMap();
+            : Collections.<String, String>emptyMap();
    }
 }
