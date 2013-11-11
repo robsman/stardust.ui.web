@@ -184,13 +184,6 @@ span.btn-ipp{
 .ipp-text-red{
 	color:red;
 }
-/*
-CheckboxRenderer
-*/
-input.htCheckboxRendererInput{
-  text-align:center;
-  width:100%;
-}
 a.ipp-disabled-text {
 	font-style: italic !important;
 	color:#dddddd;
