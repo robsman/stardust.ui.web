@@ -158,7 +158,6 @@ define(
 					        colWidths: settings.colWidths.slice(0),
 					        colHeaders: settings.colHeaders.slice(0)
 						};
-						console.log(dataSnapshot)
 						var cmd=m_ruleSetCommand.decTableDataCmd(
 								ruleSet,decTable,snapshotBuilder(settings)(),undefined);
 						lastCmdID=cmd.id;
@@ -192,8 +191,17 @@ define(
 				     * hiding and showing the non data columns in our decision table. NonData columns
 				     * being DRL attribute columns (salience,enabled,etc...) and the description column.*/
 				    uiElements.hideNonDataColumns.on("click",function(){
+				    	var colsHidden=uiElements.hideNonDataColumns.attr("colsHidden");
 				    	var settings=uiElements.decisionTableInstance.getSettings();
-				    	settings.helperFunctions.toggleNonDataColumns(uiElements.decisionTableInstance);
+				    	
+				    	colsHidden=(colsHidden==="true")?"false":"true";
+				    	uiElements.hideNonDataColumns.attr("colsHidden",colsHidden);
+				    	if(colsHidden==="true"){
+				    		settings.helperFunctions.hideAttributeColumns(uiElements.decisionTableInstance);
+				    	}
+				    	else{
+				    		settings.helperFunctions.showAttributeColumns(uiElements.decisionTableInstance);
+				    	}
 				    });
 				    
 				    /* Handle the custom JQUERY event for requests for operator menu dialogs.
