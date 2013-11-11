@@ -200,7 +200,7 @@ public class ManualActivityRestlet
          }
          else if (value instanceof Calendar)
          {
-            ret = new JsonPrimitive(((Calendar)value).toString());
+            ret = new JsonPrimitive(((Calendar)value).getTime().toString());
          }
          else
          {

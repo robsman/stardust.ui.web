@@ -32,12 +32,29 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		CodeGenerator.prototype.generate = function(paths) {
-			var root = htmlElement.create("div");;
+			var elemMain = htmlElement.create("div");
+
+			// Contents
+			var elemPrimTbl = htmlElement.create("table", {parent: elemMain});
+			var elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
+			
+			var elemContents = htmlElement.create("div", {parent: elemMain});
+			
 			for(var i in paths) {
-				generatePath(root, paths[i]);
+				if (paths[i].isPrimitive && !paths[i].isList) {
+					var elemPrimTr = htmlElement.create("tr", {parent: elemPrimTBody});
+					
+					var elemPrimitive = generatePath(null, paths[i]);
+					for (var j in elemPrimitive.children) {
+						var elemPrimTd = htmlElement.create("td", {parent: elemPrimTr});
+						elemPrimTd.children.push(elemPrimitive.children[j]);
+					}
+				} else {
+					generatePath(elemContents, paths[i]);	
+				}
 			}
 			
-			var html = root.toHtml();
+			var html = elemMain.toHtml();
 			console.log("HTML START");
 			console.log("HTML:\n" + html);
 			console.log("HTML END");
