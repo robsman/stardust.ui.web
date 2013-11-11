@@ -39,16 +39,83 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.*;
-import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.*;
+import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
+import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
+import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
+import org.eclipse.stardust.model.xpdl.carnot.TextType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
 import org.eclipse.stardust.model.xpdl.util.IdFactory;
-import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -1002,37 +1069,25 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             String dataPathDirection = dataPathJson.get(
                   ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-            DataPathType dataPathType = getDataPath(processDefinition, dataPathID, dataPathDirection);
-            if (dataPathType == null)
+            DataPathType dataPathType = getModelBuilderFacade().createDataPath();
+
+            if (dataPathID.equals("New_1"))
             {
                IdFactory idFactory = new IdFactory("dataPath", "DataPath_");
-               dataPathType = getModelBuilderFacade().createDataPath();
                idFactory.computeNames(processDefinition.getDataPath(), true);
+               dataPathID = idFactory.getId();
+               dataPathName = idFactory.getName();
+            }
 
-               if(dataPathID.equals("PROCESS_ATTACHMENTS"))
-               {
-                  dataPathType.setId("PROCESS_ATTACHMENTS");
-                  dataPathType.setName("PROCESS_ATTACHMENTS");
-               }
-               else
-               {
-                  dataPathID = idFactory.getId();
-                  dataPathName = idFactory.getName();
-                  dataPathType.setId(dataPathID);
-                  dataPathType.setName(dataPathName);
-               }
-            }
-            else
+            if (dataPathID.equals("PROCESS_ATTACHMENTS"))
             {
-               if (StringUtils.isNotEmpty(dataPathName)
-                     && !dataPathName.equals(dataPathType.getName())
-                     && !dataPathID.equals("PROCESS_ATTACHMENTS"))
-               {
-                  dataPathType.setName(dataPathName);
-                  dataPathType.setId(NameIdUtilsExtension.createIdFromName(null,
-                        (IIdentifiableElement) dataPathType, dataPathName));
-               }
+               dataPathType.setId("PROCESS_ATTACHMENTS");
+               dataPathType.setName("PROCESS_ATTACHMENTS");
             }
+
+            dataPathType.setId(dataPathID);
+            dataPathType.setName(dataPathName);
+
 
 
             if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
@@ -2467,21 +2522,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
-   private DataPathType getDataPath(ProcessDefinitionType processDefinition,
-         String dataPathID, String dataPathDirection)
-   {
-      List<DataPathType> datapaths = processDefinition.getDataPath();
-      for (Iterator<DataPathType> i = datapaths.iterator(); i.hasNext();)
-      {
-         DataPathType dataPath = i.next();
-         if (dataPath.getId().equals(dataPathID)
-               && dataPath.getDirection().getLiteral().equals(dataPathDirection))
-         {
-            return dataPath;
-         }
-      }
-      return null;
-   }
 
    /**
     *
