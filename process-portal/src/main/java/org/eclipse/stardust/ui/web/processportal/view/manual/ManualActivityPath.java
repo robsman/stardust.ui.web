@@ -101,4 +101,10 @@ public class ManualActivityPath extends Path
    {
       return null;
    }
+   
+   @Override
+   public String toJsonString()
+   {
+      return childPathsToJson();
+   }
 }

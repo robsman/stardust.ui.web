@@ -79,6 +79,7 @@ import org.eclipse.stardust.ui.web.processportal.common.WorkflowActivityCompleti
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ExternalWebAppInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.JspPanelInteractionController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityIframeInteractionController;
 import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler;
 import org.eclipse.stardust.ui.web.processportal.view.manual.IppDocumentInputController;
@@ -232,7 +233,11 @@ public class ActivityDetailsBean extends UIComponentBean
    private WorkflowAction selectedAction = WorkflowAction.SUSPEND;
 
    private boolean qualityAssuranceActionInProgress;
-   private QAAction qualityAssuranceAction;   
+   private QAAction qualityAssuranceAction;
+   
+   // Kind of constant, loaded from  properties
+   // Temporary to support both modes for some time
+   private static boolean HTML_BASED;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -251,6 +256,13 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          interactionController = new JspPanelInteractionController();
       }
+      else if (SpiUtils.DEFAULT_MANUAL_ACTIVITY_CONTROLLER == interactionController)
+      {
+         if (HTML_BASED)
+         {
+            interactionController = new ManualActivityIframeInteractionController();
+         }
+      }
 
       return interactionController;
    }
@@ -262,6 +274,8 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       super("activityPanel");
       this.title = "";
+      HTML_BASED = Parameters.instance().getBoolean("ManualActivity.Mode.HTML", false);
+      trace.info("Manual Activity HTML Mode = " + HTML_BASED);
    }
 
    /**
@@ -2074,8 +2088,9 @@ public class ActivityDetailsBean extends UIComponentBean
             if (null != interactionController)
             {
                String contextId = interactionController.getContextId(activityInstance);
+               boolean defaultContext = PredefinedConstants.DEFAULT_CONTEXT.equals(contextId);
 
-               if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+               if (defaultContext)
                {
                   FormGenerationPreferences formPref = new FormGenerationPreferences(
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout(),
@@ -2111,8 +2126,13 @@ public class ActivityDetailsBean extends UIComponentBean
                               });
                   activityForm.setData();
                   processSingleDocumentMappingCase(fromViewEvent);
+                  if (!singleDocumentCase && HTML_BASED)
+                  {
+                     defaultContext = false;
+                  }
                }
-               else
+
+               if(!defaultContext)
                {
                   WorkflowService ws = ClientContext.getClientContext()
                         .getServiceFactory().getWorkflowService();
