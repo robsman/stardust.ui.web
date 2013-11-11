@@ -276,7 +276,9 @@ define(
 					$drlEditorTextArea.on(cnstCMD.ruleScriptChangeCmd,function(event,data){
 						var uuid=data.elementID;
 						var newVal=data.changes[0].value.after;
-						if(techRule.uuid ===uuid && $drlEditorTextArea.val()!=newVal){
+						var oldVal=uiElements.drlEditor.getValue();
+						if(techRule.uuid === uuid && oldVal!=newVal){
+							console.log("setting val");
 							uiElements.drlEditor.setValue(newVal);
 						}
 					});
