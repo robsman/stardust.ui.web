@@ -175,15 +175,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elem = htmlElement.create("input", {parent: elemMain});
 				elem.attributes['ng-model'] = convertFullIdToBinding(path.fullXPath);
 
-				if ("string" === path.typeName) {
-					elem.attributes['type'] = "text";
-				} else if ("integer" === path.typeName) {
-					elem.attributes['type'] = "number";
-				} else if ("float" === path.typeName) {
-					elem.attributes['type'] = "text";
-				} else if ("long" === path.typeName) {
-					elem.attributes['type'] = "text";
-				} else if ("boolean" === path.typeName) {
+				if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
 					elem.attributes['type'] = "checkbox";
 				}
 			}
