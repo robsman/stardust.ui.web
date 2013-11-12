@@ -44,10 +44,11 @@ define(
 						typeBody,         /*result of a typeDecl.getBody() call*/
 						jstreeDataNode,   /*typeBody serialized to a jsTree jsonData structure*/ 
 						decTblSelector,   /*selector for our decision table*/
-						codeEditSelector, /*selector for the Ace Code editor linked to the decision table*/
 						newID,            /*because I don't trust HoT, Lets make a unique ID for the instance rootElement*/
 						lastCmdID,        /*ID of the last DecisionTable.data.cmd sent to the $sink*/
 						cnstCMD,		  /*Constant value commands from our command factory*/
+						showTooltip,      /*static toggle text for our hide attribute image-btn*/
+						hideTooltip,	  /*static toggle text for our hide attribute image-btn*/
 						decTblInstance;   /*instance of handsontable/dectbl with methods etc..*/
 					
 					
@@ -95,8 +96,7 @@ define(
 					options.selectors.decisionTable="#" + newID;
 					$(uiElements.decisionTable).attr("id",newID);
 					
-					codeEditSelector="decisionTableCodeEditor";
-				    
+					/*Use mapping library to associate elements with their text properties*/
 					m_i18nMapper.map(options,uiElements,true);
 					
 				    /* Initialization of decision table*/
@@ -187,9 +187,14 @@ define(
 				    
 				    
 				    
-				    /*bind behavior to our hideNonDataCols UIElement. ON click we toggle between 
+				    /* Bind behavior to our hideNonDataCols UIElement. ON click we toggle between 
 				     * hiding and showing the non data columns in our decision table. NonData columns
-				     * being DRL attribute columns (salience,enabled,etc...) and the description column.*/
+				     * being DRL attribute columns (salience,enabled,etc...) and the description column.*/			
+				    
+				    /*Pulling text for our tooltips*/
+				    showTooltip=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.toolbar.tooltip.show","Show Attributes");
+				    hideTooltip=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.toolbar.tooltip.hide","Hide Attributes");
+				    /*toggle logic*/
 				    uiElements.hideNonDataColumns.on("click",function(){
 				    	var colsHidden=uiElements.hideNonDataColumns.attr("colsHidden");
 				    	var settings=uiElements.decisionTableInstance.getSettings();
@@ -198,9 +203,13 @@ define(
 				    	uiElements.hideNonDataColumns.attr("colsHidden",colsHidden);
 				    	if(colsHidden==="true"){
 				    		settings.helperFunctions.hideAttributeColumns(uiElements.decisionTableInstance);
+				    		uiElements.hideNonDataColumns.addClass("image-disabled");
+				    		uiElements.hideNonDataColumns.attr("title",showTooltip);
 				    	}
 				    	else{
 				    		settings.helperFunctions.showAttributeColumns(uiElements.decisionTableInstance);
+				    		uiElements.hideNonDataColumns.removeClass("image-disabled");
+				    		uiElements.hideNonDataColumns.attr("title",hideTooltip);
 				    	}
 				    });
 				    
