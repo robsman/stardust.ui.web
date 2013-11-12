@@ -796,11 +796,18 @@ define(
 										function(i, declaration) {
 											if ((null != declaration.typeDeclaration)
 													&& (null != declaration.typeDeclaration.schema)
-													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-													&& (null != declaration.typeDeclaration.type)
-													&& (declaration.typeDeclaration.type.xref === sqName)) {
-												schema = declaration.typeDeclaration.schema;
-												return false;
+													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+												if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+													if (declaration.typeDeclaration.type.xref === sqName) {
+														schema = declaration.typeDeclaration.schema;
+														return false;
+													} 
+												} else {
+													if (declaration.id === parsedName.name) {
+														schema = declaration.typeDeclaration.schema;
+														return false;
+													}
+												}
 											}
 										});
 
@@ -831,11 +838,18 @@ define(
 												function(i, declaration) {
 													if ((null != declaration.typeDeclaration)
 															&& (null != declaration.typeDeclaration.schema)
-															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-															&& (null != declaration.typeDeclaration.type)
-															&& (declaration.typeDeclaration.type.xref === sqName)) {
-														schema = declaration.typeDeclaration.schema;
-														return false;
+															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+														if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+															if (declaration.typeDeclaration.type.xref === sqName) {
+																schema = declaration.typeDeclaration.schema;
+																return false;
+															} 
+														} else {
+															if (declaration.id === parsedName.name) {
+																schema = declaration.typeDeclaration.schema;
+																return false;
+															}
+														}
 													}
 												});
 							}
