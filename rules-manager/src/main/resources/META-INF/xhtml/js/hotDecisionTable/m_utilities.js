@@ -74,6 +74,41 @@ define([],function(){
 	};
 	
 	return {
+		"generateID": function(baseName,coExistantObjs,prop,self){
+			var key,				/*key in a for-in construct*/
+				temp,				/*temp obj we pull from our coexisters*/
+				tempHash={},		/*Hash map we will check against*/
+				tempSuffix,			/*Sufffix extracted from our baseName*/
+				patt=/_[0-9]+\b/;	/*suffix matcher*/
+			
+			/*Remove spaces and special characters*/
+			baseName=baseName.replace(/[^a-zA-Z0-9_.]+/g,"");
+			
+			/*Build a hash of our existing IDs*/
+			for(key in coExistantObjs){
+				if(coExistantObjs.hasOwnProperty(key)){
+					temp=coExistantObjs[key];
+					/*Avoid checking self against self*/
+					if(temp && temp!=self){
+						tempHash[temp[prop || "id"]]={};
+					}
+				}
+			}
+			/*Now check our hash for our baseName, adding an incremental suffix
+			 *to our baseName until no hash is found*/
+			while(tempHash.hasOwnProperty(baseName)){
+				if(patt.test(baseName)){
+					tempSuffix=patt.exec(baseName)[0];
+					baseName=baseName.replace(tempSuffix,"");
+					tempSuffix =(1*tempSuffix.replace("_",""))+1;
+				}
+				else{
+					tempSuffix=1;
+				}
+				baseName =baseName + "_" + tempSuffix;
+			}
+			return baseName;
+		},
 		"uuidV4":function(){
 			  var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);

@@ -28,12 +28,15 @@ define(
 				"rules-manager/js/m_ruleSet",
 				"rules-manager/js/m_i18nMapper",
 				"rules-manager/js/m_ruleSetCommandDispatcher",
-				"rules-manager/js/m_ruleSetCommand"],
+				"rules-manager/js/m_ruleSetCommand",
+				"rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
 				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
-				m_outlineToolbarController, CommandsDispatcher, RuleSet, m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand) {
+				m_outlineToolbarController, CommandsDispatcher, RuleSet,
+				m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand,
+				m_utilities) {
 			
 			
 			var isElementCreatedViaOutline = false;
@@ -234,6 +237,7 @@ define(
 
 			var renameNodeHandler = function(event, data) {
 				var nodeType=data.rslt.obj.attr('rel');
+				var newID;
 				if (nodeType == 'ruleSet') {
 					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
 					var oldName = ruleSet.name;

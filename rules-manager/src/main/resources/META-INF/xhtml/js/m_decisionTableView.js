@@ -21,11 +21,12 @@ define(
 			"rules-manager/js/hotDecisionTable/m_operatorMenuFactory",
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
-			"rules-manager/js/m_ruleSetCommand"],
+			"rules-manager/js/m_ruleSetCommand",
+			"rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
 				hotDecisionTable,tableConfig,treeFactory,
 				typeParser,operatorMenuFactory,m_i18nMapper,
-				m_ruleSetCommandDispatcher,m_ruleSetCommand) {
+				m_ruleSetCommandDispatcher,m_ruleSetCommand,m_utilities) {
 			return {
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
@@ -118,10 +119,13 @@ define(
 				    /*bind UIElements to events from our top level command processor*/
 				    m_ruleSetCommandDispatcher.register(uiElements.nameInput,cnstCMD.decTableRenameCmd);
 				    uiElements.nameInput.on(cnstCMD.decTableRenameCmd,function(event,data){
-				    	var elementID=data.elementID;
+				    	var elementID=data.elementID,newID;
 				    	var newVal=data.changes[0].value.after;
 				    	if (elementID === decTable.uuid && newVal !=uiElements.nameInput.val) {
 							uiElements.nameInput.val(newVal);
+							newID=m_utilities.generateID(newVal,ruleSet.decisionTables,"id",decTable);
+							decTable.id=newID;
+							uiElements.idOutput.empty().append(decTable.id);
 						}
 				    });
 				    
@@ -380,8 +384,11 @@ define(
 					
 					/*binding input element to the value of the decisiontable name referenced in our ruleSet*/
 					this.nameInput.change({view : this},function(event) {
-						var oldName = decTable.name;
+						var oldName = decTable.name,newID;
 						decTable.name = uiElements.nameInput.val();
+						newID=m_utilities.generateID(decTable.name,ruleSet.decisionTables,"id",decTable);
+						decTable.id=newID;
+						uiElements.idOutput.empty().append(decTable.id);
 						ruleSet.state.isDirty=true;
 						/*Communciate event to our dispatcher in the sky.*/
 						var cmd=m_ruleSetCommand.decTableRenameCmd(

@@ -29,7 +29,8 @@ define(
 			"rules-manager/js/hotDecisionTable/m_typeParser",
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
-			"rules-manager/js/m_ruleSetCommand","rules-manager/js/hotDecisionTable/m_utilities"],
+			"rules-manager/js/m_ruleSetCommand",
+			"rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
 				CommandsDispatcher, m_view, m_modelElementView, m_i18nUtils,
 				m_parameterDefinitionsPanel, m_jsfViewManager, RuleSet, DecisionTable,
@@ -57,8 +58,12 @@ define(
 						typeDecl,         /*instance of a typeDeclaration*/
 						typeBody,         /*result of a typeDecl.getBody() call*/
 						$descriptionTextArea,
+						that,
 						cnstCmd,		  /*enum of our commands from the command Factory.*/
 						codeEditSelector; /*selector for the Ace Code editor linked to the decision table*/
+					
+					/*for ref in functions*/
+					that=this;
 					
 					var uiElements={
 							uuidLabel: m_utils.jQuerySelect(options.selectors.uuidLabel),
@@ -123,6 +128,9 @@ define(
 						var newVal=data.changes[0].value.after;
 						if(ruleSet.uuid ===uuid && $nameInput.val()!=newVal){
 							$nameInput.val(newVal);
+							newID=m_utilities.generateID(newVal,RuleSet.getRuleSets());
+							ruleSet.id=newID;
+							that.idOutput.empty().append(ruleSet.id);
 						}
 					});
 					
@@ -166,7 +174,9 @@ define(
 														supportsDataTypeSelection : true,
 														readOnlyParameterList : false,
 														supportsInOutDirection : true,
-														displayParameterId: true
+														displayParameterId: true,
+														alwaysDisplayParameterId: true,
+														updateIdOnNameChangeClientSide : true
 													});
 											// TODO Not very elegant, only works
 											// because the
@@ -184,12 +194,19 @@ define(
 									},
 									function(event) {
 										var oldName = event.data.view.ruleSet.name;
+										var newID;
 										event.data.view.ruleSet.name = event.data.view.nameInput.val();
 										ruleSet.state.isDirty=true;
 										var cmd=m_ruleSetCommand.ruleSetRenameCmd(
 												ruleSet,event.data.view.ruleSet.name,event);
 										m_ruleSetCommandDispatcher.trigger(cmd);
-
+										
+										newID=m_utilities.generateID(event.data.view.ruleSet.name,
+												RuleSet.getRuleSets());
+										
+										ruleSet.id=newID;
+										view.idOutput.empty().append(newID);
+										
 									});
 					m_utils.jQuerySelect("#runButton")
 							.click(

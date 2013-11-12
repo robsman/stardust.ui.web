@@ -18,11 +18,12 @@ define(
 			"rules-manager/js/m_ruleSetCommandDispatcher",
 			"rules-manager/js/m_ruleSetCommand",
 			"rules-manager/js/hotDecisionTable/m_typeParser",
-			"rules-manager/js/m_autoCompleters"],
+			"rules-manager/js/m_autoCompleters",
+			"rules-manager/js/hotDecisionTable/m_utilities"],
 		function(m_utils,CommandsDispatcher, 
 				 m_jsfViewManager, RuleSet,m_codeEditorAce,m_i18nMapper,
 				 m_ruleSetCommandDispatcher,m_ruleSetCommand,
-				 m_typeParser,m_autoCompleters) {
+				 m_typeParser,m_autoCompleters,m_utilities) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
@@ -263,10 +264,14 @@ define(
 					/*Binding UIElement to incoming events from our top level command processor*/
 					m_ruleSetCommandDispatcher.register(uiElements.nameInput,cnstCMD.ruleRenameCmd);
 					uiElements.nameInput.on(cnstCMD.ruleRenameCmd,function(event,data){
-						var uuid=data.elementID;
+						var uuid=data.elementID,newID;
 						var newVal=data.changes[0].value.after;
 						if(techRule.uuid ===uuid && uiElements.nameInput.val()!=newVal){
 							uiElements.nameInput.val(newVal);
+							techRule.name=newVal;
+							newID=m_utilities.generateID(techRule.name,ruleSet.technicalRules,"id",techRule);
+							techRule.id=newID;
+							uiElements.idOutput.empty().append(techRule.id);
 						}
 					});
 					
@@ -295,12 +300,15 @@ define(
 					
 					/*bind our nameInput control to the actual name of the technical rule in our ruleset* */
 					uiElements.nameInput.change({view : this}, function(event) {
-						var oldName = techRule.name;
+						var oldName = techRule.name,newID;
 						techRule.name = uiElements.nameInput.val();
 						ruleSet.state.isDirty=true;
 						var cmd=m_ruleSetCommand.ruleRenameCmd(
 								ruleSet,techRule,techRule.name,event);
 						m_ruleSetCommandDispatcher.trigger(cmd);
+						newID=m_utilities.generateID(techRule.name,ruleSet.technicalRules,"id",techRule);
+						techRule.id=newID;
+						uiElements.idOutput.empty().append(techRule.id);
 					});
 					
 					/*bind our description textarea to the descritpion attribute on our technicalRule*/
