@@ -1,6 +1,9 @@
-define(["bpm-modeler/js/m_model","./m_drlAttributes",
-        "bpm-modeler/js/m_urlUtils","rules-manager/js/m_i18nUtils"],
-		function(m_model,m_drlAttributes,m_urlUtils,m_i18nUtils){
+define(["bpm-modeler/js/m_model",
+        "./m_drlAttributes",
+        "bpm-modeler/js/m_urlUtils",
+        "rules-manager/js/m_i18nUtils",
+        "rules-manager/js/hotDecisionTable/m_typeMapper"],
+		function(m_model,m_drlAttributes,m_urlUtils,m_i18nUtils,m_typeMapper){
   
   /*************************************************
    * Parse the result of a typeDeclarations.getBody() 
@@ -21,6 +24,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
   	  actionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.actions","Actions"),
   	  conditionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.conditions","Conditions"),
   	  attributeTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.attributes","Attributes");
+ 
   /*@Param:obj=typeDecl object
    * Converts a typeDecl for an enumeration into a typeBody object which can be parsed
    * by our recursive function->fx. 
@@ -46,6 +50,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
 		typeBody.typeDecl=obj;	  
 		return typeBody;
   };
+  
   
   /*convert facets to flattened object*/
   var facetBuilder=function(facets){
@@ -97,7 +102,7 @@ define(["bpm-modeler/js/m_model","./m_drlAttributes",
         	paramDef.enumeration=obj.enumeration;
         }
         temp={data: {title:obj.name, icon:img}, 
-        	  attr: {title: typeDecl.description || obj.type},
+        	  attr: {title: typeDecl.description || m_typeMapper.ippToFriendlyText( obj.type)},
         	  metadata: {
         		  ref: paramDef || obj,
         		  type: obj.type || 'na',

@@ -1,5 +1,10 @@
-define(["jquery","Handsontable","jstree","./m_typeMapper",
-        "bpm-modeler/js/m_utils","rules-manager/js/m_i18nUtils","bpm-modeler/js/m_urlUtils"],
+define(["jquery",
+        "Handsontable",
+        "jstree",
+        "./m_typeMapper",
+        "bpm-modeler/js/m_utils",
+        "rules-manager/js/m_i18nUtils",
+        "bpm-modeler/js/m_urlUtils"],
 		function($,Handsontable,jstree,typeMapper,m_utils,m_i18nUtils,m_urlUtils){
   
   var modelTreeFactory={
@@ -115,6 +120,8 @@ define(["jquery","Handsontable","jstree","./m_typeMapper",
 	  		  leafVal,
 	  		  colHdrArr;
   		  
+  		  /*Loop through our colHeaders and disable any Attribute or Action items (in our tree)
+  		   *that are already present in our decision table.*/
   		  while(hdrCount--){
   			colHdrArr=columnHeaders[hdrCount].split("|");
   			if(colHdrArr.length >=3){

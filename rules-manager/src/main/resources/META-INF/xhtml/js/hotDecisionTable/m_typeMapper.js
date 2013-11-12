@@ -90,6 +90,81 @@ define(["jquery"],function($){
 			  console.log("Error: Unknown type encountered : typeMapper.js->" + ippType);
 		  }
 		  return hotType;
-		}
+		},
+		ippToFriendlyText: function(ippType){
+			  var friendType="";
+			  if(!ippType){return;}
+			  
+			  switch(ippType.toUpperCase()){
+			  case "XSD:NMTOKENS":
+			  case "XSD:IDREFS":
+			  case "XSD:NOTATION":
+			  case "XSD:TIME":
+			  case "XSD:LANGUAGE":
+			  case "XSD:ANYURI":
+			  case "XSD:TOKEN":
+			  case "XSD:NMTOKEN":
+			  case "XSD:NAME":
+			  case "XSD:QNAME":
+			  case "XSD:ID":
+			  case "XSD:IDREF":
+			  case "XSD:DURATION":
+			  case "XSD:NCNAME":
+			  case "XSD:NORMALIZEDSTRING":
+			  case "XSD:HEXBINARY":
+			  case "XSD:BASE64BINARY":
+			  case "XSD:GMONTHDAY":
+			  case "XSD:GYEARMONTH":
+			  case "XSD:STRING":
+			  case "STRING":
+				  friendType="Text";
+				  break;
+			  case "XSD:DOUBLE":
+			  case "DOUBLE":
+			  case "XSD:FLOAT":
+			  case "XSD:DECIMAL":
+				  friendType="Decimal (1.234)";
+				  break;
+			  case "XSD:NEGATIVEINTEGER":
+			  case "XSD:POSITIVEINTEGER":
+			  case "XSD:NONNEGATIVEINTEGER":
+			  case "XSD:NONPOSITIVEINTEGER":
+			  case "XSD:UNSIGNEDBYTE" :
+			  case "XSD:UNSIGNEDINT" :
+			  case "XSD:UNSIGNEDLONG" :
+			  case "XSD:UNSIGNEDSHORT":
+			  case "XSD:GDAY":
+			  case "XSD:GMONTH":
+			  case "XSD:GYEAR":
+			  case "XSD:INTEGER":
+			  case "XSD:BYTE":
+			  case "XSD:SHORT":
+			  case "XSD:INT":
+			  case "XSD:LONG":
+			  case "INTEGER":
+			  case "INT":
+			  case "LONG":
+				  friendType="Number (Integers, signed or unsigned, 32 or 64 bit)";
+				  break;
+			  case "XSD:DATETIME":
+			  case "XSD:DATE":
+			  case "TIMESTAMP":
+				  friendType="Date (2099-12-31)";
+				  break;
+			  case "XSD:BOOLEAN":
+			  case "BOOLEAN":
+				  friendType="Boolean (True,False)";
+				  break;
+			  case "ENUMERATION":
+				  friendType="Enumerations (Red,Green,Blue...)";
+				  break;
+			  default:
+				  friendType=ippType;
+			  }
+			  if(friendType.type===ippType){
+				  console.log("Error: Unknown type encountered : typeMapper.js->" + ippType);
+			  }
+			  return friendType;
+			}
 	};
 });
