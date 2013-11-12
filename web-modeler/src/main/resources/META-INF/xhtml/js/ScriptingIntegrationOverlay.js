@@ -423,13 +423,15 @@ define(
 					code += "}\n";
 					code += "return value;\n";
 					code += "}\n";
+
+
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
 							if (accessPoint.dataType == "primitive") {
 								code += "var " + accessPoint.id + ";\n";
 								code += "if(request.headers.get('"
-										+ accessPoint.id + "')!=null){\n"
+										+ accessPoint.id + "')!=null){\n";
 								code += accessPoint.id
 										+ " =  request.headers.get('"
 										+ accessPoint.id + "');\n";
@@ -438,7 +440,7 @@ define(
 							} else if (accessPoint.dataType == "struct") {
 								code += "var " + accessPoint.id + ";\n";
 								code += "if(request.headers.get('"
-										+ accessPoint.id + "')!=null){\n"
+										+ accessPoint.id + "')!=null){\n";
 								code += accessPoint.id
 										+ " =  eval('(' + request.headers.get('"
 										+ accessPoint.id + "')+ ')');\n";
@@ -513,6 +515,8 @@ define(
 
 					return route;
 				};
+
+
 				/**
 				 *
 				 */
