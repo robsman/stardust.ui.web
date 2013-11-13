@@ -263,69 +263,98 @@ define(
 									typeDeclaration.getElements(),
 									function(i, element) {
 										var type = element.type;
+										if (type) {
+											// Strip prefix
+											if (element.type.indexOf(':') !== -1) {
+												type = element.type.split(":")[1];
+											}
 
-										// Strip prefix
-										if (element.type.indexOf(':') !== -1) {
-											type = element.type.split(":")[1];
-										}
+											var childTypeDeclaration = obj.model
+													.findTypeDeclarationBySchemaName(type);
 
-										var childTypeDeclaration = obj.model
-												.findTypeDeclarationBySchemaName(type);
+											if (element.cardinality === "required") {
+												if (childTypeDeclaration != null) {
+													if (childTypeDeclaration
+															.isSequence()) {
 
-										if (element.cardinality === "required") {
-											if (childTypeDeclaration != null) {
-												if (childTypeDeclaration
-														.isSequence()) {
+														instance[element.name] = {};
 
-													instance[element.name] = {};
+														obj
+																.populateSequenceInstanceRecursively(
+																		childTypeDeclaration,
+																		instance[element.name],
+																		options);
+													} else {
+														if (options.initializePrimitives) {
+															for ( var enumerator in childTypeDeclaration
+																	.getFacets()) {
+																instance[element.name] = enumerator;
+
+																break;
+															}
+														}
+													}
+												} else {
+													if (options.initializePrimitives) {
+														// TODO Consider primitive
+														// type
+
+														instance[element.name] = "";
+													}
+												}
+											} else {
+												instance[element.name] = [];
+
+												if (childTypeDeclaration != null
+														&& childTypeDeclaration
+																.isSequence()) {
+													instance[element.name][0] = {};
 
 													obj
 															.populateSequenceInstanceRecursively(
 																	childTypeDeclaration,
-																	instance[element.name],
+																	instance[element.name][0],
 																	options);
 												} else {
-													if (options.initializePrimitives) {
-														for ( var enumerator in childTypeDeclaration
-																.getFacets()) {
-															instance[element.name] = enumerator;
+													// TODO Consider primitive type
 
-															break;
-														}
-													}
-												}
-											} else {
-												if (options.initializePrimitives) {
-													// TODO Consider primitive
-													// type
-
-													instance[element.name] = "";
+													instance[element.name][0] = "";
 												}
 											}
 										} else {
-											instance[element.name] = [];
-
-											if (childTypeDeclaration != null
-													&& childTypeDeclaration
-															.isSequence()) {
-												instance[element.name][0] = {};
-
-												obj
-														.populateSequenceInstanceRecursively(
-																childTypeDeclaration,
-																instance[element.name][0],
-																options);
-											} else {
-												// TODO Consider primitive type
-
-												instance[element.name][0] = "";
-											}
+											instance[element.name] = {};
+											obj.populateSequenceInstanceRecursivelyForAnonymousTypeElements(element, instance[element.name], options);
 										}
 									});
 
 					return instance;
 				};
 
+				/**
+				 * 
+				 */
+				TypeDeclaration.prototype.populateSequenceInstanceRecursivelyForAnonymousTypeElements = function(inlineTypeElement, instance, options) {
+					var thisObj = this;
+					if (inlineTypeElement.body) {
+						jQuery.each(inlineTypeElement.body, function(i, seq) {
+							if (seq.classifier === "sequence" && seq.body) {
+								jQuery.each(seq.body, function(i, element) {
+									if (element.body) {
+										instance[element.name] = {};
+										thisObj.populateSequenceInstanceRecursivelyForAnonymousTypeElements(element, instance[element.name], options);
+									} else {
+										if (options.initializePrimitives) {
+											instance[element.name] = "";
+										}										
+									}
+								});
+							}
+						});
+					} else if (inlineTypeElement.type) {
+						thisObj.populateSequenceInstanceRecursively(inlineTypeElement, instance, options);
+					}
+				};
+				
 				/**
 				 *
 				 */
