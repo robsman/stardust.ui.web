@@ -25,6 +25,11 @@ define(
 				removeItemFromArray : function(array, item) {
 					removeItemFromArray(array, item);
 				},
+				
+				pushArray : pushArray,
+				
+				insertArrayAt : insertArrayAt,
+				
 				convertToSortedArray : convertToSortedArray,
 				isItemInArray : function(array, item) {
 					return isItemInArray(array, item);
@@ -284,6 +289,33 @@ define(
 						continue;
 					}
 					++n;
+				}
+			}
+
+			/**
+			 * Adds contents of array "newArray" to "thisArray"
+			 * This is better than concat as this doesn't create a new array.
+			 * 
+			 * @param arr
+			 * @param arr2
+			 * @returns
+			 */
+			function pushArray(thisArray, newArray) {
+				thisArray.push.apply(thisArray, newArray);
+			}
+			
+			/**
+			 * 
+			 * @param thisArray
+			 * @param newArray
+			 * @param index
+			 * @returns
+			 */
+			function insertArrayAt(thisArray, newArray, index) {
+				if (newArray) {
+					for (var i = (newArray.length - 1); i >= 0; i--) {
+						thisArray.splice(index, 0, newArray[i]);
+					};
 				}
 			}
 

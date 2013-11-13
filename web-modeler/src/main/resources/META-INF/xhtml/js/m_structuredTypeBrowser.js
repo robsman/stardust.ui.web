@@ -96,8 +96,7 @@ define(
 							childRow.addClass("expanded");
 						}
 					}
-					if (element.body
-							&& element.body.length > 0) {
+					if ((element.body && element.body.length > 0) || (element.attributes && element.attributes.length > 0)) {
 						childRow.addClass("parent");
 						childRow.addClass("expanded");
 					}
@@ -178,11 +177,6 @@ define(
 						if (schemaTypeOrElements.attributes) {
 							attributes = schemaTypeOrElements.attributes;
 						}
-					} else if (schemaTypeOrElements.classifier = "element") {
-						if (schemaTypeOrElements.attributes) {
-							attributes = schemaTypeOrElements.attributes;
-						}						
-						// TODO check if this has child elements
 					}
 				}
 				if (attributes) {
@@ -196,21 +190,17 @@ define(
 				if (elements) {
 					// append child rows
 					jQuery.each(elements, function(i, element) {
-
-						if (elements.attributes) {
-							jQuery.each(elements.attributes, function(i, attribute) {
-								var childRow = generateChildElementRow(parentPath, attribute, null, rowInitializer);
-								childRow.css("fontStyle", "italic");
-								childRows.push(childRow);
-							});
-						}
-						
 						var childSchemaType = undefined;
 						if(isStruct && (typeof schemaTypeOrElements.resolveElementType === "function")){
 							childSchemaType = schemaTypeOrElements.resolveElementType(element.name);
 						}
 						var childRow = generateChildElementRow(parentPath, element, childSchemaType, rowInitializer);
-
+						if (element.attributes) {
+							childRow.data("attributes", element.attributes);
+						}
+						if (element.classifier === "attribute") {
+							childRow.css("fontStyle", "italic");
+						}
 						childRows.push(childRow);
 					});
 				}
@@ -262,6 +252,13 @@ define(
 					var schemaType = parentRow.data("schemaType");
 
 					var childRows = generateChildElementRows(parentPath, schemaType);
+					
+					var attributes = parentRow.data("attributes");
+					if (attributes) {
+						var attributeRows = generateChildElementRows(parentPath, attributes, rowInitializer);
+						m_utils.insertArrayAt(childRows, attributeRows, 0);
+					}
+					
 					jQuery.each(childRows, function(i, childRow) {
 						// append child rows
 						childRow.addClass("child-of-" + parentPath);
@@ -287,6 +284,13 @@ define(
 						// first append at root ...
 						var childRows = generateChildElementRows(parentPath, schemaType, rowInitializer);
 						// reverse, to ensure child rows will end up in correct order in the table
+						
+						var attributes = parentRow.data("attributes");
+						if (attributes) {
+							var attributeRows = generateChildElementRows(parentPath, attributes, rowInitializer);
+							m_utils.insertArrayAt(childRows, attributeRows, 0);
+						}
+						
 						childRows.reverse();
 						jQuery.each(childRows, function(i, childRow) {
 							// ... then move to the proper location
@@ -318,6 +322,13 @@ define(
 						// trick to trigger initialization of child rows
 						// first append at root ...
 						var childRows = generateChildElementRows(parentPath, schemaType, rowInitializer);
+						
+						var attributes = parentRow.data("attributes");
+						if (attributes) {
+							var attributeRows = generateChildElementRows(parentPath, attributes, rowInitializer);
+							m_utils.insertArrayAt(childRows, attributeRows, 0);
+						}
+
 						// reverse, to ensure child rows will end up in correct order in the table
 						childRows.reverse();
 						jQuery.each(childRows, function(i, childRow) {

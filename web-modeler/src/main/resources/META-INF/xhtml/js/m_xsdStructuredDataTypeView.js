@@ -789,8 +789,13 @@ define(
 					jQuery.each(roots, function(i, parentRow) {
 						var parentPath = parentRow.data("path");
 						var schemaType = parentRow.data("schemaType");
-						var attributes = parentRow.data("attributes");
 						var childRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, schemaType);
+						
+						var attributes = parentRow.data("attributes");
+						if (attributes) {
+							var attributeRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, attributes);
+							m_utils.insertArrayAt(childRows, attributeRows, 0);
+						}
 
 						parentRow.appendTo(view.tableBody);
 						if(view.bindToJavaSelect.prop("checked")){
