@@ -389,13 +389,26 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
    
-               String typeDeclarationId = dataType.getDeclaredType().getId();
+               ModelType typeModel = model;
+               XpdlTypeType xpdlType = dataType.getDataType();
+               String typeDeclarationId = null;
+               if (xpdlType instanceof DeclaredTypeType)
+               {
+                  typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+               }
+               else if (xpdlType instanceof ExternalReferenceType)
+               {
+                  String modelId = ((ExternalReferenceType) xpdlType).getLocation();
+                  typeModel = getModelBuilderFacade().findModel(modelId);
+                  typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
+               }
+
    
-               TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
+               TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
    
                formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
-                     getModelBuilderFacade().createFullId(model, typeDeclaration));
+                     getModelBuilderFacade().createFullId(typeModel, typeDeclaration));
             }
             else if (dataType.getCarnotType().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
