@@ -35,7 +35,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemMain = htmlElement.create("div");
 
 			// Contents
-			var elemPrimTbl = htmlElement.create("table", {parent: elemMain});
+			var elemPrimTbl = htmlElement.create("table", {parent: elemMain, attributes: {cellpadding: 0, cellspacing: 0}});
 			var elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
 			
 			var elemContents = htmlElement.create("div", {parent: elemMain});
@@ -69,12 +69,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			console.log("To Generate: " + path.fullXPath);
 
 			if (path.isList) {
-				// TODO: Support List at later stage
-				//return generateList(parent, path);
-			} else if (path.isEnum) {
-				return generateEnum(parent, path);
+				return generateList(parent, path);
 			} else if (path.isPrimitive) {
-				return generatePrimitive(parent, path);
+				return generatePriEnum(parent, path);
 			} else {
 				return generateStruct(parent, path);
 			}
@@ -92,78 +89,61 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			// Toolbar
 			var elemToolbar = htmlElement.create("div", {parent: elemMain});
 			var elemToolbarTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", 
-										{parent: htmlElement.create("table", {parent: elemToolbar})})});
+					{parent: htmlElement.create("table", {parent: elemToolbar, attributes: {cellpadding: 0, cellspacing: 0}})})});
 			
-			var elemAddButton = htmlElement.create("input", {parent: htmlElement.create("td", {parent: elemToolbarTr}), 
-													attributes: {type: "button", value: "Add"}});
-			var elemRemoveButton = htmlElement.create("input", {parent: htmlElement.create("td", {parent: elemToolbarTr}), 
-													attributes: {type: "button", value: "Remove"}});
+			var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", {parent: elemToolbarTr})});
+			elemAddButton.attributes["href"] = "javascript: alert('Add');";
+			htmlElement.create("img", {parent: elemAddButton, 
+				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/add.png"}});
+			
+			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", {parent: elemToolbarTr})});
+			elemRemoveButton.attributes["href"] = "javascript: alert('Remove');";
+			htmlElement.create("img", {parent: elemRemoveButton, 
+				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/delete.png"}});
 			
 			// Table
-			var elemTbl = htmlElement.create("table", {parent: elemMain});
+			var elemTbl = htmlElement.create("table", {parent: elemMain, attributes: {cellpadding: 0, cellspacing: 0}});
 			var elemTHead = htmlElement.create("thead", {parent: elemTbl});
 			var elemTBody = htmlElement.create("tbody", {parent: elemTbl});
 
 			var elemTHeadTr = htmlElement.create("tr", {parent: elemTHead});
+			var elemTBodyTr = htmlElement.create("tr", {parent: elemTBody});
+			
+			var loopVar = "Obj";
+			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + convertFullIdToBinding(path.fullXPath);
 
 			if (path.isPrimitive) { // Primitive List
-				var elemTd = htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path)});
-				//generatePrimitive(elemTd, path);
+				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path)});
+				var elemTd = htmlElement.create("td", {parent: elemTBodyTr});
+				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar});
 			} else { // Structured List
 				for (var i in path.children) {
 					var child = path.children[i];
-					var elemTd = htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child)});
+					htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child)});
+					var elemTd = htmlElement.create("td", {parent: elemTBodyTr});
 
-					/*
-					// In Lists Generate only Primitives
 					if (child.isPrimitive) {
-						if (child.isEnum) {
-							generateEnum(elemTd, child, true);
-						} else {
-							generatePrimitive(elemTd, child, true);
-						}
+						generatePriEnum(elemTd, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
 					} else {
-						// TODO: Structures in Lists
 						var elemLink = htmlElement.create("a", {parent: elemTd, value: getI18NLabel(child)});
+						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
 					}
-					*/
 				}
 			}
 			return elemMain;
 		}
 
 		/*
-		 * 
+		 * options: noLabel, ngModel
 		 */
-		function generateEnum(parent, path, noLabel) {
-			var elemMain = htmlElement.create("div", {parent: parent});
-
-			if (noLabel == undefined || !noLabel) {
-				var elemLabel = htmlElement.create("label", {parent: elemMain, value: getI18NLabel(path)});
+		function generatePriEnum(parent, path, options) {
+			if (options == undefined) {
+				options = {};
 			}
 
-			var elem = null;
-			if (path.readonly) {
-				elem = htmlElement.create("label", {parent: elemMain});
-			} else {
-				elem = htmlElement.create("select", {parent: elemMain});
-				for(var i in path.enumValues) {
-					var val = path.enumValues[i];
-					var elemOpt = htmlElement.create("option", {parent: elem, value: val, attributes: {value: val}});
-				}
-			}
-			elem.attributes['ng-model'] = convertFullIdToBinding(path.fullXPath);
-			
-			return elemMain;
-		}
-
-		/*
-		 * 
-		 */
-		function generatePrimitive(parent, path, noLabel) {
 			var elemMain = htmlElement.create("div", {parent: parent});
 			
-			if (noLabel == undefined || !noLabel) {
+			if (options.noLabel == undefined || !options.noLabel) {
 				var elemLabel = htmlElement.create("label", {parent: elemMain, value: getI18NLabel(path)});
 			}
 
@@ -172,12 +152,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elem = htmlElement.create("label", {parent: elemMain});
 				elem.value = "{{" + convertFullIdToBinding(path.fullXPath) + "}}";
 			} else {
-				elem = htmlElement.create("input", {parent: elemMain});
-				elem.attributes['ng-model'] = convertFullIdToBinding(path.fullXPath);
-
-				if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-					elem.attributes['type'] = "checkbox";
+				if (path.isEnum) {
+					elem = htmlElement.create("select", {parent: elemMain});
+					for(var i in path.enumValues) {
+						var val = path.enumValues[i];
+						var elemOpt = htmlElement.create("option", {parent: elem, value: val, attributes: {value: val}});
+					}
+				} else {
+					elem = htmlElement.create("input", {parent: elemMain});
+					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+						elem.attributes['type'] = "checkbox";
+					}
 				}
+
+				elem.attributes['ng-model'] = options.ngModel == undefined ? convertFullIdToBinding(path.fullXPath) : options.ngModel;
 			}
 			
 			return elemMain;
@@ -195,7 +183,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemContainer = htmlElement.create("div", {parent: elemMain, attributes: {class: 'panel-struct-container'}});
 			
 			// Contents
-			var elemPrimTbl = htmlElement.create("table", {parent: elemContainer});
+			var elemPrimTbl = htmlElement.create("table", {parent: elemContainer, attributes: {cellpadding: 0, cellspacing: 0}});
 			var elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
 			
 			var elemContents = htmlElement.create("div", {parent: elemContainer});
