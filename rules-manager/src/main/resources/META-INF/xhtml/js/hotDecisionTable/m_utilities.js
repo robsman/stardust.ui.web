@@ -77,7 +77,9 @@ define([],function(){
 		 * Generates an id derived from the baseName string. Removes any character that
 		 * is not in the set of [a-zA-Z0-9_.]. When a generated id is found to collide with an element
 		 * in the coExistantObjs hashMap, we add a suffix of the form _[N] (e.g. _1) and test and repeat
-		 * until no collisions occur, incrementing N each time.
+		 * until no collisions occur, incrementing N each time. This function always expects to act
+		 * against a hashMap of objects with first-level properties to test against for
+		 * collisions.
 		 */
 		"generateID": function(baseName,coExistantObjs,prop,self){
 			var key,				/*key in a for-in construct*/
@@ -103,9 +105,9 @@ define([],function(){
 			 *to our baseName until no hash is found*/
 			while(tempHash.hasOwnProperty(baseName)){
 				if(patt.test(baseName)){
-					tempSuffix=patt.exec(baseName)[0];
-					baseName=baseName.replace(tempSuffix,"");
-					tempSuffix =(1*tempSuffix.replace("_",""))+1;
+					tempSuffix=patt.exec(baseName)[0]; /*extract suffix*/
+					baseName=baseName.replace(tempSuffix,""); /*remove from baseName*/
+					tempSuffix =(1*tempSuffix.replace("_",""))+1; /*generate new suffix*/
 				}
 				else{
 					tempSuffix=1;
