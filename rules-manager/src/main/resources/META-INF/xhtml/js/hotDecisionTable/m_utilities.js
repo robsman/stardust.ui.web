@@ -1,10 +1,4 @@
-/* uuidv4-UUID generator following version 4.4 of the spec.
- *  	http://www.ietf.org/rfc/rfc4122.txt @see section 4.4
-		http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
- * hashString-Javascript implementation of Javas string.hashCode function
- */
 define([],function(){
-	
 	
 	/*given a dateString that the javascript dateObject can instantiate itself from,
 	 *build an object representing the constituent date parts in various formats.
@@ -74,6 +68,17 @@ define([],function(){
 	};
 	
 	return {
+		/* @Param baseName: Root string we will generate an id from
+		 * @Param coExistantObjs: HashMap of sibling objects we will test for id collisions within
+		 * @Param prop: property we are checking for collisions (defaults to 'id')
+		 * @Param self: reference to ourself so we don't collide with ourself.
+		 * Description
+		 * -------------------------------------------------------------------
+		 * Generates an id derived from the baseName string. Removes any character that
+		 * is not in the set of [a-zA-Z0-9_.]. When a generated id is found to collide with an element
+		 * in the coExistantObjs hashMap, we add a suffix of the form _[N] (e.g. _1) and test and repeat
+		 * until no collisions occur, incrementing N each time.
+		 */
 		"generateID": function(baseName,coExistantObjs,prop,self){
 			var key,				/*key in a for-in construct*/
 				temp,				/*temp obj we pull from our coexisters*/
@@ -109,6 +114,9 @@ define([],function(){
 			}
 			return baseName;
 		},
+		/* Generates a UUID as per RFC-4122 section 4.4
+		 * http://www.ietf.org/rfc/rfc4122.txt
+		 */
 		"uuidV4":function(){
 			  var uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -116,6 +124,7 @@ define([],function(){
 			  });
 			  return uuid;
 			},
+		/*Javascript implementation of Javas string.hashCode function*/
 		"hashString": function(str){
 		    var hash = 0;
 		    var i;
