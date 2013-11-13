@@ -30,12 +30,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		ManualActivityPanel.prototype.initialize = function() {
-			/* 
-				1. Fetch Data Mappings
-				2. Then Use m_markupGenerator.js to generate markup
-				3. Insert Markup into current DOM
-				4. Bootstrap Angular
-			*/
 	        var urlPrefix = window.location.href;
 	        urlPrefix = urlPrefix.substring(0, urlPrefix.indexOf("/plugins"));
 
@@ -46,16 +40,11 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	        var restEndPoint = urlPrefix + REST_END_POINT + interactionId;
 	        console.log("Interaction Rest End Point: " + restEndPoint);
 	        
-	        fetchData(restEndPoint, "/dataMappings", {success: generateCode});
+	        fetchData(restEndPoint, "/dataMappings", {success: generateMarkup});
 
 			bootstrapAngular();
 			
 			fetchData(restEndPoint, "/inData", {success: bindInData});
-
-			runInAngularContext(function($scope){
-				$scope.test1 = "Subodh";
-				$scope.test2 = "Godbole";
-			});
 		};
 
 		/*
@@ -70,7 +59,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function generateCode(json) {
+		function generateMarkup(json) {
 			var html = codeGenerator.create().generate(json);
 			document.getElementsByTagName("body")[0].innerHTML = html;
 		};
@@ -110,20 +99,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function runInAngularContext(func) {
 			var scope = angular.element(document).scope();
 			scope.$apply(func);
-		};
-
-		/*
-		 * 
-		 */
-		function testDom() {
-			var dom = ""; 
-			dom += "<h3> Welcome to Manual Activity Rewrite</h3><br/>";
-			dom += "First Name: <input ng-model=\"test1\"/><br/>";
-			dom += "Last Name: <input ng-model=\"test2\"/><br/><br/>";
-			dom += "First Name: {{test1}}<br/>";
-			dom += "Last Name: {{test2}}<br/><br/><br/>";
-			
-			document.write(dom);			
 		};
 	};
 });

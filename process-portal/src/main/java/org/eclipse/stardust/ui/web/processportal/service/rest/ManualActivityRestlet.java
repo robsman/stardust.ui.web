@@ -202,15 +202,19 @@ public class ManualActivityRestlet
          {
             ret = new JsonPrimitive(((Calendar)value).getTime().toString());
          }
-         else
+         else if (value instanceof String)
          {
             ret = new JsonPrimitive((String)value);
+         }
+         else
+         {
+            trace.warn("Unsupported Data Type: " + value.getClass().getName());
+            ret = new JsonPrimitive(value.toString());
          }
       }
       catch (Exception e)
       {
-         trace.warn("Unsupported Data Type: " + value.getClass().getName(), e);
-         ret = new JsonPrimitive(value.toString());
+         trace.error("Something went wrong", e);
       }
       
       return ret;
