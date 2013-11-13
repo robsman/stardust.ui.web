@@ -59,6 +59,7 @@ define(
 					 * specify valid selectors for each value below.
 					 * */
 					var uiElements={
+							mainView: m_utils.jQuerySelect(options.selectors.id),
 							uuidOutput: m_utils.jQuerySelect(options.selectors.uuidOutput),
 							idOutput: m_utils.jQuerySelect(options.selectors.idOutput),
 							nameInput: m_utils.jQuerySelect(options.selectors.nameInput),
@@ -352,6 +353,7 @@ define(
 					uiElements.idOutput.append(this.technicalRule.id);
 					uiElements.nameInput.val(this.technicalRule.name);
 					uiElements.drlEditor.setValue(this.technicalRule.getDRL());
+					uiElements.mainView.removeClass("view-hide");
 				};
 				
 			}

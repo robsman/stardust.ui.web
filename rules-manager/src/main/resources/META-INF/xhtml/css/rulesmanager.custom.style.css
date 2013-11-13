@@ -212,3 +212,9 @@ a.jstree-search.ipp-disabled-text:hover{
     opacity: 0.4;
     filter: alpha(opacity=40);	
 }
+.view-hide{
+	display:none;	
+}
+.view-show{
+	display:block;	
+}

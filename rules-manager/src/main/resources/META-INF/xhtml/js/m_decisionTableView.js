@@ -409,7 +409,8 @@ define(
 					uiElements.idOutput.empty();
 					uiElements.idOutput.append(decTable.id);
 					uiElements.nameInput.val(decTable.name);
-
+					uiElements.mainView.removeClass("view-hide");
+					uiElements.decisionTableInstance.render();
 					if (decisionTableUpdate) {
 						this.decisionTable.activate(this.ruleSet,false,decTable,uiElements);
 					}
