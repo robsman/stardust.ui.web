@@ -35,50 +35,6 @@ define([], function() {
 		if(options.parent) {
 			options.parent.children.push(this);
 		}
-		
-		/*
-		 * 
-		 */
-		HtmlElement.prototype.toString = function (indent) {
-			if (indent == undefined) {
-				indent = 0;
-			}
-
-			var tagValue = "";
-			if (this.value) {
-				tagValue += "Value:" + this.value;
-			}
-			
-			var tagAttributes = "";
-			for(var key in this.attributes) {
-				tagAttributes += (key + ":" + this.attributes[key]) + " ";
-			}
-			
-			if (tagAttributes.length > 0) {
-				tagAttributes = "Attributes: {" + tagAttributes + "}";
-			}
-
-			var tagContents = "";
-			if (tagValue.length > 0) {
-				tagContents += tagValue;
-			}
-			if (tagAttributes.length > 0) {
-				if (tagContents.length > 0) {
-					tagContents += ", ";
-				}
-				tagContents += tagAttributes;
-			}
-			
-			var ret = writeIndent(indent) + this.tag + (tagContents.length > 0 ? " (" + tagContents+ ")" : "");
-			ret += "\n";
-			
-			indent++;
-			for(var i = 0; i < this.children.length; i++) {
-				ret += this.children[i].toString(indent);
-			}
-			
-			return ret;
-		};
 
 		/*
 		 * 
