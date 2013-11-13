@@ -24,7 +24,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	 * 
 	 */
 	function ManualActivityPanel() {
-		var restEndPoint = "http://localhost:7200/Demo720M4/services/rest/process-portal/manualActivity/";
+		var REST_END_POINT = "/services/rest/process-portal/manualActivity/";
 
 		/*
 		 * 
@@ -36,10 +36,14 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				3. Insert Markup into current DOM
 				4. Bootstrap Angular
 			*/
-	        var interactionId = window.location.search;
+	        var urlPrefix = window.location.href;
+	        urlPrefix = urlPrefix.substring(0, urlPrefix.indexOf("/plugins"));
+
+			var interactionId = window.location.search;
 	        interactionId = interactionId.substring(interactionId.indexOf('interactionId') + 14);
 	        interactionId = interactionId.indexOf('&') >= 0 ? interactionId.substring(0, interactionId.indexOf('&')) : interactionId;
-	        restEndPoint = restEndPoint + interactionId;
+
+	        var restEndPoint = urlPrefix + REST_END_POINT + interactionId;
 	        console.log("Interaction Rest End Point: " + restEndPoint);
 	        
 	        fetchData(restEndPoint, "/dataMappings", {success: generateCode});
