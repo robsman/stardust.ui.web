@@ -397,8 +397,6 @@ define(
 					var route = "";
 					if (this.languageSelect.val() === "JavaScript") {
 					var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
-					code += "function convertStringToDate(format, input){\nreturn new java.text.SimpleDateFormat(format).parse(input);\n}\n";
-					
 					code += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
 					
 					code += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
