@@ -72,7 +72,9 @@ define(
 							descriptionLabel: m_utils.jQuerySelect(options.selectors.descriptionLabel),
 							creationDateLabel: m_utils.jQuerySelect(options.selectors.creationDateLabel),
 							lastModificationDateLabel: m_utils.jQuerySelect(options.selectors.lastModificationDateLabel),
-							parameterTabLabel: m_utils.jQuerySelect(options.selectors.parameterTabLabel)
+							parameterTabLabel: m_utils.jQuerySelect(options.selectors.parameterTabLabel),
+							lblmax: m_utils.jQuerySelect(options.selectors.lblmax),
+							maxRulesExecutions : m_utils.jQuerySelect(options.selectors.maxRulesExecutions)
 					};
 					
 					m_i18nMapper.map(options,uiElements,true);
@@ -97,6 +99,23 @@ define(
 					/*Bind ruleSet description to our description textArea*/
 					$descriptionTextArea=m_utils.jQuerySelect("#descriptionTextarea");
 					$descriptionTextArea.val(ruleSet.description);
+					
+					/*Bind max executions to our ruleset*/
+					uiElements.maxRulesExecutions.val( ruleSet.maxExecutions || 100000);
+					uiElements.maxRulesExecutions.on("keyup",function(event){
+						if(event.which !== 37 && /*Left Arrow*/
+						   event.which !==39 &&  /*Right Arrow*/
+						   event.which !==8){    /*BackSpace*/
+							/*Restrict to numerals*/
+							this.value=this.value.replace(/[^0-9]+/g, ""); 
+							/*No total value larger than 100000*/
+							if(1*this.value > 100000){
+								this.value=100000;
+							}
+							ruleSet.maxExecutions=this.value;
+							ruleSet.state.isDirty=true;
+						}
+					});
 					
 					/* Bind change events to our ruleSet and our toplevel processor
 					 * Outgoing events....

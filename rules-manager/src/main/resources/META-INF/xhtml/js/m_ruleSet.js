@@ -173,6 +173,7 @@ define([ "bpm-modeler/js/m_utils",
 		this.rules = {};
 		this.technicalRules={};
 		this.decisionTables={};
+		this.maxExecutions=100000;
 		
 		RuleSet.prototype.toJSON=function(format){
 			var parsedData;

@@ -23,6 +23,7 @@ define(["rules-manager/js/m_ruleSet",
 				rSet.description=data.description;
 				rSet.creationDate=data.creationDate;
 				rSet.lastModificationDate=data.lastModificationDate;
+				rSet.maxExecutions=data.maxExecutions || 100000;
 				rSet=$.extend({},RS,rSet);
 				rSet.parameterDefinitions=data.facts;
 				for(key in data.rules){
@@ -116,6 +117,7 @@ define(["rules-manager/js/m_ruleSet",
 					description: rSet.description,
 					creationDate: rSet.creationDate,
 					lastModificationDate: (new Date()).toString(),
+					maxExecutions: rSet.maxExecutions,
 					facts: {},
 					rules: {},
 					decisionTables: {}
