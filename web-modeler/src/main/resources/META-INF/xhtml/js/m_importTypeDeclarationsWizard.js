@@ -157,15 +157,6 @@ define(
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.emptyURL"));
 						return;
 					}
-					// TODO
-					// replace with validation that also supports local references if needed
-//					else if (!m_urlUtils.validate(this.urlTextInput.val())) {
-//						this.urlTextInput.addClass("error");
-//						m_messageDisplay
-//								.showErrorMessage(m_i18nUtils
-//										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.invalidURL"));
-//						return;
-//					}
 					m_utils.jQuerySelect("body").css("cursor", "progress");
 					// this.clearErrorMessages();
 					this.urlTextInput.removeClass("error");
