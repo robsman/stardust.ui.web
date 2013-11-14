@@ -3,10 +3,115 @@ body, table {
 	font-size: 11px;
 }
 
-.panel-struct-header {
-	font-weight: bold;
+.panel-main {
+	margin: 10px 0 20px 0px;
 }
 
-.panel-struct-container {
-	margin-left: 20px;
+.panel-header {
+	font-weight: bold;
+	color: #708090;
+	border-bottom: 1px solid #CCCCCC;
+	padding: 5px 5px 5px 0;
+	margin-bottom: 10px;
+}
+
+.panel-struct {
+	margin-top: 8px;
+}
+
+.panel-nested-container {
+	margin-left: 10px;
+}
+
+.panel-list {
+	margin-top: 8px;
+}
+
+.panel-list-toolbar {
+	margin: 5px 0 5px 0;
+}
+
+.panel-list-tbl {
+	border-collapse: collapse;
+}
+
+.panel-list-tbl-header {
+	height: 25px;
+	margin: 2px 5px;
+	padding: 0 5px 0 5px;
+	border: 1px solid #D9D9D9;
+   color: #484848;
+	background: linear-gradient(to bottom, #E9E9E9 0%, #FFFFFF 100%);
+	text-align: center;
+}
+
+.panel-list-tbl-row {
+	border-left: 1px solid #D9D9D9;
+}
+
+.panel-list-tbl-cell {
+	border-bottom: 1px solid #CCCCCC;
+   border-right: 1px solid #CCCCCC;
+   color: #000000;
+   padding: 2px 5px;
+   text-align: left;
+}
+
+.panel-list-toolbar-tbl-cell {
+	padding-right: 5px;
+}
+
+.panel-primitive-container-cell {
+	vertical-align: top;
+}
+
+.panel-primitive-row {
+	min-height: 30px;
+}
+
+.panel-label-column {
+	vertical-align: top;
+	text-align: left;
+	padding: 5px 0 5px 0;
+}
+
+.panel-prefix-column {
+	vertical-align: top;
+	text-align: right;
+	padding: 2px 0 5px 0;
+	white-space: nowrap;
+}
+
+.panel-input-column {
+	vertical-align: top;
+	padding: 2px 0 5px 0;
+}
+
+.panel-suffix-column {
+	vertical-align: top;
+	text-align: left;
+	padding: 2px 20px 5px 0;
+	white-space: nowrap;
+}
+
+.panel-label {
+	color: #708090;
+	font-weight: normal;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+}
+
+.panel-input {
+	text-align: left;
+	width: 200px;
+   padding: 3px;
+}
+
+.panel-select {
+	text-align: left;
+   padding: 3px;
+}
+
+.panel-input {
+	border: 1px solid #AAAAAA;
 }
