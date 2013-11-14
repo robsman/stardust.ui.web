@@ -40,46 +40,56 @@
 						<td><label for="connectionTypeSelect" id="connection">Connection</label>
 						</td>
 						<td><select id="connectionTypeSelect"></select></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td><label for="databaseTypeSelect">Type</label></td>
+						<td><select id="databaseTypeSelect"></select></td>
+						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div id="directConfigTab" style="width: 100%;">
-				<table cellpadding="2" cellspacing="2" class="layoutTable"
-					style="width: 100%;">
-					<tr>
-						<td><label for="databaseTypeSelect">Type</label>
-						</td>
-						<td><select id="databaseTypeSelect"></select>
-						</td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr id="othersDbConfig">
+				<table cellpadding="2" cellspacing="2" class="layoutTable">
+
+					<tr id="dbUrlConfig">
 						<td><label for="urlInput">URL</label></td>
 						<td><input id="urlInput" type="text"></input></td>
+						<td></td>
+					</tr>
+					<tr id="dbDriverConfig">
 						<td><label for="driverInput">Driver</label></td>
 						<td><input id="driverInput" type="text"></input></td>
+						<td></td>
 					</tr>
-					<tr id="commonDbConfig">
+					<tr id="hostDbConfig">
 						<td><label for="hostInput">Host</label></td>
 						<td><input id="hostInput" type="text"></input></td>
+						<td></td>
+					</tr>
+					<tr id="portConfig">
 						<td><label for="portInput">Port</label></td>
 						<td><input id="portInput" type="text"></input></td>
+						<td></td>
+					</tr>
+					<tr id="dbNameConfig">
 						<td><label for="dataBaseNameInput">Name</label></td>
 						<td><input id="dataBaseNameInput" type="text"></input></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td><label for="userNameInput">User Name</label></td>
+						<td><label for="userNameInput">User</label></td>
 						<td><input id="userNameInput" type="text"></input></td>
+						<td></td>
+					</tr>
+					<tr>
 						<td><label for="passwordInput">Password</label></td>
 						<td><input id="passwordInput" type="text"></input></td>
-						<td><input id="useCVforPassowrdInput" type="checkbox"></input>
-						</td>
-						<td><label for="useCVforPassowrdInput">Use
-								Configuration Variable for Password</label>
-						</td>
+						<td><input id="useCVforPassowrdInput" type="checkbox">Use Configuration Variable for Password</input></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
 
 					</tr>
 				</table>
