@@ -195,7 +195,9 @@ define(
 														supportsInOutDirection : true,
 														displayParameterId: true,
 														alwaysDisplayParameterId: true,
-														updateIdOnNameChangeClientSide : true
+														updateIdOnNameChangeClientSide : true,
+														supportsCustomIDs: true,
+														customIDGenerator: m_utilities.generateID
 													});
 											// TODO Not very elegant, only works
 											// because the
