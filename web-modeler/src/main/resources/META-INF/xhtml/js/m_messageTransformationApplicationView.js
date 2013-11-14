@@ -648,9 +648,12 @@ define(
 						accessPoint) {
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+						var childElementsArray = [];
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getBody());
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getTypeDeclaration().attributes);
 						this.inputData[accessPoint.id] = typeDeclaration;
 						this.initializeTableRowsRecursively(false, accessPoint,
-								typeDeclaration.getBody(), null,
+								childElementsArray, null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
@@ -695,8 +698,11 @@ define(
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 						this.outputData[accessPoint.id] = typeDeclaration;
+						var childElementsArray = [];
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getBody());
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getTypeDeclaration().attributes);
 						this.initializeTableRowsRecursively(true, accessPoint,
-								typeDeclaration.getBody(), null,
+								childElementsArray, null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
@@ -752,6 +758,10 @@ define(
 									.getModel()).name
 							: accessPoint.primitiveDataType)
 							: elementType;
+					
+					// Assign the element name as type name assuming this is an element
+					// with anonymous nested type
+					tableRow.typeName = tableRow.typeName ? tableRow.typeName : elementName;
 
 					if (output) {
 						// for output mapping
@@ -772,6 +782,11 @@ define(
 
 					if (element.length > 0) {
 						for ( var elmnt in element) {
+							if (element[elmnt].classifier === "attribute") {
+								this.initializeTableRowsRecursively(output,
+										accessPoint, element[elmnt], path,
+										scopeModel);
+							}
 							var childElements = element[elmnt].body;
 							if (childElements == null) {
 								continue;
@@ -779,9 +794,12 @@ define(
 
 							for ( var index in childElements) {
 								var childElement = childElements[index];
-								if (childElement.body) {
+								if (childElement.attributes || childElement.body) {
+									var childElementsArray = [];
+									m_utils.insertArrayAt(childElementsArray, childElement.body);
+									m_utils.insertArrayAt(childElementsArray, childElement.attributes);
 									this.initializeTableRowsRecursively(output,
-											accessPoint, childElement.body,
+											accessPoint, childElementsArray,
 											path, scopeModel,
 											childElement.name,
 											childElement.type);

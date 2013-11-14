@@ -306,15 +306,15 @@ define(
 			
 			/**
 			 * 
-			 * @param thisArray
-			 * @param newArray
+			 * @param toArray
+			 * @param fromArray
 			 * @param index
 			 * @returns
 			 */
-			function insertArrayAt(thisArray, newArray, index) {
-				if (newArray) {
-					for (var i = (newArray.length - 1); i >= 0; i--) {
-						thisArray.splice(index, 0, newArray[i]);
+			function insertArrayAt(toArray, fromArray, index) {
+				if (toArray && fromArray) {
+					for (var i = (fromArray.length - 1); i >= 0; i--) {
+						toArray.splice(index, 0, fromArray[i]);
 					};
 				}
 			}
