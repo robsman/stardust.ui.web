@@ -72,6 +72,7 @@ define([],function(){
 		 * @Param coExistantObjs: HashMap of sibling objects we will test for id collisions within
 		 * @Param prop: property we are checking for collisions (defaults to 'id')
 		 * @Param self: reference to ourself so we don't collide with ourself.
+		 * -------------------------------------------------------------------
 		 * Description
 		 * -------------------------------------------------------------------
 		 * Generates an id derived from the baseName string. Removes any character that
@@ -106,7 +107,7 @@ define([],function(){
 			while(tempHash.hasOwnProperty(baseName)){
 				if(patt.test(baseName)){
 					tempSuffix=patt.exec(baseName)[0]; /*extract suffix*/
-					baseName=baseName.replace(tempSuffix,""); /*remove from baseName*/
+					baseName=baseName.replace(patt,""); /*remove from baseName*/
 					tempSuffix =(1*tempSuffix.replace("_",""))+1; /*generate new suffix*/
 				}
 				else{
