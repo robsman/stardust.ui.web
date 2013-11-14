@@ -56,7 +56,7 @@ define(
               visibility : "always",
               pageName : m_i18nUtils
                   .getProperty("modeler.propertyView.modelView.editLock.title"),
-              pageIconUrl : "plugins/bpm-modeler/images/icons/key--pencil.png"
+              pageIconUrl : "plugins/bpm-modeler/images/icons/lock_edit.png"
             }]
 			};
 		});
