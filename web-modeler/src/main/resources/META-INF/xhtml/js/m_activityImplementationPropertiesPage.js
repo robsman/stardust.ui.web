@@ -178,7 +178,7 @@ define(
 						for ( var i in ruleSets) {
 							if (ruleSets[i].state.isDeleted != true) {
 								this.ruleSetList.append("<option value='"
-										+ ruleSets[i].uuid + "'>"
+										+ ruleSets[i].id + "'>"
 										+ ruleSets[i].name + "</option>");
 							}
 						}	
