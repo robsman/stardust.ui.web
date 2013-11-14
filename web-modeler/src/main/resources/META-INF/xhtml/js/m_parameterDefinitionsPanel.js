@@ -202,20 +202,40 @@ define(
 										panel : this
 									},
 									function(event) {
-										if (event.data.panel.currentParameterDefinition != null) {
+										var that=event.data.panel, /*for when 'this' just isn't good enough*/
+											baseName,			   /*Name we wil lgenerate a newID from*/
+											generatedID,		   /*our ID generated from a custom function*/	
+											fx;					   /*our custom ID generation function*/
+										
+										if (that.currentParameterDefinition != null) {
 											// Blank names are not allowed.
-											if (jQuery
-													.trim(event.data.panel.parameterDefinitionNameInput
-															.val()) == "") {
-												event.data.panel.parameterDefinitionNameInput
-														.val(event.data.panel.currentParameterDefinition.name);
+											if (jQuery.trim(that.parameterDefinitionNameInput.val()) == "") {
+												that.parameterDefinitionNameInput.val(that.currentParameterDefinition.name);
 												return;
 											}
-
-											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
-													.val();
-											event.data.panel.currentFocusInput = this.parameterDefinitionDirectionSelect;
-											event.data.panel.submitChanges();
+											
+											/*Extract name the user has just updated and apply it to our pDef*/
+											that.currentParameterDefinition.name = that.parameterDefinitionNameInput.val();
+											
+											/*Check if we are going to update the ID in clientside code*/
+											if (that.options.updateIdOnNameChangeClientSide) {
+												baseName=that.currentParameterDefinition.name;
+												generatedID=baseName.replace(/\s/g, "");
+												fx=that.options.customIDGenerator;	
+												if(that.options.supportsCustomIDs===true && typeof fx==="function"){
+													generatedID=fx(
+															baseName,
+															that.parameterDefinitions,
+															"id",
+															that.currentParameterDefinition);
+													that.currentParameterDefinition.id=generatedID;
+												}
+												else{
+													that.currentParameterDefinition.id = that.parameterDefinitionNameInput.val().replace(/\s/g, "");
+												}											
+											}
+											that.currentFocusInput = this.parameterDefinitionDirectionSelect;
+											that.submitChanges();
 										}
 									});
 					this.parameterDefinitionDirectionSelect
@@ -673,7 +693,13 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.displayParameterId = function() {
-					if (this.options.displayParameterId) {
+					if (this.options.alwaysDisplayParameterId) {
+						if (this.currentParameterDefinition) {
+							this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);	
+						}							
+						this.parameterDefinitionIdOutput.show();
+						this.parameterDefinitionIdOutputLabel.show();						
+					} else if (this.options.displayParameterId) {
 						if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
 							if (this.currentParameterDefinition) {
 								this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);	
@@ -860,8 +886,10 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = this.getNextIdIndex();
-
+					var n = this.getNextIdIndex(),
+						generatedID, /*ID generated when using a custom function*/
+						fx;			 /*custom ID generator functions supplied via options*/
+					
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
 						// on server
@@ -870,7 +898,23 @@ define(
 						dataFullId : null,
 						dataPath : null
 					};
-
+					
+					/*Support custom ID generation mechanisms to supplant our default scheme.*/
+					if(this.options.supportsCustomIDs===true && 
+					   typeof this.options.customIDGenerator ==="function"){
+						
+						fx=this.options.customIDGenerator;
+						generatedID=fx(
+							this.currentParameterDefinition.name,
+							this.parameterDefinitions,
+							"id",
+							this.currentParameterDefinition);
+						
+						if(generatedID && generatedID !==""){
+							this.currentParameterDefinition.id = generatedID;
+						}
+					}
+					
 					if (this.options.supportsDescriptors) {
 						this.currentParameterDefinition.descriptor = false;
 						this.currentParameterDefinition.keyDescriptor = false;
