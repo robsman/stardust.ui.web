@@ -37,10 +37,8 @@ define(["bpm-modeler/js/m_model",
 			facetsEnum=[],   /*our collection of enumerations in our facet obj*/
 			facetTemp;    /*temp var for our loop*/
 		
+		/*retrieve and flatten facets*/
 		facets=obj.getFacets();
-		
-		console.log("-----Facets-----");
-		console.log(facets);
 		facetsObj=facetBuilder(facets);
 
 		/*create our typeBody object which fx can process*/
@@ -68,8 +66,9 @@ define(["bpm-modeler/js/m_model",
 		  else{
 			facetsObj[facetTemp.classifier]=facetTemp.name;
 		  }
-	}
-	return facetsObj;
+	  }
+	  facetsObj.enumeration.reverse();
+	  return facetsObj;
   };
   
   var fx=function(body,paramDef,typeDecl){
@@ -338,7 +337,7 @@ define(["bpm-modeler/js/m_model",
 			data= [paramDef.name];
 		}else{
 			typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
-			data=parseTypeToStringFrags(typeDecl,paramDef.name);
+			data=parseTypeToStringFrags(typeDecl,paramDef.id);
 		}
 		return data;
 	},
@@ -407,10 +406,17 @@ define(["bpm-modeler/js/m_model",
 	    		}
 	    	}
 	    	else{
-	    		temp={data: {title:paramDef.name,icon:elementImage}, 
-	    			  metadata: {ref: paramDef,
-	    					     type: paramDef.primitiveDataType || 'na'}
-	    		};
+	    		if(paramDef.primitiveDataType==="Enumeration"){
+	    			typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+	    			typeBody=enumerationParser(typeDecl);
+	    			temp=fx(typeBody,paramDef,typeDecl);
+	    		}
+	    		else{
+		    		temp={data: {title:paramDef.name,icon:elementImage}, 
+		    			  metadata: {ref: paramDef,
+		    					     type: paramDef.primitiveDataType || 'na'}
+		    		};
+	    		}
 	    		if(paramDef.direction==="IN" || paramDef.direction==="INOUT"){
 	    			jsConditionNodes.push(temp);
 	    		}
