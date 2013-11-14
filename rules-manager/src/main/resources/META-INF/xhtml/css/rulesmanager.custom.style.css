@@ -218,3 +218,16 @@ a.jstree-search.ipp-disabled-text:hover{
 .view-show{
 	display:block;	
 }
+.alert-caution{
+	background : #ffcc33;
+	height: 20px;
+	color: #b25900;
+	font-family: Arial;
+	font-size: 11px;
+}
+.alert-caution img{
+	padding-left:5px;
+}
+.alert-caution span{
+	padding-left:10px;
+}

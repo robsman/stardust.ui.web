@@ -78,7 +78,9 @@ define(
 							importData: m_utils.jQuerySelect(options.selectors.importData),
 							descriptionTextarea: m_utils.jQuerySelect(options.selectors.descriptionTextarea),
 							addRow: m_utils.jQuerySelect(options.selectors.addRow),
-							decTableNameLbl: m_utils.jQuerySelect(options.selectors.decTableNameLbl)
+							decTableNameLbl: m_utils.jQuerySelect(options.selectors.decTableNameLbl),
+							alertPanel : m_utils.jQuerySelect(options.selectors.alertPanel),
+							alertPanelMsg : m_utils.jQuerySelect(options.selectors.alertPanelMsg)
 					};
 					
 					/*TODO: [ZZM] Factor these out.*/
@@ -339,7 +341,19 @@ define(
 		                    });
 				    	}
 				    });
+				    
+				    /*Listen for clicks to hide our alert messages if they are visible.*/
+				    uiElements.mainView.on("click",function(){
+				    	if(uiElements.alertPanel.hasClass("view-hide")===false){
+				    		uiElements.alertPanel.addClass("view-hide");
+				    	}
+				    });
 				    uiElements.decisionTableInstance.rootElement.on("column_removed",function(event){
+				    	/*Check for lock-on-active column being removed*/
+				    	if(event.category==="Attribute" && event.colValue==="lock-on-active"){
+				    		uiElements.alertPanel.removeClass("view-hide",250,"linear");
+				    		uiElements.alertPanelMsg.text(m_i18nUtils.getProperty("rules.propertyView.decisiontableview.alertpanel.warning.lockOnActive"));
+				    	}
 				    	ruleSet.state.isDirty=true;
 				    	if(myDialog){
 				    		myDialog.trigger(event);

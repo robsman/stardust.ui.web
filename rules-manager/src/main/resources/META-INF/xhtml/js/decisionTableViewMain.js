@@ -66,7 +66,9 @@ require([ "require",
 					importData: "#importData",
 					descriptionTextarea: "#descriptionTextarea",
 					addRow: "#addRow",
-					decTableNameLbl: "#decTableNameLbl"
+					decTableNameLbl: "#decTableNameLbl",
+					alertPanel: "#alertPanel",
+					alertPanelMsg: "#alertPanelMsg"
 				},
 				i18nMaps:{
 					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},
