@@ -323,7 +323,11 @@ define(
 						// first append at root ...
 						var childRows = generateChildElementRows(parentPath, schemaType, rowInitializer);
 						
-						var attributes = parentRow.data("attributes");
+						// Add attributes if they were not added already by the call to
+						// generateChildElementRows above.
+						if (!schemaType || !(typeof schemaType.getAttributes === "function")) {
+							var attributes = parentRow.data("attributes");
+						}
 						if (attributes) {
 							var attributeRows = generateChildElementRows(parentPath, attributes, rowInitializer);
 							m_utils.insertArrayAt(childRows, attributeRows, 0);
