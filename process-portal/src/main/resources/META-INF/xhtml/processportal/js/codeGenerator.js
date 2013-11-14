@@ -131,7 +131,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemMain = htmlElement.create("div", {parent: parent});
 			
 			if (options.noLabel == undefined || !options.noLabel) {
-				var elemLabel = htmlElement.create("label", {parent: elemMain, value: getI18NLabel(path), attributes: {class: "panel-label"}});
+				var elemLabel = htmlElement.create("label", 
+						{parent: elemMain, value: getI18NLabel(path) + ":", attributes: {class: "panel-label"}});
 			}
 
 			var elem;
@@ -148,9 +149,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					}
 				} else {
 					elem = htmlElement.create("input", {parent: elemMain});
-					elem.attributes['class'] = "panel-input";
 					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
 						elem.attributes['type'] = "checkbox";
+						elem.attributes['class'] = "panel-checkbox";
+					} else {
+						elem.attributes['class'] = "panel-input";
 					}
 				}
 
@@ -181,28 +184,32 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function generateChildren(parent, children) {
-			// Primitives Container
-			var elemMainPrimTbl = htmlElement.create("table", {parent: parent, attributes: {cellpadding: 0, cellspacing: 0, class: "panel-primitive-container"}});
-			var elemMainPrimTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: elemMainPrimTbl})});
-
-			// Other Elements
-			var elemContents = htmlElement.create("div", {parent: parent});
-
+			var elemMainPrimTr;
 			var elemPrimTBody;
-			var renderedCount = 0;
-			var primitivesCount = countContiguousPrimitives(children);
-			for (var i in children) {
+			var renderedPrimitivesCount = 0;
+			var createPrimitiveContainer = true;
+			for (var i = 0; i < children.length; i++) {
 				if (children[i].isPrimitive && !children[i].isList) {
-					if (renderedCount >= primitivesCount / preferences.layoutColumns) {
-						renderedCount = 0;
+					var primitivesCount = countContiguousPrimitives(children, i);
+
+					if (createPrimitiveContainer) {
+						// Primitives Container
+						var elemMainPrimTbl = htmlElement.create("table", {parent: parent, attributes: {cellpadding: 0, cellspacing: 0, class: "panel-primitive-container"}});
+						elemMainPrimTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: elemMainPrimTbl})});
+
+						createPrimitiveContainer = false;
 					}
 
-					if (renderedCount == 0) {
+					if (renderedPrimitivesCount >= primitivesCount / preferences.layoutColumns) {
+						renderedPrimitivesCount = 0;
+					}
+
+					if (renderedPrimitivesCount == 0) {
 						var elemMainPrimTd = htmlElement.create("td", {parent: elemMainPrimTr, attributes: {class: "panel-primitive-container-cell"}});
 						var elemPrimTbl = htmlElement.create("table", {parent: elemMainPrimTd, attributes: {cellpadding: 0, cellspacing: 0}});
 						elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
 					}
-					renderedCount++;
+					renderedPrimitivesCount++;
 
 					var elemPrimTr = htmlElement.create("tr", {parent: elemPrimTBody, attributes: {class: "panel-primitive-row"}});
 					
@@ -222,7 +229,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					// Prefix
 					var elemPrimSuffixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-suffix-column"}});
 				} else {
-					generatePath(elemContents, children[i]);	
+					renderedPrimitivesCount = 0;
+					createPrimitiveContainer = true;
+					generatePath(parent, children[i]);
 				}
 			}
 
@@ -231,11 +240,22 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		/*
 		 * 
 		 */
-		function countContiguousPrimitives(children) {
+		function countContiguousPrimitives(children, refIndex) {
 			var count = 0;
-			for(i in children) {
+
+			for(var i = refIndex; i >= 0; i--) {
 				if (children[i].isPrimitive && !children[i].isList) {
 					count++;
+				} else {
+					break;
+				}
+			}
+
+			for(var i = refIndex + 1; i < children.length; i++) {
+				if (children[i].isPrimitive && !children[i].isList) {
+					count++;
+				} else {
+					break;
 				}
 			}
 			return count;
@@ -252,7 +272,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				if (i == 0) {
 					binding += parts[i];
 				} else {
-					binding += "['" + parts[i] + "']";					
+					binding += "['" + parts[i] + "']";
 				}
 			}
 			

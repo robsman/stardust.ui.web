@@ -61,6 +61,10 @@ body, table {
 	padding-right: 5px;
 }
 
+.panel-primitive-container {
+	margin-top: 16px;
+}
+
 .panel-primitive-container-cell {
 	vertical-align: top;
 }
@@ -102,16 +106,18 @@ body, table {
 }
 
 .panel-input {
+	border: 1px solid #AAAAAA;
 	text-align: left;
 	width: 200px;
    padding: 3px;
 }
 
-.panel-select {
+.panel-select .panel-checkbox {
 	text-align: left;
-   padding: 3px;
+	padding: 3px;
 }
 
-.panel-input {
-	border: 1px solid #AAAAAA;
+.panel-output {
+	text-align: left;
+	padding: 3px;
 }
