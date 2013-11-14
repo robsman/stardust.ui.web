@@ -76,8 +76,9 @@ public class RulesManagementService
                new String(getDocumentManagementService().retrieveDocumentContent(
                      doc.getId()))).getAsJsonObject();
          String uuid = ruleSet.get("uuid").getAsString();
+         String id = ruleSet.get("id").getAsString();
          ruleSets.add(uuid, ruleSet);
-         ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
+         ruleSetUUIDVsDocumentIdMap.put(id, doc.getId());
       }
 
       return ruleSets;
@@ -96,6 +97,7 @@ public class RulesManagementService
       for (JsonElement je : ruleSets)
       {
          String id = je.getAsJsonObject().get("id").getAsString();
+         String uuid = je.getAsJsonObject().get("uuid").getAsString();
          String documentId = ruleSetUUIDVsDocumentIdMap.get(id);
          OPERATION op = OPERATION.SAVE;
          try
@@ -104,19 +106,19 @@ public class RulesManagementService
             {
                op = OPERATION.DELETE;
                deleteRules(id, documentId);
-               consolidatedResponse.add(new Response(id, op, true, "deleted"));
+               consolidatedResponse.add(new Response(uuid, op, true, "deleted"));
             }
             else
             {
                op = OPERATION.SAVE;
                persistRules(je, id, documentId);
-               consolidatedResponse.add(new Response(id, op, true, "saved"));
+               consolidatedResponse.add(new Response(uuid, op, true, "saved"));
             }
            
          }
          catch (Exception e)
          {
-            consolidatedResponse.add(new Response(id, op, false, e.getMessage()));
+            consolidatedResponse.add(new Response(uuid, op, false, e.getMessage()));
          }
       }
 
