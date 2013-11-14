@@ -36,7 +36,11 @@ ul.popupSelectorItemList {
 	vertical-align: middle;
 	text-align: center;
 }
-
+#maxRulesExecutions{
+	width:40px;
+	min-width:40px;
+	max-width:40px;
+}
 table.wrapperTable {
 	width: 100%;
 }
@@ -163,7 +167,10 @@ table.wrapperTable {
 			</tr>
 			<tr>
 				<td>
-					<!-- rulesettabs -->
+					<div style="padding-top:5px;">
+						<label style="width:175px;display:inline;" for="maxRulesExecutions" id="lblmax">Maximum Number of Rules Executions</label>
+						<input id="maxRulesExecutions" type="text" value="100000" maxlength="6" ></input>
+					</div>
 				</td>
 			</tr>
 		</table>
