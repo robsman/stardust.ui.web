@@ -95,28 +95,28 @@ public class RulesManagementService
 
       for (JsonElement je : ruleSets)
       {
-         String uuid = je.getAsJsonObject().get("uuid").getAsString();
-         String documentId = ruleSetUUIDVsDocumentIdMap.get(uuid);
+         String id = je.getAsJsonObject().get("id").getAsString();
+         String documentId = ruleSetUUIDVsDocumentIdMap.get(id);
          OPERATION op = OPERATION.SAVE;
          try
          {
             if (je.getAsJsonObject().get("deleted") != null)
             {
                op = OPERATION.DELETE;
-               deleteRules(uuid, documentId);
-               consolidatedResponse.add(new Response(uuid, op, true, "deleted"));
+               deleteRules(id, documentId);
+               consolidatedResponse.add(new Response(id, op, true, "deleted"));
             }
             else
             {
                op = OPERATION.SAVE;
-               persistRules(je, uuid, documentId);
-               consolidatedResponse.add(new Response(uuid, op, true, "saved"));
+               persistRules(je, id, documentId);
+               consolidatedResponse.add(new Response(id, op, true, "saved"));
             }
            
          }
          catch (Exception e)
          {
-            consolidatedResponse.add(new Response(uuid, op, false, e.getMessage()));
+            consolidatedResponse.add(new Response(id, op, false, e.getMessage()));
          }
       }
 
@@ -149,42 +149,41 @@ public class RulesManagementService
 
    /**
     * @param je
-    * @param uuid
+    * @param id
     * @param documentId
     */
-   private void persistRules(JsonElement je, String uuid, String documentId)
+   private void persistRules(JsonElement je, String id, String documentId)
    {
       Document doc;
       if (null == documentId)
       {
-         String rulesetFileName = je.getAsJsonObject().get("name").getAsString() + uuid
-               + ".json";
-         trace.info("creating new ruleset with uuid, name:  " + uuid + ", "
+         String rulesetFileName =  id + ".json";
+         trace.info("creating new ruleset with id, name:  " + id + ", "
                + rulesetFileName);
          doc = getRulesManagementStrategy().createRuleSet(rulesetFileName,
                je.toString().getBytes());
       }
       else
       {
-         trace.info("updating ruleset with uuid: " + uuid);
+         trace.info("updating ruleset with uuid: " + id);
          doc = getRulesManagementStrategy().saveRuleSet(documentId,
                je.toString().getBytes());
       }
 
-      ruleSetUUIDVsDocumentIdMap.put(uuid, doc.getId());
+      ruleSetUUIDVsDocumentIdMap.put(id, doc.getId());
    }
 
    /**
-    * @param uuid
+    * @param id
     * @param documentId
     */
-   private void deleteRules(String uuid, String documentId)
+   private void deleteRules(String id, String documentId)
    {
-      trace.info("deleting ruleset with uuid:  " + uuid);
+      trace.info("deleting ruleset with id:  " + id);
 
       getRulesManagementStrategy().deleteRuleSet(documentId);
 
-      ruleSetUUIDVsDocumentIdMap.remove(uuid);
+      ruleSetUUIDVsDocumentIdMap.remove(id);
    }
 
    /**
