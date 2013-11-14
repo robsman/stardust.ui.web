@@ -61,11 +61,11 @@ define(["bpm-modeler/js/m_model"],function(m_model){
 				var typeDecl;
 				var data;
 				if(paramDef.dataType==="primitive"){
-					data= [paramDef.name];
+					data= [paramDef.id];
 				}else{
 					typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
 					if(typeDecl){
-						data=parseTypeToStringFrags(typeDecl,paramDef.name);
+						data=parseTypeToStringFrags(typeDecl,paramDef.id);
 					}
 				}
 				return data;
