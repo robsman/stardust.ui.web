@@ -56,7 +56,7 @@ define([ "bpm-modeler/js/m_utils" ],
 					this.tableData={
 							columns:[{type:"text"},{type:"checkbox","default":true}],
 					        data:[
-					               ['',true]
+					               ['',true],['',true],['',true],['',true],['',true]
 					           ],
 					        colWidths:[90,90],
 					        colHeaders:["Description|NA|Header",
