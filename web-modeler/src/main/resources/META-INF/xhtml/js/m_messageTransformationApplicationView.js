@@ -491,12 +491,16 @@ define(
 					var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
-						completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
+						if (typeDeclaration) {
+							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
+						}						
 					}
 
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
-						completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
+						if (typeDeclaration) {
+							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
+						}						
 					}
 					this.expressionEditor.setSessionData("$keywordList",completerStrings);
 					var that=this;
