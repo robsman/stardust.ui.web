@@ -809,9 +809,23 @@ define(
 											childElement.type);
 
 								} else {
-									this.initializeTableRowsRecursively(output,
-											accessPoint, childElement, path,
-											scopeModel);
+									// TODO - review
+									var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+									var schemaType = typeDeclaration.asSchemaType();
+									var childSchemaType = schemaType.resolveElementType(childElement.name);
+									if (childSchemaType && childSchemaType.isStructure()) {
+										var childElementsArray = [];
+										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);
+										m_utils.insertArrayAt(childElementsArray, childSchemaType.getAttributes());
+										this.inputData[accessPoint.id] = childSchemaType;
+										this.initializeTableRowsRecursively(output, accessPoint,
+												childElementsArray, path,
+												childSchemaType.model, childSchemaType.name, (childSchemaType.type ? childSchemaType.type.type : ""));
+									} else {
+										this.initializeTableRowsRecursively(output,
+												accessPoint, childElement, path,
+												scopeModel);
+									}
 								}
 							}
 						}
