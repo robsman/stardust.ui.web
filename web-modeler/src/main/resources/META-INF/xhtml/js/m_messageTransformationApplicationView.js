@@ -492,15 +492,25 @@ define(
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
 						if (typeDeclaration) {
+							/*Structured type branch*/
 							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
+						}
+						else{
+							/*Primitive type branch*/
+							completerStrings=completerStrings.concat([id]);
 						}						
 					}
 
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
 						if (typeDeclaration) {
+							/*Structured type branch*/
 							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
-						}						
+						}
+						else{
+							/*Primitive type branch*/
+							completerStrings=completerStrings.concat([id]);
+						}								
 					}
 					this.expressionEditor.setSessionData("$keywordList",completerStrings);
 					var that=this;
