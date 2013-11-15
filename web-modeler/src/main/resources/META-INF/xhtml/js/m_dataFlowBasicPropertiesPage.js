@@ -558,7 +558,15 @@ define(
 						inputElement.append(group);
 						var ruleSets = m_ruleSetsHelper.getRuleSets();
 						if (ruleSets) {
-							var rule = ruleSets[this.getModelElement().activity.attributes["ruleSetId"]];
+							var rule = null;
+							for ( var i in ruleSets) {
+								if (ruleSets[i].state.isDeleted != true) {
+									if(ruleSets[i].id == this.getModelElement().activity.attributes["ruleSetId"]){
+										rule = ruleSets[i];
+									}
+								}
+							}	
+							
 							if (rule) {
 								for (var i in rule.parameterDefinitions) {
 									var param = rule.parameterDefinitions[i];
@@ -592,7 +600,14 @@ define(
 						var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName + "'/>");
 						inputElement.append(group);
 						if (ruleSets) {
-							var rule = ruleSets[this.getModelElement().activity.attributes["ruleSetId"]];
+							var rule = null;
+							for ( var i in ruleSets) {
+								if (ruleSets[i].state.isDeleted != true) {
+									if(ruleSets[i].id == this.getModelElement().activity.attributes["ruleSetId"]){
+										rule = ruleSets[i];
+									}
+								}
+							}
 							if (rule) {
 								for (var i in rule.parameterDefinitions) {
 									var param = rule.parameterDefinitions[i];
