@@ -465,7 +465,7 @@ define(
 
 					if (data.dataType == null
 							|| data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						this.setPrimitiveDataType(data.primitiveDataType);
+						this.setPrimitiveDataType(data.primitiveDataType,data.structuredDataTypeFullId);
 					} else if (data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
 						this
 								.setStructuredDataType(data.structuredDataTypeFullId);
@@ -501,7 +501,7 @@ define(
 				 *
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
-						primitiveDataType) {
+						primitiveDataType,structuredDataTypeFullId) {
 					// Reinitialize the primitive type options to get rid of "Other" option
 					this.populatePrimitivesSelectInput();
 
@@ -510,7 +510,11 @@ define(
 					}
 
 					if (this.isSupportedPrimitiveDataType(primitiveDataType)) {
-						this.primitiveDataTypeSelect.val(primitiveDataType);
+						if(primitiveDataType==="Enumeration" && structuredDataTypeFullId){
+							this.primitiveDataTypeSelect.val(primitiveDataType + "-" + structuredDataTypeFullId);
+						}else{
+							this.primitiveDataTypeSelect.val(primitiveDataType);
+						}
 					} else {
 						this.primitiveDataTypeSelect
 								.append("<option value=\"other\">"
