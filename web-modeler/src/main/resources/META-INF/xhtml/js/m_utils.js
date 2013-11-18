@@ -153,6 +153,8 @@ define(
 				
 				isIntermediateEvent : isIntermediateEvent,
 				
+				encodeXmlPredfinedCharacters : encodeXmlPredfinedCharacters, 
+				
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
 				},
@@ -1163,4 +1165,17 @@ define(
 				}
 				return false;
 			}
+			
+			
+			function encodeXmlPredfinedCharacters(content) {
+				
+				content = content.replace(new RegExp("&", 'g'), "&amp;");
+				content = content.replace(new RegExp(">", 'g'), "&gt;");
+				content = content.replace(new RegExp("<", 'g'), "&lt;");
+				content = content.replace(new RegExp("\"", 'g'), "&quot;");
+				content = content.replace(new RegExp("'", 'g'), "&apos;");
+				
+				return content;
+			}
+			
 		});

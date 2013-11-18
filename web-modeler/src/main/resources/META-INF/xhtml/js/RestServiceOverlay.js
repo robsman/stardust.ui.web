@@ -113,7 +113,18 @@ define(
 							});
 
 					var self = this;
-
+					
+					var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
+					
+					if (!httpHeadersJson)
+					{
+						httpHeadersJson = "[]";
+					}
+					
+					this.httpHeaders = JSON.parse(httpHeadersJson);
+					
+					this.initializeHeaderAttributesTable();
+					
 					this.uriInput.change(function() {
 						self.submitChanges();
 					});
@@ -341,14 +352,7 @@ define(
 					}
 				};
 				
-				RestServiceOverlay.prototype.refreshHeaderAttributesTable = function(httpHeadersJson) {
-					
-					if (!httpHeadersJson)
-					{
-						httpHeadersJson = "[]";
-					}
-					
-					var httpHeaders = JSON.parse(httpHeadersJson);
+				RestServiceOverlay.prototype.initializeHeaderAttributesTable = function() {
 					
 					m_utils.jQuerySelect("#securityTab #addHeaderButton").click
 					(
@@ -357,14 +361,35 @@ define(
 						},
 						function(event) 
 						{
-							httpHeaders.push({"headerName" : "New " + (httpHeaders.length + 1), "headerValue" : ""});
-							event.data.page.refreshHeaderAttributesTable(JSON.stringify(httpHeaders));
+							event.data.page.httpHeaders.push
+							(
+								{
+									"headerName" : "New" + (event.data.page.httpHeaders.length + 1), 
+									"headerValue" : "New" + (event.data.page.httpHeaders.length + 1)
+								}
+							);
+							
+							// submit changes
+							event.data.page.submitSingleAttributeChange(
+									"stardust:restServiceOverlay::httpHeaders", JSON.stringify(event.data.page.httpHeaders));
+							
+							// update route
+							event.data.page.submitSingleAttributeChange(
+									"carnot:engine:camel::routeEntries", event.data.page.getRoute());
+							
+							event.data.page.refreshHeaderAttributesTable();
+						
 						}	
 					);
 					
+					this.refreshHeaderAttributesTable();
+				};
+				
+				RestServiceOverlay.prototype.refreshHeaderAttributesTable = function() {
+					
 					m_utils.jQuerySelect("table#headerAttributesTable tbody").empty();
 
-					for ( var n = 0; n < httpHeaders.length; ++n) {
+					for ( var n = 0; n < this.httpHeaders.length; ++n) {
 						
 						var row = m_utils.jQuerySelect("<tr></tr>");
 						var cell = m_utils.jQuerySelect("<td></td>");
@@ -378,23 +403,31 @@ define(
 						(
 							{
 								page : this,
-								headerName : httpHeaders[n].headerName
+								headerName : this.httpHeaders[n].headerName
 							},
 							function(event) 
 							{
 								newHttpHeaders = [];
 								
-								for (var h = 0; h < httpHeaders.length; ++h) 
+								for (var h = 0; h < event.data.page.httpHeaders.length; ++h) 
 								{
-									if (event.data.headerName !== httpHeaders[h].headerName)
+									if (event.data.headerName !== event.data.page.httpHeaders[h].headerName)
 									{
-										newHttpHeaders.push(httpHeaders[h]);
+										newHttpHeaders.push(event.data.page.httpHeaders[h]);
 									}
 								}
+								
+								event.data.page.httpHeaders = newHttpHeaders;
 							
 								// submit changes
 								event.data.page.submitSingleAttributeChange(
 										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(newHttpHeaders));
+								
+								// update route
+								event.data.page.submitSingleAttributeChange(
+										"carnot:engine:camel::routeEntries", event.data.page.getRoute());
+								
+								event.data.page.refreshHeaderAttributesTable();
 							}
 						);
 
@@ -403,74 +436,86 @@ define(
 						cell = m_utils.jQuerySelect("<td></td>");
 
 						
-						headerNameInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ httpHeaders[n].headerName +"'></input>");
+						headerNameInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ this.httpHeaders[n].headerName +"'></input>");
 						headerNameInput.change
 						(
 							{
 								page : this,
-								headerName : httpHeaders[n].headerName
+								headerName : this.httpHeaders[n].headerName
 							},
 							function(event) 
 							{
 								var oldValue = event.data.headerName;
 								var newValue = event.target.value;
 								
-								for ( var h = 0; h < httpHeaders.length; ++h) 
+								for ( var h = 0; h < event.data.page.httpHeaders.length; ++h) 
 								{
-									if (httpHeaders[h].headerName === oldValue)
+									if (event.data.page.httpHeaders[h].headerName === oldValue)
 									{
-										httpHeaders[h].headerName = newValue;
+										event.data.page.httpHeaders[h].headerName = newValue;
 									}
 								}
 								
 								// submit changes
 								event.data.page.submitSingleAttributeChange(
-										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(httpHeaders));
+										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(event.data.page.httpHeaders));
+								
+								// update route
+								event.data.page.submitSingleAttributeChange(
+										"carnot:engine:camel::routeEntries", event.data.page.getRoute());
+								
+								event.data.page.refreshHeaderAttributesTable();
 							}
 						);
-						headerNameInput.keydown
-						(
-							{
-								page : this
-							},	
-							function(event) 
-							{
-								if (event.which == 9) { //tab key pressed
-									if(!event.shiftKey){
-//										event.data.page.preserveFocus(m_utils.jQuerySelect(this), true);
-									}
-								}
-							}
-						);
+//						headerNameInput.keydown
+//						(
+//							{
+//								page : this
+//							},	
+//							function(event) 
+//							{
+//								if (event.which == 9) { //tab key pressed
+//									if(!event.shiftKey){
+////										event.data.page.preserveFocus(m_utils.jQuerySelect(this), true);
+//									}
+//								}
+//							}
+//						);
 						
 						cell.append(headerNameInput);
 						row.append(cell);
 						
 						cell = m_utils.jQuerySelect("<td></td>");
 						
-						headerValueInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ httpHeaders[n].headerValue +"'></input>");
+						headerValueInput = m_utils.jQuerySelect("<input type='text' class='cellEditor' value='"+ this.httpHeaders[n].headerValue +"'></input>");
 						headerValueInput.change
 						(
 							{
 								page : this,
-								headerValue : httpHeaders[n].headerValue
+								headerValue : this.httpHeaders[n].headerValue
 							},
 							function(event) 
 							{
 								var oldValue = event.data.headerValue;
 								var newValue = event.target.value;
 								
-								for ( var h = 0; h < httpHeaders.length; ++h) 
+								for ( var h = 0; h < event.data.page.httpHeaders.length; ++h) 
 								{
-									if (httpHeaders[h].headerValue === oldValue)
+									if (event.data.page.httpHeaders[h].headerValue === oldValue)
 									{
-										httpHeaders[h].headerValue = newValue;
+										event.data.page.httpHeaders[h].headerValue = newValue;
 									}
 								}
 								
 								// submit changes
 								event.data.page.submitSingleAttributeChange(
-										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(httpHeaders));
+										"stardust:restServiceOverlay::httpHeaders", JSON.stringify(event.data.page.httpHeaders));
+								
+								// update route
+								event.data.page.submitSingleAttributeChange(
+										"carnot:engine:camel::routeEntries", event.data.page.getRoute());
+								
+								event.data.page.refreshHeaderAttributesTable();
 							}
 						);
 						
@@ -654,7 +699,9 @@ define(
 					// add addtional headers defined via custom security token
 					if (this.securityModeSelect.val() === "customSecTok")
 					{
-						route += "<setHeader headerName='" + this.customSecurityTokenKeyInput.val() + "'>";
+						var cKey = this.customSecurityTokenKeyInput.val();
+						route += "<setHeader headerName='" + m_utils.encodeXmlPredfinedCharacters(cKey) + "'>";
+						
 						route += "<constant>";
 						
 						if (this.customSecurityTokenUsingCVInput.prop("checked"))
@@ -662,8 +709,8 @@ define(
 							route += "${"; 
 						}
 						
-						// TODO: verify if any encoding is required
-						route += this.customSecurityTokenValueInput.val();
+						var cValue = this.customSecurityTokenValueInput.val();
+						route += m_utils.encodeXmlPredfinedCharacters(cValue);
 						
 						if (this.customSecurityTokenUsingCVInput.prop("checked"))
 						{
@@ -672,21 +719,17 @@ define(
 						
 						route += "</constant>";
 						route += "</setHeader>";
-
-						// TODO: JSON String should be stored as global variable?
-						var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
 						
-						if (!httpHeadersJson)
+						for (var h=0; h<this.httpHeaders.length; h++)
 						{
-							httpHeadersJson = "[]";
-						}
-						
-						var httpHeaders = JSON.parse(httpHeadersJson);
-						
-						for (var h=0; h<httpHeaders.length; h++)
-						{
-							route += "<setHeader headerName='" + httpHeaders[h].headerName + "'>";
-							route += "<constant>" + httpHeaders[h].headerValue + "</constant>"; // TODO: verify if any encoding is required
+							var hName = this.httpHeaders[h].headerName;
+							hName = m_utils.encodeXmlPredfinedCharacters(hName);
+							
+							var hValue = this.httpHeaders[h].headerValue;
+							hValue = m_utils.encodeXmlPredfinedCharacters(hValue);
+							
+							route += "<setHeader headerName='" + hName + "'>";
+							route += "<constant>" + hValue + "</constant>"; 
 							route += "</setHeader>";
 						}
 					}
@@ -767,9 +810,6 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.update = function() {
-					
-					var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
-					this.refreshHeaderAttributesTable(httpHeadersJson);
 					
 					this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
 					
