@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 
-@Service
+@Service(MashupContextConfigManager.BEAN_NAME)
 @Scope("singleton")
 public class MashupContextConfigManager
 {
+   public static final String BEAN_NAME = "ippMashupContextConfigManager";
+
    private static final Logger trace = LogManager
          .getLogger(MashupContextConfigManager.class);
 
@@ -102,6 +104,18 @@ public class MashupContextConfigManager
       else
       {
          return null;
+      }
+   }
+
+   public long getContextExpiry(String contextId)
+   {
+      if (nonceManager.isValidNonce(contextId))
+      {
+         return nonceManager.getNonceExpiry(contextId);
+      }
+      else
+      {
+         return 0;
       }
    }
 

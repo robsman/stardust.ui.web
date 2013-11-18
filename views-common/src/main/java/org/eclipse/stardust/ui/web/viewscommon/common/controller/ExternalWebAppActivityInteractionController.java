@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.controller;
 
 import static java.util.Collections.emptyMap;
+import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
@@ -27,6 +28,7 @@ import java.util.Properties;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -45,6 +47,8 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController.ExtractSessionInfoCommand.SessionInfo;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
@@ -238,18 +242,33 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       
       String panelUri = uriBuilder.toString();
 
-      if (Parameters.instance().getBoolean("org.eclipse.stardust.ui.web.feature.mashupCredentialsPropagation", false));
+      if (MashupControllerUtils.isEnabled())
       {
-         MashupContextConfigRestController contextConfigController = (MashupContextConfigRestController) ManagedBeanUtils
-               .getManagedBean(fc, "ippMashupConfigCallbackController");
-         if (null != contextConfigController)
+         MashupContextConfigManager contextConfigManager = (MashupContextConfigManager) ManagedBeanUtils
+               .getManagedBean(fc, MashupContextConfigManager.BEAN_NAME);
+         if (null != contextConfigManager)
          {
             // retrieve real credentials
             SessionInfo sessionInfo = (SessionInfo) ServiceFactoryUtils
                   .getWorkflowService().execute(new ExtractSessionInfoCommand());
 
-            panelUri = contextConfigController.obtainMashupPanelBootstrapUri(panelUri,
-                  sessionInfo.tokens, URI.create(servicesBaseUri + "rest/views-common/"));
+            if (!isEmpty(sessionInfo.tokens) || MashupControllerUtils.isAlwaysEnabled())
+            {
+               Map<String, String> bootstrapParams = MashupControllerUtils
+                     .obtainMashupPanelBootstrapParams(contextConfigManager,
+                           URI.create(panelUri), sessionInfo.tokens,
+                           URI.create(servicesBaseUri));
+
+               String loaderBaseUri = portalBaseUri;
+               if ( !loaderBaseUri.endsWith("/"))
+               {
+                  loaderBaseUri += "/";
+               }
+               URI bootstrapUri = MashupControllerUtils.buildMashupBootstrapUri(
+                     bootstrapParams, URI.create(loaderBaseUri));
+
+               panelUri = bootstrapUri.toString();
+            }
          }
          else
          {

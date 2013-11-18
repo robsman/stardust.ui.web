@@ -94,6 +94,16 @@ public class NonceManager
       }
    }
 
+   public long getNonceExpiry(String nonceValue)
+   {
+      Nonce nonce = nonceRegistry.get(nonceValue);
+      if ((null != nonce) && nonce.getValue().equals(nonceValue) && !nonce.wasUsed())
+      {
+         return nonce.getExpiry();
+      }
+      return 0;
+   }
+
    public boolean consumeNonce(String nonceValue)
    {
       try
