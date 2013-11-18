@@ -348,7 +348,8 @@ define(
 					if (typeDeclaration
 							&& "enumStructuredDataType" !== typeDeclaration.getType()
 							&& !typeDeclaration.isComplexTypeWithSimpleContent()) {
-						if (typeDeclaration.getTypeDeclaration()
+						if (typeDeclaration.isSequence()
+								&& typeDeclaration.getTypeDeclaration()
 								&& typeDeclaration.getTypeDeclaration().base) {
 							baseTypeDeclaration = this
 									.resolveBaseType(typeDeclaration);
