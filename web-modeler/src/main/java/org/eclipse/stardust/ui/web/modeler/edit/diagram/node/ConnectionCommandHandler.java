@@ -215,7 +215,7 @@ public class ConnectionCommandHandler
          {
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
             {
-               getModelBuilderFacade().createDataFlowConnection(
+               DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid),
                      getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
@@ -228,6 +228,8 @@ public class ConnectionCommandHandler
                            mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                            PredefinedConstants.DEFAULT_CONTEXT, null);
+               
+               mapper.map(dataConnectionType);
             }
             else
             {
