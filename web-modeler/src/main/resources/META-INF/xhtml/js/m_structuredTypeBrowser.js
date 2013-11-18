@@ -96,7 +96,8 @@ define(
 							childRow.addClass("expanded");
 						}
 					}
-					if ((element.body && element.body.length > 0) || (element.attributes && element.attributes.length > 0)) {
+					if ((element.body && element.body.length > 0) || (element.attributes && element.attributes.length > 0)
+							|| isElementAnEnumeration(element)) {
 						childRow.addClass("parent");
 						childRow.addClass("expanded");
 					}
@@ -144,15 +145,45 @@ define(
 						isStruct = schemaTypeOrElements.isStructure();
 						isEnum = schemaTypeOrElements.isEnumeration();
 						elements = (isStruct || isEnum) ? schemaTypeOrElements.getElements() : [];
-					} else {
+					} else if (Array.isArray(schemaTypeOrElements)) {
 						isStruct = true;
 						elements = schemaTypeOrElements;
+						if (schemaTypeOrElements.attributes) {
+							attributes = schemaTypeOrElements.attributes;
+						}
+					} else if (isElementAnEnumeration(schemaTypeOrElements)) {
+						var facets = schemaTypeOrElements.facets
+						for (var i in facets) {
+							if (facets[i].classifier === "enumeration") {
+								elements.push(facets[i]);
+							}
+						}
 					}
 				}
 				if ((elements && elements.length > 0) || (attributes && attributes.length > 0)) {
 					return true;
 				}
 
+				return false;
+			}
+			
+			/**
+			 * 
+			 * @param element
+			 * @returns
+			 */
+			function isElementAnEnumeration(element) {
+				if (element && element.classifier === "element") {
+					var facets = element.facets;
+					if (facets && facets.length > 0) {
+						for (var i in facets) {
+							if (facets[i].classifier === "enumeration") {
+								return true;
+							}
+						}
+					}
+				}
+				
 				return false;
 			}
 			
@@ -176,6 +207,13 @@ define(
 						elements = schemaTypeOrElements;
 						if (schemaTypeOrElements.attributes) {
 							attributes = schemaTypeOrElements.attributes;
+						}
+					} else if (isElementAnEnumeration(schemaTypeOrElements)) {
+						var facets = schemaTypeOrElements.facets
+						for (var i in facets) {
+							if (facets[i].classifier === "enumeration") {
+								elements.push(facets[i]);
+							}
 						}
 					}
 				}

@@ -715,11 +715,14 @@ define(
 						}
 					}
 					if (facets.length == 0 && this.schema.types) {
-						for (var i in this.schema.types) {
-							if (this.schema.types[i].facets) {
-								for (var j in this.schema.types[i].facets) {
-									if (this.schema.types[i].facets[j].classifier === "enumeration") {
-										facets.push(this.schema.types[i].facets[j]);
+						if (this.type) {
+							for (var i in this.schema.types) {
+								if (this.schema.types[i].name === this.type.name
+										&& this.schema.types[i].facets) {
+									for (var j in this.schema.types[i].facets) {
+										if (this.schema.types[i].facets[j].classifier === "enumeration") {
+											facets.push(this.schema.types[i].facets[j]);
+										}
 									}
 								}
 							}
