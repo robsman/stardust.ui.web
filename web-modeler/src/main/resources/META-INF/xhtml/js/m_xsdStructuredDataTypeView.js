@@ -717,7 +717,8 @@ define(
 					if (this.isRowEditable(element)) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
-						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
+						nameColumn.append("<span class='data-element'></span>");
+						nameColumn.children("td span").text(element.name);
 					}
 
 					var typeColumn = m_utils.jQuerySelect("<td class='typeCell'></td>").appendTo(row);

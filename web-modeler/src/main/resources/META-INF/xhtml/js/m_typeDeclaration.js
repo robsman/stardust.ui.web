@@ -802,7 +802,7 @@ define(
 
 			function getElementsFromBody(body, elements, inherited) {
 				for (var i in body) {
-					if (body[i] && body[i].classifier !== "element") {
+					if (body[i] && (body[i].classifier !== "element" && body[i].name !== "<any>")) {
 						getElementsFromBody(body[i].body, elements, (inherited || body[i].inherited));
 					} else {
 						if (inherited || body[i].inherited) {
