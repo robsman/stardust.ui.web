@@ -64,7 +64,8 @@ define([ "jquery", "jquery-ui", "jquery.download",
 				redoChange: "#redoChange",
 				saveAllRules: "#saveAllRules",
 				refreshRules: "#refreshRules",
-				lastSavelLabel: "#lastsave"
+				lastSavelLabel: "#lastsave",
+				lastSaveDateDisplay: "#lastSaveDateDisplay"
 			},
 			i18nMaps: {
 				createRuleSetButton: {path:"rules.outline.toolbar.tooltip.createRuleSet",defaultText:"NA",attr:"title"},

@@ -1,4 +1,10 @@
-define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuery,m_utilities){
+define(["jquery",
+        "rules-manager/js/hotDecisionTable/m_utilities",
+        "rules-manager/js/m_i18nUtils"],
+        function(
+        		JQuery,
+        		m_utilities,
+        		m_i18nUtils){
 		/* Wrapping command object that contains a single logical change
 		 * to a ruleSet. Physically, this may represent multiple changes to the
 		 * ruleSet thus the changes element is an array.
@@ -106,7 +112,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.decTableRenameCmd,true,changeObj,
 						ruleSet.name + "." +
 						decTable.id + " - " +
-						"Renamed decision table to \"" + newVal + "\".",
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.decTableRenameCmd") +
+						" \"" + newVal + "\".",
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
@@ -116,7 +123,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.decTableCreateCmd,true,changeObj,
 						ruleSet.name + "." +
 						decTable.id + " - " +
-						"Created decision table.",
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.decTableCreateCmd"),
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
@@ -126,7 +133,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.decTableDeleteCmd,true,changeObj,
 						ruleSet.name + "." +
 						decTable.id + " - " +
-						"Deleted decision table.",
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.decTableDeleteCmd"),
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
@@ -136,7 +143,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.decTableDescriptionCmd,true,changeObj,
 						ruleSet.name + "." +
 						decTable.id + " - " +
-						"Changed description of decision table to \"" + newVal + "\".",
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.decTableDescriptionCmd") +
+						" \"" + newVal + "\".",
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
@@ -146,7 +154,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.decTableDataCmd,true,changeObj,
 						ruleSet.name + "." +
 						decTable.id + " - " +
-						"Data or configuration changed.",
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.decTableDataCmd"),
 						baseEvent,ruleSet.uuid,decTable.uuid,"decisionTable");
 				return cmd;
 			},
@@ -156,7 +164,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleSetRenameCmd,true,changeObj,
 						ruleSet.name + "." +
 						ruleSet.id+ " - " +
-						"Ruleset renamed to \"" + newVal +"\"."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleSetRenameCmd") +
+						" \"" + newVal +"\"."
 						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
@@ -166,7 +175,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleSetDescriptionCmd,true,changeObj,
 						ruleSet.name + "." +
 						ruleSet.id + " - " +
-						"Ruleset description changed to \"" + newVal +"\"."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleSetDescriptionCmd") +
+						" \"" + newVal +"\"."
 						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
@@ -176,7 +186,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleSetFactCmd,true,changeObj,
 						ruleSet.name + "." +
 						ruleSet.id + " - " +
-						"Ruleset parameter definitions modified."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleSetFactCmd")
 						,baseEvent,ruleSet.uuid,ruleSet.uuid,"ruleSet");
 				return cmd;
 			},
@@ -186,7 +196,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleCreateCmd,true,changeObj,
 						ruleSet.name + "." +
 						rule.id+ " - " +
-						"Rule created."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleCreateCmd")
 						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
@@ -196,7 +206,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleDeleteCmd,true,changeObj,
 						ruleSet.name + "." +
 						rule.id+ " - " +
-						"Rule deleted."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleDeleteCmd")
 						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
@@ -206,7 +216,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleRenameCmd,true,changeObj,
 						ruleSet.name + "." +
 						rule.id+ " - " +
-						"Rule renamed to \"" + newVal + "\"."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleRenameCmd") +
+						" \"" + newVal + "\"."
 						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
@@ -216,7 +227,8 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleDescriptionCmd,true,changeObj,
 						ruleSet.name + "." +
 						rule.id+ " - " +
-						"Rule description changed to \"" + newVal + "\"."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleDescriptionCmd") +
+						" \"" + newVal + "\"."
 						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			},
@@ -226,7 +238,7 @@ define(["jquery","rules-manager/js/hotDecisionTable/m_utilities"],function(JQuer
 						constants.ruleScriptChangeCmd,true,changeObj,
 						ruleSet.name + "." +
 						rule.id+ " - " +
-						"Script modified."
+						m_i18nUtils.getProperty("rules.rulesetcommands.description.ruleScriptChangeCmd")
 						,baseEvent,ruleSet.uuid,rule.uuid,"rule");
 				return cmd;
 			}

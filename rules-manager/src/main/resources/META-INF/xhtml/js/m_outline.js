@@ -427,7 +427,9 @@ define(
 			function saveRuleSets(deletedOnly,virginOnly) {
 				var rsArray=[], /* transformed ruleSets we will post to the server*/
 					refRsArray=[]; /* ref to original ruleSets we will operate on within the success callback*/
-				
+				debugger;
+				console.log("SAVE=");
+				console.log(this);
 				deletedOnly=deletedOnly || false;
 				virginOnly=virginOnly || false;
 				
@@ -470,8 +472,7 @@ define(
 						}
 					}
 				});/*End JQUERY.Each*/
-				console.log("--RSArray--");
-				console.log(rsArray);
+
 				m_communicationController
 						.syncPostData(
 								{
@@ -481,11 +482,13 @@ define(
 								new function() {
 									return {
 										success : function(data) {
-											console.log(data);
+											
 											var failures=[]; /*ruleSets which reported success=false from the server*/
 											m_messageDisplay.markSaved();
+											
 											/*Purge all command history*/
 											m_ruleSetCommandDispatcher.commandStack().purgeStacks();
+											outline.lastSavedAt=new Date();
 											hasUnsavedModifications = false;
 											jQuery.each(data,function(){
 												var rsRef;
@@ -518,6 +521,7 @@ define(
 													}
 												}
 											});
+
 											console.log("FAILURES...");
 											console.log(failures);
 										},
@@ -1130,10 +1134,24 @@ define(
 							redoChange:  m_utils.jQuerySelect(options.selectors.redoChange),
 							saveAllRules:  m_utils.jQuerySelect(options.selectors.saveAllRules),
 							refreshRules:  m_utils.jQuerySelect(options.selectors.refreshRules),
-							lastSavelLabel:  m_utils.jQuerySelect(options.selectors.lastsave)
+							lastSavelLabel:  m_utils.jQuerySelect(options.selectors.lastsave),
+							lastSaveDateDisplay: m_utils.jQuerySelect(options.selectors.lastSaveDateDisplay)
 					};
+					var defaultText, /*default text for our lastSaveDateDisplay label*/
+						lessThanText,/*text to display when last save < 1 minute*/
+						singularText,/*text to display when last save =1 minute*/
+						pluralText;  /*text to disaply when more than 1 minute*/
 					
+					defaultText=m_i18nUtils.getProperty("rules.outline.labels.lastSavedAt.default");
+					lessThanText=m_i18nUtils.getProperty("rules.outline.labels.lastSavedAt.suffix.lessThan");
+					singularText=m_i18nUtils.getProperty("rules.outline.labels.lastSavedAt.suffix.singular");
+					pluralText=m_i18nUtils.getProperty("rules.outline.labels.lastSavedAt.suffix.plural");
+					
+					/*map our UI elements to their values from our resource file*/
 					m_i18nMapper.map(options,uiElements,true);
+					
+					/*Default text for last saved, exists outside mapper as this will get updated in timer*/
+					uiElements.lastSaveDateDisplay.text(defaultText);
 					
 					/* Register redoImage button for messages from the commandStack in the sky
 					 * that the pointer on that stack has moved. When it does, we need to update
@@ -1181,6 +1199,31 @@ define(
 					outline = new Outline();
 
 					outline.initialize();
+					
+					/*Set up a timer to check for delta between now and our last save event
+					 *and update our UI accordingly. Timer runs every 60 seconds. May get a bit out
+					 *of sync as save events to not reset our interval just our last saved timestamp.*/
+					setInterval(function(){
+						var now,dateDelta;
+						/*outline var avaialble via closure*/
+						if(outline.lastSavedAt===Number.NEGATIVE_INFINITY){
+							uiElements.lastSaveDateDisplay.text(defaultText);
+						}
+						else{
+							now=new Date();
+							dateDelta=Math.abs(now-outline.lastSavedAt);/*diff in milliseconds*/
+							dateDelta=Math.floor((dateDelta/1000)/60); /*convert to minutes*/
+							if(dateDelta===0){
+								uiElements.lastSaveDateDisplay.text(lessThanText);
+							}
+							else if(dateDelta===1){
+								uiElements.lastSaveDateDisplay.text(dateDelta + " " + singularText);
+							}
+							else{
+								uiElements.lastSaveDateDisplay.text(dateDelta + " " + pluralText);
+							}	
+						}
+					},30000);
 
 					m_outlineToolbarController.init("rulesOutlineToolbar");
 					
@@ -1218,6 +1261,9 @@ define(
 					
 					this.createRuleSetButton = jQuery("#createRuleSetButton");
 					
+					/*On saves update this value*/
+					this.lastSavedAt=Number.NEGATIVE_INFINITY;
+					
 					this.createRuleSetButton.click({
 						outline : this
 					}, function(event) {
@@ -1234,7 +1280,7 @@ define(
 					var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
 					var id = name.replace(/\s/g,"");
 					var ruleSet = RuleSet.create(id, name);
-					//CommandsDispatcher.submitCommand();
+
 					createRuleSetNode(ruleSet);
 					viewManager.openView("ruleSetView",
 							"id=" + ruleSet.id + "&name=" + ruleSet.name
