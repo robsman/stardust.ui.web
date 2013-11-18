@@ -37,7 +37,7 @@
       <artifact name="stardust-rules-manager" type="jar"
          conf="stardust-rules-manager-compile, stardust-rules-manager-compile-optional, stardust-rules-manager-provided, stardust-rules-manager-runtime"
          ext="jar" />
-      <artifact name="stardust-rules-manager" type="source" conf="stardust-rules-manager-sources" ext="jar"  m:classifier="sources"/>
+      <artifact name="stardust-rules-manager" type="source" conf="stardust-rules-manager-sources" ext="jar" m:classifier="sources"/>
       <artifact name="stardust-rules-manager" type="pom" conf="pom" ext="pom" />
    </publications>
 
@@ -60,7 +60,6 @@
         
       <dependency org="junit" name="junit" rev="${junit.version}"
         conf="test->default" />
-                                  
       
       <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
       

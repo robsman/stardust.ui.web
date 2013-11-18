@@ -24,7 +24,6 @@
    <property name="project.etc" value="${project.dir}/etc" />
    <property file="${project.etc}/private.properties" />
 
-   <property name="organizationId" value="com.infinity.bpm" />
    <property name="artifactId" value="stardust-rules-manager" />
 
    <import file="${project.dir}/../../build.tools/commons-build.xml" />
@@ -38,40 +37,33 @@
    <target name="initOnProduction" unless="setup.development">
       <echo message="Performing a production build ..." />
 
-      <property name="javac.debuglevel" value="lines,source" />
+      <property name="javac.debuglevel" value="lines,source,vars" />
    </target>
 
-   <target name="init" depends="initOnDevelopment, initOnProduction, initBuildDir, initIvy">
-      <property name="build.dir" value="${build.home}" />
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build" />
    </target>
 
    <target name="clean" depends="init" description="removes all build results">
       <delete dir="${build.dir}" />
    </target>
 
-   <target name="initBuildDir" unless="build.home">
-      <property name="build.home" value="${project.dir}/build" />
-   </target>
-
-   <target name="initBuild" depends="init, initBuildDir">
-      <property name="build.dir" value="${build.home}" />
+   <target name="initBuild" depends="init">
       <property name="build.classes" value="${build.dir}/classes" />
       <property name="build.lib" value="${build.dir}/lib" />
-      <property name="build.lib.src" value="${build.dir}/src" />
       <property name="build.src" value="${build.dir}/src" />
       <property name="build.src.none" location="${build.dir}/src-none" />
 
       <property name="stardust-rules-manager.jarfile" value="${artifactId}.jar" />
       <property name="stardust-rules-manager.jar" value="${build.lib}/${stardust-rules-manager.jarfile}" />
       <property name="stardust-rules-manager.src-jarfile" value="${artifactId}-sources.jar" />
-      <property name="stardust-rules-manager.src-jar" value="${build.lib.src}/${stardust-rules-manager.src-jarfile}" />
+      <property name="stardust-rules-manager.src-jar" value="${build.lib}/${stardust-rules-manager.src-jarfile}" />
    </target>
 
    <target name="initBuildDirectories" depends="initBuild">
       <mkdir dir="${build.classes}" />
       <mkdir dir="${build.lib}" />
       <mkdir dir="${build.src}" />
-      <mkdir dir="${build.lib.src}" />
       <mkdir dir="${build.src.none}" />
    </target>
 
@@ -80,7 +72,7 @@
       <init-ivy />
    </target>
 
-   <target name="initClasspath" depends="init">
+   <target name="initClasspath" depends="initIvy">
    	<init-ivy-classpath />
 
       <path id="stardust-rules-manager.classpath">
@@ -112,7 +104,8 @@
       </copy>
    </target>
    
-   <target name="compile" depends="prepareSources, initClasspath, init" description="Compiles the project's Java classes">
+   <target name="compile" depends="prepareSources, initClasspath" 
+      description="Compiles the project's Java classes" unless="skip.compile">
       <!-- if build.fast property is set - only CurrentVersion class is compiled here. Otherwise all classes are compiled -->
       <ipp:javac-java6 destdir="${build.classes}"
          srcdir="${build.src.generated}" sourcepath="${build.src.generated}:${build.src.static}">
@@ -141,7 +134,7 @@
 
    <target name="jar.src" depends="compile">
       <delete file="${stardust-rules-managerr.src-jar}" />
-      <ipp:jar jarfile="${stardust-rules-manager.src-jar}" implementationTitle="Rules Manager">
+      <ipp:jar jarfile="${stardust-rules-manager.src-jar}" implementationTitle="Rules Manager - Sources">
          <fileset dir="${project.src}">
             <include name="**/*.java" />
          </fileset>
@@ -150,26 +143,32 @@
    
    <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
       <ivy:resolve file="${project.dir}/ivy.xml" />
-      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" srcArtifactDir="${build.lib.src}"  
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" 
          publishIvy="true" publishPom="true" />
    </target>
    
-   <target name="report" depends="init" xmlns:ivy="antlib:org.apache.ivy.ant">
-      <mkdir dir="report" />
-      <ivy:resolve type="${ivy.resolve.types}"/>
-      <ivy:report todir="report" />
-   </target>
-
    <target name="dist" depends="build, jar.src">
+<!--
+      <property name="stardust.dir" value="../.." />
+      <copy file="${stardust-rules-manager.jar}" todir="${stardust.dir}/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
+-->
    </target>
 
-   <target name="deploy" depends="build" />
+   <target name="deploy" depends="build,dependencies:report" />
 
    <target name="install" if="maven.localRepository" depends="initBuild"
       description="installs the artifacts into a local Maven repository">
 
       <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
-      <ipp:mvn-install file="${reporting.jar}" 
+      <ipp:mvn-install file="${stardust-rules-manager.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+      <ipp:mvn-deploy file="${stardust-rules-manager.jar}" 
       	pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    
@@ -185,4 +184,10 @@
          </fileset>
       </copy>
    </target>
+
+   <target name="dependencies:report" depends="init,initIvy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
 </project>
