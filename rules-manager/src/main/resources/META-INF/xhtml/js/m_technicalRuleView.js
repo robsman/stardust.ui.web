@@ -143,12 +143,7 @@ define(
 					$replaceMenu=$(replaceMenu)
 						.menu()
 						.appendTo(m_utils.jQuerySelect("body"))
-						.position({
-					        my: "left top",
-					        at: "left bottom",
-					        of: uiElements.drlEditorReplaceOption
-					      })
-					     .on( "menuselect", function( event, ui ) {
+					    .on( "menuselect", function( event, ui ) {
 						    	var selectedReplaceOption=ui.item.text();
 						    	uiElements.drlEditorReplaceOptionVal.text(selectedReplaceOption);
 						    	$replaceMenu.hide();
@@ -211,11 +206,6 @@ define(
 					$fontSizeMenu=$(fontSizeMenu)
 					    .menu()
 		                .appendTo(m_utils.jQuerySelect("body"))
-		                .position({
-						        my: "left top",
-						        at: "left bottom",
-						        of: uiElements.fontDropdown
-						      })
 						.on( "menuselect", function( event, ui ) {
 					    	var selectedSize=ui.item.text();
 					        $fontSizeMenu.hide();
@@ -229,6 +219,7 @@ define(
 						$fontSizeMenu.show();
 					};
 					uiElements.fontDropdown.on("click",fontSizeMenuHandler);
+					/****Font-size menu initiation end****/
 					
 					/*Add theme menu and handler for the ACE editor*/
 					themeMenu="<ul style='position:absolute;z-index:9999;'>" + 
@@ -241,13 +232,8 @@ define(
 					
 					$themeMenu=$(themeMenu)
 						.menu()
-						.position({
-					        my: "left top",
-					        at: "left bottom",
-					        of: uiElements.themeDropdown
-					      })
-					     .appendTo(m_utils.jQuerySelect("body"))
-					     .on( "menuselect", function( event, ui ) {
+					    .appendTo(m_utils.jQuerySelect("body"))
+					    .on( "menuselect", function( event, ui ) {
 						    	var selectedTheme=ui.item.text();
 						    	uiElements.drlEditor.editor.setTheme("ace/theme/" + selectedTheme);
 						        $themeMenu.hide();
@@ -338,9 +324,31 @@ define(
 						uiElements.drlEditor.setValue(typeDrl + "\n\n" + currentVal);
 					});
 					
-					/*by convention: is this function neccesary?*/
 					this.activate(ruleSet,techRule,uiElements);
-
+					
+					/*Show UI, had hidden it to make transition smoother on loading*/
+					uiElements.mainView.removeClass("view-hide");
+					
+					/*Now position our menus, can't position until DOM is is visible.
+					 *Trying to position while view-hide was active would cause all menus to
+					 *position to the top left corner of the document.*/
+					$fontSizeMenu.position({
+				        my: "left top",
+				        at: "left bottom",
+				        of: uiElements.fontDropdown
+				      });
+					
+					$themeMenu.position({
+				        my: "left top",
+				        at: "left bottom",
+				        of: uiElements.themeDropdown
+				      });
+					
+					$replaceMenu.position({
+				        my: "left top",
+				        at: "left bottom",
+				        of: uiElements.drlEditorReplaceOption
+				      });
 				};
 
 				this.activate = function(ruleSet,techRule,uiElements) {
@@ -353,7 +361,7 @@ define(
 					uiElements.idOutput.append(this.technicalRule.id);
 					uiElements.nameInput.val(this.technicalRule.name);
 					uiElements.drlEditor.setValue(this.technicalRule.getDRL());
-					uiElements.mainView.removeClass("view-hide");
+					
 				};
 				
 			}
