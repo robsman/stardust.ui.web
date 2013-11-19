@@ -295,6 +295,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          logger.warn("===> Unsupported Symbol " + element);
       }
+      ModelType model = ModelUtils.findContainingModel(element);
+      updateConfigurationVariables(model);
+   }
+
+   private void updateConfigurationVariables(ModelType model)
+   {
+      if (model != null)
+      {
+         VariableContext variableContext = new VariableContext();
+         variableContext.initializeVariables(model);
+         variableContext.refreshVariables(model);
+         variableContext.saveVariables();
+      }
    }
 
    /**
