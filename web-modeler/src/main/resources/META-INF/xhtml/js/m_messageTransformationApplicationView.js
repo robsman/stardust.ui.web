@@ -822,7 +822,7 @@ define(
 									// TODO - review
 									var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 									var schemaType = typeDeclaration.asSchemaType();
-									var childSchemaType = schemaType.resolveElementType(childElement.name);
+									var childSchemaType = schemaType.resolveElementTypeFromElement(childElement);
 									if (childSchemaType && childSchemaType.isStructure()) {
 										var childElementsArray = [];
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);

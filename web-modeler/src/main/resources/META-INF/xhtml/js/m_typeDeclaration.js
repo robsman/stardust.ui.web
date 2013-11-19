@@ -770,6 +770,10 @@ define(
 
 			SchemaType.prototype.resolveElementType = function(elementName) {
 				var element = this.getElement(elementName);
+				return this.resolveElementTypeFromElement(element);
+			};
+			
+			SchemaType.prototype.resolveElementTypeFromElement = function(element) {
 				if (element && element.type) {
 
 					var typeQName = parseQName(element.type);
