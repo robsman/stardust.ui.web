@@ -784,16 +784,17 @@ define(
 						if (!typeQName.namespace && typeQName.prefix) {
 							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
 						}
+						var resolvedSchema;
 						if (this.scope) {
-							return resolveSchemaTypeFromModel("{"
+							resolvedSchema = resolveSchemaTypeFromModel("{"
 									+ typeQName.namespace + "}"
 									+ typeQName.name, this.scope,
 									this.schema ? this.schema.locations : null);
-						} else if (this.schema) {
-							return resolveSchemaTypeFromSchema("{"
-									+ typeQName.namespace + "}"
-									+ typeQName.name, this.schema);
+						} 
+						if (!resolvedSchema && this.schema) {
+							resolvedSchema = resolveSchemaTypeFromSchema(element.type, this.schema);
 						}
+						return resolvedSchema;
 					}
 				} else {
 					return undefined;
