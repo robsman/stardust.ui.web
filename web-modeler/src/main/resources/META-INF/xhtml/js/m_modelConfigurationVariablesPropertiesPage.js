@@ -460,7 +460,12 @@ define(
 			 *
 			 */
 			function stripVariableName(fullName) {
-				return fullName.substring(fullName.indexOf("${") + 2, fullName
+				var variableName = fullName.substring(fullName.indexOf("${") + 2, fullName
 						.indexOf("}"));
+				if (variableName.indexOf(":") != -1) {
+					variableName = variableName.substring(0, variableName
+							.indexOf(":"));
+				}
+				return variableName;
 			}
 		});
