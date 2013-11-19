@@ -443,7 +443,7 @@ define(
 
 					if (model && (model.name != data.rslt.name)) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelCommand(model.uuid, model.id, {
+								.createUpdateModelElementCommand(model.id, model.id, {
 									"name" : data.rslt.name
 								}));
 					}
@@ -2422,7 +2422,7 @@ define(
 						application : application,
 						viewManager : viewManager,
 						createCallback : function(parameter) {
-							jQuery
+						jQuery
 									.ajax({
 										type : "POST",
 										url : m_urlUtils
@@ -2433,6 +2433,12 @@ define(
 										contentType : "application/json",
 										data : JSON.stringify(parameter)
 									});
+							
+							m_commandsController.submitCommand(m_command
+									.createCreateWrapperServiceCommand(model.id,
+											model.id, {
+											data : JSON.stringify(parameter)
+											}));
 						}
 					}
 				};

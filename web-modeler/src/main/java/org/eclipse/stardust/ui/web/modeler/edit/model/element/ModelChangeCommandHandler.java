@@ -80,10 +80,6 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          {
             return cloneModel(commandId, model, request);
          }
-         else if ("model.update".equals(commandId))
-         {
-            return updateModel(commandId, model, request);
-         }
          else if ("model.delete".equals(commandId))
          {
             return deleteModel(commandId, model, request);
@@ -175,35 +171,6 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          changes.removed
                .add(modelService.modelElementMarshaller().toModelOnlyJson(model));
       }
-      return changes;
-   }
-
-   /**
-    * @param commandId
-    * @param obj
-    * @param request
-    * @return
-    */
-   private ModificationDescriptor updateModel(String commandId, ModelType model, JsonObject request)
-   {
-      ModificationDescriptor changes = new ModificationDescriptor();
-      if (null != model)
-      {
-         // Delete old model xpdl
-         ModelManagementStrategy modelMgtStrategy = modelService
-               .getModelManagementStrategy();
-         modelMgtStrategy.deleteModel(model);
-
-         modelService.currentSession().modelElementUnmarshaller()
-               .populateFromJson(model, request);
-
-         modelMgtStrategy.getModels().put(model.getId(), model);
-         modelService.getModelBuilderFacade().setModified(model, new Date());
-         modelMgtStrategy.saveModel(model);
-
-         changes.modified.add(modelService.modelElementMarshaller().toModelJson(model));
-      }
-
       return changes;
    }
 }

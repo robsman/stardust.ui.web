@@ -284,7 +284,7 @@ define(
 					}
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelCommand(this.getModelElement().uuid, this.getModelElement().id, changes));
+							.createUpdateModelElementCommand(this.getModelElement().id, this.getModelElement().id, changes));
 				};
 
 				/**
