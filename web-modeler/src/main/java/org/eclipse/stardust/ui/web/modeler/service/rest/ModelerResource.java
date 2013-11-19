@@ -283,55 +283,6 @@ public class ModelerResource
       }
    }
 
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/diagrams/{diagramId}")
-   public Response updateDiagram(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @PathParam("diagramId") String diagramId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = modelService.updateProcessDiagram(modelId, processId,
-               diagramId, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/activities/{activityId}/rename")
-   public Response renameActivity(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @PathParam("activityId") String activityId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = modelService.renameActivity(modelId, processId, activityId,
-               json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
    @GET
    @Path("models/{modelId}")
    public Response saveModel(@PathParam("modelId") String modelId)
@@ -463,28 +414,6 @@ public class ModelerResource
       }
    }
 
-   @DELETE
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/dataSymbols")
-   public Response dropDataSymbol(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = modelService.dropDataSymbol(modelId, processId, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -532,46 +461,6 @@ public class ModelerResource
       {
          e.printStackTrace();
 
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{id}/processes/createWrapperProcess")
-   public Response createWrapperProcess(@PathParam("id") String modelId, String postedData)
-   {
-      try
-      {
-         modelService.createWrapperProcess(modelId,
-               jsonIo.readJsonObject(postedData));
-         return Response.ok("", APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{id}/processes/createProcessInterfaceTestWrapperProcess")
-   public Response createProcessInterfaceTestWrapperProcess(@PathParam("id") String modelId, String postedData)
-   {
-      try
-      {
-         modelService.createProcessInterfaceTestWrapperProcess(modelId,
-               jsonIo.readJsonObject(postedData));
-         return Response.ok("", APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
          throw new RuntimeException(e);
       }
    }
