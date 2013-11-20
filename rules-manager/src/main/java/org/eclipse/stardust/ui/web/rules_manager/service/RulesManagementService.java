@@ -135,18 +135,10 @@ public class RulesManagementService
     * @param rulesetUUID
     * @return
     */
-   public Map<String, String> getRuleSet(String rulesetUUID)
+   public byte[] getRuleSet(String rulesetId)
    {
-      // TODO - not good
-      // map used to avoid 2 different calls to get file content and name
-      Map<String, String> ruleSetNameAndContent = new HashMap<String, String>();
-      Document ruleSetFile = getDocumentManagementService().getDocument(
-            ruleSetUUIDVsDocumentIdMap.get(rulesetUUID));
-      ruleSetNameAndContent.put("fileName", ruleSetFile.getName());
-      ruleSetNameAndContent.put("content", new String(
-            getDocumentManagementService().retrieveDocumentContent(ruleSetFile.getId())));
-
-      return ruleSetNameAndContent;
+      return getDocumentManagementService().retrieveDocumentContent(
+            ruleSetUUIDVsDocumentIdMap.get(rulesetId));
    }
 
    /**

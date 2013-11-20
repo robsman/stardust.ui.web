@@ -90,17 +90,20 @@ public class RulesManagementResource
 
    @GET
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-   @Path("ruleSet/{ruleSetUUID}/download")
-   public Response downloadRuleSet(@PathParam("ruleSetUUID") String ruleSetUUID)
+   @Path("ruleSet/{ruleSetId}/download")
+   public Response downloadRuleSet(@PathParam("ruleSetId") String ruleSetId)
    {
-      Map<String, String> ruleSetNameAndContent = getRulesManagementService().getRuleSet(ruleSetUUID);
+      byte[] ruleSetNameAndContent = getRulesManagementService().getRuleSet(ruleSetId);
 
-      return Response.ok(ruleSetNameAndContent.get("content").getBytes(),
-            MediaType.APPLICATION_OCTET_STREAM)
-            .header(
-                  "content-disposition",
-                  "attachment; filename = \""
-                        + ruleSetNameAndContent.get("fileName") + "\"")
+      String fileName = ruleSetId;
+      if (!fileName.endsWith(".json"))
+      {
+         fileName = fileName + ".json";
+      }
+      
+      return Response.ok(ruleSetNameAndContent, MediaType.APPLICATION_OCTET_STREAM)
+            .header("content-disposition",
+                  "attachment; filename = \"" + fileName  + "\"")
             .build();
    }
    

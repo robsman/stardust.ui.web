@@ -161,7 +161,7 @@ define(
 					}
 				} else {
 					if (ruleSet) {
-						window.location = m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/ruleSet/" + encodeURIComponent(ruleSet.uuid) + "/download"
+						window.location = m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/ruleSet/" + encodeURIComponent(ruleSet.id) + "/download"
 					}	
 				}
 			}
@@ -1276,8 +1276,8 @@ define(
 				 * 
 				 */
 				Outline.prototype.createRuleSet = function() {
-					var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
-					var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
+						var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+						var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
 					var id = name.replace(/\s/g,"");
 					var ruleSet = RuleSet.create(id, name);
 
