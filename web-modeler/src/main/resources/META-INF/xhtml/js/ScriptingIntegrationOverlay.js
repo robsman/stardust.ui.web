@@ -414,7 +414,7 @@ define(
 					code += "function actualFunction(value, type) {\n";
 					code += "\tvar dataAsLong;\n";
 					code += "\tif (type === 'string') {\n";
-					code += "\t\tdataAsLong =/\\/Date\\((\\d*)\\)\\//.exec(value);\n";
+						code += "\t\tdataAsLong =/\\/Date\\((-?\\d*)\\)\\//.exec(value);\n";
 					code += "\tif (dataAsLong) {\n";
 					code += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
 					code += "\t}\n";
