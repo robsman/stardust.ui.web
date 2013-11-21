@@ -2887,11 +2887,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
       for (ApplicationType application : model.getApplication())
       {
-
-         if (application.getType() != null
-               && application.getType()
-                     .getId()
-                     .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+         ApplicationTypeType type = application.getType();
+         if (type != null && isExcluded(type))
          {
             continue;
          }
@@ -2921,8 +2918,12 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return modelJson;
    }
 
+   private boolean isExcluded(ApplicationTypeType type)
+   {
+      return type.getId().equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID);
+   }
+
    /**
-    * 
     * @param model
     * @return
     */
@@ -3020,6 +3021,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       
       return variablesJson;
    }
+
    /**
     * @param model
     * @param participant
@@ -3525,7 +3527,6 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
 
    
    /**
-    * 
     * @param name
     * @return
     */
