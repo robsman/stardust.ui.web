@@ -1677,9 +1677,9 @@ public class ModelService
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
       uuidMapper().map(processDefinition);
-      
+
       ModelBuilderFacade.setBooleanAttribute(processDefinition, PredefinedConstants.PROCESS_IS_AUXILIARY_ATT, true);
-      
+
       ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
             extractString(json, "processFullId"));
 
@@ -2951,14 +2951,13 @@ public class ModelService
          JsonObject variableJson = new JsonObject();
 
          variablesJson.add(variableJson);
-         
-         String cleanName = getModelVariableName(modelVariable.getName());         
+
+         String cleanName = getModelVariableName(modelVariable.getName());
          variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
          variableJson.addProperty("description", modelVariable.getDescription());
-         List<EObject> refList = variableContext.getVariableReferences().get(
-               modelVariable.getName());
+         List<EObject> refList = variableContext.getReferences(modelVariable);
 
          JsonArray referencesJson = new JsonArray();
 
@@ -3061,7 +3060,7 @@ public class ModelService
 
       return "Embedded Web Application is not configured.";
    }
-   
+
    private String getModelVariableName(String name)
    {
       if (name.startsWith("${")) //$NON-NLS-1$
