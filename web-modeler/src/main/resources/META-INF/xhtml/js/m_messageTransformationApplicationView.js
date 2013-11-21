@@ -12,11 +12,11 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_parsingUtils","bpm-modeler/js/m_autoCompleters"],
+				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_parsingUtils","bpm-modeler/js/m_autoCompleters", "bpm-modeler/js/m_typeDeclaration"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
 				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel,
-				m_parsingUtils,m_autoCompleters) {
+				m_parsingUtils,m_autoCompleters, m_typeDeclaration) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -828,9 +828,11 @@ define(
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.getAttributes());
 										this.inputData[accessPoint.id] = childSchemaType;
+										var elemName = childElement.name ? childElement.name : (childSchemaType.name ? m_typeDeclaration.parseQName(childSchemaType.name).name : "");
 										this.initializeTableRowsRecursively(output, accessPoint,
 												childElementsArray, path,
-												childSchemaType.model, (childSchemaType.type ? childSchemaType.type.name : childSchemaType.name), (childSchemaType.type ? childSchemaType.type.type : ""));
+												childSchemaType.model, elemName,
+												((childSchemaType.type && childSchemaType.type.type) ? childSchemaType.type.type : childSchemaType.name));
 									} else {
 										this.initializeTableRowsRecursively(output,
 												accessPoint, childElement, path,
