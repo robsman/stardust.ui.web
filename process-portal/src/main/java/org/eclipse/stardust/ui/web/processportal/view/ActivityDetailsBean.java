@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -84,6 +85,7 @@ import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler;
 import org.eclipse.stardust.ui.web.processportal.view.manual.IppDocumentInputController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
+import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
@@ -258,7 +260,7 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       else if (SpiUtils.DEFAULT_MANUAL_ACTIVITY_CONTROLLER == interactionController)
       {
-         if (HTML_BASED)
+         if (HTML_BASED && !isSingleDocumentCase(activity))
          {
             interactionController = new ManualActivityIframeInteractionController();
          }
@@ -267,6 +269,27 @@ public class ActivityDetailsBean extends UIComponentBean
       return interactionController;
    }
 
+   /**
+    * @param activity
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   public static boolean isSingleDocumentCase(Activity activity)
+   {
+      // TODO
+      List<Object> allMappings = activity.getApplicationContext("default").getAllDataMappings();
+      if (allMappings.size() > 1)
+      {
+         return false;
+      }
+      else
+      {
+         DataMapping dm = (DataMapping)allMappings.get(0);
+         Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activity.getModelOID());
+         return ModelUtils.isDMSType(model, dm);
+      }
+   }
+   
    /**
      * 
      */
@@ -1992,39 +2015,31 @@ public class ActivityDetailsBean extends UIComponentBean
       Map<String, Serializable> outDataValues = null;
 
       ActivityInstance ai = activityInstance;
-      String contextId = interactionController.getContextId(ai);
 
-      if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+      if (singleDocumentCase)
       {
-         if (singleDocumentCase)
+         // If not 'savable' means only IN Data Mapping, So no Out Data
+         if (documentHandlerBean.isSavable())
          {
-            // If not 'savable' means only IN Data Mapping, So no Out Data
-            if (documentHandlerBean.isSavable())
+            dataAvailable = false;
+            documentHandlerBean.save(new ICallbackHandler()
             {
-               dataAvailable = false;
-               documentHandlerBean.save(new ICallbackHandler()
+               public void handleEvent(EventType eventType)
                {
-                  public void handleEvent(EventType eventType)
+                  if (EventType.APPLY == eventType)
                   {
-                     if (EventType.APPLY == eventType)
-                     {
-                        Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
-   
-                        // Even Annotations needs to be cleared
-                        document.setDocumentAnnotations(null);
-                        
-                        Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
-                        outDataValues.put(singleDocumentDatgaMapping.getId(), document);
-                        retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
-                     }
+                     Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
+
+                     // Even Annotations needs to be cleared
+                     document.setDocumentAnnotations(null);
+                     
+                     Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
+                     outDataValues.put(singleDocumentDatgaMapping.getId(), document);
+                     retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
                   }
-               });
-            }
+               }
+            });
          }
-         else if (null != activityForm)
-         {
-            outDataValues = (Map)activityForm.retrieveData();
-         }         
       }
       else
       {
@@ -2088,9 +2103,8 @@ public class ActivityDetailsBean extends UIComponentBean
             if (null != interactionController)
             {
                String contextId = interactionController.getContextId(activityInstance);
-               boolean defaultContext = PredefinedConstants.DEFAULT_CONTEXT.equals(contextId);
 
-               if (defaultContext)
+               if (isSingleDocumentCase(activityInstance.getActivity()))
                {
                   FormGenerationPreferences formPref = new FormGenerationPreferences(
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout(),
@@ -2126,13 +2140,8 @@ public class ActivityDetailsBean extends UIComponentBean
                               });
                   activityForm.setData();
                   processSingleDocumentMappingCase(fromViewEvent);
-                  if (!singleDocumentCase && HTML_BASED)
-                  {
-                     defaultContext = false;
-                  }
                }
-
-               if(!defaultContext)
+               else
                {
                   WorkflowService ws = ClientContext.getClientContext()
                         .getServiceFactory().getWorkflowService();

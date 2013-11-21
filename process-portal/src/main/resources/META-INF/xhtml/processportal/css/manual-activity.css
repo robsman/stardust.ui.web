@@ -49,6 +49,10 @@ body, table {
 	border-left: 1px solid #D9D9D9;
 }
 
+.panel-list-tbl-row-sel {
+	background-color: #EEEEEE;
+}
+
 .panel-list-tbl-cell {
 	border-bottom: 1px solid #CCCCCC;
    border-right: 1px solid #CCCCCC;
@@ -76,7 +80,7 @@ body, table {
 .panel-label-column {
 	vertical-align: top;
 	text-align: left;
-	padding: 5px 0 5px 0;
+	padding: 1px 0 5px 0;
 }
 
 .panel-prefix-column {
@@ -88,7 +92,7 @@ body, table {
 
 .panel-input-column {
 	vertical-align: top;
-	padding: 2px 0 5px 0;
+	padding: 1px 0 5px 0;
 }
 
 .panel-suffix-column {

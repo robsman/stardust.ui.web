@@ -11,8 +11,10 @@
 
 package org.eclipse.stardust.ui.web.processportal.interaction.iframe;
 
+import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelUtils.getContentFrameId;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -129,7 +131,25 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public Map getOutDataValues(ActivityInstance ai)
    {
-      return null;
+      if (ai == null)
+      {
+         throw new InvalidArgumentException(
+               BpmRuntimeError.BPMRT_NULL_ARGUMENT.raise("ActivityInstance ai"));
+      }
+
+      Map<String, ? extends Serializable> outData = null;
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+      if (null != registry)
+      {
+         Interaction interaction = registry.getInteraction(getInteractionId(ai));
+         if (null != interaction)
+         {
+            outData = interaction.getOutDataValues();
+         }
+
+         registry.unregisterInteraction(interaction.getId());
+      }
+      return outData;
    }
 
    /* (non-Javadoc)

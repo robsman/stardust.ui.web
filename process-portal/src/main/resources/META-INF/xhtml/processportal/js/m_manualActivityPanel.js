@@ -25,6 +25,12 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	 */
 	function ManualActivityPanel() {
 		var REST_END_POINT = "/services/rest/process-portal/manualActivity/";
+		var BINDING_PREFIX = "dm";
+
+		var interactionEndpoint;
+
+		var dataMappings;
+		var bindings;
 
 		/*
 		 * 
@@ -37,14 +43,21 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	        interactionId = interactionId.substring(interactionId.indexOf('interactionId') + 14);
 	        interactionId = interactionId.indexOf('&') >= 0 ? interactionId.substring(0, interactionId.indexOf('&')) : interactionId;
 
-	        var restEndPoint = urlPrefix + REST_END_POINT + interactionId;
-	        console.log("Interaction Rest End Point: " + restEndPoint);
+	        interactionEndpoint = urlPrefix + REST_END_POINT + interactionId;
+	        console.log("Interaction Rest End Point: " + interactionEndpoint);
 	        
-	        fetchData(restEndPoint, "/dataMappings", {success: generateMarkup});
+	        getData(interactionEndpoint, "/dataMappings", {success: generateMarkup});
 
 			bootstrapAngular();
 			
-			fetchData(restEndPoint, "/inData", {success: bindInData});
+			getData(interactionEndpoint, "/inData", {success: bindInData});
+			
+			runInAngularContext(function($scope){
+				$scope.submitOutData = submitOutData;
+				$scope.addToList = addToList;
+				$scope.removeFromList = removeFromList;
+				$scope.selectListItem = selectListItem;
+			});
 		};
 
 		/*
@@ -60,8 +73,12 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function generateMarkup(json) {
-			var html = codeGenerator.create().generate(json);
-			document.getElementsByTagName("body")[0].innerHTML = html;
+			dataMappings = json;
+
+			var data = codeGenerator.create().generate(json, BINDING_PREFIX);
+			document.getElementsByTagName("body")[0].innerHTML = data.html;
+			
+			bindings = data.binding;
 		};
 
 		/*
@@ -69,16 +86,89 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function bindInData(data) {
 			runInAngularContext(function($scope){
-				for(var key in data) {
-					$scope[key] = data[key];
-				}
+				$scope[BINDING_PREFIX] = bindings;
+				jQuery.extend($scope[BINDING_PREFIX], data);
 			});
 		};
 
 		/*
 		 * 
 		 */
-		function fetchData(baseUrl, extension, callbacks) {
+		function submitOutData() {
+			var $scope = angular.element(document).scope();
+
+			// TODO: Clone and remove $$ data
+			
+			postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {});
+		}
+
+		/*
+		 * 
+		 */
+		function addToList(xPath) {
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			
+			var currentBinding = $scope[BINDING_PREFIX];
+			for(var i = 0; i < parts.length - 1; i++) {
+				currentBinding = currentBinding[parts[i]];
+			}
+
+			if (currentBinding) {
+				var lastPart = parts[parts.length-1];
+				if (currentBinding[lastPart] == undefined) {
+					currentBinding[lastPart] = [];
+				}
+				currentBinding = currentBinding[lastPart];
+				currentBinding.push({});
+			}
+		}
+		
+		/*
+		 * 
+		 */
+		function selectListItem(event, obj) {
+			if (obj.$$selected == undefined || obj.$$selected == false) {
+				obj.$$selected = true;
+			} else {
+				obj.$$selected = false;
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function removeFromList(xPath) {
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			
+			var currentBinding = $scope[BINDING_PREFIX];
+			for(var i = 0; i < parts.length; i++) {
+				currentBinding = currentBinding[parts[i]];
+			}
+
+			if (currentBinding) {
+				removeSelectedElements(currentBinding);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function removeSelectedElements(arr) {
+			for(var i = 0 ; i < arr.length; i++) {
+				if (arr[i].$$selected) {
+					arr.splice(i, 1);
+					removeSelectedElements(arr);
+					break;
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getData(baseUrl, extension, callbacks) {
 			var endpoint = baseUrl + extension;
 	        console.log(endpoint);
 
@@ -88,7 +178,27 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				async: false,
 				success: callbacks.success,
 				error: callbacks.failure ? callbacks.failure : function(errObj) {
-					alert('Failed to load ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
+					alert('Failed to get ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
+				}
+			});
+		};
+
+		/*
+		 * 
+		 */
+		function postData(baseUrl, extension, data, callbacks) {
+			var endpoint = baseUrl + extension;
+	        console.log(endpoint);
+
+			jQuery.ajax({
+				type: 'POST',
+				url: endpoint,
+				async: false,
+				contentType: 'application/json',
+				data: JSON.stringify(data),
+				success: callbacks.success ? callbacks.success : null,
+				error: callbacks.failure ? callbacks.failure : function(errObj) {
+					alert('Failed to post ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
 				}
 			});
 		};

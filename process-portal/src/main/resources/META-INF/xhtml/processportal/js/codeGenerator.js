@@ -23,25 +23,32 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 	 * 
 	 */
 	function CodeGenerator(prefs) {
-		if (!prefs) {
+		if (prefs == undefined) {
 			prefs = {layoutColumns: 3, tableColumns: 0}; // Defaults
 		}
 		var preferences = prefs;
 
+		var bindingPrefix;
+		var bindingData;
+
 		/*
 		 * 
 		 */
-		CodeGenerator.prototype.generate = function(paths) {
+		CodeGenerator.prototype.generate = function(paths, prefix) {
+			bindingPrefix = prefix;
+			bindingData = {};
+
 			var elemMain = htmlElement.create("div", {attributes: {class: "panel-main"}});
 
 			generateChildren(elemMain, paths);
 
+			var tempLink = "<button ng-click='submitOutData()'>Submit OUT Data</button><br/><br/>";
 			var html = elemMain.toHtml();
-			console.log("HTML START");
-			console.log("HTML:\n" + html);
-			console.log("HTML END");
+			html = tempLink + html;
 			
-			return html;
+			bindingPrefix = undefined;
+
+			return {html: html, binding: bindingData};
 		};
 
 		/*
@@ -77,13 +84,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
-			elemAddButton.attributes["href"] = "javascript: alert('Add');";
+			elemAddButton.attributes["href"] = "";
+			elemAddButton.attributes["ng-click"] = "addToList('" + path.fullXPath + "')";
 			htmlElement.create("img", {parent: elemAddButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/add.png"}});
 			
 			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
-			elemRemoveButton.attributes["href"] = "javascript: alert('Remove');";
+			elemRemoveButton.attributes["href"] = "";
+			elemRemoveButton.attributes["ng-click"] = "removeFromList('" + path.fullXPath + "')";
 			htmlElement.create("img", {parent: elemRemoveButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/delete.png"}});
 
@@ -93,11 +102,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemTHead = htmlElement.create("thead", {parent: elemTbl});
 			var elemTBody = htmlElement.create("tbody", {parent: elemTbl});
 
-			var elemTHeadTr = htmlElement.create("tr", {parent: elemTHead});
-			var elemTBodyTr = htmlElement.create("tr", {parent: elemTBody, attributes: {class: "panel-list-tbl-row"}});
-			
 			var loopVar = "Obj";
-			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + convertFullIdToBinding(path.fullXPath);
+
+			var elemTHeadTr = htmlElement.create("tr", {parent: elemTHead});
+			var elemTBodyTr = htmlElement.create("tr", {parent: elemTBody});
+			
+			elemTBodyTr.attributes["ng-class"] = "{'panel-list-tbl-row-sel': " 
+				+ loopVar + ".$$selected, 'panel-list-tbl-row': !" + loopVar + ".$$selected}";
+			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + convertFullIdToBinding(path);
+			elemTBodyTr.attributes["ng-click"] = "selectListItem($event, " + loopVar + ")";
 
 			if (path.isPrimitive) { // List of Primitives
 				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
@@ -112,7 +125,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					if (child.isPrimitive) {
 						generatePriEnum(elemTd, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
 					} else {
-						var elemLink = htmlElement.create("a", {parent: elemTd, value: getI18NLabel(child)});
+						var elemLink = htmlElement.create("a", {parent: elemTd, value: "Edit"});
 						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
 					}
 				}
@@ -138,7 +151,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elem;
 			if (path.readonly) {
 				elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
-				elem.value = "{{" + convertFullIdToBinding(path.fullXPath) + "}}";
+				elem.value = "{{" + convertFullIdToBinding(path) + "}}";
 			} else {
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain});
@@ -148,16 +161,21 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						var elemOpt = htmlElement.create("option", {parent: elem, value: val, attributes: {value: val}});
 					}
 				} else {
-					elem = htmlElement.create("input", {parent: elemMain});
-					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-						elem.attributes['type'] = "checkbox";
-						elem.attributes['class'] = "panel-checkbox";
+					if (path.typeName == "document") {
+						elem = htmlElement.create("label", {parent: elemMain, value: "TODO", attributes: {class: "panel-output"}});
 					} else {
-						elem.attributes['class'] = "panel-input";
+						elem = htmlElement.create("input", {parent: elemMain});
+						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+							elem.attributes['type'] = "checkbox";
+							elem.attributes['class'] = "panel-checkbox";
+						} else {
+							elem.attributes['type'] = "text";
+							elem.attributes['class'] = "panel-input";
+						}
 					}
 				}
 
-				elem.attributes['ng-model'] = options.ngModel == undefined ? convertFullIdToBinding(path.fullXPath) : options.ngModel;
+				elem.attributes['ng-model'] = options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel;
 			}
 			
 			return elemMain;
@@ -264,21 +282,35 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		/*
 		 * 
 		 */
-		function convertFullIdToBinding(fullId) {
-			var parts = fullId.substring(1).split("/");
+		function convertFullIdToBinding(path) {
+			var parts = path.fullXPath.substring(1).split("/");
 			
-			var binding = "";
+			var binding = bindingPrefix ? (bindingPrefix + ".") : "";
+			var currentBindingData = bindingData;
 			for (var i in parts) {
 				if (i == 0) {
 					binding += parts[i];
 				} else {
 					binding += "['" + parts[i] + "']";
 				}
+
+				if (currentBindingData[parts[i]] == undefined) {
+					if (i < parts.length - 1) {
+						currentBindingData[parts[i]] = {};
+					} else {
+						if (path.isList) {
+							currentBindingData[parts[i]] = [];
+						} else if (path.isPrimitive) {
+							currentBindingData[parts[i]] = "";
+						}
+					}
+				}
+				currentBindingData = currentBindingData[parts[i]];
 			}
 			
 			return binding;
 		};
-		
+
 		/*
 		 * 
 		 */

@@ -12,14 +12,12 @@
 package org.eclipse.stardust.ui.web.processportal.service.rest;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -35,10 +33,8 @@ import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParser;
 
 /**
  * @author Subodh.Godbole
@@ -99,124 +95,32 @@ public class ManualActivityRestlet
 
       Map<String, ? extends Serializable> inData = interaction.getInDataValues();
       JsonObject root = new JsonObject();
-      toJson(inData, root);
+      new JsonHelper().toJson(inData, root);
       
       return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
-   /*
-    * 
-    */
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   private void toJson(Map<String, ? extends Serializable> data, JsonObject parent)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("outData")
+   @POST
+   public void outData(String json)
    {
-      for (Entry<String, ? extends Serializable> entry : data.entrySet())
-      {
-         if (null == entry.getValue())
-         {
-            continue;
-         }
-         
-         if (entry.getValue() instanceof Map)
-         {
-            JsonObject json = new JsonObject();
-            parent.add(entry.getKey(), json);
-            toJson((Map)entry.getValue(), json);
-         }
-         else if (entry.getValue() instanceof List)
-         {
-            JsonArray json = new JsonArray();
-            parent.add(entry.getKey(), json);
-            toJson((List)entry.getValue(), json);
-         }
-         else // Primitive
-         {
-            JsonPrimitive primitive = toJson(entry.getValue());
-            parent.add(entry.getKey(), primitive);
-         }
-      }
-   }
-   
-   /*
-    * 
-    */
-   @SuppressWarnings({"unchecked", "rawtypes"})
-   private void toJson(List<? extends Serializable> data, JsonArray parent)
-   {
-      for (Serializable value : data)
-      {
-         if (null == value)
-         {
-            continue;
-         }
+      InteractionRegistry registry = getInteractionRegistry();
+      Interaction interaction = registry.getInteraction(interactionId);
 
-         if (value instanceof Map)
-         {
-            JsonObject json = new JsonObject();
-            parent.add(json);
-            toJson((Map)value, json);
-         }
-         else if (value instanceof List)
-         {
-            JsonArray json = new JsonArray();
-            parent.add(json);
-            toJson((List)value, json);
-         }
-         else // Primitive
-         {
-            JsonPrimitive primitive = toJson(value);
-            if (null != primitive)
-            {
-               parent.add(primitive);
-            }
-         }
-      }
+      JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
+
+      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+            interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+
+      interaction.setOutDataValues(data);
    }
 
-   /*
-    * 
-    */
-   private JsonPrimitive toJson(Object value)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("outData/{parameterId}")
+   @POST
+   public void outData(@PathParam("parameterId") String parameterId, String value)
    {
-      JsonPrimitive ret = null;
-
-      try
-      {
-         if (value instanceof Float || value instanceof Double || value instanceof Number)
-         {
-            ret = new JsonPrimitive((Number)value);               
-         }
-         else if (value instanceof Boolean)
-         {
-            ret = new JsonPrimitive((Boolean)value);               
-         }
-         else if (value instanceof Character)
-         {
-            ret = new JsonPrimitive((Character)value);               
-         }
-         else if (value instanceof Date)
-         {
-            ret = new JsonPrimitive(((Date)value).toString());
-         }
-         else if (value instanceof Calendar)
-         {
-            ret = new JsonPrimitive(((Calendar)value).getTime().toString());
-         }
-         else if (value instanceof String)
-         {
-            ret = new JsonPrimitive((String)value);
-         }
-         else
-         {
-            trace.warn("Unsupported Data Type: " + value.getClass().getName());
-            ret = new JsonPrimitive(value.toString());
-         }
-      }
-      catch (Exception e)
-      {
-         trace.error("Something went wrong", e);
-      }
-      
-      return ret;
+      trace.info("ParameterId: " + parameterId + " : " + value);
    }
 }
