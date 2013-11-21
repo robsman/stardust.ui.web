@@ -170,14 +170,17 @@ public class ModelerResource
    {
       byte[] docStream = modelService.getModelFile(modelId);
 
+      String fileName = modelId;
+      if (!fileName.endsWith(".xpdl"))
+      {
+         fileName = fileName + ".xpdl";
+      }
+      
       return Response.ok(docStream, MediaType.APPLICATION_OCTET_STREAM)
-            .header(
-                  "content-disposition",
-                  "attachment; filename = \""
-                        + modelService.getModelFileName(modelId) + "\"")
+            .header("content-disposition", "attachment; filename = \"" + fileName + "\"")
             .build();
    }
-
+   
    /**
     * Used to push models loaded on the client (e.g. from Orion) into a server-side cache.
     * Switches the model management strategy to <code>clientModelManagementStrategy</code>
