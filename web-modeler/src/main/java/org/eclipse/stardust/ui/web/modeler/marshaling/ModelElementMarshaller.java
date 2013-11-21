@@ -2947,8 +2947,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
          variableJson.addProperty("description", modelVariable.getDescription());
-         List<EObject> refList = variableContext.getVariableReferences().get(
-               modelVariable.getName());
+         List<EObject> refList = variableContext.getReferences(modelVariable);
 
          JsonArray referencesJson = new JsonArray();
 
