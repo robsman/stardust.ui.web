@@ -797,24 +797,28 @@ public final class XsdSchemaUtils
          XSDTypeDefinition type = attribute.getTypeDefinition();
 
          // elements are constructed similar with types
-         JsonObject json = doSwitch(type);
-
-         // now overwrite properties
-         json.addProperty("name", attribute.getName());
-         if (includeIcon)
+         if (type != null)
          {
-            json.addProperty("icon", XsdIcon.AttributeDeclaration.getSimpleName());
+            JsonObject json = doSwitch(type);
+   
+            // now overwrite properties
+            json.addProperty("name", attribute.getName());
+            if (includeIcon)
+            {
+               json.addProperty("icon", XsdIcon.AttributeDeclaration.getSimpleName());
+            }
+            json.addProperty("classifier", "attribute");
+   
+            if (type != attribute.getAnonymousTypeDefinition())
+            {
+               json.addProperty("type", getPrefixedName(type));
+            }
+   
+            addAnnotations(json, attribute.getAnnotation());
+   
+            return json;
          }
-         json.addProperty("classifier", "attribute");
-
-         if (type != attribute.getAnonymousTypeDefinition())
-         {
-            json.addProperty("type", getPrefixedName(type));
-         }
-
-         addAnnotations(json, attribute.getAnnotation());
-
-         return json;
+         return null;
       }
 
       private String getPrefixedName(XSDNamedComponent type)
