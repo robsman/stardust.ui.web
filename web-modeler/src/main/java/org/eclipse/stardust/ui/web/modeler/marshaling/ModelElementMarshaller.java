@@ -2753,6 +2753,11 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                dataMapping.getApplicationAccessPoint());
          dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY,
                dataMapping.getContext());
+         if (dataMapping.getApplicationPath() != null)
+         {
+            dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_PATH_PROPERTY,
+                  dataMapping.getApplicationPath());
+         }
       }
 
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,

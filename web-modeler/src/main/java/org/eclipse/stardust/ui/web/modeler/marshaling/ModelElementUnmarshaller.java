@@ -743,6 +743,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
+      {
+         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
+               .isJsonNull())
+         {
+            dataMapping.setApplicationPath(null);
+         }
+         else
+         {
+            dataMapping.setApplicationPath(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
+         }
+      }
+
       if (StringUtils.isEmpty(dataMapping.getContext()))
       {
          dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);

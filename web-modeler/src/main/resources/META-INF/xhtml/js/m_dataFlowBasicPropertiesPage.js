@@ -60,6 +60,10 @@ define(
 							.mapInputId("inputAccessPointSelectInput");
 					this.outputAccessPointSelectInput = this
 							.mapInputId("outputAccessPointSelectInput");
+					this.inputAccessPointPathInput = this
+							.mapInputId("inputAccessPointPathInput");
+					this.outputAccessPointPathInput = this
+							.mapInputId("outputAccessPointPathInput");
 					this.inputAccessPointSelectInputPanel = this
 							.mapInputId("inputAccessPointSelectInputPanel");
 					this.outputAccessPointSelectInputPanel = this
@@ -268,6 +272,33 @@ define(
 
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = context;
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = accessPointId;
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointPath = null;
+										}
+
+										page
+												.submitChanges({
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
+												});
+									});
+					this.inputAccessPointPathInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										var page = event.data.page;
+										var value = page.inputAccessPointPathInput
+												.val();
+
+										if (!value || value.trim() == "") {
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointPath = null;
+										} else {
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointPath = value.trim();
 										}
 
 										page
@@ -293,11 +324,42 @@ define(
 										if (value == "DEFAULT") {
 											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointContext = null;
 											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointId = null;
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath = null;
 										} else {
-											var data = value.split(":");
+											var colIndex = value.indexOf(":");
+											var context = value.substring(0, colIndex);
+											var accessPointId = value.substring(colIndex + 1);
 
-											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointContext = data[0];
-											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointId = data[1];
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointContext = context;
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointId = accessPointId;
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath = null;
+										}
+
+										page
+												.submitChanges({
+													modelElement : {
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
+													}
+												});
+									});
+					this.outputAccessPointPathInput
+							.change(
+									{
+										page : this
+									},
+									function(event) {
+										var page = event.data.page;
+										var value = page.outputAccessPointPathInput
+												.val();
+
+										if (!value || value.trim() == "") {
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath = null;
+										} else {
+											page.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath = value
+													.trim();
 										}
 
 										page
@@ -655,11 +717,20 @@ define(
 								.val(this.propertiesPanel.element.modelElement.inputDataMapping.dataPath);
 						if (this.propertiesPanel.element.modelElement.inputDataMapping.accessPointId == null) {
 							this.inputAccessPointSelectInput.val("DEFAULT");
+							this.inputAccessPointPathInput.prop("disabled", true);
 						} else {
 							this.inputAccessPointSelectInput
 									.val(this.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext
 											+ ":"
 											+ this.propertiesPanel.element.modelElement.inputDataMapping.accessPointId);
+
+							this.inputAccessPointPathInput.prop("disabled", false);
+							if (this.propertiesPanel.element.modelElement.inputDataMapping.accessPointPath) {
+								this.inputAccessPointPathInput
+										.val(this.propertiesPanel.element.modelElement.inputDataMapping.accessPointPath);
+							} else {
+								this.inputAccessPointPathInput.val("");
+							}
 						}
 					}
 
@@ -668,11 +739,20 @@ define(
 								.val(this.propertiesPanel.element.modelElement.outputDataMapping.dataPath);
 						if (this.propertiesPanel.element.modelElement.outputDataMapping.accessPointId == null) {
 							this.outputAccessPointSelectInput.val("DEFAULT");
+							this.outputAccessPointPathInput.prop("disabled", true);
 						} else {
 							this.outputAccessPointSelectInput
 									.val(this.propertiesPanel.element.modelElement.outputDataMapping.accessPointContext
 											+ ":"
 											+ this.propertiesPanel.element.modelElement.outputDataMapping.accessPointId);
+
+							this.outputAccessPointPathInput.prop("disabled", false);
+							if (this.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath) {
+								this.outputAccessPointPathInput
+										.val(this.propertiesPanel.element.modelElement.outputDataMapping.accessPointPath);
+							} else {
+								this.outputAccessPointPathInput.val("");
+							}
 						}
 					}
 				};
