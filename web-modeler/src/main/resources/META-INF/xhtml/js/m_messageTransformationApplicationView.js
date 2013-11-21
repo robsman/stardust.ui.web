@@ -830,7 +830,7 @@ define(
 										this.inputData[accessPoint.id] = childSchemaType;
 										this.initializeTableRowsRecursively(output, accessPoint,
 												childElementsArray, path,
-												childSchemaType.model, childSchemaType.name, (childSchemaType.type ? childSchemaType.type.type : ""));
+												childSchemaType.model, (childSchemaType.type ? childSchemaType.type.name : childSchemaType.name), (childSchemaType.type ? childSchemaType.type.type : ""));
 									} else {
 										this.initializeTableRowsRecursively(output,
 												accessPoint, childElement, path,
