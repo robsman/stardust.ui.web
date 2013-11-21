@@ -127,7 +127,7 @@ public class GsonUseCases
 
    static class ModelSerializer implements JsonSerializer<ModelType>
    {
-      public static final Class ADAPTED_TYPE = ModelTypeImpl.class;
+      public static final Class<ModelTypeImpl> ADAPTED_TYPE = ModelTypeImpl.class;
 
       public JsonElement serialize(ModelType model, Type type,
             JsonSerializationContext context)

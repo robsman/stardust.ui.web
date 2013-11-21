@@ -1,7 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.marshaling;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+//import static org.hamcrest.CoreMatchers.is;
+//import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
