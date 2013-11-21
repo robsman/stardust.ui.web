@@ -25,7 +25,9 @@ define(
 				},
 				getAllDataAsJavaScriptObjects: function(model) {
 					return getAllDataAsJavaScriptObjects(model);
-				}
+				},
+				
+				isBuiltInXsdDataType : isBuiltInXsdDataType
 			};
 
 			/**

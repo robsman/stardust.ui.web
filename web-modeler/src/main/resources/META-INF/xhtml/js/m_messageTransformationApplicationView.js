@@ -1017,7 +1017,7 @@ define(
 													var prefix = outputTableRow.path + ".";
 													for (var n = 0; n < view.outputTableRows.length; ++n) {
 														if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
-															if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
+															if (view.isPrimitive(view.outputTableRows[n])) {
 																view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
 																view.populateMappingCell(view.outputTableRows[n]);
 															}
