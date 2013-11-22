@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +102,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.util.IdFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
@@ -1154,6 +1154,14 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                dataPathType.setId("PROCESS_ATTACHMENTS");
                dataPathType.setName("PROCESS_ATTACHMENTS");
+            }
+
+            if (StringUtils.isNotEmpty(dataPathName)
+                  && !dataPathName.equals(dataPathType.getName())
+                  && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+            {
+               dataPathID = (NameIdUtilsExtension.createIdFromName(null,
+                     (IIdentifiableElement) dataPathType, dataPathName));
             }
 
             dataPathType.setId(dataPathID);
