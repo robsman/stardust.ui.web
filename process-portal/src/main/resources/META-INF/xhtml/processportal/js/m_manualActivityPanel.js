@@ -113,6 +113,23 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				};
 			});
 
+			angularModule.directive('sdDate', function($parse) {
+				return function(scope, element, attrs, controller) {
+					var ngModel = $parse(attrs.ngModel);
+					jQuery(function() {
+						element.datepicker({
+							dateFormat : 'yy-mm-dd',
+							onSelect : function(dateText, inst) {
+								scope.$apply(function(scope) {
+									// Change binded variable
+									ngModel.assign(scope, dateText);
+								});
+							}
+						});
+					});
+				};
+			});
+
 			angular.bootstrap(document, [moduleName]);
 		};
 

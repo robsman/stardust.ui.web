@@ -39,7 +39,7 @@ public class JsonHelper
 {
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
 
-   private String dateFormat = "yyyy-MM-dd HH:mm:ss";
+   private String dateFormat = "yyyy-MM-dd";
 
    /**
     * 

@@ -16,18 +16,20 @@ require.config({
 	baseUrl: "../../plugins/",
 	paths: {
 		'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],
+		'jquery-ui': ['bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min'],
 		'angularjs' : ['bpm-modeler/js/libs/angular/angular-1.0.2', '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min'],
-		'json' : ['bpm-modeler/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2'] 
+		'json' : ['bpm-modeler/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2']
 	},
 	shime: {
 		'angularjs': {
 			require: "jquery",
 			exports: "angular"
-		}
+		},
+		'jquery-ui': ['jquery']
 	}
 });
 
 
-require(["require", "jquery", "angularjs", "processportal/js/m_manualActivityPanel"], function(){
+require(["require", "jquery", "jquery-ui", "angularjs", "processportal/js/m_manualActivityPanel"], function(){
 	require("processportal/js/m_manualActivityPanel").initialize();
 });

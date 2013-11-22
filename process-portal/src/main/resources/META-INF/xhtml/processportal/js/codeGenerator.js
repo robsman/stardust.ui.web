@@ -183,6 +183,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 									attributes: {style: "color:red", "ng-show": showExpr}});
 							}
 							elem.attributes['maxlength'] = getMaxLength(path);
+
+							var cDirective = getCustomDirective(path);
+							if (cDirective != undefined) {
+								elem.attributes[cDirective] = null;
+							}
 						}
 					}
 				}
@@ -248,6 +253,16 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				return 8;
 			} else if (path.typeName == "duration") {
 				return 41;
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getCustomDirective(path) {
+			if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime"
+					|| path.typeName == "java.util.Calendar" || path.typeName == "time") {
+				return "sd-date";
 			}
 		}
 
