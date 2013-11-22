@@ -2200,8 +2200,29 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                         String primitiveDataType = accessPointJson.get(
                               ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                               .getAsString();
+                        String structuredDataFullId = null;
+                    	if (hasNotJsonNull(accessPointJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                        {
+                           structuredDataFullId = accessPointJson.get(
+                                 ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                                 .getAsString();
+                           accessPoint = getModelBuilderFacade().createStructuredAccessPoint(
+                                   context, id, name, structuredDataFullId, direction);
+
+                             TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                                   structuredDataFullId);
+
+                             if (typeDeclaration != null)
+                             {
+                                StructuredTypeUtils.setStructuredAccessPointAttributes(
+                                      accessPoint, typeDeclaration);
+                             }
+                        }
+                    	else
+                    	{
                         accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
                               context, id, name, primitiveDataType, direction);
+                     }
                      }
                      else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
                      {
@@ -2562,15 +2583,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             getModelBuilderFacade().convertDataType(data,
                   ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
+            if (dataJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+            {
+            	updateTypeForPrimitive(dataJson, data);
+				getModelBuilderFacade().updatePrimitiveData(data,
+						ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE);
+            }
+            else
+            {
             getModelBuilderFacade().updatePrimitiveData(
                   data,
                   dataJson.get(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                         .getAsString());
-            if (dataJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
-            {
-               updateTypeForPrimitive(dataJson, data);
             }
-            
          }
          else if (dataJson.get(ModelerConstants.DATA_TYPE_PROPERTY)
                .getAsString()

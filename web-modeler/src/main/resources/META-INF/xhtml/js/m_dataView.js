@@ -176,7 +176,7 @@ define(
 					var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 					this.currentPrimitiveType = null!=primitiveDataTypeSelect ? primitiveDataTypeSelect.val():null;
 					if(null!=currentPrimitiveType)
-					this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+					this.updateDefaultValueForEnum(currentPrimitiveType);
 					
 					this.enumInputSelect = m_utils.jQuerySelect("#enumInputSelect");
 					this.enumInputSelect.change({"view" : this}, enumSelectChangeHandler);
@@ -190,11 +190,8 @@ define(
 				 */
 				DataView.prototype.updateDefaultValueForEnum = function(
 						primitiveDataTypeSelect) {
-					if (primitiveDataTypeSelect.val().match("Enumeration")) {
-						var arr = primitiveDataTypeSelect.val().split("-");
-						if (null != arr) {
-							this.populateEnumsForType(arr[1]);
-						}
+					if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect)){
+						this.populateEnumsForType(primitiveDataTypeSelect);
 					}
 				};
 				/**
@@ -287,9 +284,9 @@ define(
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 						if(null == this.currentPrimitiveType){
-							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect.val());
 						}else if(null!=this.currentPrimitiveType && !this.currentPrimitiveType.match(primitiveDataTypeSelect.val())){
-							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect.val());
 						}
 						this.currentPrimitiveType = primitiveDataTypeSelect.val();
 						var self = this;
@@ -312,10 +309,14 @@ define(
 									$scope.timestampInputTextError = true;
 									self.timestampInputText.val(dateValue);
 								}
-							}else if(primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)){
-								self.enumInputSelect.val(defaultValue);
-								$scope.enumDataType = true;
 							}else {
+								if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect.val())){
+									if(null!=defaultValue){
+										self.enumInputSelect.val(defaultValue);	
+									}
+									$scope.enumDataType = true;
+									return;
+								}
 								$scope.defaultValue = defaultValue;
 								if ($scope.dataType == 'boolean') {
 									$scope.defaultValue = $scope.defaultValue == "true" ? true : false;

@@ -255,7 +255,7 @@ define(
 					this.primitiveDataTypeSelect
 							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
 									+ "</option>");
-					
+
 					if (this.scopeModel) {
 						this.primitiveDataTypeSelect
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.enum.thisModel") + "'>");
@@ -265,14 +265,14 @@ define(
 							if (this.scopeModel.typeDeclarations[i]
 							.getType() == "enumStructuredDataType"){
 								this.primitiveDataTypeSelect
-								.append("<option value='Enumeration-" + this.scopeModel.typeDeclarations[i].getFullId() + "'>"
+								.append("<option value='" + this.scopeModel.typeDeclarations[i].getFullId() + "'>"
 										+ this.scopeModel.typeDeclarations[i].name
 										+ "</option>");
 							}
-							
+
 						}
 					}
-					
+
 					if (!this.restrictToCurrentModel) {
 						this.primitiveDataTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.enum.otherModels") + "'>");
@@ -287,12 +287,12 @@ define(
 								if (m_modelElementUtils
 										.hasPublicVisibility(m_model
 												.getModels()[n].typeDeclarations[m])) {
-									
+
 									if (this.hideEnumerations && !m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
 										if (m_model.getModels()[n].typeDeclarations[m]
 												.getType() == "enumStructuredDataType") {
 											this.primitiveDataTypeSelect
-													.append("<option value='Enumeration-"+m_model.getModels()[n].typeDeclarations[m].getFullId()+"'>"
+													.append("<option value='"+m_model.getModels()[n].typeDeclarations[m].getFullId()+"'>"
 															+ m_model.getModels()[n].name
 															+ "/"
 															+ m_model.getModels()[n].typeDeclarations[m].name
@@ -332,7 +332,9 @@ define(
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
 						for ( var i in this.scopeModel.typeDeclarations) {
-							if (this.hideEnumerations && !this.scopeModel.typeDeclarations[i].isSequence()) continue;
+							if (!this.scopeModel.typeDeclarations[i].isSequence()) continue;
+							// Enum data is shown under primitive
+							if (this.scopeModel.typeDeclarations[i].getType() != "enumStructuredDataType") {
 							this.structuredDataTypeSelect
 									.append("<option value='"
 											+ this.scopeModel.typeDeclarations[i]
@@ -340,6 +342,7 @@ define(
 											+ "'>"
 											+ this.scopeModel.typeDeclarations[i].name
 											+ "</option>");
+							}
 						}
 					}
 
@@ -357,16 +360,20 @@ define(
 								if (m_modelElementUtils
 										.hasPublicVisibility(m_model
 												.getModels()[n].typeDeclarations[m])) {
-									if (this.hideEnumerations && !m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
-									this.structuredDataTypeSelect
-											.append("<option value='"
-													+ m_model.getModels()[n].typeDeclarations[m]
-															.getFullId()
-													+ "'>"
-													+ m_model.getModels()[n].name
-													+ "/"
-													+ m_model.getModels()[n].typeDeclarations[m].name
-													+ "</option>");
+									if (!m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
+									// Enum data is shown under primitive
+									if (m_model.getModels()[n].typeDeclarations[m]
+											.getType() != "enumStructuredDataType") {
+										this.structuredDataTypeSelect
+										.append("<option value='"
+												+ m_model.getModels()[n].typeDeclarations[m]
+														.getFullId()
+												+ "'>"
+												+ m_model.getModels()[n].name
+												+ "/"
+												+ m_model.getModels()[n].typeDeclarations[m].name
+												+ "</option>");
+									}
 								}
 							}
 						}
@@ -465,10 +472,15 @@ define(
 
 					if (data.dataType == null
 							|| data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						this.setPrimitiveDataType(data.primitiveDataType,data.structuredDataTypeFullId);
+						this.setPrimitiveDataType(data.primitiveDataType);
 					} else if (data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
-						this
-								.setStructuredDataType(data.structuredDataTypeFullId);
+						// If enum type show as Primitive
+						if (m_model.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
+								this.dataTypeSelect.val("primitive");
+								this.setPrimitiveDataType(data.structuredDataTypeFullId,true);
+							}else {
+							this.setStructuredDataType(data.structuredDataTypeFullId);
+						}
 					} else if (data.dataType == m_constants.DOCUMENT_DATA_TYPE) {
 						this.setDocumentDataType(data.structuredDataTypeFullId);
 					} else {
@@ -486,6 +498,9 @@ define(
 					if (this.dataTypeSelect.val() == m_constants.PRIMITIVE_DATA_TYPE) {
 						data.primitiveDataType = this.primitiveDataTypeSelect
 								.val();
+						if(m_model.isEnumTypeDeclaration(data.primitiveDataType)){
+							data.structuredDataTypeFullId = this.primitiveDataTypeSelect.val();
+						}
 					} else if (this.dataTypeSelect.val() == m_constants.STRUCTURED_DATA_TYPE) {
 						data.structuredDataTypeFullId = this.structuredDataTypeSelect
 								.val();
@@ -501,27 +516,22 @@ define(
 				 *
 				 */
 				DataTypeSelector.prototype.setPrimitiveDataType = function(
-						primitiveDataType,structuredDataTypeFullId) {
+						primitiveDataType,isEnum) {
 					// Reinitialize the primitive type options to get rid of "Other" option
 					this.populatePrimitivesSelectInput();
 
 					if (primitiveDataType == null) {
 						primitiveDataType = "String";
 					}
-
-					if (this.isSupportedPrimitiveDataType(primitiveDataType)) {
-						if(primitiveDataType==="Enumeration" && structuredDataTypeFullId){
-							this.primitiveDataTypeSelect.val(primitiveDataType + "-" + structuredDataTypeFullId);
-						}else{
+					if (this.isSupportedPrimitiveDataType(primitiveDataType) || isEnum || m_model.isEnumTypeDeclaration(primitiveDataType)) {
 							this.primitiveDataTypeSelect.val(primitiveDataType);
-						}
-					} else {
-						this.primitiveDataTypeSelect
-								.append("<option value=\"other\">"
-										+ m_i18nUtils
-												.getProperty("modeler.element.properties.commonProperties.other")
-										+ "</option>");
-						this.primitiveDataTypeSelect.val("other");
+					}else {
+							this.primitiveDataTypeSelect
+							.append("<option value=\"other\">"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.commonProperties.other")
+									+ "</option>");
+					this.primitiveDataTypeSelect.val("other");
 					}
 
 					m_dialog.makeVisible(this.primitiveDataTypeRow);
@@ -539,21 +549,11 @@ define(
 				DataTypeSelector.prototype.isSupportedPrimitiveDataType = function(
 						primitiveDataType) {
 					var supportedPrimitiveTypes = ["String", "boolean", "int", "long", "double", "Timestamp", "Enumeration" ];
-					
+
 					if (primitiveDataType
 							&& supportedPrimitiveTypes.indexOf(primitiveDataType) > -1) {
 						return true;
 					}
-					else{
-						// For Enum's id is a mix of constant 'Enumueration' +
-						// structuredTypeId
-						for(var i in supportedPrimitiveTypes){
-							if(primitiveDataType.match(supportedPrimitiveTypes[i])){
-								return true;
-							}
-						}
-					}
-
 					return false;
 				};
 
@@ -656,14 +656,10 @@ define(
 						var primitiveDataType;
 						if (m_constants.PRIMITIVE_DATA_TYPE == this.dataTypeSelect
 								.val()) {
-							primitiveDataType = this.primitiveDataTypeSelect
-									.val();
-							var arr=primitiveDataType.split("-");
-							if(null!=arr){
-								primitiveDataType =arr[0];
-								structTypeFullId = arr[1];	
+							primitiveDataType =this.primitiveDataTypeSelect.val();
+							if(m_model.isEnumTypeDeclaration(primitiveDataType)){
+								structTypeFullId = this.primitiveDataTypeSelect.val();
 							}
-							
 						} else if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect
 								.val()) {
 							structTypeFullId = this.structuredDataTypeSelect

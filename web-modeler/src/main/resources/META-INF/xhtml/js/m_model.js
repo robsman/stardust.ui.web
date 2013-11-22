@@ -54,7 +54,19 @@ define(
 				findTypeDeclaration : function(fullId) {
 					return findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
 				},
-
+				
+				isEnumTypeDeclaration : function(fullId) {
+					try{
+						var typeDeclaration = findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
+						if (typeDeclaration.getType() == "enumStructuredDataType") {
+							return true;
+						}
+					}catch (e) {
+						return false;
+					}
+					return false;
+				},
+				
 				findData : function(fullId) {
 					return findModel(stripModelId(fullId)).dataItems[stripElementId(fullId)];
 				},

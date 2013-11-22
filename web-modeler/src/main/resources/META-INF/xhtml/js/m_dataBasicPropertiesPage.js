@@ -132,12 +132,9 @@ define(
 				 */
 				DataBasicPropertiesPage.prototype.updateDefaultValueForEnum = function(
 						primitiveDataTypeSelect) {
-					if (primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)) {
-						var arr = primitiveDataTypeSelect.val().split("-");
-						if (null != arr) {
-							this.populateEnumsForType(arr[1]);
+						if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect)){
+							this.populateEnumsForType(primitiveDataTypeSelect);
 						}
-					}
 				};
 				
 				/**
@@ -236,9 +233,9 @@ define(
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
 						var primitiveDataTypeSelect = this.dataTypeSelector.primitiveDataTypeSelect;
 						if(null == this.currentPrimitiveType){
-							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect.val());
 						}else if(null!=this.currentPrimitiveType && !this.currentPrimitiveType.match(primitiveDataTypeSelect.val())){
-							this.updateDefaultValueForEnum(primitiveDataTypeSelect);
+							this.updateDefaultValueForEnum(primitiveDataTypeSelect.val());
 						}
 						this.currentPrimitiveType = primitiveDataTypeSelect.val();
 						var self = this;
@@ -261,10 +258,13 @@ define(
 									$scope.timestampInputTextError = true;
 									self.timestampInputText.val(dateValue);
 								}
-							}else if(primitiveDataTypeSelect.val().match(m_constants.ENUMERATION)){
-								self.enumInputSelect.val(defaultValue);
-								$scope.enumDataType = true;
 							}else {
+									if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect.val())){
+									if(defaultValue!=null)
+										self.enumInputSelect.val(defaultValue);
+									$scope.enumDataType = true;
+									return;
+									}
 								$scope.defaultValue = defaultValue;
 								$scope.enumDataType = false;
 								if ($scope.dataType == 'boolean') {
