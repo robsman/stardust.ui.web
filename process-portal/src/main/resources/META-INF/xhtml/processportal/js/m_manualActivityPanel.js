@@ -99,13 +99,18 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								if (scope.initState && scope.initState.success && 
 										newValue != undefined && newValue != oldValue) {
 									var binding = attr.ngModel.substr(BINDING_PREFIX.length + 1);
-									var dataMapping = binding.substr(0, binding.indexOf("["));
-
-									// TODO: Post Only changed value and not full Data Mapping 
-									log("Posting Data for Data Mapping: " + dataMapping);
-									var transferData = {};
-									transferData[dataMapping] = scope[BINDING_PREFIX][dataMapping];
-									postData(interactionEndpoint, "/outData/" + dataMapping, transferData, {});
+									var dataMapping = binding;
+									if (binding.indexOf("[") != -1) {
+										dataMapping = binding.substr(0, binding.indexOf("["));
+									}
+	
+									if (dataMapping) {
+										// TODO: Post Only changed value and not full Data Mapping 
+										log("Posting Data for Data Mapping: " + dataMapping);
+										var transferData = {};
+										transferData[dataMapping] = scope[BINDING_PREFIX][dataMapping];
+										postData(interactionEndpoint, "/outData/" + dataMapping, transferData, {});
+									}
 								}
 							}, true);
 						}
