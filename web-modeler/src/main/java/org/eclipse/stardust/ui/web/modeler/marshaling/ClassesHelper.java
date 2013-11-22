@@ -216,22 +216,46 @@ public final class ClassesHelper
       }
    }
 
-   private static ParameterName[] getParameterLabels(Method method)
+   private static <T extends Annotation> T[] getParameterLabels(Method method)
    {
       for (Annotation a : method.getAnnotations())
       {
-         if (a instanceof ParameterNames)
+         if (matchName("ParameterNames", a))
          {
-            return ((ParameterNames) a).value();
+            return getValue(a);
          }
       }
       return null;
    }
 
+   private static <T> T getValue(Annotation a)
+   {
+      try
+      {
+         Method m = a.getClass().getMethod("value");
+         @SuppressWarnings("unchecked")
+         T result = (T) m.invoke(a);
+         return result;
+      }
+      catch (Exception e)
+      {
+         // (fh) do nothing because either:
+         // - the method do not exist or
+         // - we don't have access to it
+         // - it returns a different type than expected
+      }
+      return null;
+   }
+
+   private static boolean matchName(String name, Annotation a)
+   {
+      return name.equals(a.annotationType().getSimpleName());
+   }
+
    private static String getParameterLabel(Method method, int n, ParameterName[] values, String paramId)
    {
-      ParameterName nameAnnotation = findParameterName(method, n);
-      String paramLabel = nameAnnotation == null ? null : nameAnnotation.value();
+      Annotation nameAnnotation = findParameterName(method, n);
+      String paramLabel = nameAnnotation == null ? null : ClassesHelper.<String>getValue(nameAnnotation);
       if (StringUtils.isEmpty(paramLabel) && values != null && n < values.length)
       {
          paramLabel = values[n].value();
@@ -239,14 +263,14 @@ public final class ClassesHelper
       return StringUtils.isEmpty(paramLabel) ? paramId : paramLabel;
    }
 
-   private static ParameterName findParameterName(Method method, int parameterIndex)
+   private static Annotation findParameterName(Method method, int parameterIndex)
    {
       Annotation[] paramAnnotations = method.getParameterAnnotations()[parameterIndex];
       for (Annotation annotation : paramAnnotations)
       {
-         if (annotation instanceof ParameterName)
+         if (matchName("ParameterName", annotation))
          {
-            return (ParameterName) annotation;
+            return annotation;
          }
       }
       return null;
@@ -323,5 +347,4 @@ public final class ClassesHelper
       }
       return null;
    }
-
 }
