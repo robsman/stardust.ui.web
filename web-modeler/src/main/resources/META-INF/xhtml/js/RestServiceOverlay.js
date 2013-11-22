@@ -778,7 +778,7 @@ define(
 						}
 						else
 						{
-							route += this.httpBasicAuthPwdInput.val(); // TODO: Verify if URL encoding is required.
+							route += this.getHttpBasicAuthRawPwd(); // TODO: Verify if URL encoding is required.
 						}
 					}
 					
@@ -792,6 +792,46 @@ define(
 					}
 
 					return route;
+				};
+				
+				RestServiceOverlay.prototype.getHttpBasicAuthRawPwd = function() {
+					
+					if(this.httpBasicAuthPwdInput.val().indexOf("&") != -1
+							|| this.httpBasicAuthPwdInput.val().indexOf("<")!= -1
+							|| this.httpBasicAuthPwdInput.val().indexOf(">") != -1
+							|| this.httpBasicAuthPwdInput.val().indexOf("\"") != -1
+							|| this.httpBasicAuthPwdInput.val().indexOf("'") != -1) {
+						
+						var rawPwd = this.httpBasicAuthPwdInput.val();
+							rawPwd = rawPwd.replace(/&/g, "&amp;");
+							rawPwd = rawPwd.replace(/</g, "&lt;") ;
+							rawPwd = rawPwd.replace(/>/g, "&gt;");
+							rawPwd = rawPwd.replace(/"/g, "&quot;");
+							rawPwd = rawPwd.replace(/'/g, "&apos;");
+							rawPwd = "RAW(" + rawPwd + ")";
+							
+						return rawPwd;
+					}
+					
+					return this.httpBasicAuthPwdInput.val();
+				};
+				
+				
+				RestServiceOverlay.prototype.getHttpBasicAuthOriginePwd = function(rawPwd) {	
+					
+					if(rawPwd.indexOf("RAW") == 0) {
+						var firstIdex = rawPwd.indexOf("(");
+						var lastIdex = rawPwd.lastIndexOf(")");
+						rawPwd = rawPwd.substring(firstIdex+1,lastIdex);
+						rawPwd = rawPwd.replace(/&amp;/g, "&");
+						rawPwd = rawPwd.replace(/&lt;/g, "<") ;
+						rawPwd = rawPwd.replace(/&gt;/g, ">");
+						rawPwd = rawPwd.replace(/&quot;/g, "\"");
+						rawPwd = rawPwd.replace(/&apos;/g, "'");
+						return rawPwd;
+					}
+					
+					return rawPwd;
 				};
 
 				/**
@@ -862,7 +902,7 @@ define(
 					this.crossDomainInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
 					this.setSecurityMode(this.getApplication().attributes["stardust:restServiceOverlay::securityMode"]);
 					this.httpBasicAuthUserInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthUser"]);
-					this.httpBasicAuthPwdInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]);
+					this.httpBasicAuthPwdInput.val(this.getHttpBasicAuthOriginePwd(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]));
 					this.httpBasicAuthUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthCV"]);
 					this.customSecurityTokenKeyInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenKey"]);
 					this.customSecurityTokenValueInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]);
@@ -888,7 +928,7 @@ define(
 									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
 									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
 									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
-									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.getHttpBasicAuthRawPwd(),
 									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
 										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
@@ -922,7 +962,7 @@ define(
 									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
 									"stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
 									"stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
-									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.httpBasicAuthPwdInput.val(),
+									"stardust:restServiceOverlay::httpBasicAuthPwd" : this.getHttpBasicAuthRawPwd(),
 									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
 										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
