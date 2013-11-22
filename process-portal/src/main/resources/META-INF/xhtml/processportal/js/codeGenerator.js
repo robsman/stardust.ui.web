@@ -38,14 +38,13 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			bindingPrefix = prefix;
 			bindingData = {};
 
-			var elemMain = htmlElement.create("div", {attributes: {class: "panel-main"}});
+			var elemForm = htmlElement.create("form", {attributes: {name: "form"}});
+			var elemMain = htmlElement.create("div", {parent: elemForm, attributes: {class: "panel-main"}});
 
 			generateChildren(elemMain, paths);
 
-			var tempLink = "<button ng-click='submitOutData()'>Submit OUT Data</button><br/><br/>";
-			var html = elemMain.toHtml();
-			html = tempLink + html;
-			
+			var html = elemForm.toHtml();
+
 			bindingPrefix = undefined;
 
 			return {html: html, binding: bindingData};
@@ -55,8 +54,6 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function generatePath(parent, path) {
-			console.log("To Generate: " + path.fullXPath);
-
 			if (path.isList) {
 				return generateList(parent, path);
 			} else if (path.isPrimitive) {
@@ -154,7 +151,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elem.value = "{{" + convertFullIdToBinding(path) + "}}";
 			} else {
 				if (path.isEnum) {
-					elem = htmlElement.create("select", {parent: elemMain});
+					elem = htmlElement.create("select", {parent: elemMain, 
+						attributes: {'ng-model-onblur': null, 'sd-post-data': null}});
 					elem.attributes['class'] = "panel-select";
 					for(var i in path.enumValues) {
 						var val = path.enumValues[i];
@@ -164,13 +162,27 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					if (path.typeName == "document") {
 						elem = htmlElement.create("label", {parent: elemMain, value: "TODO", attributes: {class: "panel-output"}});
 					} else {
-						elem = htmlElement.create("input", {parent: elemMain});
+						var elemWrapper = htmlElement.create("div", {parent: elemMain});
+						elem = htmlElement.create("input", {parent: elemWrapper, 
+							attributes: {'ng-model-onblur': null, 'sd-post-data': null}});
 						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
 							elem.attributes['type'] = "checkbox";
 							elem.attributes['class'] = "panel-checkbox";
 						} else {
 							elem.attributes['type'] = "text";
 							elem.attributes['class'] = "panel-input";
+							var pattern = getValidationPattern(path);
+							if (pattern) {
+								var id = "id" + Math.floor((Math.random() * 100000) + 1);
+								var showExpr = "form." + id + ".$error.pattern";
+								elem.attributes['id'] = id;
+								elem.attributes['name'] = id;
+								elem.attributes['ng-pattern'] = pattern;
+
+								htmlElement.create("div", {parent: elemWrapper, value: "Not Valid", 
+									attributes: {style: "color:red", "ng-show": showExpr}});
+							}
+							elem.attributes['maxlength'] = getMaxLength(path);
 						}
 					}
 				}
@@ -180,6 +192,64 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			return elemMain;
 		};
+
+		/*
+		 * 
+		 */
+		function getValidationPattern(path) {
+			if (path.typeName == "integer" || path.typeName == "int" ||path.typeName == "java.lang.Integer") {
+				return /^(\+|-)?([\d]{0,9})$/;
+			} else if (path.typeName == "short" || path.typeName == "java.lang.Short") {
+				return /^(\+|-)?([\d]{0,9})$/;
+			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
+				return /^(\+|-)?([\d]{0,18})$/;
+			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
+				return /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
+				return /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
+				
+			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
+				
+			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
+				
+			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
+				
+			} else if (path.typeName == "time") {
+				
+			} else if (path.typeName == "duration") {
+				
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getMaxLength(path) {
+			if (path.typeName == "integer" || path.typeName == "int" ||path.typeName == "java.lang.Integer") {
+				return 10;
+			} else if (path.typeName == "short" || path.typeName == "java.lang.Short") {
+				return 5;
+			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
+				return 19;
+			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
+				return 620;
+			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
+				return 620;
+			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
+				return 2;
+			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
+				return 1;
+			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
+				return 10;
+			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
+				return 19;
+			} else if (path.typeName == "time") {
+				return 8;
+			} else if (path.typeName == "duration") {
+				return 41;
+			}
+		}
 
 		/*
 		 * 

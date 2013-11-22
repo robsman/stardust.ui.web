@@ -44,7 +44,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	        interactionId = interactionId.indexOf('&') >= 0 ? interactionId.substring(0, interactionId.indexOf('&')) : interactionId;
 
 	        interactionEndpoint = urlPrefix + REST_END_POINT + interactionId;
-	        console.log("Interaction Rest End Point: " + interactionEndpoint);
+	        log("Interaction Rest End Point: " + interactionEndpoint);
 	        
 	        getData(interactionEndpoint, "/dataMappings", {success: generateMarkup});
 
@@ -53,7 +53,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			getData(interactionEndpoint, "/inData", {success: bindInData});
 			
 			runInAngularContext(function($scope){
-				$scope.submitOutData = submitOutData;
+				$scope.initState = {};
+				$scope.initState.success = true;
+
 				$scope.addToList = addToList;
 				$scope.removeFromList = removeFromList;
 				$scope.selectListItem = selectListItem;
@@ -66,6 +68,51 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function bootstrapAngular() {
 			var moduleName = 'ManualActivityModule';
 			var angularModule = angular.module(moduleName, []);
+			
+			// Taken From - http://jsfiddle.net/cn8VF/
+			// This is to delay model updates till element is in focus
+			angularModule.directive('ngModelOnblur', function() {
+				return {
+					restrict : 'A',
+					require : 'ngModel',
+					link : function(scope, elm, attr, ngModelCtrl) {
+						if (attr.type === 'radio' || attr.type === 'checkbox') {
+							return;
+						}
+						elm.unbind('input').unbind('keydown').unbind('change');
+						elm.bind('blur', function() {
+							scope.$apply(function() {
+								ngModelCtrl.$setViewValue(elm.val());
+							});
+						});
+					}
+				};
+			});
+
+			angularModule.directive('sdPostData', function() {
+				return {
+					require : 'ngModel',
+					link : function(scope, elm, attr, ngModelCtrl) {
+						if (attr.ngModel.indexOf(BINDING_PREFIX) == 0) {
+							log("Watching for: " + attr.ngModel);
+							scope.$watch(attr.ngModel, function(newValue, oldValue) {
+								if (scope.initState && scope.initState.success && 
+										newValue != undefined && newValue != oldValue) {
+									var binding = attr.ngModel.substr(BINDING_PREFIX.length + 1);
+									var dataMapping = binding.substr(0, binding.indexOf("["));
+
+									// TODO: Post Only changed value and not full Data Mapping 
+									log("Posting Data for Data Mapping: " + dataMapping);
+									var transferData = {};
+									transferData[dataMapping] = scope[BINDING_PREFIX][dataMapping];
+									postData(interactionEndpoint, "/outData/" + dataMapping, transferData, {});
+								}
+							}, true);
+						}
+					}
+				};
+			});
+
 			angular.bootstrap(document, [moduleName]);
 		};
 
@@ -90,17 +137,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				jQuery.extend($scope[BINDING_PREFIX], data);
 			});
 		};
-
-		/*
-		 * 
-		 */
-		function submitOutData() {
-			var $scope = angular.element(document).scope();
-
-			// TODO: Clone and remove $$ data
-			
-			postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {});
-		}
 
 		/*
 		 * 
@@ -170,7 +206,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function getData(baseUrl, extension, callbacks) {
 			var endpoint = baseUrl + extension;
-	        console.log(endpoint);
+	        log(endpoint);
 
 			jQuery.ajax({
 				type: 'GET',
@@ -178,7 +214,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				async: false,
 				success: callbacks.success,
 				error: callbacks.failure ? callbacks.failure : function(errObj) {
-					alert('Failed to get ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
+					log('Failed to get ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
 				}
 			});
 		};
@@ -188,7 +224,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function postData(baseUrl, extension, data, callbacks) {
 			var endpoint = baseUrl + extension;
-	        console.log(endpoint);
+	        log(endpoint);
 
 			jQuery.ajax({
 				type: 'POST',
@@ -198,7 +234,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				data: JSON.stringify(data),
 				success: callbacks.success ? callbacks.success : null,
 				error: callbacks.failure ? callbacks.failure : function(errObj) {
-					alert('Failed to post ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
+					log('Failed to post ' + extension + ' - ' + errObj.status + ":" + errObj.statusText);
 				}
 			});
 		};
@@ -210,5 +246,14 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var scope = angular.element(document).scope();
 			scope.$apply(func);
 		};
+
+		/*
+		 * 
+		 */
+		function log(msg) {
+			if (console) {
+				console.log(msg);
+			}
+		}
 	};
 });

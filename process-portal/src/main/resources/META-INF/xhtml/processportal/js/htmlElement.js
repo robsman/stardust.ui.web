@@ -75,7 +75,10 @@ define([], function() {
 		function writeStartTag(elem) {
 			var ret = "<" + elem.tag; 
 			for(var key in elem.attributes) {
-				ret += " " + key + "=\"" + elem.attributes[key] + "\"";
+				ret += " " + key;
+				if (elem.attributes[key] != undefined && elem.attributes[key] !== null) {
+					ret += "=\"" + elem.attributes[key] + "\"";
+				}
 			}
 			ret += ">";
 			

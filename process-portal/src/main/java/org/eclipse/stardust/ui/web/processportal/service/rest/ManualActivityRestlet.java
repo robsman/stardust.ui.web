@@ -12,7 +12,9 @@
 package org.eclipse.stardust.ui.web.processportal.service.rest;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -119,8 +121,25 @@ public class ManualActivityRestlet
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("outData/{parameterId}")
    @POST
-   public void outData(@PathParam("parameterId") String parameterId, String value)
+   public void outData(@PathParam("parameterId") String parameterId, String json)
    {
-      trace.info("ParameterId: " + parameterId + " : " + value);
+      InteractionRegistry registry = getInteractionRegistry();
+      Interaction interaction = registry.getInteraction(interactionId);
+
+      JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
+
+      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+            interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+
+      // This will have ony one value, so loop will execute once only
+      for (Entry<String, Serializable> entry : data.entrySet())
+      {
+         if(null == interaction.getOutDataValues())
+         {
+            interaction.setOutDataValues(new HashMap<String, Serializable>());
+         }
+         
+         interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
+      }
    }
 }
