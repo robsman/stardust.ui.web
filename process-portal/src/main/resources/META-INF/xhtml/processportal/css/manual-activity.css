@@ -3,8 +3,8 @@ body, table {
 	font-size: 11px;
 }
 
-input.ng-invalid {
-  border: 1px solid red;
+.invalid-msg {
+	color: red;
 }
 
 .panel-main {

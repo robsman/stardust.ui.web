@@ -146,8 +146,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			var elem;
-			if (path.readonly) {
-				elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
+			if (isReadonly(path)) {
+				if (path.properties["BooleanInputPreferences_readonlyOutputType"] != undefined &&
+						path.properties["BooleanInputPreferences_readonlyOutputType"] == "CHECKBOX") {
+					elem = htmlElement.create("input", {parent: elemMain, 
+								attributes: {type: "checkbox", class: "panel-checkbox", disabled: true}});
+				} else {
+					elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
+				}
+
 				elem.value = "{{" + convertFullIdToBinding(path) + "}}";
 			} else {
 				if (path.isEnum) {
@@ -163,8 +170,28 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						elem = htmlElement.create("label", {parent: elemMain, value: "TODO", attributes: {class: "panel-output"}});
 					} else {
 						var elemWrapper = htmlElement.create("div", {parent: elemMain});
-						elem = htmlElement.create("input", {parent: elemWrapper, 
-							attributes: {'ng-model-onblur': null, 'sd-post-data': null}});
+						var validations = [];
+
+						if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
+							elem = htmlElement.create("textarea", {parent: elemWrapper});
+							if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
+								elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
+							}
+							if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
+								elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
+							}
+						} else {
+							elem = htmlElement.create("input", {parent: elemWrapper});
+						}
+
+						elem.attributes["ng-model-onblur"] = null;
+						elem.attributes["sd-post-data"] = null;
+
+						if (path.properties["InputPreferences_mandatory"] != undefined && 
+								path.properties["InputPreferences_mandatory"] == "true") {
+							validations.push({type: "ng-required", msg: "Required"});
+						}
+
 						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
 							elem.attributes['type'] = "checkbox";
 							elem.attributes['class'] = "panel-checkbox";
@@ -173,14 +200,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							elem.attributes['class'] = "panel-input";
 							var pattern = getValidationPattern(path);
 							if (pattern) {
-								var id = "id" + Math.floor((Math.random() * 100000) + 1);
-								var showExpr = "form." + id + ".$error.pattern";
-								elem.attributes['id'] = id;
-								elem.attributes['name'] = id;
-								elem.attributes['ng-pattern'] = pattern;
-
-								htmlElement.create("div", {parent: elemWrapper, value: "Not Valid", 
-									attributes: {style: "color:red", "ng-show": showExpr}});
+								validations.push({type: "ng-pattern", value: pattern, msg: "Not Valid"});
 							}
 							elem.attributes['maxlength'] = getMaxLength(path);
 
@@ -189,7 +209,36 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								elem.attributes[cDirective] = null;
 							}
 						}
+
+						if (validations.length > 0) {
+							var id = "id" + Math.floor((Math.random() * 100000) + 1);
+							elem.attributes['id'] = id;
+							elem.attributes['name'] = id;
+
+							for (var i = 0; i < validations.length; i++) {
+								elem.attributes[validations[i].type] = validations[i].value;
+								var showExpr = "form." + id + ".$error." + validations[i].type.split("-")[1];
+								htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+									attributes: {class: "invalid-msg", "ng-show": showExpr}});
+							}
+						}
 					}
+				}
+
+				if(path.properties["InputPreferences_styleClass"] != undefined) {
+					var clazz = path.properties["InputPreferences_styleClass"];
+					if (elem.attributes['class']) {
+						clazz = clazz + " " + elem.attributes['class'];	
+					}
+					elem.attributes['class'] = clazz;
+				}
+
+				if(path.properties["InputPreferences_style"] != undefined) {
+					var style = path.properties["InputPreferences_style"] + ";";
+					if (elem.attributes['style']) {
+						style = style + " " + elem.attributes['style'];	
+					}
+					elem.attributes['style'] = style;
 				}
 
 				elem.attributes['ng-model'] = options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel;
@@ -197,6 +246,13 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			return elemMain;
 		};
+
+		/*
+		 * 
+		 */
+		function isReadonly(path) {
+			return path.properties["InputPreferences_readonly"] == "true" || path.readonly;
+		}
 
 		/*
 		 * 
@@ -324,20 +380,61 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					// Prefix
 					var elemPrimPrefixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-prefix-column"}});
+					addPrefix(elemPrimPrefixTd, children[i]);
 
 					// Input
 					var elemPrimInputTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-input-column"}});
 					elemPrimInputTd.children.push(elemPrimitive.children[1]);
 
-					// Prefix
+					// Suffix
 					var elemPrimSuffixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-suffix-column"}});
+					addSuffix(elemPrimSuffixTd, children[i]);
 				} else {
 					renderedPrimitivesCount = 0;
 					createPrimitiveContainer = true;
 					generatePath(parent, children[i]);
 				}
 			}
+		}
 
+		/*
+		 * 
+		 */
+		function addPrefix(parent, path) {
+			var prefix = path.properties["InputPreferences_prefix"];
+			var prefixKey = path.properties["InputPreferences_prefixKey"];
+
+			var value;
+			if (prefixKey != null && prefixKey != "") {
+				// TODO
+				value = prefixKey;
+			} else {
+				value = prefix;
+			}
+			
+			if (value) {
+				htmlElement.create("label", {parent: parent, value: value, attributes: {class: "panel-output"}});
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function addSuffix(parent, path) {
+			var suffix = path.properties["InputPreferences_suffix"];
+			var suffixKey = path.properties["InputPreferences_suffixKey"];
+
+			var value;
+			if (suffixKey != null && suffixKey != "") {
+				// TODO
+				value = suffixKey;
+			} else {
+				value = suffix;
+			}
+			
+			if (value) {
+				htmlElement.create("label", {parent: parent, value: value, attributes: {class: "panel-output"}});
+			}
 		}
 
 		/*
