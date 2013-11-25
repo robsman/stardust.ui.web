@@ -497,7 +497,8 @@ public class XSDInheritanceTest
       URL location = XsdSchemaUtils.class.getResource(path);
       try
       {
-         return ModelService.loadSchema(location.toString());
+         ModelService service = new ModelService();
+         return service.loadSchema(location.toString());
       }
       catch (IOException e)
       {
@@ -570,8 +571,4 @@ public class XSDInheritanceTest
          return "";
       }
    }
-
-
-
-
 }
