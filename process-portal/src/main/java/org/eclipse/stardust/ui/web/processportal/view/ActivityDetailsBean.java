@@ -260,13 +260,26 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       else if (SpiUtils.DEFAULT_MANUAL_ACTIVITY_CONTROLLER == interactionController)
       {
-         if (HTML_BASED && !isSingleDocumentCase(activity))
+         if (isHTMLBased(activity))
          {
             interactionController = new ManualActivityIframeInteractionController();
          }
       }
 
       return interactionController;
+   }
+   
+   /**
+    * @return
+    */
+   public static boolean isHTMLBased(Activity activity)
+   {
+      if (HTML_BASED && !isSingleDocumentCase(activity))
+      {
+         return true;
+      }
+
+      return false;
    }
 
    /**
@@ -2015,30 +2028,38 @@ public class ActivityDetailsBean extends UIComponentBean
       Map<String, Serializable> outDataValues = null;
 
       ActivityInstance ai = activityInstance;
+      String contextId = interactionController.getContextId(ai);
 
-      if (singleDocumentCase)
+      if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId) && !isHTMLBased(ai.getActivity()))
       {
-         // If not 'savable' means only IN Data Mapping, So no Out Data
-         if (documentHandlerBean.isSavable())
+         if (singleDocumentCase)
          {
-            dataAvailable = false;
-            documentHandlerBean.save(new ICallbackHandler()
+            // If not 'savable' means only IN Data Mapping, So no Out Data
+            if (documentHandlerBean.isSavable())
             {
-               public void handleEvent(EventType eventType)
+               dataAvailable = false;
+               documentHandlerBean.save(new ICallbackHandler()
                {
-                  if (EventType.APPLY == eventType)
+                  public void handleEvent(EventType eventType)
                   {
-                     Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
-
-                     // Even Annotations needs to be cleared
-                     document.setDocumentAnnotations(null);
-                     
-                     Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
-                     outDataValues.put(singleDocumentDatgaMapping.getId(), document);
-                     retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
+                     if (EventType.APPLY == eventType)
+                     {
+                        Document document = ((JCRDocument) documentHandlerBean.getDocumentContentInfo()).getDocument();
+   
+                        // Even Annotations needs to be cleared
+                        document.setDocumentAnnotations(null);
+                        
+                        Map<String, Serializable> outDataValues = new HashMap<String, Serializable>();
+                        outDataValues.put(singleDocumentDatgaMapping.getId(), document);
+                        retrieveOutDataMappingContinue(releaseInteraction, mainCallback, outDataValues);
+                     }
                   }
-               }
-            });
+               });
+            }
+         }
+         else if (null != activityForm)
+         {
+            outDataValues = (Map)activityForm.retrieveData();
          }
       }
       else
@@ -2103,8 +2124,8 @@ public class ActivityDetailsBean extends UIComponentBean
             if (null != interactionController)
             {
                String contextId = interactionController.getContextId(activityInstance);
-
-               if (isSingleDocumentCase(activityInstance.getActivity()))
+               
+               if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId) && !isHTMLBased(activity))
                {
                   FormGenerationPreferences formPref = new FormGenerationPreferences(
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout(),
