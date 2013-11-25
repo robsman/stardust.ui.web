@@ -63,6 +63,7 @@ body, table {
    color: #000000;
    padding: 2px 5px;
    text-align: left;
+   vertical-align: top;
 }
 
 .panel-list-toolbar-tbl-cell {

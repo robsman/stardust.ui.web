@@ -82,14 +82,22 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 			elemAddButton.attributes["href"] = "";
-			elemAddButton.attributes["ng-click"] = "addToList('" + path.fullXPath + "')";
+			if (isReadonly(path)) {
+				elemAddButton.attributes["disabled"] = true;
+			} else {
+				elemAddButton.attributes["ng-click"] = "addToList('" + path.fullXPath + "')";
+			}
 			htmlElement.create("img", {parent: elemAddButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/add.png"}});
 			
 			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 			elemRemoveButton.attributes["href"] = "";
-			elemRemoveButton.attributes["ng-click"] = "removeFromList('" + path.fullXPath + "')";
+			if (isReadonly(path)) {
+				elemRemoveButton.attributes["disabled"] = true;
+			} else {
+				elemRemoveButton.attributes["ng-click"] = "removeFromList('" + path.fullXPath + "')";
+			}
 			htmlElement.create("img", {parent: elemRemoveButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/delete.png"}});
 
@@ -107,7 +115,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			elemTBodyTr.attributes["ng-class"] = "{'panel-list-tbl-row-sel': " 
 				+ loopVar + ".$$selected, 'panel-list-tbl-row': !" + loopVar + ".$$selected}";
 			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + convertFullIdToBinding(path);
-			elemTBodyTr.attributes["ng-click"] = "selectListItem($event, " + loopVar + ")";
+			if (!isReadonly(path)) {
+				elemTBodyTr.attributes["ng-click"] = "selectListItem($event, " + loopVar + ")";
+			}
 
 			if (path.isPrimitive) { // List of Primitives
 				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
@@ -122,7 +132,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					if (child.isPrimitive) {
 						generatePriEnum(elemTd, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
 					} else {
-						var elemLink = htmlElement.create("a", {parent: elemTd, value: "Edit"});
+						var elemLink = htmlElement.create("a", {parent: elemTd, value: isReadonly(path) ? "View" : "Edit"});
 						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
 					}
 				}
@@ -155,7 +165,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
 				}
 
-				elem.value = "{{" + convertFullIdToBinding(path) + "}}";
+				elem.value = "{{" + (options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel) + "}}";
 			} else {
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain, 
@@ -189,7 +199,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 						if (path.properties["InputPreferences_mandatory"] != undefined && 
 								path.properties["InputPreferences_mandatory"] == "true") {
-							validations.push({type: "ng-required", msg: "Required"});
+							validations.push({type: "ng-required", value: true, msg: "Required"});
 						}
 
 						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
