@@ -3,8 +3,36 @@ body, table {
 	font-size: 11px;
 }
 
-.invalid-msg {
+.panel-invalid-msg {
 	color: red;
+}
+
+.panel-invalid-icon
+{
+	background: url("../../common/images/icons/exclamation.png") no-repeat 0;
+	padding: 1px 16px 1px 16px;
+}
+
+.panel-validation-summary-bar
+{
+	padding: 5px;
+	margin-bottom: 10px;
+	background-color: #FFD966;
+	width: 100%;
+	line-height: 30px;
+}
+
+.panel-validation-summary-bar-img {
+	background: url("../../common/images/icons/exclamation.png") no-repeat 0;
+	padding-left: 20px;
+	padding-top: 2px;
+	padding-bottom: 1px;
+}
+
+.panel-validation-summary-bar-text
+{
+	color: normal;
+	font-weight: bold;
 }
 
 .panel-main {
@@ -70,6 +98,14 @@ body, table {
 	padding-right: 5px;
 }
 
+.panel-list-tbl-input-column {
+	vertical-align: top;
+}
+
+.panel-list-tbl-validation-image-column {
+	vertical-align: top;
+}
+
 .panel-primitive-container {
 	margin-top: 16px;
 }
@@ -105,6 +141,11 @@ body, table {
 	text-align: left;
 	padding: 2px 20px 5px 0;
 	white-space: nowrap;
+}
+
+.panel-validation-image-column {
+	vertical-align: top;
+	padding: 2px 20px 5px 0;
 }
 
 .panel-label {

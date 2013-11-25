@@ -41,6 +41,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemForm = htmlElement.create("form", {attributes: {name: "form"}});
 			var elemMain = htmlElement.create("div", {parent: elemForm, attributes: {class: "panel-main"}});
 
+			// Validation
+			var showExpr = "form.$invalid";
+			var elemValidationBar = htmlElement.create("div", {parent: elemMain, 
+				attributes: {class: "panel-validation-summary-bar", "ng-show": showExpr}});
+			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "panel-validation-summary-bar-img"}});
+			htmlElement.create("span", {parent: elemValidationBar, value: "Form contains error(s).", 
+				attributes: {class: "panel-validation-summary-bar-text"}});
+
+			// Generate
 			generateChildren(elemMain, paths);
 
 			var html = elemForm.toHtml();
@@ -130,7 +139,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
 
 					if (child.isPrimitive) {
-						generatePriEnum(elemTd, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
+						var elemPrimitive = generatePriEnum(null, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
+						if (elemPrimitive.children.length > 1) { // Control with Validation
+							var elemWrapperTr = htmlElement.create("tr", {parent: htmlElement.create("table", {parent: elemTd})});
+							
+							var elemWrapperTd1 = htmlElement.create("td", {parent: elemWrapperTr, 
+								attributes: {class: "panel-list-tbl-input-column"}});
+							elemWrapperTd1.children.push(elemPrimitive.children[0]);
+							
+							var elemWrapperTd2 = htmlElement.create("td", {parent: elemWrapperTr, 
+								attributes: {class: "panel-list-tbl-validation-image-column"}});
+							elemWrapperTd2.children.push(elemPrimitive.children[1]);
+						} else { // Only Control no Validation
+							elemTd.children.push(elemPrimitive.children[0]);
+						}
 					} else {
 						var elemLink = htmlElement.create("a", {parent: elemTd, value: isReadonly(path) ? "View" : "Edit"});
 						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
@@ -229,8 +251,12 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								elem.attributes[validations[i].type] = validations[i].value;
 								var showExpr = "form." + id + ".$error." + validations[i].type.split("-")[1];
 								htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-									attributes: {class: "invalid-msg", "ng-show": showExpr}});
+									attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 							}
+
+							var showExpr = "form." + id + ".$invalid";
+							htmlElement.create("span", {parent: elemMain, 
+								attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 						}
 					}
 				}
@@ -399,6 +425,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					// Suffix
 					var elemPrimSuffixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-suffix-column"}});
 					addSuffix(elemPrimSuffixTd, children[i]);
+					
+					var elemValidationImgTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-validation-image-column"}});
+					if (elemPrimitive.children[2] != undefined) {
+						elemValidationImgTd.children.push(elemPrimitive.children[2]);
+					}
 				} else {
 					renderedPrimitivesCount = 0;
 					createPrimitiveContainer = true;
