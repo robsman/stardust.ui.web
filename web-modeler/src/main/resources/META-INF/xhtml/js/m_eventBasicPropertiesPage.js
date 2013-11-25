@@ -209,7 +209,12 @@ define(
 						this.participantOutput.show();
 						m_utils.jQuerySelect("label[for='interruptingInput']").show();
 					}
-
+					//TODO:ZZM - Normalize logic amongst conditions.
+					if(this.getModelElement().eventType===m_constants.START_EVENT_TYPE){
+						this.interruptingInput.hide();
+						m_utils.jQuerySelect("label[for='interruptingInput']").hide();
+					}
+					
 					this.setInterrupting(this.getModelElement().interrupting);
 					this.setCatching(!this.getModelElement().throwing);
 					this.setThrowing(this.getModelElement().throwing);
