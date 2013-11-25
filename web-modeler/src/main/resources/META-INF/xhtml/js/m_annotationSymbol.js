@@ -9,10 +9,16 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_modelerUtils" ],
+		[ "bpm-modeler/js/m_utils", 
+		  "bpm-modeler/js/m_constants", 
+		  "bpm-modeler/js/m_command", 
+		  "bpm-modeler/js/m_messageDisplay",
+		  "bpm-modeler/js/m_canvasManager", 
+		  "bpm-modeler/js/m_symbol", 
+		  "bpm-modeler/js/m_modelerUtils",
+		  "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_command, m_messageDisplay,
-				m_canvasManager, m_symbol, m_modelerUtils) {
+				m_canvasManager, m_symbol, m_modelerUtils,m_i18nUtils) {
 			return {
 				create : function(diagram) {
 					var annotationSymbol = new AnnotationSymbol();
@@ -47,7 +53,7 @@ define(
 				this.rect = null;
 				this.width = m_constants.ANNOTATION_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.ANNOTATION_SYMBOL_DEFAULT_HEIGHT;
-				this.content = "Enter an annotation";
+				this.content = m_i18nUtils.getProperty("modeler.diagram.lane.symbol.annotation.default");
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
