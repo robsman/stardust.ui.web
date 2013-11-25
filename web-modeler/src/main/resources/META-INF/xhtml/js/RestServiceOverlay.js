@@ -796,42 +796,27 @@ define(
 				
 				RestServiceOverlay.prototype.getHttpBasicAuthRawPwd = function() {
 					
-					if(this.httpBasicAuthPwdInput.val().indexOf("&") != -1
-							|| this.httpBasicAuthPwdInput.val().indexOf("<")!= -1
-							|| this.httpBasicAuthPwdInput.val().indexOf(">") != -1
-							|| this.httpBasicAuthPwdInput.val().indexOf("\"") != -1
-							|| this.httpBasicAuthPwdInput.val().indexOf("'") != -1) {
-						
-						var rawPwd = this.httpBasicAuthPwdInput.val();
-							rawPwd = rawPwd.replace(/&/g, "&amp;");
-							rawPwd = rawPwd.replace(/</g, "&lt;") ;
-							rawPwd = rawPwd.replace(/>/g, "&gt;");
-							rawPwd = rawPwd.replace(/"/g, "&quot;");
-							rawPwd = rawPwd.replace(/'/g, "&apos;");
-							rawPwd = "RAW(" + rawPwd + ")";
-							
+					if(!m_utils.isEmptyString(this.httpBasicAuthPwdInput.val()))
+					{
+						var rawPwd = m_utils.encodeXmlPredfinedCharacters(this.httpBasicAuthPwdInput.val());
+							rawPwd = "RAW(" + rawPwd + ")";	
 						return rawPwd;
 					}
-					
 					return this.httpBasicAuthPwdInput.val();
 				};
 				
 				
 				RestServiceOverlay.prototype.getHttpBasicAuthOriginePwd = function(rawPwd) {	
 					
-					if(rawPwd.indexOf("RAW") == 0) {
+					if(!m_utils.isEmptyString(rawPwd))
+					{
 						var firstIdex = rawPwd.indexOf("(");
 						var lastIdex = rawPwd.lastIndexOf(")");
-						rawPwd = rawPwd.substring(firstIdex+1,lastIdex);
-						rawPwd = rawPwd.replace(/&amp;/g, "&");
-						rawPwd = rawPwd.replace(/&lt;/g, "<") ;
-						rawPwd = rawPwd.replace(/&gt;/g, ">");
-						rawPwd = rawPwd.replace(/&quot;/g, "\"");
-						rawPwd = rawPwd.replace(/&apos;/g, "'");
-						return rawPwd;
+						var originePwd = rawPwd.substring(firstIdex+1,lastIdex);
+						originePwd = m_utils.decodeXmlPredfinedCharacters(originePwd);
+						return originePwd;
 					}
-					
-					return rawPwd;
+					return this.httpBasicAuthPwdInput.val();
 				};
 
 				/**

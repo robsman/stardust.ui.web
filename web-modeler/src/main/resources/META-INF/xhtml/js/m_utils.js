@@ -155,6 +155,8 @@ define(
 				
 				encodeXmlPredfinedCharacters : encodeXmlPredfinedCharacters, 
 				
+				decodeXmlPredfinedCharacters : decodeXmlPredfinedCharacters,
+				
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
 				},
@@ -1174,6 +1176,17 @@ define(
 				content = content.replace(new RegExp("<", 'g'), "&lt;");
 				content = content.replace(new RegExp("\"", 'g'), "&quot;");
 				content = content.replace(new RegExp("'", 'g'), "&apos;");
+				
+				return content;
+			}
+			
+			function decodeXmlPredfinedCharacters(content) {
+				
+				content = content.replace(new RegExp("&amp;", 'g'), "&");
+				content = content.replace(new RegExp("&gt;", 'g'), ">");
+				content = content.replace(new RegExp("&lt;", 'g'), "<");
+				content = content.replace(new RegExp("&quot;", 'g'), "\"");
+				content = content.replace(new RegExp("&apos;", 'g'), "'");
 				
 				return content;
 			}
