@@ -157,8 +157,51 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			runInAngularContext(function($scope){
 				$scope[BINDING_PREFIX] = bindings;
 				jQuery.extend($scope[BINDING_PREFIX], data);
+				
+				massageInData($scope[BINDING_PREFIX]);
 			});
 		};
+
+		/*
+		 * 
+		 */
+		function massageInData(data) {
+			addIfBlankArray(dataMappings, data);
+		}
+		
+		/*
+		 * 
+		 */
+		function addIfBlankArray(arrPaths, data) {
+			for (var key in arrPaths) {
+				if (arrPaths[key].readonly) {
+					continue;
+				}
+				
+				if (arrPaths[key].isList) {
+					var parts = arrPaths[key].fullXPath.substring(1).split("/");
+					var currentBinding = data;
+					for(var i = 0; i < parts.length; i++) {
+						currentBinding = currentBinding[parts[i]];
+						if (currentBinding == undefined) {
+							break;
+						}
+					}
+
+					if (currentBinding) {
+						if (currentBinding.length == 0) {
+							currentBinding.push({});
+						} else {
+							if (arrPaths[key].children) {
+								addIfBlankArray(arrPaths[key].children, data);
+							}
+						}
+					}
+				} else if (arrPaths[key].children) {
+					addIfBlankArray(arrPaths[key].children, data);
+				}
+			}
+		}
 
 		/*
 		 * 
@@ -207,6 +250,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 			if (currentBinding) {
 				removeSelectedElements(currentBinding);
+				if (currentBinding.length == 0) {
+					currentBinding.push({});
+				}
 			}
 		}
 
