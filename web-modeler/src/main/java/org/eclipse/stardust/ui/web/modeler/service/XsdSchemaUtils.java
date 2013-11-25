@@ -104,7 +104,8 @@ public final class XsdSchemaUtils
       try
       {
          URL location = XsdSchemaUtils.class.getResource("TestSchema.xsd");
-         XSDSchema schema = ModelService.loadSchema(location.toString());
+         ModelService service = new ModelService();
+         XSDSchema schema = service.loadSchema(location.toString());
          /*
          System.out.println(toPrettyString(toSchemaJson(schema, "ExtendedRGB")));
          System.out.println(toPrettyString(toSchemaJson(schema, "ExtendedColor")));
@@ -800,7 +801,7 @@ public final class XsdSchemaUtils
          if (type != null)
          {
             JsonObject json = doSwitch(type);
-   
+
             // now overwrite properties
             json.addProperty("name", attribute.getName());
             if (includeIcon)
@@ -808,14 +809,14 @@ public final class XsdSchemaUtils
                json.addProperty("icon", XsdIcon.AttributeDeclaration.getSimpleName());
             }
             json.addProperty("classifier", "attribute");
-   
+
             if (type != attribute.getAnonymousTypeDefinition())
             {
                json.addProperty("type", getPrefixedName(type));
             }
-   
+
             addAnnotations(json, attribute.getAnnotation());
-   
+
             return json;
          }
          return null;
