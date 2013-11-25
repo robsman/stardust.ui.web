@@ -180,6 +180,9 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+				
+				m_utils.jQuerySelect("#addParameterDefinitionButton")
+					.attr("title",m_i18nUtils.getProperty("modeler.element.properties.commonProperties.add"));
 			}
 			/**
 			 * 

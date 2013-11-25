@@ -930,7 +930,7 @@ define(
 							content += "<td class='outputActionsCell'>";
 							content += "<div class='clearMappingAction' title='" + clearMappingTooltip + "'></div>";
 							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class='deleteAction' title='" + "Delete" + "'></div>";
+								content += "<div class='deleteAction' title='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete") + "'></div>";
 							}
 							content += "</td>";
 							content += "</tr>";
