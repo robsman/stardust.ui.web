@@ -886,7 +886,8 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
+							if (conn && conn.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
+									&& connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
 									&& !m_utils
 											.isIntermediateEvent(connection.fromAnchorPoint.symbol)) {
 								//do nothing
