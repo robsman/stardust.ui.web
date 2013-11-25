@@ -2675,7 +2675,7 @@ public class ModelService
     * <p>
     * Should be removed after repackaging of XSDSchema for runtime is dropped.
     */
-   public static XSDSchema loadSchema(String location) throws IOException
+   public XSDSchema loadSchema(String location) throws IOException
    {
       Parameters parameters = Parameters.instance();
       Map<String, Object> loadedSchemas = null;
@@ -2699,7 +2699,7 @@ public class ModelService
       URI uri = URI.createURI(location);
       if (uri.scheme() == null)
       {
-         resourceSet.setURIConverter(new WebModelerUriConverter());
+         resourceSet.setURIConverter(getClasspathUriConverter());
          if (location.startsWith("/"))
          {
             location = location.substring(1);
