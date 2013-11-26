@@ -687,7 +687,7 @@ define(
 					this.setSecondAnchorPoint(this.fromAnchorPoint
 							.createFlippedClone(this.diagram));
 					m_messageDisplay
-							.showMessage("Select second anchor point for connection.");
+							.showMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.info.connSelAchorPoint"));
 				};
 
 				/**

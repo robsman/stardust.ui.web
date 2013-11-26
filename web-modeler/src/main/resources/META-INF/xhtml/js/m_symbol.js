@@ -14,10 +14,11 @@ define(
 				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_drawable",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_modelerUtils",
+ 				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 				m_drawable, m_commandsController, m_command, m_propertiesPanel,
-				m_modelerUtils) {
+				m_modelerUtils, m_i18nUtils) {
 
 			return {
 				createSymbol : function() {
@@ -172,7 +173,7 @@ define(
 						left : left,
 						right : right,
 						top : top,
-						bottom : bottom,
+						bottom : bottom
 					};
 				};
 
@@ -2711,7 +2712,7 @@ define(
 							}
 						}
 						this.dragConnection.createUpdateCommand(changes);
-						m_messageDisplay.showMessage("Connection updated");
+						m_messageDisplay.showMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.info.connUpdated"));
 					}
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
