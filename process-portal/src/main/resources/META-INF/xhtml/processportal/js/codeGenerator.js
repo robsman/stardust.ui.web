@@ -538,7 +538,36 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function getI18NLabel(path) {
-			return path.id; // TODO
+			// TODO
+			return convertToLabel(path.id);
 		};
+
+		/*
+		 * 
+		 */
+		function convertToLabel(key) {
+			var label = "";
+			for (var i = 0; i < key.length; i++)
+		      {
+		         if (i == 0)
+		         {
+		            label += key.charAt(i).toUpperCase();
+		         }
+		         else if (key.charAt(i) != '.') // Ignore dots in the key 
+		         {
+		        	label += isUpperCase(key.charAt(i)) ? " " : "";
+		        	label += key.charAt(i);
+		         }
+		      }
+			
+			return label;
+		};
+
+		/*
+		 * 
+		 */
+		function isUpperCase(char) {
+			return char == char.toUpperCase();
+		}
 	};
 });
