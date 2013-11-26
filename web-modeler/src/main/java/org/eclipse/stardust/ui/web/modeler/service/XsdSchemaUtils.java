@@ -333,7 +333,8 @@ public final class XsdSchemaUtils
             {
                XSDImport xsdImport = (XSDImport) item;
                String location = xsdImport.getSchemaLocation();
-               if (location.startsWith(StructuredDataConstants.URN_INTERNAL_PREFIX))
+               if (location != null
+                     && location.startsWith(StructuredDataConstants.URN_INTERNAL_PREFIX))
                {
                   location = location.substring(StructuredDataConstants.URN_INTERNAL_PREFIX.length());
                   locations.addProperty(xsdImport.getNamespace(), location);
