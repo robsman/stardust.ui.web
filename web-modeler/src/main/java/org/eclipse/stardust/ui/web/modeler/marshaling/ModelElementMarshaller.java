@@ -1853,83 +1853,30 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                   }
                }
             }
-         else if (null != data.getType()
-               && data.getType().getId().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-         {
-            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
-            String uri = AttributeUtil.getAttributeValue(data,
-                  IConnectionManager.URI_ATTRIBUTE_NAME);
-            if (null != model)
+            else if (dataTypeId.equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
-               IConnectionManager manager = model.getConnectionManager();
-               if (manager != null & uri != null)
+               String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
+               if (type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
                {
-                  EObject eObject = manager.find(uri);
-                  if (eObject instanceof EObjectDescriptor)
+                  String typeDeclarationId = AttributeUtil.getAttributeValue(data,
+                        StructuredDataConstants.TYPE_DECLARATION_ATT);
+
+                  if (!StringUtils.isEmpty(typeDeclarationId))
                   {
-                     eObject = ((EObjectDescriptor) eObject).getEObject();
+                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(
+                           typeDeclarationId);
+
+                     String fullId = getModelBuilderFacade().createFullId(model, typeDeclaration);
+
+                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+                     dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, fullId);
                   }
-                  ModelType containingModel = ModelUtils.findContainingModel(eObject);
-
-                  String fullId = getModelBuilderFacade().createFullId(containingModel,
-                        eObject);
-
-                  dataJson.addProperty(
-                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
                else
                {
-                  String typeDeclarationId = AttributeUtil.getAttributeValue(data,
-                        "carnot:engine:dms:resourceMetadataSchema");
-
-                  if ( !StringUtils.isEmpty(typeDeclarationId))
-                  {
-                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
-                           .getTypeDeclaration(typeDeclarationId);
-
-                     String fullId = getModelBuilderFacade().createFullId(model,
-                           typeDeclaration);
-
-                     dataJson.addProperty(
-                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-                  }
+                  dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
                }
             }
-         }
-         else if (null != data.getType()
-               && data.getType().getId().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
-         {
-            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-            String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
-            if(type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
-            {
-            	String typeDeclarationId = AttributeUtil.getAttributeValue(data,
-                        StructuredDataConstants.TYPE_DECLARATION_ATT);
-
-                  if ( !StringUtils.isEmpty(typeDeclarationId))
-                  {
-                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations()
-                           .getTypeDeclaration(typeDeclarationId);
-
-                     String fullId = getModelBuilderFacade().createFullId(model,
-                           typeDeclaration);
-
-                     dataJson.addProperty(
-                           ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-                     dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, fullId);
-                  }
-            }
-            else
-            {
-            	dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);            	
-            }
-         }
-         else if (null != data.getType())
-         {
-            dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, data.getType()
-                  .getId());
          }
       }
 
