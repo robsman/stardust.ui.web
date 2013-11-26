@@ -21,6 +21,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.error.InvalidArgumentException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
@@ -36,12 +38,16 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
+import com.icesoft.faces.context.effects.JavascriptContext;
+
 /**
  * @author Subodh.Godbole
  *
  */
 public class ManualActivityIframeInteractionController implements IActivityInteractionController, ViewEventAwareInteractionController
 {
+   private static final Logger trace = LogManager.getLogger(ManualActivityIframeInteractionController.class);
+   
    public static final String PANEL_URI = "/plugins/processportal/manualActivityPanel.html";
 
    /* (non-Javadoc)
@@ -97,17 +103,44 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if ((ClosePanelScenario.SUSPEND == scenario) || (ClosePanelScenario.ABORT == scenario))
-      {
-         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
-         if (null != registry)
-         {
-            // destroy interaction resource
-            registry.unregisterInteraction(Interaction.getInteractionId(ai));
-         }
-      }
+      FacesContext facesContext = FacesContext.getCurrentInstance();
 
-      return true;
+      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      {
+         trace.info("Triggering asynchronous close of activity panel ...");
+
+         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+               InteractionRegistry.BEAN_ID);
+
+         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
+         if ((null != interaction) && (Interaction.Status.Complete == interaction.getStatus()))
+         {
+            // out data mapping was already performed
+            return true;
+         }
+
+         JavascriptContext.addJavascriptCall(facesContext,
+               "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
+                     + scenario.getId() + "');");
+
+         // close panel asynchronously after iFrame page responds via JavaScript
+         return false;
+      }
+      else
+      {
+         // destroy interaction
+         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+               InteractionRegistry.BEAN_ID);
+
+         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
+         if (null != interaction)
+         {
+            registry.unregisterInteraction(interaction.getId());
+         }
+
+         // synchronously close panel as no custom post processing needs to occur
+         return true;
+      }
    }
 
    /* (non-Javadoc)
@@ -129,6 +162,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#getOutDataValues(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
     */
+   @SuppressWarnings("rawtypes")
    public Map getOutDataValues(ActivityInstance ai)
    {
       if (ai == null)
