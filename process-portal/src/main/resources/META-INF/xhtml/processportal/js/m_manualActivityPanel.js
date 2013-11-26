@@ -59,6 +59,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.addToList = addToList;
 				$scope.removeFromList = removeFromList;
 				$scope.selectListItem = selectListItem;
+				$scope.isFormValid = isFormValid;
 			});
 		};
 
@@ -267,6 +268,14 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					break;
 				}
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function isFormValid() {
+			var $scope = angular.element(document).scope();
+			return !$scope.form.$invalid;
 		}
 
 		/*

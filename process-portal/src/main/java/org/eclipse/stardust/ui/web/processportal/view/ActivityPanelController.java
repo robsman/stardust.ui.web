@@ -16,7 +16,6 @@ import static org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExec
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -33,7 +32,9 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityIframeInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -44,19 +45,18 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.TypedDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.TypedDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
-
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 /**
  * @author Robert.Sauer
@@ -177,7 +177,9 @@ public class ActivityPanelController extends UIComponentBean
          {
             ClosePanelScenario scenario = (ClosePanelScenario) ClosePanelScenario.getKey(
                   ClosePanelScenario.class, commandId);
-   
+
+            checkForHTMLBasedManualActivity(scenario);
+
             if (ClosePanelScenario.COMPLETE == scenario)
             {
                activityDetailsBean.completeCurrentActivity();
@@ -214,6 +216,43 @@ public class ActivityPanelController extends UIComponentBean
       }
    }
 
+   /**
+    * @param scenario
+    */
+   private void checkForHTMLBasedManualActivity(ClosePanelScenario scenario)
+   {
+      try
+      {
+         if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+         {
+            IActivityInteractionController interactionController = ActivityDetailsBean
+                  .getInteractionController(activityDetailsBean.getActivityInstance().getActivity());
+            
+            // HTML Based Manual Activity
+            if (null != interactionController
+                  && interactionController instanceof ManualActivityIframeInteractionController)
+            {
+               org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = 
+                  (org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry) ManagedBeanUtils
+                     .getManagedBean(InteractionRegistry.BEAN_ID);
+      
+               org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = registry
+                     .getInteraction(org.eclipse.stardust.ui.web.processportal.interaction.Interaction
+                           .getInteractionId(activityDetailsBean.getActivityInstance()));
+      
+               if (null != interaction)
+               {
+                  interaction.setStatus(org.eclipse.stardust.ui.web.processportal.interaction.Interaction.Status.Complete);
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Error in handling externally triggered close of HTML Manual activity panel", e);
+      }
+   }
+   
    @Override
    public void initialize()
    {
