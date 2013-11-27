@@ -74,7 +74,6 @@ public abstract class PopupUIComponentBean extends UIComponentBean
     */
    public void closePopup()
    {
-	  setFromlaunchPanels(false);
       View focusView = PortalApplication.getInstance().getFocusView();
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_ACTIVATED))
@@ -88,6 +87,13 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       // FOR HTML5
       String popupScript = "parent.BridgeUtils.Dialog.close();";
       PortalApplication.getInstance().addEventScript(popupScript);
+      
+      if (isFromlaunchPanels())
+      {
+         PortalApplication.getInstance().renderActiveView();
+      }
+      
+      setFromlaunchPanels(false);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))
       {

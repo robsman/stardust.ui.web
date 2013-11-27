@@ -901,6 +901,15 @@ public class PortalApplication
    }
 
    /**
+    * 
+    */
+   public void renderActiveView()
+   {
+      String script = "parent.BridgeUtils.View.syncActiveView(true);";
+      addEventScript(script);
+   }
+   
+   /**
     * If UI is already Pinned, Restore Pin View and Focus View too
     * And then Pin UI again on Focus View with new mode
     * @param mode
@@ -939,7 +948,11 @@ public class PortalApplication
       {
          script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
       }
-      addEventScript(script);
+      if (StringUtils.isNotEmpty(script))
+      {
+         addEventScript(script);
+      }
+      
    }
 
    /**
