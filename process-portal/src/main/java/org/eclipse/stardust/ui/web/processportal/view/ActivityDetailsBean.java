@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -289,18 +291,24 @@ public class ActivityDetailsBean extends UIComponentBean
    @SuppressWarnings("unchecked")
    public static boolean isSingleDocumentCase(Activity activity)
    {
-      // TODO
       List<Object> allMappings = activity.getApplicationContext("default").getAllDataMappings();
-      if (allMappings.size() > 1)
+      Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activity.getModelOID());
+
+      Set<String> docDataMappingIds = new HashSet<String>(); 
+      for (Object obj : allMappings)
       {
-         return false;
+         DataMapping dm = (DataMapping)obj;
+         if (ModelUtils.isDocumentType(model, dm))
+         {
+            docDataMappingIds.add(dm.getId());
+         }
+         else
+         {
+            return false;
+         }
       }
-      else
-      {
-         DataMapping dm = (DataMapping)allMappings.get(0);
-         Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activity.getModelOID());
-         return ModelUtils.isDMSType(model, dm);
-      }
+
+      return docDataMappingIds.size() == 1;
    }
    
    /**
