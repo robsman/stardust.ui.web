@@ -142,7 +142,7 @@ define(
 								$scope.javaClassRequiredError = false;
 								$scope.javaClassBinding = false;
 							}
-							$scope.noEnumFoundError = false;
+							$scope.noEnumFoundError = false; // Valid on server roundtrip, not on pageLoad
 						}, m_utils.jQuerySelect("#configurationTab").get(0));
 						
 						if(removeTypeDeclaration){
@@ -165,7 +165,7 @@ define(
 							if (newValue !== oldValue && $scope.form.javaClassInput.$valid) {
 								if (newValue == "" || newValue == undefined) {
 									$scope.javaClassInput = undefined;
-									$scope.javaClassRequiredError = true;
+									$scope.javaClassRequiredError = true; // For empty java class, show error
 									$scope.noEnumFoundError = false;
 								}else{
 									$scope.javaClassRequiredError = false;
@@ -497,10 +497,10 @@ define(
 								$scope.maxLength = maxVal;
 							} else {
 								if($scope.javaClassBinding == true && $scope.javaClassRequiredError == false){
+									//On server roundtrip , for valid java class provided , show No-enum msg
 									$scope.noEnumFoundError = true;
 								}else{
 									$scope.noEnumFoundError = false;
-									$scope.javaClassRequiredError = false;
 								}
 							}
 						}
@@ -557,7 +557,8 @@ define(
 						if (view.bindToJavaSelect.prop("checked")) {
 							$scope.javaClassBinding = true;
 						} else {
-							$scope.javaClassBinding = false;
+							$scope.javaClassBinding = false; //reset java bindling flag.
+							$scope.javaClassRequiredError = false; //reset javaClassRequiredflag, as javaBinding is false
 						}
 					}, m_utils.jQuerySelect("#configurationTab").get(0));
 					
