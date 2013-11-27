@@ -64,6 +64,22 @@ define(
 							.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
 					this.outputBodyAccessPointInput = m_utils
 							.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
+					this.expectedResultSetInput = m_utils
+							.jQuerySelect("#parametersTab #expectedResultSetInput");
+					this.expectedResultSetInput.empty();		
+					this.expectedResultSetInput.append("<option value='SelectList' selected>List</option>");
+					this.expectedResultSetInput.append("<option value='SelectOne'>One</option>");
+					this.expectedResultSetInput.change(function() {
+						if (self.expectedResultSetInput.val() == "SelectList") {
+						self.view.submitModelElementAttributeChange(
+								"stardust:sqlScriptingOverlay::outputType","SelectList");
+						} else if (self.expectedResultSetInput.val() == "SelectOne") {
+							self.view.submitModelElementAttributeChange(
+								"stardust:sqlScriptingOverlay::outputType","SelectOne");
+						}
+						
+					});
+							
 					this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv")
 							.get(0);
 					this.editorAnchor.id = "codeEditorDiv"
@@ -77,7 +93,9 @@ define(
 							.jQuerySelect("#dataSourceTab #connectionTypeSelect");
 					this.databaseTypeSelect = m_utils
 							.jQuerySelect("#dataSourceTab #databaseTypeSelect");
-
+					
+							
+							
 					this.urlInput = m_utils
 							.jQuerySelect("#dataSourceTab #urlInput");
 					this.driverInput = m_utils
@@ -112,7 +130,7 @@ define(
 					this.hostDbConfig = m_utils.jQuerySelect("#hostDbConfig");
 					this.portConfig = m_utils.jQuerySelect("#portConfig");
 					this.dbNameConfig = m_utils.jQuerySelect("#dbNameConfig");
-
+					
 					this.databaseTypeSelect.empty();
 					this.databaseTypeSelect
 							.append("<option value='oracle'>Oracle</option>");
@@ -567,6 +585,9 @@ define(
 							}
 						}
 					});
+					
+					
+					
 					this.update();
 				};
 
@@ -669,6 +690,9 @@ define(
 
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null || this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
+					this.expectedResultSetInput.val("SelectList");
+					this.expectedResultSetInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
 					
 					this.codeEditor
 							.getEditor()
@@ -1038,7 +1062,23 @@ define(
 						sqlQuery = sqlQuery.replace(/</g, "&lt;");
 						sqlQuery = sqlQuery.replace(/>/g, "&gt;");
 					}
-
+					var questionMarkExists=false;
+					
+					
+					if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != "" && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="SelectOne" ) {
+					sqlQuery+="?outputType=SelectOne";
+					}
+					
+					if (sqlQuery != null && sqlQuery != "" && sqlQuery.indexOf('?')!=-1 ) {
+					questionMarkExists=true;
+					}
+					if(questionMarkExists)
+					route += "<to uri=\"sql:"
+							+ sqlQuery
+							+ "&dataSource=#"
+							+ this.getDataSourceName()
+							+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />"
+					else
 					route += "<to uri=\"sql:"
 							+ sqlQuery
 							+ "?dataSource=#"
