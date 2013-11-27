@@ -30,12 +30,14 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 		var bindingPrefix;
 		var bindingData;
+		var i18nCallbackFunc;
 
 		/*
 		 * 
 		 */
-		CodeGenerator.prototype.generate = function(paths, prefix) {
+		CodeGenerator.prototype.generate = function(paths, prefix, i18nCallback) {
 			bindingPrefix = prefix;
+			i18nCallbackFunc = i18nCallback;
 			bindingData = {};
 
 			var elemForm = htmlElement.create("form", {attributes: {name: "form"}});
@@ -55,6 +57,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var html = elemForm.toHtml();
 
 			bindingPrefix = undefined;
+			i18nCallbackFunc = undefined;
 
 			return {html: html, binding: bindingData};
 		};
@@ -447,8 +450,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 			var value;
 			if (prefixKey != null && prefixKey != "") {
-				// TODO
-				value = prefixKey;
+				value = getI18NLabel(prefixKey);
 			} else {
 				value = prefix;
 			}
@@ -467,8 +469,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 			var value;
 			if (suffixKey != null && suffixKey != "") {
-				// TODO
-				value = suffixKey;
+				value = getI18NLabel(suffixKey);
 			} else {
 				value = suffix;
 			}
@@ -535,11 +536,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		};
 
 		/*
-		 * 
+		 * val : path object or string
 		 */
-		function getI18NLabel(path) {
-			// TODO
-			return convertToLabel(path.id);
+		function getI18NLabel(val) {
+			var label;
+
+			if (i18nCallbackFunc) {
+				label = i18nCallbackFunc(val);
+			}
+
+			if (label == undefined || label == null || label == "") {
+				label = convertToLabel(("string" == typeof (val))? val : val.id);
+			}
+
+			return label;
 		};
 
 		/*

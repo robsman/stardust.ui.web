@@ -12,9 +12,11 @@
 package org.eclipse.stardust.ui.web.processportal.service.rest;
 
 import java.io.Serializable;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -29,11 +31,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -52,21 +58,6 @@ public class ManualActivityRestlet
 
    @Context
    protected ServletContext servletContext;
-   
-   /**
-    * @return
-    */
-   private InteractionRegistry getInteractionRegistry()
-   {
-      InteractionRegistry registry = RestControllerUtils.resolveSpringBean(InteractionRegistry.class, servletContext);
-
-      if (null == registry)
-      {
-         throw new WebApplicationException(Status.NOT_FOUND);
-      }
-
-      return registry;
-   }
 
    /**
     * @return
@@ -76,8 +67,7 @@ public class ManualActivityRestlet
    @GET
    public Response dataMappings()
    {
-      InteractionRegistry registry = getInteractionRegistry();
-      Interaction interaction = registry.getInteraction(interactionId);
+      Interaction interaction = getInteraction();
 
       String dataMappingsJson = interaction.getManualActivityPath().toJsonString();
 
@@ -92,8 +82,7 @@ public class ManualActivityRestlet
    @GET
    public Response inData()
    {
-      InteractionRegistry registry = getInteractionRegistry();
-      Interaction interaction = registry.getInteraction(interactionId);
+      Interaction interaction = getInteraction();
 
       Map<String, ? extends Serializable> inData = interaction.getInDataValues();
       JsonObject root = new JsonObject();
@@ -107,8 +96,7 @@ public class ManualActivityRestlet
    @POST
    public void outData(String json)
    {
-      InteractionRegistry registry = getInteractionRegistry();
-      Interaction interaction = registry.getInteraction(interactionId);
+      Interaction interaction = getInteraction();
 
       JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
 
@@ -123,15 +111,14 @@ public class ManualActivityRestlet
    @POST
    public void outData(@PathParam("parameterId") String parameterId, String json)
    {
-      InteractionRegistry registry = getInteractionRegistry();
-      Interaction interaction = registry.getInteraction(interactionId);
+      Interaction interaction = getInteraction();
 
       JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
 
       Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
             interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
 
-      // This will have ony one value, so loop will execute once only
+      // This will have only one value, so loop will execute once only
       for (Entry<String, Serializable> entry : data.entrySet())
       {
          if(null == interaction.getOutDataValues())
@@ -141,5 +128,68 @@ public class ManualActivityRestlet
          
          interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
       }
+   }
+
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("i18n")
+   @GET
+   public Response i18n()
+   {
+      StringBuffer data = new StringBuffer();
+
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+      
+      Model model = getInteraction().getModel();
+      String bundleName = ModelElementUtils.getBundleName(model);
+      if (StringUtils.isNotEmpty(bundleName))
+      {
+         try
+         {
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject());
+
+            String key;
+            Enumeration<String> keys = bundle.getKeys();
+            while (keys.hasMoreElements())
+            {
+               key = keys.nextElement();
+               data.append(key).append("=").append(bundle.getString(key)).append("\n");
+            }
+         }
+         catch (Exception e)
+         {
+            if (trace.isDebugEnabled())
+            {               
+               trace.debug("No resource bundle found for model with ID '" + model.getId() + "'.");
+            }
+         }
+      }
+
+      return Response.ok(data.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+   }
+
+   /**
+    * @return
+    */
+   private Interaction getInteraction()
+   {
+      InteractionRegistry registry = getInteractionRegistry();
+      Interaction interaction = registry.getInteraction(interactionId);
+      return interaction;
+   }
+
+   /**
+    * @return
+    */
+   private InteractionRegistry getInteractionRegistry()
+   {
+      InteractionRegistry registry = RestControllerUtils.resolveSpringBean(InteractionRegistry.class, servletContext);
+
+      if (null == registry)
+      {
+         throw new WebApplicationException(Status.NOT_FOUND);
+      }
+
+      return registry;
    }
 }

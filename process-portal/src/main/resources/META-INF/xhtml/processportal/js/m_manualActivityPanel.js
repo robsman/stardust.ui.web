@@ -46,6 +46,11 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	        interactionEndpoint = urlPrefix + REST_END_POINT + interactionId;
 	        log("Interaction Rest End Point: " + interactionEndpoint);
 	        
+	        InfinityBPMI18N.initPluginProps({
+				pluginName : "manualActivity",
+				singleEndPoint : interactionEndpoint + "/i18n"
+			});
+	        
 	        getData(interactionEndpoint, "/dataMappings", {success: generateMarkup});
 
 			bootstrapAngular();
@@ -145,11 +150,34 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function generateMarkup(json) {
 			dataMappings = json;
 
-			var data = codeGenerator.create().generate(json, BINDING_PREFIX);
+			var data = codeGenerator.create().generate(json, BINDING_PREFIX, i18nLabelProvider);
 			document.getElementsByTagName("body")[0].innerHTML = data.html;
 			
 			bindings = data.binding;
 		};
+
+		/*
+		 * val: path object or string
+		 */
+		function i18nLabelProvider(val) {
+			var key = val;
+
+			if (("string" != typeof (val))) {
+				var parts = val.fullXPath.substring(1).split("/");
+				if (parts.length == 1) { // First Level means Data/DataMapping
+					key = "Data." + val.id + ".Name";
+				} else { // More than 1 level means XSD
+					var prefix = "";
+					for(var i = 0; i < parts.length; i++) {
+						prefix += parts[i] + ".";
+					}
+					key = "StructuredType." + prefix + "Name";
+				}
+			}
+
+			var value = InfinityBPMI18N.manualActivity.getProperty(key);
+			return value;
+		}
 
 		/*
 		 * 
