@@ -76,6 +76,8 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    private String distinctiveId = null;
    private List<SelectItem> enumList = CollectionUtils.newArrayList();
    private Set<TypedXPath> xpaths;
+   private Map<Integer, String> enumValueMap = CollectionUtils.newHashMap();
+   private boolean enumStructuredType = false;
 
    // these are only set in case of structured data (collection values: List, Map)
    private transient ComplexTypeWrapper structuredValue;
@@ -184,7 +186,8 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             if (dataTypeId.equals("struct") && isEnumerationType(model, dataMapping))
             {
                populateEnumValues(model, dataMapping);
-               type = ProcessPortalConstants.ENUM_TYPE;   
+               type = ProcessPortalConstants.ENUM_TYPE;
+               enumStructuredType = true;
             }
             else
             {
@@ -249,6 +252,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             for (String enumVal : enumValList)
             {
                enumList.add(new SelectItem(i.toString(), enumVal));
+               enumValueMap.put(i, enumVal);
                i++;
             }
          }
@@ -420,13 +424,23 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    public void enumValueChangeListener(ValueChangeEvent event)
    {
-      if (event.getNewValue() != null)
+      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
       {
-         setEnumValueList((String[]) event.getNewValue());
+         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         event.queue();
+
+         return;
       }
       else
       {
-         setEnumValueList(null);
+         if (event.getNewValue() != null)
+         {
+            setEnumValueList((String[]) event.getNewValue());
+         }
+         else
+         {
+            setEnumValueList(null);
+         }
       }
    }
 
@@ -458,7 +472,15 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          {
             for (String val : valueList)
             {
-               values.add(Integer.valueOf(val));
+               Integer intVal=Integer.valueOf(val);
+               if (enumStructuredType)
+               {
+                  values.add(enumValueMap.get(intVal));
+               }
+               else
+               {
+                  values.add(Integer.valueOf(val));
+               }
             }
          }
          else
@@ -466,8 +488,17 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             // when there is only single ENUM value filter, using direct approach of
             // this.value like other descriptors
             int intVal = Integer.valueOf(valueList[0].toString());
-            this.value = intVal;
-            this.values.add(intVal); // Set for showing selection on UI
+            Object objVal =  null;
+            if(enumStructuredType)
+            {
+               objVal = enumValueMap.get(intVal);
+            }
+            else
+            {
+               objVal = intVal;
+            }
+            this.value = objVal;
+            this.values.add(objVal); // Set for showing selection on UI
          }
          broadcastChange(value != null ? value : this.values);
       }

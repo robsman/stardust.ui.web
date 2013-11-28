@@ -498,9 +498,16 @@ public class DescriptorFilterUtils
             {
                if (CommonDescriptorUtils.isStructuredData(dataPath))
                {
-                  // Grab the xpath here.......
-                  String xPath = dataPath.getAccessPath();
-                  dataFilter = DataFilter.like(dataId, xPath, filterValueStr, caseSensitive);
+                  if(CommonDescriptorUtils.isEnumerationData(dataPath))
+                  {
+                     dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
+                  }
+                  else
+                  {
+                     // Grab the xpath here.......
+                     String xPath = dataPath.getAccessPath();
+                     dataFilter = DataFilter.like(dataId, xPath, filterValueStr, caseSensitive);                     
+                  }
                }
                else
                {
@@ -510,7 +517,7 @@ public class DescriptorFilterUtils
          }
          else if(filterValue instanceof Integer)
          {
-            dataFilter = DataFilter.isEqual(dataId, (Integer) filterValue);
+            dataFilter = DataFilter.isEqual(dataId,(Integer) filterValue);
          }
       }
       return dataFilter;

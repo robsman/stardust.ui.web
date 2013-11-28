@@ -357,6 +357,32 @@ public class CommonDescriptorUtils
       return false;
    }
    
+   // TODO : refactor this code
+   public static boolean isEnumerationData(DataPath dataPath)
+   {
+      try
+      {
+         Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
+         if (model != null)
+         {
+            Data data = model.getData(dataPath.getData());
+            String type = (String) data.getAttribute("carnot:engine:dataType");
+            if (StringUtils.isNotEmpty(type))
+            {
+               if (type.equals("EnumStructType"))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+      return false;
+   }
+   
    /**
     * Format Descriptors based on their types
     * 
