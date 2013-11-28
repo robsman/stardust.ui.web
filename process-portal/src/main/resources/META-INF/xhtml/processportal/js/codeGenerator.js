@@ -144,7 +144,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					if (child.isPrimitive) {
 						var elemPrimitive = generatePriEnum(null, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
 						if (elemPrimitive.children.length > 1) { // Control with Validation
-							var elemWrapperTr = htmlElement.create("tr", {parent: htmlElement.create("table", {parent: elemTd})});
+							var elemWrapperTr = htmlElement.create("tr", {parent: 
+								htmlElement.create("table", {parent: elemTd, attributes: {cellpadding: 0, cellspacing: 0}})});
 							
 							var elemWrapperTd1 = htmlElement.create("td", {parent: elemWrapperTr, 
 								attributes: {class: "panel-list-tbl-input-column"}});
@@ -181,7 +182,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			var elem;
-			if (isReadonly(path)) {
+			if (path.typeName == "document") {
+				elem = generateDocument(elemMain, path);
+			} else if (isReadonly(path)) {
 				if (path.properties["BooleanInputPreferences_readonlyOutputType"] != undefined &&
 						path.properties["BooleanInputPreferences_readonlyOutputType"] == "CHECKBOX") {
 					elem = htmlElement.create("input", {parent: elemMain, 
@@ -201,66 +204,62 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						var elemOpt = htmlElement.create("option", {parent: elem, value: val, attributes: {value: val}});
 					}
 				} else {
-					if (path.typeName == "document") {
-						elem = htmlElement.create("label", {parent: elemMain, value: "TODO", attributes: {class: "panel-output"}});
+					var elemWrapper = htmlElement.create("div", {parent: elemMain});
+					var validations = [];
+
+					if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
+						elem = htmlElement.create("textarea", {parent: elemWrapper});
+						if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
+							elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
+						}
+						if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
+							elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
+						}
 					} else {
-						var elemWrapper = htmlElement.create("div", {parent: elemMain});
-						var validations = [];
+						elem = htmlElement.create("input", {parent: elemWrapper});
+					}
 
-						if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
-							elem = htmlElement.create("textarea", {parent: elemWrapper});
-							if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
-								elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
-							}
-							if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
-								elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
-							}
-						} else {
-							elem = htmlElement.create("input", {parent: elemWrapper});
+					elem.attributes["ng-model-onblur"] = null;
+					elem.attributes["sd-post-data"] = null;
+
+					if (path.properties["InputPreferences_mandatory"] != undefined && 
+							path.properties["InputPreferences_mandatory"] == "true") {
+						validations.push({type: "ng-required", value: true, msg: "Required"});
+					}
+
+					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+						elem.attributes['type'] = "checkbox";
+						elem.attributes['class'] = "panel-checkbox";
+					} else {
+						elem.attributes['type'] = "text";
+						elem.attributes['class'] = "panel-input";
+						var pattern = getValidationPattern(path);
+						if (pattern) {
+							validations.push({type: "ng-pattern", value: pattern, msg: "Not Valid"});
+						}
+						elem.attributes['maxlength'] = getMaxLength(path);
+
+						var cDirective = getCustomDirective(path);
+						if (cDirective != undefined) {
+							elem.attributes[cDirective] = null;
+						}
+					}
+
+					if (validations.length > 0) {
+						var id = "id" + Math.floor((Math.random() * 100000) + 1);
+						elem.attributes['id'] = id;
+						elem.attributes['name'] = id;
+
+						for (var i = 0; i < validations.length; i++) {
+							elem.attributes[validations[i].type] = validations[i].value;
+							var showExpr = "form." + id + ".$error." + validations[i].type.split("-")[1];
+							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 						}
 
-						elem.attributes["ng-model-onblur"] = null;
-						elem.attributes["sd-post-data"] = null;
-
-						if (path.properties["InputPreferences_mandatory"] != undefined && 
-								path.properties["InputPreferences_mandatory"] == "true") {
-							validations.push({type: "ng-required", value: true, msg: "Required"});
-						}
-
-						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-							elem.attributes['type'] = "checkbox";
-							elem.attributes['class'] = "panel-checkbox";
-						} else {
-							elem.attributes['type'] = "text";
-							elem.attributes['class'] = "panel-input";
-							var pattern = getValidationPattern(path);
-							if (pattern) {
-								validations.push({type: "ng-pattern", value: pattern, msg: "Not Valid"});
-							}
-							elem.attributes['maxlength'] = getMaxLength(path);
-
-							var cDirective = getCustomDirective(path);
-							if (cDirective != undefined) {
-								elem.attributes[cDirective] = null;
-							}
-						}
-
-						if (validations.length > 0) {
-							var id = "id" + Math.floor((Math.random() * 100000) + 1);
-							elem.attributes['id'] = id;
-							elem.attributes['name'] = id;
-
-							for (var i = 0; i < validations.length; i++) {
-								elem.attributes[validations[i].type] = validations[i].value;
-								var showExpr = "form." + id + ".$error." + validations[i].type.split("-")[1];
-								htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-									attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
-							}
-
-							var showExpr = "form." + id + ".$invalid";
-							htmlElement.create("span", {parent: elemMain, 
-								attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
-						}
+						var showExpr = "form." + id + ".$invalid";
+						htmlElement.create("span", {parent: elemMain, 
+							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 					}
 				}
 
@@ -377,6 +376,17 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 			return elemMain;
 		};
+
+		/*
+		 * 
+		 */
+		function generateDocument(parent, path) {
+			var docLink = htmlElement.create("a", {parent: parent, attributes: {href: ""}});
+			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "')";
+			htmlElement.create("img", {parent: docLink, 
+				attributes: {src: "../../plugins/views-common/images/icons/mime-types/document-text.png"}});
+			return docLink;
+		}
 
 		/*
 		 * 

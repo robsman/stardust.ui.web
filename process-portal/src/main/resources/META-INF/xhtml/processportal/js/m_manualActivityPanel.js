@@ -65,6 +65,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.removeFromList = removeFromList;
 				$scope.selectListItem = selectListItem;
 				$scope.isFormValid = isFormValid;
+				$scope.openDocument = openDocument;
 			});
 		};
 
@@ -302,6 +303,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function isFormValid() {
 			var $scope = angular.element(document).scope();
 			return !$scope.form.$invalid;
+		}
+
+		/*
+		 * 
+		 */
+		function openDocument(xPath) {
+			log("TODO: " + xPath);
 		}
 
 		/*
