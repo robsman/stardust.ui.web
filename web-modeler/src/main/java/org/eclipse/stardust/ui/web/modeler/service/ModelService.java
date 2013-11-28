@@ -49,7 +49,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
@@ -128,7 +127,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.impl.XSDImportImpl;
@@ -1377,6 +1375,15 @@ public class ModelService
             getModelBuilderFacade().setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
                   PredefinedConstants.PROCESSINTERFACE_INVOCATION_SOAP);
+         }
+      }
+      else
+      {
+         if (extractBoolean(json, "createRestService"))
+         {
+            getModelBuilderFacade().setAttribute(processDefinition,
+                  "carnot:engine:externalInvocationType",
+                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_REST);
          }
       }
 
