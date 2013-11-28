@@ -238,33 +238,38 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public void handleActivityEvent(ActivityInstance oldAi, ActivityEvent event)
    {
-//      printCache("Before handleActivityEvent() = " + event.getType());
-
+      String userPerformer = null;
+      ActivityInstance newAi = event.getActivityInstance();
       // Act on OLD AI
       if (null != oldAi) // oldAi can be null if AI is ACTIVATED
       {
+         userPerformer = null != oldAi.getUserPerformer() ? oldAi.getUserPerformer().getQualifiedId() : null;
+         if (null == userPerformer && null != newAi)
+         {
+            userPerformer = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getQualifiedId() : null;
+         }
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
-               .getCurrentPerformer(),oldAi.getCurrentPerformer().getQualifiedId()));
+               .getCurrentPerformer(), userPerformer));
          if (null != oldEntry && (oldEntry.getCount() > 0 && oldEntry.getCount() < oldEntry.getTotalCountThreshold()))
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
          }
       }
       // Act on NEW AI
-      ActivityInstance newAi = event.getActivityInstance();
       if (null != newAi) // Safety Check
       {
-         String userParticipantQualifierId = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getQualifiedId() : oldAi
-               .getCurrentPerformer().getQualifiedId();
+         if (null == userPerformer)
+         {
+            userPerformer = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getQualifiedId() : null;
+         }
          ParticipantWorklistCacheEntry newEntry = participantWorklists.get(new ParticipantInfoWrapper(newAi
-               .getCurrentPerformer(),userParticipantQualifierId));
+               .getCurrentPerformer(), userPerformer));
          if (null != newEntry && newEntry.getCount() < Long.MAX_VALUE)
          {
             newEntry.setCount(newEntry.getCount() + 1);
          }
       }
       
-//      printCache("After handleActivityEvent()");
    }
    
    /**
