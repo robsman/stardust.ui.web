@@ -509,14 +509,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		function convertFullIdToBinding(path) {
 			var parts = path.fullXPath.substring(1).split("/");
 			
-			var binding = bindingPrefix ? (bindingPrefix + ".") : "";
+			var binding = bindingPrefix ? bindingPrefix : "";
 			var currentBindingData = bindingData;
 			for (var i in parts) {
-				if (i == 0) {
-					binding += parts[i];
-				} else {
-					binding += "['" + parts[i] + "']";
-				}
+				binding += "['" + parts[i] + "']";
 
 				if (currentBindingData[parts[i]] == undefined) {
 					if (i < parts.length - 1) {

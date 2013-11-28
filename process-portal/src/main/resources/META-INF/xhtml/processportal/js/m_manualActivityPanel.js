@@ -104,11 +104,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							scope.$watch(attr.ngModel, function(newValue, oldValue) {
 								if (scope.initState && scope.initState.success && 
 										newValue != undefined && newValue != oldValue) {
-									var binding = attr.ngModel.substr(BINDING_PREFIX.length + 1);
-									var dataMapping = binding;
-									if (binding.indexOf("[") != -1) {
-										dataMapping = binding.substr(0, binding.indexOf("["));
-									}
+									// Format of ngModel is dm['X']['Y']
+									var binding = attr.ngModel.substr(BINDING_PREFIX.length + 2);
+									var dataMapping = binding.substr(0, binding.indexOf("']"));
 	
 									if (dataMapping) {
 										// TODO: Post Only changed value and not full Data Mapping 
