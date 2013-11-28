@@ -1057,10 +1057,8 @@ define(
 					/* var dataSourceName = this.dataSourceNameInput.val(); */
 
 					if (sqlQuery != null && sqlQuery != "") {
-
-						sqlQuery = sqlQuery.replace(/&/g, "&amp;");
-						sqlQuery = sqlQuery.replace(/</g, "&lt;");
-						sqlQuery = sqlQuery.replace(/>/g, "&gt;");
+						
+						sqlQuery = m_utils.encodeXmlPredfinedCharacters(sqlQuery);
 					}
 					var questionMarkExists=false;
 					
