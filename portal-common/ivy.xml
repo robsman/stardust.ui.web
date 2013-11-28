@@ -89,6 +89,13 @@
       <!-- spring-webmvc contains the DispatcherServlet which is necessary for spring remoting -->
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-common-runtime->default"/>
 
+	<dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-portal-common-compile->default" >
+         <exclude org="org.apache.cxf" module="cxf-api" />
+         <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
+         <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
+         <exclude org="javax.ws.rs" module="jsr311-api" />
+      </dependency>
+ 
       <!-- ipp-portal-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-common-provided->default" />
       <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-portal-common-provided->default" />
