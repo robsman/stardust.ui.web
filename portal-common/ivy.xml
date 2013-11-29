@@ -94,6 +94,7 @@
          <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
          <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
          <exclude org="javax.ws.rs" module="jsr311-api" />
+         <exclude org="com.sun.xml.bind" module="jaxb-impl" />
       </dependency>
  
       <!-- ipp-portal-common-provided -->
