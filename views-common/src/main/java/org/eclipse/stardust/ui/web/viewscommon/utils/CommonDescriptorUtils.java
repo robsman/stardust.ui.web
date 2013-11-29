@@ -44,6 +44,7 @@ import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelElementComparator;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
@@ -357,7 +358,11 @@ public class CommonDescriptorUtils
       return false;
    }
    
-   // TODO : refactor this code
+   /**
+    * 
+    * @param dataPath
+    * @return
+    */
    public static boolean isEnumerationData(DataPath dataPath)
    {
       try
@@ -366,10 +371,10 @@ public class CommonDescriptorUtils
          if (model != null)
          {
             Data data = model.getData(dataPath.getData());
-            String type = (String) data.getAttribute("carnot:engine:dataType");
+            String type = (String) data.getAttribute(Constants.DATA_TYPE_ATTR);
             if (StringUtils.isNotEmpty(type))
             {
-               if (type.equals("EnumStructType"))
+               if (type.equals(Constants.ENUM_STRUCT_TYPE))
                {
                   return true;
                }
