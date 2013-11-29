@@ -61,6 +61,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.initState = {};
 				$scope.initState.success = true;
 
+				$scope.saveData = saveData;
 				$scope.addToList = addToList;
 				$scope.removeFromList = removeFromList;
 				$scope.selectListItem = selectListItem;
@@ -303,6 +304,22 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function isFormValid() {
 			var $scope = angular.element(document).scope();
 			return !$scope.form.$invalid;
+		}
+
+		/*
+		 * 
+		 */
+		function saveData() {
+			var success = false;
+			if (isFormValid()) {
+				var $scope = angular.element(document).scope();
+				postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {success: function() {
+					success = true;
+				}, failure: function() {
+					success = false;;
+				}});
+			}
+			return success;
 		}
 
 		/*

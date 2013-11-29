@@ -14,7 +14,7 @@ function performIppAiClosePanelCommand(commandId)
   try
   {
 	  runInAngularContext(function($scope) {
-		  if ($scope.isFormValid()) {
+		  if ($scope.saveData()) {
 			  parent.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
 		  }
 	  });
