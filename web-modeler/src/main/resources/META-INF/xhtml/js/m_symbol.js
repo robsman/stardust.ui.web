@@ -2353,6 +2353,10 @@ define(
 									"fill" : m_constants.DEFAULT_ANCHOR_FILL_COLOR
 								}).hide();
 
+				if (this.symbol) {
+					this.symbol.addToPrimitives(this.graphics);
+				}
+				
 				this.originalAnchorPoint = null;
 				this.dragConnection = null;
 				this.lastDragOverSymbol = null;
@@ -2723,6 +2727,7 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.remove = function() {
+					this.symbol.removeFromPrimitives(this.graphics);
 					this.graphics.remove();
 				};
 
@@ -2738,29 +2743,32 @@ define(
 			}
 
 			function AnchorPoint_clickClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.select();
 			}
 
 			function AnchorPoint_hoverInClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.hoverIn();
 			}
 
 			function AnchorPoint_hoverOutClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.hoverOut();
 			}
 
 			function AnchorPoint_dragClosure(dX, dY, x, y, event) {
-				this.auxiliaryProperties.anchorPoint.drag(dX, dY, x, y);
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.drag(dX, dY, x, y);
 			}
 
 			function AnchorPoint_dragStartClosure() {
-				this.auxiliaryProperties.anchorPoint.dragStart();
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.dragStart();
 			}
 
 			function AnchorPoint_dragStopClosure() {
-				this.auxiliaryProperties.anchorPoint.dragStop();
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.dragStop();
 			}
 		});

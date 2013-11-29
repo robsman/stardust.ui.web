@@ -114,6 +114,9 @@ define(
 					this.primitives.push(element);
 				};
 
+				Drawable.prototype.removeFromPrimitives = function(element) {
+					m_utils.removeItemFromArray(this.primitives, element);
+				};
 				/**
 				 *
 				 */
