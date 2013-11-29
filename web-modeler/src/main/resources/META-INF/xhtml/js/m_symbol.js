@@ -2354,7 +2354,7 @@ define(
 								}).hide();
 
 				if (this.symbol) {
-					this.symbol.addToPrimitives(this.graphics);
+					//this.symbol.addToPrimitives(this.graphics);
 				}
 				
 				this.originalAnchorPoint = null;
@@ -2727,7 +2727,7 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.remove = function() {
-					this.symbol.removeFromPrimitives(this.graphics);
+					//this.symbol.removeFromPrimitives(this.graphics);
 					this.graphics.remove();
 				};
 
