@@ -264,38 +264,8 @@ define(
 				/**
 				 *
 				 */
-				Model.prototype.getNewDataIndex = function() {
-					var index = 0;
-
-					for ( var n in this.dataItems) {
-						++index;
-					}
-
-					++index;
-
-					return index;
-				};
-
-				/**
-				 *
-				 */
 				Model.prototype.toJsonString = function() {
 					return JSON.stringify(this);
-				};
-
-				/**
-				 *
-				 */
-				Model.prototype.getApplicationIndex = function() {
-					var index = 0;
-
-					for ( var n in this.applications) {
-						++index;
-					}
-
-					++index;
-
-					return index;
 				};
 
 				Model.prototype.findModelElementByUuid = function(uuid) {

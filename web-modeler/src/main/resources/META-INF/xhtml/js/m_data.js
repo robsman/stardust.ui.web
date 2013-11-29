@@ -19,10 +19,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		 */
 		createData : function(model) {
 			var data = new Data();
-			var index = model.getNewDataIndex();
-
 			var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
-			data.initialize(model, dataNamePrefix + " " + index);
+			
+			var elementNameId = m_utils.getUniqueElementNameId(model.dataItems, dataNamePrefix);
+
+			
+			data.initialize(model, elementNameId.name);
 
 			data.dataType = m_constants.PRIMITIVE_DATA_TYPE;
 			data.primitiveDataType = m_constants.STRING_PRIMITIVE_DATA_TYPE;
@@ -32,9 +34,9 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 
 		createDataFromDataStructure : function(model, dataStructure) {
 			var data = new Data();
-			var index = model.getNewDataIndex();
+			var elementNameId = m_utils.getUniqueElementNameId(model.dataItems, dataStructure.name);
 
-			data.initialize(model, dataStructure.name + index,
+			data.initialize(model, elementNameId.name,
 							m_constants.STRUCTURED_DATA_TYPE);
 
 			data.dataType = m_constants.STRUCTURED_DATA_TYPE;

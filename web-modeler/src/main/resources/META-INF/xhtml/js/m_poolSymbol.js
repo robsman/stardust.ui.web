@@ -936,34 +936,6 @@ define(
 					return false;
 				};
 
-				/**
-				 *
-				 */
-				PoolSymbol.prototype.getLaneIndex = function() {
-					if (laneIndex <= this.laneSymbols.length) {
-						laneIndex = this.laneSymbols.length + 1;
-					}
-
-					while (true == this.hasLaneWithName("Lane " + laneIndex)) {
-						laneIndex++;
-					}
-
-					return laneIndex;
-				};
-
-				/**
-				 *
-				 */
-				PoolSymbol.prototype.hasLaneWithName = function(name) {
-					for ( var n in this.laneSymbols) {
-						if (this.laneSymbols[n].name == name) {
-							return true;
-						}
-					}
-
-					return false;
-				};
-
 				PoolSymbol.prototype.getAllDataSymbols = function(dataSymbols) {
 					for ( var n in this.laneSymbols) {
 						this.laneSymbols[n].getAllDataSymbols(dataSymbols);

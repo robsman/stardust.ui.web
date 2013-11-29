@@ -16,8 +16,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 
 			return {
 				createDataFlow : function(process, data, activity) {
-					var dataFlow = new DataFlow("DataFlow"
-							+ process.getDataFlowIndex());
+					var dataFlow = new DataFlow();
 
 					dataFlow.initialize(data, activity);
 

@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.modeler.edit;
 
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.stardust.common.CollectionUtils;
@@ -89,10 +90,51 @@ public class ModelElementEditingUtils
     */
    public static void deleteTransitionConnections(IFlowObjectSymbol symbol)
    {
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(symbol);
+
+      // delete transition
+      deleteTransitions(symbol, processDefinition, symbol.getInTransitions());
+      deleteTransitions(symbol, processDefinition, symbol.getOutTransitions());
+      
+      // delete connection symbol
       deleteConnectionSymbols(symbol.getInTransitions());
       deleteConnectionSymbols(symbol.getOutTransitions());
    }
 
+   /**
+    * @param symbol
+    * @param processDefinition
+    * @param transitions
+    */
+   private static void deleteTransitions(IFlowObjectSymbol symbol,
+         ProcessDefinitionType processDefinition,
+         EList<TransitionConnectionType> transitions)
+   {
+      for (TransitionConnectionType transition : transitions)
+      {
+         TransitionType transitionType = transition.getTransition();
+         if (processDefinition.getTransition() != null)
+         {
+            processDefinition.getTransition().remove(transitionType);
+         }
+
+         if (transitionType != null)
+         {
+            if (transitionType.getFrom() != null
+                  && transitionType.getFrom().getOutTransitions() != null)
+            {
+               transitionType.getFrom().getOutTransitions().remove(transitionType);
+            }
+            if (transitionType.getTo() != null
+                  && transitionType.getTo().getInTransitions() != null)
+            {
+               transitionType.getTo().getInTransitions().remove(transitionType);
+            }
+         }
+      }
+   }
+   
+   
    /**
     * @param processDefinition
     * @param dataConnIter

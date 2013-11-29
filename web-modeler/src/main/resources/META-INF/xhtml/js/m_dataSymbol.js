@@ -29,14 +29,14 @@ define(
 					var dataSymbol = new DataSymbol();
 
 					dataSymbol.bind(diagram);
-
-					var index = diagram.model.getNewDataIndex();
+					var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
+					
+					var elementNameId = m_utils.getUniqueElementNameId(diagram.model.dataItems, dataNamePrefix);
 
 					// TODO Need to create data before!
-
-					var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
-					dataSymbol.dataId = dataNamePrefix + "_" + index;
-					dataSymbol.dataName = dataNamePrefix + " " + index;
+					
+					dataSymbol.dataId = elementNameId.id;
+					dataSymbol.dataName = elementNameId.name;
 					// Data is not present at server side, using DataIndex and
 					// modelId to create dataId
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,

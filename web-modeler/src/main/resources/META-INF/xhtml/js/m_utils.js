@@ -146,7 +146,12 @@ define(
 				
 				executeTimeoutLoop : executeTimeoutLoop,
 				
-				isIntermediateEvent : isIntermediateEvent
+				isIntermediateEvent : isIntermediateEvent,
+				
+				getUniqueElementNameId : function(array, name) {
+					return getUniqueElementNameId(array, name);
+				},
+				
 			};
 			
 			/**
@@ -282,6 +287,54 @@ define(
 				}
 			}
 
+			/**
+			 * @author Yogesh.Manware
+			 * This method accepts Element Array and proposed name for new
+			 * element. It assumes that all elements in the Array have id and
+			 * name attributes. It searches for all elements in the given
+			 * array to see if any of the element already has same id or name.
+			 * If yes, it increases the index until it finds unique id and unique
+			 * name.
+			 */
+			function getUniqueElementNameId(array, name) {
+				var index = 1;
+				var id = name.replace(/\s+/g, '');
+
+				var elementNameId = {};
+				var hasElement = true;
+
+				while (true) {
+					elementNameId.name = name + " " + index;
+					elementNameId.id = id + index;
+					
+					hasElement = hasElementWithName(array, elementNameId.name);
+					hasElement = hasElement || hasElementWithId(array, elementNameId.id);
+					if (!hasElement) {
+						break;
+					}
+					index++;
+				}
+				return elementNameId;
+			}
+
+			function hasElementWithName(array, name) {
+				for ( var n in array) {
+					if (array[n].name == name) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			function hasElementWithId(array, id) {
+				for ( var n in array) {
+					if (array[n].id == id) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
