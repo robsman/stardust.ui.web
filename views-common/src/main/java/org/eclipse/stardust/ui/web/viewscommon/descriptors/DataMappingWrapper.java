@@ -176,7 +176,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          Object carnotType = getDataDetails().getAttribute("carnot:engine:type");
          Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
-         if (carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+         if (!dataTypeId.equals("struct") && carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
          {
             populateEnumValues(model, dataMapping);
             type = ProcessPortalConstants.ENUM_TYPE;
