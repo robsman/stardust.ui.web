@@ -342,11 +342,6 @@ public class ModelService
 
    // Modeling Session Management
 
-   /**
-    * Contains all loaded and newly created getModelManagementStrategy().getModels().
-    */
-   private JsonObject modelsJson = new JsonObject();
-
    @Resource
    private ModelingSessionManager sessionManager;
 
@@ -634,7 +629,7 @@ public class ModelService
             getModelManagementStrategy().getModels(true);
          }
 
-         modelsJson = new JsonObject();
+         JsonObject modelsJson = new JsonObject();
          JsonObject loaded = new JsonObject();
          JsonArray failed = new JsonArray();
          modelsJson.add("loaded", loaded);
