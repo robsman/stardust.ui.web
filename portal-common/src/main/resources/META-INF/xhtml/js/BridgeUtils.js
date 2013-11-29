@@ -119,7 +119,7 @@ if (!window["BridgeUtils"]) {
 		function logout(force) {
 			log("Logging out = " + force);
 			if (force == undefined || !force) {
-				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "logout", Math.floor(Math.random()*10000)+1);
+				BridgeUtils.View.doPartialSubmit("portalLaunchPanels", "viewFormLP", "logout", Math.floor(Math.random()*10000)+1);
 			} else {
 				// Wait for some time so that iFrame will be removed
 				window.setTimeout(function(){
@@ -177,7 +177,7 @@ if (!window["BridgeUtils"]) {
 			// Because it's called from Angular, wait for digest to get over. TODO: Find better solution
 			window.setTimeout(function() {
 				// Sidebar: Resize Launch Panels iFrame
-	            var elem = document.getElementById("modelerLaunchPanels");
+	            var elem = document.getElementById("portalLaunchPanels");
 	            if (elem) {
 		            if(elem.offsetTop < shellSizes.windowHeight) {
 		            	var pos = BridgeUtils.FrameManager.findPosition(elem);
@@ -424,11 +424,11 @@ if (!window["BridgeUtils"].View) {
 			if (isPortalPath(navPath)) {
 				var viewInfo = getViewInfoFromNavPath(navPath);
 				var value = viewInfo.viewId + ":" + viewInfo.viewKey;
-				doPartialSubmit("modelerLaunchPanels", "viewFormLP", "activeViewChanged", value);
+				doPartialSubmit("portalLaunchPanels", "viewFormLP", "activeViewChanged", value);
 			} else {
 				navPath = (typeof data.before == 'object') ? data.before.path : data.before;
 				if (isPortalPath(navPath)) {
-					doPartialSubmit("modelerLaunchPanels", "viewFormLP", "activeViewChanged", "blank:blank");
+					doPartialSubmit("portalLaunchPanels", "viewFormLP", "activeViewChanged", "blank:blank");
 				}
 			}
 		}
@@ -463,7 +463,7 @@ if (!window["BridgeUtils"].View) {
 
 					var viewInfo = getViewInfoFromNavPath(view.path);
 					BridgeUtils.log("Firring viewClosed for = " + viewInfo.viewId + ":" + viewInfo.viewKey);
-					doPartialSubmit("modelerLaunchPanels", "viewFormLP", "viewClosing", viewInfo.viewId + ":" + viewInfo.viewKey);
+					doPartialSubmit("portalLaunchPanels", "viewFormLP", "viewClosing", viewInfo.viewId + ":" + viewInfo.viewKey);
 				}
 			}
 
@@ -480,13 +480,13 @@ if (!window["BridgeUtils"].View) {
 
 			// Find All Anchors in sidebar (Launch Panels)
 			window.setTimeout(function() {
-				var iframe = document.getElementById("modelerLaunchPanels");
+				var iframe = document.getElementById("portalLaunchPanels");
 				if (iframe) {
 					var elems = iframe.contentDocument.getElementsByTagName("div");
 					for (var i in elems) {
 						if (elems[i] && elems[i].id && elems[i].id.indexOf("Anchor", elems[i].id.length - "Anchor".length) !== -1) {
 							BridgeUtils.FrameManager.doWithContentFrame(null, function(contentFrame) {
-								if ("modelerLaunchPanels:" + elems[i].id == contentFrame.getAttribute('anchorId')) {
+								if ("portalLaunchPanels:" + elems[i].id == contentFrame.getAttribute('anchorId')) {
 									var frameVisible = (contentFrame.style.display != "none")
 									if (!sidebarVisible && frameVisible) {
 										BridgeUtils.FrameManager.deactivate(contentFrame.getAttribute('name'));
@@ -608,7 +608,7 @@ if (!window["BridgeUtils"].View) {
 			}
 			window.setTimeout(function() {
 				BridgeUtils.log("Firring launch panels sync");
-				doPartialSubmit("modelerLaunchPanels", "viewFormLP", "launchPanelsSync", value);
+				doPartialSubmit("portalLaunchPanels", "viewFormLP", "launchPanelsSync", value);
 				BridgeUtils.log("Firred launch panels sync");
 			}, 200);
 		}
@@ -880,7 +880,7 @@ if (!window["BridgeUtils"].Dialog) {
 				var newHeight = (sidebarDetails.height) + "px";
 
 				// Launch Panels iframe				
-				launchPanelIframe = document.getElementById("modelerLaunchPanels");
+				launchPanelIframe = document.getElementById("portalLaunchPanels");
 				launchPanelIframeOrgData = {};
 				launchPanelIframeOrgData.clazz = launchPanelIframe.getAttribute("class");
 				launchPanelIframeOrgData.width = launchPanelIframe.style.width;

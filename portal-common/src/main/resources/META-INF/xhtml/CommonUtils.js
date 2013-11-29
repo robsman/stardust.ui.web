@@ -72,7 +72,7 @@ function TimerHandler(id) {
 	this.id = id;
 	this.timerInvoked = timerInvoked;
 	function timerInvoked() {
-		var modelerLaunchPanel = document.getElementById("modelerLaunchPanels");
+		var modelerLaunchPanel = document.getElementById("portalLaunchPanels");
 		var timeField = modelerLaunchPanel.contentDocument
 				.getElementById("viewFormLP:timerInvoked");
 		if (timeField) {

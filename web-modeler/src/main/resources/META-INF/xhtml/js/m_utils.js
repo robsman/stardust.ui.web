@@ -229,8 +229,8 @@ define(
 			function getOutlineWindowAndDocument() {
 				if (parent && parent.window["BridgeUtils"]) {
 					return {
-						win: parent.document.getElementById("modelerLaunchPanels"),
-						doc: parent.document.getElementById("modelerLaunchPanels").contentDocument
+						win: parent.document.getElementById("portalLaunchPanels"),
+						doc: parent.document.getElementById("portalLaunchPanels").contentDocument
 					};
 				} else { // Compatibility to old portal
 					return {

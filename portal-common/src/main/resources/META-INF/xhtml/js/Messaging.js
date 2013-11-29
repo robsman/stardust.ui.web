@@ -96,7 +96,7 @@ if (!window["Messaging"]) {
 			} catch(x) {}
 
 			if (proceed) {
-				BridgeUtils.View.doPartialSubmit("modelerLaunchPanels", "viewFormLP", "messageData", jsonStr);
+				BridgeUtils.View.doPartialSubmit("portalLaunchPanels", "viewFormLP", "messageData", jsonStr);
 			} else {
 				//alert("Post Error");
 			}
