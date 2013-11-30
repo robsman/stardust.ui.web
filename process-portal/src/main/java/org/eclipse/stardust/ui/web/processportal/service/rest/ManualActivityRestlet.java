@@ -146,15 +146,11 @@ public class ManualActivityRestlet
       {
          try
          {
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject());
+            // Client Messages Bundle
+            readBundle(ResourceBundle.getBundle("processportal-client", messageBean.getLocaleObject()), data);
 
-            String key;
-            Enumeration<String> keys = bundle.getKeys();
-            while (keys.hasMoreElements())
-            {
-               key = keys.nextElement();
-               data.append(key).append("=").append(bundle.getString(key)).append("\n");
-            }
+            // Model Bundle
+            readBundle(ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject()), data);
          }
          catch (Exception e)
          {
@@ -166,6 +162,21 @@ public class ManualActivityRestlet
       }
 
       return Response.ok(data.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+   }
+
+   /**
+    * @param bundle
+    * @param data
+    */
+   private void readBundle(ResourceBundle bundle, StringBuffer data)
+   {
+      String key;
+      Enumeration<String> keys = bundle.getKeys();
+      while (keys.hasMoreElements())
+      {
+         key = keys.nextElement();
+         data.append(key).append("=").append(bundle.getString(key)).append("\n");
+      }
    }
 
    /**

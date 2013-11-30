@@ -233,9 +233,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					} else {
 						elem.attributes['type'] = "text";
 						elem.attributes['class'] = "panel-input";
-						var pattern = getValidationPattern(path);
-						if (pattern) {
-							validations.push({type: "ng-pattern", value: pattern, msg: "Not Valid"});
+						var valInfo = getValidationPattern(path);
+						if (valInfo.pattern) {
+							validations.push({type: "ng-pattern", value: valInfo.pattern, 
+								msg: getI18NLabel("validation.err." + valInfo.key)});
 						}
 						elem.attributes['maxlength'] = getMaxLength(path);
 
@@ -296,29 +297,37 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function getValidationPattern(path) {
+			var ret = {};
 			if (path.typeName == "integer" || path.typeName == "int" ||path.typeName == "java.lang.Integer") {
-				return /^(\+|-)?([\d]{0,9})$/;
+				ret.pattern = /^(\+|-)?([\d]{0,9})$/;
+				ret.key = "integer";
 			} else if (path.typeName == "short" || path.typeName == "java.lang.Short") {
-				return /^(\+|-)?([\d]{0,9})$/;
+				ret.pattern = /^(\+|-)?([\d]{0,9})$/;
+				ret.key = "short";
 			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
-				return /^(\+|-)?([\d]{0,18})$/;
+				ret.pattern = /^(\+|-)?([\d]{0,18})$/;
+				ret.key = "long";
 			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
-				return /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.pattern = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.key = "float";
 			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
-				return /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.pattern = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.key = "double";
 			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
-				
+				ret.key = "byte";
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
-				
+				ret.key = "char";
 			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
-				
+				ret.key = "date";
 			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
-				
+				ret.key = "dateTime";
 			} else if (path.typeName == "time") {
-				
+				ret.key = "time";
 			} else if (path.typeName == "duration") {
-				
+				ret.key = "duration";
 			}
+
+			return ret;
 		}
 
 		/*
