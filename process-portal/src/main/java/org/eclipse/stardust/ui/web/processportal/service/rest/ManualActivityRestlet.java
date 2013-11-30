@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
@@ -43,6 +44,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * @author Subodh.Godbole
@@ -162,6 +164,22 @@ public class ManualActivityRestlet
       }
 
       return Response.ok(data.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+   }
+
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("dateFormats")
+   @GET
+   public Response dateFormats()
+   {
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+
+      JsonObject dates = new JsonObject();
+      dates.add("dateFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultDateFormat")));
+      dates.add("dateTimeFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultDateTimeFormat")));
+      dates.add("timeFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultTimeFormat")));
+
+      return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    /**

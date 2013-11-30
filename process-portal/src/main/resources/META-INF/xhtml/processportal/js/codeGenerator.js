@@ -193,7 +193,12 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
 				}
 
-				elem.value = "{{" + (options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel) + "}}";
+				var binding = (options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel);
+				var customFilter = getCustomFilter(path);
+				if (customFilter) {
+					binding = binding + " | " + customFilter;
+				}
+				elem.value = "{{" + binding + "}}";
 			} else {
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain, attributes: {'ng-model-onblur': null}});
@@ -240,10 +245,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						}
 						elem.attributes['maxlength'] = getMaxLength(path);
 
-						var cDirective = getCustomDirective(path);
-						if (cDirective != undefined) {
-							elem.attributes[cDirective] = null;
-						}
+						addCustomDirective(path, elem);
 					}
 
 					if (validations.length > 0) {
@@ -362,10 +364,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		/*
 		 * 
 		 */
-		function getCustomDirective(path) {
+		function addCustomDirective(path, elem) {
 			if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime"
 					|| path.typeName == "java.util.Calendar" || path.typeName == "time") {
-				return "sd-date";
+				elem.attributes["sd-date"] = null;
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getCustomFilter(path) {
+			if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime"
+					|| path.typeName == "java.util.Calendar" || path.typeName == "time") {
+				return "sdFilterDate";
 			}
 		}
 

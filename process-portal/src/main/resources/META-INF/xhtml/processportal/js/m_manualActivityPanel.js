@@ -53,6 +53,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				singleEndPoint : interactionEndpoint + "/i18n"
 			});
 	        
+	        getData(interactionEndpoint, "/dateFormats", {success: receiveDateFormats});
+
 	        getData(interactionEndpoint, "/dataMappings", {success: generateMarkup});
 
 			bootstrapAngular();
@@ -148,22 +150,36 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						});
 
 						ctrl.$formatters.unshift(function(viewValue) {
-							if (viewValue != undefined && viewValue != null && viewValue != "") {
-								try {
-									// Convert to Client Format
-									var date = jQuery.datepicker.parseDate(SERVER_DATE_FORMAT, viewValue);
-									viewValue = jQuery.datepicker.formatDate(clientDateFormat, date);
-								} catch(e) {
-								}
-							}
-							return viewValue;
+							return formatDate(viewValue);
 						});
 					}
 				};
 			});
 
+			angularModule.filter('sdFilterDate', function() {
+				return function(value) {
+					return formatDate(value);
+				};
+			});
+
 			angular.bootstrap(document, [moduleName]);
 		};
+
+		/*
+		 * 
+		 */
+		function formatDate(value) {
+			if (value != undefined && value != null && value != "") {
+				try {
+					// Convert to Client Format
+					var date = jQuery.datepicker.parseDate(SERVER_DATE_FORMAT, value);
+					value = jQuery.datepicker.formatDate(clientDateFormat, date);
+				} catch(e) {
+					log(e);
+				}
+			}
+			return value;
+		}
 
 		/*
 		 * 
@@ -176,6 +192,16 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			
 			bindings = data.binding;
 		};
+
+		/*
+		 * 
+		 */
+		function receiveDateFormats(json) {
+			clientDateFormat = json.dateFormat;
+			if (clientDateFormat) {
+				clientDateFormat = clientDateFormat.toLowerCase();
+			}
+		}
 
 		/*
 		 * val: path object or string
