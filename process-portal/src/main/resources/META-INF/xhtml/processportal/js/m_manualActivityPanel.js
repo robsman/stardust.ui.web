@@ -26,11 +26,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 	function ManualActivityPanel() {
 		var REST_END_POINT = "/services/rest/process-portal/manualActivity/";
 		var BINDING_PREFIX = "dm";
+		var SERVER_DATE_FORMAT = "yy-mm-dd";
 
 		var interactionEndpoint;
 
 		var dataMappings;
 		var bindings;
+		var clientDateFormat = "dd-mm-yy";
 
 		/*
 		 * 
@@ -125,19 +127,38 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			});
 
 			angularModule.directive('sdDate', function($parse) {
-				return function(scope, element, attrs, controller) {
-					var ngModel = $parse(attrs.ngModel);
-					jQuery(function() {
-						element.datepicker({
-							dateFormat : 'yy-mm-dd',
-							onSelect : function(dateText, inst) {
-								scope.$apply(function(scope) {
-									// Change binded variable
-									ngModel.assign(scope, dateText);
-								});
-							}
+				return {
+					require : 'ngModel',
+					link : function(scope, elm, attr, ctrl) {
+						var ngModel = $parse(attr.ngModel);
+						jQuery(function() {
+							elm.datepicker({
+								dateFormat : clientDateFormat,
+								onSelect : function(dateText, inst) {
+									scope.$apply(function(scope) {
+										// Convert to Server Format
+										var date = jQuery.datepicker.parseDate(clientDateFormat, dateText);
+										var value = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, date);
+
+										// Change binded variable
+										ngModel.assign(scope, value);
+									});
+								}
+							});
 						});
-					});
+
+						ctrl.$formatters.unshift(function(viewValue) {
+							if (viewValue != undefined && viewValue != null && viewValue != "") {
+								try {
+									// Convert to Client Format
+									var date = jQuery.datepicker.parseDate(SERVER_DATE_FORMAT, viewValue);
+									viewValue = jQuery.datepicker.formatDate(clientDateFormat, date);
+								} catch(e) {
+								}
+							}
+							return viewValue;
+						});
+					}
 				};
 			});
 

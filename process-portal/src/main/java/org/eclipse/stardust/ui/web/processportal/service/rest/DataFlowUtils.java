@@ -223,7 +223,7 @@ public class DataFlowUtils
       }
       else if (Type.Timestamp == targetType)
       {
-         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd HH:mm:ss", Locale.getDefault(), TimeZone.getDefault());
+         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd", Locale.getDefault(), TimeZone.getDefault());
          return date;
       }
       else if (Type.Char == targetType)
@@ -232,7 +232,7 @@ public class DataFlowUtils
       }
       else if (Type.Calendar == targetType)
       {
-         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd HH:mm:ss", Locale.getDefault(), TimeZone.getDefault());
+         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd", Locale.getDefault(), TimeZone.getDefault());
          Calendar cal = Calendar.getInstance();
          cal.setTime(date);
          return cal;
