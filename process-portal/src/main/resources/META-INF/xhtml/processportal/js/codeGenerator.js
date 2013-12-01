@@ -48,7 +48,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemValidationBar = htmlElement.create("div", {parent: elemMain, 
 				attributes: {class: "panel-validation-summary-bar", "ng-show": showExpr}});
 			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "panel-validation-summary-bar-img"}});
-			htmlElement.create("span", {parent: elemValidationBar, value: "Form contains error(s).", 
+			htmlElement.create("span", {parent: elemValidationBar, value: getI18NLabel("validation.err"), 
 				attributes: {class: "panel-validation-summary-bar-text"}});
 
 			// Generate
@@ -159,7 +159,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							elemTd.children.push(elemPrimitive.children[0]);
 						}
 					} else {
-						var elemLink = htmlElement.create("a", {parent: elemTd, value: isReadonly(path) ? "View" : "Edit"});
+						var elemLink = htmlElement.create("a", {parent: elemTd, 
+							value: isReadonly(path) ? getI18NLabel("panel.list.view") : getI18NLabel("panel.list.edit")});
 						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
 					}
 				}
