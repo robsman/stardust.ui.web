@@ -134,7 +134,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (path.isPrimitive) { // List of Primitives
 				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
 				var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
-				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar});
+				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar, idExpr: "$index"});
 			} else { // List of Structures
 				for (var i in path.children) {
 					var child = path.children[i];
@@ -142,7 +142,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
 
 					if (child.isPrimitive) {
-						var elemPrimitive = generatePriEnum(null, child, {noLabel: true, ngModel: loopVar + "['" + child.id + "']"});
+						var elemPrimitive = generatePriEnum(null, child, 
+								{noLabel: true, ngModel: loopVar + "['" + child.id + "']", idExpr: "$index"});
 						if (elemPrimitive.children.length > 1) { // Control with Validation
 							var elemWrapperTr = htmlElement.create("tr", {parent: 
 								htmlElement.create("table", {parent: elemTd, attributes: {cellpadding: 0, cellspacing: 0}})});
@@ -167,7 +168,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		};
 
 		/*
-		 * options: noLabel, ngModel
+		 * options: noLabel, ngModel, idExpr
 		 */
 		function generatePriEnum(parent, path, options) {
 			if (options == undefined) {
@@ -250,17 +251,25 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					if (validations.length > 0) {
 						var id = "id" + Math.floor((Math.random() * 100000) + 1);
+						var formId = "'" + id + "'";
+						if (options.idExpr) {
+							formId = "'" + id + "' + " + options.idExpr;
+							id += "{{" + options.idExpr + "}}";
+							
+							elem.attributes['sd-dynamic-id'] = null;
+						}
+
 						elem.attributes['id'] = id;
 						elem.attributes['name'] = id;
 
 						for (var i = 0; i < validations.length; i++) {
 							elem.attributes[validations[i].type] = validations[i].value;
-							var showExpr = "form." + id + ".$error." + validations[i].type.split("-")[1];
+							var showExpr = "form[" + formId + "].$error." + validations[i].type.split("-")[1];
 							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
 								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 						}
 
-						var showExpr = "form." + id + ".$invalid";
+						var showExpr = "form[" + formId + "].$invalid";
 						htmlElement.create("span", {parent: elemMain, 
 							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 					}
