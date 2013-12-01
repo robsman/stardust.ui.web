@@ -139,8 +139,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								onSelect : function(dateText, inst) {
 									scope.$apply(function(scope) {
 										// Convert to Server Format
-										var date = jQuery.datepicker.parseDate(clientDateFormat, dateText);
-										var value = jQuery.datepicker.formatDate(SERVER_DATE_FORMAT, date);
+										var value = formatDate(dateText, clientDateFormat, SERVER_DATE_FORMAT);
 
 										// Change binded variable
 										ngModel.assign(scope, value);
@@ -150,7 +149,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						});
 
 						ctrl.$formatters.unshift(function(viewValue) {
-							return formatDate(viewValue);
+							// Convert to Client Format
+							return formatDate(viewValue, SERVER_DATE_FORMAT, clientDateFormat);
 						});
 					}
 				};
@@ -158,7 +158,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 			angularModule.filter('sdFilterDate', function() {
 				return function(value) {
-					return formatDate(value);
+					// Convert to Client Format
+					return formatDate(value, SERVER_DATE_FORMAT, clientDateFormat);
 				};
 			});
 
@@ -168,12 +169,12 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function formatDate(value) {
+		function formatDate(value, fromFormat, toFormat) {
 			if (value != undefined && value != null && value != "") {
 				try {
 					// Convert to Client Format
-					var date = jQuery.datepicker.parseDate(SERVER_DATE_FORMAT, value);
-					value = jQuery.datepicker.formatDate(clientDateFormat, date);
+					var date = jQuery.datepicker.parseDate(fromFormat, value);
+					value = jQuery.datepicker.formatDate(toFormat, date);
 				} catch(e) {
 					log(e);
 				}
