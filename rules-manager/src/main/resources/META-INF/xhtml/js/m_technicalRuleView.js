@@ -89,8 +89,7 @@ define(
 							idLabel : m_utils.jQuerySelect(options.selectors.idLabel ),
 							nameLabel : m_utils.jQuerySelect(options.selectors.nameLabel ),
 							descriptionLabel : m_utils.jQuerySelect(options.selectors.descriptionLabel ),
-							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel ),
-							stringifyParamDefs : m_utils.jQuerySelect(options.selectors.stringifyParamDefs )
+							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel )
 					};
 					
 					/*Map uiElements to their resource text values*/
@@ -316,12 +315,6 @@ define(
 						var cmd=m_ruleSetCommand.ruleScriptChangeCmd(
 								ruleSet,techRule,tempVal,event);
 						m_ruleSetCommandDispatcher.trigger(cmd);
-					});
-					
-					uiElements.stringifyParamDefs.on("click",function(){
-						var typeDrl=ruleSet.generateDRLTypes();
-						var currentVal=uiElements.drlEditor.getValue();
-						uiElements.drlEditor.setValue(typeDrl + "\n\n" + currentVal);
 					});
 					
 					this.activate(ruleSet,techRule,uiElements);
