@@ -84,6 +84,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
@@ -2032,31 +2033,36 @@ public class ModelService
 
          EObject modelElement = issue.getModelElement();
 
-         String modelElemendId = null;
+         String modelElementId = null;
 
          if (modelElement != null && modelElement instanceof IIdentifiableModelElement)
          {
-            modelElemendId = modelId + "/"
+            modelElementId = modelId + "/"
                   + ((IIdentifiableModelElement) modelElement).getId() + "/"
                   + ((IIdentifiableModelElement) modelElement).getElementOid();
          }
          else if (modelElement != null && modelElement instanceof ModelType)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((ModelType) modelElement).getOid();
          }
          else if (modelElement != null && modelElement instanceof TypeDeclarationType)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((TypeDeclarationType) modelElement).getId();
          }
          else if (modelElement != null && modelElement instanceof ExternalPackage)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((ExternalPackage) modelElement).getId();
          }
+         else if (modelElement != null && modelElement instanceof DataMappingType)
+         {
+            modelElementId = modelId + "/" + modelId + "/"
+                  + ((DataMappingType) modelElement).getId();
+         }
 
-         issueJson.addProperty("modelElement", modelElemendId);
+         issueJson.addProperty("modelElement", modelElementId);
          issuesJson.add(issueJson);
       }
 
