@@ -321,7 +321,7 @@ define(
 				              
 				              /*if any of our tests has set doApply to true then apply our css*/
 				              if (doApply) {
-					                $(td).css("background","#99FF99");
+					                $(td).css("background","#DDDDDD");
 				              }
 				              else {
 				            	$(td).css("background","#FFFFFF");
