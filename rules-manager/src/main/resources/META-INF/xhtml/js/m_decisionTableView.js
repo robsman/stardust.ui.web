@@ -80,7 +80,9 @@ define(
 							addRow: m_utils.jQuerySelect(options.selectors.addRow),
 							decTableNameLbl: m_utils.jQuerySelect(options.selectors.decTableNameLbl),
 							alertPanel : m_utils.jQuerySelect(options.selectors.alertPanel),
-							alertPanelMsg : m_utils.jQuerySelect(options.selectors.alertPanelMsg)
+							alertPanelMsg : m_utils.jQuerySelect(options.selectors.alertPanelMsg),
+							tableSearch : m_utils.jQuerySelect(options.selectors.tableSearch),
+							tableSearchLbl : m_utils.jQuerySelect(options.selectors.tableSearchLbl)
 					};
 					
 					/*TODO: [ZZM] Factor these out.*/
@@ -174,6 +176,7 @@ define(
 					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
 						uiElements.decisionTableInstance.setColumnWidth
 					});
+					
 				    /*bind UIElements to events from our top level command processor*/
 				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,cnstCMD.decTableDataCmd);
 				    uiElements.decisionTableInstance.rootElement.on(cnstCMD.decTableDataCmd,function(event,data){
@@ -249,12 +252,100 @@ define(
 				    	myOpenDialogs=[];
 				    });
 				    
+				    /*Attach search behavior to our input field. On each keypress loop
+				     *through our underlying data looking for matches. Note, as we are looping
+				     *through our data we may see a slight disconnect when matching on formatted cells.*/
+				    uiElements.tableSearch.on('keyup', function (event) {
+				        var value = ('' + this.value).toLowerCase().trim(), row, col, r_len, c_len, td,
+				            data=uiElements.decisionTableInstance.getData(),
+				            doGT=false,doLT=false,doString=true,mathVal,tempVal,doApply;
+				        
+				        /*Check for leading operators that modify our matching conditions
+				         *No operator means simple string matching*/
+				        if(value && value.length > 1){
+				        	mathVal=value.substring(1);
+				        	if(!isNaN(mathVal)){
+						        if(value[0]===">"){
+						        	doGT=true;
+						        }
+						        else if(value[0]==="<"){
+						        	doLT=true;
+						        }
+				        	}
+				        }
+				        /*If we have a value match against it, otherwise reset to default css state*/
+				        if (value) {
+				          /*nested for loops for our 2D data.*/
+				          for (row = 0, r_len = data.length; row < r_len; row++) {
+				            for (col = 0, c_len = data[row].length; col < c_len; col++) {
+				              doApply=false
+				              td = uiElements.decisionTableInstance.getCell( row, col);
+				              tempVal=data[row][col];
+				              
+				              /*avoid evaluating tempVal as a cast numeric boolean val 
+				               *but keep its value valid*/
+				              if(tempVal===0){
+				            	  tempVal="0.00"
+				              }
+				              else if(tempVal===true){
+				            	  tempVal="true"
+				              }
+				              else if(tempVal===false){
+				            	  tempVal="false"
+				              }
+
+				              /*if we have a Math operator and a tempVal which is numeric....*/
+				              if(tempVal && !isNaN(tempVal) && (doGT || doLT)){
+					              if(doGT){
+					            	  if(1*tempVal > 1*mathVal){
+					            		  doApply=true;
+					            	  }
+					              }
+					              else if(doLT){
+					            	  if(1*tempVal < 1*mathVal ){
+					            		  doApply=true;
+					            	  }
+					              }
+				              }
+				              else{   /*regular string matching, nothing fancy.*/
+				            	  	  /*Exact matching for true and false input strings*/
+				            	  if(tempVal==="true" || tempVal==="false"){
+				            		  if(tempVal===value){
+				            			  doApply=true;
+				            		  }
+				            	  }
+				            	  else if (('' + tempVal).toLowerCase().indexOf(value) > -1) {
+					            	  doApply=true;
+					              }
+				              }
+				              
+				              /*if any of our tests has set doApply to true then apply our css*/
+				              if (doApply) {
+					                $(td).css("background","#99FF99");
+				              }
+				              else {
+				            	$(td).css("background","#FFFFFF");
+				              }
+				              
+				            }
+				          }
+				        }
+				        else{  /*User backspaced to beginning (No tempVal) so reset everyone*/
+				        	for (row = 0, r_len = data.length; row < r_len; row++) {
+				        		for (col = 0, c_len = data[row].length; col < c_len; col++) {
+				        			td = uiElements.decisionTableInstance.getCell( row, col);
+				        			$(td).css("background","#FFFFFF");
+				        		}
+				        	}
+				        }
+				      });
+				    
 				    /* POC for modifying any cell value that can be parsed as numeric on a scrollwheel event.
 				     * Stepsize is based on the number length (powers of 10) of the current cell value, such
 				     * that the wheel event will increment the value by length-1 powers of 10. In other words,
 				     * values on the order of 10^3 are incremented by 10^2 etc... (with exceptions for single digits)
 				     * */
-				    uiElements.decisionTableInstance.rootElement.bind("DOMMouseScroll onmousewheel mousewheel wheel",function(event){
+				    uiElements.decisionTableInstance.rootElement.bind("DOMMouseScroll onmousewheel mousewheel",function(event){
 				    	var direction=(event.originalEvent.wheelDeltaY > 0)?1:-1;
 				    	var selectedCellRange=uiElements.decisionTableInstance.getSelected(),
 					    	cellStart,
