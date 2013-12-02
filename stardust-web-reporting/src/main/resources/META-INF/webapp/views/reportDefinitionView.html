@@ -249,7 +249,7 @@ table.formTable td {
 												</tr>
 												<tr>
 													<td>
-														<div 
+														<!--div 
 												          ipp-Ace 
 												          mode="javascript"
 												          keywords="Hello,World" 
@@ -257,7 +257,13 @@ table.formTable td {
 												          snippets="true"
 												          autocomplete="true"
 												          ng-model="selectedComputedColumn.formula">
-												        </div>
+												        </div-->
+												        <textarea 
+												        	id="computedColumnExpressionEditor"
+															rows="10" 
+															cols="80"
+															ng-model="selectedComputedColumn.formula">
+														</textarea>
 													</td>
 												</tr>
 											</table></td>
