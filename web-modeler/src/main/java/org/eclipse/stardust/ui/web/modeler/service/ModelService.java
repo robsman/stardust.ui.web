@@ -394,6 +394,7 @@ public class ModelService
     */
    public ModelManagementStrategy getModelManagementStrategy()
    {
+      getServiceFactory();
       return currentSession().modelManagementStrategy();
    }
 
