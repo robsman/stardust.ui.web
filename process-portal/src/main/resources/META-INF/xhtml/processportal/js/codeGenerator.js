@@ -31,20 +31,28 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		var bindingPrefix;
 		var bindingData;
 		var i18nCallbackFunc;
+		var ignoreXPath;
+		var formElemName;
 
 		/*
 		 * 
 		 */
-		CodeGenerator.prototype.generate = function(paths, prefix, i18nCallback) {
+		CodeGenerator.prototype.generate = function(paths, prefix, i18nCallback, ignoreParentXPath, formName) {
 			bindingPrefix = prefix;
 			i18nCallbackFunc = i18nCallback;
+			ignoreXPath = ignoreParentXPath;
+			formElemName = formName;
+			if (!formElemName) {
+				formElemName = "form";
+			}
+
 			bindingData = {};
 
-			var elemForm = htmlElement.create("form", {attributes: {name: "form"}});
+			var elemForm = htmlElement.create("form", {attributes: {name: formElemName}});
 			var elemMain = htmlElement.create("div", {parent: elemForm, attributes: {class: "panel-main"}});
 
 			// Validation
-			var showExpr = "form.$invalid";
+			var showExpr = formElemName + ".$invalid";
 			var elemValidationBar = htmlElement.create("div", {parent: elemMain, 
 				attributes: {class: "panel-validation-summary-bar", "ng-show": showExpr}});
 			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "panel-validation-summary-bar-img"}});
@@ -58,6 +66,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 			bindingPrefix = undefined;
 			i18nCallbackFunc = undefined;
+			ignoreXPath = undefined;
+			formElemName = undefined;
 
 			return {html: html, binding: bindingData};
 		};
@@ -81,6 +91,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		function generateList(parent, path) {
 			var elemMain = htmlElement.create("div", {parent: parent, attributes: {class: "panel-list"}});
 
+			var listBinding = convertFullIdToBinding(path);
+
 			// Header
 			htmlElement.create("div", {parent: elemMain, value: getI18NLabel(path), attributes: {class: "panel-header"}});
 
@@ -97,7 +109,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (isReadonly(path)) {
 				elemAddButton.attributes["disabled"] = true;
 			} else {
-				elemAddButton.attributes["ng-click"] = "addToList('" + path.fullXPath + "')";
+				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ")";
 			}
 			htmlElement.create("img", {parent: elemAddButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/add.png"}});
@@ -108,7 +120,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (isReadonly(path)) {
 				elemRemoveButton.attributes["disabled"] = true;
 			} else {
-				elemRemoveButton.attributes["ng-click"] = "removeFromList('" + path.fullXPath + "')";
+				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
 			}
 			htmlElement.create("img", {parent: elemRemoveButton, 
 				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/delete.png"}});
@@ -126,7 +138,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			elemTBodyTr.attributes["ng-class"] = "{'panel-list-tbl-row-sel': " 
 				+ loopVar + ".$$selected, 'panel-list-tbl-row': !" + loopVar + ".$$selected}";
-			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + convertFullIdToBinding(path);
+			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + listBinding;
 			if (!isReadonly(path)) {
 				elemTBodyTr.attributes["ng-click"] = "selectListItem($event, " + loopVar + ")";
 			}
@@ -161,7 +173,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					} else {
 						var elemLink = htmlElement.create("a", {parent: elemTd, 
 							value: isReadonly(path) ? getI18NLabel("panel.list.view") : getI18NLabel("panel.list.edit")});
-						elemLink.attributes["disabled"] = "true"; // TODO: Structures in Lists
+						
+						elemLink.attributes["ng-click"] = "openNestedList(" + loopVar + ", '" + child.fullXPath + 
+							"', $index, '" + listBinding.replace(/'/g, '\\\'') + "', '" + getI18NLabel(path) + "', '" + 
+							getI18NLabel(child) + "', " + isReadonly(path) + ")";
 					}
 				}
 			}
@@ -180,7 +195,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			if (options.noLabel == undefined || !options.noLabel) {
 				var elemLabel = htmlElement.create("label", 
-						{parent: elemMain, value: getI18NLabel(path) + ":", attributes: {class: "panel-label"}});
+						{parent: elemMain, value: getI18NLabel(path), attributes: {class: "panel-label"}});
 			}
 
 			var elem;
@@ -265,12 +280,12 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 						for (var i = 0; i < validations.length; i++) {
 							elem.attributes[validations[i].type] = validations[i].value;
-							var showExpr = "form[" + formId + "].$error." + validations[i].type.split("-")[1];
+							var showExpr = formElemName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
 							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
 								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 						}
 
-						var showExpr = "form[" + formId + "].$invalid";
+						var showExpr = formElemName + "[" + formId + "].$invalid";
 						htmlElement.create("span", {parent: elemMain, 
 							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 					}
@@ -548,7 +563,12 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function convertFullIdToBinding(path) {
-			var parts = path.fullXPath.substring(1).split("/");
+			var xPath = path.fullXPath;
+			if(ignoreXPath && xPath.indexOf(ignoreXPath) == 0) {
+				xPath = xPath.substring(ignoreXPath.length);
+			}
+
+			var parts = xPath.substring(1).split("/");
 			
 			var binding = bindingPrefix ? bindingPrefix : "";
 			var currentBindingData = bindingData;

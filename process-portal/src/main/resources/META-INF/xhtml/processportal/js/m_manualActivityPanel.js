@@ -9,6 +9,8 @@
  ******************************************************************************/
 
 /**
+ * TODO: Convert and move most of the things to Angular directive
+ * 
  * @author Subodh.Godbole
  */
 
@@ -28,6 +30,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		var BINDING_PREFIX = "dm";
 		var SERVER_DATE_FORMAT = "yy-mm-dd";
 
+		var angularCompile;
+		
 		var interactionEndpoint;
 
 		var dataMappings;
@@ -71,6 +75,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.selectListItem = selectListItem;
 				$scope.isFormValid = isFormValid;
 				$scope.openDocument = openDocument;
+				$scope.openNestedList = openNestedList;
+				$scope.closeNestedList = closeNestedList;
+				$scope.showNestedList = showNestedList;
 			});
 		};
 
@@ -172,6 +179,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			    };
 			});
 
+			angularModule.controller('ManualActivityCtrl', function($compile) {
+				angularCompile = $compile;
+			});
+
 			angular.bootstrap(document, [moduleName]);
 		};
 
@@ -197,7 +208,19 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function generateMarkup(json) {
 			dataMappings = json;
 
+			var nestedListsDiv = 
+				"<div ng-show=\"showNestedDM\" class=\"panel-list-dialog\">" + 
+					"<div class=\"panel-list-dialog-title\">{{nestedDMTitle}}" + 
+						"<span class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\">X</span></div>" + 
+					"<div class=\"panel-list-dialog-breadcrumb\">" + 
+						"<span class=\"panel-list-dialog-breadcrumb-item\" ng-repeat=\"bCrumb in nestedDMs\">" + 
+							"<a href=\"\" ng-click=\"showNestedList($index)\" disabled=\"{{$last}}\">{{bCrumb.label}}</a>" + 
+								"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
+					"<div class=\"panel-list-dialog-content\"></div>" + 
+				"</div>";
+
 			var data = codeGenerator.create().generate(json, BINDING_PREFIX, i18nLabelProvider);
+			data.html += nestedListsDiv;
 			document.getElementsByTagName("body")[0].innerHTML = data.html;
 			
 			bindings = data.binding;
@@ -292,25 +315,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function addToList(xPath) {
+		function addToList(list) {
 			var $scope = angular.element(document).scope();
-			var parts = xPath.substring(1).split("/");
-			
-			var currentBinding = $scope[BINDING_PREFIX];
-			for(var i = 0; i < parts.length - 1; i++) {
-				currentBinding = currentBinding[parts[i]];
-			}
-
-			if (currentBinding) {
-				var lastPart = parts[parts.length-1];
-				if (currentBinding[lastPart] == undefined) {
-					currentBinding[lastPart] = [];
-				}
-				currentBinding = currentBinding[lastPart];
-				currentBinding.push({});
+			if (list != undefined) {
+				list.push({});
 			}
 		}
-		
+
 		/*
 		 * 
 		 */
@@ -325,19 +336,12 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function removeFromList(xPath) {
+		function removeFromList(list) {
 			var $scope = angular.element(document).scope();
-			var parts = xPath.substring(1).split("/");
-			
-			var currentBinding = $scope[BINDING_PREFIX];
-			for(var i = 0; i < parts.length; i++) {
-				currentBinding = currentBinding[parts[i]];
-			}
-
-			if (currentBinding) {
-				removeSelectedElements(currentBinding);
-				if (currentBinding.length == 0) {
-					currentBinding.push({});
+			if (list) {
+				removeSelectedElements(list);
+				if (list.length == 0) {
+					list.push({});
 				}
 			}
 		}
@@ -360,7 +364,48 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function isFormValid() {
 			var $scope = angular.element(document).scope();
-			return !$scope.form.$invalid;
+			var ret = $scope.form.$valid;
+			if (ret) {
+				ret = areNestedFormsValid();
+			}
+			return ret;
+		}
+
+		/*
+		 * 
+		 */
+		function areNestedFormsValid() {
+			var $scope = angular.element(document).scope();
+			var ret = true;
+			for(var i = 0; i < 20; i++) {
+				if ($scope['nForm' + i] != undefined) {
+					if ($scope['nForm' + i].$invalid) {
+						ret = false;
+						break;
+					}
+				}
+			}
+			return ret;
+		}
+
+		/*
+		 * 
+		 */
+		function isFocusNestedFormValid() {
+			var $scope = angular.element(document).scope();
+			var ret = true;
+			
+			if ($scope.nestedDMs && $scope.nestedDMs.length > 0) {
+				for(var i = 0; i < $scope.nestedDMs.length; i++) {
+					if ($scope.nestedDMs[i].visible) {
+						if ($scope['nForm' + i] != undefined) {
+							ret = $scope['nForm' + i].$valid;
+						}
+						break;
+					}
+				}
+			}
+			return ret;
 		}
 
 		/*
@@ -384,6 +429,144 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function openDocument(xPath) {
 			log("TODO: " + xPath);
+		}
+
+		/*
+		 * 
+		 */
+		function openNestedList(binding, xPath, index, listBinding, parentLabel, childLabel, readonly) {
+			var path = getPath(xPath);
+			
+			var breadcrumbLabel = parentLabel + "[" + index + "]." + childLabel;
+			
+			var scope = angular.element(document).scope();
+			
+			if (!scope.showNestedDM) {
+				scope.nestedDMTitle = readonly ? i18nLabelProvider("panel.list.dialog.view") : i18nLabelProvider("panel.list.dialog.edit");
+				scope.showNestedDM = true;
+			}
+			
+			if (!scope.nestedDMs) {
+				scope.nestedDMs = [];
+			} else {
+				// Dialog is already open
+				if (scope.nestedDMs.length > 0) {
+					if (!isFocusNestedFormValid()) {
+						return;
+					}
+					for(var i = 0; i < scope.nestedDMs.length; i++) {
+						if (scope.nestedDMs[i].label == breadcrumbLabel) {
+							showNestedList(i);
+							return;
+						}
+					}
+				}
+			}
+			
+			if (scope.nestedDMs.length > 0) {
+				for(var i = 0; i < scope.nestedDMs.length; i++) {
+					scope.nestedDMs[i].visible = false;
+				}
+			}
+			scope.nestedDMs.push({visible: true, label: breadcrumbLabel});
+
+			var nestedIndex = scope.nestedDMs.length - 1;
+
+			var parts = xPath.substring(1).split("/");
+			var lastPart = parts[parts.length - 1];
+
+			var parentXPath = xPath.substring(0, xPath.lastIndexOf("/"));
+
+			// NDM[0]
+			var nestedBindingPrefix = listBinding + "[" + index + "]";
+
+			var json = [];
+			json.push(path);
+			var data = codeGenerator.create().generate(json, nestedBindingPrefix, i18nLabelProvider, parentXPath, "nForm" + nestedIndex);
+			
+			for (var key in data.binding) {
+				if (binding[key] == undefined) {
+					jQuery.extend(binding, data.binding);
+					// massageInData(scope[BINDING_PREFIX]);
+					break;
+				} else {
+					break;
+				}
+			}
+
+			var nestedHtml = "<div ng-show=\"nestedDMs[" + nestedIndex + "].visible\" class=\"Nested" + nestedIndex + "\">" + data.html + "</div>";
+			jQuery(".panel-list-dialog-content").append(nestedHtml);
+
+			jQuery(function() {
+				var divElem = angular.element(".Nested" + nestedIndex);
+				angularCompile(divElem)(divElem.scope());
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function closeNestedList() {
+			if (isFocusNestedFormValid()) {
+				jQuery(".panel-list-dialog-content").html("");
+				
+				var scope = angular.element(document).scope();
+				scope.showNestedDM = false;
+				scope.nestedDMTitle = undefined;
+				scope.nestedDMs = undefined;
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function showNestedList(index) {
+			var scope = angular.element(document).scope();
+			
+			if (scope.nestedDMs.length > 0 && isFocusNestedFormValid()) {
+				// Remove HTML
+				for(var i = index + 1; i < scope.nestedDMs.length; i++) {
+					jQuery(".panel-list-dialog-content .Nested" + i).remove();
+				}
+
+				// Truncate Array
+				scope.nestedDMs.length = index + 1;
+				
+				for(var i = 0; i < scope.nestedDMs.length; i++) {
+					if (i == index) {
+						scope.nestedDMs[i].visible = true;
+					} else {
+						scope.nestedDMs[i].visible = false;
+					}
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getPath(xPath) {
+			var parts = xPath.substring(1).split("/");
+			var found;
+			var currentBinding = dataMappings;
+			for(var i = 0; i < parts.length; i++) {
+				found = false;
+				for(var j in currentBinding) {
+					if (parts[i] == currentBinding[j].id) {
+						found = true;
+						currentBinding = currentBinding[j];
+						break;
+					} 
+				}
+				if (found) {
+					if (i < parts.length - 1) { // Last Part
+						currentBinding = currentBinding.children;
+					}
+				} else {
+					return null;
+				}
+			}
+			return currentBinding;
 		}
 
 		/*

@@ -171,3 +171,42 @@ body, table {
 	text-align: left;
 	padding: 3px;
 }
+
+.panel-list-dialog {
+	position: absolute;
+	top: 0px;
+	left: 10px;
+	border: 1px solid black;
+	background-color: #FFFFFF;
+}
+
+.panel-list-dialog-close {
+	font-weight: bold;
+	float: right;
+	cursor: pointer;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.panel-list-dialog-title {
+	border-bottom: 1px solid black;
+	line-height: 30px;
+	padding: 5px;
+}
+
+.panel-list-dialog-breadcrumb {
+	line-height: 30px;
+	border-bottom: 1px solid lightgray;
+	padding: 5px;
+}
+
+.panel-list-dialog-breadcrumb-item {
+	padding-right: 5px;
+}
+
+.panel-list-dialog-content {
+	overflow: auto;
+	padding: 5px;
+	width: 1000px;
+	height: 500px;
+}
