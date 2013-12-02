@@ -302,7 +302,7 @@ define(
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
             false), function(index, model) {
           newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
-          refreshModelStatus(model);
+          //refreshModelStatus(model);
         });
 
         console.timeEnd("###################################### Tree formation");

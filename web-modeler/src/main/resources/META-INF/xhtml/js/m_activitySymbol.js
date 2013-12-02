@@ -859,6 +859,7 @@ define(
 						conn) {
 					var outMappingActivity = new Array();
 					var inMappingActivity = new Array();
+					var fromStartEvent = new Array();
 					var dataMapping = {};
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
@@ -886,11 +887,9 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (conn && conn.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
-									&& connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
-									&& !m_utils
-											.isIntermediateEvent(connection.fromAnchorPoint.symbol)) {
-								//do nothing
+							if (connection.fromAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) 
+							{
+								fromStartEvent.push(connection.fromAnchorPoint.symbol.oid);
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
 								if (connection.toAnchorPoint.symbol.modelElement
@@ -920,7 +919,6 @@ define(
 					if (conn != null) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
 							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL 
-									&& conn.fromAnchorPoint.symbol.modelElement.eventType !== m_constants.START_EVENT_TYPE
 									&& conn.toAnchorPoint && conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
 								if (conn.fromAnchorPoint
 										&& conn.fromAnchorPoint.symbol) {
@@ -932,9 +930,19 @@ define(
 								}
 								if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
 									if (this.oid == conn.toAnchorPoint.symbol.oid) {
-										return (-1 == jQuery.inArray(
-												conn.toAnchorPoint.symbol.oid,
-												inMappingActivity));
+										if(conn.fromAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE)
+										{
+											//if there is already an incoming connection from symbol which is not Start Symbol - return false
+											if(inMappingActivity.length > 0){
+												return false;	
+											}
+										}
+										else{
+											//if there is an incoming connection from start event or any other symbol - return false   
+											return (-1 == jQuery
+													.inArray(conn.toAnchorPoint.symbol.oid,
+															inMappingActivity) && fromStartEvent.length == 0);	
+										}
 									}
 								}	
 							}
