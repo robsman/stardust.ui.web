@@ -554,6 +554,14 @@ define(
 										.val()) {
 							return true
 						}
+					} else if (this.dataTypeSelector 
+							&& data.dataType === m_constants.STRUCTURED_DATA_TYPE
+							&& this.dataTypeSelector.dataTypeSelect.val() === m_constants.PRIMITIVE_DATA_TYPE
+							&& data.structuredDataTypeFullId === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
+						if (m_model
+								.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
+							return true;
+						}
 					}
 
 					return false;

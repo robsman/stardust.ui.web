@@ -415,10 +415,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
    
-               String type = getPrimitiveType(formalParameter, changeDescriptions);
+               String type = getPrimitiveType(formalParameter, changeDescriptions, model);
                if (type != null)
-               {
-                  formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
+               {    
+                   formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
                }
             }
          }
@@ -429,7 +429,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
                
-               String type = getPrimitiveType(formalParameter, changeDescriptions);
+               String type = getPrimitiveType(formalParameter, changeDescriptions, model);
                if (type != null)
                {
                   formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
@@ -475,11 +475,18 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       return process.getFormalParameterMappings();
    }
 
-   private String getPrimitiveType(FormalParameterType formalParameter,
-         List<ChangeDescriptionJto> changeDescriptions)
+   /**
+    * 
+    * @param formalParameter
+    * @param changeDescriptions
+    * @param model
+    * @return
+    */
+   private String getPrimitiveType(FormalParameterType formalParameter, List<ChangeDescriptionJto> changeDescriptions,
+         ModelType model)
    {
-      String type = changeDescriptions == null ? null :
-         findInChangeDescriptions(changeDescriptions, formalParameter.getId());
+      String type = changeDescriptions == null ? null : findInChangeDescriptions(changeDescriptions,
+            formalParameter.getId());
       if (null == type)
       {
          FormalParameterMappingsType mappingsType = getFormalParameterMappings(formalParameter);
@@ -489,6 +496,20 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             if (data != null)
             {
                type = AttributeUtil.getAttributeValue(data, "carnot:engine:type");
+               // For Enum's return Data fullId
+               if (type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
+               {
+                  String typeDeclarationId = AttributeUtil.getAttributeValue(data,
+                        StructuredDataConstants.TYPE_DECLARATION_ATT);
+                  if (!StringUtils.isEmpty(typeDeclarationId))
+                  {
+                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(
+                           typeDeclarationId);
+
+                     String fullId = getModelBuilderFacade().createFullId(model, typeDeclaration);
+                     return fullId;
+                  }
+               }
             }
          }
       }
