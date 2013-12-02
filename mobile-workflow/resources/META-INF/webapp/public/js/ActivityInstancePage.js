@@ -8,149 +8,133 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define(
+		[ "js/Utils", "js/WorkflowService" ],
+		function(Utils, WorkflowService) {
+			return {
+				create : function(deck) {
+					var page = new ActivityInstancePage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+					page.initialize(deck);
 
-bpm.mobile_workflow.ActivityInstancePage = function ActivityInstancePage(
-		activityInstance) {
-	this.id = "activityInstancePage";
-	this.activityInstance = activityInstance;
+					return page;
+				}
+			};
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
+			function ActivityInstancePage() {
+				this.id = "activityInstancePage";
 
-		$("#" + this.id + " #titleHeader").empty();
-		$("#" + this.id + " #titleHeader").append(
-				this.activityInstance.activityName + " ("
-						+ this.activityInstance.oid + ")");
-		$("#suspendConfirmationDialog").popup();
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.initialize = function(deck) {
+					this.deck = deck;
+				};
 
-		var self = this;
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.show = function() {
+					var deferred = jQuery.Deferred();
 
-		getWorkflowService()
-				.activateActivity(this.activityInstance)
-				.done(
-						function(activityInstance) {
-							self.activityInstance = activityInstance;
+					$("#" + this.id + " #titleHeader").empty();
+					$("#" + this.id + " #titleHeader").append(
+							this.activityInstance.activityName + " ("
+									+ this.activityInstance.oid + ")");
+					$("#suspendConfirmationDialog").popup();
 
-							console.log("Activity Instance");
-							console.log(self.activityInstance);
+					var self = this;
 
-							self.externalWebAppUrl = activityInstance.activity.contexts.externalWebApp['carnot:engine:ui:externalWebApp:uri']
-									+ "?ippDevice=mobile&ippInteractionUri="
-									+ activityInstance.activity.contexts.externalWebApp.interactionId;
+					WorkflowService
+							.instance()
+							.activateActivity(this.activityInstance)
+							.done(
+									function(activityInstance) {
+										self.activityInstance = activityInstance;
 
-							// activityInstance.html = "<form\">"
-							// + "<label for=\"firstNameInput\">First
-							// Name</label>"
-							// + "<input type=\"text\" name=\"firstNameInput\"
-							// id=\"firstNameInput\" value=\"\"/>"
-							// + "<label for=\"lastNameInput\">Last
-							// Name</label>"
-							// + "<input type=\"text\" name=\"lastNameInput\"
-							// id=\"lastNameInput\" value=\"\"/>"
-							// + "<label for=\"dateOfBirthInput\">Date of
-							// Birt</label>"
-							// + "<input type=\"date\" name=\"dateOfBirthInput\"
-							// id=\"dateOfBirthInput\" value=\"\"/>"
-							// + "<label for=\"countrySelect\"
-							// class=\"select\">Country</label> "
-							// + "<select name=\"countrySelect\"
-							// id=\"countrySelect\">"
-							// + "<option value=\"USA\">USA</option>"
-							// + "<option value=\"GER\">Germany</option>"
-							// + "<option value=\"SA\">South Africa</option>"
-							// + "</select>"
-							// + "<input type=\"checkbox\"
-							// name=\"approvedCheckbox\"
-							// id=\"approvedCheckbox\" class=\"custom\" />"
-							// + "<label
-							// for=\"approvedCheckbox\">Approved</label>"
-							// + "<label for=\"textarea\">Description</label>"
-							// + "<textarea cols=\"40\" rows=\"8\"
-							// name=\"description\"
-							// id=\"description\"></textarea>"
-							// + "</form>";
-							// $("#activityForm").empty();
-							// $("#activityForm").append(activityInstance.html);
-							deferred.resolve();
-						}).fail(function() {
-					deferred.reject();
-				});
+										console.log("Activity Instance");
+										console.log(self.activityInstance);
 
-		// $("#activityForm textarea").textinput();
-		// $("#activityForm input:text").textinput();
-		// $("#activityForm input:checkbox").checkboxradio();
-		// $("#activityForm select").selectmenu();
+										if (activityInstance.activity.implementation === "manual") {
+											// TODO Leverage new implementation
+											// fro Manual Activities
+										} else {
+											self.externalWebAppUrl = self.activityInstance.activity.contexts.externalWebApp['carnot:engine:ui:externalWebApp:uri']
+													+ "?ippDevice=mobile&ippInteractionUri="
+													+ activityInstance.activity.contexts.externalWebApp.interactionId;
+										}
+										deferred.resolve();
+									}).fail(function() {
+								deferred.reject();
+							});
 
-		return deferred.promise();
-	};
+					return deferred.promise();
+				};
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.complete = function() {
-		console.log("ActivityInstancePage.prototype.complete");
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.complete = function() {
+					console.log("ActivityInstancePage.prototype.complete");
 
-		getWorkflowService().completeActivity(this.activityInstance).done(
-				function(activityInstance) {
-					getDeck().popPage();
+					var self = this;
 
-					if (activityInstance != null) {
-						getDeck().pushPage(
-								new ActivityInstancePage(activityInstance));
-						console.log("New Activity Instance set");
-					} else {
-						console.log("Processing completed");
-					}
-				});
-	};
+					WorkflowService.instance().completeActivity(
+							this.activityInstance).done(
+							function(activityInstance) {
+								self.deck.popPage();
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.openSuspendDialog = function() {
-		$("#suspendConfirmationDialog").popup("open");
-	};
+								if (activityInstance != null) {
+									self.deck
+											.pushPage(new ActivityInstancePage(
+													activityInstance));
+									console.log("New Activity Instance set");
+								} else {
+									console.log("Processing completed");
+								}
+							});
+				};
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.suspendActivityInstance = function() {
-		getWorkflowService().suspendActivity(this.activityInstance).done(
-				function() {
-					getDeck().popPage();
-				});
-	};
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.openSuspendDialog = function() {
+					$("#suspendConfirmationDialog").popup("open");
+				};
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.closeSuspendDialog = function() {
-		$("#suspendConfirmationDialog").popup("close");
-	};
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.suspendActivityInstance = function() {
+					var self = this;
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.openNotesPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.NotesPage(this.activityInstance.processInstanceOid));
-	};
+					WorkflowService.instance().suspendActivity(
+							this.activityInstance).done(function() {
+						self.deck.popPage();
+					});
+				};
 
-	/**
-	 * 
-	 */
-	ActivityInstancePage.prototype.openProcessPage = function() {
-		getDeck().pushPage(
-				new bpm.mobile_workflow.ProcessPage(
-						this.activityInstance.processInstanceOid));
-	};
-};
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.closeSuspendDialog = function() {
+					$("#suspendConfirmationDialog").popup("close");
+				};
+
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.openNotesPage = function() {
+					this.deck.notesPage.processInstanceOid = this.activityInstance.processInstanceOid;
+					this.deck.pushPage(this.deck.notesPage);
+				};
+
+				/**
+				 * 
+				 */
+				ActivityInstancePage.prototype.openProcessPage = function() {
+					this.deck.processPage.processInstanceOid = this.activityInstance.processInstanceOid;
+					this.deck.pushPage(this.deck.processPage);
+				};
+			}
+		});

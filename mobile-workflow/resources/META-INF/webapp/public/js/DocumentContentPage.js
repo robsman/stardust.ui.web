@@ -8,43 +8,50 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new DocumentContentPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.DocumentContentPage = function DocumentContentPage(document) {
-	this.id = "documentContentPage";
-	this.document = document;
-
-	console.log("Document");
-	console.log(document);
-
-	/**
-	 * 
-	 */
-	DocumentContentPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-
-		deferred.resolve();
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	DocumentContentPage.prototype.getContentUri = function() {
-		return getWorkflowService().getBaseUrl() + "/dms-content/"
-				+ this.document.downloadToken;
-	};
-	/**
-	 * 
-	 */
-	DocumentContentPage.prototype.back = function() {
-		getDeck().popPage();
-	};
-};
+	function DocumentContentPage() {
+		this.id = "documentContentPage";
+
+		/**
+		 * 
+		 */
+		DocumentContentPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
+
+		/**
+		 * 
+		 */
+		DocumentContentPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+
+			deferred.resolve();
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		DocumentContentPage.prototype.getContentUri = function() {
+			return WorkflowService.instance().getBaseUrl() + "/dms-content/"
+					+ this.document.downloadToken;
+		};
+		/**
+		 * 
+		 */
+		DocumentContentPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+	}
+});

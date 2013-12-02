@@ -13,52 +13,62 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new ReportsPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.ReportsPage = function ReportsPage() {
-	this.id = "reportsPage";
+			return page;
+		}
+	};
 
-	/**
-	 * 
-	 */
-	ReportsPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-		var self = this;
+	function ReportsPage() {
+		this.id = "reportsPage";
+
+		/**
+		 * 
+		 */
+		ReportsPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
 		
-		getWorkflowService()
-				.getReportDefinitions()
-				.done(
-						function(reportFolders) {
-							self.reportFolders = reportFolders;
-							
-							console.log("Report Folders");
-							console.log(self.reportFolders);
-							
-							deferred.resolve();
-						}).fail(function() {
-					deferred.reject();
-				});
+		/**
+		 * 
+		 */
+		ReportsPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+			var self = this;
 
-		return deferred.promise();
-	};
+			WorkflowService.instance().getReportDefinitions().done(
+					function(reportFolders) {
+						self.reportFolders = reportFolders;
 
-	/**
-	 * 
-	 */
-	ReportsPage.prototype.openReportPage = function(report) {
-		getDeck().pushPage(new bpm.mobile_workflow.ReportPage(report));
-	};
+						console.log("Report Folders");
+						console.log(self.reportFolders);
 
-	/**
-	 * 
-	 */
-	ReportsPage.prototype.back = function() {
-		getDeck().popPage();				
-	};
-};
+						deferred.resolve();
+					}).fail(function() {
+				deferred.reject();
+			});
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		ReportsPage.prototype.openReportPage = function(report) {
+			this.deck.reportPage.report = report; 
+			this.deck.pushPage(this.deck.reportPage);
+		};
+
+		/**
+		 * 
+		 */
+		ReportsPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+	}
+});

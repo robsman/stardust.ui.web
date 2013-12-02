@@ -13,52 +13,63 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new ProcessPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.ProcessPage = function ProcessPage(processInstanceOid) {
-	this.id = "processPage";
-	this.processInstanceOid = processInstanceOid;
-
-	/**
-	 * 
-	 */
-	ProcessPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-		var self = this;
-
-		getWorkflowService().getProcessInstance(this.processInstanceOid).done(
-				function(processInstance) {
-					self.processInstance = processInstance;
-
-					console.log("Process Instance");
-					console.log(self.processInstance);
-
-					deferred.resolve();
-				}).fail(function() {
-			deferred.reject();
-		});
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	ProcessPage.prototype.openUserPage = function(x) {
-		getDeck().pushPage(new bpm.mobile_workflow.UserPage(x));
-	};
+	function ProcessPage(processInstanceOid) {
+		this.id = "processPage";
 
-	/**
-	 * 
-	 */
-	ProcessPage.prototype.back = function() {
-		getDeck().popPage();
-	};
+		/**
+		 * 
+		 */
+		ProcessPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
 
-};
+		/**
+		 * 
+		 */
+		ProcessPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+			var self = this;
+
+			WorkflowService.instance().getProcessInstance(
+					this.processInstanceOid).done(function(processInstance) {
+				self.processInstance = processInstance;
+
+				console.log("Process Instance");
+				console.log(self.processInstance);
+
+				deferred.resolve();
+			}).fail(function() {
+				deferred.reject();
+			});
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		ProcessPage.prototype.openUserPage = function(user) {
+			this.deck.userPage.user = user;
+
+			this.deck.pushPage(this.deck.userPage);
+		};
+
+		/**
+		 * 
+		 */
+		ProcessPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+	}
+});

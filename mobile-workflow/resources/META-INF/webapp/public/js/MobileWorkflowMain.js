@@ -37,24 +37,67 @@ require
 
 require([ "require", "jquery", "angularjs", "jquery-ui", "jquery-mobile",
 		"jquery.base64", "xml2json", "js/Utils", "js/TestWorkflowService",
-		"js/WorkflowService", "js/Deck", "js/LoginPage", "js/DashboardPage",
-		"js/StartableProcessesPage", "js/WorklistPage",
-		"js/ActivityInstancePage", "js/ProcessPage", "js/NotesPage",
-		"js/NotePage", "js/UserPage", "js/ReportsPage", "js/ReportPage",
-		"js/SearchPage", "js/FolderPage", "js/DocumentContentPage" ], function(
-		require, jquery, angularjs, jqueryUi, jqueryMobile, jqueryBase64,
-		xml2json, Utils, TestWorkflowService, WorkflowService, Deck, LoginPage,
-		DashboardPage, StartableProcessesPage, WorklistPage,
-		ActivityInstancePage, ProcessPage, NotesPage, NotePage, UserPage,
-		ReportsPage, ReportPage, SearchPage, FolderPage, DocumentContentPage) {
+		"js/WorkflowService", "js/Deck" ], function(require, jquery, angularjs,
+		jqueryUi, jqueryMobile, jqueryBase64, xml2json, Utils,
+		TestWorkflowService, WorkflowService, Deck) {
 	jQuery(document).ready(
 			function() {
-				window.top.deck = new bpm.mobile_workflow.Deck();
+				var module = angular.module('mobileWorkflowApplication', []);
 
-				window.top.deck = window.top.deck.initialize(angularjs,
-						new bpm.mobile_workflow.LoginPage());
+				module.controller('deck', function($scope) {
+					// Inherit methods from Deck
 
-				console.log("Scope");
-				console.log(window.top.deck);
+					Utils.inherit($scope, Deck.create());
+
+					console.log("Scope");
+					console.log($scope);
+
+					// Initialize
+
+					$scope.initialize();
+				});
+
+				module.directive('sdDeck', function() {
+					return {
+						restrict : "A",
+						compile : function(element, attrs) {
+							return {
+								post : function(scope, element, attributes,
+										controller) {
+									scope.$watch("getTopPage().id", function(
+											value) {
+										console.log("Top Page ID changed to "
+												+ value);
+										$.mobile.changePage("#" + value, {
+											transition : "none"
+										});
+									});
+								}
+							};
+						}
+					};
+				});
+
+				module.directive('sdList', function() {
+					return {
+						restrict : "A",
+						compile : function(element, attrs) {
+							return {
+								post : function(scope, element, attributes,
+										controller) {
+									scope.$watch(attributes.sdList,
+											function(value) {
+												if (value) {
+													jQuery(element).listview(
+															"refresh");
+												}
+											});
+								}
+							};
+						}
+					};
+				});
+
+				angular.bootstrap(document, [ "mobileWorkflowApplication" ]);
 			});
 });

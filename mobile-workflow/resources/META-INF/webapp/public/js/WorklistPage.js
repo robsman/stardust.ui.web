@@ -8,93 +8,92 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define(
+		[ "js/Utils", "js/WorkflowService" ],
+		function(Utils, WorkflowService) {
+			return {
+				create : function(deck) {
+					var page = new WorklistPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+					page.initialize(deck);
 
-bpm.mobile_workflow.WorklistPage = function WorklistPage(activityInstanceOid) {
-	this.id = "worklistPage";
+					return page;
+				}
+			};
 
-	/**
-	 * 
-	 */
-	WorklistPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
+			function WorklistPage() {
+				this.id = "worklistPage";
 
-		getWorkflowService()
-				.getWorklist()
-				.done(
-						function(worklist) {
-							$("#workitemList li").remove();
+				/**
+				 * 
+				 */
+				WorklistPage.prototype.initialize = function(deck) {
+					this.deck = deck;
+				};
 
-							for ( var n in worklist) {
-								var activityInstance = worklist[n];
+				/**
+				 * 
+				 */
+				WorklistPage.prototype.show = function() {
+					var deferred = jQuery.Deferred();
 
-								var descriptors = "";
-								var start = true;
+					var self = this;
 
-								for ( var x in activityInstance.descriptors) {
-									if (start) {
-										start = false;
-									} else {
-										descriptors += ", ";
-									}
+					WorkflowService
+							.instance()
+							.getWorklist()
+							.done(
+									function(worklist) {
+										self.worklist = [];
 
-									descriptors += x;
-									descriptors += ": ";
-									descriptors += activityInstance.descriptors[x] == null ? " -"
-											: activityInstance.descriptors[x];
-									descriptors += " ";
-								}
+										for ( var n in worklist) {
+											var activityInstance = worklist[n];
 
-								jQuery("#workitemList")
-										.append(
-												"<li><a id=\""
-														+ activityInstance.oid
-														+ "\" ref=\"#\">"
-														+ "<h4>"
-														+ activityInstance.activityName
-														+ "</h4>"
-														+ "<p>"
-														+ formatDateTime(new Date(
-																activityInstance.startTime))
-														+ " "
-														+ (activityInstance.lastModificationTime == 0 ? "-"
-																: formatDateTime(new Date(
-																		activityInstance.lastModificationTime)))
-														+ "<br>" + descriptors
-														+ "</p></a></li>");
-								$("#workitemList #" + activityInstance.oid)
-										.click(
-												{
-													"activityInstance" : activityInstance
-												},
-												function(event) {
-													getDeck()
-															.pushPage(
-																	new bpm.mobile_workflow.ActivityInstancePage(
-																			event.data.activityInstance));
-												});
-							}
+											var descriptors = "";
+											var start = true;
 
-							// $("#workitemList").listview("refresh");
+											for ( var x in activityInstance.descriptors) {
+												if (start) {
+													start = false;
+												} else {
+													descriptors += ", ";
+												}
 
-							deferred.resolve();
-						}).fail(function() {
-					deferred.reject();
-				});
+												descriptors += x;
+												descriptors += ": ";
+												descriptors += activityInstance.descriptors[x] == null ? " -"
+														: activityInstance.descriptors[x];
+												descriptors += " ";
+											}
 
-		return deferred.promise();
-	};
+											activityInstance.descriptors = descriptors;
 
-	/**
-	 * 
-	 */
-	WorklistPage.prototype.back = function() {
-		getDeck().popPage();
-	};
-};
+											self.worklist
+													.push(activityInstance);
+										}
+
+										deferred.resolve();
+									}).fail(function() {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				WorklistPage.prototype.openActivityInstancePage = function(
+						activityInstance) {
+					this.deck.activityInstancePage.activityInstance = activityInstance;
+					this.deck.pushPage(this.deck.activityInstancePage);
+				};
+
+				/**
+				 * 
+				 */
+				WorklistPage.prototype.back = function() {
+					this.deck.popPage();
+				};
+			}
+		});

@@ -8,61 +8,75 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define(
+		[ "js/WorkflowService" ],
+		function(WorkflowService) {
+			return {
+				create : function(deck) {
+					var page = new LoginPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+					page.initialize(deck);
 
-if (!window.bpm.mobile_workflow.LoginPage) {
-	bpm.mobile_workflow.LoginPage = function LoginPage() {
-		this.id = "loginPage";
+					return page;
+				}
+			};
 
-		/**
-		 * 
-		 */
-		LoginPage.prototype.initialize = function() {
-			var deferred = jQuery.Deferred();
+			function LoginPage() {
+				this.id = "loginPage";
 
-			$("#notificationDialog").popup();
+				/**
+				 * 
+				 */
+				LoginPage.prototype.initialize = function(deck) {
+					this.deck = deck;
 
-			deferred.resolve();
+					$("#notificationDialog").popup();
+				};
 
-			return deferred.promise();
-		};
+				/**
+				 * 
+				 */
+				LoginPage.prototype.show = function(deck) {
+					var deferred = jQuery.Deferred();
 
-		/**
-		 * 
-		 */
-		LoginPage.prototype.login = function() {
-			var self = this;
+					deferred.resolve();
 
-			getWorkflowService().login(this.account, this.password).done(
-					function(user) {
-						getDeck().user = user;
-						getDeck().pushPage(
-								new bpm.mobile_workflow.DashboardPage());
-					}).fail(function() {
-				self.openNotificationDialog("Login failed.");
-			});
-		};
+					return deferred.promise();
+				};
 
-		/**
-		 * 
-		 */
-		LoginPage.prototype.openNotificationDialog = function(message) {
-			$("#notificationDialog #message").empty();
-			$("#notificationDialog #message").append(message);
-			$("#notificationDialog").popup("open");
-		};
+				/**
+				 * 
+				 */
+				LoginPage.prototype.login = function() {
+					var self = this;
 
-		/**
-		 * 
-		 */
-		LoginPage.prototype.closeNotificationDialog = function() {
-			$("#notificationDialog").popup("close");
-		};
-	};
-}
+					WorkflowService
+							.instance()
+							.login(this.account, this.password)
+							.done(
+									function(user) {
+										self.deck.user = user;
+										self.deck
+												.pushPage(self.deck.dashboardPage);
+									}).fail(function() {
+								self.openNotificationDialog("Login failed.");
+							});
+				};
+
+				/**
+				 * 
+				 */
+				LoginPage.prototype.openNotificationDialog = function(message) {
+					$("#notificationDialog #message").empty();
+					$("#notificationDialog #message").append(message);
+					$("#notificationDialog").popup("open");
+				};
+
+				/**
+				 * 
+				 */
+				LoginPage.prototype.closeNotificationDialog = function() {
+					$("#notificationDialog").popup("close");
+				};
+			}
+		});

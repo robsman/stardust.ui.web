@@ -8,69 +8,82 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/WorkflowService" ], function(WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new DashboardPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.DashboardPage = function DashboardPage() {
-	this.id = "dashboardPage";
-
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-
-		deferred.resolve();
-
-		return deferred.promise();		
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.logout = function() {
-		getWorkflowService().logout().done(function() {
-			getDeck().popPage();
-		});
-	};
+	function DashboardPage() {
+		this.id = "dashboardPage";
 
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.openWorklistPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.WorklistPage());
-	};
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
 
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.openStartableProcessesPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.StartableProcessesPage());
-	};
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
 
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.openReportsPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.ReportsPage());
-	};
+			deferred.resolve();
 
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.openSearchPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.SearchPage());
-	};
-	
-	/**
-	 * 
-	 */
-	DashboardPage.prototype.openFolderPage = function() {
-		getDeck().pushPage(new bpm.mobile_workflow.FolderPage());
-	};
-};
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.logout = function() {
+			var self = this;
+
+			WorkflowService.instance().logout().done(function() {
+				self.deck.popPage();
+			});
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.openWorklistPage = function() {
+			this.deck.pushPage(this.deck.worklistPage);
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.openStartableProcessesPage = function() {
+			this.deck.pushPage(this.deck.startableProcessesPage);
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.openReportsPage = function() {
+			this.deck.pushPage(this.deck.reportsPage);
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.openSearchPage = function() {
+			this.deck.pushPage(this.deck.searchPage);
+		};
+
+		/**
+		 * 
+		 */
+		DashboardPage.prototype.openFolderPage = function() {
+			this.deck.pushPage(this.deck.folderPage);
+		};
+	}
+});

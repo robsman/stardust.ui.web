@@ -13,33 +13,43 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new NotePage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.NotePage = function NotePage(note) {
-	this.id = "notePage";
-	this.note = note;
-
-	/**
-	 * 
-	 */
-	NotePage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-
-		deferred.resolve();
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	NotePage.prototype.back = function() {
-		getDeck().popPage();				
-	};
-};
+	function NotePage() {
+		this.id = "notePage";
+
+		/**
+		 * 
+		 */
+		NotePage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
+
+		/**
+		 * 
+		 */
+		NotePage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+
+			deferred.resolve();
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		NotePage.prototype.back = function() {
+			this.deck.popPage();
+		};
+	}
+});

@@ -13,32 +13,43 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new SearchPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.SearchPage = function SearchPage() {
-	this.id = "searchPage";
-
-	/**
-	 * 
-	 */
-	SearchPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-
-		deferred.resolve();
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	SearchPage.prototype.back = function() {
-		getDeck().popPage();
-	};
-};
+	function SearchPage() {
+		this.id = "searchPage";
+
+		/**
+		 * 
+		 */
+		SearchPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
+
+		/**
+		 * 
+		 */
+		SearchPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+
+			deferred.resolve();
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		SearchPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+	}
+});

@@ -8,37 +8,43 @@
  * documentation
  ******************************************************************************/
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/LoginPage", "js/DashboardPage",
+		"js/StartableProcessesPage", "js/WorklistPage",
+		"js/ActivityInstancePage", "js/ReportsPage", "js/ReportPage",
+		"js/FolderPage", "js/DocumentContentPage", "js/SearchPage", "js/NotesPage", "js/NotePage", "js/ProcessPage", "js/UserPage" ], function(
+		Utils, LoginPage, DashboardPage, StartableProcessesPage, WorklistPage,
+		ActivityInstancePage, ReportsPage, ReportPage, FolderPage,
+		DocumentContentPage, SearchPage, NotesPage, NotePage, ProcessPage, UserPage) {
+	return {
+		create : function() {
+			return new Deck();
+		}
+	};
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
-
-if (!window.bpm.mobile_workflow.LoginPage) {
-	bpm.mobile_workflow.Deck = function Deck() {
+	function Deck() {
 		this.pages = [];
 
 		/**
 		 * 
 		 */
-		Deck.prototype.initialize = function(angular, page) {
-			this.pages.push(page);
+		Deck.prototype.initialize = function() {
+			this.loginPage = LoginPage.create(this);
+			this.dashboardPage = DashboardPage.create(this);
+			this.startableProcessesPage = StartableProcessesPage.create(this);
+			this.worklistPage = WorklistPage.create(this);
+			this.activityInstancePage = ActivityInstancePage.create(this);
+			this.reportsPage = ReportsPage.create(this);
+			this.reportPage = ReportPage.create(this);
+			this.folderPage = FolderPage.create(this);
+			this.documentPage = DocumentContentPage.create(this);
+			this.searchPage = SearchPage.create(this);
+			this.notesPage = NotesPage.create(this);
+			this.notePage = NotePage.create(this);
+			this.processPage = ProcessPage.create(this);
+			this.userPage = UserPage.create(this);
 
-			angular.module('angularApp', []);
-			angular.bootstrap(document, [ 'angularApp' ]);
-
-			this.scope = angular.element(document.body).scope();
-
+			this.pushPage(this.loginPage);
 			this.externalWebAppUrl = "./empty.html";
-
-			jQuery.extend(this.scope, this);
-			inheritMethods(this.scope, this);
-
-			page.initialize();
-
-			return this.scope;
 		};
 
 		/**
@@ -53,27 +59,18 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		 * 
 		 */
 		Deck.prototype.pushPage = function(page) {
-			this.pages.push(page);
-
-			console.log("\nPush Page - Page Stack:");
-
-			for ( var n = 0; n < this.pages.length; ++n) {
-				console.log("#" + n + ": " + this.pages[n].id);
-			}
-
 			var self = this;
 
-			page.initialize().done(function() {
-				try {
-					self.$apply();
-				} catch (x) {
-					console.log(x);
+			page.show().done(function() {
+				self.pages.push(page);
+
+				console.log("\nPush Page - Page Stack:");
+
+				for ( var n = 0; n < self.pages.length; ++n) {
+					console.log("#" + n + ": " + self.pages[n].id);
 				}
 
-				$.mobile.changePage("#" + page.id, {
-					transition : "none"
-				});
-
+				self.safeApply();
 			}).fail();
 		};
 
@@ -81,28 +78,18 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		 * 
 		 */
 		Deck.prototype.popPage = function() {
-			this.pages.pop();
-
-			console.log("\nPop Page - Page Stack:");
-
-			for ( var n = 0; n < this.pages.length; ++n) {
-				console.log("#" + n + ": " + this.pages[n].id);
-			}
-
 			var self = this;
 
-			this.getTopPage().initialize().done(function() {
-				// try {
-				// self.$apply();
-				// } catch (x) {
-				// console.log(x);
-				// }
+			this.getTopPage().show().done(function() {
+				self.pages.pop();
 
-				console.log("Changing page to " + self.getTopPage().id);
+				console.log("\nPop Page - Page Stack:");
 
-				$.mobile.changePage("#" + self.getTopPage().id, {
-					transition : "none"
-				});
+				for ( var n = 0; n < self.pages.length; ++n) {
+					console.log("#" + n + ": " + self.pages[n].id);
+				}
+
+				self.safeApply();
 			}).fail();
 		};
 
@@ -112,37 +99,29 @@ if (!window.bpm.mobile_workflow.LoginPage) {
 		Deck.prototype.getTopPage = function() {
 			return this.pages[this.pages.length - 1];
 		};
-	};
-}
 
-/**
- * Singleton function
- */
-function getDeck() {
-	return window.top.deck;
-}
+		/**
+		 * 
+		 */
+		Deck.prototype.safeApply = function(fn) {
+			var phase = this.$root.$$phase;
 
-/**
- * 
- * @returns
- */
-function getWorkflowService() {
-	if (window.top.workflowService == null) {
-		window.top.workflowService = new WorkflowService();
-		// window.top.workflowService = new TestWorkflowService();
+			if (phase == '$apply' || phase == '$digest') {
+				if (fn && (typeof (fn) === 'function')) {
+					fn();
+				}
+			} else {
+				this.$apply(fn);
+			}
+		};
+
+		Deck.prototype.formatDateTime = function(dateTime) {
+			if (dateTime) {
+				return Utils.formatDateTime(new Date(dateTime));
+			} else {
+				return "-";
+			}
+		};
 	}
 
-	return window.top.workflowService;
-}
-
-/**
- * Auxiliary function to copy all methods from the parentObject to the
- * childObject.
- */
-function inheritMethods(childObject, parentObject) {
-	for ( var member in parentObject) {
-		if (parentObject[member] instanceof Function) {
-			childObject[member] = parentObject[member];
-		}
-	}
-}
+});

@@ -13,45 +13,52 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new ReportPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.ReportPage = function ReportPage(report) {
-	this.id = "reportPage";
-	this.report = report;
-
-	console.log("Report");
-	console.log(this.report);
-
-	/**
-	 * 
-	 */
-	ReportPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-
-		deferred.resolve();
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	ReportPage.prototype.back = function() {
-		getDeck().popPage();
-	};
+	function ReportPage() {
+		this.id = "reportPage";
 
-	/**
-	 * 
-	 */
-	ReportPage.prototype.getReportUri = function(e) {
-		return getWorkflowService().getBaseUrl()
-				+ "/plugins/bpm-reporting/views/reportPanel.html?path="
-				+ this.report.path;
-	};
-};
+		/**
+		 * 
+		 */
+		ReportPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
+		
+		/**
+		 * 
+		 */
+		ReportPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+
+			deferred.resolve();
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		ReportPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+
+		/**
+		 * 
+		 */
+		ReportPage.prototype.getReportUri = function(e) {
+			return WorkflowService.instance().getBaseUrl()
+					+ "/plugins/bpm-reporting/views/reportPanel.html?path="
+					+ this.report.path;
+		};
+	}
+});

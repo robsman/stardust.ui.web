@@ -13,58 +13,71 @@
  * 
  */
 
-if (!window.bpm) {
-	bpm = {};
-}
+define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
+	return {
+		create : function(deck) {
+			var page = new FolderPage();
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+			page.initialize(deck);
 
-bpm.mobile_workflow.FolderPage = function FolderPage(folder) {
-	this.id = "folderPage";
-	this.folder = folder;
-
-	/**
-	 * 
-	 */
-	FolderPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-		var self = this;
-
-		getWorkflowService().getFolders(this.folder).done(function(folder) {
-
-			console.debug("Folder");
-			console.debug(folder);
-
-			self.folder = folder;
-
-			deferred.resolve();
-		}).fail(function() {
-			deferred.reject();
-		});
-
-		return deferred.promise();
+			return page;
+		}
 	};
 
-	/**
-	 * 
-	 */
-	FolderPage.prototype.back = function() {
-		getDeck().popPage();
-	};
+	function FolderPage(folder) {
+		this.id = "folderPage";
 
-	/**
-	 * 
-	 */
-	FolderPage.prototype.openFolderPage = function(folder) {
-		getDeck().pushPage(new bpm.mobile_workflow.FolderPage(folder));
-	};
+		/**
+		 * 
+		 */
+		FolderPage.prototype.initialize = function(deck) {
+			this.deck = deck;
+		};
 
-	/**
-	 * 
-	 */
-	FolderPage.prototype.openDocumentContentPage = function(document) {
-		getDeck().pushPage(new bpm.mobile_workflow.DocumentContentPage(document));
-	};
-};
+		/**
+		 * 
+		 */
+		FolderPage.prototype.show = function() {
+			var deferred = jQuery.Deferred();
+			var self = this;
+
+			WorkflowService.instance().getFolders(this.folder).done(
+					function(folder) {
+
+						console.debug("Folder");
+						console.debug(folder);
+
+						self.folder = folder;
+
+						deferred.resolve();
+					}).fail(function() {
+				deferred.reject();
+			});
+
+			return deferred.promise();
+		};
+
+		/**
+		 * 
+		 */
+		FolderPage.prototype.back = function() {
+			this.deck.popPage();
+		};
+
+		/**
+		 * 
+		 */
+		FolderPage.prototype.openFolderPage = function(folder) {
+			this.deck.folderPage.folder = folder;
+			this.deck.pushPage(this.deck.folderPage);
+		};
+
+		/**
+		 * 
+		 */
+		FolderPage.prototype.openDocumentContentPage = function(document) {
+			this.deck.documentContentPage.document = document;
+			this.deck.pushPage(this.deck.documentContentPage);
+		};
+	}
+});

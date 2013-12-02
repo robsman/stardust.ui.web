@@ -12,81 +12,96 @@
 /**
  * 
  */
-if (!window.bpm) {
-	bpm = {};
-}
 
-if (!window.bpm.mobile_workflow) {
-	bpm.mobile_workflow = {};
-}
+define(
+		[ "js/Utils", "js/WorkflowService" ],
+		function(Utils, WorkflowService) {
+			return {
+				create : function(deck) {
+					var page = new StartableProcessesPage();
 
-bpm.mobile_workflow.StartableProcessesPage = function StartableProcessesPage() {
-	this.id = "startableProcessesPage";
+					page.initialize(deck);
 
-	/**
-	 * 
-	 */
-	StartableProcessesPage.prototype.initialize = function() {
-		var deferred = jQuery.Deferred();
-		var self = this;
+					return page;
+				}
+			};
 
-		getWorkflowService().getStartableProcesses().done(
-				function(startableProcesses) {
-					$("#notificationDialog").popup();
+			function StartableProcessesPage() {
+				this.id = "startableProcessesPage";
 
-					self.startableProcesses = startableProcesses;
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.initialize = function(deck) {
+					this.deck = deck;
+				};
 
-					//jQuery("#startableProcessList").appendTo(".ui-page").trigger("refresh");
-					
-					deferred.resolve();
-				}).fail(function() {
-			deferred.reject();
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.show = function() {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					WorkflowService.instance().getStartableProcesses().done(
+							function(startableProcesses) {
+								$("#notificationDialog").popup();
+
+								self.startableProcesses = startableProcesses;
+
+								deferred.resolve();
+							}).fail(function() {
+						deferred.reject();
+					});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.startProcess = function(
+						process) {
+					var self = this;
+
+					WorkflowService
+							.instance()
+							.startProcess(process)
+							.done(
+									function(activityInstance) {
+										if (activityInstance != null) {
+											self.deck.activityInstancePage.activityInstance = activityInstance;
+											self.deck
+													.pushPage(self.deck.activityInstancePage);
+										} else {
+											self
+													.openNotificationDialog("Process has been started but no activity is assigned to you.");
+										}
+									});
+				};
+
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.back = function(process) {
+					this.deck.popPage();
+				};
+
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.openNotificationDialog = function(
+						message) {
+					$("#notificationDialog #message").empty();
+					$("#notificationDialog #message").append(message);
+					$("#notificationDialog").popup("open");
+				};
+
+				/**
+				 * 
+				 */
+				StartableProcessesPage.prototype.closeNotificationDialog = function() {
+					$("#notificationDialog").popup("close");
+				};
+			}
 		});
-
-		return deferred.promise();
-	};
-
-	/**
-	 * 
-	 */
-	StartableProcessesPage.prototype.startProcess = function(process) {
-		var self = this;
-
-		getWorkflowService()
-				.startProcess(process)
-				.done(
-						function(activityInstance) {
-							if (activityInstance != null) {
-								getDeck().pushPage(
-										new ActivityInstancePage(
-												activityInstance));
-							} else {
-								self
-										.openNotificationDialog("Process has been started but no activity is assigned to you.");
-							}
-						});
-	};
-
-	/**
-	 * 
-	 */
-	StartableProcessesPage.prototype.back = function(process) {
-		getDeck().popPage();
-	};
-
-	/**
-	 * 
-	 */
-	StartableProcessesPage.prototype.openNotificationDialog = function(message) {
-		$("#notificationDialog #message").empty();
-		$("#notificationDialog #message").append(message);
-		$("#notificationDialog").popup("open");
-	};
-
-	/**
-	 * 
-	 */
-	StartableProcessesPage.prototype.closeNotificationDialog = function() {
-		$("#notificationDialog").popup("close");
-	};
-};
