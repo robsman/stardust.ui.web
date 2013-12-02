@@ -1066,7 +1066,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   {
                      parameterType = getModelBuilderFacade().createPrimitiveParameter(processDefinition, data,
                            formalParameterId, formalParameterName,
-                           primitiveDataType == null ? "String" : primitiveDataType, mode); //$NON-NLS-1$
+                           primitiveDataType == null ? "String" : primitiveDataType, mode, structuredDataTypeFullId); //$NON-NLS-1$
                   }
                   newParameters.add(parameterType);
                }
