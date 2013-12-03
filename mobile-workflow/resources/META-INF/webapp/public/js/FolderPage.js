@@ -33,7 +33,12 @@ define([ "js/Utils", "js/WorkflowService", "js/DocumentContentPage" ],
 				 */
 				FolderPage.prototype.initialize = function(deck, folder) {
 					this.deck = deck;
-					this.folder = folder;
+
+					if (folder) {
+						this.folder = folder;
+					} else {
+						this.root = true;
+					}
 				};
 
 				/**
@@ -43,15 +48,8 @@ define([ "js/Utils", "js/WorkflowService", "js/DocumentContentPage" ],
 					var deferred = jQuery.Deferred();
 					var self = this;
 
-					console.debug("Folder to be sent to server");
-					console.debug(this.folder);
-
-					WorkflowService.instance().getFolders(this.folder).done(
+					WorkflowService.instance().getFolders(this.root ? null : this.folder).done(
 							function(folder) {
-
-								console.debug("Folder");
-								console.debug(folder);
-
 								self.folder = folder;
 
 								deferred.resolve();
