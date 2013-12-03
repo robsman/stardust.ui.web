@@ -1879,18 +1879,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                String type = AttributeUtil.getAttributeValue(data, CarnotConstants.TYPE_ATT);
                if (type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
                {
-                  String typeDeclarationId = AttributeUtil.getAttributeValue(data,
-                        StructuredDataConstants.TYPE_DECLARATION_ATT);
-
-                  if (!StringUtils.isEmpty(typeDeclarationId))
+                  if (dataJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                   {
-                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(
-                           typeDeclarationId);
-
-                     String fullId = getModelBuilderFacade().createFullId(model, typeDeclaration);
-
-                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-                     dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, fullId);
+                     dataJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY,
+                           dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString());
                   }
                }
                else
