@@ -18,7 +18,6 @@ body, table {
 	padding: 5px;
 	margin-bottom: 10px;
 	background-color: #FFD966;
-	width: 100%;
 	line-height: 30px;
 }
 
@@ -174,8 +173,8 @@ body, table {
 
 .panel-list-dialog {
 	position: absolute;
-	top: 0px;
-	left: 10px;
+	top: 10%;
+	left: 10%;
 	border: 1px solid black;
 	background-color: #FFFFFF;
 }
@@ -207,6 +206,16 @@ body, table {
 .panel-list-dialog-content {
 	overflow: auto;
 	padding: 5px;
-	width: 1000px;
-	height: 500px;
+	width: 800px;
+	height: 480px;
+}
+
+.panel-list-dialog-modal-iframe {
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.3;
+	background-color: lightgray;
+	width: 100%;
+	height: 100%;
 }

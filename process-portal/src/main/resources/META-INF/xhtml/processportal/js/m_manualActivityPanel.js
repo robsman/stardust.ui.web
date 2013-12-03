@@ -208,13 +208,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function generateMarkup(json) {
 			dataMappings = json;
 
-			var nestedListsDiv = 
-				"<div ng-show=\"showNestedDM\" class=\"panel-list-dialog\">" + 
+			var nestedListsDiv =
+				"<iframe ng-show=\"showNestedDM\" class=\"panel-list-dialog-modal-iframe\"" +
+					"style=\"width: {{sizes.frameWidth}}; height: {{sizes.frameHeight}};\" src=\"about:blank\"></iframe>\n" +
+				"<div ng-show=\"showNestedDM\" class=\"panel-list-dialog\" style=\"left: {{sizes.dialogLeft}}; top: {{sizes.dialogTop}}\">" + 
 					"<div class=\"panel-list-dialog-title\">{{nestedDMTitle}}" + 
 						"<span class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\">X</span></div>" + 
 					"<div class=\"panel-list-dialog-breadcrumb\">" + 
 						"<span class=\"panel-list-dialog-breadcrumb-item\" ng-repeat=\"bCrumb in nestedDMs\">" + 
-							"<a href=\"\" ng-click=\"showNestedList($index)\" disabled=\"{{$last}}\">{{bCrumb.label}}</a>" + 
+							"<a href=\"\" ng-click=\"showNestedList($index)\" disabled=\"{{ {'true': true, 'false': false}[$last] }}\">{{bCrumb.label}}</a>" + 
 								"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
 					"<div class=\"panel-list-dialog-content\"></div>" + 
 				"</div>";
@@ -434,6 +436,23 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
+	    function getWindowScrollPosition(targetWin) {
+	    	var scrollX = 0;
+	    	var scrollY = 0;
+			if (navigator.appName == 'Netscape') {
+				scrollX = targetWin.pageXOffset;
+				scrollY = targetWin.pageYOffset;
+			} else if (navigator.appName == 'Microsoft Internet Explorer') {
+				scrollX = targetWin.document.body.scrollLeft;
+				scrollY = targetWin.document.body.scrollTop;
+			}
+
+			return {'x' : scrollX, 'y' : scrollY};
+	    }
+
+		/*
+		 * 
+		 */
 		function openNestedList(binding, xPath, index, listBinding, parentLabel, childLabel, readonly) {
 			var path = getPath(xPath);
 			
@@ -444,6 +463,37 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			if (!scope.showNestedDM) {
 				scope.nestedDMTitle = readonly ? i18nLabelProvider("panel.list.dialog.view") : i18nLabelProvider("panel.list.dialog.edit");
 				scope.showNestedDM = true;
+
+				var documentSize = {
+					width: jQuery(document).outerWidth(),
+					height: jQuery(document).outerHeight()
+				};
+
+				var windowSize = {
+					width: jQuery(window).outerWidth(),
+					height: jQuery(window).outerHeight()
+				};
+
+				var scrollPos = getWindowScrollPosition(window);
+		    	var dialogLeft, dialogTop;
+				try {
+					var elemDialog = jQuery(".panel-list-dialog");
+					var widthOffset = (elemDialog.width() < windowSize.width) ? elemDialog.width() : 0;
+		    		var heightOffset = (elemDialog.height() < windowSize.height) ? elemDialog.height() : 0;
+
+		    		dialogLeft = (((windowSize.width - widthOffset)/ 2) + scrollPos.x);
+		    		dialogTop = (((windowSize.height - heightOffset)/ 2) + scrollPos.y);
+				} catch(e) {
+					dialogLeft = (scrollPos.x + 200);
+					dialogTop = (scrollPos.y + 200);
+				}
+	    		
+				scope.sizes = {
+					frameWidth: documentSize.width + "px",
+					frameHeight: documentSize.height + "px",
+					dialogLeft: dialogLeft + "px",
+					dialogTop: dialogTop + "px"
+				}
 			}
 			
 			if (!scope.nestedDMs) {
