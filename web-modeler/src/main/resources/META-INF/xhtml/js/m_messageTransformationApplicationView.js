@@ -372,7 +372,7 @@ define(
 						}
 					});
 					this.expressionEditor.loadLanguageTools();
-					
+
 					this.bindEventHandlers();
 
 					this.initializeModelElementView(application);
@@ -498,7 +498,7 @@ define(
 						else{
 							/*Primitive type branch*/
 							completerStrings=completerStrings.concat([id]);
-						}						
+						}
 					}
 
 					for (var id in this.outputData) {
@@ -510,13 +510,13 @@ define(
 						else{
 							/*Primitive type branch*/
 							completerStrings=completerStrings.concat([id]);
-						}								
+						}
 					}
 					this.expressionEditor.setSessionData("$keywordList",completerStrings);
 					var that=this;
-					
-					
-					
+
+
+
 					// TODO - these things below were possible with CodeMirror editor out of box
 					// But not in case of Ace editor hence temporarily commented out
 
@@ -772,7 +772,7 @@ define(
 									.getModel()).name
 							: accessPoint.primitiveDataType)
 							: elementType;
-					
+
 					// Assign the element name as type name assuming this is an element
 					// with anonymous nested type
 					tableRow.typeName = tableRow.typeName ? tableRow.typeName : elementName;
@@ -889,6 +889,9 @@ define(
 									"accessPoint" : tableRows[tableRow].accessPoint
 								}, function(event) {
 									event.data.view.deleteAccessPoint(event.data.accessPoint);
+									event.data.view
+									.submitChanges(event.data.view
+											.determineTransformationChanges());
 								});
 							}
 
@@ -961,6 +964,9 @@ define(
 									"accessPoint" : tableRows[tableRow].accessPoint
 								}, function(event) {
 									event.data.view.deleteAccessPoint(event.data.accessPoint);
+									event.data.view
+									.submitChanges(event.data.view
+											.determineTransformationChanges());
 								});
 							}
 
