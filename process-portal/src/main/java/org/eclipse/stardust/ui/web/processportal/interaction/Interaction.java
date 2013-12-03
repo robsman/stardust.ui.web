@@ -40,6 +40,8 @@ public class Interaction
 
    private final String contextId;
 
+   private Map<String, Object> configuration;
+
    private ManualActivityPath rootPath;
 
    private Map<String, ? extends Serializable> inDataValues;
@@ -101,6 +103,11 @@ public class Interaction
       return rootPath;
    }
 
+   public Map<String, Object> getConfiguration()
+   {
+      return configuration;
+   }
+
    public ServiceFactory getServiceFactory()
    {
       return serviceFactory;
@@ -125,7 +132,12 @@ public class Interaction
    {
       this.rootPath = rootPath;
    }
-   
+
+   public void setConfiguration(Map<String, Object> configuration)
+   {
+      this.configuration = configuration;
+   }
+
    public <V extends Serializable> void setOutDataValues(Map<String, V> outDataValues)
    {
       this.outDataValues = newHashMap();

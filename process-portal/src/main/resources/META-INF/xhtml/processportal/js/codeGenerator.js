@@ -23,9 +23,18 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 	 * 
 	 */
 	function CodeGenerator(prefs) {
+		// Set Defaults
 		if (prefs == undefined) {
-			prefs = {layoutColumns: 3, tableColumns: 0}; // Defaults
+			prefs = {layoutColumns: 3, tableColumns: 0};
+		} else {
+			if (prefs.layoutColumns == undefined) {
+				prefs.layoutColumns = 3;
+			} 
+			if (prefs.tableColumns == undefined) {
+				prefs.tableColumns = 0;
+			}
 		}
+
 		var preferences = prefs;
 
 		var bindingPrefix;
@@ -149,6 +158,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar, idExpr: "$index"});
 			} else { // List of Structures
 				for (var i in path.children) {
+					if (preferences.tableColumns > 0 && i >= preferences.tableColumns) {
+						break;
+					}
+
 					var child = path.children[i];
 					htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child), attributes: {class: "panel-list-tbl-header"}});
 					var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});

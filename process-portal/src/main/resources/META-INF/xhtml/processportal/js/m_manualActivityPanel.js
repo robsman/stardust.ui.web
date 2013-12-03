@@ -37,6 +37,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		var dataMappings;
 		var bindings;
 		var clientDateFormat = "dd-mm-yy";
+		var configuration;
 
 		/*
 		 * 
@@ -58,6 +59,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			});
 	        
 	        getData(interactionEndpoint, "/dateFormats", {success: receiveDateFormats});
+	        
+	        getData(interactionEndpoint, "/configuration", {success: receiveConfiguration});
 
 	        getData(interactionEndpoint, "/dataMappings", {success: generateMarkup});
 
@@ -221,7 +224,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					"<div class=\"panel-list-dialog-content\"></div>" + 
 				"</div>";
 
-			var data = codeGenerator.create().generate(json, BINDING_PREFIX, i18nLabelProvider);
+			var data = codeGenerator.create(configuration).generate(json, BINDING_PREFIX, i18nLabelProvider);
 			data.html += nestedListsDiv;
 			document.getElementsByTagName("body")[0].innerHTML = data.html;
 			
@@ -236,6 +239,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			if (clientDateFormat) {
 				clientDateFormat = clientDateFormat.toLowerCase();
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function receiveConfiguration(json) {
+			configuration = json;
 		}
 
 		/*

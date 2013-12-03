@@ -15,6 +15,7 @@ import static org.eclipse.stardust.engine.core.interactions.Interaction.getInter
 import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelUtils.getContentFrameId;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -29,6 +30,7 @@ import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
+import org.eclipse.stardust.ui.web.processportal.view.ActivityPanelConfigurationBean;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -93,6 +95,11 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          ManualActivityUi manualActivityUi = new ManualActivityUi(ai, ai.getActivity().getApplicationContext("default"));
          interaction.setManualActivityPath(manualActivityUi.getManualActivityPath());
          interaction.setInDataValues(inData);
+         
+         Map<String, Object> configuration = new HashMap<String, Object>();
+         configuration.put("layoutColumns", ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout());
+         configuration.put("tableColumns", ActivityPanelConfigurationBean.getAutoNoOfColumnsInTable());
+         interaction.setConfiguration(configuration);
 
          registry.registerInteraction(interaction);
       }

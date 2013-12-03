@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
@@ -180,6 +179,20 @@ public class ManualActivityRestlet
       dates.add("timeFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultTimeFormat")));
 
       return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+   }
+
+   @SuppressWarnings("unchecked")
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("configuration")
+   @GET
+   public Response configuration()
+   {
+      Interaction interaction = getInteraction();
+
+      JsonObject conf = new JsonObject();
+      new JsonHelper().toJson((Map<String, ? extends Serializable>)interaction.getConfiguration(), conf);
+      
+      return Response.ok(conf.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    /**
