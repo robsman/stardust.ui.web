@@ -191,10 +191,16 @@ define(
 					this.dataTypeSelector.setScopeModel(this.propertiesPanel.getModel());
 
 					this.dataTypeSelector.setDataType(this.getModelElement());
+					var showStructPrimitive = false;
+					// For structured ENUM data, show primitive dropdown
+					if (this.getModelElement().dataType == m_constants.STRUCTURED_DATA_TYPE
+							&& this.dataTypeSelector.dataTypeSelect.val() == m_constants.PRIMITIVE_DATA_TYPE) {
+						showStructPrimitive = true;
+					}
 					this
 							.initializeDataType(
 									this.getModelElement(),
-									this.getModelElement().attributes["carnot:engine:defaultValue"]);
+									this.getModelElement().attributes["carnot:engine:defaultValue"], showStructPrimitive);
 
 					if (!this.getModelElement().attributes["carnot:engine:visibility"]
 							|| "Public" == this.getModelElement().attributes["carnot:engine:visibility"]) {
@@ -229,8 +235,8 @@ define(
 				 *
 				 */
 				DataBasicPropertiesPage.prototype.initializeDataType = function(
-						data, defaultValue) {
-					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
+						data, defaultValue, structEnum) {
+					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE || structEnum) {
 						var primitiveDataTypeSelect = this.dataTypeSelector.primitiveDataTypeSelect;
 						if(null == this.currentPrimitiveType){
 							this.updateDefaultValueForEnum(primitiveDataTypeSelect.val());
@@ -263,6 +269,7 @@ define(
 									if(defaultValue!=null)
 										self.enumInputSelect.val(defaultValue);
 									$scope.enumDataType = true;
+									$scope.structEnum = structEnum;
 									return;
 									}
 								$scope.defaultValue = defaultValue;
