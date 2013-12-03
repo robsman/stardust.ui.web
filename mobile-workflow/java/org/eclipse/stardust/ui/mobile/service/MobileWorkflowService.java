@@ -458,25 +458,31 @@ public class MobileWorkflowService {
 
 			subFoldersJson.add(subFolderJson);
 
-			subFolderJson.addProperty("name", "Public Documents");
 			subFolderJson.addProperty("id", publicDocumentsRootFolder.getId());
 			subFolderJson.addProperty("path",
 					publicDocumentsRootFolder.getPath());
 
 			getFolderContent(subFolderJson, publicDocumentsRootFolder);
 
+			// Overwrite name
+			
+			subFolderJson.addProperty("name", "Public Documents");
+
 			if (userDocumentsRootFolder != null) {
 				subFolderJson = new JsonObject();
 
 				subFoldersJson.add(subFolderJson);
 
-				subFolderJson.addProperty("name", "Personal Documents");
 				subFolderJson
 						.addProperty("id", userDocumentsRootFolder.getId());
 				subFolderJson.addProperty("path",
 						userDocumentsRootFolder.getPath());
 
 				getFolderContent(subFolderJson, userDocumentsRootFolder);
+
+				// Overwrite name 
+				
+				subFolderJson.addProperty("name", "Personal Documents");
 			}
 		} else {
 			getFolderContent(folderJson, getDocumentManagementService()
@@ -493,6 +499,10 @@ public class MobileWorkflowService {
 	 * @return
 	 */
 	private JsonObject getFolderContent(JsonObject folderJson, Folder folder) {
+		folderJson.addProperty("id", folder.getId());
+		folderJson.addProperty("name", folder.getName());
+		folderJson.addProperty("path", folder.getPath());
+		
 		JsonArray subFoldersJson = null;
 
 		if (!folderJson.has("subFolders")) {
@@ -507,6 +517,8 @@ public class MobileWorkflowService {
 			subFoldersJson.add(subFolderJson);
 
 			subFolderJson.addProperty("id", subFolder.getId());
+			subFolderJson.addProperty("name", subFolder.getName());
+			subFolderJson.addProperty("path", subFolder.getPath());
 		}
 
 		JsonArray documentsJson = null;

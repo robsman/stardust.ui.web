@@ -8,7 +8,7 @@
  * documentation
  ******************************************************************************/
 
-define([ "js/WorkflowService" ], function(WorkflowService) {
+define([ "js/WorkflowService", "js/FolderPage" ], function(WorkflowService, FolderPage) {
 	return {
 		create : function(deck) {
 			var page = new DashboardPage();
@@ -34,8 +34,17 @@ define([ "js/WorkflowService" ], function(WorkflowService) {
 		 */
 		DashboardPage.prototype.show = function() {
 			var deferred = jQuery.Deferred();
+			var self = this;
 
-			deferred.resolve();
+			// TODO Replace by more efficient call
+
+			WorkflowService.instance().getWorklist().done(function(worklist) {
+				self.worklistSize = worklist.length;
+
+				deferred.resolve();
+			}).fail(function() {
+				deferred.reject();
+			});
 
 			return deferred.promise();
 		};
@@ -83,7 +92,7 @@ define([ "js/WorkflowService" ], function(WorkflowService) {
 		 * 
 		 */
 		DashboardPage.prototype.openFolderPage = function() {
-			this.deck.pushPage(this.deck.folderPage);
+			this.deck.pushPage(FolderPage.create(this.deck));
 		};
 	}
 });

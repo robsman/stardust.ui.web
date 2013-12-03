@@ -35,69 +35,119 @@ require
 			}
 		});
 
-require([ "require", "jquery", "angularjs", "jquery-ui", "jquery-mobile",
-		"jquery.base64", "xml2json", "js/Utils", "js/TestWorkflowService",
-		"js/WorkflowService", "js/Deck" ], function(require, jquery, angularjs,
-		jqueryUi, jqueryMobile, jqueryBase64, xml2json, Utils,
-		TestWorkflowService, WorkflowService, Deck) {
-	jQuery(document).ready(
-			function() {
-				var module = angular.module('mobileWorkflowApplication', []);
+require(
+		[ "require", "jquery", "angularjs", "jquery-ui", "jquery-mobile",
+				"jquery.base64", "xml2json", "js/Utils",
+				"js/TestWorkflowService", "js/WorkflowService", "js/Deck" ],
+		function(require, jquery, angularjs, jqueryUi, jqueryMobile,
+				jqueryBase64, xml2json, Utils, TestWorkflowService,
+				WorkflowService, Deck) {
+			jQuery(document)
+					.ready(
+							function() {
+								var module = angular.module(
+										'mobileWorkflowApplication', []);
 
-				module.controller('deck', function($scope) {
-					// Inherit methods from Deck
+								module.controller('deck', function($scope) {
+									// Inherit methods from Deck
 
-					Utils.inherit($scope, Deck.create());
+									Utils.inherit($scope, Deck.create());
 
-					console.log("Scope");
-					console.log($scope);
+									console.log("Scope");
+									console.log($scope);
 
-					// Initialize
+									// Initialize
 
-					$scope.initialize();
-				});
+									$scope.initialize();
+								});
 
-				module.directive('sdDeck', function() {
-					return {
-						restrict : "A",
-						compile : function(element, attrs) {
-							return {
-								post : function(scope, element, attributes,
-										controller) {
-									scope.$watch("getTopPage().id", function(
-											value) {
-										console.log("Top Page ID changed to "
-												+ value);
-										$.mobile.changePage("#" + value, {
-											transition : "none"
-										});
-									});
-								}
-							};
-						}
-					};
-				});
+								module
+										.directive(
+												'sdDeck',
+												function() {
+													return {
+														restrict : "A",
+														compile : function(
+																element, attrs) {
+															return {
+																post : function(
+																		scope,
+																		element,
+																		attributes,
+																		controller) {
+																	scope
+																			.$watch(
+																					"getTopPage()",
+																					function(
+																							value) {
+																						console
+																								.log("Top Page ID changed to "
+																										+ scope
+																												.getTopPage().id);
 
-				module.directive('sdList', function() {
-					return {
-						restrict : "A",
-						compile : function(element, attrs) {
-							return {
-								post : function(scope, element, attributes,
-										controller) {
-									scope.$watch(attributes.sdList,
-											function(value) {
-												if (value) {
-													jQuery(element).listview(
-															"refresh");
-												}
-											});
-								}
-							};
-						}
-					};
-				});
+																						if (scope
+																								.getTopPage().role
+																								&& scope
+																										.getTopPage().role == "dialog") {
+																							$.mobile
+																									.changePage(
+																											"#"
+																													+ scope
+																															.getTopPage().id,
+																											{
+																												transition : "slideup",
+																												role : "dialog"
+																											});
+																						} else {
+																							$.mobile
+																									.changePage(
+																											"#"
+																													+ scope
+																															.getTopPage().id,
+																											{
+																												transition : "slideup"
+																											});
+																						}
+																					});
+																}
+															};
+														}
+													};
+												});
 
-				angular.bootstrap(document, [ "mobileWorkflowApplication" ]);
-			});
-});
+								module
+										.directive(
+												'sdList',
+												function() {
+													return {
+														restrict : "A",
+														compile : function(
+																element, attrs) {
+															return {
+																post : function(
+																		scope,
+																		element,
+																		attributes,
+																		controller) {
+																	scope
+																			.$watch(
+																					attributes.sdList,
+																					function(
+																							value) {
+																						if (value) {
+																							jQuery(
+																									element)
+																									.listview(
+																											"refresh");
+																						}
+																					});
+																}
+															};
+														}
+													};
+												});
+
+								angular.bootstrap(document,
+										[ "mobileWorkflowApplication" ]);
+							});
+		});

@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "js/Utils", "js/WorkflowService" ],
+		[ "js/Utils", "js/WorkflowService"],
 		function(Utils, WorkflowService) {
 			return {
 				create : function(deck) {
@@ -41,7 +41,6 @@ define(
 					$("#" + this.id + " #titleHeader").append(
 							this.activityInstance.activityName + " ("
 									+ this.activityInstance.oid + ")");
-					$("#suspendConfirmationDialog").popup();
 
 					var self = this;
 
@@ -87,7 +86,7 @@ define(
 								if (activityInstance != null) {
 									self.deck
 											.pushPage(new ActivityInstancePage(
-													activityInstance));
+													self.deck));
 									console.log("New Activity Instance set");
 								} else {
 									console.log("Processing completed");
@@ -110,6 +109,7 @@ define(
 
 					WorkflowService.instance().suspendActivity(
 							this.activityInstance).done(function() {
+						self.closeSuspendDialog();
 						self.deck.popPage();
 					});
 				};

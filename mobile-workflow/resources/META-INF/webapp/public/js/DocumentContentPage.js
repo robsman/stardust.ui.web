@@ -10,10 +10,10 @@
 
 define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
 	return {
-		create : function(deck) {
+		create : function(deck, document) {
 			var page = new DocumentContentPage();
 
-			page.initialize(deck);
+			page.initialize(deck, document);
 
 			return page;
 		}
@@ -25,8 +25,9 @@ define([ "js/Utils", "js/WorkflowService" ], function(Utils, WorkflowService) {
 		/**
 		 * 
 		 */
-		DocumentContentPage.prototype.initialize = function(deck) {
+		DocumentContentPage.prototype.initialize = function(deck, document) {
 			this.deck = deck;
+			this.document = document;
 		};
 
 		/**

@@ -74,7 +74,7 @@
 	src="./js/libs/require/2.0.5/require.js"></script>
 </head>
 <body style="height: 100%;">
-	<div ng-controller="deck" sd-deck>
+	<div id="deck" ng-controller="deck" sd-deck>
 		<div id="loginPage" data-role="page" data-theme="a">
 			<div>
 				<div data-role="header" data-position="fixed">
@@ -118,7 +118,7 @@
 				<ul data-role="listview" data-count-theme="c" data-inset="true">
 					<a href="#" data-role="button"
 						ng-click="getTopPage().openWorklistPage()">Worklist <span
-						class="ui-li-count">12</span>
+						class="ui-li-count">{{dashboardPage.worklistSize}}</span>
 					</a>
 					<a href="#" data-role="button"
 						ng-click="getTopPage().openStartableProcessesPage()">Startable
@@ -212,24 +212,23 @@
 				<div
 					ng-show="getTopPage().activityInstance.activity.implementation == 'manual'">
 					Manual activities are not yet supported for Mobile Workflow.</div>
-			</div>
-		</div>
-		<div data-role="popup" id="suspendConfirmationDialog"
-			data-overlay-theme="a" data-theme="a" style="max-width: 400px;"
-			class="ui-corner-all">
-			<div data-role="header" data-theme="a" class="ui-corner-top">
-				<h1>Suspend Activity</h1>
-			</div>
-			<div data-role="content" data-theme="d"
-				class="ui-corner-bottom ui-content">
-				<h3 class="ui-title">
-					Are you sure you want to suspend this Activity.
-					</p>
-					<a href="#" data-role="button" data-inline="true" data-rel="back"
-						data-theme="c" ng-click="getTopPage().closeSuspendDialog()">Cancel</a>
-					<a href="#" data-role="button" data-inline="true" data-rel="back"
-						data-transition="flow" data-theme="b"
-						ng-click="getTopPage().suspendActivityInstance()">Suspend</a>
+				<div data-role="popup" id="suspendConfirmationDialog"
+					data-overlay-theme="a" data-theme="a" style="max-width: 400px;"
+					class="ui-corner-all">
+					<div data-role="header" data-theme="a" class="ui-corner-top">
+						<h1>Suspend Activity</h1>
+					</div>
+					<div data-role="content" data-theme="d"
+						class="ui-corner-bottom ui-content">
+						<h3 class="ui-title">Are you sure you want to suspend this
+							Activity.</h3>
+						<a href="#" data-role="button" data-inline="true" data-rel="back"
+							data-theme="c" ng-click="getTopPage().closeSuspendDialog()">Cancel</a>
+						<a href="#" data-role="button" data-inline="true" data-rel="back"
+							data-transition="flow" data-theme="b"
+							ng-click="getTopPage().suspendActivityInstance()">Suspend</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="searchPage" data-role="page" data-theme="a"
@@ -246,8 +245,7 @@
 			</div>
 			<div data-role="content""></div>
 		</div>
-		<div id="folderPage" data-role="page" data-theme="a"
-			class="nav-glyphish-example">
+		<div id="folderPage" data-role="page" data-theme="a">
 			<div data-role="header" data-position="fixed">
 				<div data-role="navbar"
 					class="ui-body ui-body-c nav-glyphish-example" data-grid="d">
@@ -259,17 +257,17 @@
 				<h1>Folder</h1>
 			</div>
 			<div data-role="content"">
-				<ul data-role="listview"
-					ng-repeat="x in getTopPage().folder.documents">
-					<li><a href="#"
-						ng-click="getTopPage().openDocumentContentPage(x)">
-							<p>Document: {{x.name}}</p>
+				<ul data-role="listview" data-filter="true"
+					sd-list="getTopPage().folder.documents">
+					<li ng-repeat="document in getTopPage().folder.documents"><a
+						href="#" ng-click="getTopPage().openDocumentContentPage(document)">
+							<h4>{{document.name}}</h4>
 					</a></li>
 				</ul>
-				<ul data-role="listview"
-					ng-repeat="y in getTopPage().folder.subFolders">
-					<li><a href="#" ng-click="getTopPage().openFolderPage(y)">
-							<p>Folder: {{y.name}}</p>
+				<ul data-role="listview" sd-list="getTopPage().folder.subFolders">
+					<li ng-repeat="folder in getTopPage().folder.subFolders"><a
+						href="#" ng-click="getTopPage().openFolderPage(folder)">
+							<h4>{{folder.name}}</h4>
 					</a></li>
 				</ul>
 			</div>
@@ -290,8 +288,9 @@
 				<div ng-repeat="x in getTopPage().reportFolders.subFolders">
 					<div data-role="collapsible">
 						<h2>{{x.name}}</h2>
-						<ul data-role="listview" ng-repeat="y in x.reportDefinitions">
-							<li><a href="#" ng-click="getTopPage().openReportPage(y)">
+						<ul data-role="listview">
+							<li ng-repeat="y in x.reportDefinitions"><a href="#"
+								ng-click="getTopPage().openReportPage(y)">
 									<h4>{{y.name}}</h4>
 									<p>{{y.description}}</p>
 							</a></li>
@@ -401,7 +400,7 @@
 						sd-list="processPage.processInstance.participants">
 						<li ng-repeat="user in processPage.processInstance.participants"><a
 							ng-click="processPage.openUserPage(user)">
-								<h3>{{x.name}} ({{user.id}})</h3>
+								<h3>{{user.firstName}} {{user.lastName}} ({{user.id}})</h3>
 								<p>E-Mail: {{user.e-Mail}}, Phone: +1 346 145 4577</p>
 						</a></li>
 					</ul>
@@ -474,20 +473,21 @@
 							<p>{{note.content}}</p>
 					</a></li>
 				</ul>
-			</div>
-			<div data-role="popup" id="createNoteDialog" data-overlay-theme="a"
-				data-theme="c" style="max-width: 400px;" class="ui-corner-all">
-				<div data-role="header" data-theme="a" class="ui-corner-top">
-					<h1>Create Note</h1>
-				</div>
-				<div data-role="content" data-theme="d"
-					class="ui-corner-bottom ui-content">
-					<textarea rows="5" cols="30" ng-model="getTopPage().newNoteContent"></textarea>
-					<a href="#" data-role="button" data-inline="true" data-rel="back"
-						data-theme="c" ng-click="getTopPage().closeCreateNoteDialog()">Cancel</a>
-					<a href="#" data-role="button" data-inline="true" data-rel="back"
-						data-transition="flow" data-theme="b"
-						ng-click="getTopPage().createNote()">Create</a>
+				<div data-role="popup" id="createNoteDialog" data-overlay-theme="a"
+					data-theme="c" style="max-width: 400px;" class="ui-corner-all">
+					<div data-role="header" data-theme="a" class="ui-corner-top">
+						<h1>Create Note</h1>
+					</div>
+					<div data-role="content" data-theme="d"
+						class="ui-corner-bottom ui-content">
+						<textarea rows="5" cols="30"
+							ng-model="getTopPage().newNoteContent"></textarea>
+						<a href="#" data-role="button" data-inline="true" data-rel="back"
+							data-theme="c" ng-click="getTopPage().closeCreateNoteDialog()">Cancel</a>
+						<a href="#" data-role="button" data-inline="true" data-rel="back"
+							data-transition="flow" data-theme="b"
+							ng-click="getTopPage().createNote()">Create</a>
+					</div>
 				</div>
 			</div>
 		</div>
