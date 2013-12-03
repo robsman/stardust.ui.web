@@ -479,11 +479,19 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		    	var dialogLeft, dialogTop;
 				try {
 					var elemDialog = jQuery(".panel-list-dialog");
-					var widthOffset = (elemDialog.width() < windowSize.width) ? elemDialog.width() : 0;
-		    		var heightOffset = (elemDialog.height() < windowSize.height) ? elemDialog.height() : 0;
+					var widthOffset = elemDialog.width();
+		    		var heightOffset = elemDialog.height();
 
 		    		dialogLeft = (((windowSize.width - widthOffset)/ 2) + scrollPos.x);
 		    		dialogTop = (((windowSize.height - heightOffset)/ 2) + scrollPos.y);
+
+		    		if (dialogLeft <= 0) {
+		    			dialogLeft = 5;
+		    		}
+		    		
+		    		if (dialogTop <= 0) {
+		    			dialogTop = 5;
+		    		}
 				} catch(e) {
 					dialogLeft = (scrollPos.x + 200);
 					dialogTop = (scrollPos.y + 200);
