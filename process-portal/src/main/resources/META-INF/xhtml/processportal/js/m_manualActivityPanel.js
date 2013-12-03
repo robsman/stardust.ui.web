@@ -456,7 +456,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function openNestedList(binding, xPath, index, listBinding, parentLabel, childLabel, readonly) {
 			var path = getPath(xPath);
 			
-			var breadcrumbLabel = parentLabel + "[" + index + "]." + childLabel;
+			var breadcrumbLabel = (index + 1) + ". " + i18nLabelProvider("panel.list.dialog.breadcrumb.of") + " " + 
+				parentLabel + " / " + childLabel;
 			
 			var scope = angular.element(document).scope();
 			
