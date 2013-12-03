@@ -4,7 +4,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ice="http://www.icesoft.com/icefaces/component">
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 </head>
 <body>
@@ -24,12 +25,15 @@
 			<ice:outputLabel styleClass="label-form"
 				value="#{bpmModelerMessages['configuremodeling.panel.preview']}" />
 			<ice:selectBooleanCheckbox partialSubmit="true"
-				value="#{modelingConfigurationPanel.showTechnologyPreview}" />
+				value="#{modelingConfigurationPanel.showTechnologyPreview}">
+				<pc:automationTag value="auto-BPM-ProcessModelConf-ShowTechPreview" standAlone="false"/>
+				</ice:selectBooleanCheckbox>
 
 			<ice:outputLabel styleClass="label-form"
 				value="#{bpmModelerMessages['configuremodeling.panel.defaultProfile']}" />
 			<ice:selectOneMenu partialSubmit="true"
 				value="#{modelingConfigurationPanel.defaultProfile}">
+				<pc:automationTag value="auto-BPM-ProcessModelConf-DefProfile" standAlone="false"/>
 				<f:selectItem itemValue="BusinessAnalyst"
 					itemLabel="#{bpmModelerMessages['launchpanels.profileSelector.list1.businessAnalyst']}" />
 				<f:selectItem itemValue="Integrator"
@@ -43,6 +47,7 @@
 		<ice:panelGroup styleClass="clearing" />
 	
 		<ice:panelGrid columns="3">
+			<pc:automationTag value="auto-BPM-ProcessModelConf-BtnsBar" standAlone="false"/>
 			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
 				action="#{modelingConfigurationPanel.saveConfiguration}" styleClass="button" />
 			<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.reset']}" immediate="true"
