@@ -96,7 +96,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          interaction.setManualActivityPath(manualActivityUi.getManualActivityPath());
          interaction.setInDataValues(inData);
          
-         Map<String, Object> configuration = new HashMap<String, Object>();
+         Map<String, Serializable> configuration = new HashMap<String, Serializable>();
          configuration.put("layoutColumns", ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout());
          configuration.put("tableColumns", ActivityPanelConfigurationBean.getAutoNoOfColumnsInTable());
          interaction.setConfiguration(configuration);

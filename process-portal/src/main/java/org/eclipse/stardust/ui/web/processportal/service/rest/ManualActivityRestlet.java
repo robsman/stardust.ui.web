@@ -181,7 +181,6 @@ public class ManualActivityRestlet
       return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
-   @SuppressWarnings("unchecked")
    @Produces(MediaType.APPLICATION_JSON)
    @Path("configuration")
    @GET
@@ -190,7 +189,7 @@ public class ManualActivityRestlet
       Interaction interaction = getInteraction();
 
       JsonObject conf = new JsonObject();
-      new JsonHelper().toJson((Map<String, ? extends Serializable>)interaction.getConfiguration(), conf);
+      new JsonHelper().toJson(interaction.getConfiguration(), conf);
       
       return Response.ok(conf.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }

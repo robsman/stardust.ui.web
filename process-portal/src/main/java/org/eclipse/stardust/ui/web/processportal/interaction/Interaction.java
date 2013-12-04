@@ -40,7 +40,7 @@ public class Interaction
 
    private final String contextId;
 
-   private Map<String, Object> configuration;
+   private Map<String, Serializable> configuration;
 
    private ManualActivityPath rootPath;
 
@@ -103,7 +103,7 @@ public class Interaction
       return rootPath;
    }
 
-   public Map<String, Object> getConfiguration()
+   public Map<String, Serializable> getConfiguration()
    {
       return configuration;
    }
@@ -133,7 +133,7 @@ public class Interaction
       this.rootPath = rootPath;
    }
 
-   public void setConfiguration(Map<String, Object> configuration)
+   public void setConfiguration(Map<String, Serializable> configuration)
    {
       this.configuration = configuration;
    }
