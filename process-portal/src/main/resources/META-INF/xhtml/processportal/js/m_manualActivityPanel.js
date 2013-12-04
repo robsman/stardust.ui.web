@@ -311,7 +311,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 					if (currentBinding) {
 						if (currentBinding.length == 0) {
-							currentBinding.push({});
+							currentBinding.push(arrPaths[key].isPrimitive ? "" : {});
 						} else {
 							if (arrPaths[key].children) {
 								addIfBlankArray(arrPaths[key].children, data);
