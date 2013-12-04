@@ -234,7 +234,10 @@ public class DataFlowUtils
       {
          Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd", Locale.getDefault(), TimeZone.getDefault());
          Calendar cal = Calendar.getInstance();
-         cal.setTime(date);
+         if (null != date)
+         {
+            cal.setTime(date);
+         }
          return cal;
       }
       else

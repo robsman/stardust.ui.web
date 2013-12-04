@@ -251,7 +251,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * val: path object or string
 		 */
-		function i18nLabelProvider(val) {
+		function i18nLabelProvider(val, defaultValue) {
 			var key = val;
 
 			if (("string" != typeof (val))) {
@@ -267,7 +267,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 			}
 
-			var value = InfinityBPMI18N.manualActivity.getProperty(key);
+			var value = InfinityBPMI18N.manualActivity.getProperty(key, defaultValue);
 			return value;
 		}
 
@@ -430,7 +430,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {success: function() {
 					success = true;
 				}, failure: function() {
-					success = false;;
+					success = false;
+					alert(i18nLabelProvider("panel.save.error", "Failure to save data"));
 				}});
 			}
 			return success;
