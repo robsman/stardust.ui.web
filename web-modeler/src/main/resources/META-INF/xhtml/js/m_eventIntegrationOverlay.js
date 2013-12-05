@@ -307,7 +307,7 @@ define(
 										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
 										"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications(),
 										"carnot:engine:camel::username" : "${camelTriggerUsername}",
-										"carnot:engine:camel::password" : "${camelTriggerPassword}"
+										"carnot:engine:camel::password" : "${camelTriggerPassword:Password}"
 									}
 								}
 							});
