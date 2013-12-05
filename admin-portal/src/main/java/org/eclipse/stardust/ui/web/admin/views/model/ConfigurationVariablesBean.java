@@ -143,7 +143,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
       {
          AdministrationService administrationService = SessionContext.findSessionContext().getServiceFactory()
                .getAdministrationService();
-         preferenceVariables = administrationService.getConfigurationVariables(variables.getModelId());
+         // Retrieving config variable(String type) and password type
+         preferenceVariables = administrationService.getConfigurationVariables(variables.getModelId(), true);
       }
       List<ConfigurationVariable> vars=variables.getConfigurationVariables();
       
@@ -368,7 +369,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
 
             for (String id : idSet)
             {
-               ConfigurationVariables confVariables = administrationService.getConfigurationVariables(id);
+               // Retrieving config variable(String type) and password type
+               ConfigurationVariables confVariables = administrationService.getConfigurationVariables(id, true);
 
                // add model only if ConfigurationVariables present for model id
                if (!confVariables.getConfigurationVariables().isEmpty())
