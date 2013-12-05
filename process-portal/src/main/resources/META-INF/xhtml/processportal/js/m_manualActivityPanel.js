@@ -219,8 +219,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						"<span class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\">X</span></div>" + 
 					"<div class=\"panel-list-dialog-breadcrumb\">" + 
 						"<span class=\"panel-list-dialog-breadcrumb-item\" ng-repeat=\"bCrumb in nestedDMs\">" + 
-							"<a href=\"\" ng-click=\"showNestedList($index)\" disabled=\"{{ {'true': true, 'false': false}[$last] }}\">{{bCrumb.label}}</a>" + 
-								"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
+							"<a href=\"\" ng-click=\"showNestedList($index)\" ng-show=\"!$last\">{{bCrumb.label}}</a>" + 
+							"<span ng-show=\"$last\">{{bCrumb.label}}</span>" +
+							"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
 					"<div class=\"panel-list-dialog-content\"></div>" + 
 				"</div>";
 
