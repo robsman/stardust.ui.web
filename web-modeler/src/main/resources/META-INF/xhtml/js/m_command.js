@@ -21,6 +21,11 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		UPDATE : UPDATE,
 		DELETE : DELETE,
 
+    createCommandDescriptor : function(commandId, modelId, changes) {
+      return new ChangeDescriptor(commandId, modelId, [ {
+        changes : changes
+      } ]);
+    },
 		createCreateCommand : function(command, modelId, oid, changes) {
 			return new ChangeDescriptor(command, modelId, [ {
 				oid : oid,
@@ -134,14 +139,20 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				changes : changes
 			} ]);
 		},
-		createUpdateModelCommand : function(uuid, changes) {
-			return new ChangeDescriptor("model.update", undefined, [ {
+		createUpdateModelLockStatusCommand : function(uuid, modelId, changes) {
+			return new ChangeDescriptor("modelLockStatus.update", modelId, [ {
 				uuid : uuid,
 				changes : changes
 			} ]);
 		},
-		createDeleteModelCommand : function(uuid, changes) {
-			return new ChangeDescriptor("model.delete", undefined, [ {
+		createUpdateModelCommand : function(uuid, modelId, changes) {
+			return new ChangeDescriptor("model.update", modelId, [ {
+				uuid : uuid,
+				changes : changes
+			} ]);
+		},
+		createDeleteModelCommand : function(uuid, modelId, changes) {
+			return new ChangeDescriptor("model.delete", modelId, [ {
 				uuid : uuid,
 				changes : changes
 			} ]);

@@ -52,7 +52,7 @@
 
    <publications>
       <artifact name="ipp-portal-common" type="jar" conf="ipp-portal-common-compile, ipp-portal-common-runtime, ipp-portal-common-provided" />
-      <artifact name="ipp-portal-common" type="jar" conf="ipp-portal-common-sources" m:classifier="sources" />
+      <artifact name="ipp-portal-common" type="source" ext="jar" conf="ipp-portal-common-sources" m:classifier="sources" />
       <artifact name="ipp-portal" type="war" conf="ipp-portal-web" />
       
       <artifact name="ipp-portal-common" type="pom" conf="pom" ext="pom" />
@@ -70,6 +70,7 @@
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-compile->logging-slf4j-log4j-module-compile"/>
       <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" conf="ipp-portal-common-compile->default" />
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="ipp-portal-common-compile->default" />
+      <dependency org="commons-io" name="commons-io" rev="${commons-io.version}" conf="ipp-portal-common-compile->default" />
 
       <!-- ipp-portal-common-runtime -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}" conf="ipp-portal-common-runtime->engine-module-runtime" />

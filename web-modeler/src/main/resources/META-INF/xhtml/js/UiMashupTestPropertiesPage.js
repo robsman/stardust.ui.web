@@ -40,7 +40,7 @@ define(
 						.getProperty("modeler.element.properties.commonProperties.comments");
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, commentsText,
-						"../../images/icons/comments.png");
+						"plugins/bpm-modeler/images/icons/comments.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(UiMashupTestPropertiesPage.prototype,
@@ -50,10 +50,10 @@ define(
 				 * 
 				 */
 				UiMashupTestPropertiesPage.prototype.initialize = function() {
-					this.applicationFrame = jQuery("#applicationFrame");
-					this.resetButton = jQuery("#resetButton");
-					this.runButton = jQuery("#runButton");
-					this.retrieveButton = jQuery("#retrieveButton");
+					this.applicationFrame = m_utils.jQuerySelect("#applicationFrame");
+					this.resetButton = m_utils.jQuerySelect("#resetButton");
+					this.runButton = m_utils.jQuerySelect("#runButton");
+					this.retrieveButton = m_utils.jQuerySelect("#retrieveButton");
 
 					this.resetButton
 							.prop(
@@ -70,18 +70,18 @@ define(
 									"title",
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.retrieveButton.title"));
-					jQuery("label[for='inputDataTextArea']")
+					m_utils.jQuerySelect("label[for='inputDataTextArea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.inputDataTextArea.label"));
-					jQuery("label[for='outputDataTextarea']")
+					m_utils.jQuerySelect("label[for='outputDataTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.outputDataTextArea.label"));
 					this.applicationFrame
 					.attr(
 							"src",
-							"./emptyScreen.html");
+							"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 
 					this.runButton
 							.click(
@@ -91,8 +91,8 @@ define(
 									function(event) {
 										var view = event.data.view;
 
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTable = jQuery("#outputDataTable");
+										var inputDataTextarea = m_utils.jQuerySelect("#inputDataTextarea");
+										var outputDataTable = m_utils.jQuerySelect("#outputDataTable");
 
 										outputDataTable.empty();
 
@@ -124,10 +124,10 @@ define(
 																		+ "/embeddedWebApplication/"
 																		+ view
 																				.getApplication().id
-																		+ "?ippPortalBaseUri="
+																		+ "?ippInteractionUri="
 																		+ m_urlUtils
 																				.getModelerEndpointUrl()
-																		+ "/interactions/4711";
+																		+ "/interactions/4711&ippMode=modeler";
 
 																view.applicationFrame
 																		.attr(
@@ -141,22 +141,22 @@ define(
 																					"src",
 																					view.propertiesPanel.urlInput
 																							.val()
-																							+ "?ippPortalBaseUri="
+																							+ "?ippInteractionUri="
 																							+ m_urlUtils
 																									.getModelerEndpointUrl()
-																							+ "/interactions/4711");
+																							+ "/interactions/4711&ippMode=modeler");
 																} else {
 																	view.applicationFrame
 																	.attr(
 																			"src",
-																			"./emptyScreen.html");
+																			"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 																}
 															}
 														}).fail(function() {
 															view.applicationFrame
 															.attr(
 																	"src",
-																	"./emptyScreen.html");
+																	"plugins/bpm-modeler/views/modeler/emptyScreen.html");
 												});
 									});
 					this.resetButton
@@ -166,8 +166,8 @@ define(
 									},
 									function(event) {
 										var view = event.data.view;
-										var inputDataTextarea = jQuery("#inputDataTextarea");
-										var outputDataTextarea = jQuery("#outputDataTextarea");
+										var inputDataTextarea = m_utils.jQuerySelect("#inputDataTextarea");
+										var outputDataTextarea = m_utils.jQuerySelect("#outputDataTextarea");
 
 										inputDataTextarea.empty();
 										outputDataTextarea.empty();
@@ -225,7 +225,7 @@ define(
 					}, function(event) {
 						var view = event.data.view;
 
-						var outputDataTextarea = jQuery("#outputDataTextarea");
+						var outputDataTextarea = m_utils.jQuerySelect("#outputDataTextarea");
 
 						jQuery.ajax(
 								{
@@ -234,7 +234,7 @@ define(
 											+ "/interactions/4711/outData",
 									contentType : "application/json"
 								}).done(function(data) {
-							outputDataTextarea.val(JSON.stringify(data));
+							outputDataTextarea.val(JSON.stringify(data, null, 3));
 						}).fail(function() {
 						});
 					});

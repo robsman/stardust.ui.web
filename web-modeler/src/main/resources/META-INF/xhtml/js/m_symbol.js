@@ -111,6 +111,7 @@ define(
 					transferObject.leftSelectHiddenFrame = null;
 					transferObject.flyOutMenuBackground = null;
 					transferObject.bottomFlyOutMenuItems = null;
+					transferObject.bottomRAFlyOutMenuItems = null;
 					transferObject.rightFlyOutMenuItems = null;
 					transferObject.primitives = null;
 					transferObject.editableTextPrimitives = null;
@@ -388,7 +389,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.createCommentPrimitives = function() {
-					this.commentCountText = m_canvasManager.drawTextNode(
+					this.commentCountText = this.diagram.canvasManager.drawTextNode(
 							this.x + this.width - 20, this.y - 10, "").attr({
 						"text-anchor" : "start",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
@@ -398,8 +399,8 @@ define(
 
 					this.addToPrimitives(this.commentCountText);
 
-					this.commentCountIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/comments.png",
+					this.commentCountIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/comments.png",
 							this.x + this.width - 40, this.y - 12, 16, 16)
 							.hide();
 
@@ -443,8 +444,8 @@ define(
 					if (!skipScrollAdjustment) {
 						var scrollPos = m_modelerUtils
 								.getModelerScrollPosition();
-						x += scrollPos.left;
-						y += scrollPos.top;
+//						x += scrollPos.left;
+//						y += scrollPos.top;
 					}
 
 					var distance = this.width + this.height;
@@ -513,11 +514,12 @@ define(
 				Symbol.prototype.toFront = function() {
 					//Following delay is added specifically for Chrome / IE browsers.
 					//RaphaelJs .toFront() causes loss of double click event.
-					setTimeout(function(){
-						for ( var n in this.primitives) {
-							this.primitives[n].toFront();
+					var thisSymbol = this;
+					setTimeout(function() {
+						for ( var n in thisSymbol.primitives) {
+							thisSymbol.primitives[n].toFront();
 						}
-				    }, 600);
+					}, 600);
 				};
 
 				/**
@@ -849,7 +851,7 @@ define(
 				 *
 				 */
 				Symbol.prototype.createProximitySensorPrimitive = function() {
-					return m_canvasManager.drawRectangle(this.x
+					return this.diagram.canvasManager.drawRectangle(this.x
 							- m_drawable.PROXIMITY_SENSOR_MARGIN, this.y
 							- m_drawable.PROXIMITY_SENSOR_MARGIN, this.width
 							+ 2 * m_drawable.PROXIMITY_SENSOR_MARGIN,
@@ -869,7 +871,7 @@ define(
 				Symbol.prototype.createSelectFrame = function() {
 					// Create hidden select frames, with thick width for ease to
 					// selection
-					this.leftSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.leftSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -888,7 +890,7 @@ define(
 
 					this.leftSelectHiddenFrame.hide();
 
-					this.topSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.topSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getTopSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -907,7 +909,7 @@ define(
 
 					this.topSelectHiddenFrame.hide();
 
-					this.rightSelectHiddenFrame = m_canvasManager.drawPath(this
+					this.rightSelectHiddenFrame = this.diagram.canvasManager.drawPath(this
 							.getRightSelectFramePath(), {
 						"stroke" : "white",
 						"stroke-width" : m_constants.HIDDEN_FRAME_STROKE_WIDTH,
@@ -926,7 +928,7 @@ define(
 							Symbol_stretchStopClosure);
 					this.rightSelectHiddenFrame.hide();
 
-					this.bottomSelectHiddenFrame = m_canvasManager
+					this.bottomSelectHiddenFrame = this.diagram.canvasManager
 							.drawPath(
 									this.getBottomSelectFramePath(),
 									{
@@ -948,7 +950,7 @@ define(
 							Symbol_stretchStopClosure);
 					this.bottomSelectHiddenFrame.hide();
 
-					this.leftSelectFrame = m_canvasManager.drawPath(this
+					this.leftSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getLeftSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -960,7 +962,7 @@ define(
 
 					this.leftSelectFrame.hide();
 
-					this.topSelectFrame = m_canvasManager.drawPath(this
+					this.topSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getTopSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -972,7 +974,7 @@ define(
 
 					this.topSelectFrame.hide();
 
-					this.rightSelectFrame = m_canvasManager.drawPath(this
+					this.rightSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getRightSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -984,7 +986,7 @@ define(
 
 					this.rightSelectFrame.hide();
 
-					this.bottomSelectFrame = m_canvasManager.drawPath(this
+					this.bottomSelectFrame = this.diagram.canvasManager.drawPath(this
 							.getBottomSelectFramePath(), {
 						"stroke" : m_constants.DATA_FLOW_COLOR,
 						"stroke-width" : m_constants.SELECT_FRAME_STROKE_WIDTH,
@@ -1057,7 +1059,7 @@ define(
 				 */
 				Symbol.prototype.createFlyOutMenuBackground = function(x, y,
 						height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -1077,9 +1079,11 @@ define(
 						callbackScope : this
 					};
 
-					this.flyOutMenuBackground.hover(
-							Symbol_hoverInFlyOutMenuClosure,
-							Symbol_hoverOutFlyOutMenuClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.flyOutMenuBackground.hover(
+								Symbol_hoverInFlyOutMenuClosure,
+								Symbol_hoverOutFlyOutMenuClosure);
+					}
 				};
 
 				/**
@@ -1141,11 +1145,6 @@ define(
 				 * Low level graphics operation to move all primitives.
 				 */
 				Symbol.prototype.moveBy = function(dX, dY, force) {
-
-					if (this.bindingActivity && !force) {
-						// TODO quick hack for boundary events
-						return;
-					}
 
 					var originalX = this.x;
 					var originalY = this.y;
@@ -1324,11 +1323,18 @@ define(
 				Symbol.prototype.drag = function(dX, dY, x, y) {
 					this.diagram.resetEditableText();
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
-						var displ = this.getEffectiveDisplacement(x, y);
-						this.diagram.moveSelectedSymbolsBy(displ.deltaX,
-								displ.deltaY);
 
-						this.postDrag(displ.deltaX, displ.deltaY, x, y);
+						//check if symbols are being dragged out of drawing area
+						if (x > 0 && y > 0) {
+							var displ = this.getEffectiveDisplacement(x, y);
+							this.diagram.moveSelectedSymbolsBy(displ.deltaX,
+									displ.deltaY);
+
+							this.postDrag(displ.deltaX, displ.deltaY, x, y);
+						}
+						else{
+							this.dragStop();
+						}
 					}
 				};
 
@@ -1357,10 +1363,15 @@ define(
 					}
 				};
 
+
+				Symbol.prototype.dragStop_ = function(multipleSymbols) {
+					return this.dragStopBase(multipleSymbols);
+				};
+
 				/**
 				 *
 				 */
-				Symbol.prototype.dragStop_ = function(multipleSymbols) {
+				Symbol.prototype.dragStopBase = function(multipleSymbols) {
 					this.showProximitySensor();
 					// Only process if symbol has been moved at all
 					var newGeometry = {};
@@ -1441,12 +1452,10 @@ define(
 				 */
 				Symbol.prototype.getEffectiveDisplacement = function(x, y) {
 					var moveX = x * this.diagram.zoomFactor
-							- this.diagram.X_OFFSET
-							+ this.diagram.scrollPane.scrollLeft()
+							- this.diagram.getCanvasPosition().left
 							- (this.width / 2);
 					var moveY = y * this.diagram.zoomFactor
-							- this.diagram.Y_OFFSET
-							+ this.diagram.scrollPane.scrollTop()
+							- this.diagram.getCanvasPosition().top
 							- (this.height / 2);
 					return {
 						'deltaX' : moveX - this.x,
@@ -1542,10 +1551,8 @@ define(
 
 						var scrollPos = m_modelerUtils
 								.getModelerScrollPosition();
-						var xPos = event.pageX - this.diagram.X_OFFSET
-								+ scrollPos.left;
-						var yPos = event.pageY - this.diagram.Y_OFFSET
-								+ scrollPos.top;
+						var xPos = event.pageX - this.diagram.getCanvasPosition().left;
+						var yPos = event.pageY - this.diagram.getCanvasPosition().top;
 
 						var rightProximityMargin = this.proximitySensor
 								.attr('x')
@@ -1589,7 +1596,7 @@ define(
 						};
 
 						// Event handling
-
+						// Exclude Click from readonly check to show properties panel
 						this.primitives[element].click(Symbol_clickClosure);
 					}
 				};
@@ -1598,10 +1605,12 @@ define(
 				 *
 				 */
 				Symbol.prototype.initializeCommentPrimitivesEventHandling = function() {
-					this.commentCountIcon
-							.click(Symbol_clickCommentPrimitiveClosure);
-					this.commentCountText
-							.click(Symbol_clickCommentPrimitiveClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.commentCountIcon
+								.click(Symbol_clickCommentPrimitiveClosure);
+						this.commentCountText
+								.click(Symbol_clickCommentPrimitiveClosure);
+					}
 				};
 
 				/**
@@ -1618,17 +1627,19 @@ define(
 						};
 
 						// Event handling
+						if (!this.diagram.process.isReadonly()) {
+							this.primitives[element]
+									.mousemove(Symbol_mouseMoveClosure);
+							this.primitives[element].hover(Symbol_hoverInClosure,
+									Symbol_hoverOutClosure);
 
-						this.primitives[element]
-								.mousemove(Symbol_mouseMoveClosure);
-						this.primitives[element].hover(Symbol_hoverInClosure,
-								Symbol_hoverOutClosure);
-						// Drag and Drop not allowed for Pools
-						if (this.type != m_constants.POOL_SYMBOL
-								&& this.type != m_constants.SWIMLANE_SYMBOL) {
-							this.primitives[element].drag(Symbol_dragClosure,
-									Symbol_dragStartClosure,
-									Symbol_dragStopClosure);
+							// Drag and Drop not allowed for Pools
+							if (this.type != m_constants.POOL_SYMBOL
+									&& this.type != m_constants.SWIMLANE_SYMBOL) {
+								this.primitives[element].drag(Symbol_dragClosure,
+										Symbol_dragStartClosure,
+										Symbol_dragStopClosure);
+							}
 						}
 					}
 				};
@@ -1641,9 +1652,9 @@ define(
 						this.deselectAnchorPoints();
 						var anchorPoint = this.getClosestAnchorPoint(x
 								* this.diagram.zoomFactor
-								- this.diagram.X_OFFSET, y
+								- this.diagram.getCanvasPosition().left, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.getCanvasPosition().top);
 
 						anchorPoint.select();
 
@@ -1668,9 +1679,9 @@ define(
 						this.deselectAnchorPoints();
 						var anchorPoint = this.getClosestAnchorPoint(x
 								* this.diagram.zoomFactor
-								- this.diagram.X_OFFSET, y
+								- this.diagram.getCanvasPosition().left, y
 								* this.diagram.zoomFactor
-								- this.diagram.Y_OFFSET);
+								- this.diagram.getCanvasPosition().top);
 
 						anchorPoint.select();
 
@@ -1707,10 +1718,14 @@ define(
 					}
 				};
 
+
+				Symbol.prototype.click = function(x, y) {
+					this.click_(x, y);
+				};
 				/**
 				 *
 				 */
-				Symbol.prototype.click = function(x, y) {
+				Symbol.prototype.click_ = function(x, y) {
 					// When symbol is Draged, the edit symbol operation should
 					// reset
 					//this.diagram.resetEditableText();
@@ -1719,8 +1734,8 @@ define(
 						// false
 						if (null != this.diagram.currentConnection) {
 							var status = this.diagram.placeNewSymbol(x
-									- this.diagram.X_OFFSET, y
-									- this.diagram.Y_OFFSET, true);
+									- this.diagram.getCanvasPosition().left, y
+									- this.diagram.getCanvasPosition().top, true);
 
 							this.diagram.currentConnection.toModelElementOid = this.oid;
 							this.diagram.currentConnection
@@ -1729,8 +1744,8 @@ define(
 							this.diagram.currentConnection = null;
 						} else {
 							var status = this.diagram.placeNewSymbol(x
-									- this.diagram.X_OFFSET, y
-									- this.diagram.Y_OFFSET);
+									- this.diagram.getCanvasPosition().left, y
+									- this.diagram.getCanvasPosition().top);
 						}
 					} else {
 						if (this.diagram.isInConnectionMode()) {
@@ -1739,9 +1754,9 @@ define(
 								this.diagram.setAnchorPoint(this
 										.getClosestAnchorPoint(x
 												* this.diagram.zoomFactor
-												- this.diagram.X_OFFSET, y
+												- this.diagram.getCanvasPosition().left, y
 												* this.diagram.zoomFactor
-												- this.diagram.Y_OFFSET));
+												- this.diagram.getCanvasPosition().top));
 								this.hideAnchorPoints();
 							}
 						} else if (this.diagram.dragEnabled
@@ -1826,6 +1841,10 @@ define(
 				 *
 				 */
 				Symbol.prototype.remove = function() {
+					this.remove_();
+				};
+
+				Symbol.prototype.remove_ = function() {
 					this.removePrimitives();
 					this.removeFlyOutMenu();
 					this.removeProximitySensor();
@@ -1973,9 +1992,9 @@ define(
 				 */
 				Symbol.prototype.stretchLeft = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.width += this.x - scrollPos.left
-							- (x - this.diagram.X_OFFSET);
-					this.x = x - this.diagram.X_OFFSET + scrollPos.left;
+					this.width += this.x
+							- (x - this.diagram.getCanvasPosition().left);
+					this.x = x - this.diagram.getCanvasPosition().left;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -1986,9 +2005,8 @@ define(
 				 */
 				Symbol.prototype.stretchTop = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.height += this.y - (y - this.diagram.Y_OFFSET)
-							- scrollPos.top;
-					this.y = y + scrollPos.top - this.diagram.Y_OFFSET;
+					this.height += this.y - (y - this.diagram.getCanvasPosition().top);
+					this.y = y - this.diagram.getCanvasPosition().top;
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -1999,8 +2017,7 @@ define(
 				 */
 				Symbol.prototype.stretchRight = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.width = x - this.diagram.X_OFFSET - this.x
-							+ scrollPos.left;
+					this.width = x - this.diagram.getCanvasPosition().left - this.x;
 					if (this.width < m_constants.SYMBOL_MIN_SIZE)
 						this.width = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2011,7 +2028,7 @@ define(
 				 */
 				Symbol.prototype.stretchBottom = function(dX, dY, x, y) {
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
-					this.height += ((y + scrollPos.top - this.diagram.Y_OFFSET) - (this.y + this.height));
+					this.height += ((y - this.diagram.getCanvasPosition().top) - (this.y + this.height));
 					if (this.height < m_constants.SYMBOL_MIN_SIZE)
 						this.height = m_constants.SYMBOL_MIN_SIZE;
 					this.adjustGeometry();
@@ -2130,6 +2147,10 @@ define(
 						}
 					};
 				};
+
+				Symbol.prototype.supportSnapping = function(content) {
+					return true;
+				};
 			}
 
 			// Callback methods for closure trick
@@ -2157,7 +2178,7 @@ define(
 				if (this.auxiliaryProperties
 						&& this.auxiliaryProperties.callbackScope.diagram
 								.isInNormalMode()) {
-					$(".selected-tool").removeClass("selected-tool");
+					m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 				}
 			}
 
@@ -2305,7 +2326,7 @@ define(
 				callbackScope.onCreate(data);
 			}
 
-			function AnchorPoint(symbol, orientation) {
+			function AnchorPoint(symbol, orientation, diagram) {
 				// Attributes
 
 				this.orientation = orientation;
@@ -2315,8 +2336,9 @@ define(
 				this.cacheOrientation = null;
 				this.cacheX = null;
 				this.cacheY = null;
+				this.diagram = this.symbol ? this.symbol.diagram : diagram;
 
-				this.graphics = m_canvasManager
+				this.graphics = this.diagram.canvasManager
 						.drawRectangle(
 								this.x,
 								this.y,
@@ -2340,12 +2362,18 @@ define(
 
 				// Event handling
 
+				// Exclude this ffrom readonly check to show properties panel
 				this.graphics.click(AnchorPoint_clickClosure);
-				this.graphics.hover(AnchorPoint_hoverInClosure,
-						AnchorPoint_hoverOutClosure);
-				this.graphics.drag(AnchorPoint_dragClosure,
-						AnchorPoint_dragStartClosure,
-						AnchorPoint_dragStopClosure);
+
+				// Sometimes Symbol is null
+				var readonly = this.symbol && this.symbol.diagram.process.isReadonly();
+				if (!readonly) {
+					this.graphics.hover(AnchorPoint_hoverInClosure,
+							AnchorPoint_hoverOutClosure);
+					this.graphics.drag(AnchorPoint_dragClosure,
+							AnchorPoint_dragStartClosure,
+							AnchorPoint_dragStopClosure);
+				}
 
 				/**
 				 *
@@ -2461,13 +2489,13 @@ define(
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
 					// Calculate diagram coordinates
 
-					this.moveTo((x + scrollPos.left)
+					this.moveTo((x)
 							* this.symbol.diagram.zoomFactor
-							- this.symbol.diagram.X_OFFSET - 0.5
+							- this.symbol.diagram.getCanvasPosition().left - 0.5
 							* m_constants.DEFAULT_ANCHOR_WIDTH,
-							(y + scrollPos.top)
+							(y)
 									* this.symbol.diagram.zoomFactor
-									- this.symbol.diagram.Y_OFFSET - 0.5
+									- this.symbol.diagram.getCanvasPosition().top - 0.5
 									* m_constants.DEFAULT_ANCHOR_HEIGHT);
 
 					// TODO Panning
@@ -2683,9 +2711,9 @@ define(
 						this.dragConnection.createUpdateCommand(changes);
 						m_messageDisplay.showMessage("Connection updated");
 					}
-					this.remove();
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
+					this.remove();
 				}
 
 				/**
@@ -2695,9 +2723,9 @@ define(
 					this.graphics.remove();
 				};
 
-				AnchorPoint.prototype.createFlippedClone = function() {
+				AnchorPoint.prototype.createFlippedClone = function(diagram) {
 					var clone = new AnchorPoint(null,
-							(this.orientation + 2) % 4);
+							(this.orientation + 2) % 4, diagram);
 
 					clone.x = this.x;
 					clone.y = this.y;

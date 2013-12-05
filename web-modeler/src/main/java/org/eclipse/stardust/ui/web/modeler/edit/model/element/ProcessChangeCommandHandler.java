@@ -4,39 +4,22 @@
  */
 package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
-import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newProcessDefinition;
-import static org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants.ID_PROPERTY;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.ACTIVITIES_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.ATTRIBUTES_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.CONTROL_FLOWS_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.DATA_FLOWS_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.EVENTS_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.GATEWAYS_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.MODEL_ID_PROPERTY;
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelUtils;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramModeType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal

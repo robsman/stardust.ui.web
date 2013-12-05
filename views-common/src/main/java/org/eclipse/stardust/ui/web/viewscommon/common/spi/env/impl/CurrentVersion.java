@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl;
 import java.text.MessageFormat;
 
 import org.eclipse.stardust.common.config.Version;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 
 
 
@@ -25,6 +27,8 @@ import org.eclipse.stardust.common.config.Version;
  */
 public class CurrentVersion
 {
+   private static final Logger trace = LogManager.getLogger(CurrentVersion.class);
+   
    private static final String BUILD_VERSION_NAME = "-buildVersionName";
    private static final String VERSION_NAME = "-versionName";
    public static final String COPYRIGHT_YEARS = "2000-2013";
@@ -57,7 +61,15 @@ public class CurrentVersion
 
    public static Version getBuildVersion()
    {
-      return new Version(getBuildVersionName());
+      try
+      {
+         return new Version(getBuildVersionName());
+      }
+      catch (NumberFormatException e)
+      {
+         trace.error("Could not retrieve Version Information " + e.getLocalizedMessage());
+         return null;
+      }
    }
 
    public static String getCopyrightMessage()

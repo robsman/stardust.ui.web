@@ -11,11 +11,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command", "bpm-modeler/js/m_activity",
-				"bpm-modeler/js/m_gatewayPropertiesPanel", "bpm-modeler/js/m_modelerUtils"],
+				"bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_canvasManager, m_symbol,
-				m_commandsController, m_command, m_activity,
-				m_gatewayPropertiesPanel, m_modelerUtils) {
-
+				m_commandsController, m_command, m_activity, m_modelerUtils) {
 			return {
 				createGatewaySymbol : function(diagram) {
 					var gatewaySymbol = new GatewaySymbol();
@@ -59,8 +57,8 @@ define(
 
 					this.diagram.lastSymbol = this;
 
-					this.propertiesPanel = m_gatewayPropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.gatewayPropertiesPanel;
+					
 					this.path = null;
 					this.andPath = null;
 					this.xorPath = null;
@@ -160,7 +158,7 @@ define(
 				 *
 				 */
 				GatewaySymbol.prototype.createPrimitives = function() {
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -172,7 +170,7 @@ define(
 					this.addToPrimitives(this.path);
 					this.addToEditableTextPrimitives(this.path);
 
-					this.andPath = m_canvasManager
+					this.andPath = this.diagram.canvasManager
 							.drawPath(
 									this.getPlusPathSvgString(),
 									{
@@ -184,7 +182,7 @@ define(
 					this.addToPrimitives(this.andPath);
 					this.addToEditableTextPrimitives(this.andPath);
 
-					this.xorPath = m_canvasManager
+					this.xorPath = this.diagram.canvasManager
 							.drawPath(
 									this.getCrossPathSvgString(),
 									{
@@ -202,7 +200,7 @@ define(
 						this.xorPath.show();
 					}
 
-					this.orCircle = m_canvasManager
+					this.orCircle = this.diagram.canvasManager
 							.drawCircle(
 									this.x
 											+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
@@ -218,7 +216,7 @@ define(
 					this.addToPrimitives(this.orCircle);
 					this.addToEditableTextPrimitives(this.orCircle);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + this.height + 1.2
 									* m_constants.DEFAULT_FONT_SIZE, "").attr({
@@ -507,44 +505,44 @@ define(
 									[],
 									[
 											{
-												imageUrl : "../../images/icons/connect.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/end-event-toolbar.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/end-event-toolbar.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_connectToEndEventClosure
 											} ],
 									[
 											{
-												imageUrl : "../../images/icons/delete.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_removeClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway-xor.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway-xor.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToXorGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway-and.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway-and.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToAndGatewayClosure
@@ -639,12 +637,12 @@ define(
 					editableText.css("visibility", "visible").html(name)
 							.moveDiv(
 									{
-										"x" : this.x + this.diagram.X_OFFSET
-												- scrollPos.left - 10,
+										"x" : this.x + this.diagram.getCanvasPosition().left
+												- 10,
 										"y" : this.y
-												+ this.diagram.Y_OFFSET
+												+ this.diagram.getCanvasPosition().top
 												+ m_constants.GATEWAY_SYMBOL_DEFAULT_HEIGHT
-												+ 5 - scrollPos.top
+												+ 5
 									}).show().trigger("dblclick");
 
 					return this.text;

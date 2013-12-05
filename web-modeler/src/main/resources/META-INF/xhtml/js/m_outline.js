@@ -24,15 +24,15 @@ define(
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_jsfViewManager",
 				"bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelerUtils",
+				"bpm-modeler/js/m_jsfViewManagerHelper", "bpm-modeler/js/m_modelsSaveStatus" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_outlineToolbarController,
 				m_data, m_elementConfiguration, m_jsfViewManager,
-				m_messageDisplay, m_i18nUtils, m_modelerUtils) {
+				m_messageDisplay, m_i18nUtils, m_modelerUtils, m_jsfViewManagerHelper, m_modelsSaveStatus) {
 			var isElementCreatedViaOutline = false;
-			var hasUnsavedModifications = false;
 			var displayScope = "";
 
 			function getURL() {
@@ -41,361 +41,293 @@ define(
 						+ new Date().getTime();
 			}
 
-			var readAllModels = function(force) {
-				m_model.loadModels(force);
+      function DomTreeBuilder() {
+      }
 
-				jQuery("#lastsave")
-						.text(
-								m_i18nUtils
-										.getProperty("modeler.outline.lastSavedMessage.title"));
+      DomTreeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
+        var node = jQuery("<li>");
+        node.attr(nodeConfig.attr);
 
-				jQuery
-						.each(
-								m_utils.convertToSortedArray(m_model
-										.getModels(), "name", true),
-								function(index, model) {
+        jQuery("<a href='#'>" + nodeConfig.data + "</a>").appendTo(node);
 
-									jQuery(displayScope + "#outline").jstree(
-											"create",
-											displayScope + "#outline", "first",
-											{
-												"attr" : {
-													"id" : model.uuid,
-													"rel" : "model",
-													"elementId" : model.id
-												},
-												"data" : model.name
-											}, null, true);
+        if (parentNode) {
+          var parentSelector = jQuery(parentNode);
+          if (!parentSelector.children("ul").length) {
+            parentSelector.append("<ul>");
+          }
+          parentSelector.children("ul").append(node);
+        }
 
-									jQuery(displayScope + "#outline").jstree(
-											"set_type", "model",
-											"#" + model.uuid);
+        return node;
+      };
 
-									jQuery
-											.each(
-													model.processes,
-													function(index, process) {
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"create",
-																		"#"
-																				+ model.uuid,
-																		"last",
-																		{
-																			"attr" : {
-																				"id" : process.uuid,
-																				"oid" : process.oid,
-																				"fullId" : process
-																						.getFullId(),
-																				"modelId" : model.id,
-																				"modelUUID" : model.uuid,
-																				"rel" : "process",
-																				"draggable" : true,
-																				"elementId" : process.id
-																			},
-																			"data" : process.name
-																		},
-																		null,
-																		true);
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"close_node",
-																		"#"
-																				+ process.id);
-													});
+      function TreeNodeBuilder(jsTree) {
+        this.jsTree = jsTree;
+      }
 
-									jQuery(displayScope + "#outline")
-											.jstree(
-													"create",
-													"#" + model.uuid,
-													"first",
-													{
-														"attr" : {
-															"id" : "participants_"
-																	+ model.uuid,
-															"rel" : "participants",
-															"modelUUID" : model.uuid
-														},
-														"data" : m_i18nUtils
-																.getProperty("modeler.outline.participants.name")
-													}, null, true);
+      TreeNodeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
+        return this.jsTree.create_node(parentNode, "last", nodeConfig, null, true);
+      };
 
-									jQuery
-											.each(
-													model.participants,
-													function(index, participant) {
-														if (!participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															if (!participant.parentUUID) {
-																jQuery(
-																		displayScope
-																				+ "#outline")
-																		.jstree(
-																				"create",
-																				"#participants_"
-																						+ model.uuid,
-																				"last",
-																				{
-																					"attr" : {
-																						"id" : participant.uuid,
-																						"fullId" : participant
-																								.getFullId(),
-																						"rel" : participant.type,
-																						"modelId" : model.id,
-																						"modelUUID" : model.uuid,
-																						"draggable" : true,
-																						"elementId" : participant.id
-																					},
-																					"data" : participant.name
-																				},
-																				null,
-																				true);
-																// Load child
-																// participants
-																loadChildParticipants(
-																		model,
-																		participant);
+      function OutlineUiModelBuilder(model, nodeBuilder) {
+        this.model = model;
+        this.nodeBuilder = nodeBuilder;
+      }
 
-																jQuery(
-																		displayScope
-																				+ "#outline")
-																		.jstree(
-																				"close_node",
-																				"#"
-																						+ participant.uuid);
-															}
-														}
-													});
-									jQuery(displayScope + "#outline").jstree(
-											"close_node",
-											"#participants_" + model.uuid);
+      OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
+        // alias to be used from jQuery.each callbacks
+        var self = this;
 
-									// Applications
+        // Model
+        var modelNode = this.nodeBuilder.buildNode({
+          attr : {
+            "id" : this.model.uuid,
+            "rel" : this.model.isReadonly() ? "lockedModel" : "model",
+            "elementId" : this.model.id
+          },
+          data : this.model.name
+        }, parent);
 
-									jQuery(displayScope + "#outline")
-											.jstree(
-													"create",
-													"#" + model.uuid,
-													"first",
-													{
-														"attr" : {
-															"modelId" : model.id,
-															"modelUUID" : model.uuid,
-															"id" : "applications_"
-																	+ model.uuid,
-															"rel" : "applications"
-														},
-														"data" : m_i18nUtils
-																.getProperty("modeler.outline.applications.name")
-													}, null, true);
+        // Structured Data Types
+        var structTypesNode = self.buildContainerNode("structuredTypes", modelNode);
+        jQuery.each(this.model.typeDeclarations, function(index, typeDeclaration) {
+          self.buildTypeDeclarationNode(typeDeclaration, structTypesNode);
+        });
 
-									// Create application nodes
+        // Data
+        var globalDataNode = self.buildContainerNode("data", modelNode);
+        jQuery.each(this.model.dataItems, function(index, data) {
+          self.buildDataNode(data, globalDataNode);
+        });
 
-									jQuery
-											.each(
-													model.applications,
-													function(index, application) {
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"create",
-																		"#applications_"
-																				+ model.uuid,
-																		"last",
-																		{
-																			"attr" : {
-																				"id" : application.uuid,
-																				"modelId" : model.id,
-																				"modelUUID" : model.uuid,
-																				"fullId" : application
-																						.getFullId(),
-																				"rel" : application.applicationType,
-																				"draggable" : true,
-																				"elementId" : application.id,
-																				// TODO
-																				// Likely
-																				// a
-																				// bug
-																				"accessPoint" : application.accessPoint
-																			},
-																			"data" : application.name
-																		},
-																		null,
-																		true);
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"close_node",
-																		"#applications_"
-																				+ model.uuid);
-													});
+        // Applications
+        var globalAppsNode = self.buildContainerNode("applications", modelNode);
+        jQuery.each(this.model.applications, function(index, application) {
+          self.buildApplicationNode(application, globalAppsNode);
+        });
 
-									// TODO - remove hard-coding for primitive
-									// data and add nodes of specific data types
+        // Participants
+        var globalParticipantsNode = self.buildContainerNode("participants", modelNode);
+        jQuery.each(this.model.participants, function(index, participant) {
+          // start with top level participants
+          if (!participant.parentUUID) {
+            self.buildParticipantNode(participant, globalParticipantsNode);
+          }
+        });
 
-									jQuery(displayScope + "#outline")
-											.jstree(
-													"create",
-													"#" + model.uuid,
-													"first",
-													{
-														"attr" : {
-															"id" : "data_"
-																	+ model.uuid,
-															"rel" : "data",
-															"modelUUID" : model.uuid
-														},
-														"data" : m_i18nUtils
-																.getProperty("modeler.outline.data.name")
-													}, null, true);
+        // Processes
+        jQuery.each(this.model.processes, function(index, process) {
+          self.buildProcessNode(process, modelNode);
+        });
 
-									// Create Data nodes
-									jQuery
-											.each(
-													model.dataItems,
-													function(index, data) {
-														if (!data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"create",
-																			"#data_"
-																					+ model.uuid,
-																			"last",
-																			{
-																				"attr" : {
-																					"id" : data.uuid,
-																					"modelUUID" : model.uuid,
-																					"fullId" : data
-																							.getFullId(),
-																					"rel" : data.dataType,
-																					"elementId" : data.id,
-																					"draggable" : true
-																				},
-																				"data" : data.name
-																			},
-																			null,
-																			true);
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"close_node",
-																			"#data_"
-																					+ model.uuid);
-														}
-													});
+        return modelNode;
+      };
 
-									// Structured Data Types
+      OutlineUiModelBuilder.prototype.buildErroredModelNode = function(parent) {
+        var modelNode = this.nodeBuilder.buildNode({
+          attr : {
+            "id" : this.model.uuid,
+            "rel" : "erroredModel",
+            "elementId" : this.model.id
+          },
+          data : this.model.id
+        }, parent);
 
-									jQuery(displayScope + "#outline")
-											.jstree(
-													"create",
-													"#" + model.uuid,
-													"first",
-													{
-														"attr" : {
-															"id" : "structuredTypes_"
-																	+ model.uuid,
-															"rel" : "structuredTypes",
-															"modelId" : model.id,
-															"modelUUID" : model.uuid
-														},
-														"data" : m_i18nUtils
-																.getProperty("modeler.outline.structuredTypes.name")
-													}, null, true);
+        // skip any details for errored models
 
-									// Create structured data type nodes
+        return modelNode;
+      };
 
-									jQuery
-											.each(
-													model.typeDeclarations,
-													function(index,
-															typeDeclaration) {
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"create",
-																		"#structuredTypes_"
-																				+ model.uuid,
-																		"last",
-																		{
-																			"attr" : {
-																				"id" : typeDeclaration.uuid,
-																				"fullId" : typeDeclaration
-																						.getFullId(),
-																				"elementId" : typeDeclaration.id,
-																				"rel" : typeDeclaration
-																						.getType(),
-																				"modelId" : model.id,
-																				"modelUUID" : model.uuid,
-																				"draggable" : true
-																			},
-																			"data" : typeDeclaration.name
-																		},
-																		null,
-																		true);
-														jQuery(
-																displayScope
-																		+ "#outline")
-																.jstree(
-																		"close_node",
-																		"#structuredTypes_"
-																				+ model.uuid);
-													});
+      OutlineUiModelBuilder.prototype.buildTypeDeclarationNode = function(
+          typeDeclaration, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : typeDeclaration.uuid,
+            "rel" : typeDeclaration.getType(),
+            "elementId" : typeDeclaration.id,
+            "modelId" : this.model.id,
+            "oid" : typeDeclaration.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : typeDeclaration.getFullId()
+          },
+          data : typeDeclaration.name
+        }, parent);
+      };
 
-									jQuery(displayScope + "#outline").jstree(
-											"close_node", "#" + model.uuid);
-								});
-				hasUnsavedModifications = false;
-				jQuery("#undoChange").addClass("toolDisabled");
-				jQuery("#redoChange").addClass("toolDisabled");
-			};
+      OutlineUiModelBuilder.prototype.buildDataNode = function(data, parent) {
+        if (data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+          return undefined;
+        }
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : data.uuid,
+            "rel" : data.dataType,
+            "elementId" : data.id,
+            "modelId" : this.model.id,
+            "oid" : data.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : data.getFullId()
+          },
+          data : data.name
+        }, parent);
+      };
 
-			var loadChildParticipants = function(model, parentParticipant) {
-				if (parentParticipant.childParticipants) {
-					jQuery.each(parentParticipant.childParticipants, function(
-							index, participant) {
-						jQuery(displayScope + "#outline").jstree("create",
-								"#" + parentParticipant.uuid, "last", {
-									"attr" : {
-										"id" : participant.uuid,
-										"rel" : participant.type,
-										"fullId" : participant.getFullId(),
-										"modelId" : model.id,
-										"modelUUID" : model.uuid,
-										"parentUUID" : parentParticipant.uuid,
-										"draggable" : true,
-										"elementId" : participant.id
-									},
-									"data" : participant.name
-								}, null, true);
-						loadChildParticipants(model, participant);
-						jQuery(displayScope + "#outline").jstree("close_node",
-								"#" + participant.uuid);
-					});
+      OutlineUiModelBuilder.prototype.buildApplicationNode = function(application, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : application.uuid,
+            "rel" : application.applicationType,
+            "elementId" : application.id,
+            "modelId" : this.model.id,
+            "oid" : application.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : application.getFullId()
+          },
+          data : application.name
+        }, parent);
+      };
+
+      OutlineUiModelBuilder.prototype.buildParticipantNode = function(participant, parent) {
+        if (participant[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
+          return undefined;
+        }
+
+        var nodeConfig = {
+          attr : {
+            "id" : participant.uuid,
+            "rel" : participant.type,
+            "elementId" : participant.id,
+            "modelId" : this.model.id,
+            "oid" : participant.oid,
+            "draggable" : true,
+            "modelUUID" : this.model.uuid,
+            "fullId" : participant.getFullId()
+          },
+          data : participant.name
+        };
+        if (participant.parentUUID) {
+          nodeConfig.attr.parentUUID = participant.parentUUID;
+        }
+
+        var participantNode = this.nodeBuilder.buildNode(nodeConfig, parent);
+
+        if (participant.childParticipants) {
+          var self = this;
+          jQuery.each(participant.childParticipants, function(index, childParticipant) {
+            self.buildParticipantNode(childParticipant, participantNode);
+          });
+        }
+
+        return participantNode;
+      };
+
+      OutlineUiModelBuilder.prototype.buildProcessNode = function(process, parentNode) {
+        return this.nodeBuilder.buildNode({
+          "attr" : {
+            "id" : process.uuid,
+            "rel" : "process",
+            "elementId" : process.id,
+            "modelId" : this.model.id,
+            "draggable" : true,
+            "oid" : process.oid,
+            "modelUUID" : this.model.uuid,
+            "fullId" : process.getFullId()
+          },
+          "data" : process.name
+        }, parentNode);
+      };
+
+      OutlineUiModelBuilder.prototype.buildContainerNode = function(containerType, parent) {
+        return this.nodeBuilder.buildNode({
+          attr : {
+            "id" : containerType + "_" + this.model.uuid,
+            "rel" : containerType,
+            "modelUUID" : this.model.uuid
+          },
+          data : m_i18nUtils.getProperty("modeler.outline." + containerType + ".name")
+        }, parent);
+      };
+
+      function newOutlineTreeDomBuilder(model) {
+        return new OutlineUiModelBuilder(model, new DomTreeBuilder());
+      }
+
+      function newJsTreeOutlineBuilder(model) {
+        var outlineTree = jQuery.jstree._reference(displayScope + "#outline");
+
+        return new OutlineUiModelBuilder(model, new TreeNodeBuilder(outlineTree));
+      }
+
+      var readAllModels = function(force) {
+        jQuery("div#outlineLoadingMsg").show();
+        jQuery("div#outlineLoadingMsg").html(
+            m_i18nUtils.getProperty("modeler.outline.loading.message"));
+        console.time("###################################### Load models");
+        m_model.loadModels(force);
+        console.timeEnd("###################################### Load models");
+
+        m_utils.jQuerySelect("#lastsave").text(
+            m_i18nUtils.getProperty("modeler.outline.lastSavedMessage.title"));
+
+        console.time("###################################### Tree formation");
+
+        var outlineRoot = jQuery(displayScope + "#outline");
+
+        jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", false),
+            function(index, model) {
+              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+            });
+
+        // Errored models
+        jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
+            false), function(index, model) {
+          newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+        });
+
+        console.timeEnd("###################################### Tree formation");
+
+        jQuery("div#outlineLoadingMsg").hide();
+        runHasModelsCheck();
+
+        m_messageDisplay.markSaved();
+        m_modelsSaveStatus.setModelsSaved();
+        m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+        m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
+      };
+
+			/**
+       *
+       */
+			var runHasModelsCheck = function() {
+				var models = m_model.getModels();
+				var hasModels = false;
+				for (var mod in models) {
+					hasModels = true;
+					break;
+				}
+
+				if (!hasModels) {
+					jQuery("div#outlineMessageDiv").show();
+					jQuery("div#outlineMessageDiv").html(m_i18nUtils.getProperty("modeler.outline.noModelsFound.message"));
+				} else {
+					jQuery("div#outlineMessageDiv").hide();
 				}
 			}
 
 			var deployModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
-				var modeleDeployerLink = jQuery(
+				var modeleDeployerLink = m_utils.jQuerySelect(
 						"a[id $= 'model_deployer_link']",
-						window.parent.frames['ippPortalMain'].document);
+						m_utils.getOutlineWindowAndDocument().doc);
 				var modeleDeployerLinkId = modeleDeployerLink.attr('id');
 				var form = modeleDeployerLink.parents('form:first');
 				var formId = form.attr('id');
 
 				if (model.fileName && model.filePath) {
-					window.parent.EventHub.events.publish(
-							"SELECT_MODEL_FOR_DEPLOYMENT",
+					m_jsfViewManagerHelper.openModelDeploymentDialog(
 							modeleDeployerLinkId, model.fileName,
 							model.filePath, formId);
 				} else {
@@ -407,11 +339,20 @@ define(
 			var downloadModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
 
-				window.location = require("bpm-modeler/js/m_urlUtils")
+				if (!model) {
+					for (var i = 0; i < m_model.getErroredModels().length; i++) {
+						if (m_model.getErroredModels()[i].uuid === modelUUID) {
+							model = m_model.getErroredModels()[i];
+						}
+					}
+				}
+				if (model) {
+					window.location = require("bpm-modeler/js/m_urlUtils")
 						.getModelerEndpointUrl()
 						+ "/models/"
 						+ encodeURIComponent(model.id)
 						+ "/download";
+				}
 			}
 
 			var openModelReport = function(modelUUID) {
@@ -424,7 +365,7 @@ define(
 			var elementCreationHandler = function(id, name, type, parent) {
 				if (type == 'activity') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -435,7 +376,7 @@ define(
 							}, null, true);
 				} else if (type == "subProcessActivity") {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -445,7 +386,7 @@ define(
 							}, null, true);
 				} else if (type == 'primitiveDataType') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -456,7 +397,7 @@ define(
 							}, null, true);
 				} else if (type == 'role') {
 					var parentSelector = '#' + parent;
-					jQuery(displayScope + "#outline").jstree("create",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("create",
 							parentSelector, "last", {
 								"attr" : {
 									"id" : id,
@@ -470,20 +411,21 @@ define(
 
 			var elementRenamingHandler = function(attrs) {
 				if (attrs.action == 'Rename') {
-					var rLink = jQuery("li#" + attrs.id + " a")[0];
-					var textElem = jQuery(rLink.childNodes[1])[0];
+					var rLink = m_utils.jQuerySelect("li#" + attrs.id + " a")[0];
+					var textElem = m_utils.jQuerySelect(rLink.childNodes[1])[0];
 					textElem.nodeValue = attrs.props.completetext;
 				}
 			};
 
 			var renameNodeHandler = function(event, data) {
-				if (data.rslt.obj.attr('rel') == 'model') {
+				if (data.rslt.obj.attr('rel') == 'model'
+					|| data.rslt.obj.attr('rel') == 'lockedModel') {
 					var model = m_model.findModelByUuid(data.rslt.obj
 							.attr("id"));
 
 					if (model && (model.name != data.rslt.name)) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelCommand(model.uuid, {
+								.createUpdateModelCommand(model.uuid, model.id, {
 									"name" : data.rslt.name
 								}));
 					}
@@ -504,7 +446,7 @@ define(
 			};
 
 			var renameElementViewLabel = function(type, uuid, name) {
-				if (type == 'model') {
+				if (type == 'model' || type == 'lockedModel') {
 					renameView("modelView", uuid, "modelName", name);
 				} else if (type == 'process') {
 					renameView("processDefinitionView", uuid, "processName",
@@ -584,12 +526,14 @@ define(
 				// state.
 				m_modelerUtils.closeAllModelerViews();
 
-				jQuery(displayScope + "#outline").empty();
+				m_utils.jQuerySelect(displayScope + "#outline").empty();
 				readAllModels(true);
+				setupJsTree();
+				//jQuery(displayScope + "#outline").jstree("create");
 			};
 
 			var importModel = function() {
-				if (true == hasUnsavedModifications) {
+				if (false == m_modelsSaveStatus.areModelsSaved()) {
 					if (parent.iPopupDialog) {
 						parent.iPopupDialog
 								.openPopup({
@@ -615,14 +559,14 @@ define(
 						alert("Models have unsaved changes. Please save models before continuing.");
 					}
 				} else {
-					var link = jQuery(
+					var link = m_utils.jQuerySelect(
 							"a[id $= 'open_model_upload_dialog_link']",
-							window.parent.frames['ippPortalMain'].document);
+							m_utils.getOutlineWindowAndDocument().doc);
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 					var formId = form.attr('id');
-					window.parent.EventHub.events.publish(
-							"OPEN_IMPORT_MODEL_DIALOG", linkId, formId);
+					m_jsfViewManagerHelper
+							.openImportModelDialog(linkId, formId);
 				}
 			}
 
@@ -638,15 +582,15 @@ define(
 						m_commandsController.broadcastCommandUndo(data);
 
 						if (null != data.pendingUndo) {
-							jQuery("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#undoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 						}
 
 						if (null != data.pendingRedo) {
-							jQuery("#redoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 					}
 				});
@@ -664,15 +608,15 @@ define(
 						m_commandsController.broadcastCommand(data);
 
 						if (null != data.pendingUndo) {
-							jQuery("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#undoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 						}
 
 						if (null != data.pendingRedo) {
-							jQuery("#redoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").removeClass("toolDisabled");
 						} else {
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 					}
 				});
@@ -690,7 +634,9 @@ define(
 									return {
 										success : function(data) {
 											m_messageDisplay.markSaved();
-											hasUnsavedModifications = false;
+											m_modelsSaveStatus.setModelsSaved();
+											m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+											m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {
@@ -716,49 +662,914 @@ define(
 			// return nodeId.substring(index);
 			// };
 
-			var setupEventHandling = function() {
-				/* Listen to toolbar events */
-				jQuery(document).bind('TOOL_CLICKED_EVENT',
-						function(event, data) {
-							handleToolbarEvents(event, data);
+			var setupJsTree = function() {
+				jQuery(displayScope + "#outline").jstree(
+						{
+							core : {
+								animation : 0
+							},
+							"plugins" : [ "themes", "html_data",
+									"crrm", "contextmenu", "types",
+									"ui" ],
+							contextmenu : {
+								"items" : function(node) {
+									if ('model' == node.attr('rel')
+											|| 'lockedModel' == node.attr('rel')) {
+										var ctxMenu =  {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteModel" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteModel(obj
+																		.attr("elementId"));
+															});
+												}
+											},
+											"createProcess" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.createProcess"),
+												"action" : function(obj) {
+													createProcess(obj
+															.attr("elementId"));
+												}
+											},
+											"deploy" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.deploy"),
+												"action" : function(obj) {
+													deployModel(obj
+															.attr("id"));
+												}
+											},
+											"download" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.download"),
+												"action" : function(obj) {
+													downloadModel(obj
+															.attr("id"));
+												}
+											}
+
+										// openModelReport options is
+										// Commented out as,
+										// this will not be supported in
+										// 7.1.1
+										// Uncomment when needed.
+										// ,
+										// "openModelReport" : {
+										// "label" : m_i18nUtils
+										// .getProperty("modeler.outline.model.contextMenu.openModelReport"),
+										// "action" : function(obj) {
+										// openModelReport(obj
+										// .attr("id"));
+										// }
+										// }
+										};
+
+										addMenuOptions(ctxMenu, "model");
+
+										var mod = m_model.findModelByUuid(node.attr('id'))
+										if (mod.isReadonly()) {
+											ctxMenu.rename = false;
+											ctxMenu.deleteModel = false;
+											ctxMenu.deleteModel = false;
+											ctxMenu.createProcess = false;
+										}
+
+										return ctxMenu;
+									} else if ('erroredModel' == node.attr('rel')) {
+										var ctxMenu =  {
+											"ccp" : false,
+											"create" : false,
+											"rename" : false,
+											"deleteModel" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteModel(obj
+																		.attr("elementId"));
+															});
+												}
+											},
+											"download" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.download"),
+												"action" : function(obj) {
+													downloadModel(obj
+															.attr("id"));
+												}
+											}
+										}
+
+										return ctxMenu;
+									} else if ('process' == node
+											.attr('rel')) {
+										var options = {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteProcess" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteProcess(
+																		obj
+																				.attr("elementId"),
+																		obj
+																				.attr("modelUUID"));
+															});
+												}
+											}
+										};
+
+										addMenuOptions(options,
+												"process");
+
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										return elem.isReadonly() ? {} : options;
+									} else if ('applications' == node
+											.attr('rel')) {
+										var options = {
+											"ccp" : false,
+											"create" : false,
+											"rename" : false,
+											// Options to create
+											// webservice and UI mashup
+											// applications to be
+											// disabled
+											// as they are not fully
+											// supported in 7.1.1
+											"createWebServiceApplication" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.applications.contextMenu.createWebService"),
+												"action" : function(obj) {
+													createWebServiceApplication(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createMessageTransformationApplication" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.applications.contextMenu.createTransformation"),
+												"action" : function(obj) {
+													createMessageTransformationApplication(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createUiMashupApplication" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
+												"action" : function(obj) {
+													createUiMashupApplication(obj
+															.attr("modelUUID"));
+												}
+											}
+										};
+
+										addCamelOverlayMenuOptions(options);
+
+										var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+										return mod.isReadonly() ? {} : options;
+									} else if ('data' == node
+											.attr('rel')) {
+										var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+										var ctxMenu = mod.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : false,
+											"createPrimitiveData" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.data.contextMenu.createPrimitiveData"),
+												"action" : function(obj) {
+													createPrimitiveData(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createDocumentData" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.data.contextMenu.createDocument"),
+												"action" : function(obj) {
+													createDocumentData(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createStructuredData" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.data.contextMenu.createStructuredData"),
+												"action" : function(obj) {
+													createStructuredData(obj
+															.attr("modelUUID"));
+												}
+											}
+										};
+
+										return ctxMenu
+									} else if (m_elementConfiguration
+											.isValidDataType(node
+													.attr("rel"))) {
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										var ctxMenu = elem.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteData" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteData(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if ("participants" == node
+											.attr('rel')) {
+										var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+										var ctxMenu = mod.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : false,
+											"createRole" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.contextMenu.createRole"),
+												"action" : function(obj) {
+													createRole(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createOrganization" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
+												"action" : function(obj) {
+													createOrganization(obj
+															.attr("modelUUID"));
+												}
+											},
+											"createConditionalPerformer" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.contextMenu.createConditionalPerformer"),
+												"action" : function(obj) {
+													createConditionalPerformer(obj
+															.attr("modelUUID"));
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if (m_elementConfiguration
+											.isValidAppType(node
+													.attr("rel"))) {
+										var options = {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteApplication" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteApplication(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											}
+										};
+
+										addMenuOptions(options,
+												"application");
+
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										return elem.isReadonly() ? {} : options;
+									} else if ('structuredTypes' == node
+											.attr('rel')) {
+										var mod = m_model.findModelByUuid(node.attr('modeluuid'));
+										var ctxMenu = mod.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : false,
+											"createXSDStructuredDataType" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.structureDataType.contextMenu.createDataType"),
+												"action" : function(obj) {
+													createXsdStructuredDataType(obj
+															.attr("modelUUID"));
+												}
+											},
+											importTypeDeclarations : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.structureDataType.contextMenu.importTypeDeclarations"),
+												"action" : function(obj) {
+													var model = m_model
+															.findModelByUuid(obj
+																	.attr("modelUUID"));
+
+													importTypeDeclarations(model);
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if ("structuredDataType" == node
+											.attr('rel')
+											|| "compositeStructuredDataType" == node
+													.attr('rel')
+											|| "enumStructuredDataType" == node
+													.attr('rel')
+											|| "importedStructuredDataType" == node
+													.attr('rel')) {
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										var ctxMenu = elem.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteStructuredDataType" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteStructuredDataType(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if ('roleParticipant' == node
+											.attr('rel')
+											|| 'teamLeader' == node
+													.attr('rel')) {
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										var ctxMenu = elem.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteParticipant" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteParticipant(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											},
+											"setAsManager" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.role.contextMenu.setAsManager"),
+												"_disabled" : ((undefined == node
+														.attr("parentUUID")) || ('teamLeader' == node
+														.attr('rel'))),
+												"action" : function(obj) {
+													setAsManager(
+															node
+																	.attr("modelUUID"),
+															node
+																	.attr("parentUUID"),
+															node
+																	.attr("id"));
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if ("conditionalPerformerParticipant" == node
+											.attr('rel')) {
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										var ctxMenu = elem.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteParticipant" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteParticipant(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											}
+										};
+
+										return ctxMenu;
+									} else if ('organizationParticipant' == node
+											.attr('rel')) {
+										var elem = m_model.findElementInModelByUuid(node.attr('modelid'), node.attr('id'));
+										var ctxMenu = elem.isReadonly() ? {} : {
+											"ccp" : false,
+											"create" : false,
+											"rename" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.contextMenu.rename"),
+												"action" : function(obj) {
+													m_utils.jQuerySelect(
+															displayScope
+																	+ "#outline")
+															.jstree(
+																	"rename",
+																	"#"
+																			+ obj
+																					.attr("id"));
+												}
+											},
+											"deleteParticipant" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.element.properties.commonProperties.delete"),
+												"action" : function(obj) {
+													deleteElementAction(
+															obj.context.lastChild.data,
+															function() {
+																deleteParticipant(
+																		obj
+																				.attr("modelUUID"),
+																		obj
+																				.attr("elementId"));
+															});
+												}
+											},
+											"createRole" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.contextMenu.createRole"),
+												"action" : function(obj) {
+													createRole(
+															obj
+																	.attr("modelUUID"),
+															obj
+																	.attr("id"));
+												}
+											},
+											"createOrganization" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
+												"action" : function(obj) {
+													createOrganization(
+															obj
+																	.attr("modelUUID"),
+															obj
+																	.attr("id"));
+												}
+											}
+										};
+
+										return ctxMenu;
+									}
+
+									return {};
+								}
+							},
+							types : {
+								"types" : {
+									"model" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/model.png"
+										},
+										"valid_children" : [
+												"participants",
+												"process",
+												"applications",
+												"structuredTypes",
+												"data" ]
+									},
+									"lockedModel" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/model-locked.png"
+										},
+										"valid_children" : [
+												"participants",
+												"process",
+												"applications",
+												"structuredTypes",
+												"data" ]
+									},
+									"erroredModel" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/model-error.png"
+										},
+										"valid_children" : []
+									},
+									"participants" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/participants.png"
+										}
+									},
+									"roleParticipant" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/role.png"
+										}
+									},
+									"teamLeader" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/manager.png"
+										}
+									},
+									"organizationParticipant" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/organization.png"
+										}
+									},
+									"conditionalPerformerParticipant" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/conditional.png"
+										}
+									},
+									"process" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/process.png"
+										}
+									},
+									"structuredTypes" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/structured-types.png"
+										}
+									},
+									"structuredDataType" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/structured-type.png"
+										}
+									},
+									"compositeStructuredDataType" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/bricks.png"
+										}
+									},
+									"enumStructuredDataType" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/structured-type-enum.png"
+										}
+									},
+									"importedStructuredDataType" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/structured-type-import.png"
+										}
+									},
+									"applications" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/applications-blue.png"
+										}
+									},
+									"interactive" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-c-ext-web.png"
+										}
+									},
+									"plainJava" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-plain-java.png"
+										}
+									},
+									"jms" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-jms.png"
+										}
+									},
+									"webservice" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-web-service.png"
+										}
+									},
+									"dmsOperation" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-dms.png"
+										}
+									},
+									"mailBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-mail.png"
+										}
+									},
+									"messageParsingBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-message-p.png"
+										}
+									},
+									"messageSerializationBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-message-s.png"
+										}
+									},
+									"messageTransformationBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-message-trans.png"
+										}
+									},
+									"camelSpringProducerApplication" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-camel.png"
+										}
+									},
+									"camelConsumerApplication" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-camel.png"
+										}
+									},
+									"rulesEngineBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-drools.png"
+										}
+									},
+									"sessionBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-session.png"
+										}
+									},
+									"springBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-plain-java.png"
+										}
+									},
+									"xslMessageTransformationBean" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/application-message-trans.png"
+										}
+									},
+									"data" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data.png"
+										}
+									},
+									"primitive" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-primitive.png"
+										}
+									},
+									"hibernate" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-hibernate.png"
+										}
+									},
+									"struct" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-structured.png"
+										}
+									},
+									"serializable" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-serializable.png"
+										}
+									},
+									"entity" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-entity.png"
+										}
+									},
+									"dmsDocument" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-document.png"
+										}
+									},
+									"dmsDocumentList" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-document-list.png"
+										}
+									},
+									"dmsFolder" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-folder.png"
+										}
+									},
+									"dmsFolderList" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-folder-list.png"
+										}
+									},
+									"plainXML" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/data-xml.png"
+										}
+									}
+								}
+							},
+							"themes" : {
+								"theme" : "custom",
+								"url" : "../css/jsTreeCustom/style.css"
+							}
 						});
 
-				var IE = document.all ? true : false;
-				if (!IE) {
-					document.captureEvents(Event.MOUSEMOVE);
-				} else {
-					document.ondragstart = function() {
-						return false;
-					};
-				}
-				document.onmousemove = function(e) {
-					// TODO Make portable/modularize
+				// Rename node handler
+				jQuery(displayScope + "#outline").bind("rename_node.jstree", function(event, data) {
+					renameNodeHandler(event, data);
+				});
 
-					if (parent != null && parent.iDnD != null) {
-						if (e) {
-							parent.iDnD.setIframeXY(e, window.name);
-						} else {
-							parent.iDnD.setIframeXY(window.event, window.name);
-						}
-					}
-				};
-
-				document.onmouseup = function() {
-					// TODO Make portable/modularize
-
-					if (parent != null && parent.iDnD != null) {
-						parent.iDnD.dragMode = false;
-						parent.iDnD.hideIframe();
-					}
-				};
-
-				// Tree Node Selection
-
-				jQuery(displayScope + "#outline")
+				// Tree Node Selection handler
+				m_utils.jQuerySelect(displayScope + "#outline")
 						.bind(
 								"select_node.jstree",
 								function(event, data) {
-									if (data.rslt.obj.attr('rel') == 'model') {
+									if (data.rslt.obj.attr('rel') == 'model'
+											|| data.rslt.obj.attr('rel') == 'lockedModel') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -773,6 +1584,31 @@ define(
 																+ "&uuid="
 																+ model.uuid,
 														model.uuid);
+									} else if (data.rslt.obj.attr('rel') == 'erroredModel') {
+										if (parent.iPopupDialog) {
+											parent.iPopupDialog
+													.openPopup({
+														attributes : {
+															width : "400px",
+															height : "200px",
+															src : m_urlUtils.getPlugsInRoot()
+																	+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
+														},
+														payload : {
+															title : m_i18nUtils
+																	.getProperty("modeler.messages.warning"),
+															message : m_i18nUtils
+																	.getProperty("modeler.outline.erroredModels.open.message"),
+															acceptButtonText : m_i18nUtils
+																	.getProperty("modeler.messages.confirm.close"),
+															acceptFunction : function() {
+																// Do nothing
+															}
+														}
+													});
+										} else {
+											alert(m_i18nUtils.getProperty("modeler.outline.erroredModels.open.message"));
+										}
 									} else if (data.rslt.obj.attr('rel') == "roleParticipant"
 											|| data.rslt.obj.attr('rel') == "teamLeader") {
 										var model = m_model
@@ -795,7 +1631,7 @@ define(
 																+ encodeURIComponent(role
 																		.getFullId())
 																+ "&uuid="
-																+ encodeURIComponent(role.uuid)
+																+ role.uuid
 																+ "&modelUUID="
 																+ model.uuid,
 														role.uuid);
@@ -889,14 +1725,14 @@ define(
 										viewManager.openView(
 												"webServiceApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -914,20 +1750,21 @@ define(
 												.openView(
 														"messageTransformationApplicationView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&applicationId="
-																+ application.id
+																+ encodeURIComponent(application.id)
 																+ "&applicationName="
-																+ application.name
+																+ encodeURIComponent(application.name)
 																+ "&fullId="
-																+ application
-																		.getFullId()
+																+ encodeURIComponent(application
+																		.getFullId())
 																+ "&uuid="
 																+ application.uuid
 																+ "&modelUUID="
 																+ model.uuid,
 														application.uuid);
-									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication") {
+									} else if (data.rslt.obj.attr('rel') == "camelSpringProducerApplication" ||
+											data.rslt.obj.attr('rel') == "camelConsumerApplication") {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("modelUUID"));
@@ -938,14 +1775,14 @@ define(
 										viewManager.openView(
 												"camelApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -962,14 +1799,14 @@ define(
 										viewManager.openView(
 												"uiMashupApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -988,14 +1825,14 @@ define(
 										viewManager.openView(
 												"genericApplicationView",
 												"modelId="
-														+ model.id
+														+ encodeURIComponent(model.id)
 														+ "&applicationId="
-														+ application.id
+														+ encodeURIComponent(application.id)
 														+ "&applicationName="
-														+ application.name
+														+ encodeURIComponent(application.name)
 														+ "&fullId="
-														+ application
-																.getFullId()
+														+ encodeURIComponent(application
+																.getFullId())
 														+ "&uuid="
 														+ application.uuid
 														+ "&modelUUID="
@@ -1016,14 +1853,14 @@ define(
 												.openView(
 														"xsdStructuredDataTypeView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&structuredDataTypeId="
-																+ structuredDataType.id
+																+ encodeURIComponent(structuredDataType.id)
 																+ "&structuredDataTypeName="
-																+ structuredDataType.name
+																+ encodeURIComponent(structuredDataType.name)
 																+ "&fullId="
-																+ structuredDataType
-																		.getFullId()
+																+ encodeURIComponent(structuredDataType
+																		.getFullId())
 																+ "&uuid="
 																+ structuredDataType.uuid
 																+ "&modelUUID="
@@ -1041,14 +1878,14 @@ define(
 												.openView(
 														"conditionalPerformerView",
 														"modelId="
-																+ model.id
+																+ encodeURIComponent(model.id)
 																+ "&conditionalPerformerId="
-																+ conditionalPerformer.id
+																+ encodeURIComponent(conditionalPerformer.id)
 																+ "&conditionalPerformerName="
-																+ conditionalPerformer.name
+																+ encodeURIComponent(conditionalPerformer.name)
 																+ "&fullId="
-																+ conditionalPerformer
-																		.getFullId()
+																+ encodeURIComponent(conditionalPerformer
+																		.getFullId())
 																+ "&uuid="
 																+ conditionalPerformer.uuid
 																+ "&modelUUID="
@@ -1061,11 +1898,11 @@ define(
 												+ data.rslt.obj.attr('rel'));
 									}
 
-									jQuery("a")
+									m_utils.jQuerySelect("a")
 											.mousedown(
 													function(e) {
 
-														if (jQuery(this)
+														if (m_utils.jQuerySelect(this)
 																.parent()
 																.attr(
 																		'draggable')) {
@@ -1074,8 +1911,8 @@ define(
 																		.preventDefault();
 															}
 															var insElem = this.childNodes[0];
-															var textElem = jQuery(this.childNodes[1])[0];
-															var bgImage = jQuery(
+															var textElem = m_utils.jQuerySelect(this.childNodes[1])[0];
+															var bgImage = m_utils.jQuerySelect(
 																	insElem)
 																	.css(
 																			'background-image');
@@ -1095,14 +1932,14 @@ define(
 															// parent.iDnD.drawIframeAt(e,
 															// window.name);
 															var model = m_model
-																	.findModelByUuid(jQuery(
+																	.findModelByUuid(m_utils.jQuerySelect(
 																			insElem)
 																			.parent()
 																			.parent()
 																			.attr(
 																					"modelUUID"));
 															var element = model
-																	.findModelElementByUuid(jQuery(
+																	.findModelElementByUuid(m_utils.jQuerySelect(
 																			insElem)
 																			.parent()
 																			.parent()
@@ -1112,13 +1949,13 @@ define(
 																	.setDrag();
 															parent.iDnD.dragMode = true;
 															var transferObj = {
-																'elementType' : jQuery(
+																'elementType' : m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
 																		.attr(
 																				'rel'),
-																'elementId' : jQuery(
+																'elementId' : m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
@@ -1131,7 +1968,7 @@ define(
 															};
 
 															if (transferObj.elementType == "Plain_Java_Application") {
-																transferObj.attr.accessPoint = jQuery(
+																transferObj.attr.accessPoint = m_utils.jQuerySelect(
 																		insElem)
 																		.parent()
 																		.parent()
@@ -1139,7 +1976,7 @@ define(
 																				'accessPoint');
 															}
 
-															transferObj.attr.fullId = jQuery(
+															transferObj.attr.fullId = m_utils.jQuerySelect(
 																	insElem)
 																	.parent()
 																	.parent()
@@ -1154,808 +1991,566 @@ define(
 																			textElem.nodeValue);
 														}
 													});
-								})
-						.bind("rename_node.jstree", function(event, data) {
-							renameNodeHandler(event, data);
-						})
-						.jstree(
-								{
-									core : {
-										animation : 0
-									},
-									"plugins" : [ "themes", "html_data",
-											"crrm", "contextmenu", "types",
-											"ui" ],
-									contextmenu : {
-										"items" : function(node) {
-											if ('model' == node.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteModel" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteModel(obj
-																				.attr("elementId"));
-																	});
-														}
-													},
-													"createProcess" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.model.contextMenu.createProcess"),
-														"action" : function(obj) {
-															createProcess(obj
-																	.attr("elementId"));
-														}
-													},
-													"deploy" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.model.contextMenu.deploy"),
-														"action" : function(obj) {
-															deployModel(obj
-																	.attr("id"));
-														}
-													},
-													"download" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.model.contextMenu.download"),
-														"action" : function(obj) {
-															downloadModel(obj
-																	.attr("id"));
-														}
-													}
-
-												// openModelReport options is
-												// Commented out as,
-												// this will not be supported in
-												// 7.1.1
-												// Uncomment when needed.
-												// ,
-												// "openModelReport" : {
-												// "label" : m_i18nUtils
-												// .getProperty("modeler.outline.model.contextMenu.openModelReport"),
-												// "action" : function(obj) {
-												// openModelReport(obj
-												// .attr("id"));
-												// }
-												// }
-												};
-											} else if ('process' == node
-													.attr('rel')) {
-												var options = {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteProcess" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteProcess(
-																				obj
-																						.attr("elementId"),
-																				obj
-																						.attr("modelUUID"));
-																	});
-														}
-													}
-												};
-
-												addMenuOptions(options,
-														"process");
-
-												return options;
-											} else if ('applications' == node
-													.attr('rel')) {
-												var options = {
-													"ccp" : false,
-													"create" : false,
-													"rename" : false,
-													// Options to create
-													// webservice and UI mashup
-													// applications to be
-													// disabled
-													// as they are not fully
-													// supported in 7.1.1
-													"createWebServiceApplication" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.applications.contextMenu.createWebService"),
-														"action" : function(obj) {
-															createWebServiceApplication(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createMessageTransformationApplication" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.applications.contextMenu.createTransformation"),
-														"action" : function(obj) {
-															createMessageTransformationApplication(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createUiMashupApplication" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.applications.contextMenu.createUIMashup"),
-														"action" : function(obj) {
-															createUiMashupApplication(obj
-																	.attr("modelUUID"));
-														}
-													}
-												};
-
-												addCamelOverlayMenuOptions(options);
-
-												return options;
-											} else if ('data' == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : false,
-													"createPrimitiveData" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.data.contextMenu.createPrimitiveData"),
-														"action" : function(obj) {
-															createPrimitiveData(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createDocumentData" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.data.contextMenu.createDocument"),
-														"action" : function(obj) {
-															createDocumentData(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createStructuredData" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.data.contextMenu.createStructuredData"),
-														"action" : function(obj) {
-															createStructuredData(obj
-																	.attr("modelUUID"));
-														}
-													}
-												};
-											} else if (m_elementConfiguration
-													.isValidDataType(node
-															.attr("rel"))) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteData" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteData(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													}
-												};
-											} else if ("participants" == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : false,
-													"createRole" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.contextMenu.createRole"),
-														"action" : function(obj) {
-															createRole(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createOrganization" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
-														"action" : function(obj) {
-															createOrganization(obj
-																	.attr("modelUUID"));
-														}
-													},
-													"createConditionalPerformer" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.contextMenu.createConditionalPerformer"),
-														"action" : function(obj) {
-															createConditionalPerformer(obj
-																	.attr("modelUUID"));
-														}
-													}
-												};
-											} else if (m_elementConfiguration
-													.isValidAppType(node
-															.attr("rel"))) {
-												var options = {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteApplication" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteApplication(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													}
-												};
-
-												addMenuOptions(options,
-														"application");
-
-												return options;
-											} else if ('structuredTypes' == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : false,
-													"createXSDStructuredDataType" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.structureDataType.contextMenu.createDataType"),
-														"action" : function(obj) {
-															createXsdStructuredDataType(obj
-																	.attr("modelUUID"));
-														}
-													},
-													importTypeDeclarations : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.structureDataType.contextMenu.importTypeDeclarations"),
-														"action" : function(obj) {
-															var model = m_model
-																	.findModelByUuid(obj
-																			.attr("modelUUID"));
-
-															importTypeDeclarations(model);
-														}
-													}
-												};
-											} else if ("structuredDataType" == node
-													.attr('rel')
-													|| "compositeStructuredDataType" == node
-															.attr('rel')
-													|| "enumStructuredDataType" == node
-															.attr('rel')
-													|| "importedStructuredDataType" == node
-															.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteStructuredDataType" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteStructuredDataType(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													}
-												};
-											} else if ('roleParticipant' == node
-													.attr('rel')
-													|| 'teamLeader' == node
-															.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteParticipant" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteParticipant(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													},
-													"setAsManager" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.role.contextMenu.setAsManager"),
-														"_disabled" : ((undefined == node
-																.attr("parentUUID")) || ('teamLeader' == node
-																.attr('rel'))),
-														"action" : function(obj) {
-															setAsManager(
-																	node
-																			.attr("modelUUID"),
-																	node
-																			.attr("parentUUID"),
-																	node
-																			.attr("id"));
-														}
-													}
-												};
-											} else if ("conditionalPerformerParticipant" == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteParticipant" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteParticipant(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													}
-												};
-											} else if ('organizationParticipant' == node
-													.attr('rel')) {
-												return {
-													"ccp" : false,
-													"create" : false,
-													"rename" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.contextMenu.rename"),
-														"action" : function(obj) {
-															jQuery(
-																	displayScope
-																			+ "#outline")
-																	.jstree(
-																			"rename",
-																			"#"
-																					+ obj
-																							.attr("id"));
-														}
-													},
-													"deleteParticipant" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.element.properties.commonProperties.delete"),
-														"action" : function(obj) {
-															deleteElementAction(
-																	obj.context.lastChild.data,
-																	function() {
-																		deleteParticipant(
-																				obj
-																						.attr("modelUUID"),
-																				obj
-																						.attr("elementId"));
-																	});
-														}
-													},
-													"createRole" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.contextMenu.createRole"),
-														"action" : function(obj) {
-															createRole(
-																	obj
-																			.attr("modelUUID"),
-																	obj
-																			.attr("id"));
-														}
-													},
-													"createOrganization" : {
-														"label" : m_i18nUtils
-																.getProperty("modeler.outline.participants.contextMenu.createOrganization"),
-														"action" : function(obj) {
-															createOrganization(
-																	obj
-																			.attr("modelUUID"),
-																	obj
-																			.attr("id"));
-														}
-													}
-												};
-											}
-
-											return {};
-										}
-									},
-									types : {
-										"types" : {
-											"model" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/model.png"
-												},
-												"valid_children" : [
-														"participants",
-														"process",
-														"applications",
-														"structuredTypes",
-														"data" ]
-											},
-											"participants" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/participants.png"
-												}
-											},
-											"roleParticipant" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/role.png"
-												}
-											},
-											"teamLeader" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/manager.png"
-												}
-											},
-											"organizationParticipant" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/organization.png"
-												}
-											},
-											"conditionalPerformerParticipant" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/conditional.png"
-												}
-											},
-											"process" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/process.png"
-												}
-											},
-											"structuredTypes" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/structured-types.png"
-												}
-											},
-											"structuredDataType" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/structured-type.png"
-												}
-											},
-											"compositeStructuredDataType" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/bricks.png"
-												}
-											},
-											"enumStructuredDataType" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/structured-type-enum.png"
-												}
-											},
-											"importedStructuredDataType" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/structured-type-import.png"
-												}
-											},
-											"applications" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/applications-blue.png"
-												}
-											},
-											"interactive" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-c-ext-web.png"
-												}
-											},
-											"plainJava" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-plain-java.png"
-												}
-											},
-											"jms" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-jms.png"
-												}
-											},
-											"webservice" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-web-service.png"
-												}
-											},
-											"dmsOperation" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-dms.png"
-												}
-											},
-											"mailBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-mail.png"
-												}
-											},
-											"messageParsingBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-message-p.png"
-												}
-											},
-											"messageSerializationBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-message-s.png"
-												}
-											},
-											"messageTransformationBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-message-trans.png"
-												}
-											},
-											"camelSpringProducerApplication" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-camel.png"
-												}
-											},
-											"rulesEngineBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-drools.png"
-												}
-											},
-											"sessionBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-session.png"
-												}
-											},
-											"springBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-plain-java.png"
-												}
-											},
-											"xslMessageTransformationBean" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/application-message-trans.png"
-												}
-											},
-											"data" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data.png"
-												}
-											},
-											"primitive" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-primitive.png"
-												}
-											},
-											"hibernate" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-hibernate.png"
-												}
-											},
-											"struct" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-structured.png"
-												}
-											},
-											"serializable" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-serializable.png"
-												}
-											},
-											"entity" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-entity.png"
-												}
-											},
-											"dmsDocument" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-document.png"
-												}
-											},
-											"dmsDocumentList" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-document-list.png"
-												}
-											},
-											"dmsFolder" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-folder.png"
-												}
-											},
-											"dmsFolderList" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-folder-list.png"
-												}
-											},
-											"plainXML" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "bpm-modeler/images/icons/data-xml.png"
-												}
-											}
-										}
-									},
-									"themes" : {
-										"theme" : "custom",
-										"url" : "../css/jsTreeCustom/style.css"
-									}
 								});
+			};
+
+			/**
+			 *
+			 */
+			function createModel() {
+				var modelName = m_i18nUtils
+						.getProperty("modeler.outline.newModel.namePrefix");
+				var count = 0;
+				var name = modelName + " " + (++count);
+
+				// Check if model name exists already.
+				while (modelNameExists(name)) {
+					name = modelName + " " + (++count);
+				}
+
+				m_commandsController.submitCommand(m_command
+						.createCreateModelCommand({
+							"name" : name,
+							"modelFormat" : "xpdl"
+						}));
+				isElementCreatedViaOutline = true;
+			};
+
+			function modelNameExists(name) {
+				for (m in m_model.getModels()) {
+					if (m_model.getModels()[m].name == name) {
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+			/**
+			 *
+			 */
+			function deleteModel(modelId) {
+				var model = m_model.findModel(modelId);
+				if (!model) {
+					for (var i = 0; i < m_model.getErroredModels().length; i++) {
+						if (m_model.getErroredModels()[i].id === modelId) {
+							model = m_model.getErroredModels()[i];
+						}
+					}
+				}
+
+				if (model) {
+					m_commandsController.submitCommand(m_command
+							.createDeleteModelCommand(model.uuid, model.id, {}));
+				}
+			};
+
+			/**
+			 *
+			 */
+			function createProcess(modelId) {
+				var procNamePrefix = m_i18nUtils
+						.getProperty("modeler.outline.newProcess.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(modelId, procNamePrefix);
+
+				// TODO
+				// Temporarily added I18n FOR default pool and lane names on
+				// client side,
+				// till this is handled on server side.
+				m_commandsController
+						.submitCommand(m_command
+								.createCreateProcessCommand(
+										modelId,
+										modelId,
+										{
+											"name" : name,
+											"defaultPoolName" : m_i18nUtils
+													.getProperty("modeler.diagram.defaultPoolName"),
+											"defaultLaneName" : m_i18nUtils
+													.getProperty("modeler.diagram.defaultLaneName")
+										}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function deleteProcess(processId, modelUUID) {
+				var model = m_model.findModelByUuid(modelUUID);
+				m_commandsController.submitCommand(m_command
+						.createDeleteProcessCommand(model.id, model.id, {
+							"id" : processId
+						}));
+			};
+
+			/**
+			 */
+			function deleteStructuredDataType(modelUUID, structTypeId) {
+				var model = m_model.findModelByUuid(modelUUID);
+				m_commandsController.submitCommand(m_command
+						.createDeleteStructuredDataTypeCommand(model.id,
+								model.id, {
+									"id" : structTypeId
+								}));
+			};
+
+			/**
+			 *
+			 */
+			function deleteParticipant(modelUUID, id) {
+				var model = m_model.findModelByUuid(modelUUID);
+				m_commandsController.submitCommand(m_command
+						.createDeleteParticipantCommand(model.id, model.id,
+								{
+									"id" : id
+								}));
+			};
+
+			/**
+			 *
+			 */
+			function deleteApplication(modelUUID, appId) {
+				var model = m_model.findModelByUuid(modelUUID);
+				m_commandsController.submitCommand(m_command
+						.createDeleteApplicationCommand(model.id, model.id,
+								{
+									"id" : appId
+								}));
+			};
+
+			/**
+			 *
+			 */
+			function deleteData(modelUUID, id) {
+				var model = m_model.findModelByUuid(modelUUID);
+				m_commandsController.submitCommand(m_command
+						.createDeleteDataCommand(model.id, model.id, {
+							"id" : id
+						}));
+			};
+
+			function prepareDeleteElementData(name, callback) {
+				var popupData = {
+					attributes : {
+						width : "400px",
+						height : "200px",
+						src : m_urlUtils.getPlugsInRoot()
+								+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
+					},
+					payload : {
+						title : m_i18nUtils
+								.getProperty("modeler.messages.confirm"),
+						message : m_i18nUtils.getProperty(
+								"modeler.messages.confirm.deleteElement")
+								.replace("{0}", name),
+						acceptButtonText : m_i18nUtils
+								.getProperty("modeler.messages.confirm.yes"),
+						cancelButtonText : m_i18nUtils
+								.getProperty("modeler.messages.confirm.cancel"),
+						acceptFunction : callback
+					}
+				};
+
+				return popupData;
+			};
+
+			function deleteElementAction(name, callback) {
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog.openPopup(prepareDeleteElementData(
+							name, callback));
+				} else {
+					callback();
+				}
+			};
+
+			/**
+			 *
+			 */
+			function createPrimitiveData(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newPrimitivedata.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController
+						.submitCommand(m_command
+								.createCreatePrimitiveDataCommand(
+										model.id,
+										model.id,
+										{
+											"name" : name,
+											"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
+										}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createDocumentData(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newDocumentdata.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateDocumentDataCommand(model.id,
+								model.id, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createStructuredData(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newStructureddata.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateStructuredDataCommand(model.id,
+								model.id, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createRole(modelUUId, targetUUID) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newRole.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+				var targetOid = (targetUUID ? m_model
+						.findElementInModelByUuid(model.id, targetUUID).oid
+						: model.id);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateRoleCommand(model.id, targetOid, {
+							"name" : name
+						}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createConditionalPerformer(modelUUId, targetUUID) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newConditionalperformer.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+				var targetOid = (targetUUID ? m_model
+						.findElementInModelByUuid(model.id, targetUUID).oid
+						: model.id);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateConditionalPerformerCommand(model.id,
+								targetOid, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function setAsManager(modelUUId, orgUUID, roleUUID) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var orgOid = m_model.findElementInModelByUuid(model.id,
+						orgUUID).oid;
+				var roleUUID = m_model.findElementInModelByUuid(model.id,
+						roleUUID).uuid;
+
+				m_commandsController.submitCommand(m_command
+						.createUpdateTeamLeaderCommand(model.id, orgOid, {
+							"uuid" : roleUUID
+						}));
+			};
+
+			/**
+			 *
+			 */
+			function createOrganization(modelUUId, targetUUID) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newOrganization.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+				var targetOid = (targetUUID ? m_model
+						.findElementInModelByUuid(model.id, targetUUID).oid
+						: model.id);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateOrganizationCommand(model.id,
+								targetOid, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createWebServiceApplication(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newWebservice.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateWebServiceAppCommand(model.id,
+								model.id, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createMessageTransformationApplication(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newMsgTransformation.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateMessageTransfromationAppCommand(
+								model.id, model.id, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createCamelApplication(modelUUId, name, attributes) {
+				var model = m_model.findModelByUuid(modelUUId);
+
+				//if (!name) {
+					name = m_modelerUtils.getUniqueNameForElement(
+							model.id,name);
+				//}
+
+				m_commandsController.submitCommand(m_command
+						.createCreateCamelAppCommand(model.id, model.id, {
+							name : name,
+							attributes : attributes
+						}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 */
+			function createUiMashupApplication(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newUimashup.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateUiMashupAppCommand(model.id, model.id,
+								{
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 * @param modelId
+			 * @returns
+			 */
+			function createXsdStructuredDataType(modelUUId) {
+				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils
+						.getProperty("modeler.outline.newXsddatastructure.namePrefix");
+				var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+				m_commandsController.submitCommand(m_command
+						.createCreateStructuredDataTypeCommand(model.id,
+								model.id, {
+									"name" : name
+								}));
+				isElementCreatedViaOutline = true;
+			};
+
+			/**
+			 *
+			 * @param modelId
+			 * @param id
+			 * @returns
+			 */
+			function createWrapperProcess(application) {
+				m_utils.debug("Application to wrap");
+				m_utils.debug(application);
+
+				var popupData = {
+					attributes : {
+						width : "700px",
+						height : "500px",
+						src : m_urlUtils.getPlugsInRoot()
+								+ "bpm-modeler/views/modeler/serviceWrapperWizard.html"
+					},
+					payload : {
+						callerWindow : window,
+						application : application,
+						viewManager : viewManager,
+						createCallback : function(parameter) {
+							jQuery
+									.ajax({
+										type : "POST",
+										url : m_urlUtils
+												.getModelerEndpointUrl()
+												+ "/models/"
+												+ encodeURIComponent(application.model.id)
+												+ "/processes/createWrapperProcess",
+										contentType : "application/json",
+										data : JSON.stringify(parameter)
+									});
+						}
+					}
+				};
+
+				parent.iPopupDialog.openPopup(popupData);
+			};
+
+			/**
+			 *
+			 * @param modelId
+			 * @param id
+			 * @returns
+			 */
+			function importTypeDeclarations(model) {
+				var popupData = {
+					attributes : {
+						width : "750px",
+						height : "600px",
+						src : m_urlUtils.getPlugsInRoot()
+								+ "bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
+					},
+					payload : {
+						model : model
+					}
+				};
+
+				parent.iPopupDialog.openPopup(popupData);
+			};
+
+
+			/**
+			 *
+			 */
+			function addMenuOptions(options, nodeType) {
+				var menuOptionExtensions = m_extensionManager
+						.findExtensions("menuOption", "nodeType", nodeType);
+
+				m_utils.debug("Menu Options");
+				m_utils.debug(menuOptionExtensions);
+
+				for ( var m = 0; m < menuOptionExtensions.length; ++m) {
+					var menuOptionExtension = menuOptionExtensions[m];
+
+					if (!m_session.initialize().technologyPreview
+							&& menuOptionExtension.visibility == "preview") {
+						continue;
+					}
+
+					options[menuOptionExtension.id] = {
+						label : menuOptionExtension.label,
+						action : function(node) {
+							menuOptionExtension.provider[menuOptionExtension.handlerMethod]
+									(node);
+						}
+					};
+				}
+			}
+
+			/**
+			 *
+			 */
+			function addCamelOverlayMenuOptions(options, nodeType) {
+				var applicationIntegrationOverlayExtensions = m_extensionManager
+						.findExtensions("applicationIntegrationOverlay");
+
+				for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
+					var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
+
+					if (!m_session.initialize().technologyPreview
+							&& applicationIntegrationOverlayExtension.visibility == "preview") {
+						continue;
+					}
+
+					options[applicationIntegrationOverlayExtension.id] = {
+						label : "Create "
+								+ applicationIntegrationOverlayExtension.name, // I18N
+
+						// This code requires the following patch in
+						// jquery.jstree
+						// if($.isFunction($.vakata.context.func[i])) {
+						// // Patched to add the function name as a
+						// parameter
+						// $.vakata.context.func[i].call($.vakata.context.data,
+						// $.vakata.context.par, i);
+						// return true;
+						// }
+
+						action : function(node, id) {
+							var applicationIntegrationOverlayExtensions = m_extensionManager
+									.findExtensions(
+											"applicationIntegrationOverlay",
+											"id", id);
+
+							createCamelApplication(
+									node.attr("modelUUID"),
+									applicationIntegrationOverlayExtensions[0].name,
+									{
+										"carnot:engine:camel::applicationIntegrationOverlay" : id
+									});
+						}
+					};
+				}
+			};
+
+			var setupEventHandling = function() {
+				/* Listen to toolbar events */
+				m_utils.jQuerySelect(document).bind('TOOL_CLICKED_EVENT',
+						function(event, data) {
+							handleToolbarEvents(event, data);
+						});
+
+				document.onmousemove = function(e) {
+					// TODO Make portable/modularize
+
+					if (parent != null && parent.iDnD != null) {
+						if (e) {
+							parent.iDnD.setIframeXY(e, window.name);
+						} else {
+							parent.iDnD.setIframeXY(window.event, window.name);
+						}
+					}
+				};
+
+				var outlineDiv = document.getElementById("outlineDiv");
+				outlineDiv.onmouseup = function() {
+					// TODO Make portable/modularize
+
+					if (parent != null && parent.iDnD != null) {
+						parent.iDnD.dragMode = false;
+						parent.iDnD.hideIframe();
+					}
+				};
+
+				readAllModels();
+
+				setupJsTree();
 
 				var handleToolbarEvents = function(event, data) {
 					if ("createModel" == data.id) {
@@ -1972,80 +2567,6 @@ define(
 						refresh();
 					}
 				};
-
-				/**
-				 *
-				 */
-				function addMenuOptions(options, nodeType) {
-					var menuOptionExtensions = m_extensionManager
-							.findExtensions("menuOption", "nodeType", nodeType);
-
-					m_utils.debug("Menu Options");
-					m_utils.debug(menuOptionExtensions);
-
-					for ( var m = 0; m < menuOptionExtensions.length; ++m) {
-						var menuOptionExtension = menuOptionExtensions[m];
-
-						if (!m_session.initialize().technologyPreview
-								&& menuOptionExtension.visibility == "preview") {
-							continue;
-						}
-
-						options[menuOptionExtension.id] = {
-							label : menuOptionExtension.label,
-							action : function(node) {
-								menuOptionExtension.provider[menuOptionExtension.handlerMethod]
-										(node);
-							}
-						};
-					}
-				}
-
-				/**
-				 *
-				 */
-				function addCamelOverlayMenuOptions(options, nodeType) {
-					var applicationIntegrationOverlayExtensions = m_extensionManager
-							.findExtensions("applicationIntegrationOverlay");
-
-					for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
-						var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
-
-						if (!m_session.initialize().technologyPreview
-								&& applicationIntegrationOverlayExtension.visibility == "preview") {
-							continue;
-						}
-
-						options[applicationIntegrationOverlayExtension.id] = {
-							label : "Create "
-									+ applicationIntegrationOverlayExtension.name, // I18N
-
-							// This code requires the following patch in
-							// jquery.jstree
-							// if($.isFunction($.vakata.context.func[i])) {
-							// // Patched to add the function name as a
-							// parameter
-							// $.vakata.context.func[i].call($.vakata.context.data,
-							// $.vakata.context.par, i);
-							// return true;
-							// }
-
-							action : function(node, id) {
-								var applicationIntegrationOverlayExtensions = m_extensionManager
-										.findExtensions(
-												"applicationIntegrationOverlay",
-												"id", id);
-
-								createCamelApplication(
-										node.attr("modelUUID"),
-										applicationIntegrationOverlayExtensions[0].name,
-										{
-											"carnot:engine:camel::applicationIntegrationOverlay" : id
-										});
-							}
-						};
-					}
-				}
 
 				function Callback(id, name) {
 					this.id = id;
@@ -2096,463 +2617,6 @@ define(
 					}
 				}
 
-				/**
-				 *
-				 */
-				function createModel() {
-					var modelName = m_i18nUtils
-							.getProperty("modeler.outline.newModel.namePrefix");
-					var count = 0;
-					var name = modelName + " " + (++count);
-
-					// Check if model name exists already.
-					while (modelNameExists(name)) {
-						name = modelName + " " + (++count);
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createCreateModelCommand({
-								"name" : name
-							}));
-					isElementCreatedViaOutline = true;
-				}
-
-				function modelNameExists(name) {
-					for (m in m_model.getModels()) {
-						if (m_model.getModels()[m].name == name) {
-							return true;
-						}
-					}
-
-					return false;
-				}
-
-				/**
-				 *
-				 */
-				function deleteModel(modelId) {
-					var model = m_model.findModel(modelId);
-					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, {}));
-				}
-
-				/**
-				 *
-				 */
-				function getUniqueNameForElement(modelId, namePrefix) {
-					var suffix = 0;
-					var name = namePrefix + " " + (++suffix);
-					var model = m_model.findModel(modelId);
-					if (model) {
-						while (model.findModelElementByName(name)) {
-							var name = namePrefix + (++suffix);
-						}
-					}
-
-					return name;
-				}
-
-				/**
-				 *
-				 */
-				function createProcess(modelId) {
-					var procNamePrefix = m_i18nUtils
-							.getProperty("modeler.outline.newProcess.namePrefix");
-					var name = getUniqueNameForElement(modelId, procNamePrefix);
-
-					// TODO
-					// Temporarily added I18n FOR default pool and lane names on
-					// client side,
-					// till this is handled on server side.
-					m_commandsController
-							.submitCommand(m_command
-									.createCreateProcessCommand(
-											modelId,
-											modelId,
-											{
-												"name" : name,
-												"defaultPoolName" : m_i18nUtils
-														.getProperty("modeler.diagram.defaultPoolName"),
-												"defaultLaneName" : m_i18nUtils
-														.getProperty("modeler.diagram.defaultLaneName")
-											}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function deleteProcess(processId, modelUUID) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteProcessCommand(model.id, model.id, {
-								"id" : processId
-							}));
-				}
-
-				/**
-				 */
-				function deleteStructuredDataType(modelUUID, structTypeId) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteStructuredDataTypeCommand(model.id,
-									model.id, {
-										"id" : structTypeId
-									}));
-				}
-
-				/**
-				 *
-				 */
-				function deleteParticipant(modelUUID, id) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteParticipantCommand(model.id, model.id,
-									{
-										"id" : id
-									}));
-				}
-
-				/**
-				 *
-				 */
-				function deleteApplication(modelUUID, appId) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteApplicationCommand(model.id, model.id,
-									{
-										"id" : appId
-									}));
-				}
-
-				/**
-				 *
-				 */
-				function deleteData(modelUUID, id) {
-					var model = m_model.findModelByUuid(modelUUID);
-					m_commandsController.submitCommand(m_command
-							.createDeleteDataCommand(model.id, model.id, {
-								"id" : id
-							}));
-				}
-
-				function prepareDeleteElementData(name, callback) {
-					var popupData = {
-						attributes : {
-							width : "400px",
-							height : "200px",
-							src : m_urlUtils.getPlugsInRoot()
-									+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
-						},
-						payload : {
-							title : m_i18nUtils
-									.getProperty("modeler.messages.confirm"),
-							message : m_i18nUtils.getProperty(
-									"modeler.messages.confirm.deleteElement")
-									.replace("{0}", name),
-							acceptButtonText : m_i18nUtils
-									.getProperty("modeler.messages.confirm.yes"),
-							cancelButtonText : m_i18nUtils
-									.getProperty("modeler.messages.confirm.cancel"),
-							acceptFunction : callback
-						}
-					};
-
-					return popupData;
-				}
-
-				function deleteElementAction(name, callback) {
-					if (parent.iPopupDialog) {
-						parent.iPopupDialog.openPopup(prepareDeleteElementData(
-								name, callback));
-					} else {
-						callback();
-					}
-				}
-
-				/**
-				 *
-				 */
-				function createPrimitiveData(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newPrimitivedata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController
-							.submitCommand(m_command
-									.createCreatePrimitiveDataCommand(
-											model.id,
-											model.id,
-											{
-												"name" : name,
-												"primitiveType" : m_constants.STRING_PRIMITIVE_DATA_TYPE
-											}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createDocumentData(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newDocumentdata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateDocumentDataCommand(model.id,
-									model.id, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createStructuredData(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newStructureddata.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateStructuredDataCommand(model.id,
-									model.id, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createRole(modelUUId, targetUUID) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newRole.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-					var targetOid = (targetUUID ? m_model
-							.findElementInModelByUuid(model.id, targetUUID).oid
-							: model.id);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateRoleCommand(model.id, targetOid, {
-								"name" : name
-							}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createConditionalPerformer(modelUUId, targetUUID) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newConditionalperformer.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-					var targetOid = (targetUUID ? m_model
-							.findElementInModelByUuid(model.id, targetUUID).oid
-							: model.id);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateConditionalPerformerCommand(model.id,
-									targetOid, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function setAsManager(modelUUId, orgUUID, roleUUID) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var orgOid = m_model.findElementInModelByUuid(model.id,
-							orgUUID).oid;
-					var roleUUID = m_model.findElementInModelByUuid(model.id,
-							roleUUID).uuid;
-
-					m_commandsController.submitCommand(m_command
-							.createUpdateTeamLeaderCommand(model.id, orgOid, {
-								"uuid" : roleUUID
-							}));
-				}
-
-				/**
-				 *
-				 */
-				function createOrganization(modelUUId, targetUUID) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newOrganization.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-					var targetOid = (targetUUID ? m_model
-							.findElementInModelByUuid(model.id, targetUUID).oid
-							: model.id);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateOrganizationCommand(model.id,
-									targetOid, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createWebServiceApplication(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newWebservice.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateWebServiceAppCommand(model.id,
-									model.id, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createMessageTransformationApplication(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newMsgTransformation.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateMessageTransfromationAppCommand(
-									model.id, model.id, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createCamelApplication(modelUUId, name, attributes) {
-					var model = m_model.findModelByUuid(modelUUId);
-
-					if (!name) {
-						name = getUniqueNameForElement(
-								model.id,
-								m_i18nUtils
-										.getProperty("modeler.outline.newCamelroute.namePrefix"));
-					}
-
-					m_commandsController.submitCommand(m_command
-							.createCreateCamelAppCommand(model.id, model.id, {
-								name : name,
-								attributes : attributes
-							}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 */
-				function createUiMashupApplication(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newUimashup.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateUiMashupAppCommand(model.id, model.id,
-									{
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 * @param modelId
-				 * @returns
-				 */
-				function createXsdStructuredDataType(modelUUId) {
-					var model = m_model.findModelByUuid(modelUUId);
-					var titledata = m_i18nUtils
-							.getProperty("modeler.outline.newXsddatastructure.namePrefix");
-					var name = getUniqueNameForElement(model.id, titledata);
-
-					m_commandsController.submitCommand(m_command
-							.createCreateStructuredDataTypeCommand(model.id,
-									model.id, {
-										"name" : name
-									}));
-					isElementCreatedViaOutline = true;
-				}
-
-				/**
-				 *
-				 * @param modelId
-				 * @param id
-				 * @returns
-				 */
-				function createWrapperProcess(application) {
-					m_utils.debug("Application to wrap");
-					m_utils.debug(application);
-
-					var popupData = {
-						attributes : {
-							width : "700px",
-							height : "500px",
-							src : m_urlUtils.getPlugsInRoot()
-									+ "bpm-modeler/views/modeler/serviceWrapperWizard.html"
-						},
-						payload : {
-							callerWindow : window,
-							application : application,
-							viewManager : viewManager,
-							createCallback : function(parameter) {
-								jQuery
-										.ajax({
-											type : "POST",
-											url : m_urlUtils
-													.getModelerEndpointUrl()
-													+ "/models/"
-													+ encodeURIComponent(application.model.id)
-													+ "/processes/createWrapperProcess",
-											contentType : "application/json",
-											data : JSON.stringify(parameter)
-										});
-							}
-						}
-					};
-
-					parent.iPopupDialog.openPopup(popupData);
-				}
-
-				/**
-				 *
-				 * @param modelId
-				 * @param id
-				 * @returns
-				 */
-				function importTypeDeclarations(model) {
-					var popupData = {
-						attributes : {
-							width : "750px",
-							height : "600px",
-							src : m_urlUtils.getPlugsInRoot()
-									+ "bpm-modeler/views/modeler/importTypeDeclarationsWizard.html"
-						},
-						payload : {
-							model : model
-						}
-					};
-
-					parent.iPopupDialog.openPopup(popupData);
-				}
-
 				function changeProfileHandler(profile) {
 					m_session.getInstance().currentProfile = profile;
 					m_commandsController.broadcastCommand(m_command
@@ -2566,36 +2630,38 @@ define(
 							reloadOutlineTree);
 				}
 
-				readAllModels();
+				//jQuery(displayScope + "#outline").jstree("create");
+//				m_utils.jQuerySelect(displayScope + "#outline").jstree(
+//						"close_node", "#" + model.uuid);
 			};
 
 			var i18nStaticLabels = function() {
-				jQuery("#createModel")
+				m_utils.jQuerySelect("#createModel")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.createModel"));
-				jQuery("#importModel")
+				m_utils.jQuerySelect("#importModel")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.importModel"));
-				jQuery("#undoChange")
+				m_utils.jQuerySelect("#undoChange")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.undo"));
-				jQuery("#redoChange")
+				m_utils.jQuerySelect("#redoChange")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.redo"));
-				jQuery("#saveAllModels")
+				m_utils.jQuerySelect("#saveAllModels")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.saveAllModel"));
-				jQuery("#refreshModels")
+				m_utils.jQuerySelect("#refreshModels")
 						.attr(
 								"title",
 								m_i18nUtils
@@ -2607,6 +2673,8 @@ define(
 
 			return {
 				init : function(newViewManager, newDisplayScope) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
 
 					if (newDisplayScope) {
 						displayScope = "#" + newDisplayScope + " ";
@@ -2623,8 +2691,14 @@ define(
 					outline = new Outline();
 
 					outline.initialize();
+
+					m_messageDisplay.updateLastSavedLabel(m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title"));
+
 					m_outlineToolbarController.init("outlineToolbar");
 					i18nStaticLabels();
+					m_utils.jQuerySelect("#outlineDiv").css("visibility", "visible");
+
+					m_utils.hideWaitCursor();
 
 					return outline;
 				},
@@ -2659,9 +2733,9 @@ define(
 				 */
 				Outline.prototype.openElementView = function(element, openView) {
 					if (isElementCreatedViaOutline || openView) {
-						jQuery(displayScope + "#outline").jstree("select_node",
+						m_utils.jQuerySelect(displayScope + "#outline").jstree("select_node",
 								"#" + element.uuid);
-						jQuery(displayScope + "#outline")
+						m_utils.jQuerySelect(displayScope + "#outline")
 								.jstree("deselect_all");
 						// Delay of 1000ms is added to avoid issues of node
 						// getting out or rename mode if the view takes
@@ -2669,7 +2743,7 @@ define(
 						// first node creation after login,
 						if (!openView) {
 							window.setTimeout(function() {
-								jQuery(displayScope + "#outline").jstree(
+								m_utils.jQuerySelect(displayScope + "#outline").jstree(
 										"rename", "#" + element.uuid)
 							}, 1000);
 						}
@@ -2694,8 +2768,6 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != obj && null != obj.changes) {
-						m_messageDisplay.markModified();
-						hasUnsavedModifications = true;
 						for ( var i = 0; i < obj.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
@@ -2746,14 +2818,14 @@ define(
 								modelElement.rename(obj.changes.modified[i].id,
 										obj.changes.modified[i].name);
 								var uuid = modelElement.uuid;
-								var link = jQuery("li#" + uuid + " a")[0];
-								var node = jQuery("li#" + uuid);
+								var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
+								var node = m_utils.jQuerySelect("li#" + uuid);
 
 								node.attr("elementId", modelElement.id);
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
-								var textElem = jQuery(link.childNodes[1])[0];
+								var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
 
 								textElem.nodeValue = modelElement.name;
 								m_utils.inheritFields(modelElement,
@@ -2774,6 +2846,14 @@ define(
 								// changes
 								if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
 									node.attr("rel", modelElement.getType());
+								}
+
+								// Change model icon in case the read-only factor has changed.
+								if (m_constants.MODEL === modelElement.type) {
+									node.attr("rel", (modelElement.isReadonly() ? "lockedModel" : "model"));
+									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
+										var isModelLockCommand = true;
+									}
 								}
 
 								renameElementViewLabel(node.attr("rel"), node
@@ -2803,7 +2883,7 @@ define(
 							}
 							if (command.changes.removed[i].uuid) {
 								this
-										.fireCloseViewCommand(command.changes.removed[i].uuid)
+										.fireCloseViewCommand(command.changes.removed[i].uuid);
 							}
 						}
 
@@ -2819,8 +2899,18 @@ define(
 									.processPendingRedo(command.pendingRedoableChange);
 						} else {
 							this.processPendingUndo(command);
-							jQuery("#undoChange").removeClass("toolDisabled");
-							jQuery("#redoChange").addClass("toolDisabled");
+							m_utils.jQuerySelect("#undoChange").removeClass("toolDisabled");
+							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
+						}
+
+						if (command.commandId === "modelLockStatus.update") {
+							if (isModelLockCommand) {
+								m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
+								m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
+							}
+						} else {
+							m_messageDisplay.markModified();
+							m_modelsSaveStatus.setModelsModified();
 						}
 					} else if (command.scope == "all") {
 						// @deprecated
@@ -2851,20 +2941,20 @@ define(
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#undoChange")
+						m_utils.jQuerySelect("#undoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.undo")
 												+ ": " + element + " " + action);
 					} else {
-						jQuery("#undoChange")
+						m_utils.jQuerySelect("#undoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.undo"));
 					}
-				}
+				};
 
 				/**
 				 * TODO - temporary
@@ -2889,20 +2979,20 @@ define(
 							element = this
 									.getChangedElementsText(command.changes.modified);
 						}
-						jQuery("#redoChange")
+						m_utils.jQuerySelect("#redoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.redo")
 												+ ": " + element + " " + action);
 					} else {
-						jQuery("#redoChange")
+						m_utils.jQuerySelect("#redoChange")
 								.attr(
 										"title",
 										m_i18nUtils
 												.getProperty("modeler.outline.toolbar.tooltip.redo"));
 					}
-				}
+				};
 
 				/**
 				 * TODO - temporary
@@ -2910,7 +3000,7 @@ define(
 				Outline.prototype.getChangedElementsText = function(
 						elementArray) {
 					if (elementArray.length > 2) {
-						return "Multiple elements"
+						return "Multiple elements";
 					} else if (elementArray.length == 2) {
 						for ( var i = 0; i < elementArray.length; i++) {
 							var txt = this
@@ -2924,7 +3014,7 @@ define(
 					} else {
 						return this.getChangedElementText(elementArray[0]);
 					}
-				}
+				};
 
 				Outline.prototype.getChangedElementText = function(element) {
 					if (element) {
@@ -2938,323 +3028,186 @@ define(
 							}
 						}
 					}
-				}
+				};
 
-				/**
-				 *
-				 */
-				Outline.prototype.createModel = function(data) {
-					var outlineObj = this;
-					var model = m_model.createModel(data.id, data.name,
-							data.uuid);
-					m_utils.inheritFields(model, data);
-					jQuery(displayScope + "#outline").jstree("create",
-							"#outline", "last", {
-								"attr" : {
-									"elementId" : data.id,
-									"id" : data.uuid,
-									"fullId" : model.getFullId(),
-									"rel" : "model"
-								},
-								"data" : data.name
-							}, null, true);
-					jQuery(displayScope + "#outline").jstree("set_type",
-							"model", "#" + data.uuid);
+        /**
+         *
+         */
+        Outline.prototype.createModel = function(data) {
+          var outlineObj = this;
 
-					jQuery(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "structuredTypes_"
-													+ data.uuid,
-											"rel" : "structuredTypes",
-											"modelId" : data.id,
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.structuredTypes.name")
-									}, null, true);
-					jQuery(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "data_" + data.uuid,
-											"rel" : "data",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.data.name")
-									}, null, true);
-					jQuery.each(data.dataItems, function(key, value) {
-						outlineObj.createData(value, true);
-					});
-					jQuery(displayScope + "#outline").jstree("close_node",
-							"#" + "data_" + data.uuid);
-					jQuery(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"modelId" : data.id,
-											"id" : "applications_" + data.uuid,
-											"rel" : "applications",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.applications.name")
-									}, null, true);
-					jQuery(displayScope + "#outline")
-							.jstree(
-									"create",
-									"#" + data.uuid,
-									"last",
-									{
-										"attr" : {
-											"id" : "participants_" + data.uuid,
-											"rel" : "participants",
-											"modelUUID" : data.uuid
-										},
-										"data" : m_i18nUtils
-												.getProperty("modeler.outline.participants.name")
-									}, null, true);
-					jQuery.each(data.participants, function(key, value) {
-						outlineObj.createParticipant(value, true);
-					});
-					jQuery(displayScope + "#outline").jstree("close_node",
-							"#" + "participants_" + data.uuid);
+          var model = m_model.initializeFromJson(data);
+          // register the new model with the model cache
+          m_model.attachModel(model);
 
-					return model;
-				}
+          var outlineTree = jQuery.jstree._reference(displayScope + "#outline");
+
+          var modelNode = newJsTreeOutlineBuilder(model).buildModelNode(
+              outlineTree.get_container());
+          outlineTree.open_node(modelNode);
+
+          jQuery("div#outlineMessageDiv").hide();
+
+          runHasModelsCheck();
+
+          return model;
+        };
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteModel = function(transferObject) {
 					m_model.deleteModel(transferObject.id);
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
-				}
+					runHasModelsCheck();
+				};
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteProcess = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_process.deleteProcess(transferObject.id, model);
-				}
+				};
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteApplication = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_application.deleteApplication(transferObject.id, model);
-				}
+				};
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteParticipant = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_participant.deleteParticipantRole(transferObject.id,
 							model);
-				}
+				};
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteTypeDeclaration = function(
 						transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_typeDeclaration.deleteTypeDeclaration(transferObject.id,
 							model);
-				}
+				};
 
 				/**
 				 *
 				 */
 				Outline.prototype.deleteData = function(transferObject) {
-					jQuery(displayScope + "#outline").jstree("deselect_node",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("deselect_node",
 							"#" + transferObject.uuid);
-					jQuery(displayScope + "#outline").jstree("remove",
+					m_utils.jQuerySelect(displayScope + "#outline").jstree("remove",
 							"#" + transferObject.uuid);
 					var model = m_model
 							.findModelForElement(transferObject.uuid);
 					m_data.deleteData(transferObject.id, model);
-				}
-
-				/**
-				 *
-				 */
-				Outline.prototype.createProcess = function(transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var process = m_process.createProcessFromJson(model,
-							transferObject);
-					var parentSelector = '#' + model.uuid;
-
-					jQuery(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"id" : process.uuid,
-									"oid" : process.oid,
-									"elementId" : process.id,
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"rel" : "process",
-									"fullId" : process.getFullId(),
-									"draggable" : true
-								},
-								"data" : process.name
-							}, null, true);
-
-					return process;
 				};
 
-				/**
-				 *
-				 */
-				Outline.prototype.createApplication = function(transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var application = m_application.initializeFromJson(model,
-							transferObject);
-					var parentSelector = '#applications_' + model.uuid;
+        /**
+         *
+         */
+        Outline.prototype.createProcess = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var process = m_process.createProcessFromJson(model, transferObject);
 
-					jQuery(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"rel" : application.applicationType,
-									"id" : application.uuid,
-									"elementId" : application.id,
-									"fullId" : application.getFullId(),
-									"modelId" : application.modelId,
-									"modelUUID" : model.uuid,
-									"draggable" : true
-								},
-								"data" : application.name
-							}, null, true);
+          newJsTreeOutlineBuilder(model).buildProcessNode(process, "#" + model.uuid);
+          this.expandNode("#" + model.uuid);
 
-					return application;
-				};
+          return process;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createData = function(transferObject) {
-					var model = m_model
-							.findModelByUuid(transferObject.modelUUID);
-					var data = m_data.initializeFromJson(model, transferObject);
+        /**
+         *
+         */
+        Outline.prototype.createApplication = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var application = m_application.initializeFromJson(model, transferObject);
 
-					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-						var parentSelector = '#data_' + model.uuid;
-						jQuery(displayScope + "#outline").jstree("create",
-								parentSelector, "last", {
-									"attr" : {
-										"rel" : data.dataType,
-										"modelId" : model.id,
-										"modelUUID" : model.uuid,
-										"id" : data.uuid,
-										"elementId" : data.id,
-										"fullId" : data.getFullId(),
-										"draggable" : true
-									},
-									"data" : data.name
-								}, null, true);
-					}
+          newJsTreeOutlineBuilder(model).buildApplicationNode(application,
+              "#" + model.uuid + " #applications_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #applications_" + model.uuid);
 
-					return data;
-				};
+          return application;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createStructuredDataType = function(
-						transferObject) {
-					var model = m_model.findModel(transferObject.modelId);
-					var dataStructure = m_typeDeclaration.initializeFromJson(
-							model, transferObject);
-					var parentSelector = '#structuredTypes_' + model.uuid;
+        /**
+         *
+         */
+        Outline.prototype.createData = function(transferObject) {
+          var model = m_model.findModelByUuid(transferObject.modelUUID);
+          var data = m_data.initializeFromJson(model, transferObject);
 
-					jQuery(displayScope + "#outline").jstree("create",
-							parentSelector, "last", {
-								"attr" : {
-									"rel" : dataStructure.getType(),
-									"modelId" : model.id,
-									"modelUUID" : model.uuid,
-									"id" : dataStructure.uuid,
-									"elementId" : dataStructure.id,
-									"fullId" : dataStructure.getFullId(),
-									"draggable" : true
-								},
-								"data" : dataStructure.name
-							}, null, true);
+          newJsTreeOutlineBuilder(model).buildDataNode(data,
+              "#" + model.uuid + " #data_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #data_" + model.uuid);
 
-					return dataStructure;
-				};
+          return data;
+        };
 
-				/**
-				 *
-				 */
-				Outline.prototype.createParticipant = function(transferObject) {
-					var model = m_model
-							.findModelByUuid(transferObject.modelUUID);
-					var participant = m_participant.initializeFromJson(model,
-							transferObject);
+        /**
+         *
+         */
+        Outline.prototype.createStructuredDataType = function(transferObject) {
+          var model = m_model.findModel(transferObject.modelId);
+          var dataStructure = m_typeDeclaration.initializeFromJson(model, transferObject);
 
-					if (!transferObject[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
-						var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
-								: ("#participants_" + model.uuid));
-						jQuery(displayScope + "#outline")
-								.jstree(
-										"create",
-										parentSelector,
-										"last",
-										{
-											"attr" : {
-												"id" : participant.uuid,
-												"fullId" : participant
-														.getFullId(),
-												"rel" : participant.type,
-												"modelId" : model.id,
-												"modelUUID" : model.uuid,
-												"parentUUID" : transferObject.parentUUID,
-												"draggable" : true,
-												"elementId" : participant.id
-											},
-											"data" : participant.name
-										}, null, true);
-					}
+          newJsTreeOutlineBuilder(model).buildTypeDeclarationNode(dataStructure,
+              "#" + model.uuid + " #structuredTypes_" + model.uuid);
+          this.expandNode("#" + model.uuid + " #structuredTypes_" + model.uuid);
 
-					return participant;
-				}
+          return dataStructure;
+        };
+
+        Outline.prototype.createParticipant = function(transferObject) {
+          var model = m_model.findModelByUuid(transferObject.modelUUID);
+          var participant = m_participant.initializeFromJson(model, transferObject);
+
+          var parentSelector = (transferObject.parentUUID ? ("#" + transferObject.parentUUID)
+              : ("#participants_" + model.uuid));
+
+          newJsTreeOutlineBuilder(model).buildParticipantNode(participant,
+              "#" + model.uuid + " " + parentSelector);
+
+          this.expandNode("#" + model.uuid + " " + parentSelector);
+
+          return participant;
+        };
+
+        /**
+         * 
+         */
+        Outline.prototype.expandNode = function(nodeSelector) {
+        	jQuery.jstree._reference(displayScope + "#outline").open_node(nodeSelector);
+        };
 			}
 		});

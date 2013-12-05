@@ -28,7 +28,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
 						generalProperties,
-						"../../images/icons/table.png");
+						"plugins/bpm-modeler/images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(BasicPropertiesPage.prototype,
@@ -105,6 +105,10 @@ define(
 				 *
 				 */
 				BasicPropertiesPage.prototype.setModelElement = function() {
+					//enable description section
+					this.descriptionInput.show();
+					m_utils.jQuerySelect("label[for='descriptionInput']").show();
+					
 					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
 						m_dialog.makeInvisible(this.guidOutputRow);
 						m_dialog.makeInvisible(this.idOutputRow);
@@ -150,8 +154,7 @@ define(
 					this.propertiesPanel.clearErrorMessages();
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.propertiesPanel.errorMessages
 								.push("Name must not be empty.");
 						this.nameInput.addClass("error");

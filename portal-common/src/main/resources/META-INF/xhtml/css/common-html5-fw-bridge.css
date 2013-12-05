@@ -1,0 +1,55 @@
+/* This class will need to be removed when issue at HTML5 FW is fixed */
+.sidebar {
+	z-index: 800;
+}
+
+.container-fluid {
+	padding-right: 0px;
+}
+
+.gray-out-header {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.3;
+	opacity: 0.2 \0/; /* For IE9 and IE8 */
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 91px;
+}
+
+.gray-out-footer {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.5;
+	opacity: 0.3 \0/; /* For IE9 and IE8 */
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	height: 56px;
+}
+
+.gray-out-sidebar {
+	overflow: hidden;
+	border: none;
+	background-color: black;
+	opacity: 0.5;
+	opacity: 0.25 \0/; /* For IE9 and IE8 */
+	z-index: 1000;
+	position: fixed;
+	left: 0;
+	top: 90px;
+}
+
+.gray-out-sidebar-view {
+	overflow: hidden;
+	border: none;
+	z-index: 1000;
+	position: absolute;
+	left: -5px;
+	top: -10px;
+}

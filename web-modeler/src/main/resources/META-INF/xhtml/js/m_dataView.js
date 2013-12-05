@@ -28,6 +28,9 @@ define(
 
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var data = m_model.findData(fullId);
 
 					m_utils.debug("===>  Data");
@@ -40,72 +43,72 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(data);
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
 
 			function i18primitivedataproperties() {
 
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#dataName")
+				m_utils.jQuerySelect("#dataName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#publicVisibility")
+				m_utils.jQuerySelect("#publicVisibility")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				jQuery("#dataType")
+				m_utils.jQuerySelect("#dataType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataType"));
-				jQuery("#primitiveType")
+				m_utils.jQuerySelect("#primitiveType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				jQuery("[for='structuredDataTypeSelect']")
+				m_utils.jQuerySelect("[for='structuredDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.structuredType"));
-				jQuery("#dataStructure")
+				m_utils.jQuerySelect("#dataStructure")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataStructure"));
-				jQuery("#documentType")
+				m_utils.jQuerySelect("#documentType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.documentType"));
-				jQuery("#defaultValue")
+				m_utils.jQuerySelect("#defaultValue")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
-				jQuery("#defaultValue1")
+				m_utils.jQuerySelect("#defaultValue1")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.defaultValue"));
 
 
-				jQuery("#doubleInputTextError").text(
+				m_utils.jQuerySelect("#doubleInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#intInputTextError").text(
+				m_utils.jQuerySelect("#intInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#longInputTextError").text(
+				m_utils.jQuerySelect("#longInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-				jQuery("#TimestampInputTextError").text(
+				m_utils.jQuerySelect("#TimestampInputTextError").text(
 						m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 			}
 
@@ -124,7 +127,8 @@ define(
 				 */
 				DataView.prototype.initialize = function(data) {
 					this.id = "dataView";
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 
 					this.dataTypeSelector = m_dataTypeSelector.create({
 						scope : "dataView",
@@ -164,11 +168,13 @@ define(
 									});
 
 					// Timestamp handling
-					this.timestampInputText = jQuery("#TimestampInputText");
+					this.timestampInputText = m_utils.jQuerySelect("#TimestampInputText");
+					this.timestampInputText.get(0).id = "TimestampInputText" + Math.floor((Math.random()*10000) + 1);
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
 					this.initializeModelElementView(data);
+					this.view.css("visibility", "visible");
 				};
 
 				/**
@@ -221,8 +227,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages.push("Data name must not be empty.");
 						this.nameInput.addClass("error");
 					}
@@ -242,7 +247,7 @@ define(
 				DataView.prototype.initializeDataType = function(data,
 						defaultValue) {
 					if (data.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-						var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+						var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 
 						var self = this;
 						m_angularContextUtils.runInAngularContext(function($scope) {
@@ -286,11 +291,11 @@ define(
 									$scope.watchRegistered = true;
 								}
 							}
-						});
+						}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 					} else {
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
-						});
+						}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 					}
 				};
 
@@ -303,21 +308,23 @@ define(
 						try {
 							var dateValue = view.timestampInputText.val();
 							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
-							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj);
+							if (!m_utils.isEmptyString(dateFomat)) {
+								dateFomat += ' 00:00:00:000';
+							}
 							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
 							$scope.timestampInputTextError = false;
 						} catch(e){
 							// Parse Error
 							$scope.timestampInputTextError = true;
 						}
-					});
+					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 				}
 
 				/**
 				 *
 				 */
 				DataView.prototype.submitDataChanges = function(dataChanges) {
-					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
 				};
 

@@ -28,11 +28,13 @@ define(
 
 				disableToolbarControl : disableToolbarControl,
 
-				enableToolbarControl : enableToolbarControl
+				enableToolbarControl : enableToolbarControl,
+
+				getUniqueNameForElement : getUniqueNameForElement
 			};
 
 			function getScrollpaneScrollPosition() {
-				var scrollPane = document.getElementById(SCROLL_PANE_ID);
+				var scrollPane = m_utils.jQuerySelect("#" + SCROLL_PANE_ID).get(0);
 				if (scrollPane) {
 					return {
 						top : scrollPane.scrollTop,
@@ -69,5 +71,21 @@ define(
 				input.fadeTo(0, 1);
 				input.css("cursor", "pointer");
 				input.addClass("toolbarButton");
+			}
+
+			/**
+			 *
+			 */
+			function getUniqueNameForElement(modelId, namePrefix) {
+				var suffix = 0;
+				var name = namePrefix + " " + (++suffix);
+				var model = m_model.findModel(modelId);
+				if (model) {
+					while (model.findModelElementByName(name)) {
+						var name = namePrefix + " " + (++suffix);
+					}
+				}
+
+				return name;
 			}
 		});

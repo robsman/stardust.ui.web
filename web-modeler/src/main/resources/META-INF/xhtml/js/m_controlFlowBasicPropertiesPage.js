@@ -29,26 +29,25 @@ define(
 			 *
 			 */
 			function ControlFlowBasicPropertiesPage(propertiesPanel) {
-				var propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
+				this.propertiesPage = m_basicPropertiesPage.create(propertiesPanel);
 
-				m_utils.inheritFields(this, propertiesPage);
+				m_utils.inheritFields(this, this.propertiesPage);
 				m_utils.inheritMethods(
 						ControlFlowBasicPropertiesPage.prototype,
-						propertiesPage);
+						this.propertiesPage);
 
 				/**
 				 * Override base class PropertiesPage#show() method so that codeEditor.refresh() can be called
 				 */
 				ControlFlowBasicPropertiesPage.prototype.show = function() {
-					propertiesPage.show();
+					this.propertiesPage.show();
 
 					// TODO - ace code editor doesn't have refresh at present
 					//this.conditionExpressionInputEditor.refresh();
 
-					// TODO - ace code editor doesn't have code complete at present
 					// Global variables for Code Editor auto-complete / validation
-					//var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
-					//this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
+					var globalVariables = m_dataTraversal.getAllDataAsJavaScriptObjects(this.propertiesPanel.diagram.model);
+					this.conditionExpressionInputEditor.setGlobalVariables(globalVariables);
 				};
 
 				/**
@@ -57,15 +56,15 @@ define(
 				ControlFlowBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 					this.otherwiseInput = this.mapInputId("otherwiseInput");
-					this.conditionExpressionDiv = jQuery("#"
-							+ this.propertiesPanel.id
-							+ " #conditionExpressionDiv");
+					
+					this.conditionExpressionDiv = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " [id^='conditionExpressionDiv']").get(0);
+					this.conditionExpressionDiv.id = "conditionExpressionDiv" + Math.floor((Math.random()*100000) + 1);
 
 					this.descriptionInput = this.mapInputId("descriptionInput");
 					this.conditionPanel = this.mapInputId("conditionPanel");
 
 					var page = this;
-					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor("conditionExpressionDiv");
+					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor(this.conditionExpressionDiv.id);
 					this.conditionExpressionInputEditor.getEditor().on('blur', function(e){
 						var property = "conditionExpression";
 						if (!page.validate()) {
@@ -122,7 +121,7 @@ define(
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setTitle = function(title) {
 					if (title) {
-						jQuery("#controlFlowPropertiesPanel div.propertiesPanelTitle").text(title);
+						m_utils.jQuerySelect("#controlFlowPropertiesPanel div.propertiesPanelTitle").text(title);
 					}
 				};
 			}

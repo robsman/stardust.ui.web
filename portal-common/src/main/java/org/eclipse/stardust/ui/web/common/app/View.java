@@ -158,7 +158,7 @@ public class View extends AbstractUiElement implements TabScopeManager
    @Override
    public String toString()
    {
-      return label + ":" + url;
+      return url;
    }
 
    public void destroy()
@@ -259,6 +259,32 @@ public class View extends AbstractUiElement implements TabScopeManager
          ret = "";
       else if (ret.length() >= 2)
          ret = ret.substring(0, ret.lastIndexOf('&'));
+      return ret;
+   }
+
+   /**
+    * @param viewParams2
+    * @return
+    */
+   private String contertToJsonString(Map<String, Object> viewParams2)
+   {
+      String ret = "";
+
+      if (viewParams2 != null)
+      {
+        for (Entry<String, Object> element : viewParams2.entrySet())
+         {
+            if (element.getValue() instanceof String)
+            {
+               ret += element.getKey() + ": '" + element.getValue() + "', ";
+            }
+         }
+      }
+
+      if (ret.length() == 0)
+         ret = "";
+      else
+         ret = ret.substring(0, ret.length() - 2);
       return ret;
    }
 
@@ -603,6 +629,11 @@ public class View extends AbstractUiElement implements TabScopeManager
       return contertToParamString(viewParams);
    }
 
+   public String getParamsAsJson()
+   {
+      return contertToJsonString(viewParams);
+   }
+
    public View getOpenerView()
    {
       return openerView;
@@ -635,5 +666,10 @@ public class View extends AbstractUiElement implements TabScopeManager
    {
       this.viewKey = newViewKey;
       identityUrl = null;
+   }
+
+   public String getViewKey()
+   {
+      return viewKey;
    }
 }

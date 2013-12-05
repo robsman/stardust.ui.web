@@ -84,7 +84,7 @@
 								<ice:outputText
 									value="#{views_common_msgPropsBean['fileUpload.description.label']}"
 									styleClass="label-form" />
-								<ice:panelGroup scrollWidth="100%">
+								<ice:panelGroup scrollWidth="auto;">
 									<ice:inputTextarea partialSubmit="true"
 										value="#{commonFileUploadDialog.attributes.description}"
 										rows="2" style="width: 300px;">
@@ -114,7 +114,7 @@
 								<ice:outputText
 									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"
 									styleClass="label-form" />
-								<ice:panelGroup scrollWidth="100%">
+								<ice:panelGroup scrollWidth="auto;">
 									<ice:inputTextarea partialSubmit="true"
 										value="#{commonFileUploadDialog.attributes.comments}" rows="2"
 										style="width: 300px;">
@@ -135,7 +135,7 @@
 							<ice:panelGroup
 								style="margin-top: 5px; margin-bottom: 5px; max-width: auto;">
 								<ice:inputFile id="commonFile#{commonFileUploadDialog.beanId}"
-									failOnEmptyFile="false" width="400"
+									failOnEmptyFile="false"
 									actionListener="#{commonFileUploadDialog.uploadFile}"
 									progressListener="#{commonFileUploadDialog.measureProgress}"
 									submitOnUpload="preUpload"

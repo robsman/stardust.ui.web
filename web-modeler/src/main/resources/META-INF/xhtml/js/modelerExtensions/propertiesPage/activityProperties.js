@@ -38,7 +38,7 @@ define([ 'bpm-modeler/js/m_constants',
 				}, {
 					panelId : "activityPropertiesPanel",
 					id : "commentsPropertiesPage",
-					pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 					provider : m_modelElementCommentsPropertiesPage,
 					visibility : "always"
 				}, {
@@ -49,7 +49,7 @@ define([ 'bpm-modeler/js/m_constants',
 				}, {
 					panelId : "activityPropertiesPanel",
 					id : "controllingPropertiesPage",
-					pageHtmlUrl : "activityControllingPropertiesPage.html",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/activityControllingPropertiesPage.html",
 					provider : m_activityControllingPropertiesPage,
 					visibility : "always"
 				}, {

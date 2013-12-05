@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionAttribute;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
 import java.io.IOException;
@@ -117,14 +118,24 @@ public class Bpmn2PersistenceHandler implements ModelPersistenceHandler<Definiti
                   try
                   {
                      // test if current ID already is a UUID ...
-                     UUID.fromString(definitions.getId());
+                     UUID.fromString( !isEmpty(definitions.getId()) ? definitions.getId() : "");
                      modelUuid = definitions.getId();
                   }
-                  catch (IllegalArgumentException iae)
+                  catch (IllegalArgumentException iae1)
                   {
-                     // ... nope
-                     modelUuid = Bpmn2Utils.createInternalId();
-                     setExtensionAttribute(definitions, ModelerConstants.UUID_PROPERTY, modelUuid);
+                     try
+                     {
+                        // ---nope, test if there is a suitable extension attribute already ...
+                        String stardustUuid = getExtensionAttribute(definitions, ModelerConstants.UUID_PROPERTY);
+                        UUID.fromString( !isEmpty(stardustUuid) ? stardustUuid : "");
+                        modelUuid = stardustUuid;
+                     }
+                     catch (IllegalArgumentException iae2)
+                     {
+                        // ... nope
+                        modelUuid = Bpmn2Utils.createInternalId();
+                        setExtensionAttribute(definitions, ModelerConstants.UUID_PROPERTY, modelUuid);
+                     }
                   }
 
                   String modelName = definitions.getName();

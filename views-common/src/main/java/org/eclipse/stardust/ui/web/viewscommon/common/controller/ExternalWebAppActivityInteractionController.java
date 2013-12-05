@@ -24,7 +24,6 @@ import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -125,7 +124,8 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          SessionContext ippSessionContext = SessionContext.findSessionContext();
 
          Interaction interaction = new Interaction(ippSessionContext.getUser(),
-               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai));
+               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
+               ippSessionContext.getServiceFactory());
 
          // performing client side IN mappings
          Map<String, Serializable> inParams = newHashMap();
@@ -164,8 +164,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
-      HttpServletResponse resp = (HttpServletResponse) fc.getExternalContext().getResponse();
-
+      
       // allow base URI override via parameter
       String servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
       if (isEmpty(servicesBaseUri))
@@ -208,6 +207,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          }
       }
       
+      // Take out Hash if any to append at the end
+      String uriHash = "";
+      if (uri.contains("#"))
+      {
+         uriHash = uri.substring(uri.indexOf("#"));
+         uri = uri.substring(0, uri.indexOf("#"));
+      }
+
       StringBuilder uriBuilder = new StringBuilder();
 
       uriBuilder.append(uri) //
@@ -221,8 +228,11 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       uriBuilder.append("&") //
             .append(PARAM_SERVICES_BASE_URI).append("=").append(servicesBaseUri);
+      
+      // Append Hash
+      uriBuilder.append(uriHash);
 
-      return resp.encodeURL(uriBuilder.toString());
+      return fc.getExternalContext().encodeResourceURL(uriBuilder.toString());
    }
 
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)

@@ -21,7 +21,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
    
       <ippui:menuSection name="common"
          include="/process-portal/menu/common.xhtml" />
-      <ippui:menuSection name="administration" requiredRoles="ADMINISTRATOR"
+      <ippui:menuSection name="administration"
          include="/process-portal/menu/administration.xhtml" />
    
       <ippui:launchPanel name="overview"

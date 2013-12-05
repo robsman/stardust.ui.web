@@ -96,6 +96,6 @@ public interface UserPreferencesEntries
     * Such preference id entries should go here with a prefix "P_"
     */
    public static final String P_ACTIVITY_CRITICALITY_CONFIG = "workflow-criticality-categories";
-
+   public static final String V_DEPUTY_MANAGEMENT_VIEW = "deputyManagementView";
    
 }

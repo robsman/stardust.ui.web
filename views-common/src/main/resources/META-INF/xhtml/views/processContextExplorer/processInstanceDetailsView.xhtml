@@ -91,6 +91,8 @@
 							<ice:column>
 								<ice:outputText
 									value="#{processInstanceDetailsBean.state}" />
+									<ice:outputText
+									value="#{processInstanceDetailsBean.abortedUser}" rendered ="#{processInstanceDetailsBean.abortedUser !=null}"/>
 							</ice:column>
 
 							<ice:column>

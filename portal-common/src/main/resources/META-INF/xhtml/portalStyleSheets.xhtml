@@ -1,0 +1,23 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
+	<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
+	<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
+	<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+
+	<!-- stardust-ui-form-jsf.css and stardust-ui-form-jsf-override.css have been moved from activityPanel.xhtml
+		to portalHead.xhtml, as the dymanic / delayed loading sometimes caused problems in page width calculation.  -->
+	<ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
+	<ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
+
+	<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
+		<ice:outputStyle href="#{skinFile}" />
+	</c:forEach>
+
+</f:view>

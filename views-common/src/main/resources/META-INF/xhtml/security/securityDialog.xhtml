@@ -70,12 +70,12 @@
 						<ice:panelGroup>
 							<ice:panelGrid columns="3" style="float:right;">
 								<pc:automationTag value="auto-COM-SecurityDlg-BtnsBar" standAlone="false"/>
-								<ice:commandButton rendered="#{securityDialog.editMode}" 
+								<ice:commandButton rendered="#{securityDialog.editMode and (!(securityDialog.allInheritPolicy))}" 
 									value="#{securityDialog.messages['securityDialog.button.apply']}"
-									styleClass="button" action="#{securityDialog.apply}" />
+									styleClass="button" action="#{securityDialog.apply}" onclick="Event.stop(event);" partialSubmit="true" immediate ="true"/>
 								<ice:commandButton
 									value="#{views_common_msgPropsBean['common.close']}"
-									styleClass="button secondary" action="#{securityDialog.closePopup}" />
+									styleClass="button secondary" action="#{securityDialog.closePopup}" onclick="Event.stop(event);" partialSubmit="true" immediate ="true"/>
 							</ice:panelGrid>
 							
 						</ice:panelGroup>

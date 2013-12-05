@@ -21,6 +21,9 @@ define(
 				m_jsfViewManager, m_elementConfiguration) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var view = new GenericApplicationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -28,6 +31,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -43,7 +47,7 @@ define(
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(GenericApplicationView.prototype, view);
 
-				this.unsupportedMessagePanel = jQuery("#unsupportedMessagePanel");
+				this.unsupportedMessagePanel = m_utils.jQuerySelect("#unsupportedMessagePanel");
 
 				/**
 				 *
@@ -108,8 +112,7 @@ define(
 					this.nameInput.removeClass("error");
 					this.camelContextInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Application name must not be empty.");
 						this.nameInput.addClass("error");

@@ -17,13 +17,16 @@
    <info organisation="org.eclipse.stardust.ui.web" module="stardust-web-modeler" revision="${ipp.version.full}"/>
 
    <configurations>
+      <conf name="stardust-web-modeler-provided" description="Web Modeler - Provided Scope" />
       <conf name="stardust-web-modeler-compile" description="Web Modeler - Compile Scope" />
       <conf name="stardust-web-modeler-runtime" extends="stardust-web-modeler-compile" description="Web Modeler - Runtime Scope" />
+
+      <conf name="stardust-web-modeler-sources" description="Web Modeler - Sources" />
 
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
-      <conf name="compile" visibility="private" extends="stardust-web-modeler-compile" />
+      <conf name="compile" visibility="private" extends="stardust-web-modeler-compile,stardust-web-modeler-provided" />
       <conf name="runtime" visibility="private" extends="stardust-web-modeler-runtime" />
       <conf name="all" visibility="private" extends="compile, runtime, test" />
 
@@ -32,6 +35,7 @@
 
    <publications>
       <artifact name="stardust-web-modeler" type="jar" conf="stardust-web-modeler-compile,stardust-web-modeler-runtime" ext="jar" />
+      <artifact name="stardust-web-modeler" type="source" ext="jar" conf="stardust-web-modeler-sources" m:classifier="sources" />
       <artifact name="stardust-web-modeler" type="pom" conf="pom" ext="pom" />
    </publications>
 
@@ -70,13 +74,19 @@
          <exclude org="javax.servlet" module="jstl"/>
       </dependency>
       <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="stardust-web-modeler-compile->default"/>
-      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-compile->default"/>
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-web-modeler-provided->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-compile->default"/>
       <!-->dependency org="org.apache.httpcomponents" name="httpclient" rev="${commons-httpclient.version}" conf="stardust-web-modeler-compile->default"/-->
 
       <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
          <exclude org="org.hamcrest" module="hamcrest-core" />
       </dependency>
+      <dependency org="org.springframework" name="spring-test" transitive="false" rev="${spring-test.version}" conf="test->default" />
       <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
+      <dependency org="org.mockito" name="mockito-core" rev="${mockito-core.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="com.google.guava" name="guava" rev="${guava.version}" conf="test->default" transitive="false"/>
+
    </dependencies>
 </ivy-module>

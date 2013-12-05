@@ -35,7 +35,7 @@ define(
 			function ConfigurationVariablesPropertiesPage(propertiesPanel, id) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, id, "Configuration Variables",
-						"../../images/icons/table.png");
+						"plugins/bpm-modeler/images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -46,103 +46,103 @@ define(
 				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.initialize = function() {
-					jQuery("#cofigurationVariableHeading")
+					m_utils.jQuerySelect("#cofigurationVariableHeading")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.title"));
-					jQuery("th#name")
+					m_utils.jQuerySelect("th#name")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.name"));
-					jQuery("th#defaultValue")
+					m_utils.jQuerySelect("th#defaultValue")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.defaultValue"));
-					jQuery("th#references")
+					m_utils.jQuerySelect("th#references")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.tableHeading.references"));
 
-					jQuery("label#deleteVariableDialogMsg")
+					m_utils.jQuerySelect("label#deleteVariableDialogMsg")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.message"));
-					jQuery("label[for='emptyLiteralRadio']")
+					m_utils.jQuerySelect("label[for='emptyLiteralRadio']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithEmptyLiteral"));
-					jQuery("label[for='defaultValueRadio']")
+					m_utils.jQuerySelect("label[for='defaultValueRadio']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithDefaultValue"));
-					jQuery("label[for='withLiteralRadio']")
+					m_utils.jQuerySelect("label[for='withLiteralRadio']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.replaceWithArbitaryVariable"));
-					jQuery("input#applyButton")
+					m_utils.jQuerySelect("input#applyButton")
 							.val(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.applyButtonText"));
-					jQuery("input#closeButton")
+					m_utils.jQuerySelect("input#closeButton")
 							.val(
 									m_i18nUtils
 											.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.closeButtonText"));
 
-					this.refreshConfigurationVariablesButton = jQuery("#refreshConfigurationVariablesButton");
+					this.refreshConfigurationVariablesButton = m_utils.jQuerySelect("#refreshConfigurationVariablesButton");
 					this.refreshConfigurationVariablesButton.click({
 						"page" : this
 					}, function(event) {
 						event.data.page.refreshConfigurationVariables();
 					});
 
-					jQuery("#deleteConfigurationVariableDialog").dialog({
+					m_utils.jQuerySelect("#deleteConfigurationVariableDialog").dialog({
 						autoOpen : false,
 						draggable : true,
 						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title"),
 						width : "auto",
 						height : "auto",
 						open : function() {
-							jQuery(
+							m_utils.jQuerySelect(
 									"#deleteConfigurationVariableDialog #emptyLiteralRadio")
 									.prop("checked", true);
-							jQuery(
+							m_utils.jQuerySelect(
 									"#deleteConfigurationVariableDialog #literalValueInput")
 									.val("");
-							jQuery(
+							m_utils.jQuerySelect(
 									"#deleteConfigurationVariableDialog #literalValueInput")
 									.prop('disabled', true);
 						}
 					});
 
-					jQuery(
+					m_utils.jQuerySelect(
 							"#deleteConfigurationVariableDialog input[name='deleteVariableOptions']")
 							.click(
 									function() {
-										if (jQuery(
+										if (m_utils.jQuerySelect(
 												"#deleteConfigurationVariableDialog #withLiteralRadio")
 												.prop("checked")) {
-											jQuery(
+											m_utils.jQuerySelect(
 													"#deleteConfigurationVariableDialog #literalValueInput")
 													.prop('disabled', false).focus();
 
 										} else {
-											jQuery(
+											m_utils.jQuerySelect(
 													"#deleteConfigurationVariableDialog #literalValueInput")
 													.val("");
-											jQuery(
+											m_utils.jQuerySelect(
 													"#deleteConfigurationVariableDialog #literalValueInput")
 													.prop('disabled', true);
 										}
 									});
 
-					jQuery("#deleteConfigurationVariableDialog #closeButton")
+					m_utils.jQuerySelect("#deleteConfigurationVariableDialog #closeButton")
 							.click(
 									function() {
-										jQuery(
+										m_utils.jQuerySelect(
 												"#deleteConfigurationVariableDialog")
 												.dialog("close");
 									});
-					jQuery("#deleteConfigurationVariableDialog #applyButton")
+					m_utils.jQuerySelect("#deleteConfigurationVariableDialog #applyButton")
 							.click(
 									{
 										page : this
@@ -154,24 +154,24 @@ define(
 
 										var deleteOptions = "{}";
 
-										if (jQuery(
+										if (m_utils.jQuerySelect(
 												"#deleteConfigurationVariableDialog #emptyLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "emptyLiteral"
 											};
-										} else if (jQuery(
+										} else if (m_utils.jQuerySelect(
 												"#deleteConfigurationVariableDialog #defaultValueRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "defaultValue"
 											};
-										} else if (jQuery(
+										} else if (m_utils.jQuerySelect(
 												"#deleteConfigurationVariableDialog #withLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "withLiteral",
-												literalValue : jQuery(
+												literalValue : m_utils.jQuerySelect(
 														"#deleteConfigurationVariableDialog #literalValueInput")
 														.val()
 											};
@@ -199,11 +199,13 @@ define(
 														})
 												.done(
 														function() {
-															jQuery(
+															m_utils.jQuerySelect(
 																	"#deleteConfigurationVariableDialog")
 																	.dialog(
 																			"close");
-														}).fail(function() {
+															event.data.page.refreshConfigurationVariables();
+														}).fail(function(e) {
+															alert("Delete failed: " + e);
 												});
 									});
 				};
@@ -232,124 +234,131 @@ define(
 									},
 									{
 										"success" : function(json) {
-											jQuery(
-													"table#configurationVariablesTable tbody")
-													.empty();
-
-											var variables = m_utils
-													.convertToSortedArray(json,
-															"name", false);
-
-											for ( var n = 0; n < variables.length; ++n) {
-												var row = jQuery("<tr></tr>");
-												var cell = jQuery("<td></td>");
-
-												row.append(cell);
-
-												var button = jQuery("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='"
-														+ m_urlUtils
-																.getContextName()
-														+ "/plugins/bpm-modeler/images/icons/delete.png'/>");
-
-												button
-														.click(
-																{
-																	page : page,
-																	configurationVariable : variables[n]
-																},
-																function(event) {
-																	event.data.page.currentConfigurationVariable = event.data.configurationVariable;
-
-																	jQuery(
-																			"#deleteConfigurationVariableDialog #emptyLiteralRadio")
-																			.prop(
-																					"checked",
-																					true);
-																	jQuery(
-																			"#deleteConfigurationVariableDialog")
-																			.dialog(
-																					"open");
-																});
-
-												cell.append(button);
-
-												cell = jQuery("<td></td>");
-
-												row.append(cell);
-
-												cell
-														.append(stripVariableName(variables[n].name));
-
-												cell = jQuery("<td></td>");
-
-												row.append(cell);
-
-												input = jQuery("<input type='text' class='cellEditor'></input>");
-
-												cell.append(input);
-												input
-														.val(variables[n].defaultValue);
-												input
-														.change(
-																{
-																	page : page,
-																	variableName : variables[n].name
-																},
-																function(event) {
-																	event.data.page
-																			.modifyConfigurationVariable(
-																					event.data.variableName,
-																					jQuery(
-																							this)
-																							.val());
-																});
-
-												cell = jQuery("<td></td>");
-
-												row.append(cell);
-
-												var list = jQuery("<ul class='referencesList'></ul>");
-
-												cell.append(list);
-
-												for ( var m = 0; m < variables[n].references.length; ++m) {
-													var item = jQuery("<li></li>");
-
-													list.append(item);
-
-													var info = "";
-
-													info +=  m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.elementType." + variables[n].references[m].elementType);
-
-													if (variables[n].references[m].elementName) {
-														info += " <span class='emphasis'>";
-														info += variables[n].references[m].elementName;
-														info += "</span>";
-													}
-
-													if (variables[n].references[m].scopeType) {
-														info += " " + m_i18nUtils.getProperty("modeler.general.ofLiteral") + " ";
-														info += m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.scopeType." + variables[n].references[m].scopeType);
-
-														if (variables[n].references[m].scopeType) {
-															info += " <span class='emphasis'>";
-															info += variables[n].references[m].scopeName;
-															info += "</span>";
-														}
-													}
-
-													item.append(info);
-												}
-
-												jQuery(
-														"table#configurationVariablesTable tbody")
-														.append(row);
-											}
+											page.refreshConfigurationVariablesTable(json);
 										},
 										"error" : function() {
 											m_utils.debug("Error");
 										}
 									});
+				};
+				
+				/**
+				 * 
+				 */
+				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariablesTable = function(json) {
+					m_utils.jQuerySelect(
+							"table#configurationVariablesTable tbody")
+							.empty();
+
+					var variables = m_utils
+							.convertToSortedArray(json,
+									"name", false);
+
+					for ( var n = 0; n < variables.length; ++n) {
+						var row = m_utils.jQuerySelect("<tr></tr>");
+						var cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						var button = m_utils.jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='"
+								+ m_urlUtils
+										.getContextName()
+								+ "/plugins/bpm-modeler/images/icons/delete.png'/>");
+
+						button
+								.click(
+										{
+											page : this,
+											configurationVariable : variables[n]
+										},
+										function(event) {
+											event.data.page.currentConfigurationVariable = event.data.configurationVariable;
+
+											m_utils.jQuerySelect(
+													"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+													.prop(
+															"checked",
+															true);
+											m_utils.jQuerySelect(
+													"#deleteConfigurationVariableDialog")
+													.dialog(
+															"open");
+										});
+
+						cell.append(button);
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						cell
+								.append(stripVariableName(variables[n].name));
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						input = m_utils.jQuerySelect("<input type='text' class='cellEditor'></input>");
+
+						cell.append(input);
+						input
+								.val(variables[n].defaultValue);
+						input
+								.change(
+										{
+											page : this,
+											variableName : variables[n].name
+										},
+										function(event) {
+											event.data.page
+													.modifyConfigurationVariable(
+															event.data.variableName,
+															m_utils.jQuerySelect(
+																	this)
+																	.val());
+										});
+
+						cell = m_utils.jQuerySelect("<td></td>");
+
+						row.append(cell);
+
+						var list = m_utils.jQuerySelect("<ul class='referencesList'></ul>");
+
+						cell.append(list);
+
+						for ( var m = 0; m < variables[n].references.length; ++m) {
+							var item = m_utils.jQuerySelect("<li></li>");
+
+							list.append(item);
+
+							var info = "";
+
+							info +=  m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.elementType." + variables[n].references[m].elementType);
+
+							if (variables[n].references[m].elementName) {
+								info += " <span class='emphasis'>";
+								info += variables[n].references[m].elementName;
+								info += "</span>";
+							}
+
+							if (variables[n].references[m].scopeType) {
+								info += " " + m_i18nUtils.getProperty("modeler.general.ofLiteral") + " ";
+								info += m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.scopeType." + variables[n].references[m].scopeType);
+
+								if (variables[n].references[m].scopeType) {
+									info += " <span class='emphasis'>";
+									info += variables[n].references[m].scopeName;
+									info += "</span>";
+								}
+							}
+
+							item.append(info);
+						}
+
+						m_utils.jQuerySelect(
+								"table#configurationVariablesTable tbody")
+								.append(row);
+					}
 				};
 
 				/**

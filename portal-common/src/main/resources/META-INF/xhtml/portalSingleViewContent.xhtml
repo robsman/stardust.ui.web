@@ -1,0 +1,44 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+<c:if test="#{(not empty ippPortalAppSingleView.view) and (ippPortalAppSingleView.view.viewState != 'CLOSED')}">
+	<ice:panelGroup styleClass="contentContainer">
+		<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height: 100%">
+			<tr>
+				<td class="rightContentTd">
+					<div class="content">
+						<f:subview id="subView">
+							<ice:panelGroup>
+								<ice:form partialSubmit="false">
+									<ice:panelGrid columns="2" cellspacing="0" cellpadding="0"
+											styleClass="breadCrumbsToolbarWrapper"
+											columnClasses="breadCrumbsColumn toolbarColumn">
+										<ice:panelGroup>
+											<ui:include src="portalSingleViewBreadCrumb.xhtml" />
+										</ice:panelGroup>
+										<ice:panelGroup>
+											<ui:include src="portalSingleViewToolbar.xhtml" />
+										</ice:panelGroup>
+									</ice:panelGrid>
+									<pc:tabScoped currentTab="#{ippPortalAppSingleView.view}">
+										<ui:include src="portalUserDefinedInclude.xhtml">
+											<ui:param name="includeFilePath" value="#{ippPortalAppSingleView.view.path}" />
+									   </ui:include>
+									</pc:tabScoped>
+								</ice:form>
+							</ice:panelGroup>
+						</f:subview>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div id="ippPortalEndContent"></div>
+	</ice:panelGroup>
+</c:if>
+
+</f:view>

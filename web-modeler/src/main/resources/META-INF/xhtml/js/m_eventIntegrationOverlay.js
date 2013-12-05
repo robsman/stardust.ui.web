@@ -46,7 +46,7 @@ define(
 
 						this.parameterMappingsPanelAnchor
 								.load(
-										"parameterDefinitionsPanel.html",
+										"plugins/bpm-modeler/views/modeler/parameterDefinitionsPanel.html",
 										function(response, status, xhr) {
 											if (status == "error") {
 												var msg = "Properties Page Load Error: "
@@ -54,7 +54,7 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(this).append(msg);
+												m_utils.jQuerySelect(this).append(msg);
 											} else {
 												overlay.parameterMappingsPanel = m_parameterDefinitionsPanel
 														.create({
@@ -82,7 +82,7 @@ define(
 				 *
 				 */
 				EventIntegrationOverlay.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+					return m_utils.jQuerySelect("#" + this.id + " #" + inputId);
 				};
 
 				/**
@@ -160,6 +160,7 @@ define(
 				 */
 				EventIntegrationOverlay.prototype.initializeIntervalUnitSelect = function(
 						select) {
+					select.empty();
 					select
 							.append("<option value='1'>"
 									+ m_i18nUtils
@@ -184,6 +185,28 @@ define(
 							.append("<option value='86400000'>"
 									+ m_i18nUtils
 											.getProperty("modeler.element.properties.event.days")
+									+ "</option>");
+				};
+
+				/**
+				 *
+				 */
+				EventIntegrationOverlay.prototype.initializedelayTimerUnitSelect = function(
+						select) {
+					select
+							.append("<option value='1'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.milliseconds")
+									+ "</option>");
+					select
+							.append("<option value='1000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.seconds")
+									+ "</option>");
+					select
+							.append("<option value='60000'>"
+									+ m_i18nUtils
+											.getProperty("modeler.element.properties.event.minutes")
 									+ "</option>");
 				};
 

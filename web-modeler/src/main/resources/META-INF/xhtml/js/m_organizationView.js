@@ -12,9 +12,12 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_model","bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
+				m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var organization = m_model.findParticipant(fullId);
 					i18nOrganizationview();
 					m_utils.debug("===> Organization");
@@ -27,81 +30,81 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(organization);
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
 
 			function i18nOrganizationview() {
 
-				$("label[for='guidOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.uuid"));
+				m_utils.jQuerySelect("label[for='guidOutput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
-				.text(
-						m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.id"));
+				m_utils.jQuerySelect("label[for='idOutput']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.element.properties.commonProperties.id"));
 
 
-				$("label[for='nameInput']")
+				m_utils.jQuerySelect("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.organizationName"));
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				$("label[for='supportsDepartmentsCheckbox']")
+				m_utils.jQuerySelect("label[for='supportsDepartmentsCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.supportDepartment"));
-				$("label[for='departmentDataSelect']")
+				m_utils.jQuerySelect("label[for='departmentDataSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.data"));
-				$("label[for='departmentDataPathInput']")
+				m_utils.jQuerySelect("label[for='departmentDataPathInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dataPath"));
-				$("label[for='leaderSelect']")
+				m_utils.jQuerySelect("label[for='leaderSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.leader"));
-				$("label[for='chooseAssignmentRadio']")
+				m_utils.jQuerySelect("label[for='chooseAssignmentRadio']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.assignment"));
-				$("label[for='assignAutomaticallyRadio']")
+				m_utils.jQuerySelect("label[for='assignAutomaticallyRadio']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.assignAutomatically"));
-				$("label[for='costCenterInput']")
+				m_utils.jQuerySelect("label[for='costCenterInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.costCenter"));
-				jQuery("#deptartment")
+				m_utils.jQuerySelect("#deptartment")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.department"));
-				jQuery("#teamlead")
+				m_utils.jQuerySelect("#teamlead")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.organization.teamLead"));
-				jQuery("#activityassignment")
+				m_utils.jQuerySelect("#activityassignment")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.activityAssignment"));
-				jQuery("#controlling")
+				m_utils.jQuerySelect("#controlling")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling"));
-				jQuery("#basicPropertiesPage div.heading")
+				m_utils.jQuerySelect("#basicPropertiesPage div.heading")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.general.heading"));
@@ -122,15 +125,16 @@ define(
 				 */
 				OrganizationView.prototype.initialize = function(organization) {
 					this.id = "organizationView";
+					this.view = m_utils.jQuerySelect("#" + this.id);
 
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
-					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
-					this.supportsDepartmentsCheckbox = jQuery("#supportsDepartmentsCheckbox");
-					this.departmentDataSelect = jQuery("#departmentDataSelect");
-					this.departmentDataPathInput = jQuery("#departmentDataPathInput");
-					this.costCenterInput = jQuery("#costCenterInput");
-					this.leaderSelect = jQuery("#leaderSelect");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.chooseAssignmentRadio = m_utils.jQuerySelect("#chooseAssignmentRadio");
+					this.assignAutomaticallyRadio = m_utils.jQuerySelect("#assignAutomaticallyRadio");
+					this.supportsDepartmentsCheckbox = m_utils.jQuerySelect("#supportsDepartmentsCheckbox");
+					this.departmentDataSelect = m_utils.jQuerySelect("#departmentDataSelect");
+					this.departmentDataPathInput = m_utils.jQuerySelect("#departmentDataPathInput");
+					this.costCenterInput = m_utils.jQuerySelect("#costCenterInput");
+					this.leaderSelect = m_utils.jQuerySelect("#leaderSelect");
 
 					this.registerInputForModelElementAttributeChangeSubmission(
 							this.departmentDataSelect, "carnot:engine:dataId");
@@ -252,57 +256,57 @@ define(
 										}
 									});
 
-					//TODO - check if needed, else delete
-//					this.supportsDepartmentsCheckbox
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view
-//												.setSupportDepartments(view.supportsDepartmentsCheckbox
-//														.is(":checked"));
-//
-//										// Submit changes
-//									});
-//					this.departmentDataSelect
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view.departmentDataPathInput.val(null);
-//										view
-//												.submitChanges({
-//													attributes : {
-//														"carnot:engine:dataId" : view.departmentDataSelect
-//																.val() == m_constants.TO_BE_DEFINED ? null
-//																: view.departmentDataSelect
-//																		.val(),
-//														"carnot:engine:dataId" : null
-//													}
-//												});
-//									});
-//					this.departmentDataPathInput
-//							.change(
-//									{
-//										view : this
-//									},
-//									function(event) {
-//										var view = event.data.view;
-//
-//										view
-//												.submitChanges({
-//													attributes : {
-//														"carnot:engine:dataId" : view.departmentDataPathInput
-//																.val()
-//													}
-//												});
-//									});
+					// TODO - check if needed, else delete
+					// this.supportsDepartmentsCheckbox
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view
+					// .setSupportDepartments(view.supportsDepartmentsCheckbox
+					// .is(":checked"));
+					//
+					// // Submit changes
+					// });
+					// this.departmentDataSelect
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view.departmentDataPathInput.val(null);
+					// view
+					// .submitChanges({
+					// attributes : {
+					// "carnot:engine:dataId" : view.departmentDataSelect
+					// .val() == m_constants.TO_BE_DEFINED ? null
+					// : view.departmentDataSelect
+					// .val(),
+					// "carnot:engine:dataId" : null
+					// }
+					// });
+					// });
+					// this.departmentDataPathInput
+					// .change(
+					// {
+					// view : this
+					// },
+					// function(event) {
+					// var view = event.data.view;
+					//
+					// view
+					// .submitChanges({
+					// attributes : {
+					// "carnot:engine:dataId" : view.departmentDataPathInput
+					// .val()
+					// }
+					// });
+					// });
 
 					this.leaderSelect.change({
 						view : this
@@ -315,6 +319,7 @@ define(
 					});
 
 					this.initializeModelElementView(organization);
+					this.view.css("visibility", "visible");
 				};
 
 				/**
@@ -486,8 +491,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Organization name must not be empty.");
 						this.nameInput.addClass("error");

@@ -180,7 +180,7 @@ public class PortalConfigurationPanel extends UIComponentBean
          }
       }
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE, selectedPerspective);
-      userPrefsHelper.setString(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, String.valueOf(maxTabsDisplay));
+      //userPrefsHelper.setString(V_PORTAL_CONFIG, F_TABS_MAX_TABS_DISPLAY, String.valueOf(maxTabsDisplay));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_PAGE_SIZE, String.valueOf(pageSize));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_MAX_PAGES, String.valueOf(paginatorMaxPages));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_FAST_STEP, String.valueOf(paginatorFastStep));

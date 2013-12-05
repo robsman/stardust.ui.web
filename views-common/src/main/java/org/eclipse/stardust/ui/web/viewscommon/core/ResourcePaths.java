@@ -122,4 +122,6 @@ public interface ResourcePaths
    static final String V_CONFIRMATION_DIALOG_OPTIONS = "/plugins/views-common/dialogs/confirmationDialogOptions.xhtml";
    
    static final String V_PROCESS_ACTIVITY_FILTER = "/plugins/views-common/processActivityDataFilter.xhtml";
+
+   static final String V_deputyManagementViewColumns = "/plugins/views-common/deputy/deputyManagementViewColumns.xhtml";
 }

@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-graphics-common" type="jar" conf="ipp-graphics-common-compile, ipp-graphics-common-runtime, ipp-graphics-common-provided" />
-      <artifact name="ipp-graphics-common" type="jar" conf="ipp-graphics-common-sources" m:classifier="sources" />
+      <artifact name="ipp-graphics-common" type="source" ext="jar" conf="ipp-graphics-common-sources" m:classifier="sources" />
       <artifact name="ipp-graphics-common" type="pom" conf="pom" ext="pom" />
    </publications>
 

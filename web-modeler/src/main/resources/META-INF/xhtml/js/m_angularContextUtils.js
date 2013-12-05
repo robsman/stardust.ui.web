@@ -18,8 +18,8 @@ define(function() {
 		runInAngularContext : runInAngularContext
 	};
 
-	function runInAngularContext(func) {
-		var scope = angular.element(document.body).scope();
+	function runInAngularContext(func, div) {
+		var scope = angular.element(div == undefined ? document.body : div).scope();
 		scope.$apply(func);
 	}
 });

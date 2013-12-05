@@ -58,6 +58,21 @@ public class PortalApiPhaseListener implements PhaseListener
 
          HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
          String queryString = request.getQueryString();
+         
+         //fetch query string in case of websphere server - request.getQueryString() returns empty 
+         if (isEmpty(queryString))
+         {
+            queryString = (String) request.getAttribute("javax.servlet.forward.query_string");
+            if (StringUtils.isNotEmpty(queryString))
+            {
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("QueryString empty! Possibly due to a HTTP forward since content was found in attribute 'javax.servlet.forward.query_string':"
+                        + queryString + ". Proceeding with this value ...");
+               }
+            }
+         }
+         
          if (isEmpty(queryString))
          {
             // request to open views was not passed via query string, so ignore it (e.g.

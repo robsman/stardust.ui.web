@@ -15,8 +15,11 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 
@@ -70,35 +73,49 @@ public class AbstractAdapterView implements ViewEventHandler {
 		String iframeId = "mf_" + event.getView().getIdentityParams();
 
 		switch (event.getType())
-		{
+		{		
 		case TO_BE_ACTIVATED:
-		    Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
-            PortalApplication.getInstance().addEventScript(
-                  "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
-                        + event.getView().getParams() + "', {anchorId:'" + anchorId
-                        + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
-			break;
+		    //PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
+            break;
+            
+		case ACTIVATED:
+			PortalApplicationEventScript.getInstance().addEventScript("parent.EventHub.events.publish('PEPPER_VIEW_ACTIVATED', '" + event.getView().getParamValue("uuid") + "');");
+            break;
 
 		case TO_BE_DEACTIVATED:
-			PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
+			//PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
+			// fireResizeIframeEvent();
 			break;
 
 		case CLOSED:
-			PortalApplication.getInstance().addEventScript(
-					"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
+		   PortalApplicationEventScript.getInstance().addEventScript("parent.EventHub.events.publish('PEPPER_VIEW_CLOSED', '" + event.getView().getParamValue("uuid") + "');");
+			//PortalApplication.getInstance().addEventScript(
+			//		"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
 			break;
 
 		case LAUNCH_PANELS_ACTIVATED:
 		case LAUNCH_PANELS_DEACTIVATED:
 		case FULL_SCREENED:
 		case RESTORED_TO_NORMAL:
-      case PINNED:
+        case PINNED:
 		case PERSPECTIVE_CHANGED:
-			PortalApplication.getInstance().addEventScript(
-					"InfinityBpm.ProcessPortal.resizeContentFrame('"
-					+ iframeId + "', {anchorId:'" + anchorId + "'});");
+		   //fireResizeIframeEvent();
 			break;
 		}
-
 	}
+
+	private void fireResizeIframeEvent()
+   {
+      PortalApplication.getInstance().addEventScript(
+            "InfinityBpm.ProcessPortal.resizeIFrames();");
+   }
+
+   /**
+    * @param style
+    */
+   private void changeMouseCursorStyle(String style)
+   {
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+   }
 }

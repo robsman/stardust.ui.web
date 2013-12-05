@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common;
 
+import java.util.Map;
+
 import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -42,6 +44,9 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
    protected boolean firePerspectiveEvents = true;
   
+   protected boolean fromlaunchPanels;
+   protected View fromView;
+
    /**
     * 
     */
@@ -69,6 +74,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
     */
    public void closePopup()
    {
+	  setFromlaunchPanels(false);
       View focusView = PortalApplication.getInstance().getFocusView();
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_ACTIVATED))
@@ -78,6 +84,10 @@ public abstract class PopupUIComponentBean extends UIComponentBean
 
       visible = false;
       FacesUtils.clearFacesTreeValues();
+
+      // FOR HTML5
+      String popupScript = "parent.BridgeUtils.Dialog.close();";
+      PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))
       {
@@ -90,6 +100,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
     */
    public void openPopup()
    {
+      Map requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      if ("true".equals(requestParams.get("fromlaunchPanels")))
+      {
+    	  setFromlaunchPanels(true);
+      }
       View focusView = PortalApplication.getInstance().getFocusView();
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.TO_BE_DEACTIVATED))
@@ -99,6 +114,15 @@ public abstract class PopupUIComponentBean extends UIComponentBean
      
       addPopupCenteringScript();
       visible = true;
+
+      // FOR HTML5
+      String htmlFWViewId = "";
+      if (null != fromView)
+      {
+         htmlFWViewId = (String)fromView.getParamValue("html5FWViewId");   
+      }
+      String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ", '" + htmlFWViewId + "');";
+      PortalApplication.getInstance().addEventScript(popupScript);
 
       if ((null != focusView) && !PortalUiController.getInstance().broadcastVetoableViewEvent(focusView, ViewEventType.DEACTIVATED))
       {
@@ -113,8 +137,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    {
       if (condition)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + divId + "');";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         String positionPopupScript = "resizeMessageDialog('" + divId + "');";
          PortalApplication.getInstance().addEventScript(positionPopupScript);
       }
    }
@@ -136,6 +159,11 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void addPopupCenteringScript()
    {
       addPopupCenteringScript(popupAutoCenter, getBeanId());
+   }
+
+   public void setFromView(View view)
+   {
+      fromView = view;
    }
 
    public boolean isVisible()
@@ -161,5 +189,15 @@ public abstract class PopupUIComponentBean extends UIComponentBean
    public void setPopupAutoCenter(boolean popupAutoCenter)
    {
       this.popupAutoCenter = popupAutoCenter;
+   }
+
+   public boolean isFromlaunchPanels()
+   {
+      return fromlaunchPanels;
+   }
+
+   public void setFromlaunchPanels(boolean fromlaunchPanels)
+   {
+      this.fromlaunchPanels = fromlaunchPanels;
    }
 }

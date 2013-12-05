@@ -20,6 +20,7 @@ import org.eclipse.stardust.common.error.InternalException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.AccessPoint;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -50,6 +51,11 @@ public class ClientSideDataFlowUtils
 
       if (isStructuredType(model, inMapping.getApplicationAccessPoint()))
       {
+         Data data = model.getData(inMapping.getDataId());
+         if (data.getModelOID() != model.getModelOID())
+         {
+            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+         }
          result = evaluateStructInMapping(model, inMapping.getApplicationAccessPoint(),
                accessPoint, inMapping.getApplicationPath(), inValue);
       }
@@ -81,6 +87,11 @@ public class ClientSideDataFlowUtils
 
       if (isStructuredType(model, outMapping.getApplicationAccessPoint()))
       {
+         Data data = model.getData(outMapping.getDataId());
+         if (data.getModelOID() != model.getModelOID())
+         {
+            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+         }
          result = evaluateStructOutMapping(model, outMapping.getApplicationAccessPoint(),
                value, outMapping.getApplicationPath());
       }
@@ -218,15 +229,15 @@ public class ClientSideDataFlowUtils
 
       return accessPointInstance;
    }
-   
+
    public static boolean isStructuredType(Model model, AccessPoint accessPoint)
    {
       return null != accessPoint.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
    }
-   
+
    public static boolean isPrimitiveType(Model model, AccessPoint ap)
    {
       return (ap.getAttribute(PredefinedConstants.TYPE_ATT) instanceof Type);
-   }   
+   }
 
 }

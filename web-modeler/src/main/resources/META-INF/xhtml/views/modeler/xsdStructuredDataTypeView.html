@@ -4,8 +4,8 @@
 <head>
 <title>Structured Data Type View</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <style>
 #typeDeclarationsTable {
 	width: 600px;
@@ -42,12 +42,12 @@ table.layoutTable tr.widget td .widget {
 }
 </style>
 <script type="text/javascript"
-	data-main="../../js/xsdStructuredDataTypeViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/xsdStructuredDataTypeViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 <form name="form">
-	<div id="xsdStructuredDataTypeView" class="panel">
+	<div id="xsdStructuredDataTypeView" class="nativeHtmlViewPanel" style="visibility: hidden">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -103,7 +103,7 @@ table.layoutTable tr.widget td .widget {
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
 									class="tabLabel" id="configuration">Configuration</span> </a></li>
 						</ul>
 						<div id="configurationTab">
@@ -119,16 +119,23 @@ table.layoutTable tr.widget td .widget {
 														cardinalities.</td>
 												</tr>
 												<tr id="structureKind" class="widget">
-													<td class="label" style="width: 150px;">Data structure type:</td>
+													<td style="width: 150px;">Data structure type:</td>
 													<td class="widget">
-														<select class="widget">
+														<select >
 															<option class="label-struct" value="struct">Composite</option>
 															<option class="label-enum" value="enum">Enumeration</option>
 														</select>
 													</td>
 												</tr>
+												<tr id="baseTypeSelect" class="widget show-when-struct">
+													<td style="width: 150px;">Parent Structure:</td>
+													<td class="widget">
+														<select class="widget">
+														</select>
+													</td>
+												</tr>
 												<tr id="minimumLength" class="widget show-when-enum">
-													<td class="label">Minimum length:</td>
+													<td>Minimum length:</td>
 													<td class="widget">
 														<input id="minLenghtInput" name="minLenghtInput" ng-model="minLength"
 															ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
@@ -139,7 +146,7 @@ table.layoutTable tr.widget td .widget {
 													</td>
 												</tr>
 												<tr id="maximumLength" class="widget show-when-enum">
-													<td class="label">Maximum length:</td>
+													<td>Maximum length:</td>
 													<td class="widget">
 														<input id="maxLenghtInput" name="maxLenghtInput"
 															ng-model="maxLength" ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
@@ -168,26 +175,26 @@ table.layoutTable tr.widget td .widget {
 																			class="layoutTable">
 																			<tr>
 																				<td><input id="addElementButton"
-																					type="image" src="../../images/icons/add.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/add.png"
 																					title="Add" alt="Add" class="toolbarButton" />
 																				</td>
 																				<td><input id="deleteElementButton"
-																					type="image" src="../../images/icons/delete.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 																					title="Delete" alt="Delete" class="toolbarButton" />
 																				</td>
 																				<td><img
-																					src="../../images/icons/toolbar-separator.png"></img>
+																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																				</td>
 																				<td><input id="moveElementUpButton"
-																					type="image" src="../../images/icons/arrow_up.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/arrow_up.png"
 																					title="Move Up" alt="Move Up" class="toolbarButton" />
 																				</td>
 																				<td><img
-																					src="../../images/icons/toolbar-separator.png"></img>
+																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																				</td>
 																				<td><input id="moveElementDownButton"
 																					type="image"
-																					src="../../images/icons/arrow_down.png"
+																					src="plugins/bpm-modeler/images/icons/arrow_down.png"
 																					title="Move Down" alt="Move Down"
 																					class="toolbarButton" /></td>
 																			</tr>
@@ -225,14 +232,14 @@ table.layoutTable tr.widget td .widget {
 											<tr class="show-when-struct">
 												<td align="left">
 													<div class="panelBorder">
-														<div class="dataTable">
+														<div id="fieldPropertiesTableDiv" class="dataTable">
 															<table id="fieldPropertiesTable" cellpadding="0"
 																cellspacing="0" class="treeTable"
-																style="width: 100%; text-align: left;">
+																style="width: 100%;">
 																<thead>
 																	<tr>
-																		<th style="width: 400px;" id="prop">Property</th>
-																		<th class="last" style="width: 200px;" id="val">Value</th>
+																		<th id="property">Property</th>
+																		<th id="propertyVal" class="last">Value</th>
 																	</tr>
 																</thead>
 																<tbody />
@@ -252,5 +259,8 @@ table.layoutTable tr.widget td .widget {
 		</table>
 	</div>
 </form>
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/xsdStructuredDataTypeViewMain.js"></script>
+
 </body>
 </html>

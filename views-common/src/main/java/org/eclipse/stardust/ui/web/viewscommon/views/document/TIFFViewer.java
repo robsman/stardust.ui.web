@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -30,7 +31,6 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -79,6 +79,8 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    private boolean poppedOut;
    
    private boolean descriptionChanged;
+   
+   private String executionScript;
    
    /*
     * (non-Javadoc)
@@ -259,7 +261,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
                || PortalApplication.getInstance().getActiveView() == event.getView())
          {
             String publishReinitializeMsg = "window.parent.EventHub.events.publish('RE_INITIALIZE_VIEWER');";
-            JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), publishReinitializeMsg);
             PortalApplication.getInstance().addEventScript(publishReinitializeMsg);
             activate();
          }
@@ -313,6 +314,15 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          break;
       }
    }
+   
+   /**
+    * 
+    * @param event
+    */
+   public void scriptExecuteActionListener(ActionEvent event)
+   {
+      setExecutionScript(null);
+   }
 
    /**
     * 
@@ -332,20 +342,14 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
          String pagePath = docHolder.getDefaultPagePath();
          pagePath += "&isEditable=" + documentInfo.isContentEditable();
          
-         restoreTiffIframe();
-         String anchor = "tiffViewerIframe";
-
-         String activateScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + frameId + "', '"
-               + pagePath + "' + '&canvasWidth=' + docWidth + '&canvasHeight=' + docHeight, {anchorId:'" + anchor
-               + "'});";
+         String activateScript = "activateAndResizeIframe('" + frameId + "','" + pagePath + "')";
          if (iframeDelay > 0)
          {
-            PortalApplication.getInstance().addEventScript(
-                  "window.setTimeout(function() {" + activateScript + "}," + iframeDelay + ");");
+            executionScript = "window.setTimeout(function() {" + activateScript + "}," + iframeDelay + ");";
          }
          else
          {
-            PortalApplication.getInstance().addEventScript(activateScript);
+            executionScript = activateScript;
          }
       }
    }
@@ -356,7 +360,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    public void close()
    {      
       String publishSaveMsg = "window.parent.EventHub.events.publish('VIEW_CLOSING', '" + docId + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), publishSaveMsg);
       PortalApplication.getInstance().addEventScript(publishSaveMsg);
       DOC_ID_VS_DOC_MAP.remove(docId);
       closeIframe();
@@ -425,16 +428,8 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    {
       if (!isPoppedOut())
       {
-         calculateOptimalDivSize();
          String anchor = "tiffViewerIframe";
-         String restoreTiffIframe = "if (document.getElementById('tiffViewerIframe')) {"
-         	   + "try{document.getElementById('tiffViewerIframe').style.width = (docWidth + 10) + 'px';"
-               + "document.getElementById('tiffViewerIframe').style.height = (docHeight + 70) + 'px';"
-               + "window.parent.EventHub.events.publish('CANVAS_RESIZED', docWidth, docHeight);}catch(e){}"
-               + "InfinityBpm.ProcessPortal.resizeContentFrame('" + frameId + "', {anchorId:'" + anchor + "'});}";
-
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), restoreTiffIframe);
-         PortalApplication.getInstance().addEventScript(restoreTiffIframe);
+         executionScript = "restoreTiffIframe('" + frameId + "','" + anchor + "')";
       }
    }
    
@@ -451,33 +446,15 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    /**
     * 
     */
-   private void calculateOptimalDivSize()
-   {
-      String calculateOptimalDivSizeJS = "var divObj = document.getElementById('tiffViewerIframe');"
-            + "var topValue= 0,leftValue= 0;" + "while(divObj) {" + "leftValue+= divObj.offsetLeft;"
-            + "topValue+= divObj.offsetTop;" + "divObj = divObj.offsetParent;" + "}"
-            + "var windowWidth = document.body.clientWidth, windowHeight = document.body.clientHeight;"
-            + "var docWidth = parseInt((document.body.clientWidth - leftValue)) - 30;"
-            + "var docHeight = parseInt(docWidth * 1.4);";
-
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), calculateOptimalDivSizeJS);
-      PortalApplication.getInstance().addEventScript(calculateOptimalDivSizeJS);
-   }
-
-   /**
-    * 
-    */
    public void deActivateIframe()
    {
-      String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('" + frameId + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), deActivateIframeJS);
+      String deActivateIframeJS = "this.window.parent.BridgeUtils.FrameManager.deactivate('" + frameId + "');";
       PortalApplication.getInstance().addEventScript(deActivateIframeJS);
    }
 
    private void closeIframe()
    {
-      String closeIframeJS = "InfinityBpm.ProcessPortal.closeContentFrame('" + frameId + "');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), closeIframeJS);
+      String closeIframeJS = "parent.InfinityBpm.ProcessPortal.closeContentFrame('" + frameId + "');";
       PortalApplication.getInstance().addEventScript(closeIframeJS);
    }
    
@@ -604,6 +581,21 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    public boolean isPoppedOut()
    {
       return poppedOut;
+   }
+
+   public IDocumentContentInfo getDocumentInfo()
+   {
+      return documentInfo;
+   }
+   
+   public String getExecutionScript()
+   {
+      return executionScript;
+   }
+
+   public void setExecutionScript(String executionScript)
+   {
+      this.executionScript = executionScript;
    }
 
    public void setCustomSaveDialogOptions()

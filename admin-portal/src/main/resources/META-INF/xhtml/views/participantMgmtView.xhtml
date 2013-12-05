@@ -13,6 +13,10 @@
 		 <ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
 				 <ui:param name="dialogBean" value="#{userMgmtBean.userMgmtConfirmationDialog}" /> 
 			</ui:include>
+		<ui:include src="/plugins/views-common/common/infoPanelView.xhtml">
+			<ui:param name="infoPanelBean"
+				value="#{participantMgmtBean.participantTree.infoPanelBean}" />
+		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGroup>
 		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">

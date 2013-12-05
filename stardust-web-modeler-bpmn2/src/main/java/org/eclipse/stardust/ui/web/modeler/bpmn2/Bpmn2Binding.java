@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
 
+import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
@@ -39,6 +41,12 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    public boolean isCompatible(EObject model)
    {
       return model instanceof Definitions;
+   }
+
+   @Override
+   public String getModelFormat(Definitions model)
+   {
+      return "bpmn2";
    }
 
    @Override
@@ -76,9 +84,21 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
          uuidRegistry.putIfAbsent(model, new ConcurrentHashMap<EObject, String>());
          modelUuids = uuidRegistry.get(model);
       }
+
       if ( !modelUuids.containsKey(element))
       {
-         modelUuids.putIfAbsent(element, Bpmn2Utils.createInternalId());
+         String uuid = null;
+         if (element instanceof BaseElement)
+         {
+            uuid = Bpmn2ExtensionUtils.getExtensionAttribute((BaseElement) element, "uuid");
+         }
+
+         if (isEmpty(uuid))
+         {
+            uuid = Bpmn2Utils.createInternalId();
+         }
+
+         modelUuids.putIfAbsent(element, uuid);
       }
 
       return modelUuids.get(element);

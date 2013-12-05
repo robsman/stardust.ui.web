@@ -19,18 +19,12 @@ define(
 			var ERROR_MESSAGE = 1;
 			var lastSaveDate;
 
-			var messagePanel = jquery("#messagePanel");
-			var messageDisplay = jquery("#messageDisplay");
-			var messageIcon = jquery("#messageIcon");
-			var lastSaveDateDisplay = jquery("#lastSaveDateDisplay");
-			var selectdata = m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title");
-			updateLastSavedLabel(selectdata);
-
 			var messages = [];
 
 			return {
 				markSaved : markSaved,
 				markModified : markModified,
+				updateLastSavedLabel : updateLastSavedLabel,
 				showMessage : showMessage,
 				showErrorMessage : showErrorMessage,
 				clear : clear,
@@ -45,8 +39,7 @@ define(
 				if (lastSaveDate) {
 					updateLastSavedLabel(m_utils.prettyDateTime(lastSaveDate));
 				} else {
-					var selectdata = m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title");
-					updateLastSavedLabel(selectdata);
+					updateLastSavedLabel(m_i18nUtils.getProperty("modeler.outline.unSavedMessage.title"));
 				}
 			}
 
@@ -54,16 +47,16 @@ define(
 			 *
 			 */
 			function updateLastSavedLabel(label) {
-				$("#lastSaveDateDisplay").html(label);
+				if (m_utils.jQuerySelect("#lastSaveDateDisplay"))
+					m_utils.jQuerySelect("#lastSaveDateDisplay").html(label);
 			}
 
 			/**
 			 *
 			 */
 			function markSaved() {
-				var selectdata = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.justNow");
 				lastSaveDate = new Date();
-				updateLastSavedLabel(selectdata);
+				updateLastSavedLabel(m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.justNow"));
 			}
 
 			/**
@@ -72,9 +65,9 @@ define(
 			function showMessage(message) {
 				clearDisplay();
 				messages.push(new Message(INFO_MESSAGE, message));
-				messagePanel.attr("class", "messagePanelHighlight");
-				messageIcon.parent().attr("class", "infoSeverityIssueItem");
-				messageDisplay.append(message);
+				m_utils.jQuerySelect("#messagePanel").attr("class", "messagePanelHighlight");
+				m_utils.jQuerySelect("#messageIcon").parent().attr("class", "infoSeverityIssueItem");
+				m_utils.jQuerySelect("#messageDisplay").append(message);
 
 			}
 
@@ -84,9 +77,9 @@ define(
 			function showErrorMessage(message) {
 				clearDisplay();
 				messages.push(new Message(ERROR_MESSAGE, message));
-				messagePanel.attr("class", "messagePanelHighlight");
-				messageIcon.parent().attr("class", "errorSeverityIssueItem");
-				messageDisplay.append(message);
+				m_utils.jQuerySelect("#messagePanel").attr("class", "messagePanelHighlight");
+				m_utils.jQuerySelect("#messageIcon").parent().attr("class", "errorSeverityIssueItem");
+				m_utils.jQuerySelect("#messageDisplay").append(message);
 			}
 
 			/**
@@ -94,10 +87,10 @@ define(
 			 */
 			function clearErrorMessages() {
 				clearDisplay();
-				messagePanel.removeAttr("class");
-				messageIcon.parent().removeAttr("class");
-				messageDisplay.removeAttr("class");
-				messageDisplay.empty();
+				m_utils.jQuerySelect("#messagePanel").removeAttr("class");
+				m_utils.jQuerySelect("#messageIcon").parent().removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").empty();
 
 				for(var n in messages){
 					message = messages[n];
@@ -110,9 +103,9 @@ define(
 
 				if (messages.length > 0) {
 					message = messages[messages.length - 1];
-					messagePanel.attr("class", "messagePanelHighlight");
-					messageIcon.parent().attr("class", "infoSeverityIssueItem");
-					messageDisplay.append(message.content);
+					m_utils.jQuerySelect("#messagePanel").attr("class", "messagePanelHighlight");
+					m_utils.jQuerySelect("#messageIcon").parent().attr("class", "infoSeverityIssueItem");
+					m_utils.jQuerySelect("#messageDisplay").append(message.content);
 				}
 
 			}
@@ -122,18 +115,18 @@ define(
 			 */
 			function clear() {
 				clearDisplay();
-				messagePanel.removeAttr("class");
-				messageIcon.parent().removeAttr("class");
-				messageDisplay.removeAttr("class");
-				messageDisplay.empty();
+				m_utils.jQuerySelect("#messagePanel").removeAttr("class");
+				m_utils.jQuerySelect("#messageIcon").parent().removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").empty();
 				messages.pop();
 
 				if (messages.length > 0) {
 					message = messages[messages.length - 1];
 
 					if (message.type == ERROR_MESSAGE) {
-						messageDisplay.attr("class", "errorMessage");
-						messageDisplay.append(message.content);
+						m_utils.jQuerySelect("#messageDisplay").attr("class", "errorMessage");
+						m_utils.jQuerySelect("#messageDisplay").append(message.content);
 
 					} else {
 						//TODO - Do we need this?
@@ -147,10 +140,10 @@ define(
 			 */
 			function clearAllMessages() {
 				clearDisplay();
-				messagePanel.removeAttr("class");
-				messageIcon.parent().removeAttr("class");
-				messageDisplay.removeAttr("class");
-				messageDisplay.empty();
+				m_utils.jQuerySelect("#messagePanel").removeAttr("class");
+				m_utils.jQuerySelect("#messageIcon").parent().removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").empty();
 				messages.length = 0;
 			}
 
@@ -162,8 +155,8 @@ define(
 			 *
 			 */
 			function clearDisplay() {
-				messageDisplay.removeAttr("class");
-				messageDisplay.empty();
+				m_utils.jQuerySelect("#messageDisplay").removeAttr("class");
+				m_utils.jQuerySelect("#messageDisplay").empty();
 			}
 
 			function Message(type, content) {

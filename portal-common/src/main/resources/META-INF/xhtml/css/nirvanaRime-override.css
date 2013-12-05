@@ -121,7 +121,7 @@
 	height: 20px;
 	line-height: 20px;
 	border-bottom: 1px solid #CCCCCC;
-	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	background: none;
 	white-space: nowrap;
 	clear: both;
 	margin: 5px 0;
@@ -131,7 +131,7 @@
 	height: 20px;
 	line-height: 20px;
 	border-bottom: 1px solid #CCCCCC;
-	background: url(../images/panelHeader-BG.png) bottom repeat-x;
+	background: none;
 	white-space: nowrap;
 	clear: both;
 	margin: 5px 0;

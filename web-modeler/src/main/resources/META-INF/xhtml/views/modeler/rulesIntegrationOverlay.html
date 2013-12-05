@@ -8,9 +8,9 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>Rules Integration Overlay</title>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<!-- <link rel="stylesheet" type="text/css"
+	href="../../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" /> -->
 <style>
 .parametersTable {
 	width: 600px;
@@ -24,8 +24,9 @@
 	width: 250px;
 }
 
-#ruleSetEditorDiv {
+.ruleSetEditorDivClass {
 	position: relative;
+	width: 700px;
 	height: 250px;
 }
 </style>
@@ -39,15 +40,15 @@
 					<div class="heading">Type Declarations</div></td>
 			</tr>
 			<tr>
-				<td><textarea id="typeDeclarationsTextarea" cols="80" rows="5"
-						class="code"></textarea></td>
+				<td><textarea id="typeDeclarationsTextarea"
+						class="code overlaysDefaultTextArea"></textarea></td>
 			</tr>
 			<tr>
 				<td>
 					<div class="heading">Rules Definitions</div></td>
 			</tr>
 			<tr>
-				<td><div id="ruleSetEditorDiv" /></td>
+				<td><div id="ruleSetEditorDiv" class="ruleSetEditorDivClass" /></td>
 			</tr>
 		</table>
 		<div id="parametersTab">
@@ -66,7 +67,7 @@
 											<table>
 												<tr>
 													<td><input id="deleteParameterDefinitionButton"
-														type="image" src="../../images/icons/delete.png"
+														type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 														title="Delete" alt="Delete" class="toolbarButton" />
 													</td>
 												</tr>
@@ -92,7 +93,7 @@
 							style="margin-top: 10px;">
 							<tr>
 								<td><input id="addParameterDefinitionButton" type="image"
-									src="../../images/icons/add.png" title="Add" alt="Add"
+									src="plugins/bpm-modeler/images/icons/add.png" title="Add" alt="Add"
 									class="toolbarButton" />
 								</td>
 								<td></td>
@@ -153,8 +154,8 @@
 						<div class="heading">DRL Code</div></td>
 				</tr>
 				<tr>
-					<td><textarea id="drlTextarea" cols="80" rows="15"
-							class="code"></textarea></td>
+					<td><textarea id="drlTextarea"
+							class="code overlaysDefaultTextArea"></textarea></td>
 				</tr>
 			</table>
 		</div>

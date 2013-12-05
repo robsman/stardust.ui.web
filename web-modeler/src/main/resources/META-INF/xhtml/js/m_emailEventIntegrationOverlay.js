@@ -48,47 +48,47 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='protocolSelect']")
+					m_utils.jQuerySelect("label[for='protocolSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.protocol"));
-					jQuery("label[for='mailServerInput']")
+					m_utils.jQuerySelect("label[for='mailServerInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.mailServer"));
-					jQuery("label[for='portInput']")
+					m_utils.jQuerySelect("label[for='portInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.port"));
-					jQuery("label[for='accountInput']")
+					m_utils.jQuerySelect("label[for='accountInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.account"));
-					jQuery("label[for='passwordInput']")
+					m_utils.jQuerySelect("label[for='passwordInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.password"));
-					jQuery("label[for='connectionTimeoutInput']")
+					m_utils.jQuerySelect("label[for='connectionTimeoutInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.connectionTimeout"));
-					jQuery("label[for='initialDelayInput']")
+					m_utils.jQuerySelect("label[for='initialDelayInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.initialDelay"));
-				/*	jQuery("label[for='pollingDelayInput']")
+				/*	m_utils.jQuerySelect("label[for='pollingDelayInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.pollingDelay")); */
-					jQuery("label[for='unseenInput']")
+					m_utils.jQuerySelect("label[for='unseenInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.unseen"));
-					jQuery("label[for='deleteInput']")
+					m_utils.jQuerySelect("label[for='deleteInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.delete"));
-					/*	jQuery("label[for='copyToInput']")
+					/*	m_utils.jQuerySelect("label[for='copyToInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.emailEvent.copyTo")); */
@@ -104,6 +104,61 @@ define(
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.parameters"));
 
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#emailEvent #parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+								.create({
+									scope : "emailEvent",
+									submitHandler : this,
+									supportsOrdering : true,
+									supportsDataMappings : true,
+									supportsDescriptors : false,
+									supportsDataTypeSelection : true,
+									supportsDocumentTypes : true,
+									hideEnumerations:true
+								});
+
+						if (this.propertiesTabs != null) {
+							this.propertiesTabs.tabs();
+						}
+					
+						this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+						
+						this.outputBodyAccessPointInput.change(
+										{
+											panel : this
+										},
+										function(event) {
+									if (!event.data.panel.validate()) {
+										return;
+									}
+
+									if (event.data.panel.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+														event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : null
+										}
+									}
+								});
+									} else {
+										/*event.data.panel
+												.submitParameterDefinitionsChanges(
+														"carnot:engine:camel::outBodyAccessPoint",
+														event.data.panel.outputBodyAccessPointInput
+																.val());*/
+								event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
+																.val()
+										}
+									}
+								});
+									}
+								});
+					
+					
 					this.protocolSelect = this.mapInputId("protocolSelect");
 					this.mailServerInput = this.mapInputId("mailServerInput");
 					this.portInput = this.mapInputId("portInput");
@@ -173,14 +228,14 @@ define(
 					}
 
 					if (this.passwordInput.val() != null) {
-						uri += "&password=" + this.passwordInput.val();
+						uri += "&amp;password=" + this.passwordInput.val();
 					}
 
 					
 					if(this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val()) != null){						
-					uri += "&connectionTimeout=";
+					uri += "&amp;connectionTimeout=";
 					uri += this.getIntervalInMilliseconds(
 							this.connectionTimeoutInput.val(),
 							this.connectionTimeoutUnitSelect.val());
@@ -189,7 +244,7 @@ define(
 					if(this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val()) != null){
-					uri += "&initialDelay=";
+					uri += "&amp;initialDelay=";
 					uri += this.getIntervalInMilliseconds(
 							this.initialDelayInput.val(),
 							this.initialDelayUnitSelect.val());
@@ -202,16 +257,16 @@ define(
 							this.pollingDelayUnitSelect.val());
 							*/
 										
-					uri += "&unseen=";					
+					uri += "&amp;unseen=";
 					uri += this.unseenInput.prop("checked");
-					uri += "&delete=";
+					uri += "&amp;delete=";
 					uri += this.deleteInput.prop("checked");
 
 				/*	if (this.copyToInput.prop("checked")) {
 						uri += "&copyTo=";
 						uri += this.copyToFolderInput.val();
 					} */
-					uri=uri.replace(/&/g, "&amp;");
+					//uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 				
@@ -232,11 +287,11 @@ define(
 							.getProperty("modeler.general.toBeDefined"));
 					this.portInput.val("30");
 
-					var parameterMappings = [];
+					/*var parameterMappings = [];
 
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
-									"message", "String"));
+									"message", "String"));*/
 					/*
 					 * parameterMappings.push(this
 					 * .createPrimitiveParameterMapping("Mail Body", "mailBody",
@@ -244,7 +299,7 @@ define(
 					 * .createPrimitiveParameterMapping( "Mail Attachments",
 					 * "mailAttachments", "String"));
 					 */
-
+					var parameterMappings = [];
 					this.submitOverlayChanges(parameterMappings);
 				};
 
@@ -252,6 +307,25 @@ define(
 				 * 
 				 */
 				EmailEventIntegrationOverlay.prototype.update = function() {
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "' selected>"
+							+ m_i18nUtils.getProperty("None") // TODO I18N
+							+ "</option>");
+
+					
+					
+					for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
+					{
+						var accessPoint = this.page.getEvent().parameterMappings[n];
+						//accessPoint.id=accessPoint.name;
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						this.outputBodyAccessPointInput
+								.append("<option value='" + accessPoint.id
+										+ "'>" + accessPoint.name + "</option>");
+					}
+					
+					
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -263,8 +337,8 @@ define(
 				//	route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 					var protocolAndRest = uri.split("://");
 
@@ -363,10 +437,19 @@ define(
 						} else if (name == "fetchSize") {
 						}*/
 					}
+					
+					this.outputBodyAccessPointInput
+					.val(this.page.getEvent().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.parameterDefinitionsPanel.setScopeModel(this.page
+							.getModel());
+					
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+					/*
 					this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
-							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);*/
 				};
 
 				/**
@@ -382,8 +465,7 @@ define(
 					this.page.propertiesPanel.errorMessages=[];
 																
 
-					if (this.mailServerInput.val() == null
-							|| this.mailServerInput.val() == "") {
+					if (m_utils.isEmptyString(this.mailServerInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Mail server name must not be empty.");
 						this.mailServerInput.addClass("error");
@@ -391,8 +473,7 @@ define(
 										
 					}
 
-					if (this.accountInput.val() == null
-							|| this.accountInput.val() == "") {
+					if (m_utils.isEmptyString(this.accountInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Mail account must not be empty.");
 						this.accountInput.addClass("error");
@@ -401,8 +482,7 @@ define(
 					}
 					
 
-					if (this.passwordInput.val() == null
-							|| this.passwordInput.val() == ""){
+					if (m_utils.isEmptyString(this.passwordInput.val())){
 						this.page.propertiesPanel.errorMessages
 								.push("Password must not be empty.");
 						this.passwordInput.addClass("error");
@@ -410,8 +490,7 @@ define(
 					
 					}
 					
-					if (this.portInput.val() == null
-							|| this.portInput.val() == "" || isNaN(this.portInput.val())) {
+					if (m_utils.isEmptyString(this.portInput.val()) || isNaN(this.portInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Port must be a Number.");
 						this.portInput.addClass("error");
@@ -419,8 +498,7 @@ define(
 					
 					}
 					
-					if (this.connectionTimeoutInput.val() == null
-							|| this.connectionTimeoutInput.val() == "" || isNaN(this.connectionTimeoutInput.val())) {
+					if (m_utils.isEmptyString(this.connectionTimeoutInput.val()) || isNaN(this.connectionTimeoutInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("ConnectionTimeout must be a Number.");
 						this.connectionTimeoutInput.addClass("error");
@@ -428,8 +506,7 @@ define(
 					
 					}
 					
-					if (this.initialDelayInput.val() == null
-							|| this.initialDelayInput.val() == "" || isNaN(this.initialDelayInput.val())) {
+					if (m_utils.isEmptyString(this.initialDelayInput.val()) || isNaN(this.initialDelayInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("InitialDelay must be a Number.");
 						this.initialDelayInput.addClass("error");

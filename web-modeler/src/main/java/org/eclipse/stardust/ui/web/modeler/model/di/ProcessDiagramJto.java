@@ -1,8 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model.di;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ProcessDiagramJto
 {
@@ -10,7 +9,7 @@ public class ProcessDiagramJto
    public String id;
    public String name;
 
-   public List<PoolSymbolJto> poolSymbols = newArrayList();
+   public Map<String, PoolSymbolJto> poolSymbols = new LinkedHashMap<String, PoolSymbolJto>();
 
-   public List<ConnectionSymbolJto> connections = newArrayList();
+   public Map<String, ConnectionSymbolJto> connections = new LinkedHashMap<String, ConnectionSymbolJto>();
 }

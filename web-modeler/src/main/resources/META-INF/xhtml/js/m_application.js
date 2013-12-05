@@ -74,5 +74,40 @@ define(
 
 					return null;
 				};
+
+				/**
+				 * 
+				 */
+				Application.prototype.getCompatibleActivityTaskType = function() {
+					if (this.applicationType === "webservice"
+						|| ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
+								&& (this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "restServiceOverlay"
+										|| this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "mailIntegrationOverlay"))) {
+					return m_constants.SERVICE_TASK_TYPE;
+					}
+					if (this.interactive) {
+						return m_constants.USER_TASK_TYPE;
+					}
+					if (this.applicationType === "messageTransformationBean"
+							|| ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
+								&& (this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "genericEndpointOverlay"
+										|| this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "scriptingIntegrationOverlay"))) {
+						return m_constants.SCRIPT_TASK_TYPE;
+					}
+					if ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
+							&& this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "rulesIntegrationOverlay") {
+						return m_constants.RULE_TASK_TYPE;
+					}
+					if (this.applicationType == "jms") {
+						return m_constants.RECEIVE_TASK_TYPE;
+					}
+					if (this.applicationType == "mailBean") {
+						return m_constants.SEND_TASK_TYPE;
+					}
+					
+					// TODO - check if setting task type to service task if none of the
+					// above conditions are satisfied
+					return m_constants.SERVICE_TASK_TYPE;
+				};
 			}
 		});

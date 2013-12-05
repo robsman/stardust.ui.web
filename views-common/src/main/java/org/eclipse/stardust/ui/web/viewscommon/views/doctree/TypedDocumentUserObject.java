@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 
 
@@ -55,7 +56,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
 
    /**
     * custom constructor initialing document user object
-    * 
+    *
     * @param defaultMutableTreeNode
     * @param document
     */
@@ -120,8 +121,9 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    {
       DownloadPopupDialog downloadPopupDialog = DownloadPopupDialog.getCurrent();
       Document document = getDocument();
-      OutputResource resource = new OutputResource(document.getName(), document.getId(), getMType().toString(),
-            downloadPopupDialog, getDMS(), true);
+      OutputResource resource = new OutputResource(new DefualtResourceDataProvider(
+            document.getName(), document.getId(), getMType().toString(), getDMS(), true),
+            downloadPopupDialog);
       downloadPopupDialog.open(resource);
    }
 
@@ -217,7 +219,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
             }
          }
       };
-      
+
       if (null == typedDocument.getDocument())
       {
          documentUploadHelper.initializeDocumentUploadDialog();
@@ -234,7 +236,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
 
    /**
     * save document
-    * 
+    *
     * @throws DocumentManagementServiceException
     * @throws IOException
     */
@@ -351,7 +353,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#createNote()
     */
    public void createNote()

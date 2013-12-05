@@ -36,7 +36,7 @@
    <target name="initOnProduction" unless="setup.development">
       <echo message="Performing a production build ..." />
 
-      <property name="javac.debuglevel" value="lines,source" />
+      <property name="javac.debuglevel" value="lines,source,vars" />
    </target>
 
    <target name="init" depends="initOnDevelopment, initOnProduction">

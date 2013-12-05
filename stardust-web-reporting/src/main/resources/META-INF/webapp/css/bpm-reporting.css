@@ -1,0 +1,309 @@
+body {
+	background-color: white;
+	padding: 0px 0px 0px 0px;
+	margin: 0px;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	line-height: 1.5;
+}
+
+p,li,label,table {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	line-height: 18px;
+	color: #333333;
+	font-weight: normal;
+}
+
+select {
+	margin-left: 0px;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	min-width: 100px;
+	height: 21px;
+	color: #4d4d4d;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	/*background-image: -webkit-linear-gradient(top, #ffffff, #f4f4f4);
+	background-image: -moz-linear-gradient(top, #ffffff, #f4f4f4);
+	background-image: -ms-linear-gradient(top, #ffffff, #f4f4f4);
+	background-image: -o-linear-gradient(top, #ffffff, #f4f4f4);
+	border: 1px solid #9c9c9c; Gradient #C9C9C9 - #9C9C9C*/
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+}
+
+input {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	color: #4d4d4d;
+	height: 21px;
+	margin-left: 0px;
+	padding-left: 2px;
+	border: 1px solid #9b9b9b;
+	/* Gradient #9B9B9B - #C8C8C8 */
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	border: 1px solid #9b9b9b;
+}
+
+input[type="text"] {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	padding-left: 5px;
+	min-width: 100px;
+}
+
+input[type="text"]:focus {
+	border: 1px solid #6699ff;
+}
+
+input[type="text"][disabled] {
+	background-color: #f0f0f0;
+}
+
+input[type="number"] {
+	text-align: right;
+}
+
+input[type="password"] {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	padding-left: 5px;
+	min-width: 100px;
+}
+
+input[type=button] {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	height: 21px;
+	color: #4d4d4d;
+	background-color: #f2f2f2;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff),
+		to(#f2f2f2));
+	background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -ms-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+	border: 1px solid #9B9B9B; /*Gradient #CBCBCB - #9B9B9B*/
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+}
+
+input[type=image] {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	/*height: 21px;*/
+	color: #4d4d4d;
+	background-color: #f2f2f2;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff),
+		to(#f2f2f2));
+	background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -ms-linear-gradient(top, #ffffff, #f2f2f2);
+	background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+	border: 1px solid #9B9B9B; /*Gradient #CBCBCB - #9B9B9B*/
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	padding: 2px;
+}
+
+input[type=image]:focus {
+	
+}
+
+input[type=text].rightAligned {
+	text-align: right;
+	padding-right: 3px;
+}
+
+textarea {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+}
+
+a {
+	color: #17375e;
+}
+
+a {
+	font-weight: normal;
+	color: #397d9f;
+	cursor: pointer;
+}
+
+a:hover,a:active {
+	color: #FF0000;
+	cursor: pointer;
+}
+
+h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #397d9f;
+	line-height: 20px;
+}
+
+h2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #888888;
+	line-height: 20px;
+}
+
+h3 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #888888;
+	line-height: 20px;
+}
+
+img {
+	margin: 0px;
+	padding: 0px;
+}
+
+.invisible {
+	display: none;
+}
+
+.heading {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #2f6871;
+	line-height: 20px;
+	text-decoration: none;
+}
+
+div.heading {
+	margin-top: 10px;
+	margin-bottom: 5px;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+div.left {
+	float: left;
+}
+
+div.content {
+	text-align: center;
+	width: 800px;
+	background-color: #ffffff;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+div.right {
+	float: right;
+	text-align: right;
+	border: 1px yellow solid;
+	background-color: black;
+}
+
+.section {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 18px;
+	color: #666666;
+	font-weight: normal;
+}
+
+.dialog-content form {
+	font-size: 11px !important;
+}
+
+.borderedImage {
+	border: 1px solid white;
+}
+
+.dataTableFrame {
+	background-color: #F2F2F2;
+	border: 4px solid #E8E8E8;
+}
+
+.dataTableControls {
+	background-color: #F2F2F2;
+	border-bottom: 1px Solid #E7E7E7;
+	margin-bottom: 5px;
+}
+
+.dataTable {
+	border-bottom: 1px Solid #999999;
+	font-family: Arial;
+	color: #1B545D;
+}
+
+.dataTable thead {
+	margin-top: 10px;
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -moz-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -ms-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -o-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
+}
+
+.dataTable thead th {
+	border-bottom: 1px solid #999999;
+	font-weight: normal;
+}
+
+.dataTable tbody td {
+	border-bottom: 1px solid #AFD7ED;
+}
+
+/* Embedded Table */
+.embeddedTable {
+	border: 1px solid #AFD7ED;
+}
+
+.embeddedTable tr.selected {
+	background-color: #EAF1F5;
+}
+
+.embeddedTable td {
+	padding-left: 6px;
+	padding-right: 6px;
+	border-top: 1px solid #AFD7ED;
+}
+
+.embeddedTable thead td {
+	color: #AFD7ED;
+	border: none;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.embeddedTable td input {
+	border: none;
+}
+
+.embeddedTable td select {
+	border: none;
+}
+
+.smallLink {
+	font-size: 9px;
+	text-decoration: none;
+	color: #AFD7ED;
+}
+
+/* JQuery UI Overrides */
+.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
+	{
+	font-size: 11px !important;
+	font-weight: normal !important;
+	font-family: Helvetica, Arial, sans-serif !important;
+}
+
+/*ipp-Ace styling for our directive*/
+[ipp-Ace] {
+	width:500px;
+	height:80px;"
+	border:solid 1px #555555;
+}

@@ -30,7 +30,6 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
@@ -45,7 +44,6 @@ import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssu
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
-import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.client.common.ClientContext;
 import org.eclipse.stardust.ui.common.form.jsf.DocumentInputController;
 import org.eclipse.stardust.ui.common.form.jsf.JsfStructureContainer;
@@ -67,6 +65,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.message.MessageDialogHandler;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.SessionRendererHelper;
@@ -101,9 +100,10 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -115,7 +115,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.JsfBackingBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QualityAssuranceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -137,7 +136,7 @@ import com.icesoft.faces.context.effects.JavascriptContext;
  */
 public class ActivityDetailsBean extends UIComponentBean
       implements ActivityEventObserver, NoteEventObserver, DocumentEventObserver, ViewEventHandler, DisposableBean,
-      Activator
+      Activator, MessageDialogHandler
 {
    private static final long serialVersionUID = 1L;
 
@@ -152,7 +151,11 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       COMPLETE,
       SUSPEND,
-      SAVE
+      SAVE,
+      SUSPEND_TO_USER_WORKLIST,
+      SAVE_TO_USER_WORKLIST,
+      SUSPEND_TO_DEFAULT_PERFORMER,
+      SAVE_TO_DEFAULT_PERFORMER
    }
 
    private String title;
@@ -208,6 +211,8 @@ public class ActivityDetailsBean extends UIComponentBean
    private boolean notesPopupOpened = false;
    private boolean linkedProcessPopupOpened = false;
    private boolean switchProcessPopupOpened = false;
+   private boolean suspendActivityPopupOpened = false;
+   private boolean saveActivityPopupOpened = false;
    private boolean casePopupOpened = false;
    private boolean supportsProcessDocuments = false;
    private QualityAssuranceCodesBean qaCodeIframeBean;
@@ -397,6 +402,8 @@ public class ActivityDetailsBean extends UIComponentBean
          if (StringUtils.isNotEmpty(iconPath))
          {
             thisView.setIcon(iconPath);
+            // FOR PANAMA
+            PortalApplication.getInstance().updateViewIconClass(thisView);
          }
          
          hasCreateCasePermission = AuthorizationUtils.canCreateCase();
@@ -618,6 +625,8 @@ public class ActivityDetailsBean extends UIComponentBean
          closeLinkedProcessIframePopup();
          closeCaseIframePopup();
          qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         closeSuspendActivityIframePopup();
+         closeSaveActivityIframePopup();
          break;
       case CLOSED:
          closeProcessAttachmentsIframePopup();
@@ -626,6 +635,8 @@ public class ActivityDetailsBean extends UIComponentBean
          closeLinkedProcessIframePopup();
          closeCaseIframePopup();
          qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         closeSuspendActivityIframePopup();
+         closeSaveActivityIframePopup();
          break;
       }
    }
@@ -695,6 +706,10 @@ public class ActivityDetailsBean extends UIComponentBean
 
          // At the end the focus view should be this view
          PortalApplication.getInstance().setFocusView(view);
+         // Auto - operations(Notes, documents) change the currentView icon,label on UI,
+         // reset for AI active view
+         PortalApplication.getInstance().updateViewIconClass(view);
+         PortalApplication.getInstance().updateViewTitle(view);
          
          /*
           * If any message pop-up is set to be opened up, then fire a de-activate view
@@ -783,8 +798,6 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             docInputCtrl.closeDocument();
          }
-
-         renderJsfActivitySession();
       }
    }
 
@@ -836,6 +849,25 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       }
       return null;
+   }
+
+   /**
+    * @return
+    */
+   private boolean isJSFActivity()
+   {
+      Activity activity = activityInstance.getActivity();
+      IActivityInteractionController interactionController = getInteractionController(activity);
+      if (null != interactionController)
+      {
+         String contextId = interactionController.getContextId(activityInstance);
+         if (PredefinedConstants.JSF_CONTEXT.equals(contextId))
+         {
+            return true;
+         }
+      }
+      
+      return false;
    }
 
    /**
@@ -918,7 +950,7 @@ public class ActivityDetailsBean extends UIComponentBean
          // Hence for now do both!
 
          ViewEventAwareInteractionController veaic = ((ViewEventAwareInteractionController) interactionController);
-         veaic.handleEvent(activityInstance, event);
+         //veaic.handleEvent(activityInstance, event);
          PortalApplication.getInstance().addEventScript(
                veaic.getEventScript(activityInstance, event));
       }
@@ -1040,7 +1072,6 @@ public class ActivityDetailsBean extends UIComponentBean
       params.put("noteIndex", noteIndex);
       openNotesView(params);
       closeNotesIframePopupSelf();
-      renderSession();
    }
 
    /**
@@ -1100,6 +1131,8 @@ public class ActivityDetailsBean extends UIComponentBean
                ActivityDetailsBean.this.interaction = null;
                skipViewEvents = true;
                PortalApplication.getInstance().closeView(thisView, false);
+               // When view close is auto-operation, sync view is required to update focus view
+               PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                skipViewEvents = false;
             }
             else if (eventType.equals(EventType.CANCEL))
@@ -1189,6 +1222,24 @@ public class ActivityDetailsBean extends UIComponentBean
    }
 
    /**
+    * @param event
+    */
+   public void suspendToUserWorklistAction(ActionEvent event)
+   {
+      closeSuspendActivityIframePopup();
+      processActivityInstance(WorkflowAction.SUSPEND_TO_USER_WORKLIST);
+   }
+
+   /**
+    * @param event
+    */
+   public void suspendToDefaultPerformerAction(ActionEvent event)
+   {
+      closeSuspendActivityIframePopup();
+      processActivityInstance(WorkflowAction.SUSPEND_TO_DEFAULT_PERFORMER);
+   }
+
+   /**
     * 
     */
    public void suspendCurrentActivity()
@@ -1202,6 +1253,26 @@ public class ActivityDetailsBean extends UIComponentBean
    public void saveAction(ActionEvent event)
    {
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE);
+   }
+
+   /**
+    * @param event
+    */
+   public void saveToUserWorklistAction(ActionEvent event)
+   {
+      closeSaveActivityIframePopup();
+      showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_USER_WORKLIST);
+      renderSession();
+   }
+
+   /**
+    * @param event
+    */
+   public void saveToDefaultPerformerAction(ActionEvent event)
+   {
+      closeSaveActivityIframePopup();
+      showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_DEFAULT_PERFORMER);
+      renderSession();
    }
 
    public void suspendAndSaveCurrentActivity()
@@ -1250,6 +1321,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   skipViewEvents = true;
                   // TODO move to controller?
                   PortalApplication.getInstance().closeView(thisView, true);
+                  // When view close is auto-operation, sync view is required to update focus view
+                  PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                   skipViewEvents = false;
                }
             }
@@ -1339,6 +1412,7 @@ public class ActivityDetailsBean extends UIComponentBean
          skipViewEvents = true;
          // TODO move to controller?
          PortalApplication.getInstance().closeView(thisView, true);
+         PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
          skipViewEvents = false;
       }
    }
@@ -1381,6 +1455,224 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
    
+   public boolean isSaveActivityPopupOpened()
+   {
+      return saveActivityPopupOpened;
+   }
+
+   /**
+    *
+    */
+   public void toggleSaveActivityIframePopup()
+   {
+      if (saveActivityPopupOpened)
+      {
+         closeSaveActivityIframePopup();
+      }
+      else
+      {
+         if (isProcessAttachmentsPopupOpened())
+         {
+            closeProcessAttachmentsIframePopup();
+         }
+         if (isNotesPopupOpened())
+         {
+            closeNotesIframePopup();
+         }
+         if (isLinkedProcessPopupOpened())
+         {
+            closeLinkedProcessIframePopup();
+         }
+         if (isSwitchProcessPopupOpened())
+         {
+            closeSwitchProcessIframePopup();
+         }
+         if(isCasePopupOpened())
+         {
+            closeCaseIframePopup();
+         }
+         if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
+         {
+            qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         openSaveActivityIframePopup();
+      }
+   }
+
+   /**
+    * closes the popup from portal application like completing activity
+    */
+   public void closeSaveActivityIframePopup()
+   {
+      if (saveActivityPopupOpened)
+      {
+         String iFrameId = getSaveActivityIframePopupId();
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+
+         PortalApplication.getInstance().addEventScript(script);
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+         saveActivityPopupOpened = false;
+      }
+   }
+
+   /**
+    *
+    */
+   public void openSaveActivityIframePopup()
+   {
+      String iFrameId = getSaveActivityIframePopupId();
+      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+      + "/plugins/processportal/toolbar/suspendAndSaveIframePopup.iface?random=" + System.currentTimeMillis() + "'";
+
+      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
+            + getSwitchProcessIframePopupArgs() + ");";
+      PortalApplication.getInstance().addEventScript(script);
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+      saveActivityPopupOpened = true;
+   }
+
+   /**
+    * @return
+    */
+   public String getSaveActivityIframePopupArgs()
+   {
+      String advanceArgs =
+         "{anchorId:'ippSaveActivityAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+      return advanceArgs;
+   }
+
+   /**
+    * @return
+    */
+   public String getSaveActivityIframePopupId()
+   {
+      try
+      {
+         String iFrameId = "'SAS" + getActivityInstance().getOID() + "'";
+         return iFrameId;
+      }
+      catch (Exception e)
+      {
+         return "''"; // Consume Exception
+      }
+   }
+
+   public boolean isSuspendActivityPopupOpened()
+   {
+      return suspendActivityPopupOpened;
+   }
+
+   /**
+    *
+    */
+   public void toggleSuspendActivityIframePopup()
+   {
+      if (suspendActivityPopupOpened)
+      {
+         closeSuspendActivityIframePopup();
+      }
+      else
+      {
+         if (isProcessAttachmentsPopupOpened())
+         {
+            closeProcessAttachmentsIframePopup();
+         }
+         if (isNotesPopupOpened())
+         {
+            closeNotesIframePopup();
+         }
+         if (isLinkedProcessPopupOpened())
+         {
+            closeLinkedProcessIframePopup();
+         }
+         if (isSwitchProcessPopupOpened())
+         {
+            closeSwitchProcessIframePopup();
+         }
+         if(isCasePopupOpened())
+         {
+            closeCaseIframePopup();
+         }
+         if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
+         {
+            qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
+         openSuspendActivityIframePopup();
+      }
+   }
+
+   /**
+    * closes the popup from portal application like completing activity
+    */
+   public void closeSuspendActivityIframePopup()
+   {
+      if (suspendActivityPopupOpened)
+      {
+         String iFrameId = getSuspendActivityIframePopupId();
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+
+         PortalApplication.getInstance().addEventScript(script);
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+         suspendActivityPopupOpened = false;
+      }
+   }
+
+   /**
+    *
+    */
+   public void openSuspendActivityIframePopup()
+   {
+      String iFrameId = getSuspendActivityIframePopupId();
+      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+      + "/plugins/processportal/toolbar/suspendActivityIframePopup.iface?random=" + System.currentTimeMillis() + "'";
+
+      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
+            + getSwitchProcessIframePopupArgs() + ");";
+      PortalApplication.getInstance().addEventScript(script);
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+
+      suspendActivityPopupOpened = true;
+   }
+
+   /**
+    * @return
+    */
+   public String getSuspendActivityIframePopupArgs()
+   {
+      String advanceArgs =
+         "{anchorId:'ippSuspendAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+      return advanceArgs;
+   }
+
+   /**
+    * @return
+    */
+   public String getSuspendActivityIframePopupId()
+   {
+      try
+      {
+         String iFrameId = "'SA" + getActivityInstance().getOID() + "'";
+         return iFrameId;
+      }
+      catch (Exception e)
+      {
+         return "''"; // Consume Exception
+      }
+   }
+
    /**
     * 
     */
@@ -1411,6 +1703,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if(isCasePopupOpened())
          {
             closeCaseIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          qaCodeIframeBean.openQualityAssuranceCodesIframePopup();
       }
@@ -1507,7 +1807,19 @@ public class ActivityDetailsBean extends UIComponentBean
          
          skipViewEvents = true;
          int viewIndex = PortalApplication.getInstance().getViewIndex(getThisView());
-         PortalApplication.getInstance().closeView(thisView, true);
+         if (completionLog.isDelayViewClose())
+         {
+            //Current view will close on Popup Close
+            MessageDialog.getInstance().setCallbackHandler(this);
+         }
+         else
+         {
+            PortalApplication.getInstance().closeView(thisView, true);
+            if(null == nextActivityObject)
+            {
+               PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");               
+            }
+         }
 
          if (completionLog.isSuccess())
          {
@@ -1565,6 +1877,46 @@ public class ActivityDetailsBean extends UIComponentBean
             params = getPinViewStatusParam();
 
             suspendAndSaveCurrentActivity();
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SUSPEND_TO_USER_WORKLIST:
+            params = getPinViewStatusParam();
+
+            suspendCurrentActivity(true, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SAVE_TO_USER_WORKLIST:
+            params = getPinViewStatusParam();
+
+            suspendAndSaveCurrentActivity(true, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SUSPEND_TO_DEFAULT_PERFORMER:
+            params = getPinViewStatusParam();
+
+            suspendCurrentActivity(false, true, false);
+
+            if(assemblyLineActivity && assemblyLinePushService)
+            {
+               worklistsBean.openNextAssemblyLineActivity(params);
+            }
+            break;
+         case SAVE_TO_DEFAULT_PERFORMER:
+            params = getPinViewStatusParam();
+
+            suspendAndSaveCurrentActivity(false, true, false);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
@@ -1819,6 +2171,12 @@ public class ActivityDetailsBean extends UIComponentBean
          
          if (null != docController && null != docController.getValue())
          {
+            if (!docController.isReadable())
+            {
+               singleDocumentCase = false;
+               return;
+            }
+            
             singleDocumentDatgaMapping = docController.getDataMapping();
    
             IDocumentContentInfo documentContentInfo = docController.getDocumentContentInfo();
@@ -1976,27 +2334,13 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       if (activityInstance != null)
       {
-         processAttachmentsFolderPath = DMSHelper
-               .getProcessAttachmentsFolderPath(processInstance);
+         processAttachmentsFolderPath = DMSHelper.getProcessAttachmentsFolderPath(processInstance);
 
-         supportsProcessAttachments = DMSHelper
-               .existsProcessAttachmentsDataPath(processInstance);
+         supportsProcessAttachments = DMSHelper.existsProcessAttachmentsDataPath(processInstance);
          if (supportsProcessAttachments)
          {
-            WorkflowService ws = ServiceFactoryUtils
-                  .getWorkflowService();
-
-            processAttachments = null;
-            Object o = ws.getInDataPath(processInstance.getOID(),
-                  DmsConstants.PATH_ID_ATTACHMENTS);
-
-            DataDetails data = (DataDetails) ModelCache.findModelCache().getModel(
-                  processInstance.getModelOID())
-                  .getData(DmsConstants.PATH_ID_ATTACHMENTS);
-            if (DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(data.getTypeId()))
-            {
-               refreshProcessAttachments((List<Document>) o);
-            }
+            processAttachments = DocumentMgmtUtility.getProcesInstanceDocuments(processInstance);
+            refreshProcessAttachments(processAttachments);
          }
       }
    }
@@ -2089,6 +2433,14 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
          }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
          openProcessAttachmentsIframePopup();
       }
    }
@@ -2162,9 +2514,9 @@ public class ActivityDetailsBean extends UIComponentBean
       if (processAttachmentsPopupOpened)
       {
          String iFrameId = getProcessAttachmentsIframePopupId();
-         String script = "parent.ippPortalMain.InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
+         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
    
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+         PortalApplication.getInstance().addEventScript(script);
          
          processAttachmentsPopupOpened = false;
       }
@@ -2208,6 +2560,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          openNotesIframePopup();
       }
@@ -2328,6 +2688,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          openLinkedProcessIframePopup();
       }
@@ -2457,6 +2825,14 @@ public class ActivityDetailsBean extends UIComponentBean
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
          }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
+         }
          openSwitchProcessIframePopup();
       }
    }
@@ -2502,7 +2878,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSwitchAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    
@@ -2561,6 +2937,14 @@ public class ActivityDetailsBean extends UIComponentBean
          if (qaCodeIframeBean.isQualityAssuranceCodesPopupOpened())
          {
             qaCodeIframeBean.closeQualityAssuranceCodesIframePopup();
+         }
+         if (isSuspendActivityPopupOpened())
+         {
+            closeSuspendActivityIframePopup();
+         }
+         if (isSaveActivityPopupOpened())
+         {
+            closeSaveActivityIframePopup();
          }
          openCaseIframePopup();
       }
@@ -2639,7 +3023,6 @@ public class ActivityDetailsBean extends UIComponentBean
       createCaseDialog.setSourceProcessInstances(selectedProcesses);
       createCaseDialog.openPopup();
       closeCaseIframePopup();
-      renderSession();
 
    }
    
@@ -2663,8 +3046,6 @@ public class ActivityDetailsBean extends UIComponentBean
       attachToCaseDialog.setSourceProcessInstances(selectedProcesses);
       attachToCaseDialog.openPopup();
       closeCaseIframePopup();
-
-      renderSession();
    }
    
    /**
@@ -2691,8 +3072,6 @@ public class ActivityDetailsBean extends UIComponentBean
             }
          }
       });
-
-      renderSession();
    }
    
    /**
@@ -2718,7 +3097,6 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       });
 
-      renderSession();
    }
    
    public boolean isEnableJoinProcess()
@@ -2742,7 +3120,10 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void renderSession()
    {
-      PortalApplication.getInstance().renderPortalSession();
+      if (!isJSFActivity() && thisView.getViewState() != ViewState.CLOSED)
+      {
+         PortalApplication.getInstance().renderPortalSession();
+      }
    }
 
    public static String getDocumentIcon(String fileName, String contentType)
@@ -3071,4 +3452,11 @@ public class ActivityDetailsBean extends UIComponentBean
          this.doNotShowMsgAgain = doNotShowMsgAgain;
       }
    }
+   
+   public boolean accept()
+   {
+      PortalApplication.getInstance().closeView(thisView, true);
+      return true;
+   }
+
 }

@@ -282,13 +282,11 @@ public class PdfDocumentState
             int max = getDocumentLength();
             for (int i = 0; i < max; i++)
             {
-               page = pdfDocument.getPageTree().getPage(i, this);
+               page = pdfDocument.getPageTree().getPage(i);
                if (page.isInitiated())
                {
                   page.getLibrary().disposeFontResources();
-                  page.reduceMemory();
                }
-               pdfDocument.getPageTree().releasePage(page, this);
             }
          }
       }

@@ -32,6 +32,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
 
@@ -62,7 +63,7 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       if (!StringUtils.isEmpty(searchValue))
       {
          String name = searchValue.replaceAll("\\*", "%") + "%";
-         String nameFirstLetterCaseChanged = alternateFirstLetter(name);
+         String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(name);
          FilterOrTerm or = userQuery.getFilter().addOrTerm();
          or.add(UserQuery.LAST_NAME.like(name));
          or.add(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
@@ -171,25 +172,5 @@ public class ParticipantsDataProvider implements IAutocompleteDataProvider
       }
       
       return selectParticipants;
-   }
-   
-   /**
-    * Changes the case of the initial letter of the given string.
-    * 
-    * @param field
-    * @return
-    */
-   private static String alternateFirstLetter(String field)
-   {
-      String firstLetter = field.substring(0, 1);
-      if (firstLetter.compareTo(field.substring(0, 1).toLowerCase()) == 0)
-      {
-         firstLetter = firstLetter.toUpperCase();
-      }
-      else
-      {
-         firstLetter = firstLetter.toLowerCase();
-      }
-      return firstLetter + field.substring(1);
    }
 }

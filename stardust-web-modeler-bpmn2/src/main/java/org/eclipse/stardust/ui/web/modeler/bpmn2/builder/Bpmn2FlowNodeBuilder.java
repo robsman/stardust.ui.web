@@ -60,6 +60,14 @@ public class Bpmn2FlowNodeBuilder
       {
          activity = bpmn2Factory().createUserTask();
       }
+      else if (ModelerConstants.TASK_ACTIVITY.equals(jto.activityType))
+      {
+         activity = bpmn2Factory().createManualTask();
+      }
+      else if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(jto.activityType))
+      {
+         activity = bpmn2Factory().createSubProcess();
+      }
       else
       {
          throw new IllegalArgumentException("Unsupported activity type: " + jto.activityType);

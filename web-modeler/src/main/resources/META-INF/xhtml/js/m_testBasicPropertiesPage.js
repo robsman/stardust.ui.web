@@ -57,8 +57,7 @@ define(
 					this.propertiesPanel.clearErrorMessages();
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.propertiesPanel.errorMessages
 								.push("Test symbol name must not be empty.");
 						this.nameInput.addClass("error");
@@ -75,8 +74,8 @@ define(
 			 * 
 			 */
 			function i18nStaticLabels() {
-				jQuery("#inputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.inputData"));
-				jQuery("#outputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.outputData"));
+				m_utils.jQuerySelect("#inputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.inputData"));
+				m_utils.jQuerySelect("#outputData").html(m_i18nUtils.getProperty("modeller.element.properties.testProperties.outputData"));
 			}
 			;
 		});

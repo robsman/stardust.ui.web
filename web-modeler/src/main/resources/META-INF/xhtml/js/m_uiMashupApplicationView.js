@@ -10,20 +10,23 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
+				"bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_session",
+				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce",
-				"bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_markupGenerator" ],
 		function(m_utils, m_constants, m_urlUtils, m_session, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_codeEditorAce, m_i18nUtils,
-				m_markupGenerator) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel,
+				m_codeEditorAce, m_i18nUtils, m_markupGenerator) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var view = new UiMashupApplicationView();
 					i18uimashupproperties();
 					// TODO Unregister!
@@ -32,80 +35,111 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
-
+					m_utils.hideWaitCursor();
 				}
 			};
 
+			var editorToolbarGroups = [ {
+				name : 'clipboard',
+				groups : [ 'clipboard', 'undo' ]
+			}, {
+				name : 'editing',
+				groups : [ 'find', 'selection', 'spellchecker' ]
+			}, {
+				name : 'links'
+			}, {
+				name : 'insert'
+			}, {
+				name : 'forms'
+			}, {
+				name : 'tools'
+			}, {
+				name : 'document',
+				groups : [ 'mode', 'document', 'doctools' ]
+			}, {
+				name : 'others'
+			}, '/', {
+				name : 'basicstyles',
+				groups : [ 'basicstyles', 'cleanup' ]
+			}, {
+				name : 'paragraph',
+				groups : [ 'list', 'indent', 'blocks', 'align', 'bidi' ]
+			}, {
+				name : 'styles'
+			}, {
+				name : 'colors'
+			} ];
+
 			function i18uimashupproperties() {
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#applicationName")
+				m_utils.jQuerySelect("#applicationName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.applicationName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				jQuery("#configuration")
+				m_utils.jQuerySelect("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
-				$("label[for='viaUriInput']")
+				m_utils.jQuerySelect("label[for='viaUriInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.viaUri"));
-				$("label[for='embeddedInput']")
+				m_utils.jQuerySelect("label[for='embeddedInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded"));
-				$("label[for='markupTexarea']")
+				m_utils.jQuerySelect("label[for='markupTexarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.markup"));
-				jQuery("#url")
+				m_utils.jQuerySelect("label[for='urlInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.url"));
-				jQuery("#paramDef")
+				m_utils.jQuerySelect("#paramDef")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.parameterDefinitions"));
-				jQuery("#name")
+				m_utils.jQuerySelect("#name")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
-				jQuery("#direction")
+				m_utils.jQuerySelect("#direction")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
-				jQuery("#dataType")
+				m_utils.jQuerySelect("#dataType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.datatType"));
-				jQuery("#primitiveType")
+				m_utils.jQuerySelect("#primitiveType")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				jQuery("#deleteParameterDefinitionButton")
+				m_utils.jQuerySelect("#deleteParameterDefinitionButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
 
-				var primitiveDataTypeSelect = jQuery("#primitiveDataTypeSelect");
+				var primitiveDataTypeSelect = m_utils.jQuerySelect("#primitiveDataTypeSelect");
 				var selectdata = m_i18nUtils
 						.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
 				primitiveDataTypeSelect.append("<option value=\"String\">"
@@ -142,17 +176,23 @@ define(
 				primitiveDataTypeSelect.append("<option value=\"Calendar\">"
 						+ selectdata + "</option>");
 
-				$("label[for='primitiveDataTypeSelect']")
+				m_utils.jQuerySelect("label[for='primitiveDataTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
 
-				var parameterDefinitionDirectionSelect = jQuery("#parameterDefinitionDirectionSelect");
+				var parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parameterDefinitionDirectionSelect");
 
 				selectdata = m_i18nUtils
 						.getProperty("modeler.element.properties.commonProperties.in");
 				parameterDefinitionDirectionSelect
 						.append("<option value=\"IN\">" + selectdata
+								+ "</option>");
+
+				selectdata = m_i18nUtils
+						.getProperty("modeler.element.properties.commonProperties.inout");
+				parameterDefinitionDirectionSelect
+						.append("<option value=\"INOUT\">" + selectdata
 								+ "</option>");
 
 				selectdata = m_i18nUtils
@@ -178,16 +218,23 @@ define(
 					this.id = "uiMashupApplicationView";
 					this.currentAccessPoint = null;
 
-					this.view = jQuery("#uiMashupApplicationView");
-					this.viaUriInput = jQuery("#viaUriInput");
-					this.embeddedInput = jQuery("#embeddedInput");
-					this.viaUriRow = jQuery("#viaUriRow");
-					this.embeddedRow = jQuery("#embeddedRow");
-					this.generateMarkupForAngularLink = jQuery("#generateMarkupForAngularLink");
-					this.generateMarkupForJQueryLink = jQuery("#generateMarkupForJQueryLink");
-					this.markupTextarea = jQuery("#markupTextareaDiv");
-					this.urlInput = jQuery("#urlInput");
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.viaUriInput = m_utils.jQuerySelect("#viaUriInput");
+					this.embeddedInput = m_utils.jQuerySelect("#embeddedInput");
+					this.viaUriRow = m_utils.jQuerySelect("#viaUriRow");
+					this.embeddedRow = m_utils.jQuerySelect("#embeddedRow");
+					this.generateMarkupForAngularLink = m_utils.jQuerySelect("#generateMarkupForAngularLink");
+					this.urlInput = m_utils.jQuerySelect("#urlInput");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.numberOfLabelInputPairsInput = m_utils.jQuerySelect("#numberOfLabelInputPairsInput");
+					this.generateCompleteButtonInput = m_utils.jQuerySelect("#generateCompleteButtonInput");
+					this.generateSuspendButtonInput = m_utils.jQuerySelect("#generateSuspendButtonInput");
+					this.generateAbortButtonInput = m_utils.jQuerySelect("#generateAbortButtonInput");
+					this.generateQaPassButtonInput = m_utils.jQuerySelect("#generateQaPassButtonInput");
+					this.generateQaFailButtonInput = m_utils.jQuerySelect("#generateQaFailButtonInput");
+					this.generateTabsForFirstLevelInput = m_utils.jQuerySelect("#generateTabsForFirstLevelInput");
+					this.generateTabsForFirstLevelTablesInput = m_utils.jQuerySelect("#generateTabsForFirstLevelTablesInput");
+
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "uiMashupApplicationView",
@@ -195,22 +242,38 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true,								
+								supportsDataTypeSelection : true,
 								tableWidth : "500px",
 								directionColumnWidth : "50px",
 								nameColumnWidth : "250px",
 								typeColumnWidth : "200px"
 							});
 
+					var rdmNo = Math.floor((Math.random()*100000) + 1);
+					this.editorAnchor = m_utils.jQuerySelect("#markupTextareaDiv").get(0);
+					this.editorAnchor.id = "markupTextarea" + rdmNo + "Div";
+					this.editorTextArea = m_utils.jQuerySelect("#markupTextarea").get(0);
+					this.editorTextArea.id = "markupTextarea" + rdmNo;
 					var self = this;
-					this.embeddedHTMLEditor = m_codeEditorAce.getCodeEditor("markupTextareaDiv");
-					this.embeddedHTMLEditor.getEditor().on('blur', function(e){
-						if (!self.validate()) {
-							return;
-						}
-						m_utils.debug("Code editor blur.");
-						self.submitEmbeddedModeChanges();
-					});
+
+					// TODO - the timout is only needed of Chrome and needs to
+					// be analyzed and removed with a proper solution
+					var self = this;
+					setTimeout(function() {
+						CKEDITOR.replace(self.editorTextArea.id, {
+							toolbarGroups : editorToolbarGroups,
+							allowedContent : true
+						});
+
+						CKEDITOR.instances[self.editorTextArea.id].on('blur',
+								function(e) {
+									if (!self.validate()) {
+										return;
+									}
+									self.submitEmbeddedModeChanges();
+								});
+
+					}, 0);
 
 					this.urlInput
 							.change(
@@ -228,17 +291,9 @@ define(
 															.val()
 												});
 									});
-					/*this.markupTextarea.change({
-						view : this
-					}, function(event) {
-						if (!event.data.view.validate()) {
-							return;
-						}
-						event.data.view.submitEmbeddedModeChanges();
-					});*/
-					
-					this.generateTable = jQuery("#generateTable");
-					
+
+					this.generateTable = m_utils.jQuerySelect("#generateTable");
+
 					if (!m_session.getInstance().technologyPreview) {
 						m_dialog.makeInvisible(this.generateTable);
 					}
@@ -246,15 +301,8 @@ define(
 					this.generateMarkupForAngularLink.click({
 						view : this
 					}, function(event) {
-						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForAngular());
-
-						event.data.view.submitEmbeddedModeChanges();
-					});
-					this.generateMarkupForJQueryLink.click({
-						view : this
-					}, function(event) {
-						event.data.view.embeddedHTMLEditor.getEditor().getSession().setValue(event.data.view.generateMarkupForJQuery());
-
+						CKEDITOR.instances[event.data.view.editorTextArea.id]
+								.setData(event.data.view.generateMarkup());
 						event.data.view.submitEmbeddedModeChanges();
 					});
 					this.viaUriInput
@@ -310,7 +358,7 @@ define(
 									});
 
 					this.initializeModelElementView(application);
-					
+
 					this.view.css("visibility", "visible");
 				};
 
@@ -319,7 +367,8 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
-								"carnot:engine:ui:externalWebApp:markup" : this.embeddedHTMLEditor.getValue()
+								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
+										
 							});
 				};
 
@@ -420,11 +469,18 @@ define(
 
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
-//						this.markupTextarea.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
-						this.embeddedHTMLEditor.setValue(this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						var self = this;
+						// TODO - the timout is only needed of Chrome and needs to
+						// be analyzed and removed with a proper solution
+						setTimeout(
+								function() {
+									CKEDITOR.instances[self.editorTextArea.id]
+											.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+								}, 100);
 					} else {
 						this.setViaUri();
-						this.urlInput.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
+						this.urlInput
+								.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
 					}
 
 					this.initializeModelElement(application);
@@ -433,6 +489,16 @@ define(
 							.setScopeModel(this.application.model);
 					this.parameterDefinitionsPanel.setParameterDefinitions(this
 							.getContext().accessPoints);
+
+					// UI Only Defaults, do it only once on View load
+					if (this.numberOfLabelInputPairsInput.val() == "") {
+						this.numberOfLabelInputPairsInput.val(4);
+						this.generateCompleteButtonInput.prop("checked", true);
+						this.generateSuspendButtonInput.prop("checked", true);
+						this.generateAbortButtonInput.prop("checked", true);
+						this.generateQaPassButtonInput.prop("checked", false);
+						this.generateQaFailButtonInput.prop("checked", false);
+					}
 				};
 
 				/**
@@ -450,8 +516,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages.push("Data name must not be empty.");
 						this.nameInput.addClass("error");
 					}
@@ -470,13 +535,14 @@ define(
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
-					// Context is regenerated on the server - hence, all data need to be provided
-					
+					// Context is regenerated on the server - hence, all data
+					// need to be provided
+
 					this.submitChanges({
 						contexts : {
 							"externalWebApp" : {
 								accessPoints : parameterDefinitionsChanges,
-								attributes: this.getContext().attributes
+								attributes : this.getContext().attributes
 							}
 						}
 					});
@@ -485,16 +551,28 @@ define(
 				/**
 				 * 
 				 */
-				UiMashupApplicationView.prototype.generateMarkupForAngular = function() {
-					return m_markupGenerator
-							.generateMarkupForAngular(this.getContext().accessPoints);
-				};
+				UiMashupApplicationView.prototype.generateMarkup = function() {
+					var generator = m_markupGenerator
+							.create({
+								numberOfPrimitivesPerColumns : this.numberOfLabelInputPairsInput
+										.val(),
+								generateCompleteButton : this.generateCompleteButtonInput
+										.prop("checked"),
+								generateSuspendButton : this.generateSuspendButtonInput
+										.prop("checked"),
+								generateAbortButton : this.generateAbortButtonInput
+										.prop("checked"),
+								generateQaPassButton : this.generateQaPassButtonInput
+										.prop("checked"),
+								generateQaFailButton : this.generateQaFailButtonInput
+										.prop("checked"),
+								tabsForFirstLevel : this.generateTabsForFirstLevelInput
+										.prop("checked"),
+								tabsForFirstLevelTables : this.generateTabsForFirstLevelTablesInput
+										.prop("checked")
+							});
 
-				/**
-				 * 
-				 */
-				UiMashupApplicationView.prototype.generateMarkupForJQuery = function() {
-					return m_markupGenerator
+					return generator
 							.generateMarkup(this.getContext().accessPoints);
 				};
 			}

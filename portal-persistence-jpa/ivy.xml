@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-persistence-jpa" type="jar" conf="ipp-persistence-jpa-compile, ipp-persistence-jpa-runtime, ipp-persistence-jpa-provided" />
-      <artifact name="ipp-persistence-jpa" type="jar" conf="ipp-persistence-jpa-sources" m:classifier="sources" />
+      <artifact name="ipp-persistence-jpa" type="source" ext="jar" conf="ipp-persistence-jpa-sources" m:classifier="sources" />
       
       <artifact name="ipp-persistence-jpa" type="pom" conf="pom" ext="pom" />
    </publications>
@@ -60,6 +60,12 @@
          <exclude org="org.hamcrest" module="hamcrest-core" />
       </dependency>
       <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
+      
+      <!-- ******************** -->
+      <!--    Override Rules    -->
+      <!-- ******************** -->
+      <override org="aopalliance" module="aopalliance" rev="${aopalliance.version}" />
+   
    </dependencies>
    
 </ivy-module>

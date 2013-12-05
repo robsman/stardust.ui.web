@@ -15,6 +15,9 @@ define(
 				m_dialog, m_modelElementView, m_model, m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var role = m_model.findParticipant(fullId);
 					i18nRoleScreen();
 					m_utils.debug("===> role");
@@ -23,88 +26,88 @@ define(
 					roleView.initialize(role);
 					m_commandsController.registerCommandHandler(roleView);
 					//view.initialize(m_model.findApplication(fullId));
-
+					m_utils.hideWaitCursor();
 				}
 			};
-			
+
 
 		function i18nRoleScreen() {
-                 
-			   $("label[for='guidOutput']")
+
+			   m_utils.jQuerySelect("label[for='guidOutput']")
 		        	.text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.uuid"));
-							
-		   	  $("label[for='idOutput']")
+
+		   	  m_utils.jQuerySelect("label[for='idOutput']")
 			        .text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.id"));
 
-				$("label[for='nameInput']")
+				m_utils.jQuerySelect("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.nameInput"));
-				$("label[for='cardinalityInput']")
+				m_utils.jQuerySelect("label[for='cardinalityInput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.cardinality"));
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				$("label[for='chooseAssignmentRadio']")
+				m_utils.jQuerySelect("label[for='chooseAssignmentRadio']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.activityAssignment.assignment"));
-				$("label[for='assignAutomaticallyRadio']")
+				m_utils.jQuerySelect("label[for='assignAutomaticallyRadio']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.assignAutomatically"));
-				$("label[for='workingWeeksPerYearInput']")
+				m_utils.jQuerySelect("label[for='workingWeeksPerYearInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.workingWeeksPerYear"));
-				$("label[for='targetWorktimePerDayInput']")
+				m_utils.jQuerySelect("label[for='targetWorktimePerDayInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.targetWorkTime"));
-				$("label[for='targetWorktimePerWeekInput']")
+				m_utils.jQuerySelect("label[for='targetWorktimePerWeekInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.targetWorkTimePerWeek"));
-				$("label[for='actualCostPerMinuteInput']")
+				m_utils.jQuerySelect("label[for='actualCostPerMinuteInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.actualCostPerMin"));
-				$("label[for='targetQueueDepthInput']")
+				m_utils.jQuerySelect("label[for='targetQueueDepthInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.targetQueueDepth"));
-				jQuery("#activityAssignment")
+				m_utils.jQuerySelect("#activityAssignment")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.activityAssignment"));
-				jQuery("#controlling")
+				m_utils.jQuerySelect("#controlling")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling"));
-				jQuery("#weekstext")
+				m_utils.jQuerySelect("#weekstext")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.role.controlling.week.name"));
-				jQuery("#hours")
+				m_utils.jQuerySelect("#hours")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#hours2")
+				m_utils.jQuerySelect("#hours2")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.hours"));
-				jQuery("#dollar")
+				m_utils.jQuerySelect("#dollar")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.dollar"));
@@ -127,16 +130,17 @@ define(
 				 */
 				RoleView.prototype.initialize = function(role) {
 					this.id = "roleView";
+					this.view = m_utils.jQuerySelect("#" + this.id);
 
-					this.cardinalityInput = jQuery("#cardinalityInput");
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.chooseAssignmentRadio = jQuery("#chooseAssignmentRadio");
-					this.assignAutomaticallyRadio = jQuery("#assignAutomaticallyRadio");
-					this.workingWeeksPerYearInput = jQuery("#workingWeeksPerYearInput");
-					this.targetWorktimePerDayInput = jQuery("#targetWorktimePerDayInput");
-					this.targetWorktimePerWeekInput = jQuery("#targetWorktimePerWeekInput");
-					this.targetQueueDepthInput = jQuery("#targetQueueDepthInput");
-					this.actualCostPerMinuteInput = jQuery("#actualCostPerMinuteInput");
+					this.cardinalityInput = m_utils.jQuerySelect("#cardinalityInput");
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.chooseAssignmentRadio = m_utils.jQuerySelect("#chooseAssignmentRadio");
+					this.assignAutomaticallyRadio = m_utils.jQuerySelect("#assignAutomaticallyRadio");
+					this.workingWeeksPerYearInput = m_utils.jQuerySelect("#workingWeeksPerYearInput");
+					this.targetWorktimePerDayInput = m_utils.jQuerySelect("#targetWorktimePerDayInput");
+					this.targetWorktimePerWeekInput = m_utils.jQuerySelect("#targetWorktimePerWeekInput");
+					this.targetQueueDepthInput = m_utils.jQuerySelect("#targetQueueDepthInput");
+					this.actualCostPerMinuteInput = m_utils.jQuerySelect("#actualCostPerMinuteInput");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -241,6 +245,7 @@ define(
 							"carnot:pwh:actualCostPerMinute");
 
 					this.initializeModelElementView(role);
+					this.view.css("visibility", "visible");
 				};
 
 				/**
@@ -299,8 +304,7 @@ define(
 					this.nameInput.removeClass("error");
 					this.cardinalityInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages.push("Role name must not be empty.");
 						this.nameInput.addClass("error");
 					}

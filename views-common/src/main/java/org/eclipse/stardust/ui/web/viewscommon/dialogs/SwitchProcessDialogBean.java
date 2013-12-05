@@ -641,26 +641,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
          pdMap.put(pd.getId(), pd);
       }
 
-      Set<ProcessInstance> abortablePis = CollectionUtils.newHashSet();
-
-      if (CollectionUtils.isNotEmpty(sourceProcessInstances))
-      {
-         abortablePis.addAll(sourceProcessInstances);
-      }
-      if (CollectionUtils.isNotEmpty(nonAbortableProcesses))
-      {
-         abortablePis.removeAll(nonAbortableProcesses);
-      }
-
-      Set<String> excludePdSet = CollectionUtils.newHashSet();
-
-      for (ProcessInstance pi : abortablePis)
-      {
-         excludePdSet.add(pi.getProcessID());
-      }
-
-      pdMap.keySet().removeAll(excludePdSet);
-
       List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pdMap.values());
       ProcessDefinitionUtils.sort(filteredPds);
 
@@ -670,7 +650,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       }
 
       pdMap = null;
-      excludePdSet = null;
       pds = null;
       filteredPds = null;
 

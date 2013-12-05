@@ -86,6 +86,8 @@ public class WorklistTableEntry extends DefaultRowModel
    
    private String priorityIcon;
    
+   private boolean showResubmissionLink;
+
    public WorklistTableEntry()
    {
       defaultCaseActivity = false;
@@ -110,7 +112,7 @@ public class WorklistTableEntry extends DefaultRowModel
    public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList,
          boolean activatable, String lastPerformer, int processPriority, Date startDate,
          Date lastModificationTime, long oid, String duration, int notesCount, Map<String, Object> descriptorValues,
-         long processInstanceOid, ActivityInstance activityInstance, long currentPerformerOID)
+         long processInstanceOid, ActivityInstance activityInstance, long currentPerformerOID, boolean showResubmissionLink)
    {
       super();
       defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(activityInstance);
@@ -132,6 +134,7 @@ public class WorklistTableEntry extends DefaultRowModel
       this.activityInstance = activityInstance;
       ProcessDefinition pd=ProcessDefinitionUtils.getProcessDefinition(activityInstance.getModelOID(), activityInstance.getProcessDefinitionId());
       this.processDefinition = I18nUtils.getProcessName(pd);
+      this.showResubmissionLink = showResubmissionLink;
 
       if (!defaultCaseActivity)
       {
@@ -394,5 +397,16 @@ public class WorklistTableEntry extends DefaultRowModel
    {
       return priorityIcon;
    }
+
+   public boolean isShowResubmissionLink()
+   {
+      return showResubmissionLink;
+   }
+
+   public void setShowResubmissionLink(boolean showResubmissionLink)
+   {
+      this.showResubmissionLink = showResubmissionLink;
+   }
+
    
 }

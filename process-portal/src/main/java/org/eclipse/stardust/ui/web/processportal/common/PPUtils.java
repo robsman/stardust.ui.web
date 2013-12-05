@@ -54,6 +54,8 @@ import org.eclipse.stardust.engine.api.runtime.ActivityCompletionLog;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.client.model.ProcessFilter;
 import org.eclipse.stardust.ui.client.model.ProcessFilters;
@@ -61,6 +63,7 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.WorklistSelectionEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IFilterProvider;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -73,6 +76,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
 
@@ -227,8 +231,27 @@ public class PPUtils
          break;
 
       case USER:
-         extractedWorklist = worklist;
-         break;
+         if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
+         {
+            extractedWorklist = worklist;
+            break;
+         }
+         else
+         {
+			// User-Worklist(Deputy Of) is contained in Sub-worklist of
+			// User worklist(Deputy)
+            Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
+            Worklist subWorklist1;
+            while (subWorklistIter.hasNext())
+            {
+               subWorklist1 = subWorklistIter.next();
+               if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
+               {
+                  extractedWorklist = subWorklist1;
+                  break;
+               }
+            }
+         }
       }
 
       return extractedWorklist;
@@ -424,6 +447,7 @@ public class PPUtils
 
       boolean closeViewAndProceed = true;
       boolean success = false;
+      boolean delayViewClose = false;
 
       try
       {
@@ -457,11 +481,13 @@ public class PPUtils
       }
       catch (ConcurrencyException ce)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(ce,
                MessagePropertiesBean.getInstance().getString("views.activityPanel.concurrencyError"));
       }
       catch (AccessForbiddenException af)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(af,
                MessagePropertiesBean.getInstance().getString("views.activityPanel.acccessForbiddenError"));
       }
@@ -473,6 +499,7 @@ public class PPUtils
       }
       catch (InternalException ie)
       {
+         delayViewClose = true;
          ExceptionHandler.handleException(ie);
       }
       catch (Exception e)
@@ -481,7 +508,7 @@ public class PPUtils
          ExceptionHandler.handleException(e);
       }
 
-      return new WorkflowActivityCompletionLog(completedAi, newInstance, success, closeViewAndProceed);
+      return new WorkflowActivityCompletionLog(completedAi, newInstance, success, closeViewAndProceed, delayViewClose);
    }
 
    /**
@@ -658,7 +685,16 @@ public class PPUtils
          break;
 
       case USER:
-         iconPath = MyPicturePreferenceUtils.getLoggedInUsersImageURI();
+         if(participantInfo.getQualifiedId().equals(SessionContext.findSessionContext().getUser().getQualifiedId()))
+         {
+            iconPath = MyPicturePreferenceUtils.getLoggedInUsersImageURI();            
+         }
+         else
+         {
+            UserInfo userInfo = (UserInfo) participantInfo;
+            User user = UserUtils.getUser(userInfo.getId());
+            iconPath = MyPicturePreferenceUtils.getUsersImageURI(user);   
+         }
          break;
 
       case USERGROUP:

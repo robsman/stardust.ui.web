@@ -86,18 +86,21 @@ define(
 									});
 
 					// Timestamp handling
-					this.timestampInputText = jQuery("#TimestampInputText");
+					// ** like query is used in the jquery selector as the id gets updated and
+					// properties panels are re-initialized on tab change. **
+					this.timestampInputText = m_utils.jQuerySelect("[id^='TimestampInputText']");
+					this.timestampInputText.get(0).id = "TimestampInputText" + Math.floor((Math.random()*10000) + 1);
 					this.timestampInputText.datepicker({dateFormat: 'dd.mm.yy'});
 					this.timestampInputText.change({"view" : this}, timestampChangeHandler);
 
 					// I18N
-					jQuery("#doubleInputTextError").text(
+					m_utils.jQuerySelect("#doubleInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#intInputTextError").text(
+					m_utils.jQuerySelect("#intInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#longInputTextError").text(
+					m_utils.jQuerySelect("#longInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#TimestampInputTextError").text(
+					m_utils.jQuerySelect("#TimestampInputTextError").text(
 							m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType.error.timestamp"));
 				};
 
@@ -148,8 +151,12 @@ define(
 					m_utils.debug(this.propertiesPanel.element);
 					m_utils.debug(this.getModelElement());
 
-					this.dataTypeSelector
-							.setScopeModel(this.getModelElement().model);
+					// Set scope model to this model and not to the model
+					// to which the model element belongs as it may belong to
+					// another model and then the "this model" / "other model"
+					// semantics in the properties page goes for a toss.
+					this.dataTypeSelector.setScopeModel(this.propertiesPanel.getModel());
+
 					this.dataTypeSelector.setDataType(this.getModelElement());
 					this
 							.initializeDataType(
@@ -182,7 +189,6 @@ define(
 						dataChanges) {
 					// These are changes on the data, not the symbol
 
-					this.initializeDataType(dataChanges);
 					this.submitChanges(dataChanges);
 				};
 
@@ -236,11 +242,15 @@ define(
 									$scope.watchRegistered = true;
 								}
 							}
-						});
+						}, m_utils.jQuerySelect("#datatableid").get(0));
 					} else {
 						m_angularContextUtils.runInAngularContext(function($scope) {
 							$scope.dataType = null;
-						});
+						}, m_utils.jQuerySelect("#datatableid").get(0));
+					}
+
+					if (data.isReadonly()) {
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
 					}
 				};
 
@@ -253,14 +263,17 @@ define(
 						try {
 							var dateValue = view.timestampInputText.val();
 							var dtObj = jQuery.datepicker.parseDate('dd.mm.yy', dateValue);
-							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj) + ' 00:00:00:000';
+							var dateFomat = jQuery.datepicker.formatDate('yy/mm/dd', dtObj);
+							if (!m_utils.isEmptyString(dateFomat)) {
+								dateFomat += ' 00:00:00:000';
+							}
 							view.submitModelElementAttributeChange("carnot:engine:defaultValue", dateFomat);
 							$scope.timestampInputTextError = false;
 						} catch(e){
 							// Parse Error
 							$scope.timestampInputTextError = true;
 						}
-					});
+					}, m_utils.jQuerySelect("#datatableid").get(0));
 				};
 
 				/*

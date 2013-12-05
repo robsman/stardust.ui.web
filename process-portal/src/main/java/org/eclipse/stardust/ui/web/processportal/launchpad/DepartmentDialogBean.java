@@ -31,9 +31,16 @@ public class DepartmentDialogBean extends PopupUIComponentBean
     */
    public DepartmentDialogBean()
    {
-
+      fromlaunchPanels = true;
    }
 
+   @Override
+   public void openPopup()
+   {
+      fromlaunchPanels = true;
+      super.openPopup();
+   }
+   
    public static DepartmentDialogBean getCurrent()
    {
       return (DepartmentDialogBean) FacesUtils.getBeanFromContext(BEAN_NAME);

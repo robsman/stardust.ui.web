@@ -35,6 +35,8 @@ public class DualListModel implements Serializable
    private List<SelectItemModel> target;
    private List<Object> targetSelected = new LinkedList<Object>();
 
+   private boolean dirty;
+
    private List<SelectItemModel> filteredSource = new LinkedList<SelectItemModel>();
    private List<SelectItemModel> filteredTarget = new LinkedList<SelectItemModel>();
 
@@ -67,6 +69,8 @@ public class DualListModel implements Serializable
       filteredSource.removeAll(items);
       sourceSelected.clear();
       targetSelected.clear();
+
+      dirty = true;
    }
 
    /**
@@ -81,6 +85,8 @@ public class DualListModel implements Serializable
       filteredSource.removeAll(removableObjects);
       sourceSelected.clear();
       targetSelected.clear();
+
+      dirty = true;
    }
 
    /**
@@ -131,6 +137,8 @@ public class DualListModel implements Serializable
       filteredTarget.removeAll(items);
       sourceSelected.clear();
       targetSelected.clear();
+
+      dirty = true;
    }
 
    /**
@@ -145,6 +153,8 @@ public class DualListModel implements Serializable
       filteredTarget.removeAll(removableObjects);
       sourceSelected.clear();
       targetSelected.clear();
+
+      dirty = true;
    }
 
    /**
@@ -200,6 +210,21 @@ public class DualListModel implements Serializable
       }
 
       return items;
+   }
+
+   public boolean isDirty()
+   {
+      return dirty;
+   }
+
+   public void setDirty(boolean dirty)
+   {
+      this.dirty = dirty;
+   }
+
+   public void clearDirty()
+   {
+      this.dirty = false;;
    }
 
    public List<SelectItemModel> getFilteredSource()

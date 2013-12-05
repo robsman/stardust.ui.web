@@ -1,0 +1,69 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		bean* = Bean Object
+		mainRow* = Main Row Object
+		row* = Row object for the Table
+		col* = ColumnPreference Object
+	-->
+
+	<ice:panelGroup style="margin: 0px; padding: 0px;">
+
+		<ice:panelGroup rendered="#{col.columnName == 'Deputy' or col.columnName == 'User' or col.columnName == 'TeamMember'}">
+			<ice:panelGrid columns="2">
+				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" />
+				<ice:outputText value="#{row.userDisplayName}" />
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'MyDeputiesActions'}">
+			<ice:panelGrid columns="4" style="float: right;">
+				<ice:commandLink actionListener="#{bean.editMyDeputy}">
+					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsEditDeputy" standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/pencil.png"
+						title="#{bean.messages['edit']}"
+						styleClass="portal-std-icon" />
+					<f:attribute name="deputy" value="#{row}" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.removeMyDeputy}">
+					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsRemoveDeputy" standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/delete.png"
+						title="#{bean.messages['remove']}"
+						styleClass="portal-std-icon" />
+					<f:attribute name="deputy" value="#{row}" />
+				</ice:commandLink>
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{col.columnName == 'TeamMemberDeputiesActions'}">
+			<ice:panelGrid columns="4" style="float: right;">
+				<ice:commandLink actionListener="#{bean.editMyTeamMemberDeputy}">
+					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsEditDeputy" standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/pencil.png"
+						title="#{bean.messages['edit']}"
+						styleClass="portal-std-icon" />
+					<f:attribute name="deputy" value="#{row}" />
+				</ice:commandLink>
+				<ice:commandLink actionListener="#{bean.removeMyTeamMemberDeputy}">
+					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsRemoveDeputy" standAlone="false" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/delete.png"
+						title="#{bean.messages['remove']}"
+						styleClass="portal-std-icon" />
+					<f:attribute name="deputy" value="#{row}" />
+				</ice:commandLink>
+			</ice:panelGrid>
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

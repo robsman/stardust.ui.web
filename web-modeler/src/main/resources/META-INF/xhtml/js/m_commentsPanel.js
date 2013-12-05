@@ -38,13 +38,13 @@ define(
 					this.options = options;
 					this.scope = options.scope;
 
-					this.commentsTableBody = jQuery(this.scope
+					this.commentsTableBody = m_utils.jQuerySelect(this.scope
 							+ " #commentsTable tbody");
-					this.contentTextArea = jQuery(this.scope
+					this.contentTextArea = m_utils.jQuerySelect(this.scope
 							+ " #contentTextArea");
-					this.submitButton = jQuery(this.scope
+					this.submitButton = m_utils.jQuerySelect(this.scope
 							+ " #submitButton");
-					this.deleteButton = jQuery(this.scope
+					this.deleteButton = m_utils.jQuerySelect(this.scope
 							+ " #deleteButton");
 					this.deleteButton
 							.attr(
@@ -76,6 +76,12 @@ define(
 						this.comments = [];
 					}
 
+					if (this.comments.length == 0) {
+						m_utils.jQuerySelect(this.scope + " div.panelBorder").hide();
+					} else {
+						m_utils.jQuerySelect(this.scope + " div.panelBorder").show();
+					}
+
 					this.populateCommentsTable();
 					m_modelerUtils.disableToolbarControl(this.deleteButton);
 				};
@@ -103,7 +109,11 @@ define(
 				CommentsPanel.prototype.populateCommentsTable = function() {
 					this.commentsTableBody.empty();
 
-					for ( var n = 0; (this.comments && n < this.comments.length); ++n) {
+					if (!this.comments) {
+						return;
+					}
+
+					for ( var n = this.comments.length - 1; n >= 0; n--) {
 						var comment = this.comments[n];
 
 						var rowContent = "<tr id='" + n
@@ -112,7 +122,7 @@ define(
 						rowContent += "<td style='padding-left: 0px;'>";
 						rowContent += "<table width='100%' cellspacing='0' cellpadding='0'>";
 						rowContent += "<tr>";
-						rowContent += "<td><span class='commentUserTimestampSpan'>";
+						rowContent += "<td style='padding-right: 10px;'><span class='commentUserTimestampSpan'>";
 						rowContent += comment.userFirstName + " "
 								+ comment.userLastName;
 						rowContent += " &bull; ";
@@ -125,7 +135,7 @@ define(
 						rowContent += "</span></td>";
 						rowContent += "</tr>";
 						rowContent += "<tr>";
-						rowContent += "<td><span class='commentContentSpan'>";
+						rowContent += "<td style='padding-right: 10px;'><span class='commentContentSpan'>";
 						rowContent += comment.content;
 						rowContent += "</span></td>";
 						rowContent += "</tr>";
@@ -133,14 +143,14 @@ define(
 						rowContent += "</td>";
 						rowContent += "</tr>";
 
-						var row = jQuery(rowContent);
+						var row = m_utils.jQuerySelect(rowContent);
 
 						this.commentsTableBody.append(row);
 
 						row.mousedown({
 							page : this
 						}, function(event) {
-							jQuery(this).toggleClass("selected");
+							m_utils.jQuerySelect(this).toggleClass("selected");
 
 							event.data.page.changeSelection();
 						});
@@ -151,7 +161,7 @@ define(
 				 *
 				 */
 				CommentsPanel.prototype.changeSelection = function() {
-					var selectedRows = jQuery(this.scope + " table#commentsTable tr.selected");
+					var selectedRows = m_utils.jQuerySelect(this.scope + " table#commentsTable tr.selected");
 
 					if (selectedRows.length == 0) {
 						m_modelerUtils.disableToolbarControl(this.deleteButton);
@@ -160,7 +170,7 @@ define(
 					}
 
 					for ( var n = 0; n < selectedRows.length; ++n) {
-						var comment = this.comments[jQuery(selectedRows[n])
+						var comment = this.comments[m_utils.jQuerySelect(selectedRows[n])
 								.attr("id")];
 
 						if (comment.userAccount != m_user.getCurrentUser().account) {
@@ -178,12 +188,12 @@ define(
 				 */
 				CommentsPanel.prototype.deleteSelectedComments = function() {
 					var remainingComments = [];
-					var rows = jQuery(this.scope + " table#commentsTable tr.commentRow");
+					var rows = m_utils.jQuerySelect(this.scope + " table#commentsTable tr.commentRow");
 
-					for ( var n = 0; n < rows.length; ++n) {
-						if (!jQuery(rows[n]).is(".selected")) {
+					for ( var n = rows.length - 1; n >= 0; n--) {
+						if (!m_utils.jQuerySelect(rows[n]).is(".selected")) {
 							remainingComments
-									.push(this.comments[jQuery(rows[n]).attr(
+									.push(this.comments[m_utils.jQuerySelect(rows[n]).attr(
 											"id")]);
 						}
 					}

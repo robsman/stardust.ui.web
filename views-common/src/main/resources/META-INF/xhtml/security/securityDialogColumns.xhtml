@@ -21,30 +21,35 @@
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{col.columnName == 'Participant'}"
 			style="text-align: left;">
-			<ice:outputText value="#{row.participant.name}" />
+			<ice:outputText value="#{row.participant.name}" title="#{row.modelLabel}"/>
 		</ice:panelGroup>
 
 		<ice:panelGroup
 			rendered="#{col.columnName == 'Create'}">
-			<ice:panelGroup>
-				<ice:panelGrid columns="2" rendered="#{!row.edit}">
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.create == 'Inherit'}">
 					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png"
-						rendered="#{row.create}" />
+						value="/plugins/views-common/images/icons/status-offline.png" />
 					<ice:outputText
-						value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-						rendered="#{row.create}" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png"
-						rendered="#{!row.create}" />
-					<ice:outputText
-						value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-						rendered="#{!row.create}" />
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
-				<ice:panelGroup rendered="#{row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.create =='Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.create =='Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
+			<ice:panelGroup rendered="#{row.edit}">
 					<ice:selectOneMenu onclick="Event.stop(event);"
 						valueChangeListener="#{securityDialog.policyChanged}"
-						partialSubmit="true" value="#{row.createPolicyChangedValue}">
+						partialSubmit="true" immediate ="true" value="#{row.createPolicyChangedValue}">
 						<pc:automationTag
 							value="auto-COM-SecurityDlg-SecurityDlgTbl-Create"
 							standAlone="false" />
@@ -53,28 +58,33 @@
 						<f:attribute name="property" value="Create" />
 					</ice:selectOneMenu>
 				</ice:panelGroup>
-			</ice:panelGroup>
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'Read'}">
-			<ice:panelGrid columns="2" rendered="#{!row.edit}">
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status.png"
-					rendered="#{row.read}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-					rendered="#{row.read}" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status-busy.png"
-					rendered="#{!row.read}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-					rendered="#{!row.read}" />
-			</ice:panelGrid>
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.read == 'Inherit'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.read == 'Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.read == 'Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
 			<ice:panelGroup rendered="#{row.edit}">
 				<ice:selectOneMenu onclick="Event.stop(event);"
 					valueChangeListener="#{securityDialog.policyChanged}"
-					partialSubmit="true" value="#{row.readPolicyChangedValue}">
+					partialSubmit="true" immediate ="true" value="#{row.readPolicyChangedValue}">
 					<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-Read"
 						standAlone="false" />
 					<f:selectItems value="#{securityDialog.permission}" />
@@ -85,20 +95,26 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'Modify'}">
-			<ice:panelGrid columns="2" rendered="#{!row.edit}">
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status.png"
-					rendered="#{row.modify}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-					rendered="#{row.modify}" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status-busy.png"
-					rendered="#{!row.modify}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-					rendered="#{!row.modify}" />
-			</ice:panelGrid>
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.modify == 'Inherit'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.modify == 'Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.modify == 'Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
 			<ice:panelGroup rendered="#{row.edit}">
 				<ice:selectOneMenu onclick="Event.stop(event);"
 					valueChangeListener="#{securityDialog.policyChanged}"
@@ -114,20 +130,26 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'Delete'}">
-			<ice:panelGrid columns="2" rendered="#{!row.edit}">
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status.png"
-					rendered="#{row.delete}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-					rendered="#{row.delete}" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status-busy.png"
-					rendered="#{!row.delete}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-					rendered="#{!row.delete}" />
-			</ice:panelGrid>
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.delete == 'Inherit'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.delete == 'Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.delete == 'Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
 			<ice:panelGroup rendered="#{row.edit}">
 				<ice:selectOneMenu onclick="Event.stop(event);"
 					valueChangeListener="#{securityDialog.policyChanged}"
@@ -143,20 +165,26 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'ReadACL'}">
-			<ice:panelGrid columns="2" rendered="#{!row.edit}">
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status.png"
-					rendered="#{row.readAcl}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-					rendered="#{row.readAcl}" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status-busy.png"
-					rendered="#{!row.readAcl}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-					rendered="#{!row.readAcl}" />
-			</ice:panelGrid>
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.readAcl == 'Inherit'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.readAcl =='Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.readAcl =='Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
 			<ice:panelGroup rendered="#{row.edit}">
 				<ice:selectOneMenu onclick="Event.stop(event);"
 					valueChangeListener="#{securityDialog.policyChanged}" 
@@ -172,20 +200,28 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'ModifyACL'}">
-			<ice:panelGrid columns="2" rendered="#{!row.edit}">
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status.png"
-					rendered="#{row.modifyAcl}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.allow']}"
-					rendered="#{row.modifyAcl}" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/status-busy.png"
-					rendered="#{!row.modifyAcl}" />
-				<ice:outputText
-					value="#{securityDialog.messages['securityDialog.columnValue.deny']}"
-					rendered="#{!row.modifyAcl}" />
-			</ice:panelGrid>
+			<ice:panelGroup rendered="#{!row.edit}">
+				<ice:panelGrid columns="2" rendered="#{row.modifyAcl == 'Inherit'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-offline.png" />
+					
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
+					
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.modifyAcl =='Allow'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
+				</ice:panelGrid>
+				<ice:panelGrid columns="2" rendered="#{row.modifyAcl =='Deny'}">
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
+				</ice:panelGrid>
+			</ice:panelGroup>
 			<ice:panelGroup rendered="#{row.edit}">
 				<ice:selectOneMenu onclick="Event.stop(event);"
 					valueChangeListener="#{securityDialog.policyChanged}"
@@ -202,11 +238,11 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 			<ice:commandLink value="#{views_common_msgPropsBean['common.edit']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
-				actionListener="#{row.editClicked}" style="padding-right:15px;" >
+				actionListener="#{row.editClicked}" style="padding-right:15px;" onclick="Event.stop(event);" partialSubmit="true" immediate="true">
 				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsEdit" standAlone="false"/>
 			</ice:commandLink>	
 			<ice:commandLink value="#{views_common_msgPropsBean['common.remove']}" styleClass="action-link" disabled="#{!securityDialog.modifyACL}"
-				actionListener="#{securityDialog.removeRole}" style="padding-right:15px;" >
+				actionListener="#{securityDialog.removeRole}" style="padding-right:15px;" onclick="Event.stop(event);" partialSubmit="true" immediate="true">
 				<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ActionsRemove" standAlone="false"/>
 				<f:attribute name="acb" value="#{row}" />
 			</ice:commandLink>	

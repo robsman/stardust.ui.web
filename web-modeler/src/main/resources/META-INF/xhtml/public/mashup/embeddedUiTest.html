@@ -1,0 +1,213 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css"
+	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
+<link rel='stylesheet' type='text/css' href='./bpm-form.css'></link>
+<script
+	src='http://localhost:8080/pepper-test/plugins/bpm-modeler/js/libs/require/2.0.5/require.js'></script>
+<script>
+	var baseUrl = window.location.search;
+
+	baseUrl = baseUrl.substring(baseUrl.indexOf("ippInteractionUri") + 18);
+	baseUrl = baseUrl.indexOf("&") >= 0 ? baseUrl.substring(0, baseUrl
+			.indexOf("&")) : baseUrl;
+	baseUrl = baseUrl.indexOf("/plugins") >= 0 ? baseUrl.substring(0, baseUrl
+			.indexOf("/plugins")) : baseUrl.substring(0, baseUrl
+			.indexOf("/services"));
+
+	console.log(baseUrl);
+
+	require
+			.config({
+				baseUrl : baseUrl + "/plugins/",
+				paths : {
+					'jquery' : [ 'bpm-modeler/js/libs/jquery/jquery-1.7.2',
+							'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
+					'jquery-ui' : [
+							'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
+							'//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min' ],
+					'jquery.dataTables' : [ 'bpm-modeler/public/mashup/libs/jquery.dataTables.min' ],
+					'json' : [ 'bpm-modeler/js/libs/json/json2',
+							'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
+					'jquery.url' : [
+							'bpm-modeler/js/libs/jquery/plugins/jquery.url',
+							'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url' ],
+					'angularjs' : [
+							'bpm-modeler/js/libs/angular/angular-1.0.2',
+							'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
+					// Provenance: https://code.google.com/p/x2js/
+					'xml2json' : [ 'bpm-modeler/public/mashup/xml2js' ],
+					'bpm.portal.Interaction' : [ 'bpm-modeler/public/mashup/Interaction' ],
+					'bpm.portal.GenericController' : [ 'bpm-modeler/public/mashup/GenericController' ]
+				},
+				shim : {
+					'jquery-ui' : [ 'jquery' ],
+					'jquery.url' : [ 'jquery' ],
+					'angularjs' : {
+						require : "jquery",
+						exports : "angular"
+					},
+					'bpm.portal.Interaction' : [ 'jquery' ],
+					'bpm.portal.GenericController' : [ 'jquery' ]
+				}
+			});
+
+	require([ "require", "jquery", "jquery-ui", "json", "jquery.url",
+			"angularjs", "xml2json", "bpm.portal.Interaction", ,
+			"bpm.portal.GenericController" ], function(require, jquery,
+			jqueryUi, json, jqueryUrl, angularjs, xml2json,
+			stardustPortalInteraction, stardustGenericController) {
+		jQuery(document).ready(function() {
+			var interaction = new bpm.portal.Interaction();
+			var controller = new bpm.portal.GenericController();
+
+			interaction.bind().done(function() {
+				controller.bind(angularjs, interaction);
+			});
+		});
+	});
+</script>
+</head>
+<body>
+	<form class="css-form"">
+		<table>
+			<tr>
+				<td><ul class="errorMessagesPanel">
+						<li ng-repeat="error in errors">{{error.message}}</li>
+					</ul></td>
+			</tr>
+			<tr>
+				<td>
+					<h1>Person</h1>
+					<table>
+						<tr class="formTable">
+							<td><label>First Name</label>
+							</td>
+							<td><input type='text' ng-model='person.firstName' required>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Last Name</label>
+							</td>
+							<td><input type='text' ng-model='person.lastName' required>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Gender</label>
+							</td>
+							<td><select ng-model='person.gender'>
+									<option>Male</option>
+									<option>Female</option>
+							</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Date of Birth</label>
+							</td>
+							<td><input type='text' ng-model='person.dateOfBirth' sd-date>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Monthly Salary</label>
+							</td>
+							<td><input type='text' class='decimalInputField'
+								ng-model='person.monthlySalary' sd-decimal>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Number of Dependents</label>
+							</td>
+							<td><input type='number' class='integerInputField'
+								ng-model='person.numberOfDependents' sd-integer>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Personally Known</label>
+							</td>
+							<td><input type="checkbox" ng-model='person.personallyKnown'
+								sd-integer>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><h2>Accounts</h2>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<table class="dataTable" cellspacing="0" cellpadding="0"
+									data-table>
+									<thead>
+										<tr>
+											<th></th>
+											<th>Account</th>
+											<th>Type</th>
+											<th>Balance</th>
+											<th>Last Transfer</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="account in person.accounts">
+											<td><href ng-click="deleteRow($event,$index)"
+													path="person.accounts"> <img
+													src="{{baseUrl}}/plugins/bpm-modeler/public/mashup/delete.png"
+													alt="Delete" /></href></td>
+											<td><input type="text" ng-model="account.id" /></td>
+											<td><input type="text" ng-model="account.type" /></td>
+											<td><input type="text" ng-model="account.balance"
+												sd-decimal /></td>
+											<td><input type="text" ng-model="account.lastTransfer"
+												sd-date />
+											</td>
+										</tr>
+										<tr>
+											<td><href ng-click="addRow($event)"
+													path="person.accounts"> <img
+													src="{{baseUrl}}/plugins/bpm-modeler/public/mashup/add.png"
+													alt="Add" /></href></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+						</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h1>Loan</h1>
+					<table>
+						<tr>
+							<td><label>Amount</label>
+							</td>
+							<td><input type='text' class='input stringInputField'
+								disabled ng-model='loan.amount'>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><table>
+						<tr>
+							<td><button ng-click="completeActivity()">Complete</button>
+							</td>
+							<td><button ng-click="suspendActivity()">Suspend</button>
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</form>
+	<div id="validationErrorMessageDialog" title="Validation Errors">
+		<p>
+			<span class="ui-icon ui-icon-circle-check"
+				style="float: left; margin: 0 7px 50px 0;"></span> Correct your
+			validation errors first.
+		</p>
+	</div>
+</body>
+</html>

@@ -15,12 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
-import org.springframework.stereotype.Component;
-
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
@@ -39,10 +35,10 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.UnusedModelElementsSearcher;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Barry.Grotjahn
@@ -158,6 +154,12 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                            model.getData().remove(element);
                            modified = true;
                         }
+                        else if (candidate instanceof DataType
+                              && element instanceof DataType)
+                        {
+                           model.getData().remove(element);
+                           modified = true;
+                        }
                         if (modified)
                         {
                            change.markAlsoModified(element);
@@ -181,9 +183,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
             {
                return true;
             }
-         }         
-         
-         if (modelElement instanceof IExtensibleElement)
+         }
+         else if (modelElement instanceof IExtensibleElement)
          {
             if (AttributeUtil.getAttributeValue((IExtensibleElement) modelElement,
                   IConnectionManager.URI_ATTRIBUTE_NAME) != null)
@@ -209,7 +210,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                return true;
             }
          }
-         if (modelElement instanceof Extensible)
+         else if (modelElement instanceof Extensible)
          {
             if (ExtendedAttributeUtil.getAttributeValue((Extensible) modelElement,
                   IConnectionManager.URI_ATTRIBUTE_NAME) != null)

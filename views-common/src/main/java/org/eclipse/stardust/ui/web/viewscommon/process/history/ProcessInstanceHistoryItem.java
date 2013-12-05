@@ -21,6 +21,7 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -63,6 +64,7 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    private boolean enableDetach;
    private boolean disableSpawnProcess;
    private final ProcessInstance rootProcessInstance;
+   private String abortedUser;
 
    /**
     * @param processInstance
@@ -113,6 +115,10 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
             performer = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
             //state = processInstance.getState().toString();
             state = propsBean.getString(STATUS_PREFIX +  processInstance.getState().getName().toLowerCase()); 
+            if(processInstance.getState().equals(ProcessInstanceState.Aborted))
+            {
+               abortedUser = ProcessInstanceUtils.getAbortedUser(processInstance);
+            }
             ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
             descriptorValues = processInstanceDetails.getDescriptors();
 
@@ -329,6 +335,11 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    public boolean isDisableSpawnProcess()
    {
       return disableSpawnProcess;
+   }
+
+   public String getAbortedUser()
+   {
+      return abortedUser;
    }
    
    

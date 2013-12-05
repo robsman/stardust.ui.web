@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -8,8 +8,8 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>REST Service Overlay</title>
-<link rel="stylesheet" type="text/css"
-	href="../../css/jquery-ui-1.8.20.custom.css"></link>
+<link href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css" rel="stylesheet"
+	type="text/css" />
 <link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
 <style>
 </style>
@@ -17,11 +17,6 @@
 <body>
 	<div id="restServiceOverlay">
 		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-			<tr>
-				<td><label for="camelContextInput">Camel Context</label></td>
-				<td><input id="camelContextInput" type="text"
-					style="width: 450px;"></input></td>
-			</tr>
 			<tr>
 				<td><label for="uriInput">URI</label></td>
 				<td><input id="uriInput" type="text" style="width: 450px;"></input>
@@ -106,7 +101,7 @@
 											<table>
 												<tr>
 													<td><input id="deleteParameterDefinitionButton"
-														type="image" src="../../images/icons/delete.png"
+														type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 														title="Delete" alt="Delete" class="toolbarButton" />
 													</td>
 												</tr>
@@ -132,7 +127,7 @@
 							style="margin-top: 10px;">
 							<tr>
 								<td><input id="addParameterDefinitionButton" type="image"
-									src="../../images/icons/add.png" title="Add" alt="Add"
+									src="plugins/bpm-modeler/images/icons/add.png" title="Add" alt="Add"
 									class="toolbarButton" />
 								</td>
 								<td></td>
@@ -186,57 +181,59 @@
 			</table>
 		</div>
 		<div id="testTab">
-			<table cellpadding="0" cellspacing="0" class="layoutTable">
-				<tr>
-					<td>
-						<table cellpadding="0" cellspacing="5">
-							<tr>
-								<td><img src="../../images/icons/information.png" />
-								</td>
-								<td>The External URL is expected to send a <a
-									href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
-									target="_blank">CORS</a> <tt>Access-Control-Allow-Origin</tt>
-									header in its response for it to be accessible.</td>
-							</tr>
-						</table>
+			<div class="noDataChange">
+				<table cellpadding="0" cellspacing="0" class="layoutTable">
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="5">
+								<tr>
+									<td><img src="plugins/bpm-modeler/images/icons/information.png" />
+									</td>
+									<td>The External URL is expected to send a <a
+										href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+										target="_blank">CORS</a> <tt>Access-Control-Allow-Origin</tt>
+										header in its response for it to be accessible.</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+								<tr>
+									<td>
+										<table cellpadding="0" cellspacing="5" class="layoutTable">
+											<tr>
+												<td><input id="resetButton" type="image"
+													src="plugins/bpm-modeler/images/icons/broom.png" />
+												</td>
+												<td><input id="runButton" type="image"
+													src="plugins/bpm-modeler/images/icons/action_go.gif" /></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="inputDataTextArea"></label></td>
+								</tr>
+								<tr>
+									<td><textarea id="inputDataTextarea" rows="10" cols="80"
+											class="code" style="width: 400px;"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="outputDataTextarea"></label></td>
+								</tr>
+								<tr>
+									<td><textarea id="outputDataTextarea" rows="10" cols="80"
+											class="code" style="width: 400px;"></textarea>
+									</td>
+								</tr>
+							</table>
 					</td>
-				</tr>
-				<tr>
-					<td>
-						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-							<tr>
-								<td>
-									<table cellpadding="0" cellspacing="5" class="layoutTable">
-										<tr>
-											<td><input id="resetButton" type="image"
-												src="../../images/icons/arrow_refresh.png" />
-											</td>
-											<td><input id="runButton" type="image"
-												src="../../images/icons/run.png" /></td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td><label for="inputDataTextArea"></label></td>
-							</tr>
-							<tr>
-								<td><textarea id="inputDataTextarea" rows="10" cols="80"
-										class="code" style="width: 400px;"></textarea>
-								</td>
-							</tr>
-							<tr>
-								<td><label for="outputDataTextarea"></label></td>
-							</tr>
-							<tr>
-								<td><textarea id="outputDataTextarea" rows="10" cols="80"
-										class="code" style="width: 400px;"></textarea>
-								</td>
-							</tr>
-						</table>
-				</td>
-				</tr>
-			</table>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </body>

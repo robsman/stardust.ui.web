@@ -30,86 +30,86 @@ define(
 			};
 
 			function i18modelelement() {
-				jQuery("#name")
+				m_utils.jQuerySelect("#name")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.name"));
 
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
 
-				jQuery("#dataStructName")
+				m_utils.jQuerySelect("#dataStructName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.dataStructureName"));
-				jQuery("#xsdtext")
+				m_utils.jQuerySelect("#xsdtext")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.textInfo"));
-				jQuery("#struct")
+				m_utils.jQuerySelect("#struct")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.structure"));
-				jQuery("#enum")
+				m_utils.jQuerySelect("#enum")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.enumeration"));
-				jQuery("#addElementButton")
+				m_utils.jQuerySelect("#addElementButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.add"));
-				jQuery("#deleteElementButton")
+				m_utils.jQuerySelect("#deleteElementButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.delete"));
-				jQuery("#moveElementUpButton")
+				m_utils.jQuerySelect("#moveElementUpButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveUp"));
-				jQuery("#moveElementDownButton")
+				m_utils.jQuerySelect("#moveElementDownButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveDown"));
-				jQuery("#moveElementDownButton")
+				m_utils.jQuerySelect("#moveElementDownButton")
 						.attr(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.moveDown"));
-				jQuery("#elementColumn")
+				m_utils.jQuerySelect("#elementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.element.name"));
-				jQuery("#enumElementColumn")
+				m_utils.jQuerySelect("#enumElementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.enumElement.name"));
-				jQuery("#typeColumn")
+				m_utils.jQuerySelect("#typeColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.type.name"));
-				jQuery("#cardinalityColumn")
+				m_utils.jQuerySelect("#cardinalityColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.cardinality.name"));
-				jQuery("#fieldProp")
+				m_utils.jQuerySelect("#fieldProp")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.heading.filedProperties"));
-				jQuery("#prop")
+				m_utils.jQuerySelect("#prop")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.property"));
-				jQuery("#val")
+				m_utils.jQuerySelect("#val")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.processDefinition.propertyPages.value"));
-				jQuery("#configuration")
+				m_utils.jQuerySelect("#configuration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.messageTransformation.configurationProperties.tab"));
@@ -132,23 +132,19 @@ define(
 				 */
 				ModelElementView.prototype.initializeModelElementView = function(
 						modelElement) {
-					this.guidOutputRow = jQuery("#guidOutputRow");
-					this.idOutputRow = jQuery("#idOutputRow");
-					this.guidOutput = jQuery("#guidOutput");
-					this.idOutput = jQuery("#idOutput");
-					this.nameInput = jQuery("#nameInput");
-					this.descriptionTextarea = jQuery("#descriptionTextarea");
-					this.propertiesTabs = jQuery("#propertiesTabs");
-					this.propertiesTabsList = jQuery("#propertiesTabsList");
+					this.guidOutputRow = m_utils.jQuerySelect("#guidOutputRow");
+					this.idOutputRow = m_utils.jQuerySelect("#idOutputRow");
+					this.guidOutput = m_utils.jQuerySelect("#guidOutput");
+					this.idOutput = m_utils.jQuerySelect("#idOutput");
+					this.nameInput = m_utils.jQuerySelect("#nameInput");
+					this.descriptionTextarea = m_utils.jQuerySelect("#descriptionTextarea");
+					this.propertiesTabs = m_utils.jQuerySelect("#propertiesTabs");
+					this.propertiesTabsList = m_utils.jQuerySelect("#propertiesTabsList");
 
 					this.nameInput.change({
 						"view" : this
 					}, function(event) {
 						var view = event.data.view;
-
-						if (!view.validate()) {
-							return;
-						}
 
 						if (view.modelElement.name != view.nameInput.val()) {
 							view.renameModelElement();
@@ -170,6 +166,21 @@ define(
 								propertiesPagesExtensions, 0);
 					} else {
 						this.setModelElement(modelElement);
+						this.checkAndMarkIfReadonly();
+					}
+					
+					// Set up event handling to adapt view size
+					this.initializeViewSizeEventHandling();
+					// Set initial view size
+					this.setViewDivSize();
+				};
+
+				/**
+				 *
+				 */
+				ModelElementView.prototype.checkAndMarkIfReadonly = function(override) {
+					if (this.modelElement && (this.modelElement.isReadonly() || override)) {
+						m_utils.markControlsReadonly(null, this.modelElement.isReadonly());
 					}
 				};
 
@@ -181,6 +192,7 @@ define(
 					if (n == propertiesPagesExtensions.length) {
 						this.propertiesTabs.tabs();
 						this.setModelElement(modelElement);
+						this.checkAndMarkIfReadonly();
 
 						return;
 					}
@@ -214,7 +226,7 @@ define(
 
 					this.propertiesTabsList.append(propertiesTabHeader);
 
-					var pageDiv = jQuery("<div id='" + extension.id
+					var pageDiv = m_utils.jQuerySelect("<div id='" + extension.id
 							+ "'></div>");
 
 					this.propertiesTabs.append(pageDiv);
@@ -232,11 +244,11 @@ define(
 								var msg = "Properties Page Load Error: "
 										+ xhr.status + " " + xhr.statusText;
 
-								jQuery(this).append(msg);
+								m_utils.jQuerySelect(this).append(msg);
 								view.loadPropertiesPage(modelElement,
 										propertiesPagesExtensions, ++n);
 							} else {
-								var extension = extensions[jQuery(this).attr(
+								var extension = extensions[m_utils.jQuerySelect(this).attr(
 										"id")];
 								var page = extension.provider.create(view,
 										extension.id);
@@ -351,7 +363,11 @@ define(
 				/**
 				 *
 				 */
-				ModelElementView.prototype.submitChanges = function(changes) {
+				ModelElementView.prototype.submitChanges = function(changes, skipValidation) {
+					if (!skipValidation && !this.validate()) {
+						return;
+					}
+
 					// Generic attributes
 					// TODO Is this really needed?
 
@@ -377,10 +393,6 @@ define(
 						var view = event.data.view;
 						var input = event.data.input;
 
-						if (!view.validate()) {
-							return;
-						}
-
 						if (view.getModelElement()[property] != input.val()) {
 							var modelElement = {};
 							modelElement[property] = input.val();
@@ -395,28 +407,23 @@ define(
 				 */
 				ModelElementView.prototype.registerInputForModelElementAttributeChangeSubmission = function(
 						input, attribute) {
-					input
-							.change(
-									{
-										"view" : this,
-										"input" : input
-									},
-									function(event) {
-										var view = event.data.view;
-										var input = event.data.input;
+					input.change({
+						"view" : this,
+						"input" : input
+					}, function(event) {
+						var view = event.data.view;
+						var input = event.data.input;
 
-										if (!view.validate()) {
-											return;
-										}
-
-										view.submitModelElementAttributeChange(attribute, input.val());
-									});
+						view.submitModelElementAttributeChange(attribute, input
+								.val());
+					});
 				};
 
 				/**
 				 *
 				 */
-				ModelElementView.prototype.submitModelElementAttributeChange = function(attribute, value) {
+				ModelElementView.prototype.submitModelElementAttributeChange = function(
+						attribute, value) {
 					if (this.getModelElement().attributes[attribute] != value) {
 						var modelElement = {
 							attributes : {}
@@ -441,10 +448,6 @@ define(
 										var view = event.data.view;
 										var input = event.data.input;
 
-										if (!view.validate()) {
-											return;
-										}
-
 										if (view.getModelElement().attributes[attribute] != input
 												.val()) {
 											var modelElement = {
@@ -467,6 +470,7 @@ define(
 
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setModelElement(this.getModelElement());
+						this.checkAndMarkIfReadonly();
 
 						return;
 					}
@@ -485,16 +489,48 @@ define(
 								this.setModelElement(this.getModelElement());
 							}
 						}
+						if (command.commandId === "modelLockStatus.update") {
+							this.checkAndMarkIfReadonly(true);
+						}
 					}
 
 					this.postProcessCommand(command);
 				};
 
 				/**
-				 * In case individual views want to do additional stuff
-				 * they can over ride this function.
+				 * In case individual views want to do additional stuff they can
+				 * over ride this function.
 				 */
-				ModelElementView.prototype.postProcessCommand = function(command) {
+				ModelElementView.prototype.postProcessCommand = function(
+						command) {
+				};
+				
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.initializeViewSizeEventHandling = function() {
+					var self = this;
+					jQuery(window).resize(function() {
+						self.setViewDivSize();
+					});
+					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", function(params) {
+						self.setViewDivSize();
+					});
+					
+					EventHub.events.subscribe("SIDEBAR_PINNED", function(pinned) {
+						self.setViewDivSize();
+					});
+				};
+				
+				ModelElementView.prototype.setViewDivSize = function() {				
+					// Set available height to window height - y coordinate of outline div and an additional margin of 5px
+					var viewContainerDiv = m_utils.jQuerySelect("#" + this.id);
+					if (viewContainerDiv && viewContainerDiv.length !== 0) {
+						var availableHeight = m_utils.jQuerySelect(window).height() - (viewContainerDiv.offset().top + jQuery(".sg-footer-bar").height() + 20);
+						var availableWidth = m_utils.jQuerySelect(window).width() - (viewContainerDiv.offset().left + 0);
+						viewContainerDiv.height(availableHeight);
+						viewContainerDiv.width(availableWidth);	
+					}
 				};
 			}
 		});

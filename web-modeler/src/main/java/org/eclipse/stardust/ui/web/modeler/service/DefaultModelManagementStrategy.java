@@ -1,34 +1,34 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
+import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -41,7 +41,7 @@ public class DefaultModelManagementStrategy extends
 
    private static final Logger trace = LogManager.getLogger(DefaultModelManagementStrategy.class);
 
-	private static final String MODELS_DIR = "/process-models/";
+	public static final String MODELS_DIR = "/process-models/";
 
 	private ServiceFactory serviceFactory;
 	private DocumentManagementService documentManagementService;
@@ -123,36 +123,51 @@ public class DefaultModelManagementStrategy extends
        Folder folder = documentManagementService.getFolder(MODELS_DIR);
        List<Document> candidateModelDocuments = folder.getDocuments();
        for (Document modelDocument : candidateModelDocuments) {
-          if (modelDocument.getName().endsWith(".xpdl"))
+          String documentName = modelDocument.getName();
+          if (documentName.endsWith(".xpdl"))
           {
-             if(modelDocument.getName().equals(id))
+             if (documentName.equals(id))
              {
-                ModelType model = XpdlModelIoUtils
-                   .loadModel(readModelContext(modelDocument), this);
-                loadEObjectUUIDMap(model);
-                mapModelFileName(model, modelDocument.getName());
-
-                return model;
+                try
+                {
+                   ModelType model = loadModel(modelDocument);
+                   mapModelFileName(model, documentName);
+                   return model;
+                }
+                catch (IOException ex)
+                {
+                   trace.warn("Unable to load model '" + id + "'", ex);
+                }
              }
           }
        }
        return null;
     }
 
-
+    private ModelType loadModel(Document modelDocument) throws IOException {
+        WebModelerModelManager modelMgr = new WebModelerModelManager(this);
+        modelMgr.load(URI.createURI(modelDocument.getName()), new ByteArrayInputStream(readModelContext(modelDocument)));
+        ModelType model = modelMgr.getModel();
+        loadEObjectUUIDMap(model);
+        return model;
+    }
 
 	/**
 	 *
 	 */
 	public ModelType attachModel(String id) {
-		ModelType model = XpdlModelIoUtils
-		.loadModel(readModelContext(getDocumentManagementService()
-				.getDocument(MODELS_DIR + id + ".xpdl")), this);
-		loadEObjectUUIDMap(model);
-
-		getModels().put(id, model);
-
-		return model;
+        try
+        {
+           Document document = getDocumentManagementService().getDocument(MODELS_DIR + id + ".xpdl");
+           ModelType model = loadModel(document);
+           getModels().put(id, model);
+           return model;
+        }
+        catch (IOException ex)
+        {
+           trace.warn("Unable to load model '" + id + "'", ex);
+        }
+		return null;
 	}
 
 	/**
@@ -165,14 +180,15 @@ public class DefaultModelManagementStrategy extends
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       if (persistenceService.saveMode(nativeModel, baos))
       {
-         Document modelDocument = getDocumentManagementService().getDocument(
-               getModelFilePath(model));
+         Document modelDocument = (null != getModelFileName(model))
+               ? getDocumentManagementService().getDocument(getModelFilePath(model))
+               : null;
 
          if (null == modelDocument)
          {
             DocumentInfo docInfo = DmsUtils.createDocumentInfo(persistenceService.generateDefaultFileName(nativeModel));
 
-            docInfo.setOwner(getServiceFactory().getWorkflowService()
+            docInfo.setOwner(getServiceFactory().getUserService()
                   .getUser()
                   .getAccount());
             docInfo.setContentType(MimeTypesHelper.XML.getType());
@@ -180,9 +196,13 @@ public class DefaultModelManagementStrategy extends
             modelDocument = getDocumentManagementService().createDocument(MODELS_DIR,
                   docInfo, baos.toByteArray(), null);
 
-            // create initial version
-            getDocumentManagementService().versionDocument(modelDocument.getId(), null);
-            mapModelFileName(model);
+            if (null != modelDocument)
+            {
+               // create initial version
+               getDocumentManagementService()
+                     .versionDocument(modelDocument.getId(), null);
+               mapModelFileName(model, modelDocument.getName());
+            }
          }
          else
          {
@@ -238,7 +258,7 @@ public class DefaultModelManagementStrategy extends
       {
          DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
 
-         docInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
+         docInfo.setOwner(getServiceFactory().getUserService().getUser().getAccount());
          docInfo.setContentType(MimeTypesHelper.XML.getType());
 
          getDocumentManagementService().createDocument(MODELS_DIR, docInfo, fileContent,
@@ -306,15 +326,6 @@ public class DefaultModelManagementStrategy extends
 		return getDocumentManagementService().retrieveDocumentContent(
 				modelDocument.getId());
 	}
-
-   /**
-    * @param model
-    */
-   private void mapModelFileName(ModelType model)
-   {
-      mapModelFileName(model, model.getId() + ".xpdl");
-
-   }
 
    /**
     * @param model

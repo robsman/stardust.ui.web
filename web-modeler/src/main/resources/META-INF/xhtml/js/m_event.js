@@ -9,8 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model" ],
-		function(m_utils, m_constants, m_i18nUtils, m_model) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model",
+		  "bpm-modeler/js/m_modelElement"],
+		function(m_utils, m_constants, m_i18nUtils, m_model, m_modelElement) {
 
 			return {
 				createStartEvent : function(process) {
@@ -48,6 +49,10 @@ define(
 			 *
 			 */
 			function Event() {
+				var modelElement = m_modelElement.create();
+				m_utils.inheritFields(this, modelElement);
+				m_utils.inheritMethods(Event.prototype, modelElement);
+
 				this.type = m_constants.EVENT;
 				this.id = null;
 				this.name = null;
@@ -83,7 +88,7 @@ define(
 
 						this.attributes["carnot:engine:eventIntegrationOverlay"] = "manualTrigger";
 					} else if (this.eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-						this.eventClass = m_constants.MESSAGE_EVENT_CLASS;
+						this.eventClass = m_constants.TIMER_EVENT_CLASS;
 						this.interrupting = true;
 						this.throwing = false;
 					} else {
@@ -156,22 +161,13 @@ define(
 								m_constants.TIMER_EVENT_CLASS ];
 					}
 				} else if (eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
-					if (boundary) {
-						if (interrupting) {
-							return [ m_constants.MESSAGE_EVENT_CLASS,
-									m_constants.TIMER_EVENT_CLASS,
-									m_constants.ERROR_EVENT_CLASS ];
-						} else {
-							return [ m_constants.MESSAGE_EVENT_CLASS,
-									m_constants.TIMER_EVENT_CLASS ];
-						}
-					} else if (throwing) {
-						return [ m_constants.MESSAGE_EVENT_CLASS,
-								m_constants.TIMER_EVENT_CLASS ];
+					if (interrupting & boundary) {
+						return [ m_constants.TIMER_EVENT_CLASS,
+								m_constants.ERROR_EVENT_CLASS ];
 					} else {
-						return [ m_constants.MESSAGE_EVENT_CLASS,
-								m_constants.TIMER_EVENT_CLASS ];
+						return [ m_constants.TIMER_EVENT_CLASS ];
 					}
+
 				} else if (eventType == m_constants.STOP_EVENT_TYPE) {
 					return [ m_constants.NONE_EVENT_CLASS,
 							m_constants.MESSAGE_EVENT_CLASS ];

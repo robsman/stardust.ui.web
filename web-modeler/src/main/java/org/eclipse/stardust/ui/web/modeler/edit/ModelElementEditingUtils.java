@@ -11,15 +11,17 @@
 
 package org.eclipse.stardust.ui.web.modeler.edit;
 
-import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.common.Period;
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
+import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 
 /**
  * @author Shrikant.Gangal
@@ -27,72 +29,79 @@ import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
  */
 public class ModelElementEditingUtils
 {
+   public static void setPeriodAttribute(IExtensibleElement element, String stringValue, String unit)
+   {
+      short Y = 0;
+      short M = 0;
+      short D = 0;
+      short h = 0;
+      short m = 0;
+      short s = 0;
+      
+      short value = 0;
+      try
+      {
+         value = Short.parseShort(stringValue);
+      }
+      catch (NumberFormatException ex)
+      {
+         // TODO: log ?
+      }
+      
+      if (!StringUtils.isEmpty(unit))
+      {
+         switch (unit.charAt(0))
+         {
+         case 'Y': Y = value; break;
+         case 'M': M = value; break;
+         case 'D': D = value; break;
+         case 'h': h = value; break;
+         case 'm': m = value; break;
+         case 's': s = value; break;
+         }
+      }
+      // TODO: else log ?
+         
+      Period period = new Period(Y, M, D, h, m, s);
+      AttributeUtil.setAttribute(element, "carnot:engine:period",
+            Period.class.getSimpleName(), period.toString());
+   }
+
    /**
-    * @param processDefinition
+    * @param activity
+    * @param symbol oids
+    */
+   public static void deleteEventSymbols(ActivityType activity, LaneSymbol parentLaneSymbol)
+   {
+      List<IntermediateEventSymbol> symbols = parentLaneSymbol.getIntermediateEventSymbols();
+      for (long eventSymbolOid : EventMarshallingUtils.resolveHostedEvents(activity))
+      {
+         IModelElement eventSymbol = ModelUtils.findElementByOid(symbols, eventSymbolOid);
+         if (eventSymbol instanceof IntermediateEventSymbol)
+         {
+            deleteSymbol((IntermediateEventSymbol) eventSymbol);
+         }
+      }
+   }
+   
+   /**
     * @param symbol
     */
-   public static void deleteTransitionConnectionsForSymbol(
-         ProcessDefinitionType processDefinition, IFlowObjectSymbol symbol)
+   public static void deleteTransitionConnections(IFlowObjectSymbol symbol)
    {
-      if (null != symbol.getInTransitions())
-      {
-         deleteTransitionConnection(processDefinition, symbol.getInTransitions()
-               .iterator());
-      }
-
-      if (null != symbol.getOutTransitions())
-      {
-         deleteTransitionConnection(processDefinition, symbol.getOutTransitions()
-               .iterator());
-      }
-   }
-
-   /**
-    * @param processDefinition
-    * @param connIter
-    */
-   public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
-         Iterator<TransitionConnectionType> connIter)
-   {
-      while (connIter.hasNext())
-      {
-         deleteTransitionConnection(processDefinition, connIter.next());
-         connIter.remove();
-      }
-   }
-
-   /**
-    * @param processDefinition
-    * @param transitionConnection
-    */
-   public static void deleteTransitionConnection(ProcessDefinitionType processDefinition,
-         TransitionConnectionType transitionConnection)
-   {
-      processDefinition.getDiagram()
-            .get(0)
-            .getPoolSymbols()
-            .get(0)
-            .getTransitionConnection()
-            .remove(transitionConnection);
-
-      if (transitionConnection.getTransition() != null)
-      {
-         processDefinition.getTransition().remove(transitionConnection.getTransition());
-      }
+      deleteConnectionSymbols(symbol.getInTransitions());
+      deleteConnectionSymbols(symbol.getOutTransitions());
    }
 
    /**
     * @param processDefinition
     * @param dataConnIter
     */
-   public static void deleteDataMappingConnection(
-         ProcessDefinitionType processDefinition,
-         Iterator<DataMappingConnectionType> dataConnIter)
+   public static void deleteDataMappingConnection(List<DataMappingConnectionType> dataConnIter)
    {
-      while (dataConnIter.hasNext())
+      for (int i = dataConnIter.size() - 1; i >= 0; i--)
       {
-         deleteDataMappingConnection(processDefinition, dataConnIter.next());
-         dataConnIter.remove();
+         deleteDataMappingConnection(dataConnIter.get(i));
       }
    }
 
@@ -100,41 +109,98 @@ public class ModelElementEditingUtils
     * @param processDefinition
     * @param dataMappingConnection
     */
-   public static void deleteDataMappingConnection(
-         ProcessDefinitionType processDefinition,
-         DataMappingConnectionType dataMappingConnection)
+   public static void deleteDataMappingConnection(DataMappingConnectionType dataMappingConnection)
    {
-      List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
-      if (null != dataMappingConnection.getActivitySymbol()) {
-         for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
-               .getActivity()
-               .getDataMapping())
+      List<DataMappingType> mappings = CollectionUtils.newArrayList();
+      ActivitySymbolType activitySymbol = dataMappingConnection.getActivitySymbol();
+      DataSymbolType dataSymbol = dataMappingConnection.getDataSymbol();
+      if (activitySymbol != null && dataSymbol != null)
+      {
+         ActivityType activity = activitySymbol.getActivity();
+         DataType data = dataSymbol.getData();
+         for (DataMappingType mapping : activity.getDataMapping())
          {
-            if (dataMappingType.getData()
-                  .getId()
-                  .equals(dataMappingConnection.getDataSymbol().getData().getId()))
+            // (fh) ??? why not comparing data with data ?
+            if (mapping.getData().getId()
+                  .equals(data.getId()))
             {
-               dataMapping.add(dataMappingType);
+               mappings.add(mapping);
             }
          }
-         dataMappingConnection.getActivitySymbol()
-         .getActivity()
-         .getDataMapping()
-         .removeAll(dataMapping);
       }
-
-      if (null != dataMappingConnection.getDataSymbol()) {
-         dataMappingConnection.getDataSymbol()
-         .getData()
-         .getDataMappings()
-         .removeAll(dataMapping);
+      
+      for (DataMappingType mapping : mappings)
+      {
+         EcoreUtil.delete(mapping);
       }
+      
+      EcoreUtil.delete(dataMappingConnection);
+   }
 
-      processDefinition.getDiagram()
-            .get(0)
-            .getPoolSymbols()
-            .get(0)
-            .getDataMappingConnection()
-            .remove(dataMappingConnection);
+   public static void deleteConnectionSymbols(List<? extends IConnectionSymbol> connections)
+   {
+      for (int i = connections.size()- 1; i >= 0; i--)
+      {
+         EcoreUtil.delete(connections.get(i));
+      }
+   }
+
+   public static void deleteIdentifiables(List<? extends IIdentifiableModelElement> identifiables)
+   {
+      for (int i = identifiables.size() - 1; i >= 0; i--)
+      {
+         deleteIdentifiable(identifiables.get(i));
+      }
+   }
+
+   public static void deleteIdentifiable(IIdentifiableModelElement identifiable)
+   {
+      if (identifiable instanceof TransitionType)
+      {
+         // (fh) transitions have connection symbols
+         deleteConnectionSymbols(((TransitionType) identifiable).getTransitionConnections());
+      }
+      else
+      {
+         deleteSymbols(identifiable);
+      }
+      EcoreUtil.delete(identifiable);
+   }
+
+   public static void deleteSymbols(IIdentifiableModelElement identifiable)
+   {
+      List<INodeSymbol> symbols = identifiable.getSymbols();
+      for (int i = symbols.size() - 1; i >= 0; i--)
+      {
+         deleteSymbol(symbols.get(i));
+      }
+   }
+
+   public static void deleteSymbol(INodeSymbol symbol)
+   {
+      deleteConnectionSymbols(symbol);
+      EcoreUtil.delete(symbol);
+   }
+
+   @SuppressWarnings("unchecked")
+   public static void deleteConnectionSymbols(INodeSymbol symbol)
+   {
+      List<EStructuralFeature> connectionFeatures = CollectionUtils.copyList(
+            symbol.getInConnectionFeatures());
+      connectionFeatures.addAll(symbol.getOutConnectionFeatures());
+      for (EStructuralFeature feature : connectionFeatures)
+      {
+         Object connection = symbol.eGet(feature);
+         if (connection instanceof IConnectionSymbol)
+         {
+            EcoreUtil.delete((IConnectionSymbol) connection);
+         }
+         else if (connection instanceof List)
+         {
+            deleteConnectionSymbols((List<IConnectionSymbol>) connection);
+         }
+      }
+      deleteConnectionSymbols(symbol.getInLinks());
+      deleteConnectionSymbols(symbol.getOutLinks());
    }
 }

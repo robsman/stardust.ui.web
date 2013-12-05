@@ -14,7 +14,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils",
+				"bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
@@ -78,58 +79,68 @@ define(
 					this.parameterDefinitions = [];
 					this.currentParameterDefinition = null;
 					this.selectedRowIndex = -1;
-					this.parameterDefinitionsTable = jQuery(this.options.scope
+					this.parameterDefinitionsTable = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable");
 
 					this.parameterDefinitionsTable.css("width",
 							this.options.tableWidth);
 
-					this.parameterDefinitionsTableBody = jQuery(this.options.scope
+					this.parameterDefinitionsTableBody = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tbody");
-					this.parameterDefinitionNameInput = jQuery(this.options.scope
+					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
-					this.parameterDefinitionDirectionSelect = jQuery(this.options.scope
+					this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionDirectionSelect");
-					this.addParameterDefinitionButton = jQuery(this.options.scope
+					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
-					this.deleteParameterDefinitionButton = jQuery(this.options.scope
+					this.deleteParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #deleteParameterDefinitionButton");
 
-					this.addParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/add.png");
-					this.deleteParameterDefinitionButton.attr("src", m_urlUtils.getContextName() + "/plugins/bpm-modeler/images/icons/delete.png");
+					this.addParameterDefinitionButton.attr("src", m_urlUtils
+							.getContextName()
+							+ "/plugins/bpm-modeler/images/icons/add.png");
+					this.deleteParameterDefinitionButton.attr("src", m_urlUtils
+							.getContextName()
+							+ "/plugins/bpm-modeler/images/icons/delete.png");
 
 					this.currentFocusInput = this.parameterDefinitionNameInput;
 
 					if (this.options.supportsDataTypeSelection) {
-						this.dataTypeSelector = m_dataTypeSelector.create({
-							scope : this.dataTypeSelectorScope,
-							submitHandler : this,
-							supportsOtherData : false,
-							supportsDocumentTypes : true,
-							restrictToCurrentModel : true
-						});
+						this.dataTypeSelector = m_dataTypeSelector
+								.create({
+									scope : this.dataTypeSelectorScope,
+									submitHandler : this,
+									supportsOtherData : (typeof this.options.supportsOtherData === "undefined") ? false
+											: this.options.supportsOtherData,
+									supportsDocumentTypes : (typeof this.options.supportsDocumentTypes === "undefined") ? true
+											: this.options.supportsDocumentTypes,
+									restrictToCurrentModel : (typeof this.options.restrictToCurrentModel === "undefined") ? false
+											: this.options.restrictToCurrentModel,
+									hideEnumerations : (typeof this.options.hideEnumerations === "undefined") ? false
+											: this.options.hideEnumerations
+								});
 					}
 
 					if (this.options.supportsOrdering) {
-						this.moveParameterDefinitionUpButton = jQuery(this.options.scope
+						this.moveParameterDefinitionUpButton = m_utils.jQuerySelect(this.options.scope
 								+ " #moveParameterDefinitionUpButton");
-						this.moveParameterDefinitionDownButton = jQuery(this.options.scope
+						this.moveParameterDefinitionDownButton = m_utils.jQuerySelect(this.options.scope
 								+ " #moveParameterDefinitionDownButton");
 					}
 
 					if (this.options.supportsDescriptors) {
-						this.descriptorInput = jQuery(this.options.scope
+						this.descriptorInput = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionDescriptorInput");
-						this.keyDescriptorInput = jQuery(this.options.scope
+						this.keyDescriptorInput = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionKeyDescriptorInput");
 					}
 
 					if (this.options.supportsDataMappings) {
-						this.parameterDefinitionDataSelect = jQuery(this.options.scope
+						this.parameterDefinitionDataSelect = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionDataSelect");
 
 						if (this.options.supportsDataPathes) {
-							this.parameterDefinitionPathInput = jQuery(this.options.scope
+							this.parameterDefinitionPathInput = m_utils.jQuerySelect(this.options.scope
 									+ " #parameterDefinitionPathInput");
 						}
 					}
@@ -170,8 +181,9 @@ define(
 									function(event) {
 										if (event.data.panel.currentParameterDefinition != null) {
 											// Blank names are not allowed.
-											if (jQuery.trim(event.data.panel.parameterDefinitionNameInput
-													.val()) == "") {
+											if (jQuery
+													.trim(event.data.panel.parameterDefinitionNameInput
+															.val()) == "") {
 												event.data.panel.parameterDefinitionNameInput
 														.val(event.data.panel.currentParameterDefinition.name);
 												return;
@@ -193,6 +205,10 @@ define(
 											event.data.panel.currentParameterDefinition.direction = event.data.panel.parameterDefinitionDirectionSelect
 													.val();
 
+											// Reset descriptor and key-descriptor on direction change
+											event.data.panel.currentParameterDefinition.descriptor = false;
+											event.data.panel.currentParameterDefinition.keyDescriptor = false;
+
 											// Switch back to standard focus
 											// handling
 
@@ -211,6 +227,8 @@ define(
 										function(event) {
 											event.data.panel.currentParameterDefinition.descriptor = event.data.panel.descriptorInput
 													.prop("checked");
+											// Reset key-descriptor input on descriptor change.
+											event.data.panel.currentParameterDefinition.keyDescriptor = false;
 
 											if (event.data.panel.descriptorInput
 													.prop("checked")) {
@@ -300,7 +318,8 @@ define(
 
 					if (this.options.hideDirectionSelection) {
 						m_dialog
-								.makeInvisible(jQuery(this.options.scope + "label[for='parameterDefinitionDirectionSelect']"));
+								.makeInvisible(m_utils.jQuerySelect(this.options.scope
+										+ "label[for='parameterDefinitionDirectionSelect']"));
 						m_dialog
 								.makeInvisible(this.parameterDefinitionDirectionSelect);
 					}
@@ -348,10 +367,10 @@ define(
 
 					// Select row
 
-					var tableRows = jQuery(this.options.scope
+					var tableRows = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tr");
 
-					jQuery(tableRows[this.selectedRowIndex]).addClass(
+					m_utils.jQuerySelect(tableRows[this.selectedRowIndex]).addClass(
 							"selected");
 				};
 
@@ -400,7 +419,10 @@ define(
 					this.parameterDefinitionDataSelect.empty();
 
 					this.parameterDefinitionDataSelect
-							.append("<option value=\"TO_BE_DEFINED\">" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+							.append("<option value=\"TO_BE_DEFINED\">"
+									+ m_i18nUtils
+											.getProperty("modeler.general.toBeDefined")
+									+ "</option>");
 
 					if (this.scopeModel) {
 						var modelname = m_i18nUtils
@@ -424,37 +446,38 @@ define(
 					}
 
 					// TODO - Delete this
-					// Other model types are not not needed for formal parameters
-//					var othermodel = m_i18nUtils
-//							.getProperty("modeler.element.properties.commonProperties.otherModel")
-//					this.parameterDefinitionDataSelect
-//							.append("</optgroup><optgroup label=\""
-//									+ othermodel + "\">");
-//
-//					for ( var n in m_model.getModels()) {
-//						if (this.scopeModel
-//								&& m_model.getModels()[n] == this.scopeModel) {
-//							continue;
-//						}
-//
-//						for ( var m in m_model.getModels()[n].dataItems) {
-//							var dataItem = m_model.getModels()[n].dataItems[m];
-//
-//							if (this.isDataOfSelectedType(dataItem)) {
-//								this.parameterDefinitionDataSelect
-//										.append("<option value='"
-//												+ dataItem.getFullId() + "'>"
-//												+ m_model.getModels()[n].name
-//												+ "/" + dataItem.name
-//												+ "</option>");
-//							}
-//						}
-//					}
-//
-//					this.parameterDefinitionDataSelect.append("</optgroup>");
+					// Other model types are not not needed for formal
+					// parameters
+					// var othermodel = m_i18nUtils
+					// .getProperty("modeler.element.properties.commonProperties.otherModel")
+					// this.parameterDefinitionDataSelect
+					// .append("</optgroup><optgroup label=\""
+					// + othermodel + "\">");
+					//
+					// for ( var n in m_model.getModels()) {
+					// if (this.scopeModel
+					// && m_model.getModels()[n] == this.scopeModel) {
+					// continue;
+					// }
+					//
+					// for ( var m in m_model.getModels()[n].dataItems) {
+					// var dataItem = m_model.getModels()[n].dataItems[m];
+					//
+					// if (this.isDataOfSelectedType(dataItem)) {
+					// this.parameterDefinitionDataSelect
+					// .append("<option value='"
+					// + dataItem.getFullId() + "'>"
+					// + m_model.getModels()[n].name
+					// + "/" + dataItem.name
+					// + "</option>");
+					// }
+					// }
+					// }
+					//
+					// this.parameterDefinitionDataSelect.append("</optgroup>");
 
-					if (!this.currentParameterDefinition ||
-							!this.currentParameterDefinition.dataFullId) {
+					if (!this.currentParameterDefinition
+							|| !this.currentParameterDefinition.dataFullId) {
 						this.parameterDefinitionDataSelect
 								.val(m_constants.TO_BE_DEFINED);
 					} else {
@@ -466,21 +489,26 @@ define(
 				/**
 				 *
 				 */
-				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(data) {
+				ParameterDefinitionsPanel.prototype.isDataOfSelectedType = function(
+						data) {
 					if (this.options.supportsDataTypeSelection == false) {
 						return true;
 					}
 
 					if (this.dataTypeSelector
-							&& data.dataType === this.dataTypeSelector.dataTypeSelect.val()) {
+							&& data.dataType === this.dataTypeSelector.dataTypeSelect
+									.val()) {
 						if (data.dataType === m_constants.PRIMITIVE_DATA_TYPE
-								&& data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
+								&& data.primitiveDataType === this.dataTypeSelector.primitiveDataTypeSelect
+										.val()) {
 							return true
 						} else if (data.dataType === m_constants.STRUCTURED_DATA_TYPE
-								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect.val()) {
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.structuredDataTypeSelect
+										.val()) {
 							return true
 						} else if (data.dataType === m_constants.DOCUMENT_DATA_TYPE
-								&& data.structuredDataTypeFullId === this.dataTypeSelector.documentTypeSelect.val()) {
+								&& data.structuredDataTypeFullId === this.dataTypeSelector.documentTypeSelect
+										.val()) {
 							return true
 						}
 					}
@@ -513,6 +541,8 @@ define(
 							} else {
 								content += "inDataPathListItem";
 							}
+						} else if (parameterDefinition.direction == "INOUT") {
+							content += "inoutDataPathListItem";
 						} else {
 							content += "outDataPathListItem";
 						}
@@ -535,7 +565,8 @@ define(
 								// Convert
 							} else {
 								if (parameterDefinition.structuredDataTypeFullId) {
-									content += m_model.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
+									content += m_model
+											.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
 								}
 								// Format
 							}
@@ -548,7 +579,8 @@ define(
 									+ this.options.mappingColumnWidth + "\">";
 
 							if (parameterDefinition.dataFullId != null
-									&& m_model.findData(parameterDefinition.dataFullId)) {
+									&& m_model
+											.findData(parameterDefinition.dataFullId)) {
 								var data = m_model
 										.findData(parameterDefinition.dataFullId);
 
@@ -574,7 +606,7 @@ define(
 
 						this.parameterDefinitionsTableBody.append(content);
 
-						jQuery(
+						m_utils.jQuerySelect(
 								this.options.scope
 										+ "table#parameterDefinitionsTable tr")
 								.mousedown(
@@ -584,9 +616,9 @@ define(
 										function(event) {
 											event.data.panel
 													.deselectParameterDefinitions();
-											jQuery(this).addClass("selected");
+											m_utils.jQuerySelect(this).addClass("selected");
 
-											var index = jQuery(this).attr("id");
+											var index = m_utils.jQuerySelect(this).attr("id");
 
 											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
 											event.data.panel.selectedRowIndex = index;
@@ -608,7 +640,7 @@ define(
 				 */
 				ParameterDefinitionsPanel.prototype.deselectParameterDefinitions = function(
 						dataPath) {
-					jQuery(
+					m_utils.jQuerySelect(
 							this.options.scope
 									+ "table#parameterDefinitionsTable tr.selected")
 							.removeClass("selected");
@@ -618,7 +650,8 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
-					if (this.currentParameterDefinition == null) {
+					if (!this.currentParameterDefinition
+							|| (this.currentParameterDefinition.attributes && this.currentParameterDefinition.attributes["stardust:predefined"])) {
 						this.parameterDefinitionNameInput
 								.attr("disabled", true);
 						this.parameterDefinitionDirectionSelect.attr(
@@ -641,6 +674,9 @@ define(
 										"disabled", true);
 							}
 						}
+
+						this.deleteParameterDefinitionButton.attr("disabled",
+								true);
 					} else {
 						if (this.options.readOnlyParameterList) {
 							this.parameterDefinitionNameInput.attr("disabled",
@@ -730,6 +766,8 @@ define(
 						if (this.currentParameterDefinition.dataFullId
 								&& (-1 != this.currentParameterDefinition.dataFullId
 										.indexOf("PROCESS_ATTACHMENTS"))) {
+							this.parameterDefinitionNameInput.attr(
+									"disabled", true);
 							this.parameterDefinitionDirectionSelect.attr(
 									"disabled", true);
 							this.parameterDefinitionDataSelect.attr("disabled",
@@ -739,6 +777,8 @@ define(
 										"disabled", true);
 							}
 						} else {
+							this.parameterDefinitionNameInput
+									.removeAttr("disabled");
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
 
@@ -752,6 +792,8 @@ define(
 							}
 						}
 
+						this.deleteParameterDefinitionButton.removeAttr("disabled");
+
 						if (this.currentFocusInput) {
 							// Set focus and select
 
@@ -759,18 +801,25 @@ define(
 							this.currentFocusInput.select();
 						}
 					}
+
+					if (this.scopeModel && this.scopeModel.isReadonly()
+							&& this.dataTypeSelectorScope) {
+						m_utils.markControlsReadonlyForScope(
+								this.dataTypeSelectorScope, this.scopeModel
+										.isReadonly());
+					}
 				};
 
 				/**
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = this.parameterDefinitions.length;
+					var n = this.getNextIdIndex();
 
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
 						// on server
-						name : "New " + n,
+						name : "New " + n, // TODO - i18n
 						direction : "IN",
 						dataFullId : null,
 						dataPath : null
@@ -820,6 +869,29 @@ define(
 
 					this.submitChanges();
 				};
+				
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.getNextIdIndex = function() {
+					var n = 0;
+					var idOrNameExists = true;
+					while (idOrNameExists) {
+						n++;
+						var newId = "New_" + n;
+						var newName = "New " + n;  // TODO - i18n
+						var idOrNameExists = false;
+						for (var i = 0; i < this.parameterDefinitions.length; i++) {
+							if (this.parameterDefinitions[i].id === newId
+									|| this.parameterDefinitions[i].name === newName) {
+								idOrNameExists = true;
+								break;
+							}
+						}
+					}
+					
+					return n;
+				}
 
 				/**
 				 *

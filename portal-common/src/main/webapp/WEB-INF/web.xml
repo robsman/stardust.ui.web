@@ -48,7 +48,7 @@
 	</context-param>
 	<context-param>
 		<param-name>carnot.login.MODEL_REQUIRED</param-name>
-		<param-value>true</param-value>
+		<param-value>false</param-value>
 	</context-param>
 	<context-param>
 		<param-name>carnot.login.HEADING</param-name>
@@ -134,6 +134,50 @@
 	    <filter-name>touchSessionFilter</filter-name>
 	    <url-pattern>/services/rest/*</url-pattern>
 	</filter-mapping>
+
+	<!--  FOR HTML5 FW START -->
+	<filter>
+        <filter-name>Shell Index Redirecting Filter</filter-name>
+        <filter-class>org.eclipse.stardust.ui.web.html5.HTML5LandingPageFilter</filter-class>
+	    <init-param>
+	    <param-name>landingPage</param-name>
+	        <param-value>/shell/desktop-index.html</param-value>
+	    </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Shell Index Redirecting Filter</filter-name>
+        <url-pattern>/main.html</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+	<filter>
+        <filter-name>Jar Resource Filter</filter-name>
+        <filter-class>org.eclipse.stardust.ui.web.html5.EnhancedJarResourceFilter</filter-class>
+	<init-param>
+            <param-name>replacePattern</param-name>
+            <param-value>/main.html</param-value>
+        </init-param>
+     	<init-param>
+            <param-name>skipPaths</param-name>
+            <param-value>/plugins,/services/rest</param-value>
+        </init-param>
+     	<init-param>
+            <param-name>skipExtenssions</param-name>
+            <param-value>.xhtml,.jsp,.class,.xml,.properties</param-value>
+        </init-param>
+     	<init-param>
+            <param-name>restrictLibs</param-name>
+            <param-value>sg-components-,app-shell-,util-services-,portal-common</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Jar Resource Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+	<!--  FOR HTML5 FW END -->
 
 	<listener>
 		<listener-class>org.eclipse.stardust.ui.web.viewscommon.common.listener.SessionContextListener</listener-class>

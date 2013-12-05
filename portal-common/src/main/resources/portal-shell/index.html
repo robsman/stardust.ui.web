@@ -1,0 +1,191 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en" ng-controller="sg.shell.Controller" > <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en" ng-controller="sg.shell.Controller" > <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie10 lt-ie9" lang="en" ng-controller="sg.shell.Controller" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js lt-ie10" lang="en" ng-controller="sg.shell.Controller"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <base id="baseTag" href="/">
+    <script>
+    // This ensures the base URL of the application is set to the current URL.
+    // This enables us to automatically adapt to the location the application is put in.
+    // Put inline here to ensure that all future requests the browser does on this page is made with the correct base.
+    document.getElementById('baseTag').href = location.href;
+    </script>
+
+    <title ng-bind-template="{{config.windowTitle}}"></title>
+    <meta name="viewport" content="width=device-width">
+    <!-- ng-cloak is defined here to prevent a flash of unprocessed binding strings -->
+    <style>[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }</style>
+
+    <link rel="stylesheet" href="portal-shell/themes/default/styles.css"></link>
+    <link ng-repeat="css in theme.styleSheets" rel="stylesheet" ng-href="{{css}}"></link>
+
+    <script ng-repeat="js in theme.scripts" type="text/javascript" ng-src="{{js}}"></script>
+
+    <script>
+        // include angular loader, which allows the files to be loaded asynchronously in any order, not requiring angular to be loaded first
+        /*
+         AngularJS v1.1.5
+         (c) 2010-2012 Google, Inc. http://angularjs.org
+         License: MIT
+         */
+        (function(i){'use strict';function d(c,b,e){return c[b]||(c[b]=e())}return d(d(i,"angular",Object),"module",function(){var c={};return function(b,e,f){e&&c.hasOwnProperty(b)&&(c[b]=null);return d(c,b,function(){function a(a,b,d){return function(){c[d||"push"]([a,b,arguments]);return g}}if(!e)throw Error("No module: "+b);var c=[],d=[],h=a("$injector","invoke"),g={_invokeQueue:c,_runBlocks:d,requires:e,name:b,provider:a("$provide","provider"),factory:a("$provide","factory"),service:a("$provide","service"),
+            value:a("$provide","value"),constant:a("$provide","constant","unshift"),animation:a("$animationProvider","register"),filter:a("$filterProvider","register"),controller:a("$controllerProvider","register"),directive:a("$compileProvider","directive"),config:h,run:function(a){d.push(a);return this}};f&&h(f);return g})}})})(window);
+    </script>
+
+    <style type="text/css">
+      .loading-indicator {
+           background-image: url('portal-shell/themes/default/images/Loading.gif');
+           background-repeat: no-repeat;
+           background-position: center;
+           background-attachment: fixed;
+       }
+    </style>
+</head>
+<body class="loading-indicator">
+	<div class="ng-cloak">
+		<!-- Header --> 
+		<header class="app-header">
+			<div class="header">
+				<div class="header-table">
+					<div class="header-row">
+						<div class="header-cell app-logo-main">
+							<div class="header-cell app-logo sg-common-menu"></div>
+							<div class="header-cell app-title">{{config.appTitle}}</div>
+						</div>
+						<div class="header-cell">
+							<!-- Utility Menu -->
+							<div class="header-table">
+								<div class="header-row">
+									<div class="filler-cell"></div>
+									<div ng-repeat="item in utilityItems" class="header-cell utility-item">
+										<span class="{{item.icon}}"></span>
+										<span class="utility-item-label">{{item.label}}</span>
+									</div>
+								</div>
+							</div>
+							<!-- Added direct Configuration View Link -->
+							<div style="display: table; padding-bottom: 4px;">
+								<div style="display: table-row;">
+									<div class="filler-cell"></div>
+									<div class="nav-tab-configuration">
+										<button class="configuration" ng-click="open('/ippPortal/configurationTreeView', $event)"></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Nav Bar with Tabs -->
+				<div class="shell-tabs-bar">
+					<div class="nav-tabs">
+						<div class="nav-tabs-row">
+							<div class="nav-tab-shell-home" ng-mouseleave="topMenu.close()">
+								<button class="shell-home" ng-click="topMenu.toggle()"></button>
+								<div ng-if="topMenu.visible" class="top-menu">
+									<div ng-repeat="topMenuItem in topMenu.items">
+										<div class="topMenuItemHeader">
+											{{topMenuItem.label}}
+											<div ng-repeat="childMenuItem in topMenuItem.children"
+												class="topMenuItemLabel"
+												ng-click="topMenu.openItem(childMenuItem.path, $event)">
+												{{childMenuItem.label}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="nav-tab" ng-repeat="tab in tabs">
+								<div title="{{tab.title}}" ng-click="open(tab.path, $event)"
+									class="{{ {true: 'nav-tab-active', false: 'nav-tab-inactive'}[activeViewPanel().path === tab.path] }}">
+									<div class="nav-tab-label-icon-wrapper">
+										<span class="{{tab.icon}}"></span>
+										<span class="nav-tab-label">{{tab.label}}</span>
+									</div>
+								</div>
+								<span ng-click="close(tab.path)"
+									class="nav-tab-close {{ {true: 'nav-active-tab-close', false: 'nav-inactive-tab-close'}[activeViewPanel().path === tab.path] }}">x</span>
+							</div>
+							<div class="nav-tab-filler"></div>
+							<div class="nav-overflow-tab" ng-if="overflowTabs.tabs.length > 0" ng-mouseleave="overflowTabs.close()">
+								<div ng-click="overflowTabs.toggle()" class="nav-overflow-tab-title">({{overflowTabs.tabs.length}})</div> 
+								<div ng-if="overflowTabs.visible" class="overflow-tabs">
+									<div ng-repeat="overflowTab in overflowTabs.tabs" class="nav-overflow-tab-item"
+										ng-click="overflowTabs.openView(overflowTab.path, $event)">
+										<div class="nav-overflow-tab-label-icon-wrapper">
+											<span class="{{overflowTab.icon}}"></span>
+											<span class="nav-overflow-tab-item-label">{{overflowTab.label}}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="shell-tabs-spacer"></div>
+			</div>
+		</header>
+		
+		<!-- Main Content (Sidebar and Views) -->
+		<div class="container-fluid">
+			<!-- Sidebar -->
+			<div id="sidebar" class="sidebar" sg-stretch-to-bottom>
+				<div class="sg-sidebar-toggle" ng-class="{'display-none': sidebar.pinned}"> 
+					<div class="sg-sidebar-toggle-inner">
+						<div class="sg-sidebar-toggle-icon" ng-click="pinSidebar()"></div>
+					</div>
+				</div>
+				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
+					ng-style="{'width': config.sidebar.width + 'px'}">
+					<div class="sidebar-title-wrapper">
+						<span class="sidebar-title">{{config.sidebar.title}}</span>
+						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()"></div>
+					</div>
+					<div class="sidebar-content-inner" ng-class="{'display-none': !sidebar.visible}">
+						<div ng-repeat="item in sidebars">
+							<div ng-if="sidebarCheck(item)" ng-controller="sidebarCtrl">
+								<ng-include src="item.partial"/>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-separator"></div>
+				</div>
+			</div>
+			
+			<div ng-class="{'view-panels-no-sidebar': !sidebar.pinned}" ng-style="sidebar.pinned ? {'margin-left': config.sidebar.width + 'px'} : ''">
+				<div class="view-panels">
+					<div ng-repeat="panel in panels">
+						<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"
+							class="{{ {true: 'view-panel-active', false: 'view-panel-inactive'}[activeViewPanel().path === panel.path] }}">
+							<ng-include ng-if="viewPanelCheck(panel)" src="panel.partial"></ng-include>
+						</div>
+					</div>
+				</div>
+				<div ng-if="panels.length == 0">
+					<div sg-stretch-to-bottom></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="footer-row sg-footer-bar">
+				<div class="footer-cell">
+					<span class="copy-right">Eclipse Stardust</span>
+				</div>
+				<div class="footer-filler-cell"></div>
+				<div ng-repeat="item in footerItems" class="footer-cell footer-item">
+					<span>{{item.label}}</span>
+				</div>
+			</div>
+		</footer>
+	</div>
+
+    <script src="portal-shell/js/stardust.js?version=${buildNumber}"></script>
+    <script data-main="main.js?version=${buildNumber}" src="portal-shell/js/libs/require/2.1.2/require.min.js"></script>
+</body>
+</html>

@@ -24,13 +24,13 @@ define([ 'bpm-modeler/js/m_constants',
 		}, {
 			panelId : "eventPropertiesPanel",
 			id : "commentsPropertiesPage",
-			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 			provider : m_modelElementCommentsPropertiesPage,
 			visibility : "always"
 		}, {
 			panelId : "eventPropertiesPanel",
 			id : "implementationPropertiesPage",
-			pageHtmlUrl : "eventImplementationPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/eventImplementationPropertiesPage.html",
 			provider : m_eventImplementationPropertiesPage,
 			profiles : [ m_constants.INTEGRATOR_ROLE ],
 			visibility : "always"

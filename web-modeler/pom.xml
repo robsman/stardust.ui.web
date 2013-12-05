@@ -3,10 +3,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
-      <groupId>org.eclipse.stardust</groupId>
+      <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
       <version>9.9.9-SNAPSHOT</version>
-      <relativePath>../../product/product-parent/pom.xml</relativePath>
+      <relativePath>../../../sungard/product/product-parent/pom.xml</relativePath>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
@@ -25,7 +25,7 @@
 -->
 
    <properties>
-      <ipp.version>1.0.0-NIGHTLY-SNAPSHOT</ipp.version>
+      <ipp.version>1.1.0-NIGHTLY-SNAPSHOT</ipp.version>
    </properties>
 
    <dependencyManagement>
@@ -83,6 +83,7 @@
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
          <version>${servlet-api.version}</version>
+         <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -146,6 +147,30 @@
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
          <version>${junit.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <version>${spring-test.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
+         <version>${mockito-core.version}</version>
+         <scope>test</scope>
+         <exclusions>
+         	<exclusion>
+         		<groupId>org.hamcrest</groupId>
+         		<artifactId>hamcrest-core</artifactId>
+         	</exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+         <version>10.0.1</version>
          <scope>test</scope>
       </dependency>
 

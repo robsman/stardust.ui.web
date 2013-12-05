@@ -65,13 +65,14 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DocumentVersionDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.DownloadPopupDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider.FilterAttributes;
 
 
 
 /**
  * Class is managed bean class for Documents search UI.
- * 
+ *
  * @author Vikas.Mishra
  */
 public class DocumentSearchBean extends UIComponentBean
@@ -173,7 +174,7 @@ public class DocumentSearchBean extends UIComponentBean
             "documentSearchTable.column.actions"), ResourcePaths.VIEW_DOCUMENT_SEARCH_COLUMN, true, false);
       actionsCol.setColumnAlignment(ColumnAlignment.RIGHT);
       actionsCol.setExportable(false);
-      
+
       documentSearchFixedCols2.add(actionsCol);
 
       List<ColumnPreference> documentSearchCols = new ArrayList<ColumnPreference>();
@@ -205,9 +206,9 @@ public class DocumentSearchBean extends UIComponentBean
       documentSearchTable.setISortHandler(sortHandler);
       documentSearchTable.setDataTableExportHandler(new DocumentSearchExportHandler());
    }
-   
+
    /**
-    * 
+    *
     */
    public void handleEvent(ViewEvent event)
    {
@@ -253,7 +254,7 @@ public class DocumentSearchBean extends UIComponentBean
    }
 
    /**
-    * 
+    *
     * @param event
     */
    public void downloadDocument(ActionEvent event)
@@ -263,9 +264,11 @@ public class DocumentSearchBean extends UIComponentBean
          DocumentSearchTableEntry doc = (DocumentSearchTableEntry) event.getComponent().getAttributes().get("row");
          DownloadPopupDialog downloadPopupDialog = DownloadPopupDialog.getCurrent();
          Document document = doc.getDocument();
-         OutputResource resource = new OutputResource(document.getName(), document.getId(),
-               MimeTypesHelper.DEFAULT.toString(), downloadPopupDialog,
-               DocumentMgmtUtility.getDocumentManagementService(), true);
+         OutputResource resource = new OutputResource(
+               new DefualtResourceDataProvider(document.getName(),
+                     document.getId(), MimeTypesHelper.DEFAULT.toString(),
+                     DocumentMgmtUtility.getDocumentManagementService(), true),
+               downloadPopupDialog);
          downloadPopupDialog.open(resource);
       }
       catch (Exception e)
@@ -274,9 +277,9 @@ public class DocumentSearchBean extends UIComponentBean
       }
 
    }
-   
+
    /**
-    * 
+    *
     * @param event
     */
    public void documentVersionHistory(ActionEvent event)
@@ -294,7 +297,7 @@ public class DocumentSearchBean extends UIComponentBean
       }
 
    }
-   
+
    public final IppSortHandler getSortHandler()
    {
       return sortHandler;
@@ -367,7 +370,7 @@ public class DocumentSearchBean extends UIComponentBean
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.common.UIComponentBean#initialize()
     */
    public void initialize()
@@ -380,7 +383,7 @@ public class DocumentSearchBean extends UIComponentBean
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see
     * org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder#create(java.lang.Object)
     */
@@ -405,7 +408,7 @@ public class DocumentSearchBean extends UIComponentBean
 
    /**
     * opens a popup for process difinition selection
-    * 
+    *
     * @param event
     */
    public void attachDocumentsToProcess(ActionEvent event)
@@ -499,7 +502,7 @@ public class DocumentSearchBean extends UIComponentBean
 
    /**
     * Returns selected items count
-    * 
+    *
     * @return
     */
    public int getSelectedItemCount()

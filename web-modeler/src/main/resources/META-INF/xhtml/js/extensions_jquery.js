@@ -84,4 +84,9 @@ define(['jquery'], function($) {
 		  }
 	  });
   };
+  
+  /* Checks if the jQuery object returned by a selector actually has any elements. */
+  $.fn.isNotEmpty = function () {
+	    return this.length !== 0;
+  };
 });

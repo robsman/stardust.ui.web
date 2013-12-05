@@ -49,41 +49,88 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("label[for='nameInput']")
+					m_utils.jQuerySelect("label[for='nameInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.name"));
-					jQuery("label[for='typeSelect']")
+					m_utils.jQuerySelect("label[for='typeSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.type"));
 
 
-					jQuery("label[for='preserveQoSInput']")
+					m_utils.jQuerySelect("label[for='preserveQoSInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.preserveQoS"));
-					jQuery("label[for='selector']")
+					m_utils.jQuerySelect("label[for='selector']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.selector"));
-					jQuery("label[for='transacted']")
+					m_utils.jQuerySelect("label[for='transacted']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
 
 
 					this.configurationSpan = this.mapInputId("configuration");
-
-				this.configurationSpan
-							.text(m_i18nUtils
-									.getProperty("modeler.element.properties.event.configuration"));
+					this.configurationSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
+					this.parametersSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.parameters"));
 
-					this.parametersSpan
-							.text(m_i18nUtils
-									.getProperty("modeler.element.properties.event.parameters"));
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#messageEvent #parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+								.create({
+									scope : "messageEvent",
+									submitHandler : this,
+									supportsOrdering : true,
+									supportsDataMappings : true,
+									supportsDescriptors : false,
+									supportsDataTypeSelection : true,
+									supportsDocumentTypes : true,
+									hideEnumerations:true
+								});
 
+						if (this.propertiesTabs != null) {
+							this.propertiesTabs.tabs();
+						}
+					
+						this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+						
+						this.outputBodyAccessPointInput.change(
+										{
+											panel : this
+										},
+										function(event) {
+									if (!event.data.panel.validate()) {
+										return;
+									}
+
+									if (event.data.panel.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+														event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : null
+										}
+									}
+								});
+									} else {
+										/*event.data.panel
+												.submitParameterDefinitionsChanges(
+														"carnot:engine:camel::outBodyAccessPoint",
+														event.data.panel.outputBodyAccessPointInput
+																.val());*/
+								event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
+																.val()
+										}
+									}
+								});
+									}
+								});
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
 
@@ -124,24 +171,24 @@ define(
 
 					if (this.clientIdInput.val() != null && this.clientIdInput.val().length != 0) {
 						uri += separator + "clientId=" + encodeURIComponent(this.clientIdInput.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if (this.selectorInput.val() != null && this.selectorInput.val().length != 0) {
 						uri += separator + "selector=" + encodeURIComponent(this.selectorInput.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if(this.transactedInput.prop("checked")== true){
 						uri += separator + "transacted=";
-						separator = "&";
+						separator = "&amp;";
 						uri += this.transactedInput.prop("checked");
 					}
 					if(this.preserveQoSInput.prop("checked")==true){
 						uri += separator + "preserveMessageQos=";
 						uri += this.preserveQoSInput.prop("checked");
 					}
-					uri=uri.replace(/&/g, "&amp;");
+					//uri=uri.replace(/&/g, "&amp;");
 					return uri;
 				};
 
@@ -152,12 +199,14 @@ define(
 					this.nameInput.val(m_i18nUtils
 							.getProperty("modeler.general.toBeDefined"));
 
-					var parameterMappings = [];
+				/*	var parameterMappings = [];
 
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
 									"message", "String"));
 
+					this.submitOverlayChanges(parameterMappings);*/
+					var parameterMappings = [];
 					this.submitOverlayChanges(parameterMappings);
 				};
 				MessageEventIntegrationOverlay.prototype.getRouteContent = function()
@@ -182,6 +231,24 @@ define(
 				 *
 				 */
 				MessageEventIntegrationOverlay.prototype.update = function() {
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "' selected>"
+							+ m_i18nUtils.getProperty("None") // TODO I18N
+							+ "</option>");
+
+					
+					
+					for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
+					{
+						var accessPoint = this.page.getEvent().parameterMappings[n];
+						//accessPoint.id=accessPoint.name;
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						this.outputBodyAccessPointInput
+								.append("<option value='" + accessPoint.id
+										+ "'>" + accessPoint.name + "</option>");
+					}
+					
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -190,11 +257,11 @@ define(
 
 					// TODO Need better URL encoding
 
-				//	route = route.replace(/&/g, "&amp;");
+					//route = route.replace(/&/g, "&amp;");
 
 					var xmlDoc = jQuery.parseXML("<route>"+route+"</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 
 					if (uri) {
@@ -246,9 +313,17 @@ define(
 						}/* end URI parsing*/
 					}
 
-					this.parameterMappingsPanel.setScopeModel(this.page
+				/*	this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+							*/
+					this.outputBodyAccessPointInput
+					.val(this.page.getEvent().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.parameterDefinitionsPanel.setScopeModel(this.page
+							.getModel());
+					
+					this.parameterDefinitionsPanel
 							.setParameterDefinitions(this.page.getEvent().parameterMappings);
 				};
 

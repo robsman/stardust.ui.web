@@ -48,7 +48,7 @@ define(
 				SwimlaneBasicPropertiesPage.prototype.initialize = function() {
 					this.initializeBasicPropertiesPage();
 
-					this.propertiesPanelTitle = jQuery("#swimlanePropertiesPanelTitle");
+					this.propertiesPanelTitle = m_utils.jQuerySelect("#swimlanePropertiesPanelTitle");
 					this.newParticipantName = this
 							.mapInputId("newParticipantName");
 					this.participantList = this.mapInputId("participantList");

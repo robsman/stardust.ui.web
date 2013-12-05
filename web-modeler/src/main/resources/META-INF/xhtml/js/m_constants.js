@@ -128,7 +128,7 @@ define(function() {
 		EVENT_INTERMEDIATE_STROKE_WIDTH : 1.0,
 		EVENT_STOP_STROKE_WIDTH : 2.0,
 		EVENT_INTERRUPTING_STROKE_DASHARRAY	: "",
-		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: " -",
+		EVENT_NON_INTERRUPTING_STROKE_DASHARRAY	: "-",
 		EVENT_ICON_WIDTH_EC : 110, //added to be able to see icons properly in Eclipse
 		EVENT_ICON_HEIGHT_EC : 50, //added to be able to see icons properly in Eclipse
 
@@ -228,6 +228,9 @@ define(function() {
 		// Application
 
 		APPLICATION : "application",
+		JAVA_APPLICATION_TYPE : "plainJava",
+		SPRING_BEAN_APPLICATION_TYPE : "springBean",
+		SESSION_BEAN_APPLICATION_TYPE : "sessionBean",
 
 		// Participant
 
@@ -271,6 +274,8 @@ define(function() {
 		STRUCTURED_DATA_TYPE : "struct",
 		TYPE_DECLARATION_PROPERTY : "typeDeclaration",
 		DOCUMENT_DATA_TYPE : "dmsDocument",
+		ENTITY_DATA_TYPE : "entity",
+		HIBERNATE_DATA_TYPE : "hibernate",
 
 		// Type Declarations
 
@@ -294,7 +299,7 @@ define(function() {
 		NONE_EVENT_CLASS : "none",
 		TIMER_EVENT_CLASS : "timer",
 		MESSAGE_EVENT_CLASS : "message",
-		ERROR_EVENT_CLASS : "error",
+		ERROR_EVENT_CLASS : "exception",
 
 		// Access Points
 

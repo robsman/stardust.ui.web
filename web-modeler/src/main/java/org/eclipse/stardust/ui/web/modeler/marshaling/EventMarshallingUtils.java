@@ -2,28 +2,30 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import static java.util.Collections.emptyList;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
+import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
+import java.util.Iterator;
 import java.util.List;
-
-import com.google.gson.JsonObject;
+import java.util.UUID;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
+import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
+import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
+import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
+import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.*;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
+import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.IAttributeCategory;
-import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
+
+import com.google.gson.JsonObject;
 
 public class EventMarshallingUtils
 {
@@ -47,6 +49,13 @@ public class EventMarshallingUtils
    public static void tagAsIntermediateEventHost(ActivityType activity)
    {
       AttributeUtil.setBooleanAttribute(activity, TAG_INTERMEDIATE_EVENT_HOST, true);
+      activity.setHibernateOnCreation(true);
+   }
+
+   public static void unTagAsIntermediateEventHost(ActivityType activity)
+   {
+      AttributeUtil.clearExcept(activity, new String[]{TAG_INTERMEDIATE_EVENT_HOST});
+      activity.setHibernateOnCreation(false);      
    }
 
    /**
@@ -198,26 +207,22 @@ public class EventMarshallingUtils
                   : null);
    }
 
+   /**
+    * @param activity
+    * @param eventSymbol
+    */
+   public static void deleteEventHostingConfig(IExtensibleElement activity,
+         AbstractEventSymbol eventSymbol)
+   {
+      String id = PREFIX_HOSTED_EVENT + ":"
+            + Long.toString(eventSymbol.getElementOid());
+
+      AttributeUtil.setAttribute(activity, id, null);
+   }
+
    public static String encodeEventHandlerType(EventConditionTypeType conditionType)
    {
-      if (null == conditionType)
-      {
-         return null;
-      }
-
-      if (PredefinedConstants.TIMER_CONDITION.equals(conditionType.getId()))
-      {
-         return ModelerConstants.TIMER_EVENT_CLASS_KEY;
-      }
-      else if (PredefinedConstants.EXCEPTION_CONDITION.equals(conditionType.getId()))
-      {
-         return ModelerConstants.ERROR_EVENT_CLASS_KEY;
-      }
-      else
-      {
-         // TODO more event types, ideally per pluggable SPI
-         return null;
-      }
+      return conditionType == null ? null : conditionType.getId();
    }
 
    public static Boolean encodeIsThrowingEvent(EventConditionTypeType conditionType)
@@ -242,49 +247,275 @@ public class EventMarshallingUtils
       }
    }
 
-   public static Boolean encodeIsInterruptingEvent(EventConditionTypeType conditionType)
+   public static Boolean encodeIsInterruptingEvent(EventHandlerType eventHandler)
    {
-      if (null == conditionType)
+      if (null == eventHandler)
       {
          return null;
       }
-
-      if (PredefinedConstants.TIMER_CONDITION.equals(conditionType.getId()))
+      
+      for (EventActionType action : eventHandler.getEventAction())
       {
-         return true;
+         EventActionTypeType type = action.getType();
+         if (type != null && PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(type.getId()))
+         {
+            return true;
+         }
       }
-      else if (PredefinedConstants.EXCEPTION_CONDITION.equals(conditionType.getId()))
-      {
-         return false;
-      }
-      else
-      {
-         // TODO more event types, ideally per pluggable SPI
-         return null;
-      }
+      return false;
    }
 
-   public static EventConditionTypeType decodeEventHandlerType(String eventClass, ModelType model)
+   public static EventConditionTypeType decodeEventHandlerType(String conditionTypeId, ModelType model)
    {
-      String conditionTypeId = null;
-      if (ModelerConstants.TIMER_EVENT_CLASS_KEY.equals(eventClass))
+      if (conditionTypeId != null)
       {
-         conditionTypeId = PredefinedConstants.TIMER_CONDITION;
+         EventConditionTypeType conditionType = ModelUtils.findIdentifiableElement(
+               model.getEventConditionType(), conditionTypeId);
+         if (conditionType == null)
+         {
+            conditionType = injectPredefinedConditionType(model, conditionTypeId);
+         }
+         return conditionType;
       }
-      else if (ModelerConstants.ERROR_EVENT_CLASS_KEY.equals(eventClass))
-      {
-         conditionTypeId = PredefinedConstants.EXCEPTION_CONDITION;
-      }
-      // TODO more event types, ideally per pluggable SPI
+      return null;
+   }
 
-      return !isEmpty(conditionTypeId) //
-            ? ModelUtils.findIdentifiableElement(model.getEventConditionType(),
-                  conditionTypeId) //
-            : null;
+   public static EventActionTypeType decodeEventActionType(String actionTypeId, ModelType model)
+   {
+      if (actionTypeId != null)
+      {
+         EventActionTypeType actionType = ModelUtils.findIdentifiableElement(
+               model.getEventActionType(), actionTypeId);
+         if (actionType == null)
+         {
+            actionType = injectPredefinedActionType(model, actionTypeId);
+         }
+         return actionType;
+      }
+      return null;
+   }
+   
+   private static EventConditionTypeType injectPredefinedConditionType(ModelType model, String conditionTypeId)
+   {
+      EventConditionTypeType conditionType = null;
+      if (PredefinedConstants.TIMER_CONDITION.equals(conditionTypeId))
+      {
+         conditionType = newConditionType(conditionTypeId, "Timer", true, true,
+            ImplementationType.PULL_LITERAL, new String[][] {
+            {"carnot:engine:accessPointProvider", TimerAccessPointProvider.class.getName()},
+            {"carnot:engine:binder", TimeStampBinder.class.getName()},
+            {"carnot:engine:condition", TimeStampCondition.class.getName()},
+            {"carnot:engine:pullEventEmitter", TimeStampEmitter.class.getName()},
+            {"carnot:engine:validator", TimerValidator.class.getName()}
+         });
+      }
+      else if (PredefinedConstants.EXCEPTION_CONDITION.equals(conditionTypeId))
+      {
+         conditionType = newConditionType(conditionTypeId, "On Exception", false, true,
+            ImplementationType.ENGINE_LITERAL, new String[][] {
+            {"carnot:engine:accessPointProvider", ExceptionConditionAccessPointProvider.class.getName()},
+            {"carnot:engine:condition", ExceptionCondition.class.getName()},
+            {"carnot:engine:validator", ExceptionConditionValidator.class.getName()}
+         });
+      }
+      model.getEventConditionType().add(conditionType);
+      return conditionType;
+   }
+
+   private static EventActionTypeType injectPredefinedActionType(ModelType model, String actionTypeId)
+   {
+      EventActionTypeType actionType = null;
+      if (PredefinedConstants.ABORT_ACTIVITY_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Abort Activity", false, true,
+            "timer, exception", "bind, unbind", new String[][] {
+            {"carnot:engine:action", AbortActivityEventAction.class.getName()}
+         });
+      }
+      else if (PredefinedConstants.COMPLETE_ACTIVITY_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Complete Activity", false, true,
+            "timer, exception", "bind", new String[][] {
+            {"carnot:engine:action", CompleteActivityEventAction.class.getName()}
+         });
+      }
+      model.getEventActionType().add(actionType);
+      return actionType;
+   }
+
+   private static EventActionTypeType newActionType(String id, String name, boolean isProcessAction, boolean isActivityAction,
+         String supportedConditionTypes, String unsupportedContexts, String[][] attributes)
+   {
+      EventActionTypeType actionType = BpmPackageBuilder.F_CWM.createEventActionTypeType();
+      actionType.setId(id);
+      actionType.setName(name);
+      actionType.setIsPredefined(true);
+      actionType.setProcessAction(isProcessAction);
+      actionType.setActivityAction(isActivityAction);
+      actionType.setSupportedConditionTypes(supportedConditionTypes);
+      actionType.setUnsupportedContexts(unsupportedContexts);
+      for (String[] attribute : attributes)
+      {
+         AttributeUtil.setAttribute(actionType, attribute[0], attribute[1]);
+      }
+      return actionType;
+   }
+
+   private static EventConditionTypeType newConditionType(String id, String name,
+         boolean isProcessCondition, boolean isActivityCondition,
+         ImplementationType implementation, String[][] attributes)
+   {
+      EventConditionTypeType conditionType = BpmPackageBuilder.F_CWM.createEventConditionTypeType();
+      conditionType.setId(id);
+      conditionType.setName(name);
+      conditionType.setIsPredefined(true);
+      conditionType.setProcessCondition(isProcessCondition);
+      conditionType.setActivityCondition(isActivityCondition);
+      conditionType.setImplementation(implementation);
+      for (String[] attribute : attributes)
+      {
+         AttributeUtil.setAttribute(conditionType, attribute[0], attribute[1]);
+      }
+      return conditionType;
+   }
+
+   public static EventHandlerType newEventHandler(EventConditionTypeType type)
+   {
+      EventHandlerType eventHandler = BpmPackageBuilder.F_CWM.createEventHandlerType();
+      eventHandler.setId(UUID.randomUUID().toString());
+      eventHandler.setType(type);
+      return eventHandler;
+   }
+
+   public static EventActionType newEventAction(EventActionTypeType type)
+   {
+      EventActionType action = BpmPackageBuilder.F_CWM.createEventActionType();
+      action.setId(UUID.randomUUID().toString());
+      action.setType(type);
+      return action;
    }
 
    private EventMarshallingUtils()
    {
       // utility class
+   }
+
+   public static EventHandlerType createEventHandler(IntermediateEventSymbol eventSymbol, ActivityType hostActivity,
+         JsonObject hostingConfig, String eventClass)
+   {
+      EventHandlerType eventHandler = null;
+      EventConditionTypeType conditionType = decodeEventHandlerType(
+            eventClass, findContainingModel(hostActivity));
+      if (null != conditionType)
+      {
+         eventHandler = newEventHandler(conditionType);
+         // (fh) enable automatic binding by default on all PULL events.
+         eventHandler.setAutoBind(ImplementationType.PULL_LITERAL == conditionType.getImplementation());
+         
+         bindEvent(eventHandler, eventSymbol);
+         hostActivity.getEventHandler().add(eventHandler);
+   
+         hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
+      }
+      return eventHandler;
+   }
+
+   public static void updateEventHandler(EventHandlerType eventHandler, ActivityType hostActivity, JsonObject hostingConfig,
+         JsonObject eventJson)
+   {
+      ModelElementUnmarshaller.updateIdentifiableElement(eventHandler, eventJson);
+      ModelElementUnmarshaller.storeDescription(eventHandler, eventJson);
+      
+      if (eventJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      {
+         eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
+      }
+      
+      if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
+      {
+         // no bind or unbind actions supported.
+         eventHandler.getBindAction().clear();
+         eventHandler.getUnbindAction().clear();
+
+         String eventType = null;
+
+         Boolean interrupting = extractBoolean(eventJson, ModelerConstants.INTERRUPTING_PROPERTY);
+         if (interrupting == null || interrupting) // null means default value which is "true"
+         {
+            eventType = "Interrupting";
+            
+            // there should be exactly one abort action with scope sub hierarchy
+            EventActionType action = setEventAction(eventHandler,
+                  PredefinedConstants.ABORT_ACTIVITY_ACTION,
+                  ModelElementUnmarshaller.ABORT_ACTIVITY_NAME);
+
+            String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
+            if (!AbortScope.SUB_HIERARCHY.equals(scope))
+            {
+               AttributeUtil.setAttribute(action, "carnot:engine:abort:scope", AbortScope.SUB_HIERARCHY);
+            }
+         }
+         else
+         {
+            if (EventMarshallingUtils.isIntermediateEventHost(hostActivity))
+            {
+               // non-interrupting non-boundary events have just one complete action.
+               setEventAction(eventHandler,
+                     PredefinedConstants.COMPLETE_ACTIVITY_ACTION,
+                     ModelElementUnmarshaller.COMPLETE_ACTIVITY_NAME);
+            }
+            else
+            {
+               eventType = "Non-interrupting";
+               
+               // non-interrupting boundary events have no actions.
+               eventHandler.getEventAction().clear();
+            }
+         }
+
+         AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", eventType);
+      }
+   
+      hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
+   }
+
+   private static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName)
+   {
+      EventActionType action = null;
+      
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
+      {
+         EventActionType a = i.next();
+         if (action != null || a.getType() == null || !typeId.equals(a.getType().getId()))
+         {
+            i.remove();
+         }
+         else
+         {
+            action = a;
+         }
+      }
+      
+      if (action == null)
+      {
+         EventActionTypeType actionType = decodeEventActionType(typeId, findContainingModel(eventHandler));
+         if (actionType != null)
+         {
+            action = newEventAction(actionType);
+            action.setId(NameIdUtils.createIdFromName(defaultName));
+            action.setName(defaultName);
+            eventHandler.getEventAction().add(action);
+         }
+      }
+      return action;
+   }
+
+   public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)
+   {
+      ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
+            .withIdAndName("event_" + UUID.randomUUID(), name)
+            .build();
+      processDefinition.getActivity().add(hostActivity);
+      return hostActivity;
    }
 }

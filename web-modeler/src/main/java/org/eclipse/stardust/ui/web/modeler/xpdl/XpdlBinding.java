@@ -22,6 +22,12 @@ public class XpdlBinding extends ModelBinding<ModelType>
    }
 
    @Override
+   public String getModelFormat(ModelType model)
+   {
+      return "xpdl";
+   }
+
+   @Override
    public String getModelId(ModelType model)
    {
       return model.getId();

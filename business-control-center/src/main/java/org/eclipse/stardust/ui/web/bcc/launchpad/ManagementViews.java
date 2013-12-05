@@ -65,6 +65,7 @@ public class ManagementViews extends AbstractLaunchPanel implements ResourcePath
 
       portalApp.openViewById(V_resourceAvailability, "", null, null, false);
       portalApp.openViewById(V_roleAssignment, "", null, null, false);
+      portalApp.openViewById(V_deputyTeamMemberView, "", null, null, false);
       portalApp.openViewById(V_resourceLogin, "", null, null, false);
       portalApp.openViewById(V_resourcePerformanceView, "", null, null, false);
       portalApp.openViewById(V_performanceTeamleaderView, "", null, null, false);

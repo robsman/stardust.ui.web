@@ -52,6 +52,11 @@ public class Bpmn2ExtensionUtils
 
    public static EObject getExtensionElement(BaseElement object, String tag)
    {
+      return getExtensionElement(object, tag, NS_URI_STARDUST);
+   }
+
+   public static EObject getExtensionElement(BaseElement object, String tag, String nsUri)
+   {
       ExtensionAttributeValue extensionAttributes = !object.getExtensionValues()
             .isEmpty() //
             ? object.getExtensionValues().get(0)
@@ -60,7 +65,7 @@ public class Bpmn2ExtensionUtils
       {
          for (FeatureMap.Entry extension : extensionAttributes.getValue())
          {
-            if (isInFilter(extension.getEStructuralFeature(), tag))
+            if (isInFilter(extension.getEStructuralFeature(), tag, nsUri))
             {
                Object extensionValue = extension.getValue();
 
@@ -352,52 +357,58 @@ public class Bpmn2ExtensionUtils
 
    public static void setExtensionClob(BaseElement object, String tag, String clob)
    {
+      AnyType clobHolder = null;
+      if (!isEmpty(clob))
+      {
+         clobHolder = (AnyTypeImpl) XMLTypeFactory.eINSTANCE.createAnyType();
+         setCDataString(clobHolder.getMixed(), clob);
+      }
+      setExtensionValue(object, tag, clobHolder);
+   }
+
+   public static void setExtensionValue(BaseElement object, String tag, Object value)
+   {
+      setExtensionValue(object, tag, NS_URI_STARDUST, value);
+   }
+
+   public static void setExtensionValue(BaseElement object, String tag, String nsUri, Object value)
+   {
       ExtendedMetaData metadata = XmlExtendedMetadata.INSTANCE;
 
       ExtensionAttributeValue extensionAttributes = getOrCreate(
             ExtensionAttributeValue.class, object.getExtensionValues());
       FeatureMap extensions = extensionAttributes.getValue();
 
-      AnyType clobHolder = null;
+      Object currentValue = null;
       for (FeatureMap.Entry extension : extensionAttributes.getValue())
       {
-         if (isInFilter(extension.getEStructuralFeature(), tag))
+         if (isInFilter(extension.getEStructuralFeature(), tag, nsUri))
          {
-            Object extensionValue = extension.getValue();
-
-            if (extensionValue instanceof AnyType)
-            {
-               clobHolder = (AnyType) extensionValue;
-               break;
-            }
+            currentValue = extension.getValue();
+            break;
          }
       }
 
       // create extension element type
-      EStructuralFeature extensionElementType = metadata.demandFeature(NS_URI_STARDUST,
+      EStructuralFeature extensionElementType = metadata.demandFeature(nsUri,
             tag, true, true);
       extensionElementType.setChangeable(true);
 
-      if (isEmpty(clob))
+      if (null != currentValue)
       {
-         if (null != clobHolder)
-         {
-            extensions.list(extensionElementType).remove(clobHolder);
-         }
+         extensions.list(extensionElementType).remove(currentValue);
+      }
 
+      if (null != value)
+      {
+         extensions.add(extensionElementType, value);
+      }
+      else
+      {
          if (extensions.isEmpty())
          {
             object.getExtensionValues().remove(extensionAttributes);
          }
-      }
-      else
-      {
-         if (null == clobHolder)
-         {
-            clobHolder = (AnyTypeImpl) XMLTypeFactory.eINSTANCE.createAnyType();
-            extensions.add(extensionElementType, clobHolder);
-         }
-         setCDataString(clobHolder.getMixed(), clob);
       }
    }
 
@@ -479,7 +490,7 @@ public class Bpmn2ExtensionUtils
    }
 
    /**
-    * 
+    *
     * @param id
     * @return
     */
@@ -496,7 +507,7 @@ public class Bpmn2ExtensionUtils
 
       return null;
    }
-   
+
    protected static String getCDataString(FeatureMap featureMap)
    {
       String result = null;
@@ -568,8 +579,13 @@ public class Bpmn2ExtensionUtils
 
    private static boolean isInFilter(EStructuralFeature eStructuralFeature, String tag)
    {
+      return isInFilter(eStructuralFeature, tag, NS_URI_STARDUST);
+   }
+
+   private static boolean isInFilter(EStructuralFeature eStructuralFeature, String tag, String nsUri)
+   {
       String extensionNs = ExtendedMetaData.INSTANCE.getNamespace(eStructuralFeature);
-      if (NS_URI_STARDUST.equals(extensionNs))
+      if (nsUri.equals(extensionNs))
       {
          if ((null != tag) && tag.equals(eStructuralFeature.getName()))
          {

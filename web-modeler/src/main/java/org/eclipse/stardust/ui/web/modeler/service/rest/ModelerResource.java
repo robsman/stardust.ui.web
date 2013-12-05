@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -30,12 +31,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,12 +50,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
@@ -154,13 +160,13 @@ public class ModelerResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("models")
-   public Response getAllModels()
+   public Response getAllModels(@QueryParam("reload") @DefaultValue("true") boolean reload)
    {
       try
       {
          // TODO - currently always forces a reload - getAllModels(true)
          // we may need to make it conditional
-         String result = getModelService().getAllModels(true);
+         String result = getModelService().getAllModels(reload);
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -862,14 +868,20 @@ public class ModelerResource
     *
     * @return
     */
+   private void clearInteractionDataObject()
+   {
+      interactionDataObject = new JsonObject();
+   }
+
+   /**
+    *
+    * @return
+    */
    private JsonObject getInteractionDataObject()
    {
       if (interactionDataObject == null)
       {
          interactionDataObject = new JsonObject();
-
-         interactionDataObject.add("input", new JsonObject());
-         interactionDataObject.add("output", new JsonObject());
       }
 
       return interactionDataObject;
@@ -927,9 +939,6 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Retrieving interaction input:");
-         System.out.println(getInteractionDataObject());
-
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
       }
@@ -954,12 +963,20 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Set interaction input:");
-         System.out.println(postedData);
-         JsonObject postedObject = jsonIo.readJsonObject(postedData);
-         System.out.println(postedObject);
+         clearInteractionDataObject();
 
-         getInteractionDataObject().add("input", postedObject);
+         JsonObject postedObject = jsonIo.readJsonObject(postedData);
+
+         if (postedObject != null)
+         {
+            for (Map.Entry<String, ? > entry : postedObject.entrySet())
+            {
+               String key = entry.getKey();
+               JsonElement value = postedObject.get(key);
+
+               getInteractionDataObject().add(key, value);
+            }
+         }
 
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
@@ -972,7 +989,7 @@ public class ModelerResource
       }
    }
 
-   @POST
+   @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("interactions/{interactionId}/outData")
@@ -981,10 +998,7 @@ public class ModelerResource
    {
       try
       {
-         System.out.println("Set interaction input:");
-         System.out.println(postedData);
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
-         System.out.println(postedObject);
 
          getInteractionDataObject().add("output", postedObject);
 

@@ -22,11 +22,13 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -37,6 +39,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
+import org.eclipse.stardust.ui.web.viewscommon.login.util.LoginUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -292,8 +295,7 @@ public class LoginDialogBean implements Serializable, InitializingBean
             else
             {
                sessionCtx.initInternalSession();
-               // User display name preference are not fetched with UserService.getUser()
-               UserUtils.loadDisplayPreferenceForUser(sessionCtx.getUser());
+               LoginUtils.initialize();
             }
          }
 

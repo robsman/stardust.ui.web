@@ -18,6 +18,7 @@ define(
 		function(m_utils, m_constants, m_communicationController, m_command) {
 			var executeImmediate;
 			var needUndoSupport;
+			var readonlyExcludeCommandIds = [ "modelLockStatus.update" ];
 
 			return {
 				init : function(immediate, undoSupport) {
@@ -38,7 +39,9 @@ define(
 				},
 
 				submitCommand : function(command) {
-					getInstance().submitCommand(command);
+					if (isValid(command)) {
+						return getInstance().submitCommand(command);
+					}
 				},
 				registerCommandHandler : function(commandHandler, manualUnload) {
 					getInstance().registerCommandHandler(commandHandler);
@@ -57,6 +60,47 @@ define(
 					getInstance().broadcastCommandUndo(command);
 				}
 			};
+
+			/*
+			 *
+			 */
+			function isValid(command) {
+				var checkForReadonly = true;
+				for (n in readonlyExcludeCommandIds) {
+					if (readonlyExcludeCommandIds[n] == command.commandId){
+						checkForReadonly = false;
+						break;
+					}
+				}
+
+				if (checkForReadonly && command.modelId != undefined) {
+					var model = window.top.models[command.modelId]; //m_model.findModel(command.modelId);
+					if (model != undefined) {
+						if (model.isReadonly()) {
+							m_utils.debug("Model '" + model.name + "' is marked as Readonly. Skipping server post.");
+							return false;
+						} else {
+							var chgDesc = [];
+							for( var i in command.changeDescriptions) {
+								var elem = model.findModelElementByUuid(command.changeDescriptions[i].uuid);
+								if (elem && elem.isReadonly()) {
+									m_utils.debug("Model Element '" + model.name + "/" + elem.name + "' is marked as Readonly. Skipping server post.");
+								} else {
+									chgDesc.push(command.changeDescriptions[i]);
+								}
+							}
+
+							if (chgDesc.length > 0) {
+								command.changeDescriptions = chgDesc;
+							} else {
+								return false;
+							}
+						}
+					}
+				}
+
+				return true;
+			}
 
 			/**
 			 * Singleton on DOM level.
@@ -204,6 +248,8 @@ define(
 					m_utils.debug("\n===> Post Command:\n");
 					m_utils.debug(command);
 
+					var deferred = jQuery.Deferred();
+
 					if (command.type == m_constants.DELETE_COMMAND) {
 						m_communicationController
 								.deleteData(
@@ -221,8 +267,10 @@ define(
 													getInstance()
 															.broadcastCommand(
 																	command);
+													deferred.resolve();
 												},
 												"error" : function(command) {
+													deferred.reject(command);
 												}
 											};
 										});
@@ -262,15 +310,24 @@ define(
 															.debug("\n===> Receive Command Confirmation\n");
 													m_utils.debug(command);
 
-													getInstance()
-															.broadcastCommand(
-																	command);
+													if (!command.problems) {
+														getInstance()
+																.broadcastCommand(
+																		command);
+														deferred.resolve();
+													} else {
+														deferred
+																.reject(command);
+													}
 												},
 												"error" : function(command) {
+													deferred.reject(command);
 												}
 											};
 										});
 					}
+
+					return deferred.promise();
 				};
 
 				/**

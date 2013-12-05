@@ -29,60 +29,60 @@ define(
 
 			function i18importtypeproperties() {
 
-				jQuery("#titleText")
+				m_utils.jQuerySelect("#titleText")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.panel"));
-				jQuery("#dialogCloseIcon").attr("title",
+				m_utils.jQuerySelect("#dialogCloseIcon").attr("title",
 						m_i18nUtils.getProperty("modeler.common.value.close"));
-				jQuery("#import")
+				m_utils.jQuerySelect("#import")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.text"));
-				jQuery("#importMessage")
+				m_utils.jQuerySelect("#importMessage")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.message"));
-				jQuery("#url")
+				m_utils.jQuerySelect("#url")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.url"));
-				jQuery("#loadFromUrlButton")
+				m_utils.jQuerySelect("#loadFromUrlButton")
 						.attr(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.load"));
 
-				jQuery("#dataStructElement")
+				m_utils.jQuerySelect("#dataStructElement")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.heading.dataStructureElemnets"));
-				jQuery("#structureDefinitionHintPanel")
+				m_utils.jQuerySelect("#structureDefinitionHintPanel")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.definitionPanel"));
-				jQuery("#select")
+				m_utils.jQuerySelect("#select")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.checkbox"));
-				jQuery("#elementColumn")
+				m_utils.jQuerySelect("#elementColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.propertyView.elementTable.column.element.name"));
-				jQuery("#typeColumn")
+				m_utils.jQuerySelect("#typeColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.type"));
-				jQuery("#cardinalityColumn")
+				m_utils.jQuerySelect("#cardinalityColumn")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.cardinality"));
-				jQuery("#importButton")
+				m_utils.jQuerySelect("#importButton")
 						.attr(
 								"value",
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.import"));
-				jQuery("#cancelButton")
+				m_utils.jQuerySelect("#cancelButton")
 						.attr(
 								"value",
 								m_i18nUtils
@@ -93,14 +93,14 @@ define(
 			 *
 			 */
 			function ImportTypeDeclarationsWizard() {
-				this.tree = jQuery("#typeDeclarationsTable");
-				this.tableBody = jQuery("tbody", this.tree);
-				this.urlTextInput = jQuery("#urlTextInput");
-				this.loadFromUrlButton = jQuery("#loadFromUrlButton");
-				this.importButton = jQuery("#importButton");
-				this.cancelButton = jQuery("#cancelButton");
-				this.closeButton = jQuery("#dialogCloseIcon");
-				this.selectAllCheckbox = jQuery("#selectAllCheckbox");
+				this.tree = m_utils.jQuerySelect("#typeDeclarationsTable");
+				this.tableBody = m_utils.jQuerySelect("tbody", this.tree);
+				this.urlTextInput = m_utils.jQuerySelect("#urlTextInput");
+				this.loadFromUrlButton = m_utils.jQuerySelect("#loadFromUrlButton");
+				this.importButton = m_utils.jQuerySelect("#importButton");
+				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
+				this.closeButton = m_utils.jQuerySelect("#dialogCloseIcon");
+				this.selectAllCheckbox = m_utils.jQuerySelect("#selectAllCheckbox");
 				this.selectAll = false;
 
 				var view = this;
@@ -126,9 +126,9 @@ define(
 				 */
 				this.selectAllCheckbox.click(function(event) {
 					view.selectAll = !view.selectAll;
-					jQuery("table#typeDeclarationsTable tbody tr.top-level")
+					m_utils.jQuerySelect("table#typeDeclarationsTable tbody tr.top-level")
 						.each(function() {
-							jQuery(this).toggleClass("selected", view.selectAll);
+							m_utils.jQuerySelect(this).toggleClass("selected", view.selectAll);
 					});
 				});
 
@@ -163,7 +163,7 @@ define(
 										.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.invalidURL"));
 						return;
 					}
-					jQuery("body").css("cursor", "progress");
+					m_utils.jQuerySelect("body").css("cursor", "progress");
 					// this.clearErrorMessages();
 					this.urlTextInput.removeClass("error");
 
@@ -184,10 +184,10 @@ define(
 											m_messageDisplay.clearAllMessages();
 											view.urlTextInput.removeClass("error");
 											jQuery.proxy(view.setSchema, view)(serverData);
-											jQuery("body").css("cursor", "auto");
+											m_utils.jQuerySelect("body").css("cursor", "auto");
 										},
 										"error" : function() {
-											jQuery("body").css("cursor", "auto");
+											m_utils.jQuerySelect("body").css("cursor", "auto");
 											if (structure == null) {
 												m_messageDisplay
 														.showErrorMessage(m_i18nUtils
@@ -221,9 +221,9 @@ define(
 						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(elementType, schema);
 						var row = m_structuredTypeBrowser.generateChildElementRow("element-", element, schemaType,
 								function(row, element, schemaType) {
-							jQuery("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
-							jQuery("<td>" + elementType + "</td>").appendTo(row);
-							jQuery("<td></td>").appendTo(row);
+							m_utils.jQuerySelect("<td><span class='data-element'>" + element.name + "</span></td>").appendTo(row);
+							m_utils.jQuerySelect("<td>" + elementType + "</td>").appendTo(row);
+							m_utils.jQuerySelect("<td></td>").appendTo(row);
 						});
 
 						row.data("element", element);
@@ -238,39 +238,47 @@ define(
 					}
 
 					var view = this;
-					jQuery.each(this.schema.types, function(i, type) {
-						var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(type.name, view.schema);
+					//check if xsd contains any complex types
+					if (this.schema.types) {
+						jQuery.each(this.schema.types, function(i, type) {
+							var schemaType = m_typeDeclaration.resolveSchemaTypeFromSchema(type.name, view.schema);
 
-						var path = "type-" + type.name.replace(/:/g, "-");
+							var path = "type-" + type.name.replace(/:/g, "-");
 
-						var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
-								function(row, element, schemaType) {
+							var row = m_structuredTypeBrowser.generateChildElementRow("type-", type, schemaType,
+									function(row, element, schemaType) {
 
-							jQuery("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
-							jQuery("<td>" + type.name + "</td>").appendTo(row);
-							jQuery("<td></td>").appendTo(row);
+								m_utils.jQuerySelect("<td><span class='data-element'>" + type.name + "</span></td>").appendTo(row);
+								m_utils.jQuerySelect("<td>" + type.name + "</td>").appendTo(row);
+								m_utils.jQuerySelect("<td></td>").appendTo(row);
 
-							row.data("typeDeclaration", type);
+								row.data("typeDeclaration", type);
+							});
+							row.addClass("top-level");
+							view.tableBody.append(row);
+
+							m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
 						});
-						row.addClass("top-level");
-						view.tableBody.append(row);
-
-						m_structuredTypeBrowser.insertChildElementRowsEagerly(row);
-					});
+					}
 
 					this.tree.tableScroll({
-						height : 150
+						height : 170
 					});
+					// TODO - hack
+					// The table scroll plugin sets height to auto if the
+					// initial height is less than the provided height
+					// settig max-height in the plugin should also work.
+					m_utils.jQuerySelect("div.tablescroll_wrapper").css("max-height", "170px");
 					this.tree.treeTable({
 						indent: 14,
 						onNodeShow: function() {
-							m_structuredTypeBrowser.insertChildElementRowsLazily(jQuery(this));
+							m_structuredTypeBrowser.insertChildElementRowsLazily(m_utils.jQuerySelect(this));
 						}
 					});
 
-					jQuery("table#typeDeclarationsTable tbody tr.top-level").mousedown(function() {
+					m_utils.jQuerySelect("table#typeDeclarationsTable tbody tr.top-level").mousedown(function() {
 						// allow multi-select, but restrict to top-level entries
-						jQuery(this).toggleClass("selected");
+						m_utils.jQuerySelect(this).toggleClass("selected");
 					});
 				};
 
@@ -282,8 +290,8 @@ define(
 					// collect selected types
 					var typeDeclarations = [];
 					var elements = [];
-					jQuery("tr.selected", this.tableBody).each(function() {
-						var row = jQuery(this);
+					m_utils.jQuerySelect("tr.selected", this.tableBody).each(function() {
+						var row = m_utils.jQuerySelect(this);
 						var typeDeclaration = row.data("typeDeclaration");
 						if (typeDeclaration) {
 							typeDeclarations.push(typeDeclaration);

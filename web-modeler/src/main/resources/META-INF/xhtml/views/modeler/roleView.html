@@ -8,14 +8,14 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>Role View</title>
-<link href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css" rel="stylesheet"
+<link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
 	type="text/css" />
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/roleViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/roleViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<div id="roleView" class="panel">
+	<div id="roleView" class="nativeHtmlViewPanel" style="visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -80,8 +80,8 @@
 				<td>
 					<div id="propertiesTabs">
 						<ul id="propertiesTabsList">
-							<li><a href="#assignmentTab"><img src="../../images/icons/activity.png"></img><span class="tabLabel" id="activityAssignment">Activity Assignment</span></a></li>
-							<li><a href="#controllingTab"><img src="../../images/icons/chart-up.png"></img><span class="tabLabel" id="controlling">Controlling</span></a></li>
+							<li><a href="#assignmentTab"><img src="plugins/bpm-modeler/images/icons/activity.png"></img><span class="tabLabel" id="activityAssignment">Activity Assignment</span></a></li>
+							<li><a href="#controllingTab"><img src="plugins/bpm-modeler/images/icons/chart-up.png"></img><span class="tabLabel" id="controlling">Controlling</span></a></li>
 						</ul>
 						<div id="assignmentTab">
 							<table cellpadding="0" cellspacing="0" class="fieldSetTable"
@@ -143,5 +143,8 @@
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/roleViewMain.js"></script>
+
 </body>
 </html>

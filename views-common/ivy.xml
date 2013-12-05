@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-views-common" type="jar" conf="ipp-views-common-compile, ipp-views-common-runtime, ipp-views-common-provided" />
-      <artifact name="ipp-views-common" type="jar" conf="ipp-views-common-sources" m:classifier="sources" />
+      <artifact name="ipp-views-common" type="source" ext="jar" conf="ipp-views-common-sources" m:classifier="sources" />
       
       <artifact name="ipp-views-common" type="pom" conf="pom" ext="pom" />
    </publications>

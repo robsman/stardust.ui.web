@@ -28,7 +28,7 @@
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.enableAssemblyLineFeedIn']}" />
 			</ice:commandLink>
 		</ice:panelGroup>
-		<ice:panelGrid columns="12">
+		<ice:panelGrid columns="14">
 			<ice:panelGroup
 				rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesVisible}">
 				<ice:commandLink disabled="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled}"
@@ -77,17 +77,41 @@
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/clock.png"
+					style="padding :0px;margin:0px;"
 					styleClass="toolbar-button toolbar-button-suspend"
-					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}" />
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}"/>
 			</ice:commandLink>
+			<ice:panelGroup>
+				<ice:commandLink
+					action="#{activityDetailsBean.toggleSuspendActivityIframePopup}"
+					style="padding:0px;" immediate="true"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendMenu']}" >
+					<ice:graphicImage style="padding:0px;margin:0px;width:11px;"
+						value="/plugins/views-common/images/icons/arrow.png"
+						styleClass="toolbar-button" />
+				</ice:commandLink>
+				<div id="ippSuspendAnchor" style="width: 1px; height: 1px;"></div>
+			</ice:panelGroup>
 
 			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/clock_save.png"
+					style="padding :0px;margin:0px;"
 					styleClass="toolbar-button toolbar-button-suspend-save"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			</ice:commandLink>
+			<ice:panelGroup>
+				<ice:commandLink
+					action="#{activityDetailsBean.toggleSaveActivityIframePopup}"
+					style="padding:0px;" immediate="true"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendSaveMenu']}" >
+					<ice:graphicImage style="padding:0px;width:11px;"
+						value="/plugins/views-common/images/icons/arrow.png"
+						styleClass="toolbar-button" />
+				</ice:commandLink>
+				<div id="ippSaveActivityAnchor" style="width: 1px; height: 1px;"></div>
+			</ice:panelGroup>
 
 			<ice:commandLink
 				actionListener="#{activityDetailsBean.resubmitAction}"

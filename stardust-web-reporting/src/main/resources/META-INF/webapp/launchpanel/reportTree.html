@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<link href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css"></link>
+<link href="../css/bpm-reporting.css" rel="stylesheet" type="text/css"></link>
+<link href="../css/bpm-reporting-outline.css" rel="stylesheet"
+	type="text/css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/jqplot/jquery.jqplot.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/datatables.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools.css"></link>
+<link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css"></link>
+<style type="text/css">
+table.formTable td {
+	padding: 3px;
+}
+</style>
+<script type="text/javascript"
+	data-main="../js/ReportManagementOutlineMain"
+	src="../js/libs/require/2.0.5/require.js"></script>
+</head>
+<body>
+	<table style="width: 100%;">
+		<tr>
+			<td id="toolbar">
+				<div id="outlineToolbar">
+					<div class="toolDiv">
+						<img id="createReport" src="../images/icons/add.png"
+							title="Create Ad hoc Report" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="importReport" src="../images/icons/import.png"
+							title="Import Report" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="saveReports" src="../images/icons/save.png"
+							title="Refresh Reports" />
+					</div>
+					<div class="toolSeparator">
+						<img src="../../common/images/icons/toolbar-separator.png" />
+					</div>
+					<div class="toolDiv">
+						<img id="refreshReports" src="../images/icons/refresh.png"
+							title="Refresh Reports" />
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="reportTree"
+					style="width: 180px; height: 400px; text-align: left; list-style-type: none; background-color: white;">
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

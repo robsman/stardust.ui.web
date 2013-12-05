@@ -1,0 +1,29 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ice:outputDeclaration doctypeRoot="HTML"
+		doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+		doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+
+	<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+			<ui:include src="portalStyleSheets.xhtml" />
+		</head>
+		<body onload="parent.BridgeUtils.initIframe(window);" 
+			style="background: #FFFFFF; width: auto; height: auto; padding: 5px;">
+			<ice:form partialSubmit="true">
+				<ui:include src="portalAlertsContent.xhtml" />
+			</ice:form>
+		
+			<script id="postScriptsAlerts" lang="javascript">
+				#{ippPortalAppSingleViewEventScript.wrappedEventScripts}
+			</script>
+		</body>
+	</html>
+
+</f:view>

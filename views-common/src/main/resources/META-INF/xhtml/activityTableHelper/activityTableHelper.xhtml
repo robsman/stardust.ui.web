@@ -12,6 +12,11 @@
 		bean* = Table Instance
 		includeHelpers = true/false. Default true
 	-->
+	<ice:panelGroup>
+		<script type="text/javascript"
+			src="#{facesContext.externalContext.requestContextPath}/plugins/views-common/scripts/documentUtil.js" />
+	</ice:panelGroup>
+	
 	<c:if test="#{empty includeHelpers}">
 		<c:set var="includeHelpers" value="true" />
 	</c:if>

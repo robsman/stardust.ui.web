@@ -36,6 +36,7 @@ public interface ResourcePaths
    static final String V_roleManagerDetailView = "roleManagerDetailView";
    static final String V_trafficLight = "trafficLightView";
    static final String V_strandedActivitiesView = "strandedActivities";
+   static final String V_deputyTeamMemberView = "deputyTeamMemberView";
    
 //   static final String V_processOverviewViewActivityTableColumns = "/plugins/business-control-center/views/processOverviewViewActivityTableColumns.xhtml";
 //   static final String V_processOverviewViewProcessTableColumns = "/plugins/business-control-center/views/processOverviewViewProcessTableColumns.xhtml";
@@ -74,5 +75,4 @@ public interface ResourcePaths
 //   static final String V_roleManagerActivityInstanceDetailColumn = "/plugins/business-control-center/views/roleManagerActivityInstanceDetailColumn.xhtml";
    static final String V_trafficLightViewColumns = "/plugins/business-control-center/views/trafficLightViewColumns.xhtml";
    static final String V_MY_FAV_REPORT = "myReportsViewPanel";
-
 }

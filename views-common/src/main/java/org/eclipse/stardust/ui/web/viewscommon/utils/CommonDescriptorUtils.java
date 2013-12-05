@@ -44,6 +44,7 @@ import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelElementComparator;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
@@ -286,7 +287,7 @@ public class CommonDescriptorUtils
    public static DataPath[] getCommonDescriptors(List<ProcessDefinition> processes, boolean onlyFilterable)
    {
       boolean firstProcess = true;
-   
+      ModelElementComparator comparator = new ModelElementComparator();
       // We have to use this type of Map because of the predictable order of the keys
       Map<String, DataPath> allDescriptors = new LinkedHashMap<String, DataPath>();
       for (int i = 0; i < processes.size(); ++i)
@@ -313,7 +314,7 @@ public class CommonDescriptorUtils
                   {
                      Data data1 = DescriptorFilterUtils.getData(path);
                      Data data2 = DescriptorFilterUtils.getData(other);
-                     if (data1.equals(data2))
+                     if (comparator.compare(data1, data2) == 0)
                      {
                         commonDescriptors.add(path.getId());
                      }

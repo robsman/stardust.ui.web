@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
-import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -38,8 +37,6 @@ public class ReportViewer implements IDocumentViewer
    public static final String URL_PARAMETERS="URL_PARAMETERS";
    private static final String FAVORITE_MARKED = "/plugins/views-common/images/icons/star.png";
    private static final String MARK_FAVORITE = "/plugins/views-common/images/icons/star-empty.png";
-   private static final String CONTEXT_PARAM_REPORTING_URI = "ag.carnot.processportal.integration.REPORTING_URL";
-   
    private final String contentUrl = "/plugins/views-common/views/report/reportViewer.xhtml";
    private final String toolbarUrl = "/plugins/views-common/extension/toolbar/reportDocumentViewToolbar.xhtml";
    private final MIMEType[] mimeTypes = {MimeTypesHelper.RPT_DESIGN};
@@ -79,7 +76,7 @@ public class ReportViewer implements IDocumentViewer
       this.documentContentInfo = documentContentInfo;
       setFavoriteStatus(documentContentInfo.getId());
       String queryString = getQueryString();
-      sourceURI = getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString + "&realmId="
+      sourceURI = DocumentMgmtUtility.getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString + "&realmId="
             + UserUtils.getRealmId() + "&workflowUserSessionId=" + ServiceFactoryUtils.getWorkflowUserSessionId();
    }
    
@@ -231,21 +228,6 @@ public class ReportViewer implements IDocumentViewer
       }
    }
 
-   /**
-    * @return reporting base url
-    */
-   private static String getReportingBaseURL()
-   {
-      String baseUrl = (String) FacesContext.getCurrentInstance().getExternalContext()
-            .getInitParameter(CONTEXT_PARAM_REPORTING_URI);
-
-      if (org.eclipse.stardust.common.StringUtils.isEmpty(baseUrl))
-      {
-         baseUrl = FacesUtils.getServerBaseURL();
-      }
-      return baseUrl;
-   }
-   
    public void closeDocument()
    {}
 }

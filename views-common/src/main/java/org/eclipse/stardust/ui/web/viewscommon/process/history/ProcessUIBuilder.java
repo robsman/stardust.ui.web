@@ -138,8 +138,8 @@ public class ProcessUIBuilder
 
       selectableCols.add(durationColPref);
 
-      ColumnPreference statusColPref = new ColumnPreference("Status", "state", ColumnDataType.STRING, propsBean
-            .getString("processHistory.processTable.statusLabel"));
+      ColumnPreference statusColPref = new ColumnPreference("Status", "state", propsBean
+            .getString("processHistory.processTable.statusLabel"),ResourcePaths.VIEW_PROCESS_INSTANCE_HISTORY_COLUMNS, true, false);
 
       selectableCols.add(statusColPref);
 

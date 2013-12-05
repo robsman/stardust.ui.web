@@ -15,6 +15,9 @@ define(
 				m_dialog, m_modelElementView, m_model,m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var conditionalPerformer = m_model.findParticipant(fullId);
 					i18nconditionalScreen();
 					var view = new ConditionalPerformerView();
@@ -24,67 +27,68 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(conditionalPerformer);
+					m_utils.hideWaitCursor();
 				}
 			};
 
 
 			function i18nconditionalScreen() {
 
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 				.text(
 						m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.id"));
 
-				$("label[for='bindingDataPathInput']")
+				m_utils.jQuerySelect("label[for='bindingDataPathInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataPath"));
-				$("label[for='bindingDataSelect']")
+				m_utils.jQuerySelect("label[for='bindingDataSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataSelect"));
-				$("label#userRealmSecionTitle")
+				m_utils.jQuerySelect("label#userRealmSecionTitle")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.userRealmSectionTitle"));
-				$("label[for='userRealmBindingDataPathInput']")
+				m_utils.jQuerySelect("label[for='userRealmBindingDataPathInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataPath"));
-				$("label[for='userRealmBindingDataSelect']")
+				m_utils.jQuerySelect("label[for='userRealmBindingDataSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.bindingDataSelect"));
 
-				$("label[for='performerTypeSelect']")
+				m_utils.jQuerySelect("label[for='performerTypeSelect']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.name.performerTypeSelect"));
 
-				$("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-				$("label[for='descriptionTextarea']")
+				m_utils.jQuerySelect("label[for='descriptionTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				$("label[for='nameInput']")
+				m_utils.jQuerySelect("label[for='nameInput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerName"));
 
-				jQuery("#propertiesTabs span.tabLabel")
+				m_utils.jQuerySelect("#propertiesTabs span.tabLabel")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.configuration"));
 
-				var performerTypeSelect1 = jQuery("#performerTypeSelect");
+				var performerTypeSelect1 = m_utils.jQuerySelect("#performerTypeSelect");
 
 				var dropDownData = m_i18nUtils
 						.getProperty("modeler.model.propertyView.participants.conditionalPerformer.performerTypeSelect.user");
@@ -127,12 +131,13 @@ define(
 				ConditionalPerformerView.prototype.initialize = function(
 						conditionalPerformer) {
 					this.id = "conditionalPerformerView";
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.performerTypeSelect = jQuery("#performerTypeSelect");
-					this.bindingDataSelect = jQuery("#bindingDataSelect");
-					this.bindingDataPathInput = jQuery("#bindingDataPathInput");
-					this.userRealmBindingDataSelect = jQuery("#userRealmBindingDataSelect");
-					this.userRealmBindingDataPathInput = jQuery("#userRealmBindingDataPathInput");
+					this.view = m_utils.jQuerySelect("#" + this.id);
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.performerTypeSelect = m_utils.jQuerySelect("#performerTypeSelect");
+					this.bindingDataSelect = m_utils.jQuerySelect("#bindingDataSelect");
+					this.bindingDataPathInput = m_utils.jQuerySelect("#bindingDataPathInput");
+					this.userRealmBindingDataSelect = m_utils.jQuerySelect("#userRealmBindingDataSelect");
+					this.userRealmBindingDataPathInput = m_utils.jQuerySelect("#userRealmBindingDataPathInput");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -178,6 +183,7 @@ define(
 							this.userRealmBindingDataPathInput,
 							"carnot:engine:conditionalPerformer:realmDataPath");
 					this.initializeModelElementView(conditionalPerformer);
+					this.view.css("visibility", "visible");
 				};
 
 				/**
@@ -232,9 +238,9 @@ define(
 					}
 
 					if ("user" === this.performerTypeSelect.val()) {
-						jQuery("tr.userRealmOnly").removeClass("invisible");
+						m_utils.jQuerySelect("tr.userRealmOnly").removeClass("invisible");
 					} else {
-						jQuery("tr.userRealmOnly").addClass("invisible");
+						m_utils.jQuerySelect("tr.userRealmOnly").addClass("invisible");
 					}
 				};
 
@@ -348,8 +354,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push("Conditional performer name must not be empty.");
 						this.nameInput.addClass("error");

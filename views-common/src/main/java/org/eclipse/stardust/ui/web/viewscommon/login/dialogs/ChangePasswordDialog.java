@@ -18,6 +18,7 @@ import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.login.util.LoginUtils;
 import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 
@@ -86,6 +87,9 @@ public class ChangePasswordDialog extends PopupDialog
 			LoginDialogBean loginDlg = LoginDialogBean.getInstance();
 			sessionCtx.initInternalSession(account, newPassword, loginDlg.getLoginProperties());
 			trace.debug("New session initialized...");
+			// Initialize display preference for User ,UserProvider and
+			// PortalApplication initialization
+			LoginUtils.initialize();
 			
 			String str = LoginDialogBean.getInstance().proceedToMainPage();
 			super.closePopup();

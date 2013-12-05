@@ -51,12 +51,11 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
-import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 
 
 /**
  * Represents the form generated for a Manual Activity
- * 
+ *
  * @author Marc.Gille
  * @author Subodh.Godbole
  */
@@ -71,7 +70,7 @@ public class ManualActivityForm extends Form
    private WorkflowService workflowService;
    private ApplicationContext applicationContext;
    private ActivityInstance activityInstance;
-   
+
    private DocumentInputEventHandler documentInputEventHandler;
    /**
     * @param generationPreferences
@@ -106,7 +105,7 @@ public class ManualActivityForm extends Form
       this.applicationContext = applicationContext;
       this.documentInputEventHandler = documentInputEventHandler;
 
-      // If not specified use this as default as just a flow layout, controls just be one below the other 
+      // If not specified use this as default as just a flow layout, controls just be one below the other
       if (null == generationPreferences)
       {
          generationPreferences = new FormGenerationPreferences(1, 0);
@@ -143,7 +142,7 @@ public class ManualActivityForm extends Form
    }
 
    /**
-    * 
+    *
     */
    public void setData()
    {
@@ -161,7 +160,7 @@ public class ManualActivityForm extends Form
          }
       }
    }
-   
+
    /**
     * @return
     */
@@ -278,7 +277,7 @@ public class ManualActivityForm extends Form
          trace.debug("Markup:\n" + generateMarkup());
       }
    }
-   
+
    /**
     * @return
     */
@@ -317,7 +316,7 @@ public class ManualActivityForm extends Form
 
       return mappedDocs;
    }
-   
+
    /**
     * @return
     */
@@ -367,7 +366,7 @@ public class ManualActivityForm extends Form
          getRootContainer().getInputs().add(input);
          getFullPathInputControllerMap().put("/" + systemPath.getId(), inputController);
          getTopLevelInputControllerMap().put(systemPath.getId(), inputController);
-         
+
          return true;
       }
       else
@@ -420,7 +419,7 @@ public class ManualActivityForm extends Form
             formGenerator.generateStructurePanel(getFullPathInputControllerMap(), getRootContainer(), path));
       return true;
    }
-   
+
    /**
     * @param dataMapping
     * @param allInMappings
@@ -433,10 +432,14 @@ public class ManualActivityForm extends Form
       {
          if (!isWriteOnly(dataMapping, allInMappings))
          {
-            DocumentType documentType = TypedDocumentsUtil.getDocumentTypeFromData(getModel().getData(
-                  dataMapping.getDataId()));
+            DocumentType documentType = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getDocumentTypeFromData(
+                  getModel(), getModel().getData(dataMapping.getDataId()));
 
-            // Manual Activity Panel will not display Meta Data. So pass the List<Path> documentTypes as null
+            if (documentType == null)
+            {
+               trace.debug("Could not resolve type for Document:, " + dataMapping.getQualifiedId() + ". It may be set defualt by design");
+            }
+
             return new DocumentPath(maPath, dataMapping.getId(), documentType, null,
                   Direction.IN == dataMapping.getDirection());
          }
@@ -454,7 +457,7 @@ public class ManualActivityForm extends Form
          Path docTypePath = null;
          Data documentData = getModel().getData(dataMapping.getDataId());
          String metaDataTypeId = (String) documentData.getAttribute(DmsConstants.RESOURCE_METADATA_SCHEMA_ATT);
-         
+
          if (StringUtils.isNotEmpty(metaDataTypeId))
          {
             TypeDeclaration typeDeclaration = getModel().getTypeDeclaration(metaDataTypeId);
@@ -489,7 +492,7 @@ public class ManualActivityForm extends Form
                docTypePath = createPrimitiveDataMapping(dataMapping, maPath);
             }
          }
-         
+
          return docTypePath;
       }
 
@@ -594,7 +597,7 @@ public class ManualActivityForm extends Form
 
       getFullPathInputControllerMap().put("/" + documentPath.getId(), docInputController);
       getTopLevelInputControllerMap().put(documentPath.getId(), docInputController);
-      
+
       return true;
    }
 
@@ -606,10 +609,10 @@ public class ManualActivityForm extends Form
    {
       ListInputController listInputController = new ListInputController(path);
       formGenerator.addListComponent(getRootContainer(), path);
-       
+
       getFullPathInputControllerMap().put("/" + path.getId(), listInputController);
       getTopLevelInputControllerMap().put(path.getId(), listInputController);
-      
+
       return true;
    }
 
@@ -662,7 +665,7 @@ public class ManualActivityForm extends Form
    {
       return org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activityInstance.getModelOID());
    }
-  
+
    public ApplicationContext getApplicationContext()
    {
       return applicationContext;

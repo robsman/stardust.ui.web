@@ -1,0 +1,48 @@
+.model {
+	background: url("../images/icons/model.png") no-repeat;
+}
+
+.application-camel {
+	background: url("../images/icons/application-camel.png") no-repeat;
+}
+
+.conditional {
+	background: url("../images/icons/conditional.png") no-repeat;
+}
+
+.data {
+	background: url("../images/icons/data.png") no-repeat;
+}
+
+.applications-blue {
+	background: url("../images/icons/applications-blue.png") no-repeat;
+}
+
+.application-message-trans {
+	background: url("../images/icons/application-message-trans.png")
+		no-repeat;
+}
+
+.organization {
+	background: url("../images/icons/organization.png") no-repeat;
+}
+
+.process {
+	background: url("../images/icons/process.png") no-repeat;
+}
+
+.role {
+	background: url("../images/icons/role.png") no-repeat;
+}
+
+.application-c-ext-web {
+	background: url("../images/icons/application-c-ext-web.png") no-repeat;
+}
+
+.application-web-service {
+	background: url("../images/icons/application-web-service.png") no-repeat;
+}
+
+.structured-type {
+	background: url("../images/icons/structured-type.png") no-repeat;
+}

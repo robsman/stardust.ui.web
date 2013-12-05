@@ -282,6 +282,12 @@ public class XPathCacheManager
       {
          refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
       }
+      else
+      {
+         // When Provider Model data is using in consumer Model, get the Model using
+         // data Model Id (as data itself is Provider Model data)
+         refModel = ModelCache.findModelCache().getModel(data.getModelOID());
+      }
 
       return refModel;
    }

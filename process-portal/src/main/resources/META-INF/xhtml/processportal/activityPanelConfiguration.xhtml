@@ -79,13 +79,13 @@
 		<ice:outputLabel styleClass="label-form"
 			value="#{ippActivityPanelConfigurationBean.messages['config.openView.displayProcessDetails']}"  />
 
-		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.minimizeLaunchPanels}">
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.minimizeLaunchPanels}" disabled="true">
 			<pc:automationTag value="auto-PP-ActPnlConf-MinLaunchPnl" standAlone="false" />
 		</ice:selectBooleanCheckbox>
 		<ice:outputLabel styleClass="label-form"
 			value="#{ippActivityPanelConfigurationBean.messages['config.openView.minimizeLaunchPanels']}"  />
 
-		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.maximizeView}">
+		<ice:selectBooleanCheckbox partialSubmit="true" value="#{ippActivityPanelConfigurationBean.maximizeView}" disabled="true">
 			<pc:automationTag value="auto-PP-ActPnlConf-MaxView" standAlone="false" />
 		</ice:selectBooleanCheckbox>
 		<ice:outputLabel styleClass="label-form"
@@ -94,7 +94,7 @@
 	<ice:panelGroup>
 		<ice:panelGrid columns="2">
 			<ice:selectBooleanCheckbox partialSubmit="true"
-				value="#{ippActivityPanelConfigurationBean.pinActivityView}">
+				value="#{ippActivityPanelConfigurationBean.pinActivityView}" disabled="true">
 				<pc:automationTag value="auto-PP-ActPnlConf-PinActView"
 					standAlone="false" />
 			</ice:selectBooleanCheckbox>	

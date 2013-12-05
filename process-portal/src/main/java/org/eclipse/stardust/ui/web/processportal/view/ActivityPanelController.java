@@ -158,9 +158,9 @@ public class ActivityPanelController extends UIComponentBean
 
    public String getRemoteControlActivityStateChangeCommandId()
    {
-      FacesContext facesContext = FacesContext.getCurrentInstance();
-      JavascriptContext.addJavascriptCall(facesContext,
-            "InfinityBpm.ProcessPortal.enableRemoteControlApi();");
+//      FacesContext facesContext = FacesContext.getCurrentInstance();
+//      JavascriptContext.addJavascriptCall(facesContext,
+//            "InfinityBpm.ProcessPortal.enableRemoteControlApi();");
 
       return null;
    }
@@ -323,7 +323,6 @@ public class ActivityPanelController extends UIComponentBean
          DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
 
          activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-         activityDetailsBean.renderSession();
       }
       else
       {
@@ -346,6 +345,7 @@ public class ActivityPanelController extends UIComponentBean
       documentUploadHelper.getFileUploadDialogAttributes().setHeaderMessage(
             propsBean.getParamString("common.uploadIntoFolder",
                   propsBean.getString("views.processInstanceDetailsView.processDocumentTree.processAttachment")));
+      // Close the current Process Attachment Iframe.
       startFileUpload(documentUploadHelper);
       documentUploadHelper.uploadFile();
    }
@@ -387,6 +387,7 @@ public class ActivityPanelController extends UIComponentBean
          }
       });
       uploadHelper.uploadFile();
+      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
    }
 
    /**
@@ -403,8 +404,8 @@ public class ActivityPanelController extends UIComponentBean
       //update document in process instance
       DMSHelper.addAndSaveProcessAttachment(processInstance, document);
       DocumentViewUtil.openJCRDocument(document.getId());
-
-      activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
+      
+      activityDetailsBean.closeProcessAttachmentsIframePopup();
       activityDetailsBean.renderSession();
    }
    
@@ -418,7 +419,6 @@ public class ActivityPanelController extends UIComponentBean
       if (DocumentUploadEventType.DIALOG_OPENED == eventType)
       {
          activityDetailsBean.closeProcessAttachmentsIframePopupSelf();
-         activityDetailsBean.renderSession();
       }
       if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
       {
@@ -542,8 +542,6 @@ public class ActivityPanelController extends UIComponentBean
       linkedProcess.openProcessDetial();
       // Close the current Iframe
       activityDetailsBean.closeLinkedProcessIframePopup();
-      activityDetailsBean.renderSession();
-
    }
    /**
     * 
@@ -577,7 +575,7 @@ public class ActivityPanelController extends UIComponentBean
          ProcessInstance fromProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
                PredefinedProcessInstanceLinkTypes.SWITCH);
          ProcessInstance joinProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
-        		 PredefinedProcessInstanceLinkTypes.JOIN);
+                 PredefinedProcessInstanceLinkTypes.JOIN);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
          linkedProcess.setJoinLinkedProcess(joinProcessLink);

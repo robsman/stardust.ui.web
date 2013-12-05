@@ -65,7 +65,7 @@ public class LoginFilter implements Filter
    private final static String DEFAULT_LOGOUT_PAGE = "/ipp/common/ippPortalLogout.jsp";
    
    private final static String MAIN_PAGE = "mainPage";
-   private final static String DEFAULT_MAIN_PAGE = "plugins/common/main.iface";
+   private final static String DEFAULT_MAIN_PAGE = "/main.html";
    
    private final static String PRINCIPAL_USER_ROLES = "principalUserRoles";
    
@@ -75,6 +75,8 @@ public class LoginFilter implements Filter
    
    private static final String DEFAULT_PUBLIC_URI_PATTERNS = ANY_PLUGIN_URI_PREFIX
          + "/public/*";
+   
+   private static final String PRINCIPAL_LOGIN_INIT_PAGE = "/plugins/common/initializeSession.iface";
    
    private String loginPage;
    private String logoutPage;
@@ -88,7 +90,8 @@ public class LoginFilter implements Filter
    protected final static Logger trace = LogManager.getLogger(LoginFilter.class);
    
    public final static String RETURN_URL_PARAM = "returnUrl";
-   
+   public final static String SINGLE_VIEW_PREFIX = "portalSingleView";
+
    public void destroy()
    {
       this.filterCfg = null;
@@ -152,18 +155,10 @@ public class LoginFilter implements Filter
    private void handleInvalidSession(HttpServletRequest request,
          HttpServletResponse response, FacesContext facesContext)
    {
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#handleInvalidSession() invoked...");
-      }
       String user = request.getParameter("j_username");
       String password = request.getParameter("j_password");
       if(!StringUtils.isEmpty(user) && !StringUtils.isEmpty(password))
       {
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("#creating new session...");
-         }         
          request.getSession(true);
          LoginDialogBean loginBean = (LoginDialogBean) FacesUtils.getBeanFromContext(
                facesContext, LoginDialogBean.BEAN_ID);
@@ -179,10 +174,6 @@ public class LoginFilter implements Filter
                String outcome = loginBean.login();
                if(Constants.WORKFLOW_PRINCIPAL_LOGIN.equals(outcome))
                {
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("#forwardToPage(request, response, logoutPage, false)...");
-                  }
                   // cannot be handled yet - go back to the logout page
                   // TODO: If you try to forward to the proxy page on JBOSS
                   //       an error 400 is thrown with the message:
@@ -191,10 +182,6 @@ public class LoginFilter implements Filter
                }
                else
                {
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("#handleJsfNavigation()...");
-                  }
                   handleJsfNavigation(facesContext, "/" + loginPage, outcome);
                }
             }
@@ -203,10 +190,6 @@ public class LoginFilter implements Filter
                
             }
          }
-      }
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#handleInvalidSession() exiting...");
       }
    }
 
@@ -220,18 +203,6 @@ public class LoginFilter implements Filter
       final HttpServletRequest request = (HttpServletRequest) req;
       final HttpServletResponse response = (HttpServletResponse) res;
 
-      if (trace.isDebugEnabled())
-      {
-         if (null != request.getSession(false))
-         {
-            trace.debug("#request.getSession(false).getId(): " + request.getSession(false).getId());
-         }
-         else
-         {
-            trace.debug("#request.getSession(false): null");
-         }
-      }
-      
       String preForwardUri = (String)request.getAttribute("javax.servlet.forward.request_uri");
       String preForwardContextPath = (String)request.getAttribute("javax.servlet.forward.context_path");
 
@@ -255,11 +226,6 @@ public class LoginFilter implements Filter
       }
       FacesContext facesContext = FacesUtils.getFacesContext(servletContext, request, response);
      
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#Finding session....");
-      }
-      
       SessionContext sessionContext = SessionContext.findSessionContext(facesContext);
 
       includeCustomJS(facesContext);
@@ -268,11 +234,6 @@ public class LoginFilter implements Filter
       {
          if( !sessionContext.isSessionInitialized())
          {
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("#session not initialized....");
-            }
-            
             if((null != request.getUserPrincipal()) && isUserInRoleList(request))
             {
                // initialize session
@@ -283,16 +244,21 @@ public class LoginFilter implements Filter
             }
             if(!sessionContext.isSessionInitialized())
             {
-               if(!requestUri.endsWith(loginPage))
+               if(!requestUri.contains(loginPage))
                {
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("#Redirect to login, because session was not initialized.");
-                  }
-                  
                   trace.info("Redirect to login, because session was not initialized.");
                   StringBuffer url = new StringBuffer(request.getContextPath());
-                  url.append("/").append(loginPage);
+                  if (requestUri.endsWith(PRINCIPAL_LOGIN_INIT_PAGE))
+                  {
+                     url.append("/").append(loginPage); // While login for principal user,
+                                                        // no session present
+                  }
+                  else
+                  {
+                     url.append(logoutPage); // Always forward to logout, so that checks
+                                             // applied and cleanup happens properly,
+                                             // before login page is displayed
+                  }
                   
                   Map<String, String> urlParams = new LinkedHashMap<String, String>();
 
@@ -301,10 +267,14 @@ public class LoginFilter implements Filter
                   // redirected to main page after successful login 
                   if (!requestUri.endsWith(mainPage))
                   {
-                     //In Principal mode we have to go always through container managed security via the login proxy.
-                     if (!ApplicationContext.isPrincipalLogin())
+                     String fileName = requestUri.substring(requestUri.lastIndexOf("/") + 1);
+                     if (!fileName.startsWith(SINGLE_VIEW_PREFIX))
                      {
-                        urlParams.put(RETURN_URL_PARAM, requestUri);
+                        //In Principal mode we have to go always through container managed security via the login proxy.
+                        if (!ApplicationContext.isPrincipalLogin())
+                        {
+                           urlParams.put(RETURN_URL_PARAM, requestUri);
+                        }
                      }
                   }
 
@@ -329,26 +299,13 @@ public class LoginFilter implements Filter
                      }
                      url.deleteCharAt(url.length() - 1);
                   }
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("#response.sendRedirect(response.encodeRedirectURL(url.toString()))...");
-                  }
                   response.sendRedirect(response.encodeRedirectURL(url.toString()));
-                  
-                  if (trace.isDebugEnabled())
-                  {
-                     trace.debug("#response.sendRedirect(response.encodeRedirectURL(url.toString())) done...");
-                  }
                   return;
                }
                else
                {
                   if( !request.isRequestedSessionIdValid())
                   {
-                     if (trace.isDebugEnabled())
-                     {
-                        trace.debug("#request.isRequestedSessionIdValid() is false");
-                     }
                      handleInvalidSession(request, response, facesContext);
                   }
                }
@@ -358,30 +315,12 @@ public class LoginFilter implements Filter
                && !ApplicationContext.isPrincipalLogin()
                && requestUri.indexOf(loginPage) > -1)
          {
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("#session initialized....");
-            }
-            
             LoginDialogBean loginBean = (LoginDialogBean)FacesUtils.getBeanFromContext(
                   facesContext, LoginDialogBean.BEAN_ID);
             handleJsfNavigation(facesContext, "/" + loginPage, loginBean.getNavigationOutcome());
          }
       }
 
-      if (trace.isDebugEnabled())
-      {
-         if (null != request.getSession(false))
-         {
-            trace.debug("#2. request.getSession(false).getId(): " + request.getSession(false).getId());
-         }
-         else
-         {
-            trace.debug("#2. request.getSession(false): null");
-         }
-         trace.debug("#request.isRequestedSessionIdValid(): " + request.isRequestedSessionIdValid());
-      }
-      
       chain.doFilter(request, response);
    }
 

@@ -16,17 +16,13 @@ define(
 				],
 		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
-			var dataFlowPropertiesPanel = null;
-
 			return {
 				initialize : function(diagram) {
-					dataFlowPropertiesPanel = new DataFlowPropertiesPanel();
+					var dataFlowPropertiesPanel = new DataFlowPropertiesPanel();
 
 					m_commandsController.registerCommandHandler(dataFlowPropertiesPanel);					
 					
 					dataFlowPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function() {
 					return dataFlowPropertiesPanel;
 				}
 			};

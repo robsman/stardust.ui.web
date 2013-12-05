@@ -180,7 +180,11 @@ public class ParticipantUtils
          case SCOPED_ORGANIZATION:
          case SCOPED_ROLE:
             String modelId = ModelUtils.extractModelId(participantInfo.getQualifiedId());
-            for (DeployedModel model : ModelUtils.getAllModels())
+            if (null == modelId)
+            {
+               modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
+            }
+            for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
             {
                if (model.getId().equals(modelId))
                {

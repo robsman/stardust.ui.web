@@ -54,20 +54,11 @@ public class InfinityStartup
 
    public InfinityStartup(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)
    {
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#creating InfinityStartup....");
-      }
-      
       this.servletContext = servletContext;
       this.request = request;
       this.response = response;
       
       this.params = getParams(request);
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#InfinityStartup created....");
-      }
       
       //read parameter
       this.timeout = Parameters.instance().getInteger(TIMEOUT, 1000);
@@ -127,10 +118,6 @@ public class InfinityStartup
    
    public void createSession()
    {
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#InfinityStartup createSession()....");
-      }
       HttpSession httpSession = request.getSession();
       if(null != httpSession)
       { 
@@ -156,10 +143,6 @@ public class InfinityStartup
                   msgs.add(msgIter.next());
                }
             }
-         }
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("#Invalidating Session....");
          }
 
          if (request.isRequestedSessionIdValid())
@@ -192,10 +175,6 @@ public class InfinityStartup
          }
          request.getSession(true);
          
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("#exiting from createSession()");
-         }
       }
    }
    

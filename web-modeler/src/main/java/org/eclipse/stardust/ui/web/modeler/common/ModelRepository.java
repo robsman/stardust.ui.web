@@ -136,4 +136,18 @@ public class ModelRepository
 
       throw new IllegalArgumentException("Unsupported model: " + model);
    }
+
+   @SuppressWarnings("unchecked")
+   public <M extends EObject> String getModelFormat(M model)
+   {
+      for (ModelBinding<? extends EObject> binding : modelBindings)
+      {
+         if (binding.isCompatible(model))
+         {
+            return ((ModelBinding<M>) binding).getModelFormat(model);
+         }
+      }
+
+      throw new IllegalArgumentException("Unsupported model: " + model);
+   }
 }

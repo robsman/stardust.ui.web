@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -32,13 +32,13 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function EventImplementationPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "implementationPropertiesPage",
 						"Implementation", // TODO I18N
-						"../../images/icons/wrench.png");
+						"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -46,7 +46,7 @@ define(
 						propertiesPage);
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.initialize = function() {
 					this.noImplementationPanel = this
@@ -76,7 +76,7 @@ define(
 							continue;
 						}
 
-						var pageDiv = jQuery("<div id=\"" + extension.id
+						var pageDiv = m_utils.jQuerySelect("<div id=\"" + extension.id
 								+ "\"></div>");
 
 						this.overlays[extension.id] = pageDiv;
@@ -99,13 +99,13 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(this).append(msg);
+												m_utils.jQuerySelect(this).append(msg);
 											} else {
-												var extension = page.extensions[jQuery(
+												var extension = page.extensions[m_utils.jQuerySelect(
 														this).attr("id")];
-												page.overlayControllers[jQuery(
+												page.overlayControllers[m_utils.jQuerySelect(
 														this).attr("id")] = extension.provider
-														.create(page, jQuery(
+														.create(page, m_utils.jQuerySelect(
 																this)
 																.attr("id"));
 												m_dialog
@@ -132,7 +132,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.populateSupportedOverlays = function() {
 					this.supportedOverlays = {};
@@ -152,7 +152,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.submitNoneImplementation = function() {
 					// Event class change needs to be submitted as well
@@ -167,7 +167,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.populateOverlaySelect = function() {
 					this.eventIntegrationOverlaySelect.empty();
@@ -194,7 +194,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.setOverlay = function(
 						overlay) {
@@ -229,7 +229,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.setElement = function() {
 					m_utils.debug("Event ");
@@ -255,6 +255,22 @@ define(
 							if (overlay == null) {
 								overlay = "genericCamelRouteEvent";
 							}
+						}
+
+						//TODO Temporary code - to be reviewed
+						if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+							if (this.getModelElement().eventClass == m_constants.TIMER_EVENT_CLASS) {
+								overlay = "timerEvent_intermediate";
+							} else if (this.getModelElement().eventClass == m_constants.ERROR_EVENT_CLASS) {
+								overlay = "errorEvent_intermediate";
+							}
+							this.eventIntegrationOverlaySelect.hide();
+							jQuery("label[for='eventIntegrationOverlaySelect']")
+									.addClass("invisible");
+						}else{
+							this.eventIntegrationOverlaySelect.show();
+							jQuery("label[for='eventIntegrationOverlaySelect']")
+									.removeClass("invisible");
 						}
 
 						m_utils.debug("Overlay check");
@@ -288,14 +304,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.getEvent = function() {
 					return this.propertiesPanel.element.modelElement;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				EventImplementationPropertiesPage.prototype.validate = function(
 						changes) {

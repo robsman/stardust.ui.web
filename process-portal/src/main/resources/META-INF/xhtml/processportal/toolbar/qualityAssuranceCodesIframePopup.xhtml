@@ -14,8 +14,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 <ui:include src="/plugins/common/I18NInclude.xhtml" />
-<script type="text/javascript"
-	src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortal.js" />
 
 <ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
 <ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
@@ -37,12 +35,14 @@
 					advanceArgs.width = document.documentElement.scrollWidth + 20;
 					advanceArgs.height = document.documentElement.scrollHeight + 20;
 
-					if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+					if (parent.BridgeUtils)
 					{
-						advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 17; 
+						parent.BridgeUtils.FrameManager.resizeAndReposition(iFrameId, advanceArgs);
 					}
-
-					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					else
+					{
+						parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					}
 				}	
 			}
 		</script>

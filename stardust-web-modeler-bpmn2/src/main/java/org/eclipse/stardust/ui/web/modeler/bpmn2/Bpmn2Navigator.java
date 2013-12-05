@@ -2,17 +2,14 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
-import java.util.Iterator;
-
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
 
 public class Bpmn2Navigator implements ModelNavigator<Definitions>
@@ -37,12 +34,23 @@ public class Bpmn2Navigator implements ModelNavigator<Definitions>
 
    public Process findProcess(Definitions model, String processId)
    {
+      return findRootElement(model, processId, Process.class);
+   }
+
+   public Resource findResource(Definitions model, String resourceId)
+   {
+      return findRootElement(model, resourceId, Resource.class);
+   }
+
+   public static <T extends RootElement> T findRootElement(Definitions model, String elementId,
+         Class<T> targetType)
+   {
       for (RootElement candidate : model.getRootElements())
       {
-         if ((candidate instanceof Process) && !isEmpty(candidate.getId())
-               && candidate.getId().equals(processId))
+         if ((targetType.isInstance(candidate)) && !isEmpty(candidate.getId())
+               && candidate.getId().equals(elementId))
          {
-            return (Process) candidate;
+            return targetType.cast(candidate);
          }
       }
       return null;

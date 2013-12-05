@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2010, Ajax.org B.V.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -14,7 +14,7 @@
  *     * Neither the name of Ajax.org B.V. nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -141,7 +141,7 @@ var lookup = function(parentId, moduleName) {
 function exportAce(ns) {
     var require = function(module, callback) {
         return _require("", module, callback);
-    };    
+    };
 
     var root = global;
     if (ns) {
@@ -213,8 +213,6 @@ exports.edit = function(el) {
     el.env = editor.env = env;
     return editor;
 };
-
-
 exports.createEditSession = function(text, mode) {
     var doc = new EditSession(text, doc);
     doc.setUndoManager(new UndoManager());
@@ -231,7 +229,7 @@ require("./regexp");
 require("./es5-shim");
 
 });
- 
+
 define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, exports, module) {
 
     var real = {
@@ -306,27 +304,27 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
 
 define('ace/lib/es5-shim', ['require', 'exports', 'module' ], function(require, exports, module) {
 
+function Empty() {}
+
 if (!Function.prototype.bind) {
     Function.prototype.bind = function bind(that) { // .length is 1
         var target = this;
-        if (typeof target != "function")
-            throw new TypeError(); // TODO message
+        if (typeof target != "function") {
+            throw new TypeError("Function.prototype.bind called on incompatible " + target);
+        }
         var args = slice.call(arguments, 1); // for normal call
         var bound = function () {
 
             if (this instanceof bound) {
 
-                var F = function(){};
-                F.prototype = target.prototype;
-                var self = new F;
-
                 var result = target.apply(
-                    self,
+                    this,
                     args.concat(slice.call(arguments))
                 );
-                if (result !== null && Object(result) === result)
+                if (Object(result) === result) {
                     return result;
-                return self;
+                }
+                return this;
 
             } else {
                 return target.apply(
@@ -337,6 +335,11 @@ if (!Function.prototype.bind) {
             }
 
         };
+        if(target.prototype) {
+            Empty.prototype = target.prototype;
+            bound.prototype = new Empty();
+            Empty.prototype = null;
+        }
         return bound;
     };
 }
@@ -344,7 +347,7 @@ var call = Function.prototype.call;
 var prototypeOfArray = Array.prototype;
 var prototypeOfObject = Object.prototype;
 var slice = prototypeOfArray.slice;
-var toString = call.bind(prototypeOfObject.toString);
+var _toString = call.bind(prototypeOfObject.toString);
 var owns = call.bind(prototypeOfObject.hasOwnProperty);
 var defineGetter;
 var defineSetter;
@@ -357,104 +360,217 @@ if ((supportsAccessors = owns(prototypeOfObject, "__defineGetter__"))) {
     lookupGetter = call.bind(prototypeOfObject.__lookupGetter__);
     lookupSetter = call.bind(prototypeOfObject.__lookupSetter__);
 }
+if ([1,2].splice(0).length != 2) {
+    if(function() { // test IE < 9 to splice bug - see issue #138
+        function makeArray(l) {
+            var a = new Array(l+2);
+            a[0] = a[1] = 0;
+            return a;
+        }
+        var array = [], lengthBefore;
+
+        array.splice.apply(array, makeArray(20));
+        array.splice.apply(array, makeArray(26));
+
+        lengthBefore = array.length; //46
+        array.splice(5, 0, "XXX"); // add one element
+
+        lengthBefore + 1 == array.length
+
+        if (lengthBefore + 1 == array.length) {
+            return true;// has right splice implementation without bugs
+        }
+    }()) {//IE 6/7
+        var array_splice = Array.prototype.splice;
+        Array.prototype.splice = function(start, deleteCount) {
+            if (!arguments.length) {
+                return [];
+            } else {
+                return array_splice.apply(this, [
+                    start === void 0 ? 0 : start,
+                    deleteCount === void 0 ? (this.length - start) : deleteCount
+                ].concat(slice.call(arguments, 2)))
+            }
+        };
+    } else {//IE8
+        Array.prototype.splice = function(pos, removeCount){
+            var length = this.length;
+            if (pos > 0) {
+                if (pos > length)
+                    pos = length;
+            } else if (pos == void 0) {
+                pos = 0;
+            } else if (pos < 0) {
+                pos = Math.max(length + pos, 0);
+            }
+
+            if (!(pos+removeCount < length))
+                removeCount = length - pos;
+
+            var removed = this.slice(pos, pos+removeCount);
+            var insert = slice.call(arguments, 2);
+            var add = insert.length;
+            if (pos === length) {
+                if (add) {
+                    this.push.apply(this, insert);
+                }
+            } else {
+                var remove = Math.min(removeCount, length - pos);
+                var tailOldPos = pos + remove;
+                var tailNewPos = tailOldPos + add - remove;
+                var tailCount = length - tailOldPos;
+                var lengthAfterRemove = length - remove;
+
+                if (tailNewPos < tailOldPos) { // case A
+                    for (var i = 0; i < tailCount; ++i) {
+                        this[tailNewPos+i] = this[tailOldPos+i];
+                    }
+                } else if (tailNewPos > tailOldPos) { // case B
+                    for (i = tailCount; i--; ) {
+                        this[tailNewPos+i] = this[tailOldPos+i];
+                    }
+                } // else, add == remove (nothing to do)
+
+                if (add && pos === lengthAfterRemove) {
+                    this.length = lengthAfterRemove; // truncate array
+                    this.push.apply(this, insert);
+                } else {
+                    this.length = lengthAfterRemove + add; // reserves space
+                    for (i = 0; i < add; ++i) {
+                        this[pos+i] = insert[i];
+                    }
+                }
+            }
+            return removed;
+        };
+    }
+}
 if (!Array.isArray) {
     Array.isArray = function isArray(obj) {
-        return toString(obj) == "[object Array]";
+        return _toString(obj) == "[object Array]";
     };
 }
+var boxedString = Object("a"),
+    splitString = boxedString[0] != "a" || !(0 in boxedString);
+
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function forEach(fun /*, thisp*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             thisp = arguments[1],
-            i = 0,
+            i = -1,
             length = self.length >>> 0;
-        if (toString(fun) != "[object Function]") {
+        if (_toString(fun) != "[object Function]") {
             throw new TypeError(); // TODO message
         }
 
-        while (i < length) {
+        while (++i < length) {
             if (i in self) {
-                fun.call(thisp, self[i], i, self);
+                fun.call(thisp, self[i], i, object);
             }
-            i++;
         }
     };
 }
 if (!Array.prototype.map) {
     Array.prototype.map = function map(fun /*, thisp*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             result = Array(length),
             thisp = arguments[1];
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
             if (i in self)
-                result[i] = fun.call(thisp, self[i], i, self);
+                result[i] = fun.call(thisp, self[i], i, object);
         }
         return result;
     };
 }
 if (!Array.prototype.filter) {
     Array.prototype.filter = function filter(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                    object,
             length = self.length >>> 0,
             result = [],
+            value,
             thisp = arguments[1];
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && fun.call(thisp, self[i], i, self))
-                result.push(self[i]);
+            if (i in self) {
+                value = self[i];
+                if (fun.call(thisp, value, i, object)) {
+                    result.push(value);
+                }
+            }
         }
         return result;
     };
 }
 if (!Array.prototype.every) {
     Array.prototype.every = function every(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             thisp = arguments[1];
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && !fun.call(thisp, self[i], i, self))
+            if (i in self && !fun.call(thisp, self[i], i, object)) {
                 return false;
+            }
         }
         return true;
     };
 }
 if (!Array.prototype.some) {
     Array.prototype.some = function some(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             thisp = arguments[1];
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && fun.call(thisp, self[i], i, self))
+            if (i in self && fun.call(thisp, self[i], i, object)) {
                 return true;
+            }
         }
         return false;
     };
 }
 if (!Array.prototype.reduce) {
     Array.prototype.reduce = function reduce(fun /*, initial*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0;
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
-        if (!length && arguments.length == 1)
-            throw new TypeError(); // TODO message
+        if (!length && arguments.length == 1) {
+            throw new TypeError("reduce of empty array with no initial value");
+        }
 
         var i = 0;
         var result;
@@ -466,14 +582,16 @@ if (!Array.prototype.reduce) {
                     result = self[i++];
                     break;
                 }
-                if (++i >= length)
-                    throw new TypeError(); // TODO message
+                if (++i >= length) {
+                    throw new TypeError("reduce of empty array with no initial value");
+                }
             } while (true);
         }
 
         for (; i < length; i++) {
-            if (i in self)
-                result = fun.call(void 0, result, self[i], i, self);
+            if (i in self) {
+                result = fun.call(void 0, result, self[i], i, object);
+            }
         }
 
         return result;
@@ -481,13 +599,17 @@ if (!Array.prototype.reduce) {
 }
 if (!Array.prototype.reduceRight) {
     Array.prototype.reduceRight = function reduceRight(fun /*, initial*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0;
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
-        if (!length && arguments.length == 1)
-            throw new TypeError(); // TODO message
+        if (!length && arguments.length == 1) {
+            throw new TypeError("reduceRight of empty array with no initial value");
+        }
 
         var result, i = length - 1;
         if (arguments.length >= 2) {
@@ -498,30 +620,36 @@ if (!Array.prototype.reduceRight) {
                     result = self[i--];
                     break;
                 }
-                if (--i < 0)
-                    throw new TypeError(); // TODO message
+                if (--i < 0) {
+                    throw new TypeError("reduceRight of empty array with no initial value");
+                }
             } while (true);
         }
 
         do {
-            if (i in this)
-                result = fun.call(void 0, result, self[i], i, self);
+            if (i in this) {
+                result = fun.call(void 0, result, self[i], i, object);
+            }
         } while (i--);
 
         return result;
     };
 }
-if (!Array.prototype.indexOf) {
+if (!Array.prototype.indexOf || ([0, 1].indexOf(1, 2) != -1)) {
     Array.prototype.indexOf = function indexOf(sought /*, fromIndex */ ) {
-        var self = toObject(this),
+        var self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                toObject(this),
             length = self.length >>> 0;
 
-        if (!length)
+        if (!length) {
             return -1;
+        }
 
         var i = 0;
-        if (arguments.length > 1)
+        if (arguments.length > 1) {
             i = toInteger(arguments[1]);
+        }
         i = i >= 0 ? i : Math.max(0, length + i);
         for (; i < length; i++) {
             if (i in self && self[i] === sought) {
@@ -531,20 +659,25 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 }
-if (!Array.prototype.lastIndexOf) {
+if (!Array.prototype.lastIndexOf || ([0, 1].lastIndexOf(0, -3) != -1)) {
     Array.prototype.lastIndexOf = function lastIndexOf(sought /*, fromIndex */) {
-        var self = toObject(this),
+        var self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                toObject(this),
             length = self.length >>> 0;
 
-        if (!length)
+        if (!length) {
             return -1;
+        }
         var i = length - 1;
-        if (arguments.length > 1)
+        if (arguments.length > 1) {
             i = Math.min(i, toInteger(arguments[1]));
+        }
         i = i >= 0 ? i : length - Math.abs(i);
         for (; i >= 0; i--) {
-            if (i in self && sought === self[i])
+            if (i in self && sought === self[i]) {
                 return i;
+            }
         }
         return -1;
     };
@@ -766,13 +899,18 @@ if (!Object.keys) {
         ],
         dontEnumsLength = dontEnums.length;
 
-    for (var key in {"toString": null})
+    for (var key in {"toString": null}) {
         hasDontEnumBug = false;
+    }
 
     Object.keys = function keys(object) {
 
-        if ((typeof object != "object" && typeof object != "function") || object === null)
+        if (
+            (typeof object != "object" && typeof object != "function") ||
+            object === null
+        ) {
             throw new TypeError("Object.keys called on a non-object");
+        }
 
         var keys = [];
         for (var name in object) {
@@ -789,117 +927,31 @@ if (!Object.keys) {
                 }
             }
         }
-
         return keys;
     };
 
-}
-if (!Date.prototype.toISOString || (new Date(-62198755200000).toISOString().indexOf('-000001') === -1)) {
-    Date.prototype.toISOString = function toISOString() {
-        var result, length, value, year;
-        if (!isFinite(this))
-            throw new RangeError;
-        result = [this.getUTCMonth() + 1, this.getUTCDate(),
-            this.getUTCHours(), this.getUTCMinutes(), this.getUTCSeconds()];
-        year = this.getUTCFullYear();
-        year = (year < 0 ? '-' : (year > 9999 ? '+' : '')) + ('00000' + Math.abs(year)).slice(0 <= year && year <= 9999 ? -4 : -6);
-
-        length = result.length;
-        while (length--) {
-            value = result[length];
-            if (value < 10)
-                result[length] = "0" + value;
-        }
-        return year + "-" + result.slice(0, 2).join("-") + "T" + result.slice(2).join(":") + "." +
-            ("000" + this.getUTCMilliseconds()).slice(-3) + "Z";
-    }
 }
 if (!Date.now) {
     Date.now = function now() {
         return new Date().getTime();
     };
 }
-if (!Date.prototype.toJSON) {
-    Date.prototype.toJSON = function toJSON(key) {
-        if (typeof this.toISOString != "function")
-            throw new TypeError(); // TODO message
-        return this.toISOString();
-    };
+if("0".split(void 0, 0).length) {
+    var string_split = String.prototype.split;
+    String.prototype.split = function(separator, limit) {
+        if(separator === void 0 && limit === 0)return [];
+        return string_split.apply(this, arguments);
+    }
 }
-if (Date.parse("+275760-09-13T00:00:00.000Z") !== 8.64e15) {
-    Date = (function(NativeDate) {
-        var Date = function Date(Y, M, D, h, m, s, ms) {
-            var length = arguments.length;
-            if (this instanceof NativeDate) {
-                var date = length == 1 && String(Y) === Y ? // isString(Y)
-                    new NativeDate(Date.parse(Y)) :
-                    length >= 7 ? new NativeDate(Y, M, D, h, m, s, ms) :
-                    length >= 6 ? new NativeDate(Y, M, D, h, m, s) :
-                    length >= 5 ? new NativeDate(Y, M, D, h, m) :
-                    length >= 4 ? new NativeDate(Y, M, D, h) :
-                    length >= 3 ? new NativeDate(Y, M, D) :
-                    length >= 2 ? new NativeDate(Y, M) :
-                    length >= 1 ? new NativeDate(Y) :
-                                  new NativeDate();
-                date.constructor = Date;
-                return date;
-            }
-            return NativeDate.apply(this, arguments);
-        };
-        var isoDateExpression = new RegExp("^" +
-            "(\\d{4}|[\+\-]\\d{6})" + // four-digit year capture or sign + 6-digit extended year
-            "(?:-(\\d{2})" + // optional month capture
-            "(?:-(\\d{2})" + // optional day capture
-            "(?:" + // capture hours:minutes:seconds.milliseconds
-                "T(\\d{2})" + // hours capture
-                ":(\\d{2})" + // minutes capture
-                "(?:" + // optional :seconds.milliseconds
-                    ":(\\d{2})" + // seconds capture
-                    "(?:\\.(\\d{3}))?" + // milliseconds capture
-                ")?" +
-            "(?:" + // capture UTC offset component
-                "Z|" + // UTC capture
-                "(?:" + // offset specifier +/-hours:minutes
-                    "([-+])" + // sign capture
-                    "(\\d{2})" + // hours offset capture
-                    ":(\\d{2})" + // minutes offset capture
-                ")" +
-            ")?)?)?)?" +
-        "$");
-        for (var key in NativeDate)
-            Date[key] = NativeDate[key];
-        Date.now = NativeDate.now;
-        Date.UTC = NativeDate.UTC;
-        Date.prototype = NativeDate.prototype;
-        Date.prototype.constructor = Date;
-        Date.parse = function parse(string) {
-            var match = isoDateExpression.exec(string);
-            if (match) {
-                match.shift(); // kill match[0], the full match
-                for (var i = 1; i < 7; i++) {
-                    match[i] = +(match[i] || (i < 3 ? 1 : 0));
-                    if (i == 1)
-                        match[i]--;
-                }
-                var minuteOffset = +match.pop(), hourOffset = +match.pop(), sign = match.pop();
-                var offset = 0;
-                if (sign) {
-                    if (hourOffset > 23 || minuteOffset > 59)
-                        return NaN;
-                    offset = (hourOffset * 60 + minuteOffset) * 6e4 * (sign == "+" ? -1 : 1);
-                }
-                var year = +match[0];
-                if (0 <= year && year <= 99) {
-                    match[0] = year + 400;
-                    return NativeDate.UTC.apply(this, match) + offset - 12622780800000;
-                }
-                return NativeDate.UTC.apply(this, match) + offset;
-            }
-            return NativeDate.parse.apply(this, arguments);
-        };
-
-        return Date;
-    })(Date);
+if("".substr && "0b".substr(-1) !== "b") {
+    var string_substr = String.prototype.substr;
+    String.prototype.substr = function(start, length) {
+        return string_substr.call(
+            this,
+            start < 0 ? (start = this.length + start) < 0 ? 0 : start : start,
+            length
+        );
+    }
 }
 var ws = "\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003" +
     "\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028" +
@@ -909,28 +961,64 @@ if (!String.prototype.trim || ws.trim()) {
     var trimBeginRegexp = new RegExp("^" + ws + ws + "*"),
         trimEndRegexp = new RegExp(ws + ws + "*$");
     String.prototype.trim = function trim() {
-        return String(this).replace(trimBeginRegexp, "").replace(trimEndRegexp, "");
+        if (this === undefined || this === null) {
+            throw new TypeError("can't convert "+this+" to object");
+        }
+        return String(this)
+            .replace(trimBeginRegexp, "")
+            .replace(trimEndRegexp, "");
     };
 }
-var toInteger = function (n) {
+
+function toInteger(n) {
     n = +n;
-    if (n !== n) // isNaN
+    if (n !== n) { // isNaN
         n = 0;
-    else if (n !== 0 && n !== (1/0) && n !== -(1/0))
+    } else if (n !== 0 && n !== (1/0) && n !== -(1/0)) {
         n = (n > 0 || -1) * Math.floor(Math.abs(n));
+    }
     return n;
+}
+
+function isPrimitive(input) {
+    var type = typeof input;
+    return (
+        input === null ||
+        type === "undefined" ||
+        type === "boolean" ||
+        type === "number" ||
+        type === "string"
+    );
+}
+
+function toPrimitive(input) {
+    var val, valueOf, toString;
+    if (isPrimitive(input)) {
+        return input;
+    }
+    valueOf = input.valueOf;
+    if (typeof valueOf === "function") {
+        val = valueOf.call(input);
+        if (isPrimitive(val)) {
+            return val;
+        }
+    }
+    toString = input.toString;
+    if (typeof toString === "function") {
+        val = toString.call(input);
+        if (isPrimitive(val)) {
+            return val;
+        }
+    }
+    throw new TypeError();
+}
+var toObject = function (o) {
+    if (o == null) { // this matches both null and undefined
+        throw new TypeError("can't convert "+o+" to object");
+    }
+    return Object(o);
 };
 
-var prepareString = "a"[0] != "a",
-    toObject = function (o) {
-        if (o == null) { // this matches both null and undefined
-            throw new TypeError(); // TODO message
-        }
-        if (prepareString && typeof o == "string" && o) {
-            return o.split("");
-        }
-        return Object(o);
-    };
 });
 
 define('ace/lib/dom', ['require', 'exports', 'module' ], function(require, exports, module) {
@@ -1017,9 +1105,9 @@ exports.importCssString = function importCssString(cssText, id, doc) {
     doc = doc || document;
     if (id && exports.hasCssString(id, doc))
         return null;
-    
+
     var style;
-    
+
     if (doc.createStyleSheet) {
         style = doc.createStyleSheet();
         style.cssText = cssText;
@@ -1055,7 +1143,7 @@ exports.importCssStylsheet = function(uri, doc) {
 exports.getInnerWidth = function(element) {
     return (
         parseInt(exports.computedStyle(element, "paddingLeft"), 10) +
-        parseInt(exports.computedStyle(element, "paddingRight"), 10) + 
+        parseInt(exports.computedStyle(element, "paddingRight"), 10) +
         element.clientWidth
     );
 };
@@ -1101,13 +1189,13 @@ else
     };
 
 exports.scrollbarWidth = function(document) {
-
-    var inner = exports.createElement("p");
+    var inner = exports.createElement("ace_inner");
     inner.style.width = "100%";
     inner.style.minWidth = "0px";
     inner.style.height = "200px";
+    inner.style.display = "block";
 
-    var outer = exports.createElement("div");
+    var outer = exports.createElement("ace_outer");
     var style = outer.style;
 
     style.position = "absolute";
@@ -1116,10 +1204,11 @@ exports.scrollbarWidth = function(document) {
     style.width = "200px";
     style.minWidth = "0px";
     style.height = "150px";
+    style.display = "block";
 
     outer.appendChild(inner);
 
-    var body = document.body || document.documentElement;
+    var body = document.documentElement;
     body.appendChild(outer);
 
     var noScrollbar = inner.offsetWidth;
@@ -1570,11 +1659,10 @@ var ua = navigator.userAgent;
 exports.isWin = (os == "win");
 exports.isMac = (os == "mac");
 exports.isLinux = (os == "linux");
-
-exports.isIE = 
-    navigator.appName == "Microsoft Internet Explorer"
+exports.isIE =
+    (navigator.appName == "Microsoft Internet Explorer" || navigator.appName.indexOf("MSAppHost") >= 0)
     && parseFloat(navigator.userAgent.match(/MSIE ([0-9]+[\.0-9]+)/)[1]);
-    
+
 exports.isOldIE = exports.isIE && exports.isIE < 9;
 exports.isGecko = exports.isMozilla = window.controllers && window.navigator.product === "Gecko";
 exports.isOldGecko = exports.isGecko && parseInt((navigator.userAgent.match(/rv\:(\d+)/)||[])[1], 10) < 4;
@@ -1591,7 +1679,7 @@ exports.isTouchPad = ua.indexOf("TouchPad") >= 0;
 
 });
 
-define('ace/editor', ['require', 'exports', 'module' , 'ace/lib/fixoldbrowsers', 'ace/lib/oop', 'ace/lib/lang', 'ace/lib/useragent', 'ace/keyboard/textinput', 'ace/mouse/mouse_handler', 'ace/mouse/fold_handler', 'ace/keyboard/keybinding', 'ace/edit_session', 'ace/search', 'ace/range', 'ace/lib/event_emitter', 'ace/commands/command_manager', 'ace/commands/default_commands'], function(require, exports, module) {
+define('ace/editor', ['require', 'exports', 'module' , 'ace/lib/fixoldbrowsers', 'ace/lib/oop', 'ace/lib/lang', 'ace/lib/useragent', 'ace/keyboard/textinput', 'ace/mouse/mouse_handler', 'ace/mouse/fold_handler', 'ace/keyboard/keybinding', 'ace/edit_session', 'ace/search', 'ace/range', 'ace/lib/event_emitter', 'ace/commands/command_manager', 'ace/autocomplete', 'ace/commands/default_commands', 'ace/config'], function(require, exports, module) {
 
 
 require("./lib/fixoldbrowsers");
@@ -1608,7 +1696,9 @@ var Search = require("./search").Search;
 var Range = require("./range").Range;
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
 var CommandManager = require("./commands/command_manager").CommandManager;
+var Autocomplete = require("./autocomplete").Autocomplete;
 var defaultCommands = require("./commands/default_commands").commands;
+var config = require("./config");
 var Editor = function(renderer, session) {
     var container = renderer.getContainerElement();
     this.container = container;
@@ -1627,13 +1717,24 @@ var Editor = function(renderer, session) {
     });
 
     this.setSession(session || new EditSession(""));
+    Autocomplete.addTo(this);
 };
 
 (function(){
 
     oop.implement(this, EventEmitter);
     this.setKeyboardHandler = function(keyboardHandler) {
-        this.keyBinding.setKeyboardHandler(keyboardHandler);
+        if (typeof keyboardHandler == "string" && keyboardHandler) {
+            this.$keybindingId = keyboardHandler;
+            var _self = this;
+            config.loadModule(["keybinding", keyboardHandler], function(module) {
+                if (_self.$keybindingId == keyboardHandler)
+                    _self.keyBinding.setKeyboardHandler(module && module.handler);
+            });
+        } else {
+            delete this.$keybindingId;
+            this.keyBinding.setKeyboardHandler(keyboardHandler);
+        }
     };
     this.getKeyboardHandler = function() {
         return this.keyBinding.getKeyboardHandler();
@@ -1773,6 +1874,8 @@ var Editor = function(renderer, session) {
         this.renderer.unsetStyle(style);
     };
     this.setFontSize = function(size) {
+        if (typeof size == "number")
+            size = size + "px";
         this.container.style.fontSize = size;
         this.renderer.updateFontSize();
     };
@@ -1855,7 +1958,7 @@ var Editor = function(renderer, session) {
     this.onScrollTopChange = function() {
         this.renderer.scrollToY(this.session.getScrollTop());
     };
-    
+
     this.onScrollLeftChange = function() {
         this.renderer.scrollToX(this.session.getScrollLeft());
     };
@@ -1882,7 +1985,7 @@ var Editor = function(renderer, session) {
 
         if (session.$highlightLineMarker && !highlight) {
             session.removeMarker(session.$highlightLineMarker.id);
-        session.$highlightLineMarker = null;
+            session.$highlightLineMarker = null;
         } else if (!session.$highlightLineMarker && highlight) {
             session.$highlightLineMarker = session.highlightLines(highlight.row, highlight.row, "ace_active-line");
         } else if (highlight) {
@@ -1910,7 +2013,7 @@ var Editor = function(renderer, session) {
 
         var re = this.$highlightSelectedWord && this.$getSelectionHighLightRegexp()
         this.session.highlight(re);
-        
+
         this._emit("changeSelection");
     };
 
@@ -1997,7 +2100,7 @@ var Editor = function(renderer, session) {
         this.commands.exec("cut", this);
     };
     this.onPaste = function(text) {
-        if (this.$readOnly) 
+        if (this.$readOnly)
             return;
         this._emit("paste", text);
         this.insert(text);
@@ -2205,6 +2308,8 @@ var Editor = function(renderer, session) {
     this.$readOnly = false;
     this.setReadOnly = function(readOnly) {
         this.$readOnly = readOnly;
+        this.textInput.setReadOnly(readOnly);
+        this.renderer.$cursorLayer.setBlinking(!readOnly);
     };
     this.getReadOnly = function() {
         return this.$readOnly;
@@ -2375,6 +2480,10 @@ var Editor = function(renderer, session) {
             return this.insert(indentString);
         }
     };
+    this.blockIndent = function() {
+        var rows = this.$getSelectedRows();
+        this.session.indentRows(rows.first, rows.last, "\t");
+    };
     this.blockOutdent = function() {
         var selection = this.session.getSelection();
         this.session.outdentRows(selection.getRange());
@@ -2440,14 +2549,14 @@ var Editor = function(renderer, session) {
 
                 var t = parseFloat(nr.value);
                 t *= Math.pow(10, decimals);
-                
+
 
                 if(fp !== nr.end && column < fp){
                     amount *= Math.pow(10, nr.end - column - 1);
                 } else {
                     amount *= Math.pow(10, nr.end - column);
                 }
-                
+
                 t += amount;
                 t /= Math.pow(10, decimals);
                 var nnr = t.toFixed(decimals);
@@ -2485,7 +2594,7 @@ var Editor = function(renderer, session) {
             var endPoint = doc.insert(point, doc.getTextRange(range), false);
             range.start = point;
             range.end = endPoint;
-            
+
             sel.setSelectionRange(range, reverse)
         }
     };
@@ -2669,7 +2778,7 @@ var Editor = function(renderer, session) {
             if (pos.row == cursor.row && Math.abs(pos.column - cursor.column) < 2)
                 range = this.session.getBracketRange(pos);
         }
-        
+
         pos = range && range.cursor || pos;
         if (pos) {
             if (select) {
@@ -2907,7 +3016,15 @@ exports.stringReverse = function(string) {
 };
 
 exports.stringRepeat = function (string, count) {
-     return new Array(count + 1).join(string);
+    var result = '';
+    while (count > 0) {
+        if (count & 1)
+            result += string;
+
+        if (count >>= 1)
+            string += string;
+    }
+    return result;
 };
 
 var trimBeginRegexp = /^\s\s*/;
@@ -2934,7 +3051,7 @@ exports.copyArray = function(array){
     for (var i=0, l=array.length; i<l; i++) {
         if (array[i] && typeof array[i] == "object")
             copy[i] = this.copyObject( array[i] );
-        else 
+        else
             copy[i] = array[i];
     }
     return copy;
@@ -2944,7 +3061,7 @@ exports.deepCopy = function (obj) {
     if (typeof obj != "object") {
         return obj;
     }
-    
+
     var copy = obj.constructor();
     for (var key in obj) {
         if (typeof obj[key] == "object") {
@@ -3075,6 +3192,7 @@ var event = require("../lib/event");
 var useragent = require("../lib/useragent");
 var dom = require("../lib/dom");
 var lang = require("../lib/lang");
+var BROKEN_SETDATA = useragent.isChrome < 18;
 
 var TextInput = function(parentNode, host) {
     var text = dom.createElement("textarea");
@@ -3087,7 +3205,7 @@ var TextInput = function(parentNode, host) {
     text.autocapitalize = "off";
     text.spellcheck = false;
 
-    text.style.top = "-2em";
+    text.style.bottom = "2000em";
     parentNode.insertBefore(text, parentNode.firstChild);
 
     var PLACEHOLDER = "\x01\x01";
@@ -3098,7 +3216,8 @@ var TextInput = function(parentNode, host) {
     var inCompostion = false;
     var tempStyle = '';
     var isSelectionEmpty = true;
-    var isFocused = document.activeElement === text;
+    try { var isFocused = document.activeElement === text; } catch(e) {}
+
     event.addListener(text, "blur", function() {
         host.onBlur();
         isFocused = false;
@@ -3234,7 +3353,7 @@ var TextInput = function(parentNode, host) {
                 data = data.slice(0, -1);
             if (data[data.length - 1] == PLACEHOLDER[0])
                 data = data.slice(0, -1);
-            
+
             if (data)
                 host.onTextInput(data);
         }
@@ -3257,7 +3376,7 @@ var TextInput = function(parentNode, host) {
 
         var clipboardData = e.clipboardData || window.clipboardData;
 
-        if (clipboardData) {
+        if (clipboardData && !BROKEN_SETDATA) {
             var supported = clipboardData.setData("Text", data);
             if (supported) {
                 host.onCut();
@@ -3286,7 +3405,7 @@ var TextInput = function(parentNode, host) {
         }
 
         var clipboardData = e.clipboardData || window.clipboardData;
-        if (clipboardData) {
+        if (clipboardData && !BROKEN_SETDATA) {
             var supported = clipboardData.setData("Text", data);
             if (supported) {
                 host.onCopy();
@@ -3366,15 +3485,18 @@ var TextInput = function(parentNode, host) {
         host.onCompositionEnd();
     };
 
+    var syncComposition = lang.delayedCall(onCompositionUpdate, 50);
 
     event.addListener(text, "compositionstart", onCompositionStart);
-    if (useragent.isGecko)
-        event.addListener(text, "text", onCompositionUpdate);
-    else
-        event.addListener(text, "keyup", onCompositionUpdate);
+    event.addListener(text, useragent.isGecko ? "text" : "keyup", function(){syncComposition.schedule()});
     event.addListener(text, "compositionend", onCompositionEnd);
+
     this.getElement = function() {
         return text;
+    };
+
+    this.setReadOnly = function(readOnly) {
+       text.readOnly = readOnly;
     };
 
     this.onContextMenu = function(e) {
@@ -3511,7 +3633,7 @@ var MouseHandler = function(editor) {
 
         this.x = ev.x;
         this.y = ev.y;
-        
+
         this.isMousePressed = true;
         var renderer = this.editor.renderer;
         if (renderer.$keepTextAreaAtCursor)
@@ -3537,7 +3659,7 @@ var MouseHandler = function(editor) {
         var onCaptureInterval = function() {
             self[self.state] && self[self.state]();
         }
-        
+
         if (useragent.isOldIE && ev.domEvent.type == "dblclick") {
             setTimeout(function() {
                 onCaptureInterval();
@@ -3878,7 +4000,7 @@ function GutterHandler(mouseHandler) {
             return;
         var gutterRegion = gutter.getRegion(e);
 
-        if (gutterRegion)
+        if (gutterRegion == "foldWidgets")
             return;
 
         var row = e.getDocumentPosition().row;
@@ -3902,7 +4024,6 @@ function GutterHandler(mouseHandler) {
     function createTooltip() {
         tooltip = dom.createElement("div");
         tooltip.className = "ace_gutter-tooltip";
-        tooltip.style.maxWidth = "500px";
         tooltip.style.display = "none";
         editor.container.appendChild(tooltip);
     }
@@ -3947,10 +4068,10 @@ function GutterHandler(mouseHandler) {
 
     function moveTooltip(e) {
         var rect = editor.renderer.$gutter.getBoundingClientRect();
-        tooltip.style.left = e.x - rect.left + 15 + "px";
+        tooltip.style.left = e.x + 15 + "px";
         if (e.y + 3 * editor.renderer.lineHeight + 15 < rect.bottom) {
             tooltip.style.bottom =  "";
-            tooltip.style.top =  e.y - rect.top + 15 + "px";
+            tooltip.style.top =  e.y + 15 + "px";
         } else {
             tooltip.style.top =  "";
             tooltip.style.bottom = rect.bottom - e.y + 5 + "px";
@@ -4002,29 +4123,29 @@ var useragent = require("../lib/useragent");
 var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.domEvent = domEvent;
     this.editor = editor;
-    
+
     this.x = this.clientX = domEvent.clientX;
     this.y = this.clientY = domEvent.clientY;
 
     this.$pos = null;
     this.$inSelection = null;
-    
+
     this.propagationStopped = false;
     this.defaultPrevented = false;
 };
 
-(function() {  
-    
+(function() {
+
     this.stopPropagation = function() {
         event.stopPropagation(this.domEvent);
         this.propagationStopped = true;
     };
-    
+
     this.preventDefault = function() {
         event.preventDefault(this.domEvent);
         this.defaultPrevented = true;
     };
-    
+
     this.stop = function() {
         this.stopPropagation();
         this.preventDefault();
@@ -4032,16 +4153,16 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.getDocumentPosition = function() {
         if (this.$pos)
             return this.$pos;
-        
+
         this.$pos = this.editor.renderer.screenToTextCoordinates(this.clientX, this.clientY);
         return this.$pos;
     };
     this.inSelection = function() {
         if (this.$inSelection !== null)
             return this.$inSelection;
-            
+
         var editor = this.editor;
-        
+
         if (editor.getReadOnly()) {
             this.$inSelection = false;
         }
@@ -4062,11 +4183,11 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.getShiftKey = function() {
         return this.domEvent.shiftKey;
     };
-    
+
     this.getAccelKey = useragent.isMac
         ? function() { return this.domEvent.metaKey; }
         : function() { return this.domEvent.ctrlKey; };
-    
+
 }).call(MouseEvent.prototype);
 
 });
@@ -4084,6 +4205,8 @@ var DragdropHandler = function(mouseHandler) {
 
     var mouseTarget = editor.container;
     event.addListener(mouseTarget, "dragenter", function(e) {
+        if (editor.getReadOnly())
+            return;
         counter++;
         if (!dragSelectionMarker) {
             range = editor.getSelectionRange();
@@ -4098,31 +4221,35 @@ var DragdropHandler = function(mouseHandler) {
     });
 
     event.addListener(mouseTarget, "dragover", function(e) {
+        if (editor.getReadOnly())
+            return;
         x = e.clientX;
         y = e.clientY;
         return event.preventDefault(e);
     });
-    
+
     var onDragInterval =  function() {
         dragCursor = editor.renderer.screenToTextCoordinates(x, y);
         editor.moveCursorToPosition(dragCursor);
         editor.renderer.scrollCursorIntoView();
     };
-    
+
     event.addListener(mouseTarget, "dragleave", function(e) {
+        if (editor.getReadOnly())
+            return;
         counter--;
         if (counter > 0)
             return;
-        console.log(e.type, counter,e.target);
         clearInterval(timerId);
         editor.session.removeMarker(dragSelectionMarker);
         dragSelectionMarker = null;
         editor.selection.setSelectionRange(range, isBackwards);
         return event.preventDefault(e);
     });
-    
+
     event.addListener(mouseTarget, "drop", function(e) {
-        console.log(e.type, counter,e.target);
+        if (editor.getReadOnly())
+            return;
         counter = 0;
         clearInterval(timerId);
         editor.session.removeMarker(dragSelectionMarker);
@@ -4160,6 +4287,8 @@ function FoldHandler(editor) {
     });
 
     editor.on("guttermousedown", function(e) {
+        if (!editor.isFocused())
+            return;
         var gutterRegion = editor.renderer.$gutterLayer.getRegion(e);
 
         if (gutterRegion == "foldWidgets") {
@@ -4281,26 +4410,25 @@ var KeyBinding = function(editor) {
 
     this.$callKeyboardHandlers = function (hashId, keyString, keyCode, e) {
         var toExecute;
+        var success = false;
+        var commands = this.$editor.commands;
+
         for (var i = this.$handlers.length; i--;) {
             toExecute = this.$handlers[i].handleKeyboard(
                 this.$data, hashId, keyString, keyCode, e
             );
-            if (toExecute && toExecute.command)
+            if (!toExecute || !toExecute.command)
+                continue;
+            if (toExecute.command == "null") {
+                success = toExecute.passEvent != true;
+            } else {
+                success = commands.exec(toExecute.command, this.$editor, toExecute.args, e);
+            }
+            if (success && e && hashId != -1)
+                event.stopEvent(e);
+            if (success)
                 break;
         }
-
-        if (!toExecute || !toExecute.command)
-            return false;
-
-        var success = false;
-        var commands = this.$editor.commands;
-        if (toExecute.command != "null")
-            success = commands.exec(toExecute.command, this.$editor, toExecute.args, e);
-        else
-            success = toExecute.passEvent != true;
-        if (success && e && hashId != -1)
-            event.stopEvent(e);
-
         return success;
     };
 
@@ -4342,7 +4470,7 @@ var EditSession = function(text, mode) {
     this.$backMarkers = {};
     this.$markerId = 1;
     this.$undoSelect = true;
-    
+
     this.$foldData = [];
     this.$foldData.toString = function() {
         var str = "";
@@ -4353,7 +4481,7 @@ var EditSession = function(text, mode) {
     }
     this.on("changeFold", this.onChangeFold.bind(this));
     this.$onChange = this.onChange.bind(this);
-    
+
     if (typeof text != "object" || !text.getLine)
         text = new Document(text);
 
@@ -4700,9 +4828,9 @@ var EditSession = function(text, mode) {
         }
         if (!clazz)
             clazz = "ace_step";
-        
+
         var range = new Range(startRow, 0, endRow, Infinity);
-        
+
         var id = this.addMarker(range, clazz, "fullLine", inFront);
         range.id = id;
         return range;
@@ -4735,7 +4863,7 @@ var EditSession = function(text, mode) {
 
         if (!inToken)
             inToken = !!line.charAt(column).match(this.tokenRe);
-        
+
         if (inToken)
             var re = this.tokenRe;
         else if (/^\s+$/.test(line.slice(column-1, column+1)))
@@ -4796,88 +4924,44 @@ var EditSession = function(text, mode) {
     };
 
     this.$modes = {};
-    this._loadMode = function(mode, callback) {
-        if (!this.$modes["null"])
-            this.$modes["null"] = this.$modes["ace/mode/text"] = new TextMode();
-
-        if (this.$modes[mode])
-            return callback(this.$modes[mode]);
-
-        var _self = this;
-        var module;
-        try {
-            module = require(mode);
-        } catch (e) {};
-        if (module && module.Mode)
-            return done(module);
-        if (!this.$mode)
-            this.$setModePlaceholder();
-
-        fetch(mode, function() {
-            require([mode], done);
-        });
-
-        function done(module) {
-            if (_self.$modes[mode])
-                return callback(_self.$modes[mode]);
-
-            _self.$modes[mode] = new module.Mode();
-            _self.$modes[mode].$id = mode;
-            _self._emit("loadmode", {
-                name: mode,
-                mode: _self.$modes[mode]
-            });
-            callback(_self.$modes[mode]);
-        }
-
-        function fetch(name, callback) {
-            if (!config.get("packaged"))
-                return callback();
-
-            net.loadScript(config.moduleUrl(name, "mode"), callback);
-        }
-    };
-
-    this.$setModePlaceholder = function() {
-        this.$mode = this.$modes["null"];
-        var tokenizer = this.$mode.getTokenizer();
-
-        if (!this.bgTokenizer) {
-            this.bgTokenizer = new BackgroundTokenizer(tokenizer);
-            var _self = this;
-            this.bgTokenizer.addEventListener("update", function(e) {
-                _self._emit("tokenizerUpdate", e);
-            });
-        } else {
-            this.bgTokenizer.setTokenizer(tokenizer);
-        }
-        this.bgTokenizer.setDocument(this.getDocument());
-
-        this.tokenRe = this.$mode.tokenRe;
-        this.nonTokenRe = this.$mode.nonTokenRe;
-    };
     this.$mode = null;
     this.$modeId = null;
     this.setMode = function(mode) {
-        mode = mode || "null";
-        if (typeof mode === "string") {
-            if (this.$modeId == mode)
-                return;
-
-            this.$modeId = mode;
-            var _self = this;
-            this._loadMode(mode, function(module) {
-                if (_self.$modeId !== mode)
-                    return;
-
-                _self.setMode(module);
-            });
-            return;
+        if (mode && typeof mode === "object") {
+            if (mode.getTokenizer)
+                return this.$onChangeMode(mode);
+            var options = mode;
+            var path = options.path;
+        } else {
+            path = mode || "ace/mode/text";
         }
+        if (!this.$modes["ace/mode/text"])
+            this.$modes["ace/mode/text"] = new TextMode();
 
+        if (this.$modes[path] && !options)
+            return this.$onChangeMode(this.$modes[path]);
+        this.$modeId = path;
+        config.loadModule(["mode", path], function(m) {
+            if (this.$modeId !== path)
+                return;
+            if (this.$modes[path] && !options)
+                return this.$onChangeMode(this.$modes[path]);
+            if (m && m.Mode) {
+                m = new m.Mode(options);
+                if (!options) {
+                    this.$modes[path] = m;
+                    m.$id = path;
+                }
+                this.$onChangeMode(m)
+            }
+        }.bind(this));
+        if (!this.$mode)
+            this.$onChangeMode(this.$modes["ace/mode/text"], true);
+    };
+
+    this.$onChangeMode = function(mode, $isPlaceholder) {
         if (this.$mode === mode) return;
         this.$mode = mode;
-        this.$modeId = mode.$id;
 
         this.$stopWorker();
 
@@ -4902,14 +4986,47 @@ var EditSession = function(text, mode) {
         }
 
         this.bgTokenizer.setDocument(this.getDocument());
-        this.bgTokenizer.start(0);
 
         this.tokenRe = mode.tokenRe;
         this.nonTokenRe = mode.nonTokenRe;
 
-        this.$setFolding(mode.foldingRules);
 
-        this._emit("changeMode");
+        if (!$isPlaceholder) {
+            this.$modeId = mode.$id;
+            this.$setFolding(mode.foldingRules);
+            this._emit("changeMode");
+            this.bgTokenizer.start(0);
+        }
+        var rules = null, completionKeywords = [];
+        for (var rule in rules) {
+          if (rules.hasOwnProperty(rule)) {
+            var ruleItr = rules[rule];
+            for (var r = 0, l = ruleItr.length; r < l; r++) {
+                if (typeof ruleItr[r].token === "string") {
+                    if (/keyword|support|storage/.test(ruleItr[r].token))
+                        completionKeywords.push(ruleItr[r].regex);
+                }
+                else if (typeof ruleItr[r].token === "object") {
+                    for (var a = 0, aLength = ruleItr[r].token.length; a < aLength; a++) {
+                        if (/keyword|support|storage/.test(ruleItr[r].token[a])) {
+                            var rule = ruleItr[r].regex.match(/\(.+?\)/g)[a];
+                            completionKeywords.push(rule.substr(1, rule.length - 2));
+                        }
+                    }
+                }
+            }
+          }
+        }
+
+        if (mode.$id != null) {
+        var self = this;
+        this.$modes[mode.$id].getKeywords = function(append) {
+            if (!append)
+                return self.$modes[mode.$id].$keywordList;
+
+            return completionKeywords.concat(self.$modes[mode.$id].$keywordList || []);
+        };
+        }
     };
 
 
@@ -5706,7 +5823,7 @@ var EditSession = function(text, mode) {
                     foldStart = foldLine ? foldLine.start.row : Infinity;
                 }
             }
-            
+
             if (doCache) {
                 this.$docRowCache.push(docRow);
                 this.$screenRowCache.push(row);
@@ -5860,7 +5977,7 @@ var EditSession = function(text, mode) {
         }
 
         return screenRows;
-    }
+    };
     function isFullWidth(c) {
         if (c < 0x1100)
             return false;
@@ -5906,10 +6023,13 @@ require("./edit_session/bracket_match").BracketMatch.call(EditSession.prototype)
 exports.EditSession = EditSession;
 });
 
-define('ace/config', ['require', 'exports', 'module' , 'ace/lib/lang'], function(require, exports, module) {
+define('ace/config', ['require', 'exports', 'module' , 'ace/lib/lang', 'ace/lib/oop', 'ace/lib/net', 'ace/lib/event_emitter'], function(require, exports, module) {
 "no use strict";
 
 var lang = require("./lib/lang");
+var oop = require("./lib/oop");
+var net = require("./lib/net");
+var EventEmitter = require("./lib/event_emitter").EventEmitter;
 
 var global = (function() {
     return this;
@@ -5942,6 +6062,7 @@ exports.set = function(key, value) {
 exports.all = function() {
     return lang.copyObject(options);
 };
+oop.implement(exports, EventEmitter);
 
 exports.moduleUrl = function(name, component) {
     if (options.$moduleUrls[name])
@@ -5965,6 +6086,29 @@ exports.setModuleUrl = function(name, subst) {
     return options.$moduleUrls[name] = subst;
 };
 
+exports.loadModule = function(moduleName, onLoad) {
+    var module, moduleType;
+    if (Array.isArray(moduleName)) {
+        moduleType = moduleName[0];
+        moduleName = moduleName[1];
+    }
+    try {
+        module = require(moduleName);
+    } catch (e) {};
+    if (module)
+        return onLoad(module);
+
+    var afterLoad = function() {
+        require([moduleName], function(module) {
+            exports._emit("load.module", {name: moduleName, module: module});
+            onLoad(module);
+        });
+    };
+
+    if (!exports.get("packaged"))
+        return afterLoad();
+    net.loadScript(exports.moduleUrl(moduleName, moduleType), afterLoad);
+};
 exports.init = function() {
     options.packaged = require.packaged || module.packaged || (global.define && define.packaged);
 
@@ -6000,6 +6144,7 @@ exports.init = function() {
         scriptOptions.packaged = true;
     }
 
+    scriptOptions.basePath = scriptOptions.base;
     scriptOptions.workerPath = scriptOptions.workerPath || scriptOptions.base;
     scriptOptions.modePath = scriptOptions.modePath || scriptOptions.base;
     scriptOptions.themePath = scriptOptions.themePath || scriptOptions.base;
@@ -6095,13 +6240,13 @@ EventEmitter._dispatchEvent = function(eventName, e) {
 
     if (!e.type)
         e.type = eventName;
-    
+
     if (!e.stopPropagation) {
         e.stopPropagation = function() {
             this.propagationStopped = true;
         };
     }
-    
+
     if (!e.preventDefault) {
         e.preventDefault = function() {
             this.defaultPrevented = true;
@@ -6113,17 +6258,17 @@ EventEmitter._dispatchEvent = function(eventName, e) {
         if (e.propagationStopped)
             break;
     }
-    
+
     if (defaultHandler && !e.defaultPrevented)
         return defaultHandler(e);
 };
 
 EventEmitter.setDefaultHandler = function(eventName, callback) {
     this._defaultHandlers = this._defaultHandlers || {};
-    
+
     if (this._defaultHandlers[eventName])
         throw new Error("The default handler for '" + eventName + "' is already set");
-        
+
     this._defaultHandlers[eventName] = callback;
 };
 
@@ -6427,17 +6572,9 @@ var Selection = function(session) {
         );
 
         var leadingSpace = beforeCursor.match(/^\s*/);
-        if (leadingSpace[0].length == column) {
-            this.moveCursorTo(
-                firstColumnPosition.row, firstColumnPosition.column
-            );
-        }
-        else {
-            this.moveCursorTo(
-                firstColumnPosition.row,
-                firstColumnPosition.column + leadingSpace[0].length
-            );
-        }
+        if (leadingSpace[0].length != column && !this.session.$useEmacsStyleLineStart)
+            firstColumnPosition.column += leadingSpace[0].length;
+        this.moveCursorToPosition(firstColumnPosition);
     };
     this.moveCursorLineEnd = function() {
         var lead = this.lead;
@@ -6580,11 +6717,11 @@ var Selection = function(session) {
 
         if (column == line.length) {
             var l = this.doc.getLength();
-            do {    
+            do {
                 row++;
                 rightOfCursor = this.doc.getLine(row)
             } while (row < l && /^\s*$/.test(rightOfCursor))
-            
+
             if (!/^\s+/.test(rightOfCursor))
                 rightOfCursor = ""
             column = 0;
@@ -6605,11 +6742,11 @@ var Selection = function(session) {
 
         var line = this.session.getLine(row).substring(0, column);
         if (column == 0) {
-            do {    
+            do {
                 row--;
                 line = this.doc.getLine(row);
             } while (row > 0 && /^\s*$/.test(line))
-            
+
             column = line.length;
             if (!/\s+$/.test(line))
                 line = ""
@@ -6716,21 +6853,21 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
 };
 
-(function() { 
+(function() {
     this.isEqual = function(range) {
         return this.start.row == range.start.row &&
             this.end.row == range.end.row &&
             this.start.column == range.start.column &&
             this.end.column == range.end.column
-    }; 
+    };
     this.toString = function() {
         return ("Range: [" + this.start.row + "/" + this.start.column +
             "] -> [" + this.end.row + "/" + this.end.column + "]");
-    }; 
+    };
 
     this.contains = function(row, column) {
         return this.compare(row, column) == 0;
-    }; 
+    };
     this.compareRange = function(range) {
         var cmp,
             end = range.end,
@@ -6758,10 +6895,10 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
                 return 0;
             }
         }
-    }; 
+    };
     this.comparePoint = function(p) {
         return this.compare(p.row, p.column);
-    }; 
+    };
     this.containsRange = function(range) {
         return this.comparePoint(range.start) == 0 && this.comparePoint(range.end) == 0;
     };
@@ -6771,10 +6908,10 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
     this.isEnd = function(row, column) {
         return this.end.row == row && this.end.column == column;
-    }; 
+    };
     this.isStart = function(row, column) {
         return this.start.row == row && this.start.column == column;
-    }; 
+    };
     this.setStart = function(row, column) {
         if (typeof row == "object") {
             this.start.column = row.column;
@@ -6783,7 +6920,7 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             this.start.row = row;
             this.start.column = column;
         }
-    }; 
+    };
     this.setEnd = function(row, column) {
         if (typeof row == "object") {
             this.end.column = row.column;
@@ -6792,7 +6929,7 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             this.end.row = row;
             this.end.column = column;
         }
-    }; 
+    };
     this.inside = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column) || this.isStart(row, column)) {
@@ -6802,7 +6939,7 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             }
         }
         return false;
-    }; 
+    };
     this.insideStart = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column)) {
@@ -6812,7 +6949,7 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             }
         }
         return false;
-    }; 
+    };
     this.insideEnd = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isStart(row, column)) {
@@ -6966,7 +7103,7 @@ var Mode = function() {
         + unicode.packages.Nd
         + unicode.packages.Pc + "\\$_]+", "g"
     );
-    
+
     this.nonTokenRe = new RegExp("^(?:[^"
         + unicode.packages.L
         + unicode.packages.Mn + unicode.packages.Mc
@@ -7000,7 +7137,7 @@ var Mode = function() {
 
         return "";
     };
-    
+
     this.createWorker = function(session) {
         return null;
     };
@@ -7015,7 +7152,7 @@ var Mode = function() {
                 this.$modes[this.$embeds[i]] = new mapping[this.$embeds[i]]();
             }
         }
-        
+
         var delegations = ['toggleCommentLines', 'getNextLineIndent', 'checkOutdent', 'autoOutdent', 'transformAction'];
 
         for (var i = 0; i < delegations.length; i++) {
@@ -7028,13 +7165,13 @@ var Mode = function() {
             } (this));
         }
     }
-    
+
     this.$delegator = function(method, args, defaultHandler) {
         var state = args[0];
-        
+
         for (var i = 0; i < this.$embeds.length; i++) {
             if (!this.$modes[this.$embeds[i]]) continue;
-            
+
             var split = state.split(this.$embeds[i]);
             if (!split[0] && split[1]) {
                 args[0] = split[1];
@@ -7045,7 +7182,7 @@ var Mode = function() {
         var ret = defaultHandler.apply(this, args);
         return defaultHandler ? ret : undefined;
     };
-    
+
     this.transformAction = function(state, action, editor, session, param) {
         if (this.$behaviour) {
             var behaviours = this.$behaviour.getBehaviours();
@@ -7059,7 +7196,7 @@ var Mode = function() {
             }
         }
     }
-    
+
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
@@ -7068,121 +7205,175 @@ exports.Mode = Mode;
 define('ace/tokenizer', ['require', 'exports', 'module' ], function(require, exports, module) {
 var Tokenizer = function(rules, flag) {
     flag = flag ? "g" + flag : "g";
-    this.rules = rules;
+    this.states = rules;
 
     this.regExps = {};
     this.matchMappings = {};
-    for ( var key in this.rules) {
-        var rule = this.rules[key];
-        var state = rule;
+    for (var key in this.states) {
+        var state = this.states[key];
         var ruleRegExps = [];
         var matchTotal = 0;
-        var mapping = this.matchMappings[key] = {};
+        var mapping = this.matchMappings[key] = {defaultToken: "text"};
 
-        for ( var i = 0; i < state.length; i++) {
+        for (var i = 0; i < state.length; i++) {
+            var rule = state[i];
+            if (rule.defaultToken) {
+                mapping.defaultToken = rule.defaultToken;
+                continue;
+            }
+            if (rule.regex instanceof RegExp)
+                rule.regex = rule.regex.toString().slice(1, -1);
+            var adjustedregex = rule.regex;
+            var matchcount = new RegExp("(?:(" + adjustedregex + ")|(.))").exec("a").length - 2;
+            if (Array.isArray(rule.token)) {
+                if (rule.token.length == 1) {
+                    rule.token = rule.token[0];
+                } else {
+                    rule.tokenArray = rule.token;
+                    rule.token = this.$arrayTokens;
+                }
+            }
 
-            if (state[i].regex instanceof RegExp)
-                state[i].regex = state[i].regex.toString().slice(1, -1);
-            var matchcount = new RegExp("(?:(" + state[i].regex + ")|(.))").exec("a").length - 2;
-            var adjustedregex = state[i].regex.replace(/\\([0-9]+)/g, function (match, digit) {
-                return "\\" + (parseInt(digit, 10) + matchTotal + 1);
-            });
+            if (matchcount > 1) {
+                if (/\\\d/.test(rule.regex)) {
+                    adjustedregex = rule.regex.replace(/\\([0-9]+)/g, function (match, digit) {
+                        return "\\" + (parseInt(digit, 10) + matchTotal + 1);
+                    });
+                } else {
+                    matchcount = 1;
+                    adjustedregex = this.removeCapturingGroups(rule.regex);
+                }
+                if (!rule.splitRegex)
+                    rule.splitRegex = this.createSplitterRegexp(rule.regex, flag);
+            }
 
-            if (matchcount > 1 && state[i].token.length !== matchcount-1)
-                throw new Error("For " + state[i].regex + " the matching groups (" +(matchcount-1) + ") and length of the token array (" + state[i].token.length + ") don't match (rule #" + i + " of state " + key + ")");
-
-            mapping[matchTotal] = {
-                rule: i,
-                len: matchcount
-            };
+            mapping[matchTotal] = i;
             matchTotal += matchcount;
 
             ruleRegExps.push(adjustedregex);
         }
 
-        this.regExps[key] = new RegExp("(?:(" + ruleRegExps.join(")|(") + ")|(.))", flag);
+        this.regExps[key] = new RegExp("(" + ruleRegExps.join(")|(") + ")|($)", flag);
     }
 };
 
 (function() {
+    this.$arrayTokens = function(str) {
+        if (!str)
+            return [];
+        var values = str.split(this.splitRegex)
+        var tokens = [];
+        var types = this.tokenArray;
+        if (types.length != values.length - 2) {
+            if (window.console)
+                console.error(types.length , values.length - 2, str, this.splitRegex);
+            return [{type: "error.invalid", value: str}];
+        }
+        for (var i = 0; i < types.length; i++) {
+            if (values[i + 1]) {
+                tokens[tokens.length] = {
+                    type: types[i],
+                    value: values[i + 1]
+                };
+            }
+        }
+        return tokens;
+    };
+
+    this.removeCapturingGroups = function(src) {
+        var r = src.replace(
+            /\[(?:\\.|[^\]])*?\]|\\.|\(\?[:=!]|(\()/g,
+            function(x, y) {return y ? "(?:" : x;}
+        );
+        return r;
+    };
+
+    this.createSplitterRegexp = function(src, flag) {
+        src = src.replace(/\(\?=([^()]|\\.)*?\)$/, "");
+        return new RegExp(src, flag);
+    };
     this.getLineTokens = function(line, startState) {
+        if (startState && typeof startState != "string") {
+            var stack = startState.slice(0);
+            startState = stack[0];
+        } else
+            var stack = [];
+
         var currentState = startState || "start";
-        var state = this.rules[currentState];
+        var state = this.states[currentState];
         var mapping = this.matchMappings[currentState];
         var re = this.regExps[currentState];
         re.lastIndex = 0;
 
         var match, tokens = [];
-
         var lastIndex = 0;
 
-        var token = {
-            type: null,
-            value: ""
-        };
+        var token = {type: null, value: ""};
 
         while (match = re.exec(line)) {
-            var type = "text";
+            var type = mapping.defaultToken;
             var rule = null;
-            var value = [match[0]];
+            var value = match[0];
+            var index = re.lastIndex;
+
+            if (index - value.length > lastIndex) {
+                var skipped = line.substring(lastIndex, index - value.length);
+                if (token.type == type) {
+                    token.value += skipped;
+                } else {
+                    if (token.type)
+                        tokens.push(token);
+                    token = {type: type, value: skipped};
+                }
+            }
 
             for (var i = 0; i < match.length-2; i++) {
                 if (match[i + 1] === undefined)
                     continue;
 
-                rule = state[mapping[i].rule];
-
-                if (mapping[i].len > 1)
-                    value = match.slice(i+2, i+1+mapping[i].len);
-                if (typeof rule.token == "function")
-                    type = rule.token.apply(this, value);
-                else
-                    type = rule.token;
+                rule = state[mapping[i]];
+                type = typeof rule.token == "function"
+                    ? rule.token(value, currentState, stack)
+                    : rule.token;
 
                 if (rule.next) {
                     currentState = rule.next;
-                    state = this.rules[currentState];
-                    mapping = this.matchMappings[currentState];
-                    lastIndex = re.lastIndex;
-
-                    re = this.regExps[currentState];
-
-                    if (re === undefined) {
-                         throw new Error("You indicated a state of " + rule.next + " to go to, but it doesn't exist!");
+                    state = this.states[currentState];
+                    if (!state) {
+                        window.console && console.error && console.error(currentState, "doesn't exist");
+                        currentState = "start";
+                        state = this.states[currentState];
                     }
-
-                    re.lastIndex = lastIndex;
+                    mapping = this.matchMappings[currentState];
+                    lastIndex = index;
+                    re = this.regExps[currentState];
+                    re.lastIndex = index;
                 }
                 break;
             }
 
-            if (value[0]) {
+            if (value) {
                 if (typeof type == "string") {
-                    value = [value.join("")];
-                    type = [type];
-                }
-                for (var i = 0; i < value.length; i++) {
-                    if (!value[i])
-                        continue;
-
-                    if ((!rule || rule.merge || type[i] === "text") && token.type === type[i]) {
-                        token.value += value[i];
+                    if ((!rule || rule.merge !== false) && token.type === type) {
+                        token.value += value;
                     } else {
                         if (token.type)
                             tokens.push(token);
-
-                        token = {
-                            type: type[i],
-                            value: value[i]
-                        };
+                        token = {type: type, value: value};
                     }
+                } else {
+                    if (token.type)
+                        tokens.push(token);
+                    token = {type: null, value: ""};
+                    for (var i = 0; i < type.length; i++)
+                        tokens.push(type[i]);
                 }
             }
 
             if (lastIndex == line.length)
                 break;
 
-            lastIndex = re.lastIndex;
+            lastIndex = index;
         }
 
         if (token.type)
@@ -7190,7 +7381,7 @@ var Tokenizer = function(rules, flag) {
 
         return {
             tokens : tokens,
-            state : currentState
+            state : stack.length ? stack : currentState
         };
     };
 
@@ -7222,7 +7413,7 @@ var TextHighlightRules = function() {
     this.addRules = function(rules, prefix) {
         for (var key in rules) {
             var state = rules[key];
-            for (var i=0; i<state.length; i++) {
+            for (var i = 0; i < state.length; i++) {
                 var rule = state[i];
                 if (rule.next) {
                     rule.next = prefix + rule.next;
@@ -7246,12 +7437,14 @@ var TextHighlightRules = function() {
             for (var key in embedRules)
                 states.push(prefix + key);
         }
-        
+
         this.addRules(embedRules, prefix);
 
-        var addRules = Array.prototype[append ? "push" : "unshift"];
-        for (var i = 0; i < states.length; i++)
-            addRules.apply(this.$rules[states[i]], lang.deepCopy(escapeRules));       
+        if (escapeRules) {
+            var addRules = Array.prototype[append ? "push" : "unshift"];
+            for (var i = 0; i < states.length; i++)
+                addRules.apply(this.$rules[states[i]], lang.deepCopy(escapeRules));
+        }
 
         if (!this.$embeds)
             this.$embeds = [];
@@ -7260,7 +7453,38 @@ var TextHighlightRules = function() {
 
     this.getEmbeds = function() {
         return this.$embeds;
-    }
+    };
+
+    this.normalizeRules = function() {
+        var id = 0;
+        for (var key in this.$rules) {
+            var state = this.$rules[key];
+            for (var i = 0; i < state.length; i++) {
+                var rule = state[i];
+                if (rule.next && Array.isArray(rule.next)) {
+                    var stateName = rule.stateName || ("state" + id++);
+                    this.$rules[stateName] = rule.next;
+                    rule.next = stateName;
+                }
+                if (rule.rules) {
+                     for (var r in rule.rules) {
+                        if (this.$rules[r]) {
+                            if (this.$rules[r].push)
+                                this.$rules[r].push.apply(this.$rules[r], rule.rules[r]);
+                        } else {
+                            this.$rules[r] = rule.rules[r];
+                        }
+                    }
+                }
+                if (rule.include || typeof rule == "string") {
+                    var args = [i, 1].concat(this.$rules[rule.include || rule]);
+                    if (rule.noEscape)
+                        args = args.filter(function(x) {return !x.next;});
+                    state.splice.apply(state, args);
+                }
+            }
+        }
+    };
 
     this.createKeywordMapper = function(map, defaultToken, ignoreCase, splitChar) {
         var keywords = Object.create(null);
@@ -7272,6 +7496,7 @@ var TextHighlightRules = function() {
             for (var i = list.length; i--; )
                 keywords[list[i]] = className;
         });
+        this.$keywordList = Object.keys(keywords);
         map = null;
         return ignoreCase
             ? function(value) {return keywords[value.toLowerCase()] || defaultToken }
@@ -7305,7 +7530,7 @@ var Behaviour = function() {
         }
         this.$behaviours[name][action] = callback;
     }
-    
+
     this.addBehaviours = function (behaviours) {
         for (var key in behaviours) {
             for (var action in behaviours[key]) {
@@ -7313,13 +7538,13 @@ var Behaviour = function() {
             }
         }
     }
-    
+
     this.remove = function (name) {
         if (this.$behaviours && this.$behaviours[name]) {
             delete this.$behaviours[name];
         }
     }
-    
+
     this.inherit = function (mode, filter) {
         if (typeof mode === "function") {
             var behaviours = new mode().getBehaviours(filter);
@@ -7328,7 +7553,7 @@ var Behaviour = function() {
         }
         this.addBehaviours(behaviours);
     }
-    
+
     this.getBehaviours = function (filter) {
         if (!filter) {
             return this.$behaviours;
@@ -7441,7 +7666,7 @@ var Document = function(text) {
         };
 
 
- 
+
     this.$detectNewLine = function(text) {
         var match = text.match(/^.*?(\r\n|\r|\n)/m);
         if (match) {
@@ -7451,16 +7676,16 @@ var Document = function(text) {
         }
     };
     this.getNewLineCharacter = function() {
-      switch (this.$newLineMode) {
+        switch (this.$newLineMode) {
           case "windows":
-              return "\r\n";
+            return "\r\n";
 
           case "unix":
-              return "\n";
+            return "\n";
 
-          case "auto":
-              return this.$autoNewLine;
-      }
+          default:
+            return this.$autoNewLine;
+        }
     };
 
     this.$autoNewLine = "\n";
@@ -7719,6 +7944,26 @@ var Document = function(text) {
                 this.insert(range.start, delta.text);
         }
     };
+    this.indexToPosition = function(index, startRow) {
+        var lines = this.$lines || this.getAllLines();
+        var newlineLength = this.getNewLineCharacter().length;
+        for (var i = startRow || 0, l = lines.length; i < l; i++) {
+            index -= lines[i].length + newlineLength;
+            if (index < 0)
+                return {row: i, column: index + lines[i].length + newlineLength};
+        }
+        return {row: l-1, column: lines[l-1].length};
+    };
+    this.positionToIndex = function(pos, startRow) {
+        var lines = this.$lines || this.getAllLines();
+        var newlineLength = this.getNewLineCharacter().length;
+        var index = 0;
+        var row = Math.min(pos.row, lines.length);
+        for (var i = startRow || 0; i < row; ++i)
+            index += lines[i].length;
+
+        return index + newlineLength * i + pos.column;
+    };
 
 }).call(Document.prototype);
 
@@ -7733,7 +7978,7 @@ var EventEmitter = require("./lib/event_emitter").EventEmitter;
 
 var Anchor = exports.Anchor = function(doc, row, column) {
     this.document = doc;
-    
+
     if (typeof column == "undefined")
         this.setPosition(row.row, row.column);
     else
@@ -7750,7 +7995,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
     this.getPosition = function() {
         return this.$clipPositionToDocument(this.row, this.column);
     };
-        
+
     this.getDocument = function() {
         return this.document;
     };
@@ -7758,19 +8003,19 @@ var Anchor = exports.Anchor = function(doc, row, column) {
     this.onChange = function(e) {
         var delta = e.data;
         var range = delta.range;
-            
+
         if (range.start.row == range.end.row && range.start.row != this.row)
             return;
-            
+
         if (range.start.row > this.row)
             return;
-            
+
         if (range.start.row == this.row && range.start.column > this.column)
             return;
-    
+
         var row = this.row;
         var column = this.column;
-        
+
         if (delta.action === "insertText") {
             if (range.start.row === row && range.start.column <= column) {
                 if (range.start.row === range.end.row) {
@@ -7795,7 +8040,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
                     column = range.start.column;
                 else
                     column = Math.max(0, column - (range.end.column - range.start.column));
-                
+
             } else if (range.start.row !== range.end.row && range.start.row < row) {
                 if (range.end.row == row) {
                     column = Math.max(0, column - range.end.column) + range.start.column;
@@ -7831,15 +8076,15 @@ var Anchor = exports.Anchor = function(doc, row, column) {
         else {
             pos = this.$clipPositionToDocument(row, column);
         }
-        
+
         if (this.row == pos.row && this.column == pos.column)
             return;
-            
+
         var old = {
             row: this.row,
             column: this.column
         };
-        
+
         this.row = pos.row;
         this.column = pos.column;
         this._emit("change", {
@@ -7853,7 +8098,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
     };
     this.$clipPositionToDocument = function(row, column) {
         var pos = {};
-    
+
         if (row >= this.document.getLength()) {
             pos.row = Math.max(0, this.document.getLength() - 1);
             pos.column = this.document.getLine(pos.row).length;
@@ -7866,13 +8111,13 @@ var Anchor = exports.Anchor = function(doc, row, column) {
             pos.row = row;
             pos.column = Math.min(this.document.getLine(pos.row).length, Math.max(0, column));
         }
-        
+
         if (column < 0)
             pos.column = 0;
-            
+
         return pos;
     };
-    
+
 }).call(Anchor.prototype);
 
 });
@@ -8004,7 +8249,7 @@ var BackgroundTokenizer = function(tokenizer, editor) {
             data.state = "start";
         }
 
-        if (this.states[row] !== data.state) {
+        if (this.states[row] + "" !== data.state + "") {
             this.states[row] = data.state;
             this.lines[row + 1] = null;
             if (this.currentLine > row + 1)
@@ -8036,7 +8281,7 @@ var SearchHighlight = function(regExp, clazz, type) {
 
 (function() {
     this.MAX_RANGES = 500;
-    
+
     this.setRegexp = function(regExp) {
         if (this.regExp+"" == regExp+"")
             return;
@@ -8141,16 +8386,16 @@ function Folding() {
     this.getAllFolds = function() {
         var folds = [];
         var foldLines = this.$foldData;
-        
+
         function addFold(fold) {
             folds.push(fold);
             if (!fold.subFolds)
                 return;
-                
+
             for (var i = 0; i < fold.subFolds.length; i++)
                 addFold(fold.subFolds[i]);
         }
-        
+
         for (var i = 0; i < foldLines.length; i++)
             for (var j = 0; j < foldLines[i].folds.length; j++)
                 addFold(foldLines[i].folds[j]);
@@ -8259,7 +8504,7 @@ function Folding() {
         var foldData = this.$foldData;
         var added = false;
         var fold;
-        
+
         if (placeholder instanceof Fold)
             fold = placeholder;
         else
@@ -8502,7 +8747,7 @@ function Folding() {
             else if (bracketPos = this.findMatchingBracket(cursor)) {
                 if (range.comparePoint(bracketPos) == 1) {
                     range.end = bracketPos;
-                } 
+                }
                 else {
                     range.start = bracketPos;
                     range.start.column++;
@@ -8525,7 +8770,7 @@ function Folding() {
             if (tryToUnfold && folds.length) {
                 this.expandFolds(folds);
                 return;
-            } 
+            }
             else if (folds.length == 1 ) {
                 fold = folds[0];
             }
@@ -8562,12 +8807,12 @@ function Folding() {
                 } while(token && re.test(token.type));
                 iterator.stepForward();
             }
-            
+
             range.start.row = iterator.getCurrentTokenRow();
             range.start.column = iterator.getCurrentTokenColumn() + 2;
 
             iterator = new TokenIterator(this, row, column);
-            
+
             if (dir != -1) {
                 do {
                     token = iterator.stepForward();
@@ -8597,7 +8842,7 @@ function Folding() {
             } catch(e) {}
         }
     };
-    
+
     this.$foldStyles = {
         "manual": 1,
         "markbegin": 1,
@@ -8607,12 +8852,12 @@ function Folding() {
     this.setFoldStyle = function(style) {
         if (!this.$foldStyles[style])
             throw new Error("invalid fold style: " + style + "[" + Object.keys(this.$foldStyles).join(", ") + "]");
-        
+
         if (this.$foldStyle == style)
             return;
 
         this.$foldStyle = style;
-        
+
         if (style == "manual")
             this.unfold();
         var mode = this.$foldMode;
@@ -8622,24 +8867,24 @@ function Folding() {
     this.$setFolding = function(foldMode) {
         if (this.$foldMode == foldMode)
             return;
-            
+
         this.$foldMode = foldMode;
-        
+
         this.removeListener('change', this.$updateFoldWidgets);
         this._emit("changeAnnotation");
-        
+
         if (!foldMode || this.$foldStyle == "manual") {
             this.foldWidgets = null;
             return;
         }
-        
+
         this.foldWidgets = [];
         this.getFoldWidget = foldMode.getFoldWidget.bind(foldMode, this, this.$foldStyle);
         this.getFoldWidgetRange = foldMode.getFoldWidgetRange.bind(foldMode, this, this.$foldStyle);
-        
+
         this.$updateFoldWidgets = this.updateFoldWidgets.bind(this);
         this.on('change', this.$updateFoldWidgets);
-        
+
     };
 
     this.onFoldWidgetClick = function(row, e) {
@@ -8672,7 +8917,7 @@ function Folding() {
                     return;
                 }
             }
-            
+
             if (!onlySubfolds)
                 this.addFold("...", range);
 
@@ -8684,7 +8929,7 @@ function Folding() {
             (e.target || e.srcElement).className += " ace_invalid"
         }
     };
-    
+
     this.updateFoldWidgets = function(e) {
         var delta = e.data;
         var range = delta.range;
@@ -9008,27 +9253,27 @@ var TokenIterator = function(session, initialRow, initialColumn) {
     this.$tokenIndex = token ? token.index : -1;
 };
 
-(function() { 
+(function() {
     this.stepBackward = function() {
         this.$tokenIndex -= 1;
-        
+
         while (this.$tokenIndex < 0) {
             this.$row -= 1;
             if (this.$row < 0) {
                 this.$row = 0;
                 return null;
             }
-                
+
             this.$rowTokens = this.$session.getTokens(this.$row);
             this.$tokenIndex = this.$rowTokens.length - 1;
         }
-            
+
         return this.$rowTokens[this.$tokenIndex];
-    };   
+    };
     this.stepForward = function() {
         var rowCount = this.$session.getLength();
         this.$tokenIndex += 1;
-        
+
         while (this.$tokenIndex >= this.$rowTokens.length) {
             this.$row += 1;
             if (this.$row >= rowCount) {
@@ -9039,31 +9284,31 @@ var TokenIterator = function(session, initialRow, initialColumn) {
             this.$rowTokens = this.$session.getTokens(this.$row);
             this.$tokenIndex = 0;
         }
-            
+
         return this.$rowTokens[this.$tokenIndex];
-    };      
+    };
     this.getCurrentToken = function () {
         return this.$rowTokens[this.$tokenIndex];
-    };      
+    };
     this.getCurrentTokenRow = function () {
         return this.$row;
-    };     
+    };
     this.getCurrentTokenColumn = function() {
         var rowTokens = this.$rowTokens;
         var tokenIndex = this.$tokenIndex;
         var column = rowTokens[tokenIndex].start;
         if (column !== undefined)
             return column;
-            
+
         column = 0;
         while (tokenIndex > 0) {
             tokenIndex -= 1;
             column += rowTokens[tokenIndex].value.length;
         }
-        
-        return column;  
+
+        return column;
     };
-            
+
 }).call(TokenIterator.prototype);
 
 exports.TokenIterator = TokenIterator;
@@ -9093,7 +9338,7 @@ function BracketMatch() {
         else
             return this.$findOpeningBracket(match[2], position);
     };
-    
+
     this.getBracketRange = function(pos) {
         var line = this.getLine(pos.row);
         var before = true, range;
@@ -9130,7 +9375,7 @@ function BracketMatch() {
             }
             range.cursor = range.start;
         }
-        
+
         return range;
     };
 
@@ -9153,7 +9398,7 @@ function BracketMatch() {
             token = iterator.stepForward();
         if (!token)
             return;
-        
+
          if (!typeRe){
             typeRe = new RegExp(
                 "(\\.?" +
@@ -9163,9 +9408,9 @@ function BracketMatch() {
         }
         var valueIndex = position.column - iterator.getCurrentTokenColumn() - 2;
         var value = token.value;
-        
+
         while (true) {
-        
+
             while (valueIndex >= 0) {
                 var chr = value.charAt(valueIndex);
                 if (chr == openBracket) {
@@ -9186,11 +9431,11 @@ function BracketMatch() {
 
             if (token == null)
                 break;
-                
+
             value = token.value;
             valueIndex = value.length - 1;
         }
-        
+
         return null;
     };
 
@@ -9241,7 +9486,7 @@ function BracketMatch() {
 
             valueIndex = 0;
         }
-        
+
         return null;
     };
 }
@@ -9309,7 +9554,7 @@ var Search = function() {
                 for (var j = 0; j < len; j++)
                     if (lines[row + j].search(re[j]) == -1)
                         break;
-                
+
                 var startLine = lines[row];
                 var line = lines[row + len - 1];
                 var startIndex = startLine.match(re[0])[0].length;
@@ -9357,7 +9602,7 @@ var Search = function() {
         var match = re.exec(input);
         if (!match || match[0].length != input.length)
             return null;
-        
+
         replacement = input.replace(re, replacement);
         if (options.preserveCase) {
             replacement = replacement.split("");
@@ -9370,7 +9615,7 @@ var Search = function() {
             }
             replacement = replacement.join("");
         }
-        
+
         return replacement;
     };
 
@@ -9483,7 +9728,7 @@ var Search = function() {
         var start = options.start;
         if (!start)
             start = range ? range[backwards ? "end" : "start"] : session.selection.getRange();
-         
+
         if (start.start)
             start = start[skipCurrent != backwards ? "end" : "start"];
 
@@ -9525,7 +9770,7 @@ var Search = function() {
                     if (callback(session.getLine(row), row))
                         return;
             };
-        
+
         return {forEach: forEach};
     };
 
@@ -9546,7 +9791,7 @@ var CommandManager = function(platform, commands) {
     this.commmandKeyBinding = {};
 
     this.addCommands(commands);
-    
+
     this.setDefaultHandler("exec", function(e) {
         return e.command.exec(e.editor, e.args || {});
     });
@@ -9767,488 +10012,476 @@ function HashHandler(config, platform) {
 exports.HashHandler = HashHandler;
 });
 
-define('ace/commands/default_commands', ['require', 'exports', 'module' , 'ace/lib/lang'], function(require, exports, module) {
+define('ace/autocomplete', ['require', 'exports', 'module' , 'ace/edit_session', 'ace/virtual_renderer', 'ace/range', 'ace/lib/event', 'ace/token_iterator', 'ace/lib/dom', 'ace/keyboard/hash_handler', 'ace/mode/text', 'ace/worker/worker_client'], function(require, exports, module) {
 
 
-var lang = require("../lib/lang");
+var EditSession = require("./edit_session").EditSession;
+var Renderer = require("./virtual_renderer").VirtualRenderer;
+var Range = require("./range").Range;
+var event = require("./lib/event");
+var TokenIterator = require("./token_iterator").TokenIterator;
 
-function bindKey(win, mac) {
-    return {
-        win: win,
-        mac: mac
-    };
-}
+var dom = require("./lib/dom");
+var HashHandler = require("./keyboard/hash_handler").HashHandler;
+var TextMode = require("./mode/text").Mode;
 
-exports.commands = [{
-    name: "selectall",
-    bindKey: bindKey("Ctrl-A", "Command-A"),
-    exec: function(editor) { editor.selectAll(); },
-    readOnly: true
-}, {
-    name: "centerselection",
-    bindKey: bindKey(null, "Ctrl-L"),
-    exec: function(editor) { editor.centerSelection(); },
-    readOnly: true
-}, {
-    name: "gotoline",
-    bindKey: bindKey("Ctrl-L", "Command-L"),
-    exec: function(editor) {
-        var line = parseInt(prompt("Enter line number:"), 10);
-        if (!isNaN(line)) {
-            editor.gotoLine(line);
-        }
-    },
-    readOnly: true
-}, {
-    name: "fold",
-    bindKey: bindKey("Alt-L|Ctrl-F1", "Command-Alt-L|Command-F1"),
-    exec: function(editor) { editor.session.toggleFold(false); },
-    readOnly: true
-}, {
-    name: "unfold",
-    bindKey: bindKey("Alt-Shift-L|Ctrl-Shift-F1", "Command-Alt-Shift-L|Command-Shift-F1"),
-    exec: function(editor) { editor.session.toggleFold(true); },
-    readOnly: true
-}, {
-    name: "foldall",
-    bindKey: bindKey("Alt-0", "Command-Option-0"),
-    exec: function(editor) { editor.session.foldAll(); },
-    readOnly: true
-}, {
-    name: "unfoldall",
-    bindKey: bindKey("Alt-Shift-0", "Command-Option-Shift-0"),
-    exec: function(editor) { editor.session.unfold(); },
-    readOnly: true
-}, {
-    name: "findnext",
-    bindKey: bindKey("Ctrl-K", "Command-G"),
-    exec: function(editor) { editor.findNext(); },
-    readOnly: true
-}, {
-    name: "findprevious",
-    bindKey: bindKey("Ctrl-Shift-K", "Command-Shift-G"),
-    exec: function(editor) { editor.findPrevious(); },
-    readOnly: true
-}, {
-    name: "find",
-    bindKey: bindKey("Ctrl-F", "Command-F"),
-    exec: function(editor) {
-        var needle = prompt("Find:", editor.getCopyText());
-        editor.find(needle);
-    },
-    readOnly: true
-}, {
-    name: "overwrite",
-    bindKey: "Insert",
-    exec: function(editor) { editor.toggleOverwrite(); },
-    readOnly: true
-}, {
-    name: "selecttostart",
-    bindKey: bindKey("Ctrl-Shift-Home", "Command-Shift-Up"),
-    exec: function(editor) { editor.getSelection().selectFileStart(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotostart",
-    bindKey: bindKey("Ctrl-Home", "Command-Home|Command-Up"),
-    exec: function(editor) { editor.navigateFileStart(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectup",
-    bindKey: bindKey("Shift-Up", "Shift-Up"),
-    exec: function(editor) { editor.getSelection().selectUp(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "golineup",
-    bindKey: bindKey("Up", "Up|Ctrl-P"),
-    exec: function(editor, args) { editor.navigateUp(args.times); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selecttoend",
-    bindKey: bindKey("Ctrl-Shift-End", "Command-Shift-Down"),
-    exec: function(editor) { editor.getSelection().selectFileEnd(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotoend",
-    bindKey: bindKey("Ctrl-End", "Command-End|Command-Down"),
-    exec: function(editor) { editor.navigateFileEnd(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectdown",
-    bindKey: bindKey("Shift-Down", "Shift-Down"),
-    exec: function(editor) { editor.getSelection().selectDown(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "golinedown",
-    bindKey: bindKey("Down", "Down|Ctrl-N"),
-    exec: function(editor, args) { editor.navigateDown(args.times); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectwordleft",
-    bindKey: bindKey("Ctrl-Shift-Left", "Option-Shift-Left"),
-    exec: function(editor) { editor.getSelection().selectWordLeft(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotowordleft",
-    bindKey: bindKey("Ctrl-Left", "Option-Left"),
-    exec: function(editor) { editor.navigateWordLeft(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selecttolinestart",
-    bindKey: bindKey("Alt-Shift-Left", "Command-Shift-Left"),
-    exec: function(editor) { editor.getSelection().selectLineStart(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotolinestart",
-    bindKey: bindKey("Alt-Left|Home", "Command-Left|Home|Ctrl-A"),
-    exec: function(editor) { editor.navigateLineStart(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectleft",
-    bindKey: bindKey("Shift-Left", "Shift-Left"),
-    exec: function(editor) { editor.getSelection().selectLeft(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotoleft",
-    bindKey: bindKey("Left", "Left|Ctrl-B"),
-    exec: function(editor, args) { editor.navigateLeft(args.times); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectwordright",
-    bindKey: bindKey("Ctrl-Shift-Right", "Option-Shift-Right"),
-    exec: function(editor) { editor.getSelection().selectWordRight(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotowordright",
-    bindKey: bindKey("Ctrl-Right", "Option-Right"),
-    exec: function(editor) { editor.navigateWordRight(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selecttolineend",
-    bindKey: bindKey("Alt-Shift-Right", "Command-Shift-Right"),
-    exec: function(editor) { editor.getSelection().selectLineEnd(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotolineend",
-    bindKey: bindKey("Alt-Right|End", "Command-Right|End|Ctrl-E"),
-    exec: function(editor) { editor.navigateLineEnd(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectright",
-    bindKey: bindKey("Shift-Right", "Shift-Right"),
-    exec: function(editor) { editor.getSelection().selectRight(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "gotoright",
-    bindKey: bindKey("Right", "Right|Ctrl-F"),
-    exec: function(editor, args) { editor.navigateRight(args.times); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectpagedown",
-    bindKey: "Shift-PageDown",
-    exec: function(editor) { editor.selectPageDown(); },
-    readOnly: true
-}, {
-    name: "pagedown",
-    bindKey: bindKey(null, "Option-PageDown"),
-    exec: function(editor) { editor.scrollPageDown(); },
-    readOnly: true
-}, {
-    name: "gotopagedown",
-    bindKey: bindKey("PageDown", "PageDown|Ctrl-V"),
-    exec: function(editor) { editor.gotoPageDown(); },
-    readOnly: true
-}, {
-    name: "selectpageup",
-    bindKey: "Shift-PageUp",
-    exec: function(editor) { editor.selectPageUp(); },
-    readOnly: true
-}, {
-    name: "pageup",
-    bindKey: bindKey(null, "Option-PageUp"),
-    exec: function(editor) { editor.scrollPageUp(); },
-    readOnly: true
-}, {
-    name: "gotopageup",
-    bindKey: "PageUp",
-    exec: function(editor) { editor.gotoPageUp(); },
-    readOnly: true
-}, {
-    name: "scrollup",
-    bindKey: bindKey("Ctrl-Up", null),
-    exec: function(e) { e.renderer.scrollBy(0, -2 * e.renderer.layerConfig.lineHeight); },
-    readOnly: true
-}, {
-    name: "scrolldown",
-    bindKey: bindKey("Ctrl-Down", null),
-    exec: function(e) { e.renderer.scrollBy(0, 2 * e.renderer.layerConfig.lineHeight); },
-    readOnly: true
-}, {
-    name: "selectlinestart",
-    bindKey: "Shift-Home",
-    exec: function(editor) { editor.getSelection().selectLineStart(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selectlineend",
-    bindKey: "Shift-End",
-    exec: function(editor) { editor.getSelection().selectLineEnd(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "togglerecording",
-    bindKey: bindKey("Ctrl-Alt-E", "Command-Option-E"),
-    exec: function(editor) { editor.commands.toggleRecording(editor); },
-    readOnly: true
-}, {
-    name: "replaymacro",
-    bindKey: bindKey("Ctrl-Shift-E", "Command-Shift-E"),
-    exec: function(editor) { editor.commands.replay(editor); },
-    readOnly: true
-}, {
-    name: "jumptomatching",
-    bindKey: bindKey("Ctrl-P", "Ctrl-Shift-P"),
-    exec: function(editor) { editor.jumpToMatching(); },
-    multiSelectAction: "forEach",
-    readOnly: true
-}, {
-    name: "selecttomatching",
-    bindKey: bindKey("Ctrl-Shift-P", null),
-    exec: function(editor) { editor.jumpToMatching(true); },
-    readOnly: true
-}, 
-{
-    name: "cut",
-    exec: function(editor) {
-        var range = editor.getSelectionRange();
-        editor._emit("cut", range);
+var WorkerClient = require("./worker/worker_client").WorkerClient;
+// TODO: Hack! - changed "ace/autocomplete/autocomplete_worker" to "ace/mode/autocomplete_worker"
+var worker = new WorkerClient(["ace"], "ace/mode/autocomplete_worker", "AutocompleteWorker");
 
-        if (!editor.selection.isEmpty()) {
-            editor.session.remove(range);
-            editor.clearSelection();
-        }
-    },
-    multiSelectAction: "forEach"
-}, {
-    name: "removeline",
-    bindKey: bindKey("Ctrl-D", "Command-D"),
-    exec: function(editor) { editor.removeLines(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "duplicateSelection",
-    bindKey: bindKey("Ctrl-Shift-D", "Command-Shift-D"),
-    exec: function(editor) { editor.duplicateSelection(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "sortlines",
-    bindKey: bindKey("Ctrl-Alt-S", "Command-Alt-S"),
-    exec: function(editor) { editor.sortLines(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "togglecomment",
-    bindKey: bindKey("Ctrl-/", "Command-/"),
-    exec: function(editor) { editor.toggleCommentLines(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "modifyNumberUp",
-    bindKey: bindKey("Ctrl-Shift-Up", "Alt-Shift-Up"),
-    exec: function(editor) { editor.modifyNumber(1); },
-    multiSelectAction: "forEach"
-}, {
-    name: "modifyNumberDown",
-    bindKey: bindKey("Ctrl-Shift-Down", "Alt-Shift-Down"),
-    exec: function(editor) { editor.modifyNumber(-1); },
-    multiSelectAction: "forEach"
-}, {
-    name: "replace",
-    bindKey: bindKey("Ctrl-R", "Command-Option-F"),
-    exec: function(editor) {
-        var needle = prompt("Find:", editor.getCopyText());
-        if (!needle)
-            return;
-        var replacement = prompt("Replacement:");
-        if (!replacement)
-            return;
-        editor.replace(replacement, {needle: needle});
+var mode = new TextMode();
+mode.$tokenizer = {
+    getLineTokens: function(line) {
+
     }
-}, {
-    name: "replaceall",
-    bindKey: bindKey("Ctrl-Shift-R", "Command-Shift-Option-F"),
-    exec: function(editor) {
-        var needle = prompt("Find:");
-        if (!needle)
-            return;
-        var replacement = prompt("Replacement:");
-        if (!replacement)
-            return;
-        editor.replaceAll(replacement, {needle: needle});
-    }
-}, {
-    name: "undo",
-    bindKey: bindKey("Ctrl-Z", "Command-Z"),
-    exec: function(editor) { editor.undo(); }
-}, {
-    name: "redo",
-    bindKey: bindKey("Ctrl-Shift-Z|Ctrl-Y", "Command-Shift-Z|Command-Y"),
-    exec: function(editor) { editor.redo(); }
-}, {
-    name: "copylinesup",
-    bindKey: bindKey("Alt-Shift-Up", "Command-Option-Up"),
-    exec: function(editor) { editor.copyLinesUp(); }
-}, {
-    name: "movelinesup",
-    bindKey: bindKey("Alt-Up", "Option-Up"),
-    exec: function(editor) { editor.moveLinesUp(); }
-}, {
-    name: "copylinesdown",
-    bindKey: bindKey("Alt-Shift-Down", "Command-Option-Down"),
-    exec: function(editor) { editor.copyLinesDown(); }
-}, {
-    name: "movelinesdown",
-    bindKey: bindKey("Alt-Down", "Option-Down"),
-    exec: function(editor) { editor.moveLinesDown(); }
-}, {
-    name: "del",
-    bindKey: bindKey("Delete", "Delete|Ctrl-D"),
-    exec: function(editor) { editor.remove("right"); },
-    multiSelectAction: "forEach"
-}, {
-    name: "backspace",
-    bindKey: bindKey(
-        "Command-Backspace|Option-Backspace|Shift-Backspace|Backspace",
-        "Ctrl-Backspace|Command-Backspace|Shift-Backspace|Backspace|Ctrl-H"
-    ),
-    exec: function(editor) { editor.remove("left"); },
-    multiSelectAction: "forEach"
-}, {
-    name: "removetolinestart",
-    bindKey: bindKey("Alt-Backspace", "Command-Backspace"),
-    exec: function(editor) { editor.removeToLineStart(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "removetolineend",
-    bindKey: bindKey("Alt-Delete", "Ctrl-K"),
-    exec: function(editor) { editor.removeToLineEnd(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "removewordleft",
-    bindKey: bindKey("Ctrl-Backspace", "Alt-Backspace|Ctrl-Alt-Backspace"),
-    exec: function(editor) { editor.removeWordLeft(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "removewordright",
-    bindKey: bindKey("Ctrl-Delete", "Alt-Delete"),
-    exec: function(editor) { editor.removeWordRight(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "outdent",
-    bindKey: bindKey("Shift-Tab", "Shift-Tab"),
-    exec: function(editor) { editor.blockOutdent(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "indent",
-    bindKey: bindKey("Tab", "Tab"),
-    exec: function(editor) { editor.indent(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "insertstring",
-    exec: function(editor, str) { editor.insert(str); },
-    multiSelectAction: "forEach"
-}, {
-    name: "inserttext",
-    exec: function(editor, args) {
-        editor.insert(lang.stringRepeat(args.text  || "", args.times || 1));
-    },
-    multiSelectAction: "forEach"
-}, {
-    name: "splitline",
-    bindKey: bindKey(null, "Ctrl-O"),
-    exec: function(editor) { editor.splitLine(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "transposeletters",
-    bindKey: bindKey("Ctrl-T", "Ctrl-T"),
-    exec: function(editor) { editor.transposeLetters(); },
-    multiSelectAction: function(editor) {editor.transposeSelections(1); }
-}, {
-    name: "touppercase",
-    bindKey: bindKey("Ctrl-U", "Ctrl-U"),
-    exec: function(editor) { editor.toUpperCase(); },
-    multiSelectAction: "forEach"
-}, {
-    name: "tolowercase",
-    bindKey: bindKey("Ctrl-Shift-U", "Ctrl-Shift-U"),
-    exec: function(editor) { editor.toLowerCase(); },
-    multiSelectAction: "forEach"
-}];
-
-});
-
-define('ace/undomanager', ['require', 'exports', 'module' ], function(require, exports, module) {
-var UndoManager = function() {
-    this.reset();
 };
 
+var Autocomplete = function() {
+    this.keyboardHandler = new HashHandler();
+    this.keyboardHandler.bindKeys(this.commands);
+
+    this.$blurListener = this.blurListener.bind(this);
+    this.$changeListener = this.changeListener.bind(this);
+    this.$mousedownListener = this.mousedownListener.bind(this);
+};
+
+
 (function() {
-    this.execute = function(options) {
-        var deltas = options.args[0];
-        this.$doc  = options.args[1];
-        this.$undoStack.push(deltas);
-        this.$redoStack = [];
-    };
-    this.undo = function(dontSelect) {
-        var deltas = this.$undoStack.pop();
-        var undoSelectionRange = null;
-        if (deltas) {
-            undoSelectionRange =
-                this.$doc.undoChanges(deltas, dontSelect);
-            this.$redoStack.push(deltas);
-        }
-        return undoSelectionRange;
-    };
-    this.redo = function(dontSelect) {
-        var deltas = this.$redoStack.pop();
-        var redoSelectionRange = null;
-        if (deltas) {
-            redoSelectionRange =
-                this.$doc.redoChanges(deltas, dontSelect);
-            this.$undoStack.push(deltas);
-        }
-        return redoSelectionRange;
-    };
-    this.reset = function() {
-        this.$undoStack = [];
-        this.$redoStack = [];
-    };
-    this.hasUndo = function() {
-        return this.$undoStack.length > 0;
-    };
-    this.hasRedo = function() {
-        return this.$redoStack.length > 0;
+    this.$init = function() {
+        this.popup = new AcePopup();
+        this.popup.on("click", function(e) {
+            this.insertMatch();
+        }.bind(this));
     };
 
-}).call(UndoManager.prototype);
+    this.openPopup = function(editor) {
+    	if ("none" == jQuery("#" + editor.container.id).parents("[ng-repeat='panel in panels']").css("display")
+    			|| undefined == jQuery("#" + editor.container.id).parents("[ng-repeat='panel in panels']").css("display")) {
+    		return;
+    	}
+    	
+        if (!this.popup)
+            this.$init();
 
-exports.UndoManager = UndoManager;
+        this.popup.setData(this.completions.filtered)
+
+        var renderer = editor.renderer;
+        var lineHeight = renderer.layerConfig.lineHeight;
+        var pos = renderer.$cursorLayer.getPixelPosition(null, true)
+        var rect = editor.container.getBoundingClientRect()
+        pos.top += rect.top - renderer.layerConfig.offset;
+        pos.left += rect.left;
+        pos.left += renderer.$gutterLayer.gutterWidth;
+
+        var el = this.popup.container;
+        if (pos.top > window.innerHeight / 2  + lineHeight) {
+            el.style.top = ""
+            el.style.bottom = window.innerHeight - pos.top + "px";
+        } else {
+            pos.top += lineHeight;
+            el.style.top = pos.top + "px";
+            el.style.bottom = ""
+        }
+
+        el.style.left = pos.left + "px";
+        el.style.display = "";
+
+        renderer.updateText();
+    };
+
+    this.detach = function() {
+        this.editor.keyBinding.removeKeyboardHandler(this.keyboardHandler);
+        this.editor.removeEventListener("changeSelection", this.changeListener);
+        this.editor.removeEventListener("blur", this.changeListener);
+        this.editor.removeEventListener("mousedown", this.changeListener);
+
+        if (this.popup)
+            this.popup.container.style.display = "none";
+
+        this.editor.Autocomplete.activated = false;
+    };
+
+    this.changeListener = function(e) {
+        if (this.editor.Autocomplete.activated)
+            Autocomplete.startCommand.exec(this.editor);
+        else
+            this.detach();
+    };
+
+    this.blurListener = function() {
+        if (document.activeElement != this.editor.textInput.getElement())
+            this.detach();
+    };
+
+    this.mousedownListener = function(e) {
+        var mouseX = e.clientX, mouseY = e.clientY;
+        var newRow = this.editor.renderer.pixelToScreenCoordinates(mouseX, mouseY).row;
+        var currentRow = e.editor.getCursorPosition().row;
+
+        if (newRow !== currentRow) {
+            this.detach();
+        }
+    };
+
+    this.goTo = function(where) {
+        var row = this.popup.getRow();
+        var max = this.popup.session.getLength() - 1;
+
+        switch(where) {
+            case "up": row = row <= 0 ? max : row - 1; break;
+            case "down": row = row >= max ? 0 : row + 1; break;
+            case "start": row = 0; break;
+            case "end": row = max; break
+        }
+
+        this.popup.setRow(row);
+    };
+
+    this.insertMatch = function(row) {
+        this.detach();
+
+        if (row == undefined)
+            row = this.popup.getRow();
+        var text = this.completions.filtered[row];
+        if (text.value)
+            text = text.value;
+		this.editor.getSession().remove(this.identifierRange);
+        this.editor.insert(text);
+    };
+
+    this.commands = {
+        "up": function(editor) { editor.Autocomplete.goTo("up"); },
+        "down": function(editor) { editor.Autocomplete.goTo("down"); },
+        "ctrl-up": function(editor) { editor.Autocomplete.goTo("start"); },
+        "ctrl-down": function(editor) { editor.Autocomplete.goTo("end"); },
+
+        "esc": function(editor) { editor.Autocomplete.detach(); },
+        "space": function(editor) { editor.Autocomplete.detach(); editor.insert(" ");},
+        "Return": function(editor) { editor.Autocomplete.insertMatch(); },
+        "Shift-Return": function(editor) { editor.Autocomplete.insertMatch(true); },
+        "Tab": function(editor) { editor.Autocomplete.insertMatch(); }
+    };
+	function getCompletions(token, context, keywords) {
+		var found = [], start = token.value;
+
+		function arrayContains(arr, item) {
+			if (!Array.prototype.indexOf) {
+				var i = arr.length;
+				while (i--) {
+					if (arr[i] === item) {
+						return true;
+					}
+				}
+				return false;
+			}
+			return arr.indexOf(item) != -1;
+		}
+
+		function maybeAdd(str) {
+			if (str.indexOf(start) == 0 && !arrayContains(found, str)) found.push(str);
+		}
+		function gatherCompletions(obj) {
+			for (var name in obj) maybeAdd(name);
+		}
+
+		if (context) {
+			var obj = context.pop(), base;
+
+		if (obj.type == "identifier")
+			base = window[obj.value];
+		else
+			base = "";
+		while (base != null && context.length)
+			base = base[context.pop().value];
+		if (base != null) gatherCompletions(base);
+		}
+		else {
+		}
+		return found;
+	}
+
+	function getCurrentToken(editor)
+	{
+		var stream = new TokenIterator(editor.session, editor.getCursorPosition().row, editor.getCursorPosition().column);
+        var currToken = stream.getCurrentToken();
+		if (currToken == null || (currToken.type == "punctuation.operator" && currToken.value == ".")) currToken = { type: "", value: "" };
+
+		return currToken;
+	}
+
+	function getContext(editor)
+	{
+		var stream = new TokenIterator(editor.session, editor.getCursorPosition().row, editor.getCursorPosition().column);
+		var token = stream.stepBackward();
+		var tokenRow = stream.getCurrentTokenRow();
+		var editorRow = editor.getCursorPosition().row;
+		while (tokenRow == editorRow) {
+			if ((token == null || stream.$tokenIndex <= -1) || (token != null && token.type == "text")) {
+				break;
+			}
+			if (!(token != null && token.type == "punctuation.operator" && token.value == ".")) {
+				if (!context) var context = [];
+				context.push(token);
+			}
+			token = stream.stepBackward();
+			tokenRow = stream.getCurrentTokenRow();
+		}
+
+		return context;
+	}
+
+    this.complete = function(editor) {
+        if (this.editor)
+            this.detach();
+
+        var _self = this;
+        this.editor = editor;
+        if (editor.Autocomplete != this) {
+            if (editor.Autocomplete)
+                editor.Autocomplete.detach();
+            editor.Autocomplete = this;
+        }
+
+        editor.keyBinding.addKeyboardHandler(this.keyboardHandler);
+        editor.on("changeSelection", this.$changeListener);
+        editor.on("blur", this.$blurListener);
+        editor.on("mousedown", this.$mousedownListener);
+
+		var objCompletions = getCompletions(getCurrentToken(editor), getContext(editor), new Array());
+
+        worker.attachToDocument(editor.session.getDocument(), {cursor: editor.getCursorPosition(), keywords: editor.session.getMode().getKeywords()}, true);
+
+        worker.on("complete", function(data) {
+            var matches = data.data.matches;
+
+			if (!matches.length) {
+				matches = objCompletions;
+			}
+
+            if (matches.length) {
+                _self.completions = new FilteredList(matches);
+                _self.completions.setFilter("a");
+				_self.identifierRange = new Range(data.data.startRow, data.data.startColumn, data.data.endRow, data.data.endColumn);
+                _self.openPopup(editor);
+            }
+            else {
+                _self.detach();
+            }
+        });
+    };
+
+}).call(Autocomplete.prototype);
+
+Autocomplete.startCommand = {
+    name: "startAutocomplete",
+    exec: function(editor) {
+        if (!editor.Autocomplete)
+            editor.Autocomplete = new Autocomplete();
+        editor.Autocomplete.complete(editor);
+        editor.Autocomplete.activated = true;
+    },
+    bindKey: "Ctrl-Space|Shift-Space|Alt-Space"
+}
+Autocomplete.addTo = function(editor) {
+    editor.commands.addCommand(Autocomplete.startCommand);
+}
+
+var FilteredList = function(array, mutateData) {
+    this.all = array;
+    this.filtered = array.concat();
+    this.filterText = "";
+};
+(function(){
+    this.setFilter = function(str) {
+
+    };
+
+}).call(FilteredList.prototype);
+
+
+var $singleLineEditor = function(el) {
+    var renderer = new Renderer(el);
+    el.style.overflow = "hidden";
+    renderer.scrollBar.element.style.top = "0";
+    renderer.scrollBar.element.style.display = "none";
+    renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
+    renderer.scrollBar.width = 0;
+    renderer.content.style.height = "auto";
+
+    renderer.screenToTextCoordinates = function(x, y) {
+        var pos = this.pixelToScreenCoordinates(x, y);
+        return this.session.screenToDocumentPosition(
+            Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
+            Math.max(pos.column, 0)
+        );
+    };
+
+    renderer.maxLines = 4;
+    renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
+    renderer.$computeLayerConfig = function() {
+        var config = this.layerConfig;
+        var height = this.session.getScreenLength() * this.lineHeight;
+        if (config.height != height) {
+            var maxHeight = this.maxLines * this.lineHeight
+            var vScroll = height > maxHeight;
+
+            if (vScroll != this.$vScroll || this.lineHeight != config.lineHeight) {
+                if (vScroll) {
+                    this.scrollBar.element.style.display = "";
+                    this.scrollBar.width = this.scrollBar.orginalWidth;
+                    this.container.style.height = maxHeight + "px";
+                    height = maxHeight;
+                    this.scrollTop = height - this.maxLines * this.lineHeight;
+                } else {
+                    this.scrollBar.element.style.display = "none";
+                    this.scrollBar.width = 0;
+                }
+
+                this.$size.height = 0;
+                this.$size.width = 0;
+                this.onResize();
+                this.$vScroll = vScroll;
+            }
+
+            if (this.$vScroll)
+                return renderer.$computeLayerConfigWithScroll();
+
+            this.container.style.height = height + "px";
+            this.scroller.style.height = height + "px";
+            this.content.style.height = height + "px";
+            this._emit("resize");
+        }
+
+        var longestLine = this.$getLongestLine();
+        var firstRow = 0;
+        var lastRow = this.session.getLength();
+
+        this.scrollTop = 0;
+        config.width = longestLine;
+        config.padding = this.$padding;
+        config.firstRow = 0;
+        config.firstRowScreen = 0;
+        config.lastRow = lastRow;
+        config.lineHeight = this.lineHeight;
+        config.characterWidth = this.characterWidth;
+        config.minHeight = height;
+        config.maxHeight = height;
+        config.offset = 0;
+        config.height = height;
+
+        this.$gutterLayer.element.style.marginTop = 0 + "px";
+        this.content.style.marginTop = 0 + "px";
+        this.content.style.width = longestLine + 2 * this.$padding + "px";
+    };
+
+
+    var Editor = require("ace/editor").Editor;
+    var editor = new Editor(renderer);
+
+    editor.setHighlightActiveLine(false);
+    editor.setShowPrintMargin(false);
+    editor.renderer.setShowGutter(false);
+    editor.renderer.setHighlightGutterLine(false);
+
+    editor.$mouseHandler.$focusWaitTimout = 0;
+
+    return editor;
+};
+
+var AcePopup = function(e) {
+    var el = dom.createElement("div");
+    var popup = new $singleLineEditor(el);
+    document.body.appendChild(el);
+    el.style.display = "none";
+    popup.renderer.content.style.cursor = "default";
+    popup.renderer.setStyle("ace_autocomplete");
+
+    var noop = function(){};
+
+    popup.focus = noop;
+    popup.$isFocused = true;
+
+    popup.renderer.$cursorLayer.restartTimer = noop;
+    popup.renderer.$cursorLayer.element.style.opacity = 0;
+
+    popup.renderer.maxLines = 8
+    popup.renderer.$keepTextAreaAtCursor = false;
+
+    popup.setHighlightActiveLine(true);
+    popup.setSession(new EditSession(""));
+
+    popup.on("mousedown", function(e) {
+        var pos = e.getDocumentPosition();
+        popup.moveCursorToPosition(pos);
+        popup.selection.clearSelection();
+        e.stop();
+    });
+
+    popup.getRow = function() {
+        var line = this.getCursorPosition().row;
+        if (line == 0 && !this.getHighlightActiveLine())
+            line = -1;
+        return line;
+    };
+
+    popup.setRow = function(line) {
+        popup.setHighlightActiveLine(line != -1);
+        popup.gotoLine(line + 1);
+    };
+
+    var hoverMarker = new Range(0,0,0,Infinity);
+    hoverMarker.id = popup.session.addMarker(hoverMarker, "ace_line-hover", "fullLine");
+    popup.on("mousemove", function(e) {
+        var row = e.getDocumentPosition().row;
+        hoverMarker.start.row = hoverMarker.end.row = row;
+        popup.session._emit("changeBackMarker");
+    });
+    event.addListener(popup.container, "mouseout", function(e) {
+        hoverMarker.start.row = hoverMarker.end.row = -1;
+        popup.session._emit("changeBackMarker");
+    });
+
+    popup.setData = function(list) {
+        var value = ""
+        if (list) {
+            if (typeof list[0] == "string")
+                value = list.join("\n");
+            else
+                value = list.map(function(x){return x.value}).join("\n");
+        }
+
+        this.setValue(value, -1);
+    };
+
+    popup.setHighlight = function(re) {
+        ace.session.highlight(re);
+        ace.session._emit("changeFrontMarker");
+    };
+
+    return popup;
+};
+
+dom.importCssString("\
+.ace_autocomplete.ace-tm .ace_marker-layer .ace_active-line {\
+    background-color: #abbffe;\
+}\
+.ace_autocomplete.ace-tm .ace_line-hover {\
+    border: 1px solid #abbffe;\
+    position: absolute;\
+    background: rgb(233,233,232);\
+    z-index: 2;\
+}\
+.ace_autocomplete {\
+    width: 200px;\
+    z-index: 200000;\
+    background: #f8f8f8;\
+    border: 1px lightgray solid;\
+    position: fixed;\
+}");
+
+exports.Autocomplete = Autocomplete;
+exports.FilteredList = FilteredList;
+
 });
 
 define('ace/virtual_renderer', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/dom', 'ace/lib/event', 'ace/lib/useragent', 'ace/config', 'ace/lib/net', 'ace/layer/gutter', 'ace/layer/marker', 'ace/layer/text', 'ace/layer/cursor', 'ace/scrollbar', 'ace/renderloop', 'ace/lib/event_emitter'], function(require, exports, module) {
@@ -10268,14 +10501,17 @@ var ScrollBar = require("./scrollbar").ScrollBar;
 var RenderLoop = require("./renderloop").RenderLoop;
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
 var editorCss = ".ace_editor {\
-position: absolute;\
+position: relative;\
 overflow: hidden;\
 font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;\
 font-size: 12px;\
+line-height: normal;\
 }\
 .ace_scroller {\
 position: absolute;\
 overflow: hidden;\
+top: 0;\
+bottom: 0;\
 }\
 .ace_content {\
 position: absolute;\
@@ -10287,8 +10523,10 @@ cursor: text;\
 .ace_gutter {\
 position: absolute;\
 overflow : hidden;\
-height: 100%;\
 width: auto;\
+top: 0;\
+bottom: 0;\
+left: 0;\
 cursor: default;\
 z-index: 4;\
 }\
@@ -10326,6 +10564,8 @@ position: absolute;\
 overflow-x: hidden;\
 overflow-y: scroll;\
 right: 0;\
+top: 0;\
+bottom: 0;\
 }\
 .ace_scrollbar-inner {\
 position: absolute;\
@@ -10349,14 +10589,16 @@ border: none;\
 resize: none;\
 outline: none;\
 overflow: hidden;\
+font: inherit;\
 }\
 .ace_text-input.ace_composition {\
-background: #fff;\
-color: #000;\
+background: #f8f8f8;\
+color: #111;\
 z-index: 1000;\
 opacity: 1;\
 border: solid lightgray 1px;\
-margin: -1px\
+margin: -1px;\
+padding: 0 1px;\
 }\
 .ace_layer {\
 z-index: 1;\
@@ -10472,13 +10714,17 @@ background-position: center center, top left;\
 cursor: move;\
 }\
 .ace_gutter-tooltip {\
-background-color: #FFFFD5;\
+background-color: #FFF;\
+background-image: -webkit-linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));\
+background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));\
 border: 1px solid gray;\
-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);\
+border-radius: 1px;\
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);\
 color: black;\
 display: inline-block;\
+max-width: 500px;\
 padding: 4px;\
-position: absolute;\
+position: fixed;\
 z-index: 300;\
 -moz-box-sizing: border-box;\
 -webkit-box-sizing: border-box;\
@@ -10486,6 +10732,10 @@ box-sizing: border-box;\
 cursor: default;\
 white-space: pre-line;\
 word-wrap: break-word;\
+line-height: normal;\
+font-style: normal;\
+font-weight: normal;\
+letter-spacing: normal;\
 }\
 .ace_folding-enabled > .ace_gutter-cell {\
 padding-right: 13px;\
@@ -10584,10 +10834,10 @@ dom.importCssString(editorCss, "ace_editor");
 var VirtualRenderer = function(container, theme) {
     var _self = this;
 
-    this.container = container;
+    this.container = container || dom.createElement("div");
     this.$keepTextAreaAtCursor = !useragent.isIE;
 
-    dom.addCssClass(container, "ace_editor");
+    dom.addCssClass(this.container, "ace_editor");
 
     this.setTheme(theme);
 
@@ -10620,7 +10870,7 @@ var VirtualRenderer = function(container, theme) {
 
     this.$animatedScroll = false;
 
-    this.scrollBar = new ScrollBar(container);
+    this.scrollBar = new ScrollBar(this.container);
     this.scrollBar.addEventListener("scroll", function(e) {
         if (!_self.$inScrollAnimation)
             _self.session.setScrollTop(e.data);
@@ -10692,29 +10942,29 @@ var VirtualRenderer = function(container, theme) {
     this.CHANGE_H_SCROLL = 1024;
 
     oop.implement(this, EventEmitter);
-    
+
     this.updateCharacterSize = function() {
         if (this.$textLayer.allowBoldFonts != this.$allowBoldFonts) {
             this.$allowBoldFonts = this.$textLayer.allowBoldFonts;
             this.setStyle("ace_nobold", !this.$allowBoldFonts);
         }
-        
+
         this.characterWidth = this.$textLayer.getCharacterWidth();
         this.lineHeight = this.$textLayer.getLineHeight();
         this.$updatePrintMargin();
     };
     this.setSession = function(session) {
         this.session = session;
-        
+
         this.scroller.className = "ace_scroller";
-        
+
         this.$cursorLayer.setSession(session);
         this.$markerBack.setSession(session);
         this.$markerFront.setSession(session);
         this.$gutterLayer.setSession(session);
         this.$textLayer.setSession(session);
         this.$loop.schedule(this.CHANGE_FULL);
-        
+
     };
     this.updateLines = function(firstRow, lastRow) {
         if (lastRow === undefined)
@@ -10733,7 +10983,7 @@ var VirtualRenderer = function(container, theme) {
             if (this.$changedLines.lastRow < lastRow)
                 this.$changedLines.lastRow = lastRow;
         }
-        
+
         if (this.$changedLines.firstRow > this.layerConfig.lastRow ||
             this.$changedLines.lastRow < this.layerConfig.firstRow)
             return;
@@ -10768,13 +11018,12 @@ var VirtualRenderer = function(container, theme) {
             this.resizing++;
         else
             this.resizing = force ? 1 : 0;
-        
         if (!height)
             height = dom.getInnerHeight(this.container);
-        if (force || size.height != height) {
+
+        if (height && (force || size.height != height)) {
             size.height = height;
 
-            this.scroller.style.height = height + "px";
             size.scrollerHeight = this.scroller.clientHeight;
             this.scrollBar.setHeight(size.scrollerHeight);
 
@@ -10786,7 +11035,8 @@ var VirtualRenderer = function(container, theme) {
 
         if (!width)
             width = dom.getInnerWidth(this.container);
-        if (force || this.resizing > 1 || size.width != width) {
+
+        if (width && (force || this.resizing > 1 || size.width != width)) {
             size.width = width;
 
             var gutterWidth = this.showGutter ? this.$gutter.offsetWidth : 0;
@@ -10802,7 +11052,7 @@ var VirtualRenderer = function(container, theme) {
             this.$renderChanges(changes, true);
         else
             this.$loop.schedule(changes);
-        
+
         if (force)
             delete this.resizing;
     };
@@ -10838,12 +11088,12 @@ var VirtualRenderer = function(container, theme) {
     this.getDisplayIndentGuides = function() {
         return this.$textLayer.displayIndentGuides;
     };
-    
+
     this.setDisplayIndentGuides = function(display) {
         if (this.$textLayer.setDisplayIndentGuides(display))
             this.$loop.schedule(this.CHANGE_TEXT);
     };
-    
+
     this.$showPrintMargin = true;
     this.setShowPrintMargin = function(showPrintMargin) {
         this.$showPrintMargin = showPrintMargin;
@@ -10909,7 +11159,7 @@ var VirtualRenderer = function(container, theme) {
         this.$gutterLineHighlight.style.top = this.$cursorLayer.$pixelPos.top - this.layerConfig.offset + "px";
         this.$gutterLineHighlight.style.height = this.layerConfig.lineHeight + "px";
     };
-    
+
     this.$updatePrintMargin = function() {
         if (!this.$showPrintMargin && !this.$printMarginEl)
             return;
@@ -10939,28 +11189,29 @@ var VirtualRenderer = function(container, theme) {
     this.$moveTextAreaToCursor = function() {
         if (!this.$keepTextAreaAtCursor)
             return;
-
+        var config = this.layerConfig;
         var posTop = this.$cursorLayer.$pixelPos.top;
         var posLeft = this.$cursorLayer.$pixelPos.left;
-        posTop -= this.layerConfig.offset;
+        posTop -= config.offset;
 
-        if (posTop < 0 || posTop > this.layerConfig.height - this.lineHeight)
+        if (posTop < 0 || posTop > config.height - this.lineHeight)
             return;
 
         var w = this.characterWidth;
-        if (this.$composition)
-            w += this.textarea.scrollWidth;
+        if (this.$composition) {
+            var val = this.textarea.value.replace(/^\x01+/, "");
+            w *= this.session.$getStringScreenWidth(val)[0];
+        }
         posLeft -= this.scrollLeft;
         if (posLeft > this.$size.scrollerWidth - w)
             posLeft = this.$size.scrollerWidth - w;
 
-        if (this.showGutter)
-            posLeft += this.$gutterLayer.gutterWidth;
+        posLeft -= this.scrollBar.width;
 
         this.textarea.style.height = this.lineHeight + "px";
         this.textarea.style.width = w + "px";
-        this.textarea.style.left = posLeft + "px";
-        this.textarea.style.top = posTop - 1 + "px";
+        this.textarea.style.right = this.$size.scrollerWidth - posLeft - w + "px";
+        this.textarea.style.bottom = this.$size.height - posTop - this.lineHeight + "px";
     };
     this.getFirstVisibleRow = function() {
         return this.layerConfig.firstRow;
@@ -11405,35 +11656,16 @@ var VirtualRenderer = function(container, theme) {
     };
 
     this._loadTheme = function(name, callback) {
-        if (!config.get("packaged"))
-            return callback();
 
-        net.loadScript(config.moduleUrl(name, "theme"), callback);
     };
     this.setTheme = function(theme) {
         var _self = this;
-
         this.$themeValue = theme;
         _self._dispatchEvent('themeChange',{theme:theme});
-        
+
         if (!theme || typeof theme == "string") {
             var moduleName = theme || "ace/theme/textmate";
-
-            var module;
-            try {
-                module = require(moduleName);
-            } catch (e) {};
-            if (module)
-                return afterLoad(module);
-
-            _self._loadTheme(moduleName, function() {
-                require([moduleName], function(module) {
-                    if (_self.$themeValue !== theme)
-                        return;
-
-                    afterLoad(module);
-                });
-            });
+            config.loadModule(["theme", moduleName], afterLoad);
         } else {
             afterLoad(theme);
         }
@@ -11460,7 +11692,7 @@ var VirtualRenderer = function(container, theme) {
                 _self.$size.width = 0;
                 _self.onResize();
             }
-            
+
             _self._dispatchEvent('themeLoaded',{theme:theme});
         }
     };
@@ -11496,7 +11728,7 @@ var Gutter = function(parentEl) {
     this.element.className = "ace_layer ace_gutter-layer";
     parentEl.appendChild(this.element);
     this.setShowFoldWidgets(this.$showFoldWidgets);
-    
+
     this.gutterWidth = 0;
 
     this.$annotations = [];
@@ -11535,7 +11767,7 @@ var Gutter = function(parentEl) {
             var rowInfo = this.$annotations[row];
             if (!rowInfo)
                 rowInfo = this.$annotations[row] = {text: []};
-           
+
             var annoText = annotation.text;
             annoText = annoText ? lang.escapeHTML(annoText) : annotation.html || "";
 
@@ -11594,7 +11826,7 @@ var Gutter = function(parentEl) {
             html.push(
                 "<div class='ace_gutter-cell ",
                 breakpoints[i] || "", decorations[i] || "", annotation.className,
-                "' style='height:", this.session.getRowLength(i) * config.lineHeight, "px;'>", 
+                "' style='height:", this.session.getRowLength(i) * config.lineHeight, "px;'>",
                 lastLineNumber = i + 1
             );
 
@@ -11618,10 +11850,10 @@ var Gutter = function(parentEl) {
 
         this.element = dom.setInnerHtml(this.element, html.join(""));
         this.element.style.height = config.minHeight + "px";
-        
+
         if (this.session.$useWrapMode)
             lastLineNumber = this.session.getLength();
-        
+
         var gutterWidth = ("" + lastLineNumber).length * config.characterWidth;
         var padding = this.$padding || this.$computePadding();
         gutterWidth += padding.left + padding.right;
@@ -11642,7 +11874,7 @@ var Gutter = function(parentEl) {
         this.$showFoldWidgets = show;
         this.$padding = null;
     };
-    
+
     this.getShowFoldWidgets = function() {
         return this.$showFoldWidgets;
     };
@@ -11653,7 +11885,7 @@ var Gutter = function(parentEl) {
         var style = dom.computedStyle(this.element.firstChild);
         this.$padding = {}
         this.$padding.left = parseInt(style.paddingLeft) + 1;
-        this.$padding.right = parseInt(style.paddingRight);  
+        this.$padding.right = parseInt(style.paddingRight);
         return this.$padding;
     };
 
@@ -11694,7 +11926,7 @@ var Marker = function(parentEl) {
     this.setSession = function(session) {
         this.session = session;
     };
-    
+
     this.setMarkers = function(markers) {
         this.markers = markers;
     };
@@ -12014,23 +12246,25 @@ var Text = function(parentEl) {
             if (this.showInvisibles) {
                 tabStr.push("<span class='ace_invisible'>"
                     + this.TAB_CHAR
-                    + Array(i).join("&#160;")
+                    + lang.stringRepeat("\xa0", i - 1)
                     + "</span>");
             } else {
-                tabStr.push(new Array(i+1).join("&#160;"));
+                tabStr.push(lang.stringRepeat("\xa0", i));
             }
         }
         if (this.displayIndentGuides) {
             this.$indentGuideRe =  /\s\S| \t|\t |\s$/;
             var className = "ace_indent-guide";
-            var content = Array(this.tabSize + 1).join("&#160;");
-            var tabContent = content;
             if (this.showInvisibles) {
                 className += " ace_invisible";
-                tabContent = this.TAB_CHAR + content.substr(6);
+                var spaceContent = lang.stringRepeat(this.SPACE_CHAR, this.tabSize);
+                var tabContent = this.TAB_CHAR + lang.stringRepeat("\xa0", this.tabSize - 1);
+            } else{
+                var spaceContent = lang.stringRepeat("\xa0", this.tabSize);
+                var tabContent = spaceContent;
             }
 
-            this.$tabStrings[" "] = "<span class='" + className + "'>" + content + "</span>";
+            this.$tabStrings[" "] = "<span class='" + className + "'>" + spaceContent + "</span>";
             this.$tabStrings["\t"] = "<span class='" + className + "'>" + tabContent + "</span>";
         }
     };
@@ -12196,7 +12430,9 @@ var Text = function(parentEl) {
         var replaceReg = /\t|&|<|( +)|([\x00-\x1f\x80-\xa0\u1680\u180E\u2000-\u200f\u2028\u2029\u202F\u205F\u3000\uFEFF])|[\u1100-\u115F\u11A3-\u11A7\u11FA-\u11FF\u2329-\u232A\u2E80-\u2E99\u2E9B-\u2EF3\u2F00-\u2FD5\u2FF0-\u2FFB\u3000-\u303E\u3041-\u3096\u3099-\u30FF\u3105-\u312D\u3131-\u318E\u3190-\u31BA\u31C0-\u31E3\u31F0-\u321E\u3220-\u3247\u3250-\u32FE\u3300-\u4DBF\u4E00-\uA48C\uA490-\uA4C6\uA960-\uA97C\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE52\uFE54-\uFE66\uFE68-\uFE6B\uFF01-\uFF60\uFFE0-\uFFE6]/g;
         var replaceFunc = function(c, a, b, tabIdx, idx4) {
             if (a) {
-                return new Array(c.length+1).join("&#160;");
+                return self.showInvisibles ?
+                    "<span class='ace_invisible'>" + lang.stringRepeat(self.SPACE_CHAR, c.length) + "</span>" :
+                    lang.stringRepeat("\xa0", c.length);
             } else if (c == "&") {
                 return "&#38;";
             } else if (c == "<") {
@@ -12243,10 +12479,10 @@ var Text = function(parentEl) {
             return value;
         if (value[0] == " ") {
             cols -= cols % this.tabSize;
-            stringBuilder.push(Array(cols/this.tabSize + 1).join(this.$tabStrings[" "]));
+            stringBuilder.push(lang.stringRepeat(this.$tabStrings[" "], cols/this.tabSize));
             return value.substr(cols);
         } else if (value[0] == "\t") {
-            stringBuilder.push(Array(cols + 1).join(this.$tabStrings["\t"]));
+            stringBuilder.push(lang.stringRepeat(this.$tabStrings["\t"], cols));
             return value.substr(cols);
         }
         return value;
@@ -12706,6 +12942,675 @@ var RenderLoop = function(onRender, win) {
 exports.RenderLoop = RenderLoop;
 });
 
+define('ace/worker/worker_client', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter', 'ace/config'], function(require, exports, module) {
+
+
+var oop = require("../lib/oop");
+var EventEmitter = require("../lib/event_emitter").EventEmitter;
+var config = require("../config");
+
+var WorkerClient = function(topLevelNamespaces, mod, classname) {
+    this.changeListener = this.changeListener.bind(this);
+    this.onMessage = this.onMessage.bind(this);
+    this.onError = this.onError.bind(this);
+
+    // TODO: Hack!
+    if (classname == "AutocompleteWorker") {
+	config.set("packaged", "false");
+    }
+
+    var workerUrl;
+    if (config.get("packaged")) {
+        workerUrl = config.moduleUrl(mod, "worker");
+    } else {
+        var normalizePath = this.$normalizePath;
+        if (typeof require.supports !== "undefined" && require.supports.indexOf("ucjs2-pinf-0") >= 0) {
+            workerUrl = require.nameToUrl("ace/worker/worker_sourcemint");
+        } else {
+            if (require.nameToUrl && !require.toUrl)
+                require.toUrl = require.nameToUrl;
+            workerUrl = normalizePath(require.toUrl("ace/worker/worker", null, "_"));
+        }
+
+        var tlns = {};
+        topLevelNamespaces.forEach(function(ns) {
+            tlns[ns] = normalizePath(require.toUrl(ns, null, "_").replace(/.js(\?.*)?$/, ""));
+        });
+    }
+
+    // TODO: Hack!
+    if (mod == "ace/mode/autocomplete_worker") {
+	workerUrl = "plugins/bpm-modeler/js/libs/ace/worker-autocomplete.js";
+    }
+
+    this.$worker = new Worker(workerUrl);
+    this.$worker.postMessage({
+        init : true,
+        tlns: tlns,
+        module: mod,
+        classname: classname
+    });
+
+    this.callbackId = 1;
+    this.callbacks = {};
+
+    this.$worker.onerror = this.onError;
+    this.$worker.onmessage = this.onMessage;
+};
+
+(function(){
+
+    oop.implement(this, EventEmitter);
+
+    this.onError = function(e) {
+        window.console && console.log && console.log(e);
+        throw e;
+    };
+
+    this.onMessage = function(e) {
+        var msg = e.data;
+        switch(msg.type) {
+            case "log":
+                window.console && console.log && console.log.apply(console, msg.data);
+                break;
+
+            case "event":
+                this._emit(msg.name, {data: msg.data});
+                break;
+
+            case "call":
+                var callback = this.callbacks[msg.id];
+                if (callback) {
+                    callback(msg.data);
+                    delete this.callbacks[msg.id];
+                }
+                break;
+        }
+    };
+
+    this.$normalizePath = function(path) {
+        if (!location.host) // needed for file:// protocol
+            return path;
+        path = path.replace(/^[a-z]+:\/\/[^\/]+/, ""); // Remove domain name and rebuild it
+        path = location.protocol + "//" + location.host
+            + (path.charAt(0) == "/" ? "" : location.pathname.replace(/\/[^\/]*$/, ""))
+            + "/" + path.replace(/^[\/]+/, "");
+        return path;
+    };
+
+    this.terminate = function() {
+        this._emit("terminate", {});
+        this.$worker.terminate();
+        this.$worker = null;
+        this.$doc.removeEventListener("change", this.changeListener);
+        this.$doc = null;
+    };
+
+    this.send = function(cmd, args) {
+        this.$worker.postMessage({command: cmd, args: args});
+    };
+
+    this.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+
+    this.emit = function(event, data) {
+        try {
+            this.$worker.postMessage({event: event, data: {data: data.data}});
+        }
+        catch(ex) {}
+    };
+
+    this.attachToDocument = function(doc, data, ignore) {
+        if (this.$doc && !ignore)
+            this.terminate();
+
+        this.$doc = doc;
+        this.call("setValue", [doc.getValue(), data]);
+        doc.on("change", this.changeListener);
+    };
+
+    this.changeListener = function(e) {
+        e.range = {
+            start: e.data.range.start,
+            end: e.data.range.end
+        };
+        this.emit("change", e);
+    };
+
+}).call(WorkerClient.prototype);
+
+
+var UIWorkerClient = function(topLevelNamespaces, mod, classname) {
+    this.changeListener = this.changeListener.bind(this);
+    this.callbackId = 1;
+    this.callbacks = {};
+    this.messageBuffer = [];
+
+    var main = null;
+    var sender = Object.create(EventEmitter);
+    var _self = this;
+
+    this.$worker = {}
+    this.$worker.terminate = function() {};
+    this.$worker.postMessage = function(e) {
+        _self.messageBuffer.push(e);
+        main && setTimeout(processNext);
+    };
+
+    var processNext = function() {
+        var msg = _self.messageBuffer.shift();
+        if (msg.command)
+            main[msg.command].apply(main, msg.args);
+        else if (msg.event)
+            sender._emit(msg.event, msg.data);
+    };
+
+    sender.postMessage = function(msg) {
+        _self.onMessage({data: msg});
+    };
+    sender.callback = function(data, callbackId) {
+        this.postMessage({type: "call", id: callbackId, data: data});
+    };
+    sender.emit = function(name, data) {
+        this.postMessage({type: "event", name: name, data: data});
+    };
+
+    require([mod], function(Main) {
+        main = new Main[classname](sender);
+        while (_self.messageBuffer.length)
+            processNext();
+    });
+};
+
+UIWorkerClient.prototype = WorkerClient.prototype;
+
+exports.UIWorkerClient = UIWorkerClient;
+exports.WorkerClient = WorkerClient;
+
+});
+
+define('ace/commands/default_commands', ['require', 'exports', 'module' , 'ace/lib/lang', 'ace/config'], function(require, exports, module) {
+
+
+var lang = require("../lib/lang");
+var config = require("../config");
+
+function bindKey(win, mac) {
+    return {
+        win: win,
+        mac: mac
+    };
+}
+
+exports.commands = [{
+    name: "selectall",
+    bindKey: bindKey("Ctrl-A", "Command-A"),
+    exec: function(editor) { editor.selectAll(); },
+    readOnly: true
+}, {
+    name: "centerselection",
+    bindKey: bindKey(null, "Ctrl-L"),
+    exec: function(editor) { editor.centerSelection(); },
+    readOnly: true
+}, {
+    name: "gotoline",
+    bindKey: bindKey("Ctrl-L", "Command-L"),
+    exec: function(editor) {
+        var line = parseInt(prompt("Enter line number:"), 10);
+        if (!isNaN(line)) {
+            editor.gotoLine(line);
+        }
+    },
+    readOnly: true
+}, {
+    name: "fold",
+    bindKey: bindKey("Alt-L|Ctrl-F1", "Command-Alt-L|Command-F1"),
+    exec: function(editor) { editor.session.toggleFold(false); },
+    readOnly: true
+}, {
+    name: "unfold",
+    bindKey: bindKey("Alt-Shift-L|Ctrl-Shift-F1", "Command-Alt-Shift-L|Command-Shift-F1"),
+    exec: function(editor) { editor.session.toggleFold(true); },
+    readOnly: true
+}, {
+    name: "foldall",
+    bindKey: bindKey("Alt-0", "Command-Option-0"),
+    exec: function(editor) { editor.session.foldAll(); },
+    readOnly: true
+}, {
+    name: "unfoldall",
+    bindKey: bindKey("Alt-Shift-0", "Command-Option-Shift-0"),
+    exec: function(editor) { editor.session.unfold(); },
+    readOnly: true
+}, {
+    name: "findnext",
+    bindKey: bindKey("Ctrl-K", "Command-G"),
+    exec: function(editor) { editor.findNext(); },
+    readOnly: true
+}, {
+    name: "findprevious",
+    bindKey: bindKey("Ctrl-Shift-K", "Command-Shift-G"),
+    exec: function(editor) { editor.findPrevious(); },
+    readOnly: true
+}, {
+    name: "find",
+    bindKey: bindKey("Ctrl-F", "Command-F"),
+    exec: function(editor) {
+        config.loadModule("ace/ext/searchbox", function(e) {e.Search(editor)});
+    },
+    readOnly: true
+}, {
+    name: "overwrite",
+    bindKey: "Insert",
+    exec: function(editor) { editor.toggleOverwrite(); },
+    readOnly: true
+}, {
+    name: "selecttostart",
+    bindKey: bindKey("Ctrl-Shift-Home", "Command-Shift-Up"),
+    exec: function(editor) { editor.getSelection().selectFileStart(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotostart",
+    bindKey: bindKey("Ctrl-Home", "Command-Home|Command-Up"),
+    exec: function(editor) { editor.navigateFileStart(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectup",
+    bindKey: bindKey("Shift-Up", "Shift-Up"),
+    exec: function(editor) { editor.getSelection().selectUp(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "golineup",
+    bindKey: bindKey("Up", "Up|Ctrl-P"),
+    exec: function(editor, args) { editor.navigateUp(args.times); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selecttoend",
+    bindKey: bindKey("Ctrl-Shift-End", "Command-Shift-Down"),
+    exec: function(editor) { editor.getSelection().selectFileEnd(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotoend",
+    bindKey: bindKey("Ctrl-End", "Command-End|Command-Down"),
+    exec: function(editor) { editor.navigateFileEnd(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectdown",
+    bindKey: bindKey("Shift-Down", "Shift-Down"),
+    exec: function(editor) { editor.getSelection().selectDown(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "golinedown",
+    bindKey: bindKey("Down", "Down|Ctrl-N"),
+    exec: function(editor, args) { editor.navigateDown(args.times); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectwordleft",
+    bindKey: bindKey("Ctrl-Shift-Left", "Option-Shift-Left"),
+    exec: function(editor) { editor.getSelection().selectWordLeft(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotowordleft",
+    bindKey: bindKey("Ctrl-Left", "Option-Left"),
+    exec: function(editor) { editor.navigateWordLeft(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selecttolinestart",
+    bindKey: bindKey("Alt-Shift-Left", "Command-Shift-Left"),
+    exec: function(editor) { editor.getSelection().selectLineStart(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotolinestart",
+    bindKey: bindKey("Alt-Left|Home", "Command-Left|Home|Ctrl-A"),
+    exec: function(editor) { editor.navigateLineStart(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectleft",
+    bindKey: bindKey("Shift-Left", "Shift-Left"),
+    exec: function(editor) { editor.getSelection().selectLeft(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotoleft",
+    bindKey: bindKey("Left", "Left|Ctrl-B"),
+    exec: function(editor, args) { editor.navigateLeft(args.times); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectwordright",
+    bindKey: bindKey("Ctrl-Shift-Right", "Option-Shift-Right"),
+    exec: function(editor) { editor.getSelection().selectWordRight(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotowordright",
+    bindKey: bindKey("Ctrl-Right", "Option-Right"),
+    exec: function(editor) { editor.navigateWordRight(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selecttolineend",
+    bindKey: bindKey("Alt-Shift-Right", "Command-Shift-Right"),
+    exec: function(editor) { editor.getSelection().selectLineEnd(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotolineend",
+    bindKey: bindKey("Alt-Right|End", "Command-Right|End|Ctrl-E"),
+    exec: function(editor) { editor.navigateLineEnd(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectright",
+    bindKey: bindKey("Shift-Right", "Shift-Right"),
+    exec: function(editor) { editor.getSelection().selectRight(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "gotoright",
+    bindKey: bindKey("Right", "Right|Ctrl-F"),
+    exec: function(editor, args) { editor.navigateRight(args.times); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectpagedown",
+    bindKey: "Shift-PageDown",
+    exec: function(editor) { editor.selectPageDown(); },
+    readOnly: true
+}, {
+    name: "pagedown",
+    bindKey: bindKey(null, "Option-PageDown"),
+    exec: function(editor) { editor.scrollPageDown(); },
+    readOnly: true
+}, {
+    name: "gotopagedown",
+    bindKey: bindKey("PageDown", "PageDown|Ctrl-V"),
+    exec: function(editor) { editor.gotoPageDown(); },
+    readOnly: true
+}, {
+    name: "selectpageup",
+    bindKey: "Shift-PageUp",
+    exec: function(editor) { editor.selectPageUp(); },
+    readOnly: true
+}, {
+    name: "pageup",
+    bindKey: bindKey(null, "Option-PageUp"),
+    exec: function(editor) { editor.scrollPageUp(); },
+    readOnly: true
+}, {
+    name: "gotopageup",
+    bindKey: "PageUp",
+    exec: function(editor) { editor.gotoPageUp(); },
+    readOnly: true
+}, {
+    name: "scrollup",
+    bindKey: bindKey("Ctrl-Up", null),
+    exec: function(e) { e.renderer.scrollBy(0, -2 * e.renderer.layerConfig.lineHeight); },
+    readOnly: true
+}, {
+    name: "scrolldown",
+    bindKey: bindKey("Ctrl-Down", null),
+    exec: function(e) { e.renderer.scrollBy(0, 2 * e.renderer.layerConfig.lineHeight); },
+    readOnly: true
+}, {
+    name: "selectlinestart",
+    bindKey: "Shift-Home",
+    exec: function(editor) { editor.getSelection().selectLineStart(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selectlineend",
+    bindKey: "Shift-End",
+    exec: function(editor) { editor.getSelection().selectLineEnd(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "togglerecording",
+    bindKey: bindKey("Ctrl-Alt-E", "Command-Option-E"),
+    exec: function(editor) { editor.commands.toggleRecording(editor); },
+    readOnly: true
+}, {
+    name: "replaymacro",
+    bindKey: bindKey("Ctrl-Shift-E", "Command-Shift-E"),
+    exec: function(editor) { editor.commands.replay(editor); },
+    readOnly: true
+}, {
+    name: "jumptomatching",
+    bindKey: bindKey("Ctrl-P", "Ctrl-Shift-P"),
+    exec: function(editor) { editor.jumpToMatching(); },
+    multiSelectAction: "forEach",
+    readOnly: true
+}, {
+    name: "selecttomatching",
+    bindKey: bindKey("Ctrl-Shift-P", null),
+    exec: function(editor) { editor.jumpToMatching(true); },
+    readOnly: true
+},
+{
+    name: "cut",
+    exec: function(editor) {
+        var range = editor.getSelectionRange();
+        editor._emit("cut", range);
+
+        if (!editor.selection.isEmpty()) {
+            editor.session.remove(range);
+            editor.clearSelection();
+        }
+    },
+    multiSelectAction: "forEach"
+}, {
+    name: "removeline",
+    bindKey: bindKey("Ctrl-D", "Command-D"),
+    exec: function(editor) { editor.removeLines(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "duplicateSelection",
+    bindKey: bindKey("Ctrl-Shift-D", "Command-Shift-D"),
+    exec: function(editor) { editor.duplicateSelection(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "sortlines",
+    bindKey: bindKey("Ctrl-Alt-S", "Command-Alt-S"),
+    exec: function(editor) { editor.sortLines(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "togglecomment",
+    bindKey: bindKey("Ctrl-/", "Command-/"),
+    exec: function(editor) { editor.toggleCommentLines(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "modifyNumberUp",
+    bindKey: bindKey("Ctrl-Shift-Up", "Alt-Shift-Up"),
+    exec: function(editor) { editor.modifyNumber(1); },
+    multiSelectAction: "forEach"
+}, {
+    name: "modifyNumberDown",
+    bindKey: bindKey("Ctrl-Shift-Down", "Alt-Shift-Down"),
+    exec: function(editor) { editor.modifyNumber(-1); },
+    multiSelectAction: "forEach"
+}, {
+    name: "replace",
+    bindKey: bindKey("Ctrl-H", "Command-Option-F"),
+    exec: function(editor) {
+        config.loadModule("ace/ext/searchbox", function(e) {e.Search(editor, true)});
+    }
+}, {
+    name: "undo",
+    bindKey: bindKey("Ctrl-Z", "Command-Z"),
+    exec: function(editor) { editor.undo(); }
+}, {
+    name: "redo",
+    bindKey: bindKey("Ctrl-Shift-Z|Ctrl-Y", "Command-Shift-Z|Command-Y"),
+    exec: function(editor) { editor.redo(); }
+}, {
+    name: "copylinesup",
+    bindKey: bindKey("Alt-Shift-Up", "Command-Option-Up"),
+    exec: function(editor) { editor.copyLinesUp(); }
+}, {
+    name: "movelinesup",
+    bindKey: bindKey("Alt-Up", "Option-Up"),
+    exec: function(editor) { editor.moveLinesUp(); }
+}, {
+    name: "copylinesdown",
+    bindKey: bindKey("Alt-Shift-Down", "Command-Option-Down"),
+    exec: function(editor) { editor.copyLinesDown(); }
+}, {
+    name: "movelinesdown",
+    bindKey: bindKey("Alt-Down", "Option-Down"),
+    exec: function(editor) { editor.moveLinesDown(); }
+}, {
+    name: "del",
+    bindKey: bindKey("Delete", "Delete|Ctrl-D"),
+    exec: function(editor) { editor.remove("right"); },
+    multiSelectAction: "forEach"
+}, {
+    name: "backspace",
+    bindKey: bindKey(
+        "Command-Backspace|Option-Backspace|Shift-Backspace|Backspace",
+        "Ctrl-Backspace|Command-Backspace|Shift-Backspace|Backspace|Ctrl-H"
+    ),
+    exec: function(editor) { editor.remove("left"); },
+    multiSelectAction: "forEach"
+}, {
+    name: "removetolinestart",
+    bindKey: bindKey("Alt-Backspace", "Command-Backspace"),
+    exec: function(editor) { editor.removeToLineStart(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "removetolineend",
+    bindKey: bindKey("Alt-Delete", "Ctrl-K"),
+    exec: function(editor) { editor.removeToLineEnd(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "removewordleft",
+    bindKey: bindKey("Ctrl-Backspace", "Alt-Backspace|Ctrl-Alt-Backspace"),
+    exec: function(editor) { editor.removeWordLeft(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "removewordright",
+    bindKey: bindKey("Ctrl-Delete", "Alt-Delete"),
+    exec: function(editor) { editor.removeWordRight(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "outdent",
+    bindKey: bindKey("Shift-Tab", "Shift-Tab"),
+    exec: function(editor) { editor.blockOutdent(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "indent",
+    bindKey: bindKey("Tab", "Tab"),
+    exec: function(editor) { editor.indent(); },
+    multiSelectAction: "forEach"
+},{
+    name: "blockoutdent",
+    bindKey: bindKey("Ctrl-[", "Ctrl-["),
+    exec: function(editor) { editor.blockOutdent(); },
+    multiSelectAction: "forEach"
+},{
+    name: "blockindent",
+    bindKey: bindKey("Ctrl-]", "Ctrl-]"),
+    exec: function(editor) { editor.blockIndent(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "insertstring",
+    exec: function(editor, str) { editor.insert(str); },
+    multiSelectAction: "forEach"
+}, {
+    name: "inserttext",
+    exec: function(editor, args) {
+        editor.insert(lang.stringRepeat(args.text  || "", args.times || 1));
+    },
+    multiSelectAction: "forEach"
+}, {
+    name: "splitline",
+    bindKey: bindKey(null, "Ctrl-O"),
+    exec: function(editor) { editor.splitLine(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "transposeletters",
+    bindKey: bindKey("Ctrl-T", "Ctrl-T"),
+    exec: function(editor) { editor.transposeLetters(); },
+    multiSelectAction: function(editor) {editor.transposeSelections(1); }
+}, {
+    name: "touppercase",
+    bindKey: bindKey("Ctrl-U", "Ctrl-U"),
+    exec: function(editor) { editor.toUpperCase(); },
+    multiSelectAction: "forEach"
+}, {
+    name: "tolowercase",
+    bindKey: bindKey("Ctrl-Shift-U", "Ctrl-Shift-U"),
+    exec: function(editor) { editor.toLowerCase(); },
+    multiSelectAction: "forEach"
+}];
+
+});
+
+define('ace/undomanager', ['require', 'exports', 'module' ], function(require, exports, module) {
+var UndoManager = function() {
+    this.reset();
+};
+
+(function() {
+    this.execute = function(options) {
+        var deltas = options.args[0];
+        this.$doc  = options.args[1];
+        this.$undoStack.push(deltas);
+        this.$redoStack = [];
+    };
+    this.undo = function(dontSelect) {
+        var deltas = this.$undoStack.pop();
+        var undoSelectionRange = null;
+        if (deltas) {
+            undoSelectionRange =
+                this.$doc.undoChanges(deltas, dontSelect);
+            this.$redoStack.push(deltas);
+        }
+        return undoSelectionRange;
+    };
+    this.redo = function(dontSelect) {
+        var deltas = this.$redoStack.pop();
+        var redoSelectionRange = null;
+        if (deltas) {
+            redoSelectionRange =
+                this.$doc.redoChanges(deltas, dontSelect);
+            this.$undoStack.push(deltas);
+        }
+        return redoSelectionRange;
+    };
+    this.reset = function() {
+        this.$undoStack = [];
+        this.$redoStack = [];
+    };
+    this.hasUndo = function() {
+        return this.$undoStack.length > 0;
+    };
+    this.hasRedo = function() {
+        return this.$redoStack.length > 0;
+    };
+
+}).call(UndoManager.prototype);
+
+exports.UndoManager = UndoManager;
+});
+
 define('ace/multi_select', ['require', 'exports', 'module' , 'ace/range_list', 'ace/range', 'ace/selection', 'ace/mouse/multi_select_handler', 'ace/lib/event', 'ace/lib/lang', 'ace/commands/multi_select_commands', 'ace/search', 'ace/edit_session', 'ace/editor'], function(require, exports, module) {
 
 var RangeList = require("./range_list").RangeList;
@@ -12852,7 +13757,7 @@ var EditSession = require("./edit_session").EditSession;
                     var start = range.end, end = range.start;
                 else
                     var start = range.start, end = range.end;
-                
+
                 this.addRange(Range.fromPoints(end, end));
                 this.addRange(Range.fromPoints(start, start));
                 return;
@@ -13050,7 +13955,7 @@ var Editor = require("./editor").Editor;
             command.multiSelectAction(editor, e.args || {});
         }
         e.preventDefault();
-    }; 
+    };
     this.forEachSelection = function(cmd, args) {
         if (this.inVirtualSelectionMode)
             return;
@@ -13326,23 +14231,23 @@ var Editor = require("./editor").Editor;
             return m;
         }).map(isLeftAligned ? isRightAligned ? alignRight : alignLeft : unAlign);
 
-        function strRepeat(n, ch) {
-            return Array(n + 1).join(ch)
+        function spaces(n) {
+            return lang.stringRepeat(" ", n);
         }
 
         function alignLeft(m) {
-            return !m[2] ? m[0] : strRepeat(startW, " ") + m[2]
-                + strRepeat(textW - m[2].length + endW, " ")
+            return !m[2] ? m[0] : spaces(startW) + m[2]
+                + spaces(textW - m[2].length + endW)
                 + m[4].replace(/^([=:])\s+/, "$1 ")
         }
         function alignRight(m) {
-            return !m[2] ? m[0] : strRepeat(startW + textW - m[2].length, " ") + m[2]
-                + strRepeat(endW, " ")
+            return !m[2] ? m[0] : spaces(startW + textW - m[2].length) + m[2]
+                + spaces(endW, " ")
                 + m[4].replace(/^([=:])\s+/, "$1 ")
         }
         function unAlign(m) {
-            return !m[2] ? m[0] : strRepeat(startW, " ") + m[2]
-                + strRepeat(endW, " ")
+            return !m[2] ? m[0] : spaces(startW) + m[2]
+                + spaces(endW)
                 + m[4].replace(/^([=:])\s+/, "$1 ")
         }
     }
@@ -13638,7 +14543,7 @@ function onMouseDown(e) {
         e.editor.textInput.onContextMenu(e.domEvent);
         return;
     }
-    
+
     if (!ctrl && !alt) {
         if (button == 0 && e.editor.inMultiSelectMode)
             e.editor.exitMultiSelectMode();
@@ -13677,12 +14582,12 @@ function onMouseDown(e) {
         rectSel.forEach(editor.addSelectionMarker, editor);
         editor.updateSelectionMarkers();
     };
-    
+
     var session = editor.session;
     var screenAnchor = editor.renderer.pixelToScreenCoordinates(mouseX, mouseY);
     var screenCursor = screenAnchor;
 
-    
+
 
     if (ctrl && !shift && !alt && button == 0) {
         if (!isMultiSelect && inSelection)
@@ -13806,188 +14711,6 @@ var HashHandler = require("../keyboard/hash_handler").HashHandler;
 exports.keyboardHandler = new HashHandler(exports.multiSelectCommands);
 
 });
-
-define('ace/worker/worker_client', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter', 'ace/config'], function(require, exports, module) {
-
-
-var oop = require("../lib/oop");
-var EventEmitter = require("../lib/event_emitter").EventEmitter;
-var config = require("../config");
-
-var WorkerClient = function(topLevelNamespaces, mod, classname) {
-    this.changeListener = this.changeListener.bind(this);
-    this.onMessage = this.onMessage.bind(this);
-    this.onError = this.onError.bind(this);
-
-    var workerUrl;
-    if (config.get("packaged")) {
-        workerUrl = config.moduleUrl(mod, "worker");
-    } else {
-        var normalizePath = this.$normalizePath;
-        if (typeof require.supports !== "undefined" && require.supports.indexOf("ucjs2-pinf-0") >= 0) {
-            workerUrl = require.nameToUrl("ace/worker/worker_sourcemint");
-        } else {
-            if (require.nameToUrl && !require.toUrl)
-                require.toUrl = require.nameToUrl;
-            workerUrl = normalizePath(require.toUrl("ace/worker/worker", null, "_"));
-        }
-
-        var tlns = {};
-        topLevelNamespaces.forEach(function(ns) {
-            tlns[ns] = normalizePath(require.toUrl(ns, null, "_").replace(/.js(\?.*)?$/, ""));
-        });
-    }
-
-    this.$worker = new Worker(workerUrl);
-    this.$worker.postMessage({
-        init : true,
-        tlns: tlns,
-        module: mod,
-        classname: classname
-    });
-
-    this.callbackId = 1;
-    this.callbacks = {};
-
-    this.$worker.onerror = this.onError;
-    this.$worker.onmessage = this.onMessage;
-};
-
-(function(){
-
-    oop.implement(this, EventEmitter);
-
-    this.onError = function(e) {
-        window.console && console.log && console.log(e);
-        throw e;
-    };
-
-    this.onMessage = function(e) {
-        var msg = e.data;
-        switch(msg.type) {
-            case "log":
-                window.console && console.log && console.log.apply(console, msg.data);
-                break;
-
-            case "event":
-                this._emit(msg.name, {data: msg.data});
-                break;
-
-            case "call":
-                var callback = this.callbacks[msg.id];
-                if (callback) {
-                    callback(msg.data);
-                    delete this.callbacks[msg.id];
-                }
-                break;
-        }
-    };
-
-    this.$normalizePath = function(path) {
-        if (!location.host) // needed for file:// protocol
-            return path;
-        path = path.replace(/^[a-z]+:\/\/[^\/]+/, ""); // Remove domain name and rebuild it
-        path = location.protocol + "//" + location.host
-            + (path.charAt(0) == "/" ? "" : location.pathname.replace(/\/[^\/]*$/, ""))
-            + "/" + path.replace(/^[\/]+/, "");
-        return path;
-    };
-
-    this.terminate = function() {
-        this._emit("terminate", {});
-        this.$worker.terminate();
-        this.$worker = null;
-        this.$doc.removeEventListener("change", this.changeListener);
-        this.$doc = null;
-    };
-
-    this.send = function(cmd, args) {
-        this.$worker.postMessage({command: cmd, args: args});
-    };
-
-    this.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-
-    this.emit = function(event, data) {
-        try {
-            this.$worker.postMessage({event: event, data: {data: data.data}});
-        }
-        catch(ex) {}
-    };
-
-    this.attachToDocument = function(doc) {
-        if(this.$doc)
-            this.terminate();
-
-        this.$doc = doc;
-        this.call("setValue", [doc.getValue()]);
-        doc.on("change", this.changeListener);
-    };
-
-    this.changeListener = function(e) {
-        e.range = {
-            start: e.data.range.start,
-            end: e.data.range.end
-        };
-        this.emit("change", e);
-    };
-
-}).call(WorkerClient.prototype);
-
-
-var UIWorkerClient = function(topLevelNamespaces, mod, classname) {
-    this.changeListener = this.changeListener.bind(this);
-    this.callbackId = 1;
-    this.callbacks = {};
-    this.messageBuffer = [];
-
-    var main = null;
-    var sender = Object.create(EventEmitter);
-    var _self = this;
-
-    this.$worker = {}
-    this.$worker.postMessage = function(e) {
-        _self.messageBuffer.push(e);
-        main && setTimeout(processNext);
-    };
-
-    var processNext = function() {
-        var msg = _self.messageBuffer.shift();
-        if (msg.command)
-            main[msg.command].apply(main, msg.args);
-        else if (msg.event)
-            sender._emit(msg.event, msg.data);
-    };
-
-    sender.postMessage = function(msg) {
-        _self.onMessage({data: msg});
-    };
-    sender.callback = function(data, callbackId) {
-        this.postMessage({type: "call", id: callbackId, data: data});
-    };
-    sender.emit = function(name, data) {
-        this.postMessage({type: "event", name: name, data: data});
-    };
-
-    require([mod], function(Main) {
-        main = new Main[classname](sender);
-        while (_self.messageBuffer.length)
-            processNext();
-    });
-};
-
-UIWorkerClient.prototype = WorkerClient.prototype;
-
-exports.UIWorkerClient = UIWorkerClient;
-exports.WorkerClient = WorkerClient;
-
-});
 define('ace/placeholder', ['require', 'exports', 'module' , 'ace/range', 'ace/lib/event_emitter', 'ace/lib/oop'], function(require, exports, module) {
 
 
@@ -14005,13 +14728,13 @@ var PlaceHolder = function(session, length, pos, others, mainClass, othersClass)
     this.$onUpdate = this.onUpdate.bind(this);
     this.doc.on("change", this.$onUpdate);
     this.$others = others;
-    
+
     this.$onCursorChange = function() {
         setTimeout(function() {
             _self.onCursorChange();
         });
     };
-    
+
     this.$pos = pos;
     var undoStack = session.getUndoManager().$undoStack || session.getUndoManager().$undostack || {length: -1};
     this.$undoStackDepth =  undoStack.length;
@@ -14070,7 +14793,7 @@ var PlaceHolder = function(session, length, pos, others, mainClass, othersClass)
         if (this.$updating) return;
         this.$updating = true;
         var lengthDiff = delta.action === "insertText" ? range.end.column - range.start.column : range.start.column - range.end.column;
-        
+
         if(range.start.column >= this.pos.column && range.start.column <= this.pos.column + this.length + 1) {
             var distanceFromStart = range.start.column - this.pos.column;
             this.length += lengthDiff;
@@ -14133,7 +14856,7 @@ var PlaceHolder = function(session, length, pos, others, mainClass, othersClass)
             this.hideOtherMarkers();
             this._emit("cursorLeave", event);
         }
-    };    
+    };
     this.detach = function() {
         this.session.removeMarker(this.markerId);
         this.hideOtherMarkers();

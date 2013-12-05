@@ -1,0 +1,40 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/views-common/deputy/createOrModifyDeputyDialog.xhtml" />
+		</ice:panelGroup>
+
+		<!-- My Team Members -->
+		<ice:panelGroup>
+			<br />
+			<pc:automationTag value="auto-BCC-DeputyMgmt-MyTeamMembersTbl" />
+			<pc:genericDataTable exportExcel="false" exportCsv="false"
+				resizable="false" sortSupported="true"
+				title="#{deputyTeamMemberBean.messages['myTeamMembers.title']}"
+				bean="#{deputyTeamMemberBean}"
+				table="#{deputyTeamMemberBean.myTeamMembersTable}"
+				toolbarUrl="/plugins/business-control-center/views/deputyManagementViewMyTeamMembersTableToolbar.xhtml" />
+		</ice:panelGroup>
+
+		<!-- My Team Members Deputies -->
+		<ice:panelGroup>
+			<br />
+			<pc:automationTag value="auto-BCC-DeputyMgmt-myTeamMembersDeputyTbl" />
+			<pc:genericDataTable exportExcel="false" exportCsv="false"
+				resizable="false" sortSupported="true"
+				bean="#{deputyTeamMemberBean}"
+				table="#{deputyTeamMemberBean.myTeamMemberDeputiesTable}"
+				toolbarUrl="/plugins/business-control-center/views/deputyManagementViewTeamMembersDeputiesTableToolbar.xhtml" />
+		</ice:panelGroup>
+
+
+	</ice:panelGroup>
+</f:view>

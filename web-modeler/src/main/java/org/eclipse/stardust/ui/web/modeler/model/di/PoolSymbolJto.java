@@ -11,6 +11,8 @@ public class PoolSymbolJto extends ShapeJto
    public String id;
    public String name;
 
+   public String processId;
+
    public List<LaneSymbolJto> laneSymbols = newArrayList();
 
    public String orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;

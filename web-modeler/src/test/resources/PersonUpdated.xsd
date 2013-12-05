@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/Person" xmlns:tns="http://www.example.org/Person" elementFormDefault="qualified">
+
+
+
+    <complexType name="Address">
+	<sequence>
+		<element name="streetName" type="string"></element>
+		<element name="zipCode" type="string"></element>
+		<element name="city" type="string"></element>
+	</sequence>
+    </complexType>
+
+    <complexType name="Person">
+	<sequence>
+		<element name="name" type="string"></element>
+		<element name="theAge" type="int"></element>
+		<element name="address" type="tns:Address"></element>
+	</sequence>
+    </complexType>
+
+    <complexType name="Employee">
+	<complexContent>
+		<extension base="tns:Person">
+			<sequence>
+				<element name="empNumber" type="int"></element>
+				<element name="skill" type="tns:Skill"></element>
+			</sequence>
+		</extension>
+	</complexContent>
+    </complexType>
+
+
+    <simpleType name="Skill">
+	<restriction base="string">
+		<enumeration value="Rookie"></enumeration>
+		<enumeration value="Advanced"></enumeration>
+		<enumeration value="Professional"></enumeration>
+		<enumeration value="Expert"></enumeration>
+	</restriction>
+    </simpleType>
+</schema>

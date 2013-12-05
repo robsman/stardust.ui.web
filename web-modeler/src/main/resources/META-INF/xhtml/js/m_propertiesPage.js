@@ -32,11 +32,11 @@ define(
 				this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
-				this.page = jQuery("#" + this.propertiesPanel.id + " #"
+				this.page = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
 						+ this.id);
 
 				if (imageUrl == null) {
-					this.imageUrl = "../../images/icons/page_white.png";
+					this.imageUrl = "plugins/bpm-modeler/images/icons/page_white.png";
 				} else {
 					this.imageUrl = imageUrl;
 				}
@@ -44,7 +44,7 @@ define(
 				 * 
 				 */
 				PropertiesPage.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.propertiesPanel.id + " #"
+					return m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
 							+ this.id + " #" + inputId);
 				};
 
@@ -149,9 +149,6 @@ define(
 					}, function(event) {
 						var page = event.data.page;
 						var input = event.data.input;
-
-						m_utils.debug("Changed " + property + ": "
-								+ input.val());
 
 						if (!page.validate(input, property)) {
 							return;

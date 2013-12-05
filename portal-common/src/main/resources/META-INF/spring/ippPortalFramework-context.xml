@@ -48,14 +48,13 @@
       <property name="portalApplicationEventScript" ref="ippPortalAppEventScript"/>
       <property name="runtimeEnvironmentInfoProvider" ref="runtimeEnvironmentInfoProvider"/>
    </bean>
-
+   <!-- Beans for Single HTML5 FW Usage - START -->   <bean name="ippPortalAppSingleView" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView"	   scope="request">	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />   </bean>   <bean name="ippSingleViewLaunchPanels" class="org.eclipse.stardust.ui.web.common.app.SingleViewLaunchPanels"	   scope="session">	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />   </bean>   <bean name="ippPortalAppSingleViewEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleViewEventScript"	   scope="request">   </bean>   <!-- Beans for Single HTML5 FW Usage - END -->
    <bean name="ippPortalAppEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript"
       scope="session">
    </bean>
 
    <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
-      scope="singleton">
-   </bean>
+      scope="singleton">   </bean>
 
    <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
       scope="session">
@@ -91,4 +90,5 @@
 		<property name="navigationProvider" ref="navigationProvider" />
 		<property name="preferenceProvider" ref="preferenceProvider"/>
 	</bean>
+   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"      scope="session" />          <bean name="common_msgPropsBean"		class="org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean"		scope="session" />  
 </beans>

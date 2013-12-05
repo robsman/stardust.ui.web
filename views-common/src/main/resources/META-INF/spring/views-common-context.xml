@@ -73,7 +73,12 @@
 	<bean name="panelConfirmation" class="org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation"
 		scope="portalTab">
 	</bean>
-	
+
+	<bean name="initializeSessionBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.login.dialogs.InitializeSessionBean"
+		scope="session">
+	</bean>
+   
 	<bean name="commonFileUploadDialog"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog"
 		scope="portalTab">
@@ -473,4 +478,14 @@
 		scope="session">
 	</bean>	
 		
+
+	<bean name="deputyManagementBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.DeputyManagementBean"
+		scope="portalTab">
+	</bean>
+
+	<bean name="createOrModifyDeputyPopupBean" class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.CreateOrModifyDeputyPopupBean"
+		scope="portalTab">
+	</bean>
+
 </beans>

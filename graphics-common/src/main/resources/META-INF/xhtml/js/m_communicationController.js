@@ -42,9 +42,10 @@ define(function(){
 				type: 'GET',
 				url: options.url,
 				async: false,
+				cache:options.hasOwnProperty('cacheData') ? options.cacheData : true,
 				success: callbacks.hasOwnProperty('success') ? callbacks.success : null,
 				error: callbacks.hasOwnProperty('error') ? callbacks.error : null
 			});
 		}
-	}
+	};
 });

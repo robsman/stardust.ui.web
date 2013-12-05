@@ -22,10 +22,10 @@ import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatistics
 import org.eclipse.stardust.ui.web.common.autocomplete.AutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.common.autocomplete.IAutocompleteDataProvider;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -319,6 +319,61 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
    }
 
    /**
+    * @param users
+    * @param selectedData
+    * @param searchValue
+    * @return
+    */
+   public static List<SelectItem> buildSearchResult(List<User> users, List<UserWrapper> selectedData, String searchValue)
+   {
+      List<SelectItem> userItems = new ArrayList<SelectItem>(users.size());
+
+      if(CollectionUtils.isNotEmpty(users))
+      {
+         UserLoginStatistics userLoginStatistics = UserUtils.getUserLoginStatistics(users);
+         
+         UserWrapper userWrapper;
+         if (null == selectedData)
+         {
+            selectedData = new ArrayList<UserWrapper>();
+         }
+
+         for (User user : users)
+         {
+            LoginStatistics loginStatistics = userLoginStatistics.getLoginStatistics(user.getOID());
+            userWrapper = new UserWrapper(user, SessionContext.findSessionContext().getUser(), getUserLabel(user,
+                  searchValue), loginStatistics != null ? loginStatistics.currentlyLoggedIn : false);
+            if (!selectedData.contains(userWrapper))
+            {
+               userItems.add(new SelectItem(userWrapper, user.getLastName() + ", " + user.getFirstName()));
+            }
+         }
+      }
+
+      return userItems;
+   }
+
+   /**
+    * @param user
+    * @param searchValue
+    * @return
+    */
+   public static String getUserLabel(User user, String searchValue)
+   {
+      return formatValue(I18nUtils.getUserLabel(user), searchValue);
+   }
+
+   /**
+    * @param value
+    * @param searchValue
+    * @return
+    */
+   private static String formatValue(String value, String searchValue)
+   {
+      return value.replaceAll(searchValue, "<b>"+searchValue+"</b>");
+   }
+
+   /**
     * @author Subodh.Godbole
     *
     */
@@ -330,49 +385,9 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
       public List<SelectItem> getMatchingData(String searchValue, int maxMatches)
       {
          List<User> users = UserUtils.searchUsers(searchValue + "%", onlyActiveUsers, maxMatches);
-         List<SelectItem> userItems = new ArrayList<SelectItem>(users.size());
-         
-         if(CollectionUtils.isNotEmpty(users))
-         {
-            UserLoginStatistics userLoginStatistics = UserUtils.getUserLoginStatistics(users);
-            
-            UserWrapper userWrapper; 
-            List<UserWrapper> selectedData = !isSingleSelect() ? getSelectedValues() : new ArrayList<UserWrapper>();
-            for (User user : users)
-            {
-               LoginStatistics loginStatistics = userLoginStatistics.getLoginStatistics(user.getOID());
-               userWrapper = new UserWrapper(user, SessionContext.findSessionContext().getUser(), getUserLabel(user, searchValue), loginStatistics != null
-                     ? loginStatistics.currentlyLoggedIn
-                     : false);
-               if (!selectedData.contains(userWrapper))
-               {
-                  userItems.add(new SelectItem(userWrapper, user.getLastName() + ", " + user.getFirstName()));
-               }
-            }
-         }
-
-         return userItems;
+         return buildSearchResult(users, !isSingleSelect() ? getSelectedValues() : new ArrayList<UserWrapper>(),
+               searchValue);
       }
-
-      /**
-       * @param user
-       * @param searchValue
-       * @return
-       */
-      private String getUserLabel(User user, String searchValue)
-      {
-         return formatValue(I18nUtils.getUserLabel(user), searchValue);
-      }
-      
-      /**
-       * @param value
-       * @param searchValue
-       * @return
-       */
-      private String formatValue(String value, String searchValue)
-      {
-         return value.replaceAll(searchValue, "<b>"+searchValue+"</b>");
-      }      
    }
    
    /**

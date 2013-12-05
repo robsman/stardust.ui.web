@@ -381,17 +381,25 @@ public class DMSHelper
    {
       if (isSecurityEnabled())
       {
-         DocumentManagementService dms = ContextPortalServices
-               .getDocumentManagementService();
-         if (dms.getPrivileges(resourceID).contains(privilege)
-               || dms.getPrivileges(resourceID).contains(DmsPrivilege.ALL_PRIVILEGES))
+         DocumentManagementService dms = ContextPortalServices.getDocumentManagementService();
+         try
          {
-            return true;
+            if ((dms.getPrivileges(resourceID).contains(privilege))
+                  || dms.getPrivileges(resourceID).contains(DmsPrivilege.ALL_PRIVILEGES))
+            {
+               return true;
+            }
+            else
+            {
+               return false;
+            }
          }
-         else
+         catch (Exception e)
          {
+            //TODO- review the same after CRNT-29870 is resolved
             return false;
          }
+         
       }
       else
       {

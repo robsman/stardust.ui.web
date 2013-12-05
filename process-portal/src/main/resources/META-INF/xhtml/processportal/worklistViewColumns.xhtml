@@ -11,19 +11,19 @@
 		row*= Instance of Row Class
 		col*= Instance of ColumnPreference 
 	 -->
-
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 
 		<!--	Overview	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Overview'}">
 			<ice:panelGrid columns="2" style="width:100%">
 				<ice:panelGrid columns="1">
-					<ice:commandLink disabled="#{!row.activatable}"
+					<ice:commandLink disabled="#{(!row.activatable) and (!row.showResubmissionLink)}"
 						value="#{row.processName}" style="white-space: nowrap;"
 						actionListener="#{worklistTableBean.openActivity}" onclick="Event.stop(event);"
 						title="#{worklistTableBean.messages['tooltip.openActivity']}">
 						<pc:automationTag value="auto-PP-WorkList-DataTable-Overview" standAlone="false"/>
 						<f:param name="oid" value="#{row.oid}" />
+						<f:param name="resubmitActivity" value="#{row.showResubmissionLink}" />
 						<ice:graphicImage rendered="#{row.renderIcon}" style="margin-left:5px; vertical-align:middle"
 							value="#{row.iconPath}"
 							title="" />
@@ -65,11 +65,11 @@
 
 	<ice:panelGroup rendered="#{col.columnName == 'Descriptors'}">
 		<ice:panelGroup rendered="#{not empty row.processDescriptorsList}">
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<table border="0" cellpadding="0" cellspacing="0">
 				<ui:repeat value="#{row.processDescriptorsList}" var="info">
 				<tr>
-					<td style="text-align: left; white-space: nowrap; padding-right: 5px; width: 10%;"><ice:outputText value="#{info.key}:"/></td>
-					<td style="text-align: left; white-space: nowrap; width: 90%;"><ice:outputText value="#{info.value}" escape="false"/></td>
+					<td style="text-align: left; white-space: nowrap; padding-right: 5px;"><ice:outputText value="#{info.key}:"/></td>
+					<td style="text-align: left; white-space: nowrap;"><ice:outputText value="#{info.value}" escape="false"/></td>
 				</tr>
 				</ui:repeat>
 			</table>
@@ -119,7 +119,7 @@
 	<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 		<ice:panelGroup styleClass="table-actions-column" style="float:right" rendered="#{row.loaded}">
 			<ice:panelGrid columns="4" style="float: right;">
-			<ice:commandLink action="#{ippPortalApp.openView}">
+			<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process.png"
@@ -135,7 +135,7 @@
 			<!--	Delegate Dialog		-->
 			<ice:commandLink
 				actionListener="#{worklistTableBean.openDelegateDialog}"
-				disabled="#{!row.delegable or row.defaultCaseActivity}">
+				disabled="#{!row.delegable or row.defaultCaseActivity}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsDelegate" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/process-history/delegate.png"
@@ -149,7 +149,7 @@
 			<!--	Abort Dialog		-->
 
 			<ice:commandLink actionListener="#{worklistTableBean.openAbortDialog}"
-				disabled="#{!row.abortActivity or row.defaultCaseActivity}">
+				disabled="#{!row.abortActivity or row.defaultCaseActivity}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsAbort" standAlone="false"/>
 				<ice:graphicImage
 					url="/plugins/views-common/images/icons/cross.png"
@@ -166,7 +166,7 @@
 			</ice:panelGroup>
 						
 			<ice:commandLink rendered="#{row.notesCount gt 0 and !row.defaultCaseActivity}" 
-				actionListener="#{worklistTableBean.openNotes}">
+				actionListener="#{worklistTableBean.openNotes}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
@@ -175,7 +175,7 @@
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>
 			<ice:commandLink rendered="#{row.notesCount le 0 and !row.defaultCaseActivity}" 
-				actionListener="#{worklistTableBean.openNotes}">
+				actionListener="#{worklistTableBean.openNotes}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/notes-blank.png"

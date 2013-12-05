@@ -56,10 +56,13 @@ public class ValidationMessageBean implements Serializable
    {
       errorMessages.add(errorMsg);
 
-      for (String clientId : clientIds)
+      if (null != clientIds)
       {
-         facesContext.addMessage(FacesUtils.getClientId(clientId), new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg,
-               errorMsg));
+         for (String clientId : clientIds)
+         {
+            facesContext.addMessage(FacesUtils.getClientId(clientId), new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg,
+                  errorMsg));
+         }
       }
    }
 

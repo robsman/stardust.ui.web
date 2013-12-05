@@ -1,0 +1,143 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup id="#{createOrModifyDeputyPopupBean.beanId}" modal="true" rendered="#{createOrModifyDeputyPopupBean.visible}"
+			draggable="true" autoPosition="manual" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<ice:outputText
+						value="#{createOrModifyDeputyPopupBean.title}"
+						styleClass="headerText" />
+					<pc:automationTag value="auto-COM-DeputyMgmt-DeputyPopup-CloseLink" standAlone="false"/>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						action="#{createOrModifyDeputyPopupBean.closePopup}"
+						immediate="true"
+						styleClass="windowClose"/>
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder  styleClass="pnlPopUpBrdrDialog" cellpadding="0" cellspacing="0"
+					renderNorth="false" renderEast="false" renderSouth="true"  renderWest="false" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ui:include src="/plugins/views-common/common/validationMessage.xhtml">
+								<ui:param name="validationMessageBean"
+									value="#{createOrModifyDeputyPopupBean.validationMessageBean}" />
+							</ui:include>
+							<table>
+								<tr>
+									<td class="table-columnVertical" style="#{createOrModifyDeputyPopupBean.modifyMode ? '' : 'padding-top: 10px;' }">
+										<ice:outputLabel
+											value="#{createOrModifyDeputyPopupBean.messages['dialog.deputyName']}"
+											styleClass="label-form" style="padding-top: 8px;" />
+									</td>
+									<td class="table-columnVertical">
+										<c:if test="#{not createOrModifyDeputyPopupBean.modifyMode}">
+											<ice:panelGroup>
+												<ui:include
+													src="#{createOrModifyDeputyPopupBean.deputySelector.autocompleteContentUrl}">
+													<ui:param name="component"
+														value="#{createOrModifyDeputyPopupBean.deputySelector}" />
+												</ui:include>
+											</ice:panelGroup>
+										</c:if>
+										<c:if test="#{createOrModifyDeputyPopupBean.modifyMode}">
+											<ice:outputText style="padding-left: 2px;"
+												value="#{createOrModifyDeputyPopupBean.deputyTableEntry.userDisplayName}" />
+										</c:if>
+									</td>
+									<td class="table-columnVertical">
+										<c:if test="#{not createOrModifyDeputyPopupBean.modifyMode}">
+											<ice:panelGrid columns="1" cellpadding="0" cellspacing="0">
+												<ice:selectOneRadio partialSubmit="true" layout="pageDirection"
+													styleClass="label-form"
+													value="#{createOrModifyDeputyPopupBean.searchMode}">
+													<pc:automationTag value="auto-COM-DeputyMgmt-DeputyPopup-SearchMode" standAlone="false" />
+													<f:selectItem itemValue="ALL_USERS"
+														itemLabel="#{createOrModifyDeputyPopupBean.messages['dialog.searchMode.allUsers']}" />
+													<f:selectItem itemValue="SIMILAR_USERS"
+														itemLabel="#{createOrModifyDeputyPopupBean.messages['dialog.searchMode.similarUsers']}" />
+												</ice:selectOneRadio>
+											</ice:panelGrid>
+										</c:if>
+										<c:if test="#{createOrModifyDeputyPopupBean.modifyMode}">
+											<ice:outputText value="" />
+										</c:if>
+									</td>
+								</tr>
+								<tr>
+									<td class="table-columnVertical">
+										<ice:outputLabel
+											value="#{createOrModifyDeputyPopupBean.messages['validFrom']}"
+											styleClass="label-form" />
+									</td>
+									<td class="table-columnVertical">
+										<ice:panelGroup>
+											<ice:selectInputDate renderAsPopup="true" id="validFrom"
+												value="#{createOrModifyDeputyPopupBean.validFrom}">
+												<f:converter converterId="customDateTimeConverter" />
+												<pc:automationTag value="auto-COM-DeputyMgmt-DeputyPopup-ValidFrom" standAlone="false"/>
+											</ice:selectInputDate>
+											<ice:message for="validFrom" />
+										</ice:panelGroup>
+									</td>
+									<td class="table-columnVertical">
+										<ice:outputText value="" />
+									</td>
+								</tr>
+								<tr>
+									<td class="table-columnVertical">
+										<ice:outputLabel
+											value="#{createOrModifyDeputyPopupBean.messages['validTo']}"
+											styleClass="label-form" />
+									</td>
+									<td class="table-columnVertical">
+										<ice:panelGroup>
+											<ice:selectInputDate renderAsPopup="true" id="validTo"
+												value="#{createOrModifyDeputyPopupBean.validTo}">
+												<f:converter converterId="customDateTimeConverter" />
+												<pc:automationTag value="auto-COM-DeputyMgmt-DeputyPopup-ValidTo" standAlone="false"/>
+											</ice:selectInputDate>
+											<ice:message for="validTo" />
+										</ice:panelGroup>
+									</td>
+									<td class="table-columnVertical">
+										<ice:outputText value="" />
+									</td>
+								</tr>
+							</table>
+
+							<br/>
+							<ice:panelGroup styleClass="heading">
+								<ice:outputText value="#{createOrModifyDeputyPopupBean.messages['dialog.authorizations']}" />
+							</ice:panelGroup>
+							<ice:panelGroup>
+								<ui:include src="/plugins/views-common/duallist/dualList.xhtml">
+									<ui:param name="dualListModel" value="#{createOrModifyDeputyPopupBean.dualListModel}" />
+								</ui:include>
+							</ice:panelGroup>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-ADM-UserGrpMgmt-UserGrpPopup-BtnsBar" standAlone="false"/>
+							<ice:commandButton value="#{common_msgPropsBean['common.apply']}" action="#{createOrModifyDeputyPopupBean.apply}"
+								styleClass="button" title="#{common_msgPropsBean['common.apply']}"/>
+							<ice:commandButton value="#{common_msgPropsBean['common.cancel']}" action="#{createOrModifyDeputyPopupBean.closePopup}"
+								immediate="true" styleClass="button" title="#{common_msgPropsBean['common.cancel']}"/>
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

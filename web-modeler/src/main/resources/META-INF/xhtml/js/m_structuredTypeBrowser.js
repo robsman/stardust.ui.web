@@ -52,13 +52,13 @@ define(
 			function generateChildElementRow(parentPath, element, schemaType, rowInitializer) {
 
 				var childPath = (parentPath || "") + "-" + element.name.replace(/[:<>]/g, "-");
-				var childRow = jQuery("<tr id='" + childPath + "'></tr>");
+				var childRow = m_utils.jQuerySelect("<tr id='" + childPath + "'></tr>");
 
 				if (rowInitializer) {
 					rowInitializer(childRow, element, schemaType);
 				} else {
 
-					var nameColumn = jQuery("<td><span class='data-element'></span></td>");
+					var nameColumn = m_utils.jQuerySelect("<td><span class='data-element'></span></td>");
 					// set this way to ensure content is properly encoded
 					nameColumn.children("td span").text(element.name);
 					nameColumn.appendTo(childRow);
@@ -71,8 +71,8 @@ define(
 					}
 					var cardinalityLabel = getCardinalityLabel(element.cardinality);
 
-					jQuery("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
-					jQuery("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
+					m_utils.jQuerySelect("<td>" + (typeLabel || "") + "</td>").appendTo(childRow);
+					m_utils.jQuerySelect("<td>" +  (cardinalityLabel || "") + "</td>").appendTo(childRow);
 
 					if (schemaType && (schemaType.isStructure() || schemaType.isEnumeration())) {
 						if ( !jQuery.isArray(schemaType.getElements()) || (0 < schemaType.getElements().length)) {
@@ -81,13 +81,22 @@ define(
 							childRow.addClass("expanded");
 						}
 					}
+					if (element.body
+							&& element.body.length > 0) {
+						childRow.addClass("parent");
+						childRow.addClass("expanded");
+					}
 				}
 
 				if (parentPath) {
 					childRow.data("parentId", parentPath);
 				}
 				childRow.data("path", childPath);
-				childRow.data("schemaType", schemaType);
+				if (schemaType) {
+					childRow.data("schemaType", schemaType);
+				} else if (element.body && element.body[0].classifier == "sequence") {
+					childRow.data("schemaType", element.body[0].body);
+				}
 
 				return childRow;
 			}
@@ -113,9 +122,11 @@ define(
 				if (elements) {
 					// append child rows
 					jQuery.each(elements, function(i, element) {
-						var childSchemaType = (isStruct && (typeof schemaTypeOrElements.resolveElementType === "function"))
-							? schemaTypeOrElements.resolveElementType(element.name)
-							: undefined;
+
+						var childSchemaType = undefined;
+						if(isStruct && (typeof schemaTypeOrElements.resolveElementType === "function")){
+							childSchemaType = schemaTypeOrElements.resolveElementType(element.name);
+						}
 						var childRow = generateChildElementRow(parentPath, element, childSchemaType, rowInitializer);
 
 						childRows.push(childRow);
@@ -130,7 +141,7 @@ define(
 			 */
 			function insertChildElementRowsEagerly(parentRows, rowInitializer) {
 				jQuery.each(parentRows, function() {
-					var parentRow = jQuery(this);
+					var parentRow = m_utils.jQuerySelect(this);
 
 					var parentPath = this.id;
 					var schemaType = parentRow.data("schemaType");
@@ -139,6 +150,9 @@ define(
 					jQuery.each(childRows, function(i, childRow) {
 						// append child rows
 						childRow.addClass("child-of-" + parentPath);
+						if (parentRow.hasClass("locked")) {
+							childRow.addClass("locked");
+						}
 						parentRow.after(childRow);
 					});
 				});
@@ -149,7 +163,7 @@ define(
 			 */
 			function insertChildElementRowsLazily(parentRows, rowInitializer) {
 				jQuery.each(parentRows, function() {
-					var parentRow = jQuery(this);
+					var parentRow = m_utils.jQuerySelect(this);
 					if ( !parentRow.data("elements-initialized")) {
 						var parentPath = this.id;
 						var schemaType = parentRow.data("schemaType");
@@ -161,6 +175,9 @@ define(
 						childRows.reverse();
 						jQuery.each(childRows, function(i, childRow) {
 							// ... then move to the proper location
+							if (parentRow.hasClass("locked")) {
+								childRow.addClass("locked");
+							}
 							parentRow.after(childRow);
 							childRow.appendBranchTo(parentRow[0]);
 						});

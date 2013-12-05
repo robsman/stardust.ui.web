@@ -11,9 +11,11 @@
 package org.eclipse.stardust.ui.web.common.util;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -43,6 +45,9 @@ public abstract class PopupDialog implements Serializable
    protected boolean fireViewEvents = true;
    protected boolean firePerspectiveEvents = false;
 
+   protected boolean modal;
+   protected boolean fromlaunchPanels;
+
    public abstract void apply();
    public abstract void reset();
    
@@ -70,6 +75,7 @@ public abstract class PopupDialog implements Serializable
     */
    public void closePopup()
    {
+	  setFromlaunchPanels(false);
       // TODO remove duplicate code, see CRNT-16380
       PortalUiController portalUiController = null;
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
@@ -87,6 +93,13 @@ public abstract class PopupDialog implements Serializable
 
       visible = false;
 
+      // FOR HTML5
+      if (modal)
+      {
+         String popupScript = "parent.BridgeUtils.Dialog.close();";
+         PortalApplication.getInstance().addEventScript(popupScript);
+      }
+
       if(fireViewEvents)
       {
          if ((null != focusView) && !portalUiController.broadcastVetoableViewEvent(focusView, ViewEventType.ACTIVATED))
@@ -101,6 +114,11 @@ public abstract class PopupDialog implements Serializable
     */
    public void openPopup()
    {
+      Map requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      if ("true".equals(requestParams.get("fromlaunchPanels")))
+      {
+    	  setFromlaunchPanels(true);
+      }
       PortalUiController portalUiController = null;
       firePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
       View focusView = null;
@@ -115,9 +133,15 @@ public abstract class PopupDialog implements Serializable
             // TODO trace
          }
       }
-
       addPopupCenteringScript();
       visible = true;
+
+      // FOR HTML5
+      if (modal)
+      {
+         String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ");";
+         PortalApplication.getInstance().addEventScript(popupScript);
+      }
 
       if(fireViewEvents)
       {
@@ -132,8 +156,7 @@ public abstract class PopupDialog implements Serializable
    {
       if (popupAutoCenter)
       {
-         String positionPopupScript = "InfinityBpm.Core.positionMessageDialog('" + getBeanId() + "');";
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), positionPopupScript);
+         String positionPopupScript = "resizeMessageDialog('" + getBeanId() + "');";
          PortalApplicationEventScript.getInstance().addEventScript(positionPopupScript);
       }
    }
@@ -202,5 +225,15 @@ public abstract class PopupDialog implements Serializable
    public void setPopupAutoCenter(boolean popupAutoCenter)
    {
       this.popupAutoCenter = popupAutoCenter;
+   }
+
+   public boolean isFromlaunchPanels()
+   {
+      return fromlaunchPanels;
+   }
+
+   public void setFromlaunchPanels(boolean fromlaunchPanels)
+   {
+      this.fromlaunchPanels = fromlaunchPanels;
    }
 }

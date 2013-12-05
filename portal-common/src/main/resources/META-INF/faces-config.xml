@@ -26,14 +26,6 @@
    	    <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
     </lifecycle>
 
-	<managed-bean>
-		<managed-bean-name>common_msgPropsBean</managed-bean-name>
-		<managed-bean-class>
-			org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean
-		</managed-bean-class>
-		<managed-bean-scope>session</managed-bean-scope>
-	</managed-bean>
-
    <navigation-rule>
       <navigation-case>
          <from-outcome>ippPortalLogout</from-outcome>
@@ -43,28 +35,10 @@
    </navigation-rule>
 	
    <navigation-rule>
-      <from-view-id>/plugins/common/main.xhtml</from-view-id>
-      <navigation-case>
-         <from-outcome>pageRefresh</from-outcome>
-         <to-view-id>/plugins/common/main.iface</to-view-id>
-         <redirect/>
-      </navigation-case>
-   </navigation-rule>
-
-   <navigation-rule>
-      <from-view-id>/plugins/common/portalMain.xhtml</from-view-id>
-      <navigation-case>
-         <from-outcome>pageRefresh</from-outcome>
-         <to-view-id>/plugins/common/portalMain.iface</to-view-id>
-         <redirect/>
-      </navigation-case>
-   </navigation-rule>
-
-   <navigation-rule>
       <from-view-id>/businessControlCenter.xhtml</from-view-id>
       <navigation-case>
          <from-outcome>pageRefresh</from-outcome>
-         <to-view-id>/faces/businessControlCenter.iface</to-view-id>
+         <to-view-id>businessControlCenter.iface</to-view-id>
          <redirect/>
       </navigation-case>
    </navigation-rule>

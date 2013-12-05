@@ -7,26 +7,16 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Process Definition View</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/codemirror.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/theme/eclipse.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/dialog.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/simple-hint.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/lightdust-codemirror.css"></link>
-<script type="text/javascript" data-main="../../js/modeler-main"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<table style="width: 100%; height: 100%" cellpadding="0"
-		cellspacing="0">
+<div id="processDefinitionView" style="visibility: hidden">
+  <div style="margin-left: 10px; overflow: auto;">
+	<table style="width: 100%; height: auto;" cellpadding="0" cellspacing="0"> <!-- Height to be adjusted with available area -->
 		<tr style="vertical-align: top; height: 100%">
 			<td>
 				<div id="modelerDiagramPanelWrapper" class="panelWrapperBorder">
@@ -66,7 +56,7 @@
 			<td>
 				<div id="propertiesPanelDisplayControlDiv" style="height: 100%;">
 					<img id="propertiesPanelShowControl"
-						src="../../images/icons/collapse.png"
+						src="plugins/bpm-modeler/images/icons/collapse.png"
 						class="propertyPageVisibilityControl invisible" title="Show Property Panel" />
 				</div></td>
 			<td
@@ -79,7 +69,7 @@
 								<table>
 									<tr>
 										<td><img id="propertiesPanelHideControl"
-											src="../../images/icons/expand.png"
+											src="plugins/bpm-modeler/images/icons/expand.png"
 											class="propertyPageVisibilityControl invisible"
 											title="Hide Property Panel"
 											style="padding-left: 5px; margin-top: 0;" />
@@ -184,27 +174,27 @@
 																										<td><input
 																											id="deleteParameterDefinitionButton"
 																											type="image"
-																											src="../../images/icons/delete.png"
+																											src="plugins/bpm-modeler/images/icons/delete.png"
 																											title="Delete" alt="Delete"
 																											class="toolbarButton" />
 																										</td>
 																										<td><img
-																											src="../../images/icons/toolbar-separator.png"></img>
+																											src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																										</td>
 																										<td><input
 																											id="moveParameterDefinitionUpButton"
 																											type="image"
-																											src="../../images/icons/arrow_up.png"
+																											src="plugins/bpm-modeler/images/icons/arrow_up.png"
 																											title="Move Up" alt="Move Up"
 																											class="toolbarButton" />
 																										</td>
 																										<td><img
-																											src="../../images/icons/toolbar-separator.png"></img>
+																											src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																										</td>
 																										<td><input
 																											id="moveParameterDefinitionDownButton"
 																											type="image"
-																											src="../../images/icons/arrow_down.png"
+																											src="plugins/bpm-modeler/images/icons/arrow_down.png"
 																											title="Move Down" alt="Move Down"
 																											class="toolbarButton" />
 																										</td>
@@ -230,7 +220,7 @@
 																			<table id="directionlistTable">
 																				<tr>
 																					<td><input id="addParameterDefinitionButton"
-																						type="image" src="../../images/icons/add.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/add.png"
 																						title="Add" alt="Add" class="toolbarButton" />
 																					</td>
 																					<td></td>
@@ -369,7 +359,7 @@
 																														<td><input
 																															id="deleteParameterDefinitionButton"
 																															type="image"
-																															src="../../images/icons/delete.png"
+																															src="plugins/bpm-modeler/images/icons/delete.png"
 																															title="Delete" alt="Delete"
 																															class="toolbarButton" />
 																														</td>
@@ -397,7 +387,7 @@
 																								<tr>
 																									<td><input
 																										id="addParameterDefinitionButton" type="image"
-																										src="../../images/icons/add.png" title="Add"
+																										src="plugins/bpm-modeler/images/icons/add.png" title="Add"
 																										alt="Add" class="toolbarButton" />
 																									</td>
 																									<td></td>
@@ -427,7 +417,7 @@
 																									</td>
 																								</tr>
 																								<tr id="primitiveDataTypeRow">
-																									<td><label for="primitiveDataTypeSelect" />Primitive
+																									<td><label for="primitiveDataTypeSelect">Primitive
 																										Type</label></td>
 																									<td><select id="primitiveDataTypeSelect"
 																										size="1">
@@ -581,7 +571,12 @@
 																		<td><label for="taskInput">Task</label></td>
 																		<td><select id="taskTypeList" size="1">
 																		</select></td>
-																		<td><div id="participantOutput" /></td>
+																		<td></td>
+																	</tr>
+																	<tr>
+																		<td></td>
+																		<td></td>																		
+																		<td colspan="2"><div id="participantOutput" /></td>
 																	</tr>
 																	<tr>
 																		<td><input id="subprocessInput" type="radio" />
@@ -719,11 +714,11 @@
 
 															<div id="qualityControlPropertiesPage"
 																class="propertiesPage">
-																<div class="heading">Quality Control</div>
+																<div class="heading">Quality Assurance</div>
 																<table>
 																	<tr>
 																		<td><label for="qualityControlProbabilityInput">Quality
-																				Control Probability</label>
+																				Assurance Probability</label>
 																		</td>
 																		<td><input id="qualityControlProbabilityInput"
 																			type="text" /></td>
@@ -815,11 +810,11 @@
 																	<tr>
 																		<td>
 																			<table cellpadding="0" cellspacing="0"
-																				class="layoutTable" style="margin-top: 10px;">
+																				class="layoutTable" style="margin-top: 10px; margin-bottom: 10px;">
 																				<tr>
 																					<td><input id="interruptingInput"
 																						type="checkbox" /></td>
-																					<td><label for="interruptingInput">Interrupting</label>
+																					<td><label for="interruptingInput" style="margin-left:5px">Interrupting</label>
 																					</td>
 																				</tr>
 																			</table></td>
@@ -943,11 +938,6 @@
 														</td>
 													</tr>
 													<tr>
-														<td><div class="propertiesPage">
-																<a id="viewLink">Open Data View &raquo;</a>
-															</div></td>
-													</tr>
-													<tr>
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
@@ -963,16 +953,23 @@
 																		<td><label for="guidOutput">UUID</label>
 																		</td>
 																		<td><div id="guidOutput" class="output" /></td>
+																		<td>
+																			<div>
+																				<a id="viewLink">Open Data View &raquo;</a>
+																			</div>
+																		</td>
 																	</tr>
 																	<tr id="idOutputRow">
 																		<td><label for="idOutput">ID</label>
 																		</td>
 																		<td><div id="idOutput" class="output" /></td>
+																		<td></td>
 																	</tr>
 																	<tr>
 																		<td><label for="nameInput">Name</label>
 																		</td>
 																		<td><input type="text" id="nameInput" /></td>
+																		<td></td>
 																	</tr>
 																</table>
 																<table id="datadescription">
@@ -1017,7 +1014,7 @@
 																		</select></td>
 																	</tr>
 																	<tr id="primitiveDataTypeRow">
-																		<td><label for="primitiveDataTypeSelect" />Primitive
+																		<td><label for="primitiveDataTypeSelect">Primitive
 																			Type</label>
 																		</td>
 																		<td><select id="primitiveDataTypeSelect" size="1">
@@ -1057,7 +1054,7 @@
 																				<div ng-show="dataType == 'double'">
 																					<input id="doubleInputText" name="doubleInputText" class="rightAligned"
 																							type="text" ng-model="defaultValue" maxlength="620"
-																							ng-model-onblur ng-pattern="/^[-+]?[0-9]\d{0,308}(\.\d{1,309})?%?$/" />
+																							ng-model-onblur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/" />
 																					<div id="doubleInputTextError"
 																						ng-show="form.doubleInputText.$error.pattern" style="color:red">Not a valid number</div>
 																				</div>
@@ -1395,5 +1392,20 @@
 	<form id="saveModelForm" method="get" target="_blank" />
 	<div id="editable" style="position: absolute"></div>
 	<div id="editableArea"></div>
+		<div id="applicationActivityTooltip" class="modelerTooltip">
+			<div id="header" class="modelerTooltipHeader">
+				<img id="icon" src="" style="margin-bottom: 3px; margin-right: 2px" />
+				<span id="name"></span>
+			</div>
+			<div id="body" class="modelerTooltipBody">
+				<div id="description"></div>
+				<br />
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/modeler-main.js"></script>
+
 </body>
 </html>

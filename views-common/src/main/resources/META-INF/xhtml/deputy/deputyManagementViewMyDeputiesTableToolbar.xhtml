@@ -1,0 +1,19 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGrid columns="1">
+		<ice:commandLink action="#{deputyManagementBean.addMyDeputy}">
+			<pc:automationTag
+				value="auto-COM-DeputyMgmt-MyDeputiesTbl-ToolbarAddDeputy" standAlone="false" />
+			<h:graphicImage style="border: none;"
+				value="/plugins/views-common/images/icons/user_add.png"
+				title="#{deputyManagementBean.messages['addDeputy.title']}" />
+		</ice:commandLink>
+	</ice:panelGrid>
+
+</f:view>

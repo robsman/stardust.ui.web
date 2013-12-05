@@ -10,9 +10,9 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_annotationPropertiesPanel", "bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_command, m_messageDisplay,
-				m_canvasManager, m_symbol, m_annotationPropertiesPanel, m_modelerUtils) {
+				m_canvasManager, m_symbol, m_modelerUtils) {
 			return {
 				create : function(diagram) {
 					var annotationSymbol = new AnnotationSymbol();
@@ -57,8 +57,7 @@ define(
 					this.type = m_constants.ANNOTATION_SYMBOL;
 					this.diagram = diagram;
 					this.diagram.lastSymbol = this;
-					this.propertiesPanel = m_annotationPropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.annotationPropertiesPanel;
 					this.rect = null;
 					this.image = null;
 					this.width = m_constants.ANNOTATION_SYMBOL_DEFAULT_WIDTH;
@@ -108,7 +107,7 @@ define(
 				 *
 				 */
 				AnnotationSymbol.prototype.createPrimitives = function() {
-					this.rect = m_canvasManager
+					this.rect = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -123,7 +122,7 @@ define(
 					this.addToPrimitives(this.rect);
 					this.addToEditableTextPrimitives(this.rect);
 
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -132,7 +131,7 @@ define(
 									});
 					this.addToPrimitives(this.path);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x,
 							this.y, this.content).attr({
 						"text-anchor" : "start",
@@ -202,13 +201,13 @@ define(
 									//This is commented temporarily
 									[
 											/*{
-												imageUrl : "../../images/icons/connect.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : AnnotationSymbol_connectToClosure
 											}*/],
 									[ {
-										imageUrl : "../../images/icons/delete.png",
+										imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 										imageWidth : 16,
 										imageHeight : 16,
 										clickHandler : AnnotationSymbol_removeClosure
@@ -278,10 +277,10 @@ define(
 					editableTextArea.css("visibility", "visible").html(
 							name).moveDiv(
 							{
-								"x" : this.x + this.diagram.X_OFFSET
-										+ this.width / 5 - scrollPos.left - 10,
-								"y" : this.y + this.diagram.Y_OFFSET
-										+ this.height / 8 - scrollPos.top
+								"x" : this.x + this.diagram.getCanvasPosition().left
+										+ this.width / 5 - 10,
+								"y" : this.y + this.diagram.getCanvasPosition().top
+										+ this.height / 8
 							}).show().trigger("dblclick");
 					return this.text;
 				};

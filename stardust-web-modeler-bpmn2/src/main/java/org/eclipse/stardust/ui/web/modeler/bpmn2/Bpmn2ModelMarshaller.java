@@ -7,11 +7,15 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findParticipatingProcesses;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.getExtensionElement;
+import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.ElementRefUtils.encodeReference;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.XMLConstants;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
@@ -44,9 +48,12 @@ import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.Resource;
+import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
@@ -104,7 +111,7 @@ import org.eclipse.stardust.ui.web.modeler.model.di.LaneSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.PoolSymbolJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ShapeJto;
-import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 
 public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
@@ -131,6 +138,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          return toModelJson(element);
       }
+      else if (element instanceof ItemDefinition)
+      {
+         return jsonIo.gson().toJsonTree(toJto((ItemDefinition) element));
+      }
       else if (element instanceof Interface)
       {
          return jsonIo.gson().toJsonTree(toJto((Interface) element));
@@ -141,7 +152,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       }
       else if (element instanceof BPMNDiagram)
       {
-         return jsonIo.gson().toJsonTree(toProcessDiagramJto((BPMNDiagram) element));
+         return jsonIo.gson().toJsonTree(toProcessDiagramJto((BPMNDiagram) element, null));
       }
       else if (element instanceof DataStore)
       {
@@ -150,6 +161,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       else if (element instanceof DataObject)
       {
          return jsonIo.gson().toJsonTree(toJto((DataObject) element));
+      }
+      else if (element instanceof Resource)
+      {
+         return jsonIo.gson().toJsonTree(toJto((Resource) element));
       }
       else if (element instanceof Event)
       {
@@ -206,6 +221,24 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
             return jsonIo.gson().toJsonTree(symbolJto);
          }
+         else if (shape.getBpmnElement() instanceof Participant)
+         {
+            PoolSymbolJto symbolJto = newShapeJto(shape, new PoolSymbolJto());
+            symbolJto.orientation = shape.isIsHorizontal()
+                  ? ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+                  : ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
+         else if (shape.getBpmnElement() instanceof Lane)
+         {
+            LaneSymbolJto symbolJto = newShapeJto(shape, new LaneSymbolJto());
+            symbolJto.orientation = shape.isIsHorizontal()
+                  ? ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL
+                  : ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
+
+            return jsonIo.gson().toJsonTree(symbolJto);
+         }
          else
          {
             trace.debug("Unsupported shape: " + shape.getBpmnElement());
@@ -258,32 +291,40 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          if (root instanceof ItemDefinition)
          {
-            modelJto.typeDeclarations.add(toJto((ItemDefinition) root));
+            modelJto.typeDeclarations.put(root.getId(), toJto((ItemDefinition) root));
          }
          else if (root instanceof Participant)
          {
-            modelJto.participants.add(toJto((Participant) root));
+            modelJto.participants.put(root.getId(), toJto((Participant) root));
+         }
+         else if (root instanceof Resource)
+         {
+            ModelParticipantJto jto = toJto((Resource) root);
+            if (isEmpty(jto.parentUUID))
+            {
+               modelJto.participants.put(root.getId(), jto);
+            }
          }
          else if (root instanceof DataStore)
          {
-            modelJto.dataItems.add(toJto((DataStore) root));
+            modelJto.dataItems.put(root.getId(), toJto((DataStore) root));
          }
          else if (root instanceof Process)
          {
-            modelJto.processes.add(toJto((Process) root));
+            modelJto.processes.put(root.getId(), toJto((Process) root));
 
             for (FlowElement flowElement : ((Process) root).getFlowElements())
             {
                if (flowElement instanceof DataObject)
                {
-                  modelJto.dataItems.add(toJto((DataObject) flowElement));
+                  modelJto.dataItems.put(root.getId(), toJto((DataObject) flowElement));
                }
             }
 
             // expose process properties as global data (see BPMN2 -> WS-BPEL mapping)
             for (Property property : ((Process) root).getProperties())
             {
-               modelJto.dataItems.add(toJto((Process) root, property));
+               modelJto.dataItems.put(root.getId(), toJto((Process) root, property));
             }
          }
       }
@@ -295,6 +336,9 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    public JsonObject toProcessDiagramJson(EObject model, String processId)
    {
       assert model instanceof Definitions;
+
+      BPMNDiagram primaryDiagram = null;
+      BPMNDiagram fallbackDiagram = null;
 
       for (RootElement root : ((Definitions) model).getRootElements())
       {
@@ -308,58 +352,77 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                {
                   BPMNPlane plane = (BPMNPlane) diagram.getRootElement();
 
-                  ProcessDiagramJto jto = null;
                   if (process == plane.getBpmnElement())
                   {
-                     jto = toProcessDiagramJto((BPMNDiagram) diagram);
+                     primaryDiagram = (BPMNDiagram) diagram;
+                     break;
                   }
                   else if (plane.getBpmnElement() instanceof Collaboration)
                   {
                      List<Process> participatingProcesses = findParticipatingProcesses((Collaboration) plane.getBpmnElement());
-                     if ((1 == participatingProcesses.size())
-                           && participatingProcesses.contains(process))
+                     if (participatingProcesses.contains(process))
                      {
-                        jto = toProcessDiagramJto((BPMNDiagram) diagram);
+                        if (1 == participatingProcesses.size())
+                        {
+                           primaryDiagram = (BPMNDiagram) diagram;
+                           break;
+                        }
+                        else if (null == fallbackDiagram)
+                        {
+                           fallbackDiagram = (BPMNDiagram) diagram;
+                        }
                      }
                   }
 
-                  if (null != jto)
-                  {
-                     return jsonIo.gson().toJsonTree(jto).getAsJsonObject();
-                  }
                }
+            }
+
+            ProcessDiagramJto jto = null;
+            if (null != primaryDiagram)
+            {
+               jto = toProcessDiagramJto(primaryDiagram, process);
+            }
+            else if (null != fallbackDiagram)
+            {
+               jto = toProcessDiagramJto(fallbackDiagram, process);
+            }
+            if (null != jto)
+            {
+               return jsonIo.gson().toJsonTree(jto).getAsJsonObject();
             }
          }
       }
       return new JsonObject();
    }
 
-   public ProcessDiagramJto toProcessDiagramJto(BPMNDiagram diagram)
+   public ProcessDiagramJto toProcessDiagramJto(BPMNDiagram diagram, Process process)
    {
       BPMNPlane plane = (BPMNPlane) diagram.getRootElement();
 
-      Process process;
-      if (plane.getBpmnElement() instanceof Process)
+      if (null == process)
       {
-         process = (Process) plane.getBpmnElement();
-      }
-      else if (plane.getBpmnElement() instanceof Collaboration)
-      {
-         List<Process> participatingProcesses = findParticipatingProcesses((Collaboration) plane.getBpmnElement());
-         if (1 != participatingProcesses.size())
+         if (plane.getBpmnElement() instanceof Process)
+         {
+            process = (Process) plane.getBpmnElement();
+         }
+         else if (plane.getBpmnElement() instanceof Collaboration)
+         {
+            List<Process> participatingProcesses = findParticipatingProcesses((Collaboration) plane.getBpmnElement());
+            if (1 != participatingProcesses.size())
+            {
+               throw new IllegalArgumentException("Unsupported diagram configuration: "
+                     + diagram);
+            }
+            else
+            {
+               process = participatingProcesses.get(0);
+            }
+         }
+         else
          {
             throw new IllegalArgumentException("Unsupported diagram configuration: "
                   + diagram);
          }
-         else
-         {
-            process = participatingProcesses.get(0);
-         }
-      }
-      else
-      {
-         throw new IllegalArgumentException("Unsupported diagram configuration: "
-               + diagram);
       }
 
       Definitions model = findContainingModel(diagram);
@@ -416,6 +479,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (null != processPoolShape)
       {
          mainPoolJto = newShapeJto(processPoolShape, new PoolSymbolJto());
+         mainPoolJto.processId = process.getId();
+         if (processPoolShape.isIsHorizontal())
+         {
+            mainPoolJto.orientation = ModelerConstants.DIAGRAM_FLOW_ORIENTATION_HORIZONTAL;
+         }
 
          if (processPoolShape.getBpmnElement() instanceof Participant)
          {
@@ -450,6 +518,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       else
       {
          mainPoolJto = new PoolSymbolJto();
+         mainPoolJto.processId = process.getId();
          if ( !otherPoolShapes.isEmpty())
          {
             float left = otherPoolShapes.get(0).getBounds().getX();
@@ -506,6 +575,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          defaultLane.width = mainPoolJto.width - 20;
          defaultLane.height = mainPoolJto.height - 20;
 
+         defaultLane.orientation = mainPoolJto.orientation;
+
          mainPoolJto.laneSymbols.add(defaultLane);
       }
 
@@ -544,7 +615,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                   symbolJto.modelElement = toJto((Activity) shape.getBpmnElement());
 
-                  laneJto.activitySymbols.add(symbolJto);
+                  laneJto.activitySymbols.put(symbolJto.modelElement.id, symbolJto);
                   nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Gateway)
@@ -553,7 +624,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                   symbolJto.modelElement = toJto((Gateway) shape.getBpmnElement());
 
-                  laneJto.gatewaySymbols.add(symbolJto);
+                  laneJto.gatewaySymbols.put(symbolJto.modelElement.id, symbolJto);
                   nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                }
                else if (shape.getBpmnElement() instanceof Event)
@@ -565,7 +636,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
-                     laneJto.eventSymbols.add(symbolJto);
+                     laneJto.eventSymbols.put(symbolJto.modelElement.id, symbolJto);
                      nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                   else if (shape.getBpmnElement() instanceof BoundaryEvent)
@@ -574,7 +645,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
                      symbolJto.modelElement = toJto((Event) shape.getBpmnElement());
 
-                     laneJto.eventSymbols.add(symbolJto);
+                     laneJto.eventSymbols.put(symbolJto.modelElement.id, symbolJto);
                      nodeSymbolPerElement.put((FlowNode) shape.getBpmnElement(), shape);
                   }
                }
@@ -589,7 +660,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
                symbolJto.dataFullId = getFullId(dataObject);
 
-               laneJto.dataSymbols.add(symbolJto);
+               laneJto.dataSymbols.put(dataObject.getId(), symbolJto);
             }
             else if (((shape.getBpmnElement() instanceof DataStore)
                   || (shape.getBpmnElement() instanceof DataStoreReference)))
@@ -601,7 +672,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                DataSymbolJto symbolJto = newShapeJto(shape, new DataSymbolJto());
                symbolJto.dataFullId = getFullId(dataStore);
 
-               laneJto.dataSymbols.add(symbolJto);
+               laneJto.dataSymbols.put(dataStore.getId(), symbolJto);
             }
             else
             {
@@ -650,11 +721,11 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
                      edge.getWaypoint().get(edge.getWaypoint().size() - 2));
             }
 
-            jto.connections.add(symbolJto);
+            jto.connections.put(symbolJto.modelElement.id, symbolJto);
          }
       }
 
-      jto.poolSymbols.add(mainPoolJto);
+      jto.poolSymbols.put(mainPoolJto.id, mainPoolJto);
 
       for (BPMNShape poolShape : otherPoolShapes)
       {
@@ -662,8 +733,15 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
          if (poolShape.getBpmnElement() instanceof Participant)
          {
-            poolJto.id = ((Participant) poolShape.getBpmnElement()).getId();
-            poolJto.name = ((Participant) poolShape.getBpmnElement()).getName();
+            Participant poolParticipant = (Participant) poolShape.getBpmnElement();
+            poolJto.id = poolParticipant.getId();
+            poolJto.name = poolParticipant.getName();
+
+            if (null != poolParticipant.getProcessRef())
+            {
+               poolJto.processId = poolParticipant.getProcessRef().getId();
+            }
+
             // TODO anything else?
          }
 
@@ -694,7 +772,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             }
          }
 
-         jto.poolSymbols.add(poolJto);
+         jto.poolSymbols.put(poolJto.id, poolJto);
       }
 
       return jto;
@@ -750,11 +828,88 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
             {
                if (typeId.equals(typeDefinition.getName()))
                {
-                  ModelService.loadSchemaInfo(jto.typeDeclaration.schema, importedSchema);
-
+                  jto.typeDeclaration.schema = XsdSchemaUtils.toSchemaJson(importedSchema);
                   jto.typeDeclaration.type.classifier = "ExternalReference";
                   jto.typeDeclaration.type.location = importSpec.getLocation();
                   jto.typeDeclaration.type.xref = typeDefinition.getQName(importedSchema);
+               }
+            }
+         }
+      }
+      else
+      {
+         EObject xsdSchema = getExtensionElement(itemDefinition, "schema", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         if ((xsdSchema instanceof XSDSchema) && !isEmpty(typeId))
+         {
+            XSDSchema embeddedSchema = (XSDSchema) xsdSchema;
+            jto.typeDeclaration.schema = XsdSchemaUtils.toSchemaJson(embeddedSchema, typeId);
+            jto.typeDeclaration.type.classifier = "SchemaType";
+         }
+      }
+
+      return jto;
+   }
+
+   public ModelParticipantJto toJto(Resource resource)
+   {
+      ModelParticipantJto jto = newModelElementJto(resource, new ModelParticipantJto());
+
+      loadDescription(resource, jto);
+      loadExtensions(resource, jto);
+
+      JsonObject extJson = Bpmn2ExtensionUtils.getExtensionAsJson(resource, "core");
+      if (extJson.has(ModelerConstants.PARTICIPANT_TYPE_PROPERTY))
+      {
+         jto.type = extJson.get(ModelerConstants.PARTICIPANT_TYPE_PROPERTY).getAsString();
+         if ( !isEmpty(jto.participantType))
+         {
+            // TODO review
+            jto.participantType = jto.type;
+         }
+      }
+
+      if (isEmpty(jto.type))
+      {
+         jto.type = ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY;
+      }
+
+      if (extJson.has(ModelerConstants.PARENT_UUID_PROPERTY))
+      {
+         jto.parentUUID = extJson.get(ModelerConstants.PARENT_UUID_PROPERTY).getAsString();
+
+         EObject parentResource = bpmn2Binding.findElementByUuid(
+               findContainingModel(resource), jto.parentUUID);
+         if (parentResource instanceof Resource)
+         {
+            JsonObject parentExtJson = Bpmn2ExtensionUtils.getExtensionAsJson(
+                  (Resource) parentResource, "core");
+            if (parentExtJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY)
+                  && extractAsString(parentExtJson,
+                        ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).endsWith(jto.id))
+            {
+               jto.type = ModelerConstants.TEAM_LEADER_TYPE_KEY;
+            }
+         }
+      }
+
+      if (extJson.has(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY))
+      {
+         jto.teamLeadFullId = extJson.get(ModelerConstants.TEAM_LEAD_FULL_ID_PROPERTY).getAsString();
+      }
+
+      Definitions model = findContainingModel(resource);
+      if (null != model)
+      {
+         for (RootElement rootElement : model.getRootElements())
+         {
+            if (rootElement instanceof Resource)
+            {
+               JsonObject extJson2 = Bpmn2ExtensionUtils.getExtensionAsJson(rootElement, "core");
+               if (extJson2.has(ModelerConstants.PARENT_UUID_PROPERTY)
+                     && jto.uuid.equals(extJson2.get(ModelerConstants.PARENT_UUID_PROPERTY).getAsString()))
+               {
+                  ModelParticipantJto childParticipant = toJto((Resource) rootElement);
+                  jto.childParticipants.add(childParticipant);
                }
             }
          }
@@ -819,15 +974,19 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          // TODO
          if (flowElement instanceof Activity)
          {
-            jto.activities.add(toJto((Activity) flowElement));
+            jto.activities.put(flowElement.getId(), toJto((Activity) flowElement));
          }
          else if (flowElement instanceof Gateway)
          {
-            jto.gateways.add(toJto((Gateway) flowElement));
+            jto.gateways.put(flowElement.getId(), toJto((Gateway) flowElement));
+         }
+         else if (flowElement instanceof Event)
+         {
+            jto.events.put(flowElement.getId(), toJto((Event) flowElement));
          }
          else if (flowElement instanceof SequenceFlow)
          {
-            jto.controlFlows.add(toJto((SequenceFlow) flowElement));
+            jto.controlFlows.put(flowElement.getId(), toJto((SequenceFlow) flowElement));
          }
       }
 
@@ -899,8 +1058,8 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 //         jto.activityType = ModelerConstants.TASK_ACTIVITY;
 //         jto.taskType = ModelerConstants.NONE_TASK_KEY;
 //      }
-//      else 
-         if (activity instanceof ManualTask)
+//      else
+      if (activity instanceof ManualTask)
       {
          jto.activityType = ModelerConstants.TASK_ACTIVITY;
          jto.taskType = ModelerConstants.MANUAL_TASK_KEY;
@@ -919,22 +1078,22 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       {
          jto.activityType = ModelerConstants.TASK_ACTIVITY;
          jto.taskType = ModelerConstants.SCRIPT_TASK_KEY;
-      }      
+      }
       else if (activity instanceof SendTask)
       {
          jto.activityType = ModelerConstants.TASK_ACTIVITY;
          jto.taskType = ModelerConstants.SEND_TASK_KEY;
-      }      
+      }
       else if (activity instanceof ReceiveTask)
       {
          jto.activityType = ModelerConstants.TASK_ACTIVITY;
          jto.taskType = ModelerConstants.RECEIVE_TASK_KEY;
-      }  
+      }
 //      else if (activity instanceof RuleTask)
 //      {
 //         jto.activityType = ModelerConstants.TASK_ACTIVITY;
 //         jto.taskType = ModelerConstants.RULE_TASK_KEY;
-//      }            
+//      }
       else if (activity instanceof SubProcess)
       {
          SubProcess subProcess = (SubProcess) activity;
@@ -942,6 +1101,18 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          jto.activityType = ModelerConstants.SUBPROCESS_ACTIVITY;
 
          // jto.subprocessFullId = subProcess.get;
+      }
+
+      if ( !activity.getResources().isEmpty())
+      {
+         for (ResourceRole resourceRole : activity.getResources())
+         {
+            if (resourceRole instanceof Performer)
+            {
+               jto.participantFullId = encodeReference(resourceRole.getResourceRef());
+               break;
+            }
+         }
       }
 
       return jto;
@@ -1005,13 +1176,13 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 
          jto.eventType = ModelerConstants.INTERMEDIATE_EVENT;
          jto.eventClass = encodeEventClass(boundaryEvent.getEventDefinitions());
-         
+
          // TODO Temporary
          if (boundaryEvent.getAttachedToRef() != null)
          {
             jto.bindingActivityUuid = boundaryEvent.getAttachedToRef().getId();
          }
-         
+
          jto.interrupting = boundaryEvent.isCancelActivity();
          jto.throwing = false;
       }
@@ -1058,7 +1229,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param src
@@ -1080,6 +1251,10 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       else if (src instanceof Interface)
       {
          name = ((Interface) src).getId();
+      }
+      else if (src instanceof Resource)
+      {
+         name = ((Resource) src).getName();
       }
       else if (src instanceof Participant)
       {
@@ -1122,7 +1297,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param shape
@@ -1143,7 +1318,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param <T>
     * @param <J>
     * @param edge
@@ -1167,14 +1342,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param event
     * @return
     */
    public String encodeEventClass(List<EventDefinition> eventDefinitions)
    {
       Set<String> eventClasses = newHashSet();
-      
+
       for (EventDefinition eventDefinition : eventDefinitions)
       {
          if (eventDefinition instanceof TimerEventDefinition)
@@ -1202,7 +1377,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param node
     * @return
     */
@@ -1227,7 +1402,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param fromShape
     * @param point
     * @param point2
@@ -1266,7 +1441,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param name
     * @param id
     * @return
@@ -1277,7 +1452,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */
@@ -1292,7 +1467,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param element
     * @param jto
     */

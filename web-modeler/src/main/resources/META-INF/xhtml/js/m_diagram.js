@@ -48,36 +48,40 @@ define(
 				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
 				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
 
-			var X_OFFSET; // Set fpr #panningSensor
-			var Y_OFFSET; // Set for #toolbar +
+			//var X_OFFSET; // Set fpr #panningSensor
+			//var Y_OFFSET; // Set for #toolbar +
+
 			// #messageDisplay
 			// Adjustments for Editable Text on Symbol
 
 			return {
-				createDiagram : function(divId) {
-					return new Diagram("canvas");
+				createDiagram : function(divId, canvasManager) {
+					return new Diagram(divId, canvasManager);
 				}
 			};
 
-			var currentDiagram = null;
-			var panningIntervalId = null;
-			var symbolEditMode = false;
+//			var currentDiagram = null;
+//			var panningIntervalId = null;
+//			var symbolEditMode = false;
 
 			/**
 			 *
 			 */
-			function Diagram(newDivId) {
-				currentDiagram = this;
+			function Diagram(newDivId, canvasManager) {
+				//currentDiagram = this;
 
-				var canvasPos = $("#canvas").position();
-				X_OFFSET = canvasPos.left; // Set fpr #panningSensor
-				Y_OFFSET = canvasPos.top; // Set for #toolbar +
+				var canvasPos = m_utils.jQuerySelect("#" + newDivId).position();
+				//X_OFFSET = canvasPos.left; // Set fpr #panningSensor
+				//Y_OFFSET = canvasPos.top; // Set for #toolbar +
 
 				// Constants
 
 				var SNAP_LINE_THRESHOLD = 15;
 
 				// Public constants
+				this.aTempId = Math.floor(Math.random() * 1000);
+
+				this.canvasManager = canvasManager;
 				this.oid = 0;
 				this.NORMAL_MODE = "NORMAL_MODE";
 				this.RUBBERBAND_MODE = "RUBBERBAND_MODE";
@@ -85,10 +89,10 @@ define(
 				this.SYMBOL_MOVE_MODE = "SYMBOL_MOVE_MODE";
 				this.SEPARATOR_MODE = "SEPARATOR_MODE";
 				this.CREATE_MODE = "CREATE_MODE";
-				this.X_OFFSET = X_OFFSET;
-				this.Y_OFFSET = Y_OFFSET;
-				this.width = m_canvasManager.getCanvasWidth();
-				this.height = m_canvasManager.getCanvasHeight();
+				//this.X_OFFSET = X_OFFSET;
+				//this.Y_OFFSET = Y_OFFSET;
+				this.width = this.canvasManager.getCanvasWidth();
+				this.height = this.canvasManager.getCanvasHeight();
 				this.flowOrientation = m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL;
 				this.zoomFactor = 1;
 				this.divId = newDivId;
@@ -130,8 +134,8 @@ define(
 				this.animationEasing = null;
 				this.symbolGlow = true;
 
-				this.background = m_canvasManager.drawRectangle(0, 0,
-						m_canvasManager.getCanvasWidth(), m_canvasManager
+				this.background = this.canvasManager.drawRectangle(0, 0,
+						this.canvasManager.getCanvasWidth(), this.canvasManager
 								.getCanvasHeight(), {
 							"stroke-width" : 0,
 							"fill" : "white"
@@ -140,7 +144,22 @@ define(
 				this.background.auxiliaryProperties = {
 					diagram : this
 				};
+				
+				//All Properties pages pertaining to this instance
+				this.processPropertiesPanel = null;
+				this.activityPropertiesPanel = null;
+				this.dataPropertiesPanel = null;
+				this.eventPropertiesPanel = null;
+				this.gatewayPropertiesPanel = null;
+				this.annotationPropertiesPanel = null;
+				this.swimlanePropertiesPanel = null;
+				this.controlFlowPropertiesPanel = null;
+				this.dataFlowPropertiesPanel = null;
+				
+				//Tooltip
+				this.applicationActivityTooltip = m_utils.jQuerySelect("#applicationActivityTooltip");
 
+				// Exclude Click from readonly check to show properties panel
 				this.background.click(Diagram_clickClosure);
 
 				// Register with Command Controller
@@ -154,7 +173,7 @@ define(
 				var toolbarPalettes = m_extensionManager
 						.findExtensions("diagramToolbarPalette");
 
-				var paletteTableRow = jQuery("#diagramToolbarTable #paletteRow");
+				var paletteTableRow = m_utils.jQuerySelect("#diagramToolbarTable #paletteRow");
 
 				for ( var n = 0; n < toolbarPalettes.length; ++n) {
 					if (!m_session.initialize().technologyPreview
@@ -171,14 +190,14 @@ define(
 									+ toolbarPalettes[n].title
 									+ "</div></div></td>");
 
-					var entryRow = jQuery("#diagramToolbarTable #paletteRow #"
+					var entryRow = m_utils.jQuerySelect("#diagramToolbarTable #paletteRow #"
 							+ toolbarPalettes[n].id + "EntryRow");
 
 					if (toolbarPalettes[n].contentHtmlUrl != null) {
 						var extension = toolbarPalettes[n];
 						var dummy = this;
 
-						jQuery(
+						m_utils.jQuerySelect(
 								"#diagramToolbarTable #paletteRow #"
 										+ toolbarPalettes[n].id + "EntryRow")
 								.load(
@@ -190,7 +209,7 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												jQuery(
+												m_utils.jQuerySelect(
 														"#"
 																+ panel.id
 																+ " #"
@@ -220,9 +239,11 @@ define(
 									+ "title=\"" + paletteEntries[m].title
 									+ "\" height=\"16\" width=\"16\" alt=\""
 									+ paletteEntries[m].title
-									+ "\" class=\"toolbarButton\" /></td>");
+									+ "\" class=\"toolbarButton"
+									+ (paletteEntries[m].styleClass ? (" " + paletteEntries[m].styleClass) : "")
+									+ "\" /></td>");
 
-							jQuery(
+							m_utils.jQuerySelect(
 									"#diagramToolbarTable #paletteRow #"
 											+ toolbarPalettes[n].id
 											+ "EntryRow #"
@@ -248,15 +269,15 @@ define(
 
 				}
 
-				var selectModeButton = jQuery("#selectModeButton");
-
+				var selectModeButton = m_utils.jQuerySelect("#selectModeButton");
+				
 				selectModeButton.click({
 					"diagram" : this
 				}, function(event) {
 					event.data.diagram.setSelectMode();
 				});
 
-				var separatorModeButton = jQuery("#separatorModeButton");
+				var separatorModeButton = m_utils.jQuerySelect("#separatorModeButton");
 
 				separatorModeButton.click({
 					"diagram" : this
@@ -266,13 +287,27 @@ define(
 
 				// === End Toolbar
 
-				this.canvas = jQuery('#' + this.divId);
-				this.scrollPane = jQuery("#scrollpane");
+				this.canvas = m_utils.jQuerySelect('#' + this.divId);
+				this.scrollPane = m_utils.jQuerySelect("#scrollpane");
+
+
+				// dirty workaround - only chrome being triggerring 'blur' event on clicking scrollbars
+				// resetForm and submit form conflicts in this case
+				var clickedOnScrollBar = false;
+				this.scrollPane.mousedown({
+					"diagram" : this
+				}, function(event) {
+					if (m_utils.isBrowserChrome()) {
+						event.data.diagram.clickedOnScrollBar = true;
+					}
+				});
 
 				this.scrollPane.scroll({
 					"diagram" : this
 				}, function(event) {
-					event.data.diagram.resetEditableText();
+					if (event.data.diagram.clickedOnScrollBar == false) {
+						event.data.diagram.resetEditableText();
+					}
 				});
 
 				// Define event handling for DOM elements
@@ -283,12 +318,8 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseDown(event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 						});
 
 				this.canvas.mousemove({
@@ -297,26 +328,18 @@ define(
 						function(event) {
 							event.data.diagram
 									.onGlobalMouseMove(event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 						});
 
 				this.canvas.mouseup({
 					"diagram" : this
 				}, function(event) {
 					event.data.diagram
-							.onGlobalMouseUp(event.pageX - X_OFFSET,
+							.onGlobalMouseUp(event.pageX - event.data.diagram.getCanvasPosition().left,
 									event.pageX
-											- X_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollLeft(), event.pageY
-											- Y_OFFSET
-											+ event.data.diagram.scrollPane
-													.scrollTop());
+											- event.data.diagram.getCanvasPosition().left, event.pageY
+											- event.data.diagram.getCanvasPosition().top);
 				});
 
 				this.panningSensorNorthWest = {};
@@ -380,14 +403,14 @@ define(
 
 				this.horizontalSnapLinePosition = this.height * 0.5;
 				this.isHorizontalSnap = false;
-				this.horizontalSnapLine = m_canvasManager.drawPath("", {
+				this.horizontalSnapLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SNAP_LINE_COLOR,
 					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
 				});
 				this.verticalSnapLinePosition = this.width * 0.5;
 				this.isVerticalSnap = false;
-				this.verticalSnapLine = m_canvasManager.drawPath("", {
+				this.verticalSnapLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SNAP_LINE_COLOR,
 					"stroke-width" : m_constants.SNAP_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SNAP_LINE_DASHARRAY
@@ -400,18 +423,18 @@ define(
 				this.separatorDX = 0;
 				this.separatorDY = 0;
 				this.separatorList = [];
-				this.horizontalSeparatorLine = m_canvasManager.drawPath("", {
+				this.horizontalSeparatorLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
 					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
 				});
-				this.verticalSeparatorLine = m_canvasManager.drawPath("", {
+				this.verticalSeparatorLine = this.canvasManager.drawPath("", {
 					"stroke" : m_constants.SEPARATOR_LINE_COLOR,
 					"stroke-width" : m_constants.SEPARATOR_LINE_STROKE_WIDTH,
 					'stroke-dasharray' : m_constants.SEPARATOR_LINE_DASHARRAY
 				});
 
-				this.rubberBand = m_canvasManager.drawRectangle(0, 0, 0, 0, {
+				this.rubberBand = this.canvasManager.drawRectangle(0, 0, 0, 0, {
 					'stroke' : m_constants.RUBBERBAND_COLOR,
 					'fill' : m_constants.RUBBERBAND_COLOR,
 					'fill-opacity' : 0.1,
@@ -426,7 +449,8 @@ define(
 				this.rubberBandWidth = 0;
 				this.rubberBandHeight = 0;
 
-				this.editableText = jQuery("#editable")
+				var self = this;
+				this.editableText = m_utils.jQuerySelect("#editable")
 						.editable(
 								function(value, settings) {
 									return value;
@@ -443,19 +467,17 @@ define(
 										// the
 										// text box and reset
 										// the value
-										jQuery.data(document, "diagram")
-												.cancelEditable();
+										self.cancelEditable();
 									},
 									onsubmit : function(settings, value) {
-										jQuery.data(document, "diagram")
-												.submitEditable(
-														$('input', this).val());
+										self.submitEditable(
+														m_utils.jQuerySelect('input', this).val());
 									}
 								}).css("font-family",
 								m_constants.DEFAULT_FONT_FAMILY).css(
 								"font-size", m_constants.DEFAULT_FONT_SIZE);
 
-				this.editableTextArea = jQuery("#editableArea").editable(
+				this.editableTextArea = m_utils.jQuerySelect("#editableArea").editable(
 						function(value, settings) {
 							return value;
 						},
@@ -471,18 +493,14 @@ define(
 								// the
 								// text box and reset
 								// the value
-								jQuery.data(document, "diagram")
-										.cancelEditableArea();
+								self.cancelEditableArea();
 							},
 							onsubmit : function(settings, value) {
-								jQuery.data(document, "diagram")
-										.submitEditableArea(
-												$('textarea', this).val());
+								self.submitEditableArea(
+												m_utils.jQuerySelect('textarea', this).val());
 							}
 						}).css("font-family", m_constants.DEFAULT_FONT_FAMILY)
 						.css("font-size", m_constants.DEFAULT_FONT_SIZE);
-
-				jQuery.data(document, "diagram", this);
 
 				this.currentTextPrimitive = null;
 				this.poolSymbol = null;
@@ -500,10 +518,43 @@ define(
 				 */
 				Diagram.prototype.initialize = function() {
 					// TODO Bind against loaded models
+					var self = this;
 
-					this.modelId = jQuery.url(window.location.search).param(
+					// Refresh properties panel on view activation
+					this.onViewActivate = function(params) {
+						if (params && params === self.process.uuid) {
+							// Executes a timeout loop with 50ms timeout and maximum 20 repetitions
+							// checks if the activated view has actually been dispalyed (display: block)
+							// before re-initializing the properties panel 
+							m_utils.executeTimeoutLoop(function() {
+								self.clearCurrentSelection();
+							}, 20, 50, function() {
+								return "block" == self.canvas.parents("[ng-repeat='panel in panels']").css("display")	
+							});
+						} else {
+							this.lastSymbol = null;
+						}
+					};
+					
+					this.onViewPinned = function(pinned) {
+						require("bpm-modeler/js/m_modelerViewLayoutManager").adjustPanels();
+					};
+					
+					this.onViewClose = function(params) {
+						if (params && params === self.process.uuid) {
+							EventHub.events.unsubscribe("PEPPER_VIEW_ACTIVATED", self.onViewActivate);
+							EventHub.events.unsubscribe("PEPPER_VIEW_CLOSED", self.onViewClose);
+							EventHub.events.unsubscribe("SIDEBAR_PINNED", self.onViewPinned);
+						}						
+					};
+					
+					EventHub.events.subscribe("PEPPER_VIEW_ACTIVATED", self.onViewActivate);
+					EventHub.events.subscribe("PEPPER_VIEW_CLOSED", self.onViewClose);					
+					EventHub.events.subscribe("SIDEBAR_PINNED", self.onViewPinned);
+
+					this.modelId = BridgeUtils.View.getActiveViewParams().param(
 							"modelId");
-					this.processId = jQuery.url(window.location.search).param(
+					this.processId = BridgeUtils.View.getActiveViewParams().param(
 							"processId");
 					this.model = m_model.findModel(this.modelId);
 
@@ -521,18 +572,10 @@ define(
 					this.process.diagram = this;
 
 					// Initialize Properties Panels
-
-					// TODO Should be done via extension mechanism
-
-					m_processPropertiesPanel.initialize(this);
-					m_activityPropertiesPanel.initialize(this);
-					m_dataPropertiesPanel.initialize(this);
-					m_eventPropertiesPanel.initialize(this);
-					m_gatewayPropertiesPanel.initialize(this);
-					m_annotationPropertiesPanel.initialize(this);
-					m_swimlanePropertiesPanel.initialize(this);
-					m_controlFlowPropertiesPanel.initialize(this);
-					m_dataFlowPropertiesPanel.initialize(this);
+					this.initializePropertiesPanels();
+					this.showProcessPropertiesPanel();
+					
+					var currentDiagram = this;
 					m_autoScrollManager
 							.initScrollManager(
 									"scrollpane",
@@ -564,13 +607,9 @@ define(
 											currentDiagram
 													.onGlobalMouseMove(
 															event.pageX
-																	- X_OFFSET
-																	+ currentDiagram.scrollPane
-																			.scrollLeft(),
+																	- currentDiagram.getCanvasPosition().left,
 															event.pageY
-																	- Y_OFFSET
-																	+ currentDiagram.scrollPane
-																			.scrollTop());
+																	- currentDiagram.getCanvasPosition().top);
 										} else if (currentDiagram.currentSelection.length > 0) {
 											for ( var i in currentDiagram.currentSelection) {
 												if (currentDiagram.currentSelection[i]
@@ -597,6 +636,21 @@ define(
 					return m_urlUtils.getContextName()
 							+ "/services/rest/bpm-modeler/modeler/"
 							+ new Date().getTime();
+				};
+
+				/**
+				 *
+				 */
+				Diagram.prototype.initializePropertiesPanels = function() {
+					this.processPropertiesPanel = m_processPropertiesPanel.initialize(this, this.process);
+					this.activityPropertiesPanel = m_activityPropertiesPanel.initialize(this);
+					this.dataPropertiesPanel = m_dataPropertiesPanel.initialize(this);
+					this.eventPropertiesPanel = m_eventPropertiesPanel.initialize(this);
+					this.gatewayPropertiesPanel = m_gatewayPropertiesPanel.initialize(this);
+					this.annotationPropertiesPanel = m_annotationPropertiesPanel.initialize(this);
+					this.swimlanePropertiesPanel = m_swimlanePropertiesPanel.initialize(this);
+					this.controlFlowPropertiesPanel = m_controlFlowPropertiesPanel.initialize(this);
+					this.dataFlowPropertiesPanel = m_dataFlowPropertiesPanel.initialize(this);
 				};
 
 				/**
@@ -1469,8 +1523,13 @@ define(
 				 */
 				Diagram.prototype.checkSnapLines = function(symbol) {
 					this.verticalSnapLine.hide();
-
 					this.isVerticalSnap = false;
+					this.horizontalSnapLine.hide();
+					this.isHorizontalSnap = false;
+
+					if(!symbol.supportSnapping()){
+						return;
+					}
 
 					for ( var n in this.symbols) {
 						if (symbol == this.symbols[n]) {
@@ -1490,9 +1549,7 @@ define(
 						}
 					}
 
-					this.horizontalSnapLine.hide();
-
-					this.isHorizontalSnap = false;
+					
 
 					for ( var n in this.symbols) {
 						if (symbol == this.symbols[n]) {
@@ -1577,10 +1634,10 @@ define(
 						// If the symbol was created with a connection traversal
 						// the connection needs to be completed, too
 						if (null != this.currentConnection) {
-							var status = this.placeNewSymbol(x - this.X_OFFSET,
-									y - this.Y_OFFSET, true);
-							if (status) {
-								this.currentConnection.toModelElementOid = this.lastSymbol.oid;
+							var newSymbol = this.placeNewSymbol(x - this.getCanvasPosition().left,
+									y - this.getCanvasPosition().top, true);
+							if (newSymbol) {
+								this.currentConnection.toModelElementOid = newSymbol.oid;
 								this.currentConnection.updateAnchorPointForSymbol();
 								this.currentConnection.complete();
 							}
@@ -1592,7 +1649,7 @@ define(
 						} else {
 							this.placeNewSymbol(x * this.zoomFactor, y
 									* this.zoomFactor);
-							$(".selected-tool").removeClass("selected-tool");
+							m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 						}
 					} else if (this.mode == this.NORMAL_MODE) {
 						this.clearCurrentSelection();
@@ -1613,7 +1670,7 @@ define(
 						this.currentConnection = null;
 						m_messageDisplay.clear();
 						this.mode = this.NORMAL_MODE;
-						$(".selected-tool").removeClass("selected-tool");
+						m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 					}
 				};
 
@@ -1635,9 +1692,9 @@ define(
 
 					this.snapSymbol(this.newSymbol);
 
-					this.lastSymbol = this.newSymbol;
+					var lastSymbol = this.newSymbol;
 					this.newSymbol = null;
-					return true;
+					return lastSymbol;
 				};
 
 				/**
@@ -1692,7 +1749,7 @@ define(
 				 *
 				 */
 				Diagram.prototype.print = function(anchorPoint) {
-					jQuery("#canvas").jqprint();
+					m_utils.jQuerySelect("#" + this.divId).jqprint();
 				};
 
 				/**
@@ -1741,6 +1798,14 @@ define(
 					this.addAndConnectSymbol(symbol, m_eventSymbol
 							.createStopEventSymbol(this));
 				};
+				
+				/**
+				 *
+				 */
+				Diagram.prototype.connectToIntermediateEvent = function(symbol) {
+					this.addAndConnectSymbol(symbol, m_eventSymbol
+							.createIntermediateEventSymbol(this));
+				};
 
 				/**
 				 *
@@ -1750,43 +1815,55 @@ define(
 
 					this.newSymbol = targetSymbol;
 					this.mode = this.CREATE_MODE;
+					var x_adj = 0, y_adj = 0, fromAnchor, toAnchor;
 
 					if (this.flowOrientation == m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
-						this.newSymbol.prepare(startSymbol.x,
-								startSymbol.y + 100);
-						// Create connection if connectionValidation passes
-						this.currentConnection = m_connection.createConnection(
-								this, startSymbol.anchorPoints[2]);
-						if (null != this.currentConnection
-								&& this.currentConnection
-										.validateCreateConnection(
-												this.currentConnection.fromAnchorPoint,
-												this.newSymbol.anchorPoints[0])) {
-							this.currentConnection.prepare();
-							this.currentConnection
-									.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[0]);
-						} else {
-							// Remove the connection and symbol created, if
-							// validation fails
-							if (this.currentConnection) {
-								this.currentConnection.remove();
-							}
-							this.newSymbol.remove();
-							this.newSymbol = null;
-							this.mode = this.NORMAL_MODE;
+						x_adj = 0;
+						y_adj = 100;
+						fromAnchor = 2;
+						toAnchor = 0;
+						if (m_utils.isIntermediateEvent(startSymbol)) {
+							fromAnchor = 2;
+							toAnchor = 0;
 						}
 					} else {
-						this.newSymbol.prepare(startSymbol.x + 200,
-								startSymbol.y);
-						this.currentConnection = m_connection.createConnection(
-								this, startSymbol.anchorPoints[1]);
-						this.currentConnection.prepare();
-						this.currentConnection
-								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[3]);
+						x_adj = 200;
+						y_adj = 0;
+						fromAnchor = 1;
+						toAnchor = 3;
+						if (m_utils.isIntermediateEvent(startSymbol)) {
+							fromAnchor = 1;
+							toAnchor = 0;
+						}
 					}
 
-					// TODO Is this needed
-					// this.mode = this.NORMAL_MODE;
+					this.newSymbol.prepare(startSymbol.x + x_adj, startSymbol.y
+							+ y_adj);
+					// Create connection if connectionValidation passes
+					this.currentConnection = m_connection.createConnection(
+							this, startSymbol.anchorPoints[fromAnchor]);
+
+					if (null != this.currentConnection
+							&& this.currentConnection
+									.validateCreateConnection(
+											this.currentConnection.fromAnchorPoint,
+											this.newSymbol.anchorPoints[toAnchor])) {
+						this.currentConnection.prepare();
+						this.currentConnection
+								.setSecondAnchorPointNoComplete(this.newSymbol.anchorPoints[toAnchor]);
+					} else {
+						// Remove the connection and symbol created, if
+						// validation fails
+						if (this.currentConnection) {
+							this.currentConnection.remove();
+							this.currentConnection = null;
+						}
+						
+						this.newSymbol.remove();
+						this.newSymbol = null;
+						this.mode = this.NORMAL_MODE;
+						
+					}
 				};
 
 				/**
@@ -1816,7 +1893,7 @@ define(
 
 							// When connection created from toolbar, the anchor
 							// point should not change
-							if (!$(".selected-tool").is("#connectorButton")) {
+							if (!m_utils.jQuerySelect(".selected-tool").is("#connectorButton")) {
 								this.currentConnection
 										.updateAnchorPointForSymbol();
 							}
@@ -1903,13 +1980,10 @@ define(
 				 *
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
-					m_processPropertiesPanel.getInstance().setElement(
-							this.process);
-
-					m_propertiesPanel
-							.initializeProcessPropertiesPanel(m_processPropertiesPanel
-									.getInstance());
-				}
+					m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
+					this.processPropertiesPanel.setElement(this.process);
+					m_propertiesPanel.initializeProcessPropertiesPanel(this.processPropertiesPanel);
+				};
 
 				/**
 				 *
@@ -1939,14 +2013,28 @@ define(
 				Diagram.prototype.selectedSymbolsDragStop = function() {
 					var changeDescriptionsDiagram = [];
 					var failed = false;
-					for ( var n in this.currentSelection) {
-						var changes = this.currentSelection[n].dragStop_(this.currentSelection.length > 1);
-						if (null == changes) {
-							failed = true;
-							this.revertDrag();
-							break;
+					
+					if (this.currentSelection.length == 1) {
+						if (m_utils.isIntermediateEvent(this.currentSelection[0])) {
+							changeDescriptionsDiagram = this.currentSelection[0].dragStop_(false);
+							if(null == changeDescriptionsDiagram){
+								failed = true;
+								this.revertDrag();
+							}
 						}
-						changeDescriptionsDiagram.push(changes);
+					}
+					
+					if (changeDescriptionsDiagram && changeDescriptionsDiagram.length == 0) {
+						for ( var n in this.currentSelection) {
+							var changes = this.currentSelection[n]
+									.dragStop_(this.currentSelection.length > 1);
+							if (null == changes) {
+								failed = true;
+								this.revertDrag();
+								break;
+							}
+							changeDescriptionsDiagram.push(changes);
+						}
 					}
 
 					if (!failed) {
@@ -1956,19 +2044,23 @@ define(
 						command.sync = true;
 						m_commandsController.submitCommand(command);
 
-						//Adjust Lanes to fit the symbols
-						var adjustedLanes = [];
-						for ( var n in this.currentSelection) {
-							var swimlane = this.currentSelection[n].parentSymbol;
-							if (-1 == adjustedLanes.indexOf(swimlane)) {
-								swimlane.adjustToSymbolBoundaries();
-								adjustedLanes.push(swimlane);
-							}
-						}
+						this.adjustLanes();
 					}
 					this.clearCurrentSelection();
 				};
 
+				Diagram.prototype.adjustLanes = function(){
+					//Adjust Lanes to fit the symbols
+					var adjustedLanes = [];
+					for ( var n in this.currentSelection) {
+						var swimlane = this.currentSelection[n].parentSymbol;
+						if (-1 == adjustedLanes.indexOf(swimlane)) {
+							swimlane.adjustToSymbolBoundaries();
+							adjustedLanes.push(swimlane);
+						}
+					}
+				};
+				
 				Diagram.prototype.revertDrag = function() {
 					for ( var n in this.currentSelection) {
 						this.currentSelection[n].revertDrag_();
@@ -1983,11 +2075,28 @@ define(
 					// textbox
 					if (!this.symbolEditMode) {
 						m_utils.debug("text primitive set");
+						// TODO: Can registering for this event be blocked for some Symbols
+						if (textPrimitive.auxiliaryProperties.callbackScope.modelElement
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.isReadonly()) {
+							return;
+						}
+
+						// If data, check if it's external data and if external check if it's read-only
+						if (textPrimitive.auxiliaryProperties.callbackScope.modelElement
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.type === m_constants.DATA
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.externalReference
+								&& textPrimitive.auxiliaryProperties.callbackScope.modelElement.dataFullId) {
+							var extData = m_model.findData(textPrimitive.auxiliaryProperties.callbackScope.modelElement.dataFullId);
+							if (extData && extData.isReadonly()) {
+								return;
+							}
+						}
 
 						this.currentTextPrimitive = textPrimitive.auxiliaryProperties.callbackScope
 								.showEditable();
 
 						this.symbolEditMode = true;
+						this.clickedOnScrollBar = false;
 						m_utils.debug("editable activated");
 					}
 				};
@@ -2015,6 +2124,7 @@ define(
 					this.currentTextPrimitive.auxiliaryProperties.callbackScope
 							.adjustPrimitivesOnShrink();
 					this.symbolEditMode = false;
+					this.clickedOnScrollBar = false;
 					m_utils.debug("text primitive shown");
 					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
 					}
@@ -2051,7 +2161,11 @@ define(
 				Diagram.prototype.cancelEditable = function() {
 					this.editableText.css("visibility", "hidden").hide()
 							.trigger("blur");
-					this.currentTextPrimitive.show();
+
+					if (!this.currentTextPrimitive.removed) {
+						this.currentTextPrimitive.show();
+					}
+
 					this.symbolEditMode = false;
 					m_utils.debug("text primitive hidden");
 				};
@@ -2079,10 +2193,10 @@ define(
 					this.zoomFactor = Math.max(this.zoomFactor
 							- m_constants.ZOOM_INCREMENT, 1);
 
-					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+					this.canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
 
-					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
+					this.canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
@@ -2092,10 +2206,10 @@ define(
 					this.zoomFactor = this.zoomFactor
 							+ m_constants.ZOOM_INCREMENT;
 
-					m_canvasManager.setCanvasSize(this.width / this.zoomFactor,
+					this.canvasManager.setCanvasSize(this.width / this.zoomFactor,
 							this.height / this.zoomFactor);
 
-					m_canvasManager.setViewBox(0, 0, this.zoomFactor);
+					this.canvasManager.setViewBox(0, 0, this.zoomFactor);
 				};
 
 				/**
@@ -2179,8 +2293,7 @@ define(
 						this.symbols[n].resolveNonHierarchicalRelationships();
 					}
 
-					m_processPropertiesPanel.getInstance().setElement(
-							this.process);
+					this.processPropertiesPanel.setElement(this.process);
 				};
 
 				/**
@@ -2193,7 +2306,7 @@ define(
 						"width" : (width / this.zoomFactor) * 1.25,
 						"height" : (height / this.zoomFactor) * 1.25
 					});
-					m_canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
+					this.canvasManager.setCanvasSize(width / this.zoomFactor, height / this.zoomFactor);
 				};
 
 				/**
@@ -2252,45 +2365,58 @@ define(
 				Diagram.prototype.findLane = function(id) {
 					return this.poolSymbol.findLane(id);
 				};
-			}
 
-			function Diagram_clickClosure(event) {
-				this.auxiliaryProperties.diagram.onClick(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
-			}
 
-			function Diagram_mouseDownClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseDown(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
-			}
+				/**
+				 *
+				 */
+				Diagram.prototype.getCanvasPosition = function() {
+					return getCanvasPosition(this.divId);
+				}
 
-			function Diagram_mouseMoveClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseMove(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
-			}
+				// TODO need not read position every time
+				// Can cache the position on view activation and on navigation panel
+				// collapse / expand event (nto sure if there exist evetns for navigation panel
+				// collapse / expand???)
+				function getCanvasPosition(divId) {
+					var canvasPos = m_utils.jQuerySelect("#" + divId).position();
 
-			function Diagram_mouseUpClosure(event) {
-				this.auxiliaryProperties.diagram.onMouseUp(event.pageX
-						- X_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollLeft(), event.pageY
-						- Y_OFFSET
-						+ this.auxiliaryProperties.diagram.scrollPane
-								.scrollTop());
+					if(canvasPos){
+						return {
+							left : canvasPos.left,
+							top : canvasPos.top
+						};
+					}
+					else{
+						return {
+							left : 0,
+							top : 0
+						};
+					}
+				}
+
+				function Diagram_clickClosure(event) {
+					this.auxiliaryProperties.diagram.onClick(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
+
+				function Diagram_mouseDownClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseDown(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
+
+				function Diagram_mouseMoveClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseMove(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
+
+				function Diagram_mouseUpClosure(event) {
+					this.auxiliaryProperties.diagram.onMouseUp(event.pageX
+							- this.auxiliaryProperties.diagram.getCanvasPosition().left, event.pageY
+							- this.auxiliaryProperties.diagram.getCanvasPosition().top);
+				}
 			}
 		});

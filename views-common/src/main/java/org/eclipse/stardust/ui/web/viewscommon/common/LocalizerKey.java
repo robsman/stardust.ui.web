@@ -32,6 +32,8 @@ public class LocalizerKey implements Serializable
    public static final LocalizerKey PROCESS_DEFINITION = new LocalizerKey("processDefinition");
    public static final LocalizerKey PH_DELEGATION_TYPE = new LocalizerKey("processHistoryDelegationType");
    public static final LocalizerKey PH_EXCEPTION_TYPE = new LocalizerKey("processHistoryExceptionType");
+   public static final LocalizerKey PH_EVENT_EXCEPTION_TYPE = new LocalizerKey("processHistoryEventExceptionType");
+   public static final LocalizerKey PH_EVENT_TIMER_TYPE = new LocalizerKey("processHistoryEventTimerType");
    public static final LocalizerKey PH_NOTE_TYPE = new LocalizerKey("processHistoryNoteType");
    public static final LocalizerKey PH_RESUBMISSION_TYPE = new LocalizerKey("processHistoryResubmissionType");
    public static final LocalizerKey PH_ACTIVITY_ACTIVE_TYPE = new LocalizerKey("processHistoryActivityActiveType");

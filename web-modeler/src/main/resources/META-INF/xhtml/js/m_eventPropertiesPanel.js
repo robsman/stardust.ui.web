@@ -19,18 +19,14 @@ define(
 		function(m_utils, m_constants, m_commandsController, m_model,
 				m_propertiesPanel, m_propertiesPage, m_i18nUtils) {
 
-			var eventPropertiesPanel = null;
-
 			return {
 				initialize : function(diagram) {
-					eventPropertiesPanel = new EventPropertiesPanel();
+					var eventPropertiesPanel = new EventPropertiesPanel();
 
 					m_commandsController
 							.registerCommandHandler(eventPropertiesPanel);
 
 					eventPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function() {
 					return eventPropertiesPanel;
 				}
 			};
@@ -67,7 +63,7 @@ define(
 					m_utils.debug("Event");
 					m_utils.debug(element);
 
-					this.titleSpan = jQuery("#" + this.id + " #title");
+					this.titleSpan = m_utils.jQuerySelect("#" + this.id + " #title");
 					
 					m_utils.debug(this.titleSpan);
 					

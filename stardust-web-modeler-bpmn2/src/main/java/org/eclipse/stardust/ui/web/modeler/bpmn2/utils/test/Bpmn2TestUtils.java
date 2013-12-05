@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -14,12 +15,17 @@ import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2CoreElementsBuilde
 import org.eclipse.stardust.ui.web.modeler.bpmn2.builder.Bpmn2DiBuilder;
 import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelParticipantJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
 import org.eclipse.stardust.ui.web.modeler.model.di.ProcessDiagramJto;
 
 public class Bpmn2TestUtils
 {
    public static final String MODEL_NAME = "Simple BPMN2 Model";
+
+   public static final String ROLE_NAME = "Test Role";
+
+   public static final String ROLE_ID = UUID.randomUUID().toString();
 
    public static final String PROCESS_NAME = "Test Process";
 
@@ -67,6 +73,21 @@ public class Bpmn2TestUtils
       CORE_ELEMENTS_BUILDER.attachToModel(model, webService);
 
       return webService;
+   }
+
+   public static Resource createTestRole(Definitions model)
+   {
+      ModelParticipantJto jto = new ModelParticipantJto();
+      jto.uuid = ROLE_ID;
+      jto.id = ROLE_ID;
+      jto.name = ROLE_NAME;
+
+      jto.participantType = ModelerConstants.ROLE_PARTICIPANT_TYPE_KEY;
+
+      Resource role = CORE_ELEMENTS_BUILDER.createModelParticipant(model, jto);
+      CORE_ELEMENTS_BUILDER.attachToModel(model, role);
+
+      return role;
    }
 
    public static BPMNDiagram createTestProcessDiagram(Process process)

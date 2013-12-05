@@ -1,0 +1,22 @@
+{
+	"windowTitle": "PORTAL_TITLE",
+	"appId": "ipp",
+	"appTitle": "PORTAL_TITLE",
+	"sidebar": {
+	    "title": "SIDEBAR_LABEL",
+	    "name": "main",
+	    "enabled": true,
+	    "mode": "click",
+	    "position": "left",
+	    "width": "350"
+	},
+	"menuApi":{
+      "searchEnabled": false
+    },
+    "supportedLanguages": [],
+	"endpoints": {
+		"navigation": "/CONTEXT_ROOT/services/rest/common/html5/api/navigation?random=RANDOM_VALUE",
+		"i18n": "/CONTEXT_ROOT/services/rest/common/html5/api/messages",
+		"theme": "/CONTEXT_ROOT/services/rest/common/html5/api/themes"
+	}COMMON_MENU
+}

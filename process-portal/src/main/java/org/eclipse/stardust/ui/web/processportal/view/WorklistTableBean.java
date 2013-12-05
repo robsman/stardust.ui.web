@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -51,6 +52,7 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.event.ActivityEventObserver;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -63,6 +65,11 @@ import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
@@ -75,6 +82,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPickList;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
@@ -93,6 +101,8 @@ import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistColumnPreferenceHandler;
 import org.eclipse.stardust.ui.web.processportal.view.worklistConfiguration.WorklistConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
@@ -108,6 +118,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -135,7 +146,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class WorklistTableBean extends UIComponentBean
       implements InitializingBean, DisposableBean,
       ActivityEventObserver, IUserObjectBuilder<WorklistTableEntry>, 
-      ICallbackHandler, Serializable,ViewEventHandler
+      ICallbackHandler, Serializable,ViewEventHandler,ConfirmationDialogHandler
 {
 
    protected final static String PROCESS_DEFINITION_MODEL = "carnotBcProcessInstanceFilter/processDefinitionModel";
@@ -169,6 +180,8 @@ public class WorklistTableBean extends UIComponentBean
 
    private ParticipantInfo participantInfo;
 
+   private String userParticipantId;
+   
    private String worklistId;
 
    private boolean filtersAddedToQuery;
@@ -181,11 +194,19 @@ public class WorklistTableBean extends UIComponentBean
    
    private boolean fetchAllDescriptors;
 
+   private boolean showResubmissionLink = false;
+
+   private ConfirmationDialog workListConfirmationDialog;
+
+   private ActivityInstance resubmitionActivity;
+
    private ProcessDefinition processDefintion;
    
    private String preferenceId;
    
    private String defaultUserDisplayFormat = null;
+   
+   private Boolean showAllWorklist = false;
    
    public WorklistTableBean()
    {
@@ -208,7 +229,14 @@ public class WorklistTableBean extends UIComponentBean
       case CREATED:
          this.view = event.getView();
          currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
-         initViewParams();
+         if ("true".equals((String)getParamFromView("standaloneMode")))
+         {
+            initViewParamsStandalone();
+         }
+         else
+         {
+            initViewParams();
+         }
          break;
          
       case ACTIVATED:
@@ -222,9 +250,25 @@ public class WorklistTableBean extends UIComponentBean
          
          // set wrapped label if provided
          String wrappedLabel = (String) getParamFromView("wrappedLabel");
+         showAllWorklist = (Boolean) getParamFromView("showAllWorklist");
          if (StringUtils.isNotEmpty(wrappedLabel))
          {
-            this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
+            if (showAllWorklist)
+            {
+               this.view.setLabel(getMessages().getString("label.unifiedWorklist") + " "
+                     + getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            else if (participantInfo instanceof UserInfo)
+            {
+               this.view.setLabel(getMessages().getString("label.personalWorklist") + " "
+                     + getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            else
+            {
+               this.view.setLabel(getMessages().getString("wrappedLabel", wrappedLabel));
+            }
+            this.view.setFullLabel(this.view.getLabel());
+            PortalApplication.getInstance().updateViewTitle(this.view);
          }
          
          break;
@@ -313,13 +357,55 @@ public class WorklistTableBean extends UIComponentBean
       {
          String oidStr = org.eclipse.stardust.ui.web.common.util.FacesUtils.getRequestParameter("oid");
          Long oid = (oidStr != null) ? Long.parseLong(oidStr) : 0;
-
          ActivityInstance ai = getActivityObjectById(oid);
-         ActivityInstanceUtils.openActivity(ai);
+         Boolean resubmitActivity = Boolean.valueOf(org.eclipse.stardust.ui.web.common.util.FacesUtils.getRequestParameter("resubmitActivity"));
+         if (resubmitActivity)
+         {
+            resubmitionActivity = ai;
+            // For resubmition WorkList, confirmation dialog is show to reactivate
+            if (null == workListConfirmationDialog)
+            {
+               workListConfirmationDialog = new ConfirmationDialog(
+                     DialogContentType.WARNING, DialogActionType.YES_NO, null,
+                     DialogStyle.COMPACT, this);
+               workListConfirmationDialog.setTitle(MessagesViewsCommonBean.getInstance()
+                     .getString("common.confirm"));
+               workListConfirmationDialog.setMessage(this.getMessages().getString(
+                     "resubmit.confirm"));
+            }
+            workListConfirmationDialog.openPopup();
+         }
+         else
+         {
+            ActivityInstanceUtils.openActivity(ai);
+         }
+
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
+      }
+   }
+
+   /**
+    *
+    */
+   public void resubmitActivityInstance()
+   {
+      ActivityInstance ai = null;
+      try
+      {
+         ai = ActivityInstanceUtils.activate(resubmitionActivity);
+         ai = ServiceFactoryUtils.getWorkflowService().unbindActivityEventHandler(
+               ai.getOID(), "Resubmission");
+         ActivityInstanceUtils.openActivity(ai);
+      }
+      catch (Exception e)
+      {
+         MessageDialog.addErrorMessage(this.getMessages().getString("resubmit.error",
+               String.valueOf(resubmitionActivity.getOID())));
+         // TODO - Identify a way to handle when unbind fails, with AI
+         // state-Application
       }
    }
 
@@ -355,19 +441,28 @@ public class WorklistTableBean extends UIComponentBean
       update();
    }
 
-   private QueryResult fetchQueryResult(Query query, ParticipantInfo participantInfo)
+   /**
+    * 
+    * @param query
+    * @param participantInfo
+    * @param userParticipantId
+    * @return
+    */
+   private QueryResult fetchQueryResult(Query query, ParticipantInfo participantInfo, String userParticipantId)
    {
       QueryResult queryResult = null;
       
       if (query instanceof WorklistQuery)
       {
          Worklist worklist = ServiceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
-         queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
-
+            queryResult = PPUtils.extractParticipantWorklist(worklist, participantInfo);
+            
          if (!filtersAddedToQuery)
          {
-            ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, queryResult.getTotalCount());
-            ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, queryResult.getTotalCountThreshold());
+            ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, userParticipantId,
+                  queryResult.getTotalCount());
+            ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, userParticipantId,
+                  queryResult.getTotalCountThreshold());
          }
       }
       else if (query instanceof ActivityInstanceQuery)
@@ -417,7 +512,7 @@ public class WorklistTableBean extends UIComponentBean
       query = (Query) getParamFromView(Query.class.getName());
       participantInfo = (ParticipantInfo) getParamFromView("participantInfo");
       processDefintion = (ProcessDefinition) getParamFromView("processDefinition");
-
+      userParticipantId = (String) getParamFromView("userParticipantId");
       if (null != processDefintion)
       {
          preferenceId = UserPreferencesEntries.P_WORKLIST_PROC_CONF;
@@ -425,6 +520,11 @@ public class WorklistTableBean extends UIComponentBean
       else
       {
          preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
+         Object showResubmitLink = getParamFromView("showResubmitLink");
+         if (null != showResubmitLink)
+         {
+            showResubmissionLink = (Boolean)showResubmitLink;
+         }
       }
       
       worklistId = (String) getParamFromView("id");
@@ -434,7 +534,50 @@ public class WorklistTableBean extends UIComponentBean
          worklistId = UserPreferencesEntries.V_WORKLIST;
       }
    }
-   
+
+   /**
+    *
+    */
+   private void initViewParamsStandalone()
+   {
+      String participantQId = (String) getParamFromView("participantQId");
+
+      if (StringUtils.isNotEmpty(participantQId))
+      {
+         preferenceId = UserPreferencesEntries.P_WORKLIST_PART_CONF;
+         worklistId = preferenceId;
+
+         boolean found = false;
+         Map<String, Set<ParticipantInfo>> participantMap = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants();
+         for (Entry<String, Set<ParticipantInfo>> entry : participantMap.entrySet())
+         {
+            Set<ParticipantInfo> participants = entry.getValue();
+            for (ParticipantInfo partInfo : participants)
+            {
+               if (partInfo.getQualifiedId().equals(participantQId))
+               {
+                  participantInfo = partInfo;
+                  userParticipantId = entry.getKey();
+                  query = ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,entry.getKey());
+                  view.getViewParams().put(Query.class.getName(), query);
+
+                  ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+                  view.getViewParams().put("name", label.getLabel());
+
+                  view.resolveLabelAndDescription();
+
+                  found = true;
+                  break;
+               }
+            }
+            if (found)
+            {
+               break;
+            }
+         }
+      }
+   }
+
    /**
     * @param key
     * @return
@@ -521,7 +664,7 @@ public class WorklistTableBean extends UIComponentBean
    private void initColumnModel()
    {
       ColumnPreference activityNameCol = new ColumnPreference(Constants.COL_ACTIVITY_NAME,
-            "activityName", this.getMessages().getString("column.overview"),
+            "processName", this.getMessages().getString("column.overview"),
             Resources.VIEW_WORKLIST_COLUMNS, true, true);
 
       activityNameCol.setColumnDataFilterPopup(new TableDataFilterPopup(new ProcessActivityDataFilter(
@@ -669,6 +812,27 @@ public class WorklistTableBean extends UIComponentBean
       this.processPortalContext = processPortalContext;
    }
 
+   public ConfirmationDialog getWorkListConfirmationDialog()
+   {
+      return workListConfirmationDialog;
+   }
+
+   public boolean accept()
+   {
+      resubmitActivityInstance();
+      return true;
+   }
+
+   public boolean cancel()
+   {
+      return true;
+   }
+
+   public void setNeedUpdateForActvityEvent(Boolean needUpdateForActvityEvent)
+   {
+      this.needUpdateForActvityEvent = needUpdateForActvityEvent;
+   }
+
    /*
     * (non-Javadoc)
     * 
@@ -729,7 +893,7 @@ public class WorklistTableBean extends UIComponentBean
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
                   ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), pi.getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
-                  ai.getProcessInstanceOID(), ai, currentPerformerOID);
+                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
          }
          catch (Exception e)
          {
@@ -915,7 +1079,7 @@ public class WorklistTableBean extends UIComponentBean
       @Override
       public QueryResult<Object> performSearch(Query query)
       {
-         QueryResult queryResult = fetchQueryResult(query, participantInfo);
+         QueryResult queryResult = fetchQueryResult(query, participantInfo, userParticipantId);
          processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(queryResult, true);
          return queryResult;
       }
@@ -1230,7 +1394,7 @@ public class WorklistTableBean extends UIComponentBean
                      ? WorklistQuery.START_TIME
                      : ActivityInstanceQuery.START_TIME, sortCriterion.isAscending());
             }
-            else if ("activityName".equals(sortCriterion.getProperty()))
+            else if ("processName".equals(sortCriterion.getProperty()))
             {
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());
@@ -1324,11 +1488,7 @@ public class WorklistTableBean extends UIComponentBean
       public Object handleCellExport(ExportType exportType, ColumnPreference column, WorklistTableEntry row,
             Object value)
       {
-         if (Constants.COL_ACTIVITY_NAME.equals(column.getColumnName()))
-         {
-            return row.getProcessName();
-         }
-         else if (Constants.COL_PRIORITY.equals(column.getColumnName()))
+         if (Constants.COL_PRIORITY.equals(column.getColumnName()))
          {
             return ProcessInstanceUtils.getPriorityLabel(row.getProcessPriority());
          }
@@ -1355,4 +1515,5 @@ public class WorklistTableBean extends UIComponentBean
          return text;
       }
    }
+
 }

@@ -17,7 +17,7 @@
 		<!--	Overview	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Notes'}"
 			panelTooltip="noteToolTip">
-			<ice:commandLink rendered="#{row.loaded}">
+			<ice:commandLink rendered="#{row.loaded}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-NotesView-DataTable-Preview"
 					standAlone="false" />
 				<f:attribute name="noteTimestamp" value="#{row.created}" />

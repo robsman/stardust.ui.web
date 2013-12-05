@@ -31,8 +31,8 @@
 		<ice:outputText styleClass="panelHeaderTitle"
 			value="#{title}" rendered="#{!collapsible}"/>
 		</ice:panelGroup>
-		<ice:panelGrid columns="2" styleClass="panelHeader" width="100%" rendered="#{showRefreshLink}" cellpadding="0" cellspacing="0">
-			<ice:panelGroup>
+		<ice:panelGrid columns="2" width="100%" rendered="#{showRefreshLink}" cellpadding="0" cellspacing="0">
+			<ice:panelGroup styleClass="panelHeader">
 				<ice:commandLink action="#{bean.toggle}">
 				<c:if test="${automationTag!=null}">
 					<pc:automationTag value="#{automationTag}" standAlone="false"/>
@@ -48,9 +48,9 @@
 							</ice:panelGrid>
 				</ice:commandLink>
 			</ice:panelGroup>
-			<ice:panelGroup style="text-align:right">
+			<ice:panelGroup styleClass="panelHeader" style="text-align:right">
 			  <ice:commandLink title="#{messages_bcc['views.common.refresh']}"
-		            action="#{bean.update}" partialSubmit="true" rendered="#{bean.expanded}">
+		            action="#{bean.update}" partialSubmit="true" rendered="#{bean.expanded}" style="vertical-align: bottom;">
 				<ice:graphicImage value="/plugins/common/images/icons/arrow_refresh.png"/>
 			  </ice:commandLink>
 			</ice:panelGroup> 

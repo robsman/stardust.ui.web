@@ -11,22 +11,16 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model", "bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_propertiesPage" ],
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_jsfViewManagerHelper"],
 		function(m_utils, m_constants, m_command,
 				m_commandsController, m_model, m_propertiesPanel,
-				m_propertiesPage) {
-
-			var activityPropertiesPanel = null;
+				m_propertiesPage, m_jsfViewManagerHelper) {
 
 			return {
 				initialize : function(diagram) {
-					activityPropertiesPanel = new ActivityPropertiesPanel();
-
+					var activityPropertiesPanel = new ActivityPropertiesPanel();
 					m_commandsController.registerCommandHandler(activityPropertiesPanel);
-
 					activityPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function() {
 					return activityPropertiesPanel;
 				}
 			};
@@ -57,15 +51,17 @@ define(
 				this.getModelingHelpLink.click({
 					"callbackScope" : this
 				}, function(event) {
-					var link = jQuery(
+					var link = m_utils.jQuerySelect(
 							"a[id $= 'modeling_work_assignment_view_link']",
 							window.parent.frames['ippPortalMain'].document);
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 					var formId = form.attr('id');
 
-					window.parent.EventHub.events.publish("OPEN_VIEW", linkId,
-							formId, "modelingWorkAssignmentView");
+//					window.parent.EventHub.events.publish("OPEN_VIEW", linkId,
+//							formId, "modelingWorkAssignmentView");
+
+					m_jsfViewManagerHelper.openView(linkId, formId, viewId);
 				});
 
 				/**

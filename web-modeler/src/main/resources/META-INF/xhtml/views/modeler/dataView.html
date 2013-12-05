@@ -9,16 +9,16 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="../../js/dataViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" data-main="plugins/bpm-modeler/js/dataViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 <form name="form">
-	<div id="dataView" class="panel">
+	<div id="dataView" class="nativeHtmlViewPanel" style="visibility: hidden">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
-			style="width: 800px;">
+			style="width: 100%;">
 			<tr>
 				<td>
 					<div class="errorMessagesPanel">
@@ -78,7 +78,7 @@
 					<div id="propertiesTabs">
 						<ul id="propertiesTabsList">
 							<li><a href="#dataTypeTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/table.png"></img><span
 									class="tabLabel" id="dataType">Data Type</span> </a>
 							</li>
 						</ul>
@@ -94,7 +94,7 @@
 												</select></td>
 											</tr>
 											<tr id="primitiveDataTypeRow">
-												<td><label for="primitiveDataTypeSelect" id="primitiveType"/>Primitive
+												<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
 													Type</label>
 												</td>
 												<td><select id="primitiveDataTypeSelect" size="1">
@@ -133,7 +133,7 @@
 													<div ng-show="dataType == 'double'">
 														<input id="doubleInputText" name="doubleInputText" class="rightAligned"
 																type="text" ng-model="defaultValue" maxlength="620"
-																ng-model-onblur ng-pattern="/^[-+]?[0-9]\d{0,308}(\.\d{1,309})?%?$/" />
+																ng-model-onblur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/" />
 														<div id="doubleInputTextError"
 															ng-show="form.doubleInputText.$error.pattern" style="color:red">Not a valid number</div>
 													</div>
@@ -175,5 +175,8 @@
 		</table>
 	</div>
 </form>
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/dataViewMain.js"></script>
+
 </body>
 </html>

@@ -56,6 +56,7 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
    private Effect effect = new SlideDown();
 
    private boolean showEmptyWorklist = false;
+   private boolean needUpdateForWorklist = false;
 
    private Set<String> assemblyLineParticipants;
    private IAssemblyLineActivityProvider assemblyLineActivityProvider;
@@ -288,4 +289,16 @@ public class WorklistsBean extends AbstractLaunchPanel implements InitializingBe
    {
       return assemblyLineMode;
    }
+
+   public boolean isNeedUpdateForWorklist()
+   {
+      return needUpdateForWorklist;
+   }
+
+   public void setNeedUpdateForWorklist(Boolean needUpdateForWorklist)
+   {
+      this.needUpdateForWorklist = needUpdateForWorklist;
+   }
+
+
 }

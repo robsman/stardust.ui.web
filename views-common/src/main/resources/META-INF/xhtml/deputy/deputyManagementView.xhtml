@@ -1,0 +1,33 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ice:panelGroup>
+			<ui:include src="/plugins/views-common/deputy/createOrModifyDeputyDialog.xhtml" />
+		</ice:panelGroup>
+
+		<!-- My Deputies -->
+		<ice:panelGroup>
+			<pc:automationTag value="auto-COM-DeputyMgmt-MyDeputiesTbl"/>
+			<pc:genericDataTable exportExcel="false" exportCsv="false" resizable="false" sortSupported="true"
+				title="#{deputyManagementBean.messages['myDeputies.title']}"
+				bean="#{deputyManagementBean}" table="#{deputyManagementBean.myDeputiesTable}"
+				toolbarUrl="/plugins/views-common/deputy/deputyManagementViewMyDeputiesTableToolbar.xhtml" />
+		</ice:panelGroup>
+
+		<!-- Deputy of -->
+		<ice:panelGroup>
+			<br/>
+			<pc:automationTag value="auto-COM-DeputyMgmt-DeputyOfTbl"/>
+			<pc:genericDataTable exportExcel="false" exportCsv="false" resizable="false" sortSupported="true"
+				title="#{deputyManagementBean.messages['deputyOf.title']}"
+				bean="#{deputyManagementBean}" table="#{deputyManagementBean.deputyOfTable}" />
+		</ice:panelGroup>
+
+	</ice:panelGroup>
+</f:view>

@@ -9,21 +9,11 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/codemirror.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/theme/eclipse.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/dialog.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/codemirror/simple-hint.css"></link>
-<link rel="stylesheet" type="text/css"
-	href="../../css/lightdust-codemirror.css"></link>
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-	data-main="../../js/messageTransformationApplicationViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/messageTransformationApplicationViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 <style>
 #inputDataTextarea {
 	font-family: monospace;
@@ -95,18 +85,18 @@
 }
 
 .mappingError {
-	background-image: url(../../images/icons/exclamation.png);
+	background-image: url(plugins/bpm-modeler/images/icons/exclamation.png);
 }
 
 .deleteAction {
-	background: url(../../images/icons/delete.png) no-repeat;
+	background: url(plugins/bpm-modeler/images/icons/delete.png) no-repeat;
 	height: 16px;
 	width: 16px;
 	float: left;
 }
 
 .clearMappingAction {
-	background: url(../../images/icons/script_delete.png) no-repeat;
+	background: url(plugins/bpm-modeler/images/icons/script_delete.png) no-repeat;
 	height: 16px;
 	width: 16px;
 	float: left;
@@ -120,7 +110,7 @@
 </style>
 </head>
 <body>
-	<div id="messageTransformationApplicationView" class="panel">
+	<div id="messageTransformationApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden">
 		<table cellpadding="0" cellspacing="0" class="layoutTable">
 			<tr>
 				<td>
@@ -174,13 +164,111 @@
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
+							<li><a href="#parametersTab"><img
+									src="plugins/bpm-modeler/images/icons/database_link.png"></img><span
+									class="tabLabel" id="parameters">Parameters</span> </a></li>
 							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
 									class="tabLabel" id="configuration">Configuration</span> </a></li>
 							<li><a href="#testTab"><img
-									src="../../images/icons/table.png"></img><span
+									src="plugins/bpm-modeler/images/icons/application-run.png"></img><span
 									class="tabLabel" id="testdata">Test</span> </a></li>
 						</ul>
+						<div id="parametersTab">
+							<table cellpadding="0" cellspacing="0" class="layoutTable">
+								<tr>
+									<td>
+										<div class="heading" id="paramDef">Parameter Definitions</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="panelBorder" style="width: 500px;">
+											<table cellpadding="0" cellspacing="0" width="100%"
+												class="layoutTable">
+												<tr>
+													<td><div class="toolBar">
+															<table>
+																<tr>
+																	<td><input id="deleteParameterDefinitionButton"
+																		type="image" src="plugins/bpm-modeler/images/icons/delete.png"
+																		title="Delete" alt="Delete" class="toolbarButton" />
+																	</td>
+																</tr>
+															</table>
+														</div></td>
+												</tr>
+												<tr>
+													<td>
+														<div class="dataTable">
+															<table id="parameterDefinitionsTable" cellpadding="0"
+																cellspacing="0">
+																<tbody />
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div></td>
+								</tr>
+								<tr>
+									<td>
+										<table id="parameterDefinitionTypeSelector"
+											class="fieldSetTable" style="margin-top: 10px;">
+											<tr>
+												<td><input id="addParameterDefinitionButton"
+													type="image" src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+													alt="Add" class="toolbarButton" />
+												</td>
+												<td></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionNameInput" id="name">Name</label>
+												</td>
+												<td><input id="parameterDefinitionNameInput"
+													type="text" style="width: 200px;" /></td>
+											</tr>
+											<tr>
+												<td><label for="parameterDefinitionDirectionSelect"
+													id="direction">Direction</label>
+												</td>
+												<td><select id="parameterDefinitionDirectionSelect">
+												</select>
+												</td>
+											</tr>
+											<tr>
+												<td><label for="dataTypeSelect" id="dataType">Data
+														Type</label></td>
+												<td><select id="dataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="primitiveDataTypeRow">
+												<td><label for="primitiveDataTypeSelect"
+													id="primitiveType">Primitive Type</label></td>
+												<td><select id="primitiveDataTypeSelect" size="1">
+												</select></td>
+											</tr>
+											<tr id="structuredDataTypeRow">
+												<td><label for="structuredDataTypeSelect">Data
+														Structure</label>
+												</td>
+												<td><select id="structuredDataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="documentTypeRow">
+												<td><label for="documentTypeSelect">Document
+														Type</label>
+												</td>
+												<td><select id="documentTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+										</table></td>
+								</tr>
+							</table>
+						</div>
 						<div id="configurationTab">
 							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 								<tr>
@@ -204,15 +292,13 @@
 																		<table cellpadding="0" cellspacing="5"
 																			class="layoutTable">
 																			<tr>
-																				<td><input id="addInputDataButton"
-																					type="button" value="Add Input ..." /></td>
 																				<td><input
 																					id="filterHighlightedSourceFieldsInput"
-																					type="image" src="../../images/icons/lightbulb.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/lightbulb.png"
 																					title="Display only highlighted fields" />
 																				</td>
 																				<td><input id="showAllSourceFieldsInput"
-																					type="image" src="../../images/icons/lightbulb_off.png"
+																					type="image" src="plugins/bpm-modeler/images/icons/lightbulb_off.png"
 																					title="Display highlighted and non-highlighted fields" />
 																				</td>
 																				<td><input id="sourceFilterInput" type="text"
@@ -252,28 +338,25 @@
 																			<table cellpadding="0" cellspacing="5"
 																				class="layoutTable">
 																				<tr>
-																					<td><input id="addOutputDataButton"
-																						type="button" value="Add Output ..." />
-																					</td>
 																					<td><input id="filterFieldsWithMappingInput"
-																						type="image" src="../../images/icons/mapping.gif"
+																						type="image" src="plugins/bpm-modeler/images/icons/mapping.gif"
 																						title="Display only fields with mapping expressions" />
 																					</td>
 																					<td><input id="filterFieldsWithNoMappingInput"
-																						type="image" src="../../images/icons/no-mapping.gif"
+																						type="image" src="plugins/bpm-modeler/images/icons/no-mapping.gif"
 																						title="Display only fields with no mapping expression" />
 																					</td>
 																					<td><input
 																						id="filterHighlightedTargetFieldsInput"
-																						type="image" src="../../images/icons/lightbulb.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/lightbulb.png"
 																						title="Display only highlighted fields" />
 																					</td>
 																					<td><input id="showAllTargetFieldsInput"
-																						type="image" src="../../images/icons/lightbulb_off.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/lightbulb_off.png"
 																						title="Display highlighted and non-highlighted fields" />
 																					</td>
 																					<td><input id="filterFieldsWithMappingInvalidInput"
-																						type="image" src="../../images/icons/exclamation.png"
+																						type="image" src="plugins/bpm-modeler/images/icons/exclamation.png"
 																						title="Display only fields whose mapping expression is invalid" />
 																					</td>
 																					<td><input id="targetFilterInput" type="text"
@@ -324,133 +407,45 @@
 							</table>
 						</div>
 						<div id="testTab">
-							<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-								<tr>
-									<td>
-										<table cellpadding="0" cellspacing="5" class="layoutTable">
-											<tr>
-												<td><input id="runButton" type="image"
-													src="../../images/icons/run.png"
-													title="Run Message Transformation" />
-												</td>
-												<td><input id="resetButton" type="image"
-													src="../../images/icons/arrow_refresh.png"
-													title="Clear input data fields" /></td>
-											</tr>
-										</table></td>
-								</tr>
-								<tr>
-									<td><label for="inputDataTextArea" id="inputData">Input Data</label>
-									</td>
-								</tr>
-								<tr>
-									<td><textarea id="inputDataTextarea" rows="10" cols="80"
-											style="width: 680px;"></textarea></td>
-								</tr>
-								<tr>
-									<td><label for="outputDataTable" id="outputData">Output Data</label>
-									</td>
-								</tr>
-								<tr>
-									<td><div
-											style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
-											<table id="outputDataTable" style="width: 680px;">
-											</table>
-										</div></td>
-								</tr>
-							</table>
+							<div class="noDataChange">
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+									<tr>
+										<td>
+											<table cellpadding="0" cellspacing="5" class="layoutTable">
+												<tr>
+													<td><input id="runButton" type="image"
+													src="plugins/bpm-modeler/images/icons/action_go.gif"
+														title="Run Message Transformation" />
+													</td>
+													<td><input id="resetButton" type="image"
+													src="plugins/bpm-modeler/images/icons/broom.png"
+														title="Clear input data fields" /></td>
+												</tr>
+											</table></td>
+									</tr>
+									<tr>
+										<td><label for="inputDataTextArea" id="inputData">Input Data</label>
+										</td>
+									</tr>
+									<tr>
+										<td><textarea id="inputDataTextarea" rows="10" cols="80"
+												style="width: 680px;"></textarea></td>
+									</tr>
+									<tr>
+										<td><label for="outputDataTable" id="outputData">Output Data</label>
+										</td>
+									</tr>
+									<tr>
+										<td><div
+												style="width: 680px; height: 200px; border: 1px solid grey; overflow: auto;">
+												<table id="outputDataTable" style="width: 680px;">
+												</table>
+											</div></td>
+									</tr>
+								</table>
+							</div>
 						</div>
 					</div></td>
-			</tr>
-		</table>
-	</div>
-	<div id="inputDataDialog" title="Input Data"
-		style="min-width: 300px; min-height: 200px;">
-		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-			<tr>
-				<td>
-					<table style="margin-top: 10px;">
-						<tr>
-							<td><label for="dataTypeSelect" id="dataType1">Data Type</label>
-							</td>
-							<td><select id="dataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive Type</label>
-							</td>
-							<td><select id="primitiveDataTypeSelect" size="1">
-							</select>
-							</td>
-						</tr>
-						<tr id="structuredDataTypeRow">
-							<td><label for="structuredDataTypeSelect">Structured
-									Type</label></td>
-							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="nameTextInput" id="name">Name</label></td>
-							<td><input id="nameTextInput" type="text" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td><input id="applyButton" type="button" value="Apply" />
-							</td>
-							<td><input id="closeButton" type="button" value="Close" />
-							</td>
-						</tr>
-					</table></td>
-			</tr>
-		</table>
-	</div>
-	<div id="outputDataDialog" title="Output Data"
-		style="min-width: 300px; min-height: 200px;">
-		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
-			<tr>
-				<td>
-					<table style="margin-top: 10px;">
-						<tr>
-							<td><label for="dataTypeSelect" id="dataType1">Data Type</label>
-							</td>
-							<td><select id="dataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr id="primitiveDataTypeRow">
-							<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive Type</label>
-							</td>
-							<td><select id="primitiveDataTypeSelect" size="1">
-							</select>
-							</td>
-						</tr>
-						<tr id="structuredDataTypeRow">
-							<td><label for="structuredDataTypeSelect">Structured
-									Type</label></td>
-							<td><select id="structuredDataTypeSelect" size="1">
-							</select></td>
-						</tr>
-						<tr>
-							<td><label for="nameTextInput" id="name">Name</label></td>
-							<td><input id="nameTextInput" type="text" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table>
-						<tr>
-							<td><input id="applyButton" type="button" value="Apply" />
-							</td>
-							<td><input id="closeButton" type="button" value="Close" />
-							</td>
-						</tr>
-					</table></td>
 			</tr>
 		</table>
 	</div>
@@ -563,5 +558,8 @@
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/messageTransformationApplicationViewMain.js"></script>
+
 </body>
 </html>

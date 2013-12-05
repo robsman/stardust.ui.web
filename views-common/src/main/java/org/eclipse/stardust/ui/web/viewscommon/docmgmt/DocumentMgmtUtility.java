@@ -20,16 +20,19 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -62,14 +65,13 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
@@ -438,20 +440,7 @@ public class DocumentMgmtUtility
     */
    public static Folder getFolder(String path)
    {
-      Folder folder = null;
-      String searchString = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(path, "/");
-      searchString = DocumentMgmtUtility.replaceIllegalXpathSearchChars(searchString);
-      List<Folder> newlist = getDocumentManagementService().findFoldersByName(searchString, Folder.LOD_NO_MEMBERS);
-      for (Folder tempFolder : newlist)
-      {
-         if (path.equalsIgnoreCase(tempFolder.getPath()))
-         {
-            folder = tempFolder;
-            break;
-         }
-      }
-
-      return folder;
+      return getDocumentManagementService().getFolder(path);
    }
 
    /**
@@ -515,8 +504,31 @@ public class DocumentMgmtUtility
          {
             processAttachments = new ArrayList<Document>();
          }
+         else
+         {
+               processAttachments = filterWithReadAccess(processAttachments);
+         }
       }
       return processAttachments;
+   }
+   
+   /**
+    * Filter the documents for which user do not have READ access
+    * 
+    * @param documentsList
+    * @return
+    */
+  private static List<Document> filterWithReadAccess(List<Document> documentsList)
+   {
+      List<Document> updatedDocumentList = CollectionUtils.newArrayList();
+      for (Document doc : documentsList)
+      {
+         if (null != getDocumentManagementService().getDocument(doc.getId()))
+         {
+            updatedDocumentList.add(doc);
+         }
+      }
+      return updatedDocumentList;
    }
 
    /**
@@ -1077,6 +1089,21 @@ public class DocumentMgmtUtility
    }
    
    /**
+    * @return reporting base url
+    */
+   public static String getReportingBaseURL()
+   {
+      String baseUrl = (String) FacesContext.getCurrentInstance().getExternalContext()
+            .getInitParameter(Constants.CONTEXT_PARAM_REPORTING_URI);
+
+      if (org.eclipse.stardust.common.StringUtils.isEmpty(baseUrl))
+      {
+         baseUrl = FacesUtils.getServerBaseURL();
+      }
+      return baseUrl;
+   }
+   
+   /**
     * Validates the file name for JCR
     * 
     * @param parentFolderPath
@@ -1200,27 +1227,17 @@ public class DocumentMgmtUtility
       DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
       documentManagementService.removeDocument(document.getId());
    }
+   
    /**
     * method return processes by document
+    * 
     * @param document
     * @return
     */
    public static ProcessInstances findProcessesHavingDocument(Document document)
    {
-      long processInstanceOID = DmsUtils.getProcessInstanceOID(document.getPath());
-      if (processInstanceOID > 0)
-      {
-         ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOID);
-         if (null != processInstance)
-         {
-            DeployedModel model = ModelUtils.getModel(processInstance.getModelOID());
-            String modelID = model.getId();
-
-            ProcessInstanceQuery processQuery = ProcessInstanceQuery.findHavingDocument(document, modelID);
-            return DocumentSearchProvider.getQueryService().getAllProcessInstances(processQuery);
-
-         }
-      }
-      return null;
+      ProcessInstanceQuery processQuery = ProcessInstanceQuery.findHavingDocument(document);
+      return DocumentSearchProvider.getQueryService().getAllProcessInstances(processQuery);
    }
+   
 }

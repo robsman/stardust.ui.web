@@ -29,7 +29,7 @@ define(
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "qualityControlPropertiesPage",
-						"Quality Control");
+						"Quality Assurance");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(

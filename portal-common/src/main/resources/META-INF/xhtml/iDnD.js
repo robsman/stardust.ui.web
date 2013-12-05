@@ -27,27 +27,42 @@ var iDnD = function () {
 	
 	var hideIframe = function()
 	{
-		dragContentIFrame.width = "0px";
-		dragContentIFrame.height = "0px";
-		dragContentIFrame.style.visibility = "hidden";
+		getDragContentIFrame().width = "0px";
+		getDragContentIFrame().height = "0px";
+		getDragContentIFrame().style.visibility = "hidden";
 	}
 	
 	function initDnD()
 	{
 		var dragOverlayDiv = document.createElement('div');
 		dragOverlayDiv.id = "dragOverlay";
+		dragOverlayDiv.style.position = "absolute";
+		dragOverlayDiv.style.top = "0px";
+		dragOverlayDiv.style.left = "0px";
+		dragOverlayDiv.style.width = "0px";
+		dragOverlayDiv.style.height = "0px";
+
 		document.getElementsByTagName('body') [0].appendChild(dragOverlayDiv);
-		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="0px" height="0px"  style="z-index:10000; overflow : hidden;" src="dndContent.html" frameborder="0"></iframe>';
+		dragOverlayDiv.innerHTML = '<iframe id="dragContentIFrame" width="0px" height="0px"  style="z-index:10000; overflow : hidden;" src="plugins/common/dndContent.html" frameborder="0"></iframe>';
 		dragContentIFrame = document.getElementById('dragContentIFrame');
 		dragContentIFrame.style.visibility = "hidden";
 	}
 	
+	function getDragContentIFrame() {
+		if (!dragContentIFrame) {
+			initDnD();
+		}
+		return dragContentIFrame;
+	}
+
 	document.onmouseup = hideIframe;
 		
 	return {
 		setImageToDrag : function(imgSrc, txt) {
 			imageToDrag = imgSrc;
-			imgDragCallback(imgSrc, txt);
+			if (imgDragCallback) {
+				imgDragCallback(imgSrc, txt);
+			}
 		},
 		
 		resetImageToDrag : function()
@@ -61,9 +76,9 @@ var iDnD = function () {
 			  	e.preventDefault();
 			 }
 			var coordinates = getMouseCoordinates(e, container)
-			dragContentIFrame.width = "170px";
-			dragContentIFrame.height = "50px";
-			dragContentIFrame.style.visibility = "visible";
+			getDragContentIFrame().width = "170px";
+			getDragContentIFrame().height = "50px";
+			getDragContentIFrame().style.visibility = "visible";
 			this.setIframeXY(e, container);
 		},
 		
@@ -76,11 +91,11 @@ var iDnD = function () {
 		setIframeXY : function(e, container) {
 			var coordinates = getMouseCoordinates(e, container);
 			
-			if ((true == ifDrag) && (dragContentIFrame.style.visibility == "visible"))
+			if ((true == ifDrag) && (getDragContentIFrame().style.visibility == "visible"))
 			{
-				dragContentIFrame.style.position = 'absolute';
-				dragContentIFrame.style.left = (coordinates.x + 10);
-				dragContentIFrame.style.top = (coordinates.y + 10);
+				getDragContentIFrame().style.position = 'absolute';
+				getDragContentIFrame().style.left = (coordinates.x + 10) + "px";
+				getDragContentIFrame().style.top = (coordinates.y + 10) + "px";
 			}
 			else if (true == ifDrag)
 			{

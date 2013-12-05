@@ -10,7 +10,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ActivityName'}">
 			<ice:commandLink value="#{row.activityName}"
 				action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}"
-				title="#{messages_bcc['common.tooltip.contextExplorer']}">
+				title="#{messages_bcc['common.tooltip.contextExplorer']}" onclick="Event.stop(event);">
 				<pc:automationTag
 					value="auto-COM-ActivityTbl-DataTable-ActivityName"
 					standAlone="false" />
@@ -22,7 +22,7 @@
 
 			<ice:commandLink value="#{row.activityName}"
 				action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}"
-				title="#{messages_bcc['common.tooltip.contextExplorer']}">
+				title="#{messages_bcc['common.tooltip.contextExplorer']}" onclick="Event.stop(event);">
 				<pc:automationTag
 					value="auto-COM-ActivityTbl-DataTable-ActivityName"
 					standAlone="false" />
@@ -96,7 +96,7 @@
 		
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 			<ice:panelGrid columns="6" style="float: right;" rendered="#{row.loaded}">
-				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
+				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
 					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
 						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
@@ -106,7 +106,7 @@
 						value="processInstanceOID=#{row.processOID}&amp;processInstanceName=#{row.processInstanceName}" />
 				</ice:commandLink>
 				
-				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}">
+				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
 					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
 						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
@@ -117,7 +117,7 @@
 				</ice:commandLink>
 				
 				<ice:commandLink actionListener="#{ippActivityHelper.openActivity}"
-					disabled="#{not row.activatable or row.caseInstance}">
+					disabled="#{not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsActivate" standAlone="false"/>
 					<f:param name="oid" value="#{row.activityOID}" />
 					<ice:graphicImage
@@ -127,7 +127,7 @@
 	                    title="#{messages_bcc['common.tooltip.activate']}"/>
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.performDefaultDelegation}"
-					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}">
+					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDefaultDelegate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 					<ice:graphicImage
@@ -136,7 +136,7 @@
 						styleClass="#{!row.caseInstance ? '' : 'iceCmdBtn-dis'}"
 						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}" />
 				</ice:commandLink>
-				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}">
+				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDelegate" standAlone="false"/>
 					<h:graphicImage value="/plugins/views-common/images/icons/process-history/delegate.png"
 						style="border: none;" 
@@ -144,7 +144,7 @@
 						title="#{messages_bcc['common.tooltip.delegate']}"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
-				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}">
+				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsAbort" standAlone="false"/>
 					<ice:graphicImage
 						url="/plugins/views-common/images/icons/cross.png"
@@ -173,7 +173,7 @@
 				</ice:panelGroup>
 				
 				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
-					actionListener="#{bean.openNotes}">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
@@ -181,7 +181,7 @@
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0 and !row.caseInstance}"
-					actionListener="#{bean.openNotes}">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/notes-blank.png"

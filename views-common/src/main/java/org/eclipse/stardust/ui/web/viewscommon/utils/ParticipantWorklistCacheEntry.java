@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.io.Serializable;
 
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 
 /**
@@ -24,6 +25,8 @@ public class ParticipantWorklistCacheEntry implements Serializable
    private long count;
    private long totalCountThreshold;
    private WorklistQuery worklistQuery;
+   private ActivityInstanceQuery activityInstanceQuery;
+   private String worklistOwner;
 
    /**
     * @param count
@@ -39,10 +42,28 @@ public class ParticipantWorklistCacheEntry implements Serializable
     * @param count
     * @param worklistQuery
     */
-   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, long totalCountThreshold)
+   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, long totalCountThreshold,String worklistOwner)
    {
       this(count,worklistQuery);
       this.totalCountThreshold = totalCountThreshold;
+      this.worklistOwner = worklistOwner;
+   }
+   
+   /**
+    * 
+    * @param count
+    * @param worklistQuery
+    * @param activityQuery
+    * @param totalCountThreshold
+    * @param worklistOwner
+    */
+   public ParticipantWorklistCacheEntry(long count, WorklistQuery worklistQuery, ActivityInstanceQuery activityQuery,
+         long totalCountThreshold, String worklistOwner)
+   {
+      this(count, worklistQuery);
+      this.totalCountThreshold = totalCountThreshold;
+      this.worklistOwner = worklistOwner;
+      this.activityInstanceQuery = activityQuery;
    }
 
    public long getCount()
@@ -73,6 +94,21 @@ public class ParticipantWorklistCacheEntry implements Serializable
    public void setWorklistQuery(WorklistQuery worklistQuery)
    {
       this.worklistQuery = worklistQuery;
+   }
+   
+   public ActivityInstanceQuery getActivityInstanceQuery()
+   {
+      return activityInstanceQuery;
+   }
+
+   public void setActivityInstanceQuery(ActivityInstanceQuery activityInstanceQuery)
+   {
+      this.activityInstanceQuery = activityInstanceQuery;
+   }
+
+   public String getWorklistOwner()
+   {
+      return worklistOwner;
    }
 
    @Override

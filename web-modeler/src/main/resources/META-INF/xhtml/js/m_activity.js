@@ -51,19 +51,7 @@ define(
 					activity.initialize(application.name + index,
 							m_constants.TASK_ACTIVITY_TYPE);
 
-					// TODO Put at a central place
-
-					if (application.applicationType == "jms") {
-						activity.taskType = m_constants.RECEIVE_TASK_TYPE;
-					} else if (application.applicationType == "mailBean") {
-						activity.taskType = m_constants.SEND_TASK_TYPE;
-					} else if (application.applicationType == "messageTransformationBean") {
-						activity.taskType = m_constants.SCRIPT_TASK_TYPE;
-					} else if (application.applicationType == "interactive") {
-						activity.taskType = m_constants.USER_TASK_TYPE;
-					} else {
-						activity.taskType = m_constants.SERVICE_TASK_TYPE;
-					}
+					activity.taskType = application.getCompatibleActivityTaskType();
 
 					activity.applicationFullId = application.getFullId();
 
@@ -138,6 +126,13 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				Activity.prototype.isApplicationActivity = function() {
+					return ((this.activityType == m_constants.TASK_ACTIVITY_TYPE) && (this.taskType != m_constants.MANUAL_TASK_TYPE));
+				};
+				
+				/**
 				 *
 				 */
 				Activity.prototype.getContexts = function() {
@@ -161,12 +156,21 @@ define(
 
 					for ( var key in contexts) {
 						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
-							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT) {
+							if (contexts[key].accessPoints[n].direction == m_constants.IN_ACCESS_POINT ||
+									contexts[key].accessPoints[n].direction == m_constants.IN_OUT_ACCESS_POINT) {
 								return true;
 							}
 						}
 					}
 
+					// Return true if activity is a sub-process activity with copyAllData disabled,
+					// as in this case engine context access points are generated on the fly
+					if (this.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.subprocessMode !== "synchShared"
+							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
+						return true;
+					}
+					
 					return false;
 				};
 
@@ -178,12 +182,21 @@ define(
 
 					for ( var key in contexts) {
 						for ( var n = 0; n < contexts[key].accessPoints.length; ++n) {
-							if (contexts[key].accessPoints[n].direction == m_constants.OUT_ACCESS_POINT) {
+							if (contexts[key].accessPoints[n].direction == m_constants.OUT_ACCESS_POINT ||
+									contexts[key].accessPoints[n].direction == m_constants.IN_OUT_ACCESS_POINT) {
 								return true;
 							}
 						}
 					}
 
+					// Return true if activity is a sub-process activity with copyAllData disabled,
+					// as in this case engine context access points are generated on the fly
+					if (this.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.subprocessMode !== "synchShared"
+							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
+						return true;
+					}
+					
 					return false;
 				};
 			}

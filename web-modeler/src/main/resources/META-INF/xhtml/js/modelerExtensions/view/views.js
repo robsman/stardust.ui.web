@@ -13,71 +13,71 @@ define([], function() {
 		view : [ {
 			viewId : "modelView",
 			label : "Model ${viewParams.modelName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/modelView.html",
-			iconUrl : "bpm-modeler/images/icons/model.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/modelView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/model.png"
 		}, {
 			viewId : "processDefinitionView",
 			label : "Process Definition ${viewParams.processName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/processDefinitionView.html",
-			iconUrl : "bpm-modeler/images/icons/process.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/processDefinitionView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/process.png"
 		}, {
 			viewId : "roleView",
 			label : "Role ${viewParams.roleName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/roleView.html",
-			iconUrl : "bpm-modeler/images/icons/role.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/roleView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/role.png"
 		}, {
 			viewId : "organizationView",
 			label : "Organization ${viewParams.organizationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/organizationView.html",
-			iconUrl : "bpm-modeler/images/icons/organization.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/organizationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/organization.png"
 		},
 		{
 			viewId : "conditionalPerformerView",
 			label : "Conditional Performer ${viewParams.conditionalPerformerName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/conditionalPerformerView.html",
-			iconUrl : "bpm-modeler/images/icons/conditional.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/conditionalPerformerView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/conditional.png"
 		},
 		{
 			viewId : "dataView",
 			label : "Data ${viewParams.dataName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/dataView.html",
-			iconUrl : "bpm-modeler/images/icons/data.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/dataView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/data.png"
 		},
 		{
 			viewId : "genericApplicationView",
 			label : "Unsupported Application ${viewParams.applicationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/genericApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/applications-blue.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/genericApplicationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/applications-blue.png"
 		},
 		{
 			viewId : "webServiceApplicationView",
 			label : "Web Service ${viewParams.applicationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/webServiceApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/application-web-service.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/webServiceApplicationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/application-web-service.png"
 		},
 		{
 			viewId : "uiMashupApplicationView",
 			label : "UI Mashup ${viewParams.applicationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/uiMashupApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/application-c-ext-web.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/uiMashupApplicationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/application-c-ext-web.png"
 		},
 		{
 			viewId : "camelApplicationView",
 			label : "Camel Route ${viewParams.applicationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/camelApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/application-camel.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/camelApplicationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/application-camel.png"
 		},
 		{
 			viewId : "messageTransformationApplicationView",
 			label : "Message Transformation ${viewParams.applicationName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/messageTransformationApplicationView.html",
-			iconUrl : "bpm-modeler/images/icons/application-message-trans.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/messageTransformationApplicationView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/application-message-trans.png"
 		},
 		{
 			viewId : "xsdStructuredDataTypeView",
 			label : "Structured Data ${viewParams.structuredDataTypeName}[20]",
-			viewHtmlUrl : "bpm-modeler/views/modeler/xsdStructuredDataTypeView.html",
-			iconUrl : "bpm-modeler/images/icons/structured-type.png"
+			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html",
+			iconUrl : "plugins/bpm-modeler/images/icons/structured-type.png"
 		}  ]
 	};
 });

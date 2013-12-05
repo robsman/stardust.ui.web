@@ -134,7 +134,7 @@ define(
 				 *
 				 */
 				TestSymbol.prototype.createPrimitives = function() {
-					this.rect = m_canvasManager
+					this.rect = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -150,8 +150,8 @@ define(
 
 					this.addToPrimitives(this.rect);
 
-					this.image = m_canvasManager.drawImageAt(
-							"../../images/icons/camunda.gif", this.x
+					this.image = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/camunda.gif", this.x
 									+ TEST_WIDTH - 0.5 * 16, this.y
 									+ TEST_HEIGHT - 0.5 * 16, 16, 16);
 
@@ -185,22 +185,22 @@ define(
 				 */
 				TestSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/connect.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToClosure
 					}, {
-						imageUrl : "../../images/icons/activity.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToActivityClosure
 					}, {
-						imageUrl : "../../images/icons/gateway.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_connectToGatewayClosure
 					} ], [ {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : TestSymbol_removeClosure

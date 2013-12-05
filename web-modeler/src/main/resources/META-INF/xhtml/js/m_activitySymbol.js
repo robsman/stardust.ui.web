@@ -14,13 +14,12 @@ define(
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager",
 				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_gatewaySymbol",
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_eventSymbol",
-				"bpm-modeler/js/m_activityPropertiesPanel",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_activity",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
-				m_session, m_activityPropertiesPanel, m_model, m_activity,
+				m_session, m_model, m_activity,
 				m_commandsController, m_command, m_modelerUtils) {
 
 			return {
@@ -102,8 +101,7 @@ define(
 
 					this.diagram.lastSymbol = this;
 
-					this.propertiesPanel = m_activityPropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.activityPropertiesPanel;
 
 					this.rectangle = null;
 					this.text = null;
@@ -163,7 +161,8 @@ define(
 					transferObject.subprocessMarkerIcon = null;
 					transferObject.boundaryEvents = null;
 					transferObject.viewManager = null;
-
+					transferObject.boundaryEventSymbols = null;
+					transferObject.applicationActivitiesIcon = null;
 					return transferObject;
 				};
 
@@ -186,7 +185,7 @@ define(
 				 *
 				 */
 				ActivitySymbol.prototype.createPrimitives = function() {
-					this.rectangle = m_canvasManager
+					this.rectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -203,7 +202,7 @@ define(
 					this.addToPrimitives(this.rectangle);
 					this.addToEditableTextPrimitives(this.rectangle);
 
-					this.text = m_canvasManager.drawTextNode(
+					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
 							this.y + 0.5 * this.height, "").attr({
 						"text-anchor" : "middle",
@@ -214,82 +213,142 @@ define(
 					this.addToPrimitives(this.text);
 					this.addToEditableTextPrimitives(this.text);
 
-					this.manualTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/manual-task.png", this.x + 5,
+					this.manualTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/manual-task.png", this.x + 5,
 							this.y + 5, 18, 13).hide();
 
 					this.addToPrimitives(this.manualTaskIcon);
 
-					this.receiveTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/receive-task.png", this.x + 5,
+					this.receiveTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/receive-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.receiveTaskIcon);
 
-					this.ruleTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/rule-task.png", this.x + 5,
+					this.ruleTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/rule-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.ruleTaskIcon);
 
-					this.scriptTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/script-task.png", this.x + 5,
+					this.scriptTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/script-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.scriptTaskIcon);
 
-					this.sendTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/send-task.png", this.x + 5,
+					this.sendTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/send-task.png", this.x + 5,
 							this.y + 5, 18, 14).hide();
 
 					this.addToPrimitives(this.sendTaskIcon);
 
-					this.serviceTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/service-task.png", this.x + 5,
+					this.serviceTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/service-task.png", this.x + 5,
 							this.y + 5, 18, 18).hide();
 
 					this.addToPrimitives(this.serviceTaskIcon);
 
-					this.userTaskIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/user-task.png", this.x + 5,
+					this.userTaskIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/user-task.png", this.x + 5,
 							this.y + 5, 16, 18).hide();
 
 					this.addToPrimitives(this.userTaskIcon);
 
-					this.parallelMultiProcessingMarkerIcon = m_canvasManager
+					this.parallelMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
-									"../../images/icons/parallel-marker.gif",
+									"plugins/bpm-modeler/images/icons/parallel-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
 									16, 16).hide();
 
 					this
 							.addToPrimitives(this.parallelMultiProcessingMarkerIcon);
 
-					this.sequentialMultiProcessingMarkerIcon = m_canvasManager
+					this.sequentialMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
-									"../../images/icons/sequential-marker.gif",
+									"plugins/bpm-modeler/images/icons/sequential-marker.gif",
 									this.x + 0.5 * this.width - 4, this.y + 2,
 									16, 16).hide();
 
 					this
 							.addToPrimitives(this.sequentialMultiProcessingMarkerIcon);
 
-					this.subprocessMarkerIcon = m_canvasManager.drawImageAt(
-							"../../images/icons/subprocess-marker.gif",
+					this.subprocessMarkerIcon = this.diagram.canvasManager.drawImageAt(
+							"plugins/bpm-modeler/images/icons/subprocess-marker.gif",
 							this.x + 0.5 * this.width - 8,
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
+					
+					this.applicationActivitiesIcon = this.diagram.canvasManager.getNewSet();
+					this.applicationActivitiesIcon.push(this.receiveTaskIcon);
+					this.applicationActivitiesIcon.push(this.ruleTaskIcon);
+					this.applicationActivitiesIcon.push(this.scriptTaskIcon);
+					this.applicationActivitiesIcon.push(this.sendTaskIcon);
+					this.applicationActivitiesIcon.push(this.serviceTaskIcon);
+					this.applicationActivitiesIcon.push(this.userTaskIcon);
+					this.applicationActivitiesIcon.push(this.parallelMultiProcessingMarkerIcon);
+					this.applicationActivitiesIcon.push(this.sequentialMultiProcessingMarkerIcon);
 				};
 
 				/**
 				 *
 				 */
 				ActivitySymbol.prototype.initializeEventHandling = function() {
-					this.subprocessMarkerIcon
-							.mousemove(ActivitySymbol_subprocessMarkerIconMouseMoveClosure);
-					this.subprocessMarkerIcon
-							.click(ActivitySymbol_subprocessMarkerIconClickClosure);
+					//Subprocess activity
+					this.subprocessMarkerIcon.mouseover(ActivitySymbol_subprocessMarkerIconMouseOverClosure);
+					
+					this.subprocessMarkerIcon.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
+					
+					this.subprocessMarkerIcon.click(ActivitySymbol_subprocessMarkerIconClickClosure);
+					
+					if (this.modelElement.isApplicationActivity()) {
+						//MouseHover event
+						this.applicationActivitiesIcon
+								.mouseover(ActivitySymbol_applicationActivityIconMouseOverClosure);
+					
+						//MouseOut event
+						this.applicationActivitiesIcon
+								.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
+						
+						//Click event
+						if(!this.modelElement.applicationFullId){
+							m_utils.debug("Application Full Id not defined for " + this.modelElement.name);
+							return;
+						}
+						
+						var application = m_model
+								.findApplication(this.modelElement.applicationFullId);
+
+						var model = m_model
+								.findModel(m_model
+										.stripModelId(this.modelElement.applicationFullId));
+
+						var applicationeMD = this.getApplicationMD(application);
+
+						var self = this;
+
+						this.applicationActivitiesIcon.click(function(e) {
+							/* e.preventDefault(); */
+							self.viewManager.openView(
+									applicationeMD.applicationViewName,
+													"applicationId="
+															+ encodeURIComponent(application.id)
+															+ "&modelId="
+															+ encodeURIComponent(model.id)
+															+ "&applicationName="
+															+ encodeURIComponent(application.name)
+															+ "&fullId="
+															+ encodeURIComponent(application.getFullId())
+															+ "&uuid="
+															+ application.uuid
+															+ "&modelUUID="
+															+ model.uuid,
+													application.uuid);
+							return false;
+						});
+					}
+					
 				};
 
 				/**
@@ -361,7 +420,6 @@ define(
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
-
 				};
 
 				/**
@@ -502,48 +560,57 @@ define(
 									[],
 									[
 											{
-												imageUrl : "../../images/icons/connect.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/gateway.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToGatewayClosure
 											},
 											{
-												imageUrl : "../../images/icons/end-event-toolbar.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/end-event-toolbar.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_connectToEndEventClosure
-											} ],
+											}],
 									[
 											{
-												imageUrl : "../../images/icons/delete.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_removeClosure
 											},
 											/*{
-												imageUrl : "../../images/icons/activity-subprocess.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity-subprocess.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToSubprocessActivityClosure
 											},
 											{
-												imageUrl : "../../images/icons/activity-manual.png",
+												imageUrl : "plugins/bpm-modeler/images/icons/activity-manual.png",
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : ActivitySymbol_switchToManualActivityClosure
-											}*/ ]);
+											}*/ ],
+									[
+										{
+											imageUrl : "plugins/bpm-modeler/images/icons/intermediate-event-toolbar.png",
+											imageWidth : 16,
+											imageHeight : 16,
+											clickHandler : ActivitySymbol_connectToIntermediateEventClosure
+										}
+									 ]
+							);
 				};
 
 				/**
@@ -605,8 +672,48 @@ define(
 				/**
 				 *
 				 */
-				ActivitySymbol.prototype.onSubprocessMarkerIconMouseMove = function() {
+				ActivitySymbol.prototype.onSubprocessMarkerIconMouseOver = function() {
 					this.showPointerCursor();
+
+					var model = m_model.findModel(m_model
+							.stripModelId(this.modelElement.subprocessFullId));
+					var process = m_model
+							.findProcess(this.modelElement.subprocessFullId);
+
+					// HTML encode newline and other characters
+					var description = process.description
+							.replace(/&/g, '&amp;').replace(/>/g, '&gt;')
+							.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+
+					// Fill in the Application Name and Description
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.find("#name").html(process.name);
+					applicationActivityTooltip.find("#description").html(
+							description);
+
+					// Set the Application Icon
+					applicationActivityTooltip.find("#icon").attr("src",
+							"plugins/bpm-modeler/images/icons/process.png");
+
+					// Fade out the tooltip on mouse click
+					applicationActivityTooltip.click(function() {
+						applicationActivityTooltip.fadeOut("slow");
+					});
+
+					// Position the tooltip to the left of the Activity so as to
+					// have minimum overlap with it
+					var toolTipX = this.x
+							+ this.diagram.getCanvasPosition().left
+							- applicationActivityTooltip.width() + 55;
+					var toolTipY = this.y
+							+ this.diagram.getCanvasPosition().top + 35;
+
+					// Fade in the tooltip
+					applicationActivityTooltip.css("visibility", "visible")
+							.moveDiv({
+								"x" : toolTipX,
+								"y" : toolTipY
+							}).hide().fadeIn("slow");
 				};
 
 				/**
@@ -619,12 +726,120 @@ define(
 							.findProcess(this.modelElement.subprocessFullId);
 
 					this.viewManager.openView("processDefinitionView",
-							"processId=" + process.id + "&modelId=" + model.id
-									+ "&processName=" + process.name
-									+ "&fullId=" + process.getFullId(), process
-									.getFullId());
+							"processId=" + encodeURIComponent(process.id)
+									+ "&modelId="
+									+ encodeURIComponent(model.id)
+									+ "&processName="
+									+ encodeURIComponent(process.name)
+									+ "&fullId="
+									+ encodeURIComponent(process.getFullId())
+									+ "&uuid="
+									+ process.uuid
+									+ "&modelUUID="
+									+ model.uuid,
+							process.uuid);
 				};
 
+				ActivitySymbol.prototype.onApplicationActivityIconMouseOut = function() {
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.fadeOut("slow");
+				};
+				
+				/**
+				 *
+				 */
+				ActivitySymbol.prototype.onApplicationActivityIconMouseOver = function() {
+					this.showPointerCursor();
+
+					var model = m_model.findModel(m_model
+							.stripModelId(this.modelElement.applicationFullId));
+					var application = m_model
+							.findApplication(this.modelElement.applicationFullId);
+
+					// HTML encode newline and other characters
+					var description = application.description.replace(/&/g,
+							'&amp;').replace(/>/g, '&gt;')
+							.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+
+					// Fill in the Application Name and Description
+					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
+					applicationActivityTooltip.find("#name").html(
+							application.name);
+					applicationActivityTooltip.find("#description").html(
+							description);
+
+					// Determine the View name and Icon name based on the
+					// Application Type
+					var applicationMD = this.getApplicationMD(application);
+
+					// Set the Application Icon
+					applicationActivityTooltip.find("#icon").attr("src",
+							applicationMD.applicationIcon);
+
+					// Fade out the tooltip on mouse click
+					applicationActivityTooltip.click(function() {
+						applicationActivityTooltip.fadeOut("slow");
+					});
+
+					// Position the tooltip to the left of the Activity so as to
+					// have minimum overlap with it
+					var toolTipX = this.x
+							+ this.diagram.getCanvasPosition().left
+							- applicationActivityTooltip.width() + 15;
+					var toolTipY = this.y
+							+ this.diagram.getCanvasPosition().top + 30;
+
+					// Fade in the tooltip
+					applicationActivityTooltip.css("visibility", "visible")
+							.moveDiv({
+								"x" : toolTipX,
+								"y" : toolTipY
+							}).hide().fadeIn("slow");
+
+				};
+
+				/**
+				 * return Applicatio Type Metadata
+				 */
+				ActivitySymbol.prototype.getApplicationMD = function(
+						application) {
+					var applicationMD = new Object();
+					var applicationIcon, applicationType, applicationViewName;
+					switch (application.applicationType) {
+					case "webservice":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-web-service.png";
+						applicationMD.applicationType = "Web Service Application"
+						applicationMD.applicationViewName = "webServiceApplicationView";
+						break;
+
+					case "messageTransformationBean":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-message-trans.png";
+						applicationMD.applicationType = "Message Transformation Application"
+						applicationMD.applicationViewName = "messageTransformationApplicationView";
+						break;
+
+					case "camelSpringProducerApplication":
+					case "camelConsumerApplication":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-camel.png";
+						applicationMD.applicationType = "Camel Application"
+						applicationMD.applicationViewName = "camelApplicationView";
+						break;
+
+					case "interactive":
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/application-c-ext-web.png";
+						applicationMD.applicationType = "UI Mashup Application"
+						applicationMD.applicationViewName = "uiMashupApplicationView";
+						break;
+
+					default:
+						applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/applications-blue.png";
+						applicationMD.applicationType = "Unknown Application"
+						applicationMD.applicationViewName = "genericApplicationView";
+					}
+					return applicationMD;
+				};
+				
+				
 				/**
 				 * Update the modelElement
 				 */
@@ -671,8 +886,10 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL) {
-								// do nothing
+							if (connection.fromAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL
+									&& !m_utils
+											.isIntermediateEvent(connection.fromAnchorPoint.symbol)) {
+								//do nothing
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 								// verify duplicate Data mapping
 								if (connection.toAnchorPoint.symbol.modelElement
@@ -694,88 +911,192 @@ define(
 							}
 						}
 					}
+					
+					//to keep single incoming and outgoing connection to/from an activity
 					// When rerouting happens, connection is not present in
 					// this.connections, check the validation rules with symbol
 					// connections list
-					if (conn != null && conn.oid > 0) {
+					if (conn != null) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
-							if (conn.fromAnchorPoint
-									&& conn.fromAnchorPoint.symbol) {
-								if (this.oid == conn.fromAnchorPoint.symbol.oid) {
-									return (-1 == jQuery.inArray(
-											conn.fromAnchorPoint.symbol.oid,
-											outMappingActivity))
+							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL 
+									&& conn.fromAnchorPoint.symbol.modelElement.eventType !== m_constants.START_EVENT_TYPE
+									&& conn.toAnchorPoint && conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+								if (conn.fromAnchorPoint
+										&& conn.fromAnchorPoint.symbol) {
+									if (this.oid == conn.fromAnchorPoint.symbol.oid) {
+										return (-1 == jQuery.inArray(
+												conn.fromAnchorPoint.symbol.oid,
+												outMappingActivity));
+									}
 								}
-							}
-							if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
-								if (this.oid == conn.toAnchorPoint.symbol.oid) {
-									return (-1 == jQuery.inArray(
-											conn.toAnchorPoint.symbol.oid,
-											inMappingActivity))
-								}
+								if (conn.toAnchorPoint && conn.toAnchorPoint.symbol) {
+									if (this.oid == conn.toAnchorPoint.symbol.oid) {
+										return (-1 == jQuery.inArray(
+												conn.toAnchorPoint.symbol.oid,
+												inMappingActivity));
+									}
+								}	
 							}
 						}
 					}
+					
 					return true;
 				};
 
+
 				/**
-				 *
+				 * overridden to consider boundary events as part of activity symbol 
 				 */
-				ActivitySymbol.prototype.postMove = function(x, y, originalX,
-						originalY) {
-					for ( var n = 0; n < this.boundaryEventSymbols.length; ++n) {
-						this.boundaryEventSymbols[n].moveBy(x - originalX, y
-								- originalY, true);
-						this.boundaryEventSymbols[n].toFront();
+				ActivitySymbol.prototype.dragStart = function() {
+					if (!this.selected) {
+						// de-select other symbols before drag
+						this.diagram.deselectCurrentSelection();
+						this.diagram.currentSelection = [];
+						this.select();
 					}
+
+					for ( var n = 0, length = this.boundaryEventSymbols.length; n < length; ++n) {
+						this.boundaryEventSymbols[n].select();
+					}
+
+					this.diagram.selectedSymbolsDragStart();
+				};
+
+				
+				/**
+				 * Adjust Activity Symbol Width
+				 */
+				ActivitySymbol.prototype.adjustWidth = function(returnChanges, add) {
+					if (this.boundaryEventSymbols) {
+						var requiredWidth = (this.boundaryEventSymbols.length + 1) * 45;
+						requiredWidth = requiredWidth < m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH ? m_constants.ACTIVITY_SYMBOL_DEFAULT_WIDTH
+								: requiredWidth;
+
+						if ((add && this.width < requiredWidth) || (!add && this.width > requiredWidth)) {
+							var difference = requiredWidth - this.width;
+							this.x = this.x - difference; 
+							this.width = requiredWidth;
+							var changes = {
+								"x" : this.x,
+								"y" : this.y,
+								"parentSymbolId" : this.parentSymbol.id,
+								"width" : this.width
+							};
+							
+							if (!returnChanges) {
+								m_commandsController.submitCommand(m_command
+										.createUpdateModelElementCommand(
+												this.diagram.modelId, this.oid,
+												changes));
+							}
+ 							else {
+								return {
+									oid : this.oid,
+									changes : changes,
+								};
+							}
+						}
+					}
+					return null;
 				};
 
 				/**
+				 * insert Boundary event into an boundaryEventSymbols considering the x attribute
+				 */
+				ActivitySymbol.prototype.insertBoundaryEvent = function(
+						symbolTobeInserted) {
+					
+					if (m_utils.isItemInArray(this.boundaryEventSymbols, symbolTobeInserted)) {
+						return boundaryEventSymbols.indexOf(symbolTobeInserted);
+					}
+					
+					this.boundaryEventSymbols.push(symbolTobeInserted);
+					
+					var length = this.boundaryEventSymbols.length;
+					
+					for (var i=0; i < length; i++) {
+				        var eventSymbol = this.boundaryEventSymbols[i];
+				        
+						for ( var j = i - 1; j > -1 && this.boundaryEventSymbols[j].x < eventSymbol.x; j--) {
+				        	this.boundaryEventSymbols[j+1] = this.boundaryEventSymbols[j];
+				        }
+						
+				        this.boundaryEventSymbols[j+1] = eventSymbol;
+				    }
+					return this.boundaryEventSymbols.indexOf(symbolTobeInserted);
+				};
+				
+				/**
 				 *
 				 */
-				ActivitySymbol.prototype.addBoundaryEvent = function(
-						eventSymbol) {
-					if (m_utils.isItemInArray(this.boundaryEventSymbols,
-							eventSymbol)) {
-						return;
-					}
-
-					this.boundaryEventSymbols.push(eventSymbol);
-
-					eventSymbol.bindingActivity = this;
-
-					eventSymbol.modelElement
-							.bindWithActivity(this.modelElement);
-
-					// Align all boundary events on the symbol boundary
-
-					var x = this.x + this.width;
+				ActivitySymbol.prototype.realignBoundaryEvent = function(bindingEventSymbol, interrupting){
+					var x = this.x + this.width - m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
+					var eventSymbol;
+					var changeDesc;
+					var changeDescriptions = [];
+					var changes;
+					
+					var y = this.y + this.height - m_constants.EVENT_DEFAULT_RADIUS;
 
 					for ( var i = 0; i < this.boundaryEventSymbols.length; ++i) {
 						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
+						eventSymbol = this.boundaryEventSymbols[i];
+						
+						if (eventSymbol.x !== (x - eventSymbol.clientSideAdjX + eventSymbol.parentSymbol.symbolXOffset)
+								|| eventSymbol.y !== y) {
+							eventSymbol.moveTo(x, y);
 
-						eventSymbol.moveTo(x - 0.5 * eventSymbol.width, this.y
-								+ this.height - 0.5 * eventSymbol.height);
+							changes = {
+								"x" : x - eventSymbol.clientSideAdjX
+										+ eventSymbol.parentSymbol.symbolXOffset,
+								"y" : y,
+								"parentSymbolId" : this.parentSymbol.id,
+								"type" : eventSymbol.type
+							};
 
+							if (bindingEventSymbol && (eventSymbol.oid == bindingEventSymbol.oid)) {
+									if(interrupting){
+										changes["modelElement"] = {
+												bindingActivityUuid : this.modelElement.id,
+												interrupting : true
+											};		
+									}else{
+										changes["modelElement"] = {
+												bindingActivityUuid : this.modelElement.id
+											};
+									}
+							}
+
+							changeDesc = {
+								oid : eventSymbol.oid,
+								changes : changes
+							};
+							changeDescriptions.push(changeDesc);
+						}
 						x -= eventSymbol.width;
 					}
+					
+					return changeDescriptions;
 				};
 
-				/**
-				 *
-				 */
-				ActivitySymbol.prototype.removeBoundaryEvent = function(
-						eventSymbol) {
-					m_utils.removeItemFromArray(this.boundaryEventSymbols,
-							eventSymbol);
+				
+				ActivitySymbol.prototype.getNextAvailableSlot = function() {
+					var length = this.boundaryEventSymbols.length + 1;
+					
+					var x = this.x + this.width + 10;
+					x -= (m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET * length);
+					x -= (2 * m_constants.EVENT_DEFAULT_RADIUS * length);
+					
+					var y = this.y + this.height
+							- (m_constants.EVENT_DEFAULT_RADIUS);
 
-					eventSymbol.bindingActivity = null;
-
-					eventSymbol.modelElement
-							.unbindFromActivity(this.modelElement);
+					return {
+						"x" : x,
+						"y" : y
+					};
 				};
 
+				
 				ActivitySymbol.prototype.showEditable = function() {
 					this.text.hide();
 					var editableText = this.diagram.editableText;
@@ -795,9 +1116,8 @@ define(
 						textBoxY = this.y + this.height / 3;
 					}
 
-					textBoxX = textBoxX + this.diagram.X_OFFSET
-							- scrollPos.left;
-					textBoxY = textBoxY + this.diagram.Y_OFFSET - scrollPos.top;
+					textBoxX = textBoxX + this.diagram.getCanvasPosition().left;
+					textBoxY = textBoxY + this.diagram.getCanvasPosition().top;
 
 					editableText.css("width", parseInt(textboxWidth.valueOf()));
 					editableText.css("height",
@@ -814,6 +1134,23 @@ define(
 				ActivitySymbol.prototype.postComplete = function() {
 					this.select();
 					this.diagram.showEditable(this.text);
+				};
+
+				ActivitySymbol.prototype.click = function(x, y) {
+					if (this.diagram.CREATE_MODE == this.diagram.mode
+							&& m_constants.INTERMEDIATE_EVENT_TYPE == this.diagram.newSymbol.modelElement.eventType) {
+						// delete connection
+						if (this.diagram.currentConnection) {
+							if (this.diagram.currentConnection.fromModelElementOid != this.oid) {
+								return;
+							}
+							this.diagram.currentConnection.remove();
+							this.diagram.currentConnection = null;
+						}
+						this.diagram.onClick(x, y);
+					} else {
+						this.click_(x, y);
+					}
 				};
 			}
 
@@ -852,6 +1189,14 @@ define(
 			/**
 			 *
 			 */
+			function ActivitySymbol_connectToIntermediateEventClosure() {
+				this.auxiliaryProperties.callbackScope.diagram
+						.connectToIntermediateEvent(this.auxiliaryProperties.callbackScope);
+			}
+			
+			/**
+			 *
+			 */
 			function ActivitySymbol_removeClosure() {
 				this.auxiliaryProperties.callbackScope
 						.createAndSubmitDeleteCommand();
@@ -883,11 +1228,11 @@ define(
 			/**
 			 *
 			 */
-			function ActivitySymbol_subprocessMarkerIconMouseMoveClosure() {
+			function ActivitySymbol_subprocessMarkerIconMouseOverClosure() {
 				this.auxiliaryProperties.callbackScope
-						.onSubprocessMarkerIconMouseMove();
+						.onSubprocessMarkerIconMouseOver();
 			}
-
+			
 			/**
 			 *
 			 */
@@ -896,6 +1241,18 @@ define(
 						.onSubprocessMarkerIconClick();
 			}
 
+			/**
+			 *
+			 */
+			function ActivitySymbol_applicationActivityIconMouseOverClosure() {
+				this.auxiliaryProperties.callbackScope
+						.onApplicationActivityIconMouseOver();
+			}
+
+			function ActivitySymbol_applicationActivityIconMouseOutClosure() {
+				this.auxiliaryProperties.callbackScope
+						.onApplicationActivityIconMouseOut();
+			}
 			/**
 			 *
 			 */

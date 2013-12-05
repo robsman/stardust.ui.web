@@ -32,23 +32,22 @@ define(
 
 					this.view.insertPropertiesTab("restServiceOverlay",
 							"parameters", "Parameters",
-							"../../images/icons/table.png");
+							"plugins/bpm-modeler/images/icons/database_link.png");
 					this.view.insertPropertiesTab("restServiceOverlay", "test",
-							"Test", "../../images/icons/table.png");
+							"Test", "plugins/bpm-modeler/images/icons/application-run.png");
 
-					this.camelContextInput = jQuery("#restServiceOverlay #camelContextInput");
-					this.uriInput = jQuery("#restServiceOverlay #uriInput");
-					this.queryStringLabel = jQuery("#restServiceOverlay #queryStringLabel");
-					this.commandSelect = jQuery("#restServiceOverlay #commandSelect");
-					this.requestTypeSelect = jQuery("#restServiceOverlay #requestTypeSelect");
-					this.responseTypeSelect = jQuery("#restServiceOverlay #responseTypeSelect");
-					this.crossDomainInput = jQuery("#restServiceOverlay #crossDomainInput");
-					this.resetButton = jQuery("#testTab #resetButton");
-					this.runButton = jQuery("#testTab #runButton");
-					this.inputDataTextarea = jQuery("#testTab #inputDataTextarea");
-					this.outputDataTextarea = jQuery("#testTab #outputDataTextarea");
-					this.inputBodyAccessPointInput = jQuery("#parametersTab #inputBodyAccessPointInput");
-					this.outputBodyAccessPointInput = jQuery("#parametersTab #outputBodyAccessPointInput");
+					this.uriInput = m_utils.jQuerySelect("#restServiceOverlay #uriInput");
+					this.queryStringLabel = m_utils.jQuerySelect("#restServiceOverlay #queryStringLabel");
+					this.commandSelect = m_utils.jQuerySelect("#restServiceOverlay #commandSelect");
+					this.requestTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #requestTypeSelect");
+					this.responseTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #responseTypeSelect");
+					this.crossDomainInput = m_utils.jQuerySelect("#restServiceOverlay #crossDomainInput");
+					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
+					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
+					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
+					this.outputDataTextarea = m_utils.jQuerySelect("#testTab #outputDataTextarea");
+					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
 					this.resetButton
 							.prop(
@@ -60,11 +59,11 @@ define(
 									"title",
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.runButton.title"));
-					jQuery("label[for='inputDataTextArea']")
+					m_utils.jQuerySelect("label[for='inputDataTextArea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.inputDataTextArea.label"));
-					jQuery("label[for='outputDataTextarea']")
+					m_utils.jQuerySelect("label[for='outputDataTextarea']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.uiMashup.test.outputDataTextArea.label"));
@@ -76,14 +75,12 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : false
 							});
 
 					var self = this;
 
-					this.camelContextInput.change(function() {
-						self.submitChanges();
-					});
 					this.uriInput.change(function() {
 						self.submitChanges();
 					});
@@ -101,40 +98,30 @@ define(
 					});
 					this.inputBodyAccessPointInput
 							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
-
+								
 								if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inBodyAccessPoint",
-													null);
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::inBodyAccessPoint",
+												null);
 								} else {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::inBodyAccessPoint",
-													self.inputBodyAccessPointInput
-															.val());
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::inBodyAccessPoint",
+												self.inputBodyAccessPointInput
+													.val());
 								}
 							});
 					this.outputBodyAccessPointInput
 							.change(function() {
-								if (!self.view.validate()) {
-									return;
-								}
-
+								
 								if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outBodyAccessPoint",
-													null);
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::outBodyAccessPoint",
+												null);
 								} else {
-									self.view
-											.submitModelElementAttributeChange(
-													"carnot:engine:camel::outBodyAccessPoint",
-													self.outputBodyAccessPointInput
-															.val());
+									self.submitSingleAttributeChange(
+											"carnot:engine:camel::outBodyAccessPoint",
+												self.outputBodyAccessPointInput
+													.val());
 								}
 							});
 
@@ -366,8 +353,18 @@ define(
 				 * 
 				 */
 				RestServiceOverlay.prototype.getRoute = function() {
+
 					var uri = this.uriInput.val();
 					var start = true;
+					var route = "";
+					var httpUri = "";
+					var httpQuery = "";
+					
+					if (uri.indexOf("?") >= 0)
+					{
+						// there is already a ? defined in URI
+						start = false;
+					}
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
@@ -379,42 +376,72 @@ define(
 						}
 
 						if (this.uriInput.val().indexOf(
-								"{" + accessPoint.id + "}") >= 0) {
+								"{" + accessPoint.id + "}") >= 0)
+						{
 							uri = uri.replace("{" + accessPoint.id + "}",
-									"{header." + accessPoint.id + "}");
-						} else {
-							if (start) {
+									"$simple{header." + accessPoint.id + "}");
+
+							route += "<setHeader headerName='" + accessPoint.id + "'>";
+							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
+							route += "</setHeader>";
+						}
+						else
+						{
+							if (start)
+							{
 								uri += "?";
 								start = false;
-							} else {
+							}
+							else
+							{
 								uri += "&";
 							}
 
 							uri += accessPoint.id;
 							uri += "=";
 							uri += "$simple{header." + accessPoint.id + "}";
+
+							route += "<setHeader headerName='" + accessPoint.id + "'>";
+							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
+							route += "</setHeader>";
 						}
 					}
 
-					var route = "";
+					uri = uri.replace(/&/g, "&amp;");
 
-					route += "<setHeader headerName='CamelHttpUri'>\n";
-					route += "\t<simple>" + uri + "</simple>\n";
-					route += "</setHeader>\n";
-					route += "<setHeader headerName='CamelHttpMethod'>\n";
-					route += "\t<constant>" + this.commandSelect.val()
-							+ "</constant>\n";
-					route += "</setHeader>\n";
-					route += "<setHeader headerName='CamelAcceptContentType'>\n";
-					route += "\t<constant>" + this.responseTypeSelect.val()
-							+ "</constant>\n";
-					route += "</setHeader>\n";
-					route += "<to uri='http://isoverwritten'/>\n";
+					if (uri.indexOf("?") > 0)
+					{
+						var index = uri.indexOf("?");
+						httpUri = uri.substring(0, index);
+                        httpQuery = uri.substring(index + 1); 						
+						route += "<setHeader headerName='CamelHttpQuery'>";
+						route += "<simple>" + httpQuery + "</simple>";
+						route += "</setHeader>";
+					}
+					else
+					{
+						httpUri = uri;
+					}
+
+					route += "<setHeader headerName='CamelHttpUri'>";
+					route += "<simple>" + httpUri + "</simple>";
+					route += "</setHeader>";
+					route += "<setHeader headerName='CamelHttpMethod'>";
+					route += "<constant>" + this.commandSelect.val() + "</constant>";
+					route += "</setHeader>";
+
+					if (this.requestTypeSelect.val() === "application/json") {
+						route += "<to uri='bean:bpmTypeConverter?method=toJSON' />";
+					} else if (this.requestTypeSelect.val() === "application/xml") {
+						route += "<to uri='bean:bpmTypeConverter?method=toXML' />";
+					}
+
+					route += "<to uri='http://isoverwritten'/>";
 
 					if (this.responseTypeSelect.val() === "application/json") {
-						route += "<unmarshal ref='bpm.JsonUnmarshaller' />\n";
+						route += "<to uri='bean:bpmTypeConverter?method=fromJSON' />";
 					} else if (this.responseTypeSelect.val() === "application/xml") {
-						route += "<unmarshal ref='bpm.XmlUnmarshaller' />\n";
+						route += "<to uri='bean:bpmTypeConverter?method=fromXML' />";
 					}
 
 					return route;
@@ -429,7 +456,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay"
 								}
-							});
+							}, true);
 				};
 
 				/**
@@ -481,8 +508,6 @@ define(
 							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-					this.camelContextInput
-					.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);
 					this.uriInput
 							.val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
 					this.queryStringLabel.empty();
@@ -507,8 +532,7 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : this.camelContextInput
-											.val(),
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -539,8 +563,7 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
-									"carnot:engine:camel::camelContextId" : this.camelContextInput
-											.val(),
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"stardust:restServiceOverlay::uri" : this.uriInput
@@ -554,31 +577,31 @@ define(
 									"stardust:restServiceOverlay::crossDomain" : this.crossDomainInput
 											.prop("checked")
 								}
-							});
+							}, true);
+				};
+				
+				RestServiceOverlay.prototype.submitSingleAttributeChange = function(attribute, value) {
+					
+					if (this.getModelElement().attributes[attribute] != value) {
+						var modelElement = {
+							attributes : {}
+						};
+						modelElement.attributes[attribute] = value;
+						this.view.submitChanges(modelElement, true);
+					}
 				};
 
 				/**
 				 * 
 				 */
 				RestServiceOverlay.prototype.validate = function() {
-					this.camelContextInput.removeClass("error");
 
-					if (this.camelContextInput.val() == null
-							|| this.camelContextInput.val() == "") {
-						this.view.errorMessages
-								.push("Camel Context must not be empty."); // TODO
-						// I18N
-						this.camelContextInput.addClass("error");
+					this.uriInput.removeClass("error");
 
-						return false;
-					}
-
-					if (this.uriInput.val() == null
-							|| this.uriInput.val() == "") {
-						this.view.errorMessages.push("URI must not be empty."); // TODO
-						// I18N
+					if (m_utils.isEmptyString(this.uriInput.val())) 
+					{
+						this.view.errorMessages.push("URI must not be empty."); // TODO I18N
 						this.uriInput.addClass("error");
-
 						return false;
 					}
 

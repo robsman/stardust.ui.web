@@ -9,10 +9,12 @@ import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.ExtensionDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -148,6 +150,16 @@ public class ChangesetNormalizer implements ChangePostprocessor
       {
          return IGNORE;
       }
+      else if ( !isModelOrModelElement(element))
+      {
+         // report any change to a non-element sub-object as modification of the
+         // containing parent element
+         EObject changedElement = determineChangedElement(element);
+         if (element != changedElement)
+         {
+            return modifyInstead(changedElement);
+         }
+      }
 
       return ACCEPT;
    }
@@ -165,8 +177,10 @@ public class ChangesetNormalizer implements ChangePostprocessor
    private boolean isModelOrModelElement(EObject changedObject)
    {
       return (changedObject instanceof Definitions)
+            || (changedObject instanceof ItemDefinition)
             || (changedObject instanceof Interface)
             || (changedObject instanceof DataStore)
+            || (changedObject instanceof Resource)
             || (changedObject instanceof Process)
             || ((changedObject instanceof FlowElement) && !(changedObject instanceof DataStoreReference))
             || (changedObject instanceof Diagram)

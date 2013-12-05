@@ -29,8 +29,8 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		m_data, m_i18nUtils) {
 
 	function selectTool(toolButtonId) {
-		$(".selected-tool").removeClass("selected-tool");
-		$("#" + toolButtonId).addClass("selected-tool");
+		m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
+		m_utils.jQuerySelect("#" + toolButtonId).addClass("selected-tool");
 	}
 	return {
 		setSelectMode : function(diagram) {
@@ -121,15 +121,15 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 					m_commandsController.broadcastCommandUndo(data);
 
 					if (null != data.pendingUndo) {
-						jQuery("#undo").removeAttr("disabled", "disabled");
+						m_utils.jQuerySelect("#undo").removeAttr("disabled", "disabled");
 					} else {
-						jQuery("#undo").attr("disabled", "disabled");
+						m_utils.jQuerySelect("#undo").attr("disabled", "disabled");
 					}
 
 					if (null != data.pendingRedo) {
-						jQuery("#redo").removeAttr("disabled", "disabled");
+						m_utils.jQuerySelect("#redo").removeAttr("disabled", "disabled");
 					} else {
-						jQuery("#redo").attr("disabled", "disabled");
+						m_utils.jQuerySelect("#redo").attr("disabled", "disabled");
 					}
 				}
 			});
@@ -146,15 +146,15 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 					m_commandsController.broadcastCommand(data);
 
 					if (null != data.pendingUndo) {
-						jQuery("#undo").removeAttr("disabled", "disabled");
+						m_utils.jQuerySelect("#undo").removeAttr("disabled", "disabled");
 					} else {
-						jQuery("#undo").attr("disabled", "disabled");
+						m_utils.jQuerySelect("#undo").attr("disabled", "disabled");
 					}
 
 					if (null != data.pendingRedo) {
-						jQuery("#redo").removeAttr("disabled", "disabled");
+						m_utils.jQuerySelect("#redo").removeAttr("disabled", "disabled");
 					} else {
-						jQuery("#redo").attr("disabled", "disabled");
+						m_utils.jQuerySelect("#redo").attr("disabled", "disabled");
 					}
 				}
 			});

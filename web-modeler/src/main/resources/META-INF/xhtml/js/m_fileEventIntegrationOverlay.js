@@ -48,35 +48,35 @@ define(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
 
-					jQuery("configuration")
+					m_utils.jQuerySelect("configuration")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.configuration"));
-					jQuery("parameters")
+					m_utils.jQuerySelect("parameters")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.event.parameters"));
-					jQuery("label[for='directoryNameInput']")
+					m_utils.jQuerySelect("label[for='directoryNameInput']")
 					        .text(
 						           	m_i18nUtils
 						           			.getProperty("modeler.element.properties.fileEvent.directoryName"));
-			        jQuery("label[for='fileNameInput']")
+			        m_utils.jQuerySelect("label[for='fileNameInput']")
 			        		.text(
 			        				m_i18nUtils
 			        						.getProperty("modeler.element.properties.fileEvent.fileName"));
-					jQuery("label[for='recursiveInput']")
+					m_utils.jQuerySelect("label[for='recursiveInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.recursive"));
-					jQuery("label[for='initialIntervalInput']")
+					m_utils.jQuerySelect("label[for='initialIntervalInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.initialInterval"));
-					jQuery("label[for='postProcessingSelect']")
+					m_utils.jQuerySelect("label[for='postProcessingSelect']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.postProcessing"));
-					jQuery("label[for='alwaysConsumeInput']")
+					m_utils.jQuerySelect("label[for='alwaysConsumeInput']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.fileEvent.alwaysConsume"));
@@ -105,6 +105,60 @@ define(
 					this.alwaysConsumeInput = this
 							.mapInputId("alwaysConsumeInput");
 
+					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
+					this.outputBodyAccessPointInput = jQuery("#fileEvent #parametersTab #outputBodyAccessPointInput");
+					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+								.create({
+									scope : "fileEvent",
+									submitHandler : this,
+									supportsOrdering : true,
+									supportsDataMappings : true,
+									supportsDescriptors : false,
+									supportsDataTypeSelection : true,
+									supportsDocumentTypes : true,
+									hideEnumerations:true
+								});
+
+						if (this.propertiesTabs != null) {
+							this.propertiesTabs.tabs();
+						}
+					
+						this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+						
+						this.outputBodyAccessPointInput.change(
+										{
+											panel : this
+										},
+										function(event) {
+									if (!event.data.panel.validate()) {
+										return;
+									}
+
+									if (event.data.panel.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+														event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : null
+										}
+									}
+								});
+									} else {
+										/*event.data.panel
+												.submitParameterDefinitionsChanges(
+														"carnot:engine:camel::outBodyAccessPoint",
+														event.data.panel.outputBodyAccessPointInput
+																.val());*/
+								event.data.panel.submitChanges({
+									modelElement : {
+										attributes : {
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
+																.val()
+										}
+									}
+								});
+									}
+								});
+					
 					this.registerForRouteChanges(this.directoryNameInput);
 					this.registerForRouteChanges(this.fileNameInput);
 					this.registerForRouteChanges(this.recursiveInput);
@@ -131,14 +185,14 @@ define(
 					
 					if(this.fileNameInput != null && this.fileNameInput.val().length != 0){
 						uri += separator + "fileName="+this.fileNameInput.val();
-						separator = "&";
+						separator = "&amp;";
 						
 					}
 					
 					if (this.recursiveInput.is(":checked") == true) {
 						uri += separator + "recursive="
 								+ this.recursiveInput.is(":checked");
-						separator = "&";
+						separator = "&amp;";
 
 					}
 
@@ -150,7 +204,7 @@ define(
 								+ this.getIntervalInMilliseconds(
 										this.initialIntervalInput.val(),
 										this.initialIntervalUnitSelect.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 
 					if (this.getIntervalInMilliseconds(this.repeatIntervalInput
@@ -160,18 +214,18 @@ define(
 								+ this.getIntervalInMilliseconds(
 										this.repeatIntervalInput.val(),
 										this.repeatIntervalUnitSelect.val());
-						separator = "&";
+						separator = "&amp;";
 					}
 					if (this.lockBehaviorSelect.val() == "none") {
 						// nothing to do
 					} else {
 						if (this.lockBehaviorSelect.val() == "markerFile") {
 							uri += separator + "readLock=markerFile";
-							separator = "&";
+							separator = "&amp;";
 						} else {
 							if (this.lockBehaviorSelect.val() == "changed") {
 								uri += separator + "readLock=changed";
-								separator = "&";
+								separator = "&amp;";
 							}
 						}
 					}
@@ -182,15 +236,12 @@ define(
 					 */
 
 					if (this.postProcessingSelect.val() == "noop") {
-						uri += "&noop=true";
-						uri += "&delete=false";
+						uri += "&amp;noop=true";
+						uri += "&amp;delete=false";
 					} else if (this.postProcessingSelect.val() == "delete") {
-						uri += "&noop=false";
-						uri += "&delete=true";
+						uri += "&amp;noop=false";
+						uri += "&amp;delete=true";
 					}
-
-					uri = uri.replace(/&/g, "&amp;")
-
 					return uri;
 				};
 
@@ -203,11 +254,11 @@ define(
 					this.initialIntervalInput.val(5000);
 					this.repeatIntervalInput.val(5000);
 
-					var parameterMappings = [];
+				/*	var parameterMappings = [];
 
 					parameterMappings.push(this
 							.createPrimitiveParameterMapping("Message",
-									"message", "String"));
+									"message", "String"));*/
 					/*
 					 * parameterMappings.push(this
 					 * .createPrimitiveParameterMapping("File Name",
@@ -230,8 +281,9 @@ define(
 					 * .createPrimitiveParameterMapping( "Last Modified Date",
 					 * "CamelFileLastModified", "String"));
 					 */
-
+					var parameterMappings = [];
 					this.submitOverlayChanges(parameterMappings);
+					
 				};
 				FileEventIntegrationOverlay.prototype.getAdditionalRouteDefinitions = function() {
 					return "<to uri=\"ipp:direct\"/>";
@@ -245,6 +297,25 @@ define(
 				 * 
 				 */
 				FileEventIntegrationOverlay.prototype.update = function() {
+					
+					this.outputBodyAccessPointInput.empty();
+					this.outputBodyAccessPointInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "' selected>"
+							+ m_i18nUtils.getProperty("None") // TODO I18N
+							+ "</option>");
+
+					
+					
+					for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
+					{
+						var accessPoint = this.page.getEvent().parameterMappings[n];
+						//accessPoint.id=accessPoint.name;
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						this.outputBodyAccessPointInput
+								.append("<option value='" + accessPoint.id
+										+ "'>" + accessPoint.name + "</option>");
+					}
+					
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
 					if (route == null) {
@@ -257,8 +328,8 @@ define(
 
 					var xmlDoc = jQuery
 							.parseXML("<route>" + route + "</route>");
-					var xmlObject = jQuery(xmlDoc);
-					var from = jQuery(xmlObject).find("from");
+					var xmlObject = m_utils.jQuerySelect(xmlDoc);
+					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
 					var uri = uri.split("//");
 
@@ -323,10 +394,17 @@ define(
 						}
 					}
 
-					this.parameterMappingsPanel.setScopeModel(this.page
+					this.outputBodyAccessPointInput
+					.val(this.page.getEvent().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+					this.parameterDefinitionsPanel.setScopeModel(this.page
+							.getModel());
+					
+					this.parameterDefinitionsPanel
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+				/*	this.parameterMappingsPanel.setScopeModel(this.page
 							.getModel());
 					this.parameterMappingsPanel
-							.setParameterDefinitions(this.page.getEvent().parameterMappings);
+							.setParameterDefinitions(this.page.getEvent().parameterMappings);*/
 				};
 
 				/**
@@ -336,8 +414,7 @@ define(
 					this.directoryNameInput.removeClass("error");
 					this.page.propertiesPanel.errorMessages=[];
 
-					if (this.directoryNameInput.val() == null
-							|| this.directoryNameInput.val() == "") {
+					if (m_utils.isEmptyString(this.directoryNameInput.val())) {
 						this.page.propertiesPanel.errorMessages
 								.push("Directory name must not be empty.");
 						this.directoryNameInput.addClass("error");

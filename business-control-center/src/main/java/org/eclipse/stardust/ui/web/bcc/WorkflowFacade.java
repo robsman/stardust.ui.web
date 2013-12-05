@@ -1167,10 +1167,27 @@ public class WorkflowFacade implements Resetable
 
    public UserQuery getTeamQuery(boolean includeTeamLeader)
    {
+      return getTeamQuery(includeTeamLeader, false);
+   }
+   
+   /**
+    * For deputy, if user is Admin, all users should be visible
+    * 
+    * @param includeTeamLeader
+    * @param excludeFilterForAdmin
+    * @return
+    */
+   public UserQuery getTeamQuery(boolean includeTeamLeader, boolean excludeFilterForAdmin)
+   {
       UserQuery query = UserQuery.findActive();
       User user = getLoginUser();
       if (user != null)
-      {        
+      {       
+         if (excludeFilterForAdmin && user.isAdministrator())
+         {
+            // Deputy- For Admin user, return all users
+            return query;
+         }
          FilterTerm filter = query.getFilter().addOrTerm();
          
          ModelParticipantInfo modelParticipantInfo;
@@ -1196,17 +1213,116 @@ public class WorkflowFacade implements Resetable
                   modelParticipantInfo = role;
                }
 
-               String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
-               if (teamleadRoles.containsKey(participantKey))
+               if (null != modelParticipantInfo)
                {
-                  filter.add(ParticipantAssociationFilter
-                        .forTeamLeader((RoleInfo) modelParticipantInfo));
+                  String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+                  if (teamleadRoles.containsKey(participantKey))
+                  {
+                     filter.add(ParticipantAssociationFilter.forTeamLeader((RoleInfo) modelParticipantInfo));
+                  }
                }
             }
          }
          if (includeTeamLeader)
          {
             filter.add(UserQuery.OID.isEqual(user.getOID()));
+         }
+      }
+      else
+      {
+         query.where(UserQuery.OID.isEqual(0));
+      }
+      return query;
+   }
+
+   /**
+    * @return
+    */
+   public boolean isTeamLead()
+   {
+      User user = getLoginUser();
+      if (user != null)
+      {
+         ModelParticipantInfo modelParticipantInfo;
+         Model model;
+         Role role;
+         Department department;
+
+         List<Grant> grants = user.getAllGrants();
+         for (Grant grant:grants)
+         {
+            if (!grant.isOrganization())
+            {
+               model = ModelCache.findModelCache().getActiveModel(grant);
+               role = model.getRole(grant.getId());
+               department = grant.getDepartment();
+
+               if (department != null)
+               {
+                  modelParticipantInfo = department.getScopedParticipant(role);
+               }
+               else
+               {
+                  modelParticipantInfo = role;
+               }
+
+               String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+               if (teamleadRoles.containsKey(participantKey))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+      return false;
+   }
+
+   /**
+    * @param excludeThisUser
+    * @return
+    */
+   public UserQuery getUsersWithSimilarGrants(boolean excludeThisUser)
+   {
+      UserQuery query = UserQuery.findActive();
+      User user = getLoginUser();
+      if (user != null)
+      {
+         FilterTerm filter = query.getFilter().addOrTerm();
+
+         ModelParticipantInfo modelParticipantInfo;
+         Model model;
+         Role role;
+         Department department;
+
+         List<Grant> grants = user.getAllGrants();
+         for (Grant grant:grants)
+         {
+            if (!grant.isOrganization())
+            {
+               model = ModelCache.findModelCache().getActiveModel(grant);
+               role = model.getRole(grant.getId());
+               department = grant.getDepartment();
+
+               if (department != null)
+               {
+                  modelParticipantInfo = department.getScopedParticipant(role);
+               }
+               else
+               {
+                  modelParticipantInfo = role;
+               }
+
+               String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
+               if (teamleadRoles.containsKey(participantKey))
+               {
+                  filter.add(ParticipantAssociationFilter.forParticipant(((RoleInfo) modelParticipantInfo)));
+               }
+            }
+         }
+
+         if (excludeThisUser)
+         {
+            //filter.add(UserQuery.OID.isEqual(user.getOID()));
          }
       }
       else

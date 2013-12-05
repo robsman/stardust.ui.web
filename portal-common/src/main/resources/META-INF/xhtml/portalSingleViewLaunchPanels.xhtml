@@ -1,0 +1,72 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<div class="topMenu" style="line-height:16px;">
+			<ice:form partialSubmit="true">
+				<table>
+					<tr>
+						<td class="topMenuTd" style="width: 100%">
+							<ice:panelGroup	styleClass="topMenuIframeBar">
+								<ice:panelGrid columns="2" styleClass="menuItm">
+									<ice:commandLink
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<ice:panelGroup style="padding-top: 1px; padding-right: 2px;">
+											<ice:graphicImage
+												value="/plugins/common/images/icons/trigger-perspective.png" />
+										</ice:panelGroup>
+									</ice:commandLink>
+									<ice:commandLink value="#{ippPortalUi.perspective.label}"
+										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
+										style="margin-right:3px;">
+										<pc:automationTag value="auto-FW-PerspectiveMenu"
+											standAlone="false" />
+									</ice:commandLink>
+								</ice:panelGrid>
+								<!-- Anchor to include the Iframe -->
+								<div id="ippPerspectiveMenuAnchor"></div>
+							</ice:panelGroup>
+						</td>
+						<td class="topMenuTd">
+							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true">
+								<!-- HELP Menu Item -->
+								<c:if test="#{not empty ippPortalApp.helpDocPreference}">
+									<pc:automationTag value="auto-FW-HelpMenu" />
+									<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help']}">
+										<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help.documentation']}"
+											onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;"/>
+									</ice:menuItem>
+								</c:if>
+
+								<!-- TODO: Menu Sections from perspective definition -->
+							</ice:menuBar>
+						</td>
+					</tr>
+				</table>
+			</ice:form>
+		</div>
+
+		<div class="content">
+			<c:forEach items="#{ippPortalUi.perspective.launchPanels}"
+				var="launchPanel">
+				<ice:form partialSubmit="false">
+					<ice:panelGroup>
+						<ui:include src="portalUserDefinedInclude.xhtml">
+							<ui:param name="includeFilePath" value="#{launchPanel.include}" />
+						</ui:include>
+						<ice:panelGroup styleClass="clearing" />
+					</ice:panelGroup>
+				</ice:form>
+			</c:forEach>
+		</div>
+
+		<div id="ippPortalEndLP"></div>
+	</ice:panelGroup>
+
+</f:view>

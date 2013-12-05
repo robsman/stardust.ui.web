@@ -13,9 +13,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_dataPropertiesPanel", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_command, m_canvasManager, m_model,
-				m_symbol, m_connection, m_dataPropertiesPanel, m_data, m_modelerUtils, m_i18nUtils) {
+				m_symbol, m_connection, m_data, m_modelerUtils, m_i18nUtils) {
 
 			return {
 				/**
@@ -94,7 +94,7 @@ define(
 
 					this.diagram.lastSymbol = this;
 
-					this.propertiesPanel = m_dataPropertiesPanel.getInstance();
+					this.propertiesPanel = this.diagram.dataPropertiesPanel;
 					this.path = null;
 					this.text = null;
 				};
@@ -163,7 +163,7 @@ define(
 				 *
 				 */
 				DataSymbol.prototype.createPrimitives = function() {
-					this.path = m_canvasManager
+					this.path = this.diagram.canvasManager
 							.drawPath(
 									this.getPathSvgString(),
 									{
@@ -175,7 +175,7 @@ define(
 					this.addToPrimitives(this.path);
 					this.addToEditableTextPrimitives(this.path);
 
-					this.text = m_canvasManager.drawTextNode(this.x + 15,
+					this.text = this.diagram.canvasManager.drawTextNode(this.x + 15,
 							this.y + 50, this.dataName).attr({
 						"text-anchor" : "middle",
 						"font-family" : m_constants.DEFAULT_FONT_FAMILY,
@@ -307,12 +307,12 @@ define(
 				 */
 				DataSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/connect.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/connect.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : DataSymbol_connectToClosure
 					} ], [ {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : DataSymbol_removeClosure
@@ -404,12 +404,10 @@ define(
 					editableText.css("visibility", "visible").html(name)
 							.moveDiv(
 									{
-										"x" : this.x + this.diagram.X_OFFSET
-												+ this.width / 5
-												- scrollPos.left - 10,
-										"y" : this.y + this.diagram.Y_OFFSET
+										"x" : this.x + this.diagram.getCanvasPosition().left
+												+ this.width / 5 - 10,
+										"y" : this.y + this.diagram.getCanvasPosition().top
 												+ (this.height) + 5
-												- scrollPos.top
 									}).show().trigger("dblclick");
 					return this.text;
 				};

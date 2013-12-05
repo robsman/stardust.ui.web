@@ -10,14 +10,22 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.provider;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ParticipantWorklist;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
@@ -26,12 +34,15 @@ import org.eclipse.stardust.engine.api.query.UserWorklist;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExecutionPortal;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.provider.IAssemblyLineActivityProvider;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 
 
@@ -48,22 +59,102 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
  */
 public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivityProvider
 {
-
+   private Map<String, List<Department>> departmentsCache = new HashMap<String, List<Department>>();
+   
    protected WorklistQuery createWorklistQuery(Set participantIds, boolean outline)
    {
+      Map<String, Organization> organizationMap = CollectionUtils.newHashMap();
       WorklistQuery query = new WorklistQuery();
       query.setUserContribution(SubsetPolicy.UNRESTRICTED);
       for (Iterator i = participantIds.iterator(); i.hasNext();)
       {
          String participantId = (String) i.next();
-         query.setParticipantContribution(
-               PerformingParticipantFilter.forModelParticipant(participantId, false),
-               outline ? new SubsetPolicy(0, true) : null);
+         ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(participantId);
+         if(!participant.isDepartmentScoped())
+         {
+            // For non-department scoped Participant use the participantId for filter
+            query.setParticipantContribution(PerformingParticipantFilter.forModelParticipant(participantId, false),
+                  outline ? new SubsetPolicy(0, true) : null);
+         }
+         else
+         {
+            List<Department> deptList;
+            
+            if(!updateOrganizationMap(participant,organizationMap))
+            {
+               continue; // If query already contains filter for Org/Role, loop out
+            }
+            // Loop over each Org. to get Department for setting filter on Scoped
+            // Participant of Dept.
+            for (Entry<String, Organization> entry : organizationMap.entrySet())
+            {
+               Organization org = entry.getValue();
+               if (departmentsCache.containsKey(org.getQualifiedId()))
+               {
+                  deptList = departmentsCache.get(org.getQualifiedId());
+               }
+               else
+               {
+                  // Populate Department cache
+                  QueryService qs = ServiceFactoryUtils.getQueryService();
+                  deptList = qs.findAllDepartments(org.getDepartment(), org);
+                  departmentsCache.put(org.getQualifiedId(), deptList);
+               }
+
+               for (Department department : deptList)
+               {
+                  ParticipantInfo participantInfo = department.getScopedParticipant(participant);
+                  if (null != participantInfo)
+                  {
+                     query.setParticipantContribution(PerformingParticipantFilter
+                           .forParticipant(participantInfo, false), outline ? new SubsetPolicy(0, true) : null);
+                  }
+               }
+            }
+         }
       }
       FilterTerm filter = query.getFilter().addAndTerm();
       long caseActivityOID = ModelCache.findModelCache().getDefaultCaseActivity().getRuntimeElementOID();
       filter.add(WorklistQuery.ACTIVITY_OID.notEqual(caseActivityOID));
       return query;
+   }
+
+   /**
+    * Updates the original Org Map, return true if map is updated, return false, if Org.
+    * Map already contains key
+    * 
+    * @param participant
+    * @param organizationMap
+    * @return
+    */
+   private boolean updateOrganizationMap(Participant participant, Map<String, Organization> organizationMap)
+   {
+      if (participant instanceof Organization)
+      {
+         if (!organizationMap.containsKey(participant.getQualifiedId()))
+         {
+            // Create a map for unique Org, used for fetching dept.
+            organizationMap.put(participant.getQualifiedId(), (Organization) participant);
+            return true;
+         }
+      }
+      else if (participant instanceof Role)
+      {
+         Role role = (Role) participant;
+         List<Organization> worksForOrganizations = role.getClientOrganizations();
+
+         if ((worksForOrganizations != null) && (worksForOrganizations.size() > 0))
+         {
+            String orgQualifierId = worksForOrganizations.get(0).getQualifiedId();
+            if (!organizationMap.containsKey(orgQualifierId))
+            {
+               organizationMap.put(orgQualifierId, worksForOrganizations.get(0));
+               return true;
+            }
+         }
+      }
+      // If Org. Map was not updated return false
+      return false;
    }
    
    private boolean isAssemblyLineActivity(Set assemblyLineParticipants, ActivityInstance ai)
@@ -172,5 +263,10 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
          }
       }
       return activityCount;
+   }
+
+   public Map<String, List<Department>> getDepartmentsCache()
+   {
+      return departmentsCache;
    }
 }

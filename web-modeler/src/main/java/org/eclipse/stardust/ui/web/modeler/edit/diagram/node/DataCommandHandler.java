@@ -81,8 +81,8 @@ public class DataCommandHandler
             {
                data = getModelBuilderFacade().createPrimitiveData(model, dataID,
                      dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
-               mapper.map(data);
             }
+            mapper.map(data);
          }
          catch (ObjectNotFoundException x)
          {
@@ -111,8 +111,7 @@ public class DataCommandHandler
       {
          if(dataSymbol != null)
          {
-            ModelElementEditingUtils.deleteDataMappingConnection(processDefinition,
-                  dataSymbol.getDataMappings().iterator());
+            ModelElementEditingUtils.deleteDataMappingConnection(dataSymbol.getDataMappings());
             data.getDataSymbols().remove(dataSymbol);
             processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
             parentLaneSymbol.getDataSymbol().remove(dataSymbol);

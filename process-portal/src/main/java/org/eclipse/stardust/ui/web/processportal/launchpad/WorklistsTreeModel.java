@@ -10,13 +10,20 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.processportal.launchpad;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 
@@ -36,6 +43,7 @@ public class WorklistsTreeModel extends DefaultTreeModel
 
    private boolean showEmptyWorklist;
    private WorklistsBean worklistsBean;
+   private List<String> expandedUserObjects;
    
    /**
     * @param root
@@ -76,9 +84,10 @@ public class WorklistsTreeModel extends DefaultTreeModel
     */
    public void clear()
    {
+      cacheCurrentNodeState();
       root.removeAllChildren();
    }
-
+   
    /**
     * @param reload
     */
@@ -91,68 +100,171 @@ public class WorklistsTreeModel extends DefaultTreeModel
          {
             ParticipantWorklistCacheManager.getInstance().reset();
          }
+         Map<String,Set<ParticipantInfo>> participantMap = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants();
          
-         addAssemblyLineChild(reload);
-
-         Set<ParticipantInfo> participants = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants();
-         for (ParticipantInfo participantInfo : participants)
+         for (Entry<String, Set<ParticipantInfo>> entry : participantMap.entrySet())
          {
-            if (assemblyLineUserObject.isAssemblyLineMode()
-                  && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getId()))
+            DefaultMutableTreeNode tempRootNode = null;
+            DefaultMutableTreeNode assemblyLineNode = null;
+            Set<ParticipantInfo> participants = entry.getValue();
+            if (null == assemblyLineNode)
             {
-               continue;
+               assemblyLineNode = initAssemblyLineChild(reload);
+            }
+            for (ParticipantInfo participantInfo : participants)
+            {
+               boolean assemblyNodeCreated = false;
+               if (participantInfo.getQualifiedId().equals(entry.getKey()) && (participantInfo instanceof UserInfo))
+               {
+                  tempRootNode = addChild(participantInfo, false, root);
+               }
+               
+               if (assemblyLineUserObject.isAssemblyLineMode()
+                     && assemblyLineUserObject.getAssemblyLineParticipants().contains(participantInfo.getId()))
+               {
+                  if (!assemblyNodeCreated)
+                  {
+                     assemblyLineNode = addAssemblyLineChild(reload, tempRootNode, assemblyLineNode);
+                  }
+                  assemblyNodeCreated = true;
+                  continue;
+               }
+               DefaultMutableTreeNode childNode = addChild(participantInfo, true, tempRootNode);
+               if(null == childNode)
+               {
+                  continue;
+               }
+               if(entry.getKey().equals(participantInfo.getQualifiedId()) && (participantInfo instanceof UserInfo))
+               {
+                  ((WorklistsTreeUserObject)childNode.getUserObject()).setText(MessagePropertiesBean.getInstance().getString("launchPanels.worklists.personalWorklist")+ " :");
+               }
+
             }
             
-            addChild(participantInfo, true);
+            if (tempRootNode != null)
+            {   
+               WorklistsTreeUserObject rootUserObject = (WorklistsTreeUserObject) tempRootNode.getUserObject();
+               ParticipantLabel label = ModelHelper.getParticipantLabel(rootUserObject.getParticipantInfo());
+               rootUserObject.setText(label.getWrappedLabel() + ": ");
+            }
          }
+         
+         restoreNodeState();
+         
       }
       catch (Exception e)
       {
          ExceptionHandler.handleException(e);
       }
    }
-
-   /**
-    * @param participantWorklist
-    * @param isLeaf
-    */
-   private void addChild(ParticipantInfo participantInfo, boolean isLeaf)
+   
+	/**
+	 * Append the child to specified Root Node
+	 * 
+	 * @param participantInfo
+	 * @param isLeaf
+	 *            - For Current User/deputy User -isLeaf is false, else true
+	 * @param rootNode
+	 * @return
+	 */
+   private DefaultMutableTreeNode addChild(ParticipantInfo participantInfo, boolean isLeaf,
+         DefaultMutableTreeNode rootNode)
    {
-      if (showEmptyWorklist || ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo) > 0)
+      String userParticipantId =null;
+      if(isLeaf)
+      {
+         userParticipantId =((WorklistsTreeUserObject) rootNode.getUserObject()).getParticipantInfo().getQualifiedId();   
+      }
+      else
+      {
+         userParticipantId = participantInfo.getQualifiedId();
+      }
+      if (showEmptyWorklist
+            || (ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo, userParticipantId) > 0 || !isLeaf))
       {
          DefaultMutableTreeNode child = new DefaultMutableTreeNode();
          WorklistsTreeUserObject childUserObject = new WorklistsTreeUserObject(child);
-   
          childUserObject.setModel(participantInfo);
          childUserObject.setLeaf(isLeaf);
-   
+         childUserObject.setUserParticipantId(userParticipantId);
          child.setUserObject(childUserObject);
-         root.add(child);
+         rootNode.add(child);
+         return child;
       }
+      return null;
    }
    
    /**
+    * Append the child to specified Root Node
+    * @param reload
+    * @param rootNode
+    * @param child
+    * @return
+    */
+   private DefaultMutableTreeNode addAssemblyLineChild(boolean reload,DefaultMutableTreeNode rootNode,DefaultMutableTreeNode child)
+   {
+     
+      if(assemblyLineUserObject.isAssemblyLineMode())
+      {
+         if (showEmptyWorklist || Long.valueOf(assemblyLineUserObject.getActivityCount()) > 0)
+         {
+            child.setUserObject(assemblyLineUserObject);
+            rootNode.add(child);
+         }
+         return child;
+      }
+      
+      return null;
+   }
+   
+   /**
+    * 
     * @param reload
     * @return
     */
-   private WorklistsTreeAssemblyLineUserObject addAssemblyLineChild(boolean reload)
+   private DefaultMutableTreeNode initAssemblyLineChild(boolean reload)
    {
       DefaultMutableTreeNode child = new DefaultMutableTreeNode();
       if (reload || null == assemblyLineUserObject)
       {
          assemblyLineUserObject = new WorklistsTreeAssemblyLineUserObject(child, worklistsBean);
       }
+      return child;
+   }
 
-      if(assemblyLineUserObject.isAssemblyLineMode())
+   /**
+    * Cache the current Node state while Refresh/Show all worklist -before clean
+    */
+   private void cacheCurrentNodeState()
+   {
+      expandedUserObjects = CollectionUtils.newArrayList();
+      int permissionNodesCount = root.getChildCount();
+      for (int i = 0; i < permissionNodesCount; i++)
       {
-         if (showEmptyWorklist || Long.valueOf(assemblyLineUserObject.getActivityCount()) > 0)
+         DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) root.getChildAt(i);
+         WorklistsTreeUserObject userObject = (WorklistsTreeUserObject) childNode.getUserObject();
+         if (userObject.isExpanded())
          {
-            child.setUserObject(assemblyLineUserObject);
-            root.add(child);
+            expandedUserObjects.add(userObject.getParticipantInfo().getQualifiedId());
          }
       }
-      
-      return assemblyLineUserObject;
+   }
+
+   /**
+    * 
+    */
+   private void restoreNodeState()
+   {
+    int permissionNodesCount = root.getChildCount();
+      for (int i = 0; i < permissionNodesCount; i++)
+      {
+         DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) root.getChildAt(i);
+         WorklistsTreeUserObject userObject = (WorklistsTreeUserObject)childNode.getUserObject();
+         if(userObject.getParticipantInfo()!=null && expandedUserObjects.contains(userObject.getParticipantInfo().getQualifiedId()))
+          {
+            userObject.setExpanded(true);
+          }
+      }
    }
 
    public boolean isEmpty()

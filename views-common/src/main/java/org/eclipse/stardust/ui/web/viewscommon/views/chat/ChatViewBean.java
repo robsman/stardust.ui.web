@@ -169,6 +169,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
             event.setVetoed(true);
             confirmationPopup.setViewCloseRequested(true);
             confirmationPopup.setChatView(event.getView());
+            confirmationPopup.setFromView(event.getView());
             confirmationPopup.openPopup();
 
          }
@@ -339,7 +340,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
 
    public boolean isCanSendMessage()
    {
-      if ((chatRoom.isUserStillInChat() && !chatRoom.isClosed() && chatRoom.getConferenceSize() > 1))
+      if (null != chatRoom && (chatRoom.isUserStillInChat() && !chatRoom.isClosed() && chatRoom.getConferenceSize() > 1))
       {
          return true;
       }
@@ -354,7 +355,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
     */
    public List<UserWrapper> getAfterLogoutList()
    {
-      if (null == afterLogoutList)
+      if (null == afterLogoutList && null != chatRoom)
       {
          afterLogoutList = new LinkedList<UserWrapper>(chatRoom.getAutoCompleteSelector().getSelectedValues());
       }
@@ -367,7 +368,7 @@ public class ChatViewBean extends UIComponentBean implements ViewEventHandler, C
     */
    public List<ChatMessage> getAfterLogoutChatMessages()
    {
-      if (afterLogoutChatMessages == null)
+      if (afterLogoutChatMessages == null && null != chatRoom)
       {
          afterLogoutChatMessages = new LinkedList<ChatMessage>(chatRoom.getChatMessages());
       }

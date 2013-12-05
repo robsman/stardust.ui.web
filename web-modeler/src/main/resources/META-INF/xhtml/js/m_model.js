@@ -31,9 +31,19 @@ define(
 
 				getModels : getModels,
 
+				getErroredModels : getErroredModels,
+
 				createModel : function() {
 					return new Model();
 				},
+
+        initializeFromJson : function(json) {
+          bindModel(json);
+
+          return json;
+        },
+
+        attachModel : attachModel,
 
 				findModel : findModel,
 
@@ -70,7 +80,7 @@ define(
 					model.name = name;
 					model.uuid = uuid;
 
-					getModels()[id] = model;
+					attachModel(model);
 
 					return model;
 				},
@@ -208,6 +218,10 @@ define(
 
 				return ids[1];
 			}
+
+      function attachModel(model) {
+        getModels()[model.id] = model;
+      }
 
 			/**
 			 *
@@ -455,41 +469,15 @@ define(
 
 					return null;
 				};
-			}
 
-			/**
-			 *
-			 */
-			function DefaultModelManager() {
-				/**
-				 *
-				 */
-				DefaultModelManager.prototype.refreshModels = function() {
-					m_communicationController.syncGetData({
-						url : m_communicationController.getEndpointUrl()
-								+ "/models"
-					}, {
-						"success" : function(json) {
-							window.top.models = json;
+				Model.prototype.isReadonly = function() {
+					if (this.attributes
+							&& this.attributes["stardust:security:hash"]) {
+						return true;
+					}
 
-							bindModels();
-						},
-						"error" : function() {
-							alert('Error occured while fetching models');
-						}
-					});
+					return false;
 				};
-			}
-
-			/**
-			 * Singleton on DOM level.
-			 */
-			function getModelManager() {
-				if (!window.top.modelManager) {
-					window.top.modelManager = new DefaultModelManager();
-				}
-
-				return window.top.modelManager;
 			}
 
 			/**
@@ -504,6 +492,19 @@ define(
 				return window.top.models;
 			}
 
+
+			/**
+			 * Singleton on DOM level.
+			 */
+			function getErroredModels() {
+				if (window.top.models) {
+					return window.top.erroredModels;
+				}
+				loadModels(true);
+
+				return window.top.erroredModels;
+			}
+
 			function findModel(id) {
 				return getModels()[id];
 			}
@@ -516,7 +517,7 @@ define(
 					return;
 				}
 
-				getModelManager().refreshModels();
+				refreshModels();
 			}
 
 			/**
@@ -533,23 +534,27 @@ define(
 			}
 
 			/**
-			 *
+			 * As part of CRNT-28015. a regular function has been used instead of the
+			 * singleton object DefaultModelManager / window.top.modelManager
+			 * as it was apparently giving problems (on model loading) in IOD env. when releases were switched.
 			 */
-//			function refreshModels() {
-//				m_communicationController.syncGetData({
-//					url : m_communicationController.getEndpointUrl()
-//							+ "/models"
-//				}, {
-//					"success" : function(json) {
-//						window.top.models = json;
-//
-//						bindModels();
-//					},
-//					"error" : function() {
-//						alert('Error occured while fetching models');
-//					}
-//				});
-//			}
+			function refreshModels() {
+				m_communicationController.syncGetData({
+					url : m_communicationController.getEndpointUrl()
+							+ "/models"
+				}, {
+					"success" : function(json) {
+						if (json.loaded) {
+							window.top.models = json.loaded;
+							window.top.erroredModels = json.failed;
+							bindModels();
+						}
+					},
+					"error" : function() {
+						alert('Error occured while fetching models');
+					}
+				});
+			}
 
 			/**
 			 *

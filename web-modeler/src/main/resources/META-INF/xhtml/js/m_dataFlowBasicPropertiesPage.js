@@ -15,8 +15,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils) {
+				"bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_model" ],
+		function(m_utils, m_constants, m_user, m_dialog, m_basicPropertiesPage, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new DataFlowBasicPropertiesPage(propertiesPanel);
@@ -47,8 +48,6 @@ define(
 					this.inputInput = this.mapInputId("inputInput");
 					this.outputInput = this.mapInputId("outputInput");
 					this.descriptionInput = this.mapInputId("descriptionInput");
-					this.descriptionInput.hide();
-					$("label[for='descriptionInput']").hide();
 					this.inputDataPathInput = this
 							.mapInputId("inputDataPathInput");
 					this.outputDataPathInput = this
@@ -95,6 +94,28 @@ define(
 														page.outputInput
 																.is(":checked"));
 
+										if (page.inputInput.is(":checked") && page.outputInput.is(":checked")
+												&& page.propertiesPanel.element.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
+											var tempFromAnchorPoint = page.propertiesPanel.element.fromAnchorPoint;
+											page.propertiesPanel.element.fromAnchorPoint = page.propertiesPanel.element.toAnchorPoint;
+											page.propertiesPanel.element.toAnchorPoint = tempFromAnchorPoint;
+											page.propertiesPanel.element.fromModelElementOid = page.propertiesPanel.element.fromAnchorPoint.symbol.oid;
+											page.propertiesPanel.element.toModelElementOid = page.propertiesPanel.element.toAnchorPoint.symbol.oid;
+											var tempFromOrientation = page.propertiesPanel.element.fromAnchorPointOrientation;
+											page.propertiesPanel.element.fromAnchorPointOrientation = page.propertiesPanel.element.toAnchorPointOrientation;
+											page.propertiesPanel.element.toAnchorPointOrientation = tempFromOrientation;
+										} else if (!page.inputInput.is(":checked") && page.outputInput.is(":checked")
+												&& page.propertiesPanel.element.fromAnchorPoint.symbol.type === m_constants.DATA_SYMBOL) {
+											var tempFromAnchorPoint = page.propertiesPanel.element.fromAnchorPoint;
+											page.propertiesPanel.element.fromAnchorPoint = page.propertiesPanel.element.toAnchorPoint;
+											page.propertiesPanel.element.toAnchorPoint = tempFromAnchorPoint;
+											page.propertiesPanel.element.fromModelElementOid = page.propertiesPanel.element.fromAnchorPoint.symbol.oid;
+											page.propertiesPanel.element.toModelElementOid = page.propertiesPanel.element.toAnchorPoint.symbol.oid;
+											var tempFromOrientation = page.propertiesPanel.element.fromAnchorPointOrientation;
+											page.propertiesPanel.element.fromAnchorPointOrientation = page.propertiesPanel.element.toAnchorPointOrientation;
+											page.propertiesPanel.element.toAnchorPointOrientation = tempFromOrientation;
+										}
+										
 										page
 												.submitChanges({
 													// TODO Usually, we are not
@@ -105,6 +126,10 @@ define(
 													modelElement : {
 														id : page.propertiesPanel.element.modelElement.id,
 														name : page.propertiesPanel.element.modelElement.name,
+														fromAnchorPointOrientation : page.propertiesPanel.element.fromAnchorPointOrientation,
+														toAnchorPointOrientation : page.propertiesPanel.element.toAnchorPointOrientation,
+														toModelElementOid : page.propertiesPanel.element.toModelElementOid,
+														fromModelElementOid : page.propertiesPanel.element.fromModelElementOid,
 														updateDataMapping : true,
 														inputDataMapping : page.propertiesPanel.element.modelElement.inputDataMapping,
 														outputDataMapping : page.propertiesPanel.element.modelElement.outputDataMapping
@@ -237,10 +262,12 @@ define(
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = null;
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = null;
 										} else {
-											var data = value.split(":");
+											var colIndex = value.indexOf(":");
+											var context = value.substring(0, colIndex);
+											var accessPointId = value.substring(colIndex + 1);
 
-											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = data[0];
-											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = data[1];
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = context;
+											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointId = accessPointId;
 										}
 
 										page
@@ -292,18 +319,50 @@ define(
 						hasInputMapping, hasOutputMapping) {
 					if (hasInputMapping) {
 						m_dialog.makeVisible(this.inputAccessPointPanel);
+						this.disableDataPath(this.inputDataPathInput);
 					} else {
 						m_dialog.makeInvisible(this.inputAccessPointPanel);
 					}
 
 					if (hasOutputMapping) {
 						m_dialog.makeVisible(this.outputAccessPointPanel);
+						this.disableDataPath(this.outputDataPathInput);
 					} else {
 						m_dialog.makeInvisible(this.outputAccessPointPanel);
 					}
 
 					this.inputInput.attr("checked", hasInputMapping);
 					this.outputInput.attr("checked", hasOutputMapping);
+				};
+
+				/**
+				 * Input / output dataPath text-boxes are disabled for
+				 * java-like application activities (plainJava, springBean, sessionBean)
+				 * and data (entity, hibernate).
+				 */
+				DataFlowBasicPropertiesPage.prototype.disableDataPath = function(dataPath) {
+					dataPath.removeAttr("disabled");
+					if (this.propertiesPanel.element
+							&& this.propertiesPanel.element.modelElement) {
+						if (this.propertiesPanel.element.modelElement.activity
+								&& this.propertiesPanel.element.modelElement.activity.activityType === "Task"
+								&& this.propertiesPanel.element.modelElement.activity.applicationFullId) {
+							var app = m_model
+									.findApplication(this.propertiesPanel.element.modelElement.activity.applicationFullId);
+							if (app
+									&& (app.applicationType === m_constants.JAVA_APPLICATION_TYPE
+											|| app.applicationType === m_constants.SPRING_BEAN_APPLICATION_TYPE
+											|| app.applicationType === m_constants.SESSION_BEAN_APPLICATION_TYPE)) {
+								dataPath.attr("disabled", "disabled");
+							}
+						}
+
+						if (this.propertiesPanel.element.modelElement.data
+								&& (this.propertiesPanel.element.modelElement.data.dataType === m_constants.ENTITY_DATA_TYPE
+									|| this.propertiesPanel.element.modelElement.data.dataType === m_constants.HIBERNATE_DATA_TYPE)) {
+							dataPath.attr("disabled", "disabled");
+						}
+					}
 				};
 
 				/**
@@ -357,7 +416,7 @@ define(
 							continue;
 						}
 
-						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
 
 						this.inputAccessPointSelectInput.append(group);
 
@@ -380,6 +439,7 @@ define(
 							group.append(option);
 						}
 					}
+					this.populateEngineAccessPoints(this.inputAccessPointSelectInput);
 				};
 
 				/**
@@ -426,7 +486,7 @@ define(
 							continue;
 						}
 
-						var group = jQuery("<optgroup label='" + i + "'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
 
 						this.outputAccessPointSelectInput.append(group);
 
@@ -449,14 +509,47 @@ define(
 							group.append(option);
 						}
 					}
+					this.populateEngineAccessPoints(this.outputAccessPointSelectInput);
 				};
 
+				/**
+				 *
+				 */
+				DataFlowBasicPropertiesPage.prototype.populateEngineAccessPoints = function(inputElement) {
+					// Generate engine context access points for all data in the model,
+					// for sub-process activities with where copyAllData is disabled.
+					if (this.getModelElement()
+							&& this.getModelElement().activity
+							&& this.getModelElement().activity.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
+							&& this.getModelElement().activity.subprocessMode !== "synchShared"
+							&& (this.getModelElement().activity.attributes 
+									&& !this.getModelElement().activity.attributes["carnot:engine:subprocess:copyAllData"])) {
+						
+						var group = m_utils.jQuerySelect("<optgroup label='engine'/>"); // I18N
+						inputElement.append(group);
+						for (var i in this.getModel().dataItems) {
+							var d = this.getModel().dataItems[i];
+							var option = "<option value='engine:";
+							option += d.id;
+							option += "'>";
+							option += d.name;
+							option += "</option>";
+
+							group.append(option);
+						}	
+					}
+				};
+				
 				/**
 				 *
 				 */
 				DataFlowBasicPropertiesPage.prototype.setElement = function() {
 					this.setModelElement();
 
+					//disable description section
+					this.descriptionInput.hide();
+					m_utils.jQuerySelect("label[for='descriptionInput']").hide();
+					
 					m_utils.debug("===> Data Flow");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 

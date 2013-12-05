@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.faces.context.FacesContext;
+
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -46,6 +48,7 @@ public class MessageDialog extends PopupDialog
    private Throwable exception;
 
    private PortalUiController portalUiController;
+   private MessageDialogHandler callbackHandler;
 
    /**
     * 
@@ -54,8 +57,23 @@ public class MessageDialog extends PopupDialog
    {
       super(""); // Title not known at this stage
       firePerspectiveEvents = true;
+      modal = true;
    }
    
+   public void openPopup()
+   {
+	   String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+	   if (StringUtils.isNotEmpty(viewId))
+	   {
+		   if (viewId.endsWith("/portalSingleViewLaunchPanelsOnly.xhtml"))
+		   {
+			   fromlaunchPanels = true;
+		   }
+	   }
+	   
+	   super.openPopup();
+   }
+
    /**
     * @return
     */
@@ -223,6 +241,10 @@ public class MessageDialog extends PopupDialog
    public void closePopup()
    {
       clearMessages();
+      if (null != callbackHandler)
+      {
+         callbackHandler.accept();
+      }
       super.closePopup();
    }
    
@@ -291,4 +313,17 @@ public class MessageDialog extends PopupDialog
    {
       return exception;
    }
+
+   public MessageDialogHandler getCallbackHandler()
+   {
+      return callbackHandler;
+   }
+
+   public void setCallbackHandler(MessageDialogHandler callbackHandler)
+   {
+      this.callbackHandler = callbackHandler;
+   }
+   
+   
+   
 }

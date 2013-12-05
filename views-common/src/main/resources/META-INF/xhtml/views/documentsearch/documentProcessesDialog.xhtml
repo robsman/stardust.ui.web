@@ -17,7 +17,7 @@
 						<ice:commandButton
 								action="#{bean.processesDialog.closePopup}" immediate="true"
 								title="#{common_msgPropsBean['common.filterPopup.close']}"
-								styleClass="windowClose">
+								styleClass="windowClose" onclick="Event.stop(event);">
 							</ice:commandButton></td>
 					</tr>
 				</table>
@@ -40,7 +40,7 @@
 									<ice:commandLink style="white-space:nowrap;"
 										value="#{processWrapper.processName} (##{processWrapper.processInstance.OID})"
 										title="#{documentSearchBean.messages['documentSearchTable.tooltip.processContextExplorer']}"
-										actionListener="#{bean.processesDialog.openProcess}">
+										actionListener="#{bean.processesDialog.openProcess}" onclick="Event.stop(event);">
 										<pc:automationTag value="auto-COM-SrchDoc-DocSrchTbl-DocProcDlg-OpenProc" standAlone="false"/>
 										<f:attribute name="processInstance"
 											value="#{processWrapper.processInstance}" />										

@@ -15,13 +15,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -68,15 +70,35 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       ParticipantInfo worklistOwner = null;
       try
       {
-         List<Worklist> worklists = WorklistUtils.getWorklist_anyForUser();
-         for (Worklist worklist : worklists)
+         Map<String, List<Worklist>> worklistMap = WorklistUtils.getWorklist_anyForUser();
+         for (Entry<String, List<Worklist>> entry : worklistMap.entrySet())
          {
-            worklistOwner = worklist.getOwner();
-
-            participantWorklists.put(new ParticipantInfoWrapper(worklistOwner), new ParticipantWorklistCacheEntry(
-                  worklist.getTotalCount(), WorklistUtils.createWorklistQuery(worklistOwner),worklist.getTotalCountThreshold()));
+            for (Worklist worklist : entry.getValue())
+            {
+               worklistOwner = worklist.getOwner();
+               if(entry.getKey().equals(worklistOwner.getQualifiedId()) && (worklistOwner instanceof UserInfo))
+               {
+                  // Using the userParticipantId i.e entry.getKey() along with
+                  // worklistOwner- ParticipantInfo
+                  // to distinguish same Role present for Deputy
+                  participantWorklists.put(
+                        new ParticipantInfoWrapper(worklistOwner, entry.getKey()),
+                        new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
+                              .createWorklistQuery(worklistOwner), WorklistUtils.getAllUserAssignedActivities(),
+                              worklist.getTotalCountThreshold(), entry.getKey()));
+               }
+               else
+               {
+                  // Using the userParticipantId i.e entry.getKey() along with
+                  // worklistOwner- ParticipantInfo
+                  // to distinguish same Role present for Deputy
+                  participantWorklists.put(
+                        new ParticipantInfoWrapper(worklistOwner, entry.getKey()),
+                        new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
+                              .createWorklistQuery(worklistOwner), worklist.getTotalCountThreshold(), entry.getKey()));
+               }
+            }
          }
-
       }
       catch (Exception e)
       {
@@ -86,27 +108,33 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    }
 
    /**
+    * 
     * @param participantInfo
+    * @param userParticipantId - The Id of user (Root Node in participant Tree)
     * @return
     */
-   public long getWorklistCount(ParticipantInfo participantInfo)
+   public long getWorklistCount(ParticipantInfo participantInfo, String userParticipantId)
    {
-      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo,
+            userParticipantId));
       if (null != cacheEntry)
       {
          return cacheEntry.getCount();
       }
-      
+
       return 0;
    }
-   
+
    /**
+    * 
     * @param participantInfo
+    * @param userParticipantId- The Id of user (Root Node in participant Tree)
     * @return
     */
-   public long getWorklistCountThreshold(ParticipantInfo participantInfo)
+   public long getWorklistCountThreshold(ParticipantInfo participantInfo, String userParticipantId)
    {
-      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      ParticipantWorklistCacheEntry cacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo,
+            userParticipantId));
       if (null != cacheEntry)
       {
          return cacheEntry.getTotalCountThreshold();
@@ -115,38 +143,71 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       return Long.MAX_VALUE;
    }
 
+   
    /**
     * @return
     */
-   public Set<ParticipantInfo> getWorklistParticipants()
+   public Map<String, Set<ParticipantInfo>> getWorklistParticipants()
    {
-      Set<ParticipantInfo> worklistParticipants = new LinkedHashSet<ParticipantInfo>();
-      
+      Map<String, Set<ParticipantInfo>> worklistParticipantMap = new LinkedHashMap<String, Set<ParticipantInfo>>();
+
       for (Entry<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> entry : participantWorklists.entrySet())
       {
+         Set<ParticipantInfo> worklistParticipants = worklistParticipantMap.get(entry.getValue().getWorklistOwner());
+         if (null == worklistParticipants)
+         {
+            worklistParticipants = new LinkedHashSet<ParticipantInfo>();
+            worklistParticipantMap.put(entry.getValue().getWorklistOwner(), worklistParticipants);
+         }
          worklistParticipants.add(entry.getKey().getParticipantInfo());
+         //
       }
-      
-      return worklistParticipants;
+
+      return worklistParticipantMap;
    }
 
    /**
+    * ParticipantInfoWrapper uses the participantInfo,UserParticipantId to distingush same
+    * role in Dif hierarchy(User-Deputy)
+    * 
     * @param participantInfo
+    * @param userParticipantId
+    *           - The Id of user (Root Node in participant Tree)
     * @return
     */
-   public WorklistQuery getWorklistQuery(ParticipantInfo participantInfo)
+   public WorklistQuery getWorklistQuery(ParticipantInfo participantInfo, String userParticipantId)
    {
-      WorklistQuery worklistQuery = participantWorklists.get(new ParticipantInfoWrapper(participantInfo)).getWorklistQuery();
+      WorklistQuery worklistQuery = participantWorklists.get(
+            new ParticipantInfoWrapper(participantInfo, userParticipantId)).getWorklistQuery();
       return (WorklistQuery) QueryUtils.getClonedQuery(worklistQuery);
    }
    
    /**
+    * ParticipantInfoWrapper uses the participantInfo,UserParticipantId to distingush same
+    * role in Dif hierarchy(User-Deputy)
+    * 
     * @param participantInfo
+    * @param userParticipantId
+    * @return
+    */
+   public ActivityInstanceQuery getActivityInstanceQuery(ParticipantInfo participantInfo, String userParticipantId)
+   {
+      ActivityInstanceQuery activityInstanceQuery = participantWorklists.get(new ParticipantInfoWrapper(participantInfo, userParticipantId)).getActivityInstanceQuery();
+      return (ActivityInstanceQuery) QueryUtils.getClonedQuery(activityInstanceQuery);
+   }
+   
+   /**
+    * ParticipantInfoWrapper uses the participantInfo,UserParticipantId to distingush same
+    * role in Dif hierarchy(User-Deputy)
+    * 
+    * @param participantInfo
+    * @param userParticipantId
     * @param count
     */
-   public void setWorklistCount(ParticipantInfo participantInfo, long count)
+   public void setWorklistCount(ParticipantInfo participantInfo, String userParticipantId, long count)
    {
-      ParticipantWorklistCacheEntry worklistCacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      ParticipantWorklistCacheEntry worklistCacheEntry = participantWorklists.get(new ParticipantInfoWrapper(
+            participantInfo, userParticipantId));
       if (null != worklistCacheEntry)
       {
          worklistCacheEntry.setCount(count);
@@ -154,12 +215,17 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    }
    
    /**
+    * ParticipantInfoWrapper uses the participantInfo,UserParticipantId to distingush same
+    * role in Dif hierarchy(User-Deputy)
+    * 
     * @param participantInfo
+    * @param userParticipantId
     * @param count
     */
-   public void setWorklistThresholdCount(ParticipantInfo participantInfo, long count)
+   public void setWorklistThresholdCount(ParticipantInfo participantInfo, String userParticipantId, long count)
    {
-      ParticipantWorklistCacheEntry worklistCacheEntry = participantWorklists.get(new ParticipantInfoWrapper(participantInfo));
+      ParticipantWorklistCacheEntry worklistCacheEntry = participantWorklists.get(new ParticipantInfoWrapper(
+            participantInfo, userParticipantId));
       if (null != worklistCacheEntry)
       {
          worklistCacheEntry.setTotalCountThreshold(count);
@@ -178,19 +244,20 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       if (null != oldAi) // oldAi can be null if AI is ACTIVATED
       {
          ParticipantWorklistCacheEntry oldEntry = participantWorklists.get(new ParticipantInfoWrapper(oldAi
-               .getCurrentPerformer()));
+               .getCurrentPerformer(),oldAi.getCurrentPerformer().getQualifiedId()));
          if (null != oldEntry && (oldEntry.getCount() > 0 && oldEntry.getCount() < oldEntry.getTotalCountThreshold()))
          {
             oldEntry.setCount(oldEntry.getCount() - 1);
          }
       }
-      
       // Act on NEW AI
       ActivityInstance newAi = event.getActivityInstance();
       if (null != newAi) // Safety Check
       {
+         String userParticipantQualifierId = null != newAi.getUserPerformer() ? newAi.getUserPerformer().getQualifiedId() : oldAi
+               .getCurrentPerformer().getQualifiedId();
          ParticipantWorklistCacheEntry newEntry = participantWorklists.get(new ParticipantInfoWrapper(newAi
-               .getCurrentPerformer()));
+               .getCurrentPerformer(),userParticipantQualifierId));
          if (null != newEntry && newEntry.getCount() < Long.MAX_VALUE)
          {
             newEntry.setCount(newEntry.getCount() + 1);
@@ -224,6 +291,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    {
       private static final long serialVersionUID = -2659357845106111645L;
       private ParticipantInfo participantInfo;
+      private String userParticipant;
       
       /**
        * @param participantInfo
@@ -233,12 +301,31 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
          this.participantInfo = participantInfo;
       }
       
+      /**
+       * For role Participant, User Participant Id is used to distingush when same role is
+       * present in Deputy
+       * 
+       * @param participantInfo
+       * @param userParticipant
+       */
+      public ParticipantInfoWrapper(ParticipantInfo participantInfo, String userParticipant)
+      {
+         this(participantInfo);
+         this.userParticipant = userParticipant;
+      }
+
       @Override
       public int hashCode()
       {
          final int prime = 31;
          int result = 1;
-         String id = (participantInfo == null) ? null : participantInfo.getId();
+         String id = null;
+         if(userParticipant!=null)
+         {
+            id = (participantInfo == null) ? null : participantInfo.getId() + userParticipant;
+         }
+         else
+         id = (participantInfo == null) ? null : participantInfo.getId();
          // Note: It is not required that if two objects are unequal according to the
          // equals(java.lang.Object) method, then calling the hashCode method on each of
          // the two objects must produce distinct integer results.
@@ -270,6 +357,10 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
          {
             return false;
          }
+         else if (userParticipant != null && !(userParticipant.equals(other.userParticipant)))
+         {
+            return false;
+         }
          
          return true;
       }
@@ -278,5 +369,11 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
       {
          return participantInfo;
       }
+
+      public String getUserParticipant()
+      {
+         return userParticipant;
+      }
+      
    }
 }

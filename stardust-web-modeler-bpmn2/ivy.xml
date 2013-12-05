@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-web-modeler-bpmn2" revision="${ipp.version.full}"/>
+
+   <configurations>
+      <conf name="stardust-web-modeler-bpmn2-compile" description="Web Modeler BPMN2 - Compile Scope" />
+      <conf name="stardust-web-modeler-bpmn2-runtime" extends="stardust-web-modeler-bpmn2-compile" description="Web Modeler BPMN2 - Runtime Scope" />
+      <conf name="stardust-web-modeler-bpmn2-sources" description="Web Modeler BPMN2 - Sources" />
+
+      <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="compile" visibility="private" extends="stardust-web-modeler-bpmn2-compile" />
+      <conf name="runtime" visibility="private" extends="stardust-web-modeler-bpmn2-runtime" />
+      <conf name="all" visibility="private" extends="compile, runtime, test" />
+
+      <conf name="pom" description="PDL Modeler - POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-web-modeler-bpmn2" type="jar" conf="stardust-web-modeler-bpmn2-compile,stardust-web-modeler-bpmn2-runtime" ext="jar" />
+      <artifact name="stardust-web-modeler-bpmn2" type="pom" conf="pom" ext="pom" />
+      <artifact name="stardust-web-modeler-bpmn2" type="source" ext="jar" conf="stardust-web-modeler-bpmn2-sources" m:classifier="sources" />
+   </publications>
+
+   <dependencies>
+      <!-- compile -->
+      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-base" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->stardust-engine-base-compile" />
+      <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model-builder" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->ipp-bpm-model-builder-compile">
+         <exclude org="org.eclipse.stardust.modeling.core" module="ipp-bpm-repository" />
+         <exclude org="org.eclipse.osgi" module="org.eclipse.osgi" />
+         <exclude org="org.eclipse.core" module="org.eclipse.core.runtime" />
+         <exclude org="org.eclipse.equinox" module="org.eclipse.equinox.common" />
+         <exclude org="org.eclipse.equinox" module="org.eclipse.equinox.registry" />
+      </dependency>
+      <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->ipp-bpm-model-runtime" />
+      <dependency org="org.eclipse.stardust.ui.web" name="stardust-web-modeler" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->stardust-web-modeler-compile">
+         <exclude org="org.eclipse.stardust.engine" module="infinity-process-engine" />
+         <exclude org="wsdl4j" module="wsdl4j" />
+         <exclude org="org.eclipse.stardust.modeling.model" module="ipp-bpm-model" />
+         <exclude org="org.eclipse.stardust.modeling.model" module="ipp-bpm-model-builder" />
+         <exclude org="org.eclipse.stardust.modeling.core" module="ipp-bpm-model-validation" />
+         <exclude org="org.eclipse.stardust.ui.web" module="ipp-portal-common" />
+         <exclude org="org.eclipse.stardust.ui.web" module="ipp-views-common" />
+         <exclude org="org.apache.myfaces.core" module="myfaces-api" />
+         <exclude org="javax.servlet" module="servlet-api" />
+      </dependency>
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-bpmn2-compile->carnot-engine-compile" />
+      
+      <dependency org="org.eclipse.bpmn2" name="org.eclipse.bpmn2" rev="${org.eclipse.bpmn2.version}" conf="stardust-web-modeler-bpmn2-compile->default">
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore" />
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.ecore.xmi" />
+         <exclude org="org.eclipse.xsd" module="org.eclipse.xsd" />
+         <exclude org="org.eclipse.core" module="org.eclipse.core.runtime" />
+      </dependency>
+      <dependency org="org.springframework" name="spring-context" rev="${spring-context.version}" conf="stardust-web-modeler-bpmn2-compile->default">
+         <!-- [ERROR] commons-logging#commons-logging;1.1.1 (needed by [org.springframework#spring-core;3.0.5.RELEASE]) conflicts with commons-logging#commons-logging;1.1.1-eclipse01 (needed by [commons-beanutils#commons-beanutils;1.8.0-eclipse01]) -->
+         <exclude org="commons-logging" module="commons-logging" />
+      </dependency>
+      <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" conf="stardust-web-modeler-bpmn2-compile->default" />
+      
+      <!-- The following Eclipse dependencies are part of Eclipse 4.3.1 -->
+      <dependency org="org.eclipse.core" name="org.eclipse.core.runtime" rev="${org.eclipse.core.runtime.version}" conf="stardust-web-modeler-bpmn2-runtime->default"/>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}" conf="stardust-web-modeler-bpmn2-compile->default"/>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}" conf="stardust-web-modeler-bpmn2-compile->default">
+         <exclude org="org.eclipse.emf" module="org.eclipse.emf.common" />
+      </dependency>
+      <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.xmi" rev="${org.eclipse.emf.ecore.xmi.version}" conf="stardust-web-modeler-bpmn2-compile->default"/>
+      <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="${org.eclipse.xsd.version}" conf="stardust-web-modeler-bpmn2-compile->default"/>
+
+      <dependency org="junit" name="junit" rev="${junit.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="org.hamcrest" name="hamcrest-core" rev="${hamcrest-core.version}" conf="test->default" />
+      <dependency org="org.springframework" name="spring-test" transitive="false" rev="${spring-test.version}" conf="test->default" />
+      <dependency org="org.mockito" name="mockito-core" rev="${mockito-core.version}" conf="test->default">
+         <exclude org="org.hamcrest" module="hamcrest-core" />
+      </dependency>
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" conf="test->default" transitive="false"/>
+   </dependencies>
+</ivy-module>

@@ -20,6 +20,9 @@ define(
 				m_i18nUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var view = new CamelApplicationView();
 					i18camelrouteproperties();
 					// TODO Unregister!
@@ -27,46 +30,48 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findApplication(fullId));
+
+					m_utils.hideWaitCursor();
 				}
 			};
 
 			function i18camelrouteproperties() {
-				$("label[for='guidOutput']")
+				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-				$("label[for='idOutput']")
+				m_utils.jQuerySelect("label[for='idOutput']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.id"));
 
-				jQuery("#applicationName")
+				m_utils.jQuerySelect("#applicationName")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.applicationName"));
-				jQuery("#description")
+				m_utils.jQuerySelect("#description")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.description"));
-				jQuery("#camelConfiguration")
+				m_utils.jQuerySelect("#camelConfiguration")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.tab"));
-				jQuery("#camelContext")
+				m_utils.jQuerySelect("#camelContext")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.camelContext"));
 
-				jQuery("#addBeanSpec")
+				m_utils.jQuerySelect("#addBeanSpec")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.additionalBeanSpecification"));
-				jQuery("#direction")
+				m_utils.jQuerySelect("#direction")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.direction"));
-				jQuery("label[for='publicVisibilityCheckbox']")
+				m_utils.jQuerySelect("label[for='publicVisibilityCheckbox']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
@@ -89,10 +94,10 @@ define(
 					this.id = "camelApplicationView";
 					this.application = application;
 
-					this.view = jQuery("#camelApplicationView");
-					
-					this.publicVisibilityCheckbox = jQuery("#publicVisibilityCheckbox");
-					this.overlayAnchor = jQuery("#overlayAnchor");
+					this.view = m_utils.jQuerySelect("#camelApplicationView");
+
+					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.overlayAnchor = m_utils.jQuerySelect("#overlayAnchor");
 
 					this.publicVisibilityCheckbox
 							.change(
@@ -101,10 +106,6 @@ define(
 									},
 									function(event) {
 										var view = event.data.view;
-
-										if (!view.validate()) {
-											return;
-										}
 
 										if (view.modelElement.attributes["carnot:engine:visibility"]
 												&& view.modelElement.attributes["carnot:engine:visibility"] != "Public") {
@@ -127,10 +128,15 @@ define(
 					var self = this;
 
 					if (this.application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == null) {
-						this.setOverlay("genericEndpointOverlay").done(function() {
-							self.initializeModelElementView(application);
-							self.view.css("visibility", "visible");
-						});
+						this
+								.setOverlay("genericEndpointOverlay")
+								.done(
+										function() {
+											self
+													.initializeModelElementView(application);
+											self.view.css("visibility",
+													"visible");
+										});
 					} else {
 						this
 								.setOverlay(
@@ -139,7 +145,8 @@ define(
 										function() {
 											self
 													.initializeModelElementView(application);
-											self.view.css("visibility", "visible");
+											self.view.css("visibility",
+													"visible");
 										});
 					}
 				};
@@ -149,8 +156,8 @@ define(
 				 */
 				CamelApplicationView.prototype.insertPropertiesTab = function(
 						scope, id, name, icon) {
-					var propertiesTabs = jQuery("#propertiesTabs");
-					var propertiesTabsList = jQuery("#propertiesTabsList");
+					var propertiesTabs = m_utils.jQuerySelect("#propertiesTabs");
+					var propertiesTabsList = m_utils.jQuerySelect("#propertiesTabsList");
 					var lastListItem = propertiesTabsList.children().last();
 
 					// propertiesTabsList.append("<li><a href='#" + id
@@ -158,23 +165,36 @@ define(
 					// + "'></img><span class='tabLabel' id='" + id + "'>"
 					// + name + "</span> </a></li>");
 
-					lastListItem.before("<li><a href='#" + id
-							+ "Tab'><img src='" + icon
-							+ "'></img><span class='tabLabel' id='" + id + "'>"
-							+ name + "</span> </a></li>");
+					// TODO - need a better way of sequencing the properties tabs 
+					if (id === "parameters") {
+						lastListItem.before("<li><a href='#" + id
+								+ "Tab'><img src='" + icon
+								+ "'></img><span class='tabLabel' id='" + id + "'>"
+								+ name + "</span> </a></li>");
+					} else {
+						lastListItem.after("<li><a href='#" + id
+								+ "Tab'><img src='" + icon
+								+ "'></img><span class='tabLabel' id='" + id + "'>"
+								+ name + "</span> </a></li>");	
+					}
 
-					var html = jQuery("#" + scope + " #" + id + "Tab").html();
+					var elem = m_utils.jQuerySelect("#" + scope + " #" + id + "Tab")
+					var html = elem.html();
 
-					jQuery("#" + scope + " #" + id + "Tab").empty();
+					m_utils.jQuerySelect("#" + scope + " #" + id + "Tab").empty();
 					propertiesTabs.append("<div id='" + id + "Tab'>" + html
 							+ "</div>");
+					// After append remove old contents
+					if (elem.length > 0) {
+						elem[0].parentNode.removeChild(elem[0]);
+					}
 				};
 
 				/**
 				 * 
 				 */
 				CamelApplicationView.prototype.setOverlay = function(overlay) {
-					var deferred = jQuery.Deferred();					
+					var deferred = jQuery.Deferred();
 					var extension = m_extensionManager.findExtensions(
 							"applicationIntegrationOverlay", "id", overlay)[0];
 
@@ -247,7 +267,10 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 
+					m_utils.debug("===> Updating Overlay");
+
 					this.overlayController.update();
+					m_utils.debug("===> Done updating");
 				};
 
 				/**
@@ -262,15 +285,6 @@ define(
 				 */
 				CamelApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
-
-					this.nameInput.removeClass("error");
-
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
-						this.errorMessages
-								.push("Application name must not be empty.");
-						this.nameInput.addClass("error");
-					}
 
 					if (this.overlayController) {
 						this.overlayController.validate();

@@ -10,12 +10,12 @@
 
 /**
  * Helper functions for object inspection and object initialization.
- * 
+ *
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_i18nUtils" ],
-		function(m_i18nUtils) {
+		[ "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants"],
+		function(m_i18nUtils, m_constants) {
 
 			return {
 				removeFromArray : function(array, from, to) {
@@ -56,6 +56,74 @@ define(
 					return getLastIndexOf(str, searchStr);
 				},
 
+				initializeWaitCursor : function(element) {
+//					if (element && window.parent.InfinityBpm.Core) {
+//						element.ajaxStart(function() {
+//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+//						});
+//						element.ajaxStop(function() {
+//							window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+//						});
+//					}
+				},
+
+				showWaitCursor : function() {
+//					if (window.parent.InfinityBpm.Core) {
+//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("progress");
+//					}
+				},
+
+				hideWaitCursor : function () {
+//					if (window.parent.InfinityBpm.Core) {
+//						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
+//					}
+				},
+
+				isBrowserChrome : function() {
+					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+						return true;
+					}
+				},
+
+				markControlsReadonly : function(divName, readonly) {
+					var lookupScope = divName == undefined ? null : jQuerySelect("#" + divName);
+					this.markControlsReadonlyForScope(lookupScope, readonly);
+				},
+
+				/**
+				 * lookupscope should be a jQuerySelect('#elementId') object
+				 */
+				markControlsReadonlyForScope : function(lookupScope, readonly) {
+					jQuerySelect(['input:not(.noDataChange input)', 'textarea:not(.noDataChange textarea)', 'select:not(.noDataChange select)']).each(function(index, type){
+						jQuerySelect(type, lookupScope).each(function(index, control){
+							if (readonly == undefined || readonly == true) {
+								if (control.disabled !== undefined) {
+									// Exclude links marked specifically
+									if(control.className.indexOf("noDataChange") == -1) {
+										control.disabled = true;
+										control.style.opacity = 0.5;
+										control.style.cursor = "default";
+									}
+								}
+							} else {
+								control.disabled = false;
+								control.style.opacity = 1;
+								control.style.cursor = "auto";
+							}
+						});
+					});
+				},
+
+				isElementReadonly : function(element) {
+					if (element) {
+						if ((typeof element.isReadonly === "function")) {
+							return element.isReadonly();
+						}
+					}
+
+					return false;
+				},
+
 				prettyDateTime : prettyDateTime,
 
 				formatDate : formatDate,
@@ -70,18 +138,103 @@ define(
 
 				isEmptyString : isEmptyString,
 
-				isNumber : isNumber
+				isNumber : isNumber,
+
+				getOutlineWindowAndDocument : getOutlineWindowAndDocument,
+
+				jQuerySelect : jQuerySelect,
+				
+				executeTimeoutLoop : executeTimeoutLoop,
+				
+				isIntermediateEvent : isIntermediateEvent
+			};
+			
+			/**
+			 * A utility function to execute a <fn> function, after a delay of
+			 * <delay> milliseconds, for a maximum of <reps> repetitions,
+			 * until <conditionFn> functions returns true.
+			 */
+			function executeTimeoutLoop(fn, reps, delay, conditionFn) {
+				if (reps > 0) {
+					setTimeout(function() {
+						if (conditionFn()) {
+							fn();	
+						} else {
+							executeTimeoutLoop(fn, reps-1, delay, conditionFn);
+						}
+					}, delay);
+				}
+			};
+
+			/*
+			 *
+			 */
+			function jQuerySelect(pattern, context) {
+				var ret = null;
+				if (!context) {
+					if (!(typeof pattern === "string"
+						&& (pattern.indexOf("</") != -1
+									|| pattern.indexOf("/>") != -1))) {
+						// Find HTML5 Framework parent div for current View
+						var views = jQuery(".sg-view-panel").children();
+						if (views) {
+							for(var i = 0; i< views.length; i++) {
+								if (views[i].style.display == "" || views[i].style.display == "inline") {
+									var ret = jQuery(pattern, jQuery(views[i]));
+									if (ret.length > 0) {
+										return ret;
+									}
+								}
+							}
+						} 
+
+						// Fallback portal-shell
+						var view = jQuery(".view-panel-active");
+						if (view && view.length > 0) {
+							var ret = jQuery(pattern, jQuery(view));
+							if (ret.length > 0) {
+								return ret;
+							}
+						}
+					}
+					
+					ret = jQuery(pattern);
+				}
+				ret = jQuery(pattern, context);
+				
+//				if (ret.length == 0) {
+//					return null;
+//				}
+					
+				return ret;
+			}
+
+			/*
+			 *
+			 */
+			function getOutlineWindowAndDocument() {
+				if (parent && parent.window["BridgeUtils"]) {
+					return {
+						win: parent.document.getElementById("modelerLaunchPanels"),
+						doc: parent.document.getElementById("modelerLaunchPanels").contentDocument
+					};
+				} else { // Compatibility to old portal
+					return {
+						win: window.parent.frames['ippPortalMain'],
+						doc: window.parent.frames['ippPortalMain'].document
+					};
+				}
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function isEmptyString(str) {
 				return str == null || jQuery.trim(str).length == 0;
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function isNumber(n) {
 				return !isNaN(parseFloat(n)) && isFinite(n);
@@ -101,7 +254,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param from
 			 * @param to
 			 * @returns
@@ -113,7 +266,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param item
 			 */
 			function removeItemFromArray(array, item) {
@@ -132,7 +285,7 @@ define(
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
-			 * 
+			 *
 			 * @param t :
 			 *            textNode element for Symbol
 			 * @param width :
@@ -168,7 +321,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param array
 			 * @param item
 			 */
@@ -183,7 +336,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function convertToSortedArray(obj, field, ascending) {
 				var sortedObjects = [];
@@ -214,7 +367,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function lexicalSort(left, right) {
 				left = left.toLowerCase();
@@ -241,7 +394,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(proto, untypedObject) {
 				var typedObject = Object.create(proto);
@@ -257,18 +410,18 @@ define(
 			 * Copies all data members of and object into another object
 			 * recursively. Members existing in the childObject and not existing
 			 * in the parentObject will not be overwritten.
-			 * 
+			 *
 			 * Arrays however will be overwritten.
-			 * 
+			 *
 			 * TODO - review behaviour for attributes: Attributes also will be
 			 * over written, like arrays, as in some cases attributes don't
 			 * switch between different values (like true and false), but they
 			 * either exist or they don't. In such cases it is necessary to
 			 * remove the attributes from child if they don't exist in the
 			 * parent.
-			 * 
+			 *
 			 * The function will not check for cyclic dependencies.
-			 * 
+			 *
 			 * Functions in parentObject will not be copied.
 			 */
 			function inheritFields(childObject, parentObject) {
@@ -291,7 +444,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function isAttribute(member) {
 				if (member == "attributes") {
@@ -321,7 +474,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function typeObject(object, prototype) {
 				inheritMethods(object, prototype);
@@ -351,7 +504,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function prettyDateTime(date) {
 				if (date == null) {
@@ -474,7 +627,7 @@ define(
 					'Friday', 'Saturday', 'Sunday' ];
 
 			/**
-			 * 
+			 *
 			 */
 			function formatDate(date, s, utc) {
 				s = s.split('');
@@ -733,7 +886,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getDaySuffix(date, utc) {
 				var n = utc ? date.getUTCDate() : date.getDate();
@@ -764,7 +917,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getISOWeek(date, utc) {
 				var y = utc ? date.getUTCFullYear() : date.getFullYear();
@@ -812,7 +965,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -824,7 +977,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 * @param date
 			 * @param utc
 			 * @returns
@@ -836,7 +989,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function getTimezoneOffset(date) {
 				return date.getTimezoneOffset() * -1;
@@ -872,14 +1025,14 @@ define(
 
 			/**
 			 * wraps String
-			 * 
+			 *
 			 * @param content :
 			 *            string to be wrapped
 			 * @param maxLength :
 			 *            max number of characters in one line
 			 * @param brk :
 			 *            The character(s) to be inserted at every break
-			 * 
+			 *
 			 */
 			function contentWrap(content, maxLength, brk) {
 				if (!content) {
@@ -887,5 +1040,16 @@ define(
 				}
 				var regex = ".{1," + maxLength + "}(\\s|$)";
 				return content.match(RegExp(regex, "g")).join(brk);
+			}
+			
+			/**
+			 * checks if the symbol is of type Intermediate Event
+			 */
+			function isIntermediateEvent(symbol) {
+				if (symbol.modelElement
+						&& (m_constants.INTERMEDIATE_EVENT_TYPE == symbol.modelElement.eventType)) {
+					return true;
+				}
+				return false;
 			}
 		});

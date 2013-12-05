@@ -1,8 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.model;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.google.gson.JsonArray;
 
@@ -15,10 +14,10 @@ public class ProcessDefinitionJto extends ModelElementJto
       this.type = ModelerConstants.PROCESS_KEY;
    }
 
-   public List<ActivityJto> activities = newArrayList();
-   public List<GatewayJto> gateways = newArrayList();
-   public List<EventJto> events = newArrayList();
-   public List<TransitionJto> controlFlows = newArrayList();
+   public Map<String, ActivityJto> activities = new LinkedHashMap<String, ActivityJto>();
+   public Map<String, GatewayJto> gateways = new LinkedHashMap<String, GatewayJto>();
+   public Map<String, EventJto> events = new LinkedHashMap<String, EventJto>();
+   public Map<String, TransitionJto> controlFlows = new LinkedHashMap<String, TransitionJto>();
 
    // TODO
    public JsonArray dataPathes = new JsonArray();

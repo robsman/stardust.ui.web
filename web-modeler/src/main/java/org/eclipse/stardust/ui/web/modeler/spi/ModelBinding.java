@@ -32,6 +32,8 @@ public abstract class ModelBinding<M extends EObject>
 
    public abstract boolean isCompatible(EObject model);
 
+   public abstract String getModelFormat(M model);
+
    public abstract String getModelId(M model);
 
    public ModelingSession getModelingSession()

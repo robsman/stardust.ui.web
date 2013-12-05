@@ -1,0 +1,371 @@
+body, table {
+	margin:0;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+
+.display-none {
+	display: none;
+}
+
+.container-fluid {
+	width: 100%;
+	height: 100%;
+}
+
+.filler-cell{
+	display: table-cell;
+	width: 100%;
+}
+
+.app-header {
+}
+
+.header-table {
+	display: table;
+	width: 100%;
+	height: 40px;
+}
+
+.header-row {
+	display: table-row;
+}
+
+.header-cell {
+	display: table-cell;
+	white-space: nowrap;
+	padding-left: 10px;
+	padding-right: 10px;
+	line-height: 20px;
+	vertical-align: middle;
+}
+
+.utility-link {
+	cursor: pointer;
+}
+
+.app-logo {
+	width: 100px;
+	/* background-image: url('./images/stardust.jpg'); */
+}
+
+.app-logo-main {
+	background: url('./images/stardust-logo.png')  no-repeat;
+	width: 100%;
+}
+
+.app-title {
+	font-weight: bold;
+	font-size: 16px;
+	padding-left: 15px;
+	visibility: hidden;
+}
+
+.shell-tabs-bar {
+	height: 34px;
+	padding-top: 4px;
+	background-color: #F3F3F3;
+	background: linear-gradient(to bottom, #F3F3F3 0%, #FFFFFF 100%);
+	overflow: hidden;
+	z-index: 1029;
+}
+
+.shell-tabs-spacer {
+	background-color: #FFFFFF;
+	height: 4px;
+}
+
+.shell-home {
+	background: url('./images/dropBox.png') no-repeat center;
+	border: 1px solid #DFDEDA;
+	height: 34px;
+	width: 38px;
+	cursor: pointer;
+}
+
+.shell-home-icon {
+}
+
+.top-menu {
+	position: absolute;
+	z-index: 1000;
+	padding: 5px;
+	border: 1px solid #D2D3D3;
+	background-color: #F2F3F3;
+	cursor: auto;
+	width: 300px;
+	height: 150px;
+	overflow: auto;
+	margin: -2px;
+}
+
+.topMenuItemHeader {
+	font-weight: bold;
+}
+
+.topMenuItemLabel {
+	margin-left: 15px;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.nav-tabs {
+	display: table;
+}
+
+.nav-tabs-row {
+	display: table-row;
+}
+
+/* Styles for Configuration View Link */
+.nav-tab-configuration {
+	display: table-cell;
+	overflow: hidden;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	padding-right: 10px;
+}
+
+.configuration {
+	background: url('./images/wrench.png') no-repeat center;
+	border: 1px solid #F3F3F3;
+	height: 24px;
+	width: 24px;
+	cursor: pointer;
+}
+/* Styles for Configuration View Link */
+
+.nav-tab-shell-home {
+	display: none; /*table-cell*/
+	overflow: hidden;
+	height: 33px;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	border: 1px solid gray;
+}
+
+.nav-tab {
+	display: table-cell;
+	height: 33px;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.nav-tab-close {
+	display: none;
+   float: right;
+   margin-right: 2px;
+   margin-top: -35px;
+   font-weight: bold;
+   color: #696969;
+}
+
+.nav-active-tab-close {
+   color: #696969;
+}
+
+.nav-inactive-tab-close {
+   color: #FFFFFF;
+}
+
+.nav-tab:hover .nav-tab-close {
+	display: inline-Block;
+}
+
+.nav-tab-label-icon-wrapper {
+	max-width: 220px;
+	min-width: 50px;
+	overflow: hidden;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.nav-tab-active {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-weight: bold;
+	line-height: 33px;
+	border: 1px solid #cccccc;
+	border-radius: inherit;
+}
+
+.nav-tab-inactive {
+	background-color: rgb(72, 69, 62);
+	color: #FFFFFF;
+	font-weight: normal;
+	line-height: 33px;
+	border: 1px solid #888888;
+	border-radius: inherit;
+}
+
+.nav-tab-filler {
+	display: table-cell;
+	width: 100%;
+	border-bottom: 2px solid #cccccc;
+}
+
+.nav-overflow-tab {
+	display: table-cell;
+	height: 33px;
+	cursor: pointer;
+	white-space: nowrap;
+	vertical-align: middle;
+	padding-left: 35px;
+	padding-right: 5px;
+	color: #000000;
+	border-bottom: 2px solid #cccccc;
+}
+
+.nav-overflow-tab-title {
+	line-height: 33px;
+	font-weight: bold;
+}
+
+.overflow-tabs {
+	position: absolute;
+	right: 2px;
+	z-index: 1000;
+	border: 1px solid #D2D3D3;
+	background-color: #FFFFFF;
+	color: #000000;
+	padding: 5px;
+	width: auto;
+	min-width: 300px;
+	max-width: 500px;
+	height: auto;
+	min-height: 200px;
+	max-height: 60%;
+	overflow: auto;
+	margin: -2px;
+	box-shadow: -6px 8px 10px rgba(220, 220, 220, 0.75);
+}
+
+.nav-overflow-tab-item {
+	padding: 5px;
+	font-weight: normal;
+}
+
+.nav-overflow-tab-item:hover {
+	background: #F8F8F8;
+}
+
+.nav-overflow-tab-item-label {
+}
+
+.view-panel-active {
+	display: block;
+}
+
+.view-panel-inactive {
+	display: none;
+}
+
+.sidebar {
+	float: left;
+	position: absolute;
+}
+
+.sidebar-content {
+    background-color: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    overflow: auto;
+    word-wrap: break-word;
+    z-index: 1028;
+}
+
+.sidebar-title-wrapper {
+    background-color: #938F87;
+    background-image: linear-gradient(to bottom, #9F9C95, #807C73);
+    background-repeat: repeat-x;
+    color: #FFFFFF;
+    font-size: small;
+    font-weight: bold;
+    height: 20px;
+}
+
+.sidebar-title {
+	padding-left: 10px;
+	display: none;
+}
+
+.sg-sidebar-pin {
+	float: right;
+	/* background: url('../../../plugins/common/images/icons/toggle-small.png') no-repeat center; */
+	cursor: pointer;
+	margin-top: 1px;
+	margin-left: 9px;
+	width: 18px;
+	height: 18px;
+	font-size: small;
+	font-weight: bold;
+}
+
+.sg-sidebar-toggle {
+	width: 28px;
+	background-color: #D2D3D3;
+	height: 100%
+}
+
+.sg-sidebar-toggle-inner {
+}
+
+.sg-sidebar-toggle-icon {
+	/* background: url('../../../plugins/common/images/icons/toggle-small-expand.png') no-repeat center; */
+	width: 28px;
+	height: 28px;
+	cursor: pointer;
+	color: black;
+	font-size: small;
+	font-weight: bold;
+}
+
+.view-panels-no-sidebar {
+	margin-left: 28px;
+}
+
+.footer {
+	background-image: none !important;
+	border-top: 1px solid #cccccc !important;
+	display: table;
+	background-color: #FFFFFF !important;
+	color: #000000 !important;
+	width: 100%;
+	height: 40px;
+	position: fixed;
+	bottom: 0px;
+	margin-top: 5px;
+}
+
+.footer-row {
+	display: table-row;
+}
+
+.footer-cell {
+	display: table-cell;
+	white-space: nowrap;
+	padding-right: 5px;
+	line-height: 40px;
+	vertical-align: middle;
+	text-align: right;
+}
+
+.footer-filler-cell {
+	display: none;
+	width: 100%;
+}
+
+.footer-item {
+	text-align: left;
+}
+
+.copy-right {
+}
+
+.content-frame {
+  width: 100%;
+  border: none;
+}

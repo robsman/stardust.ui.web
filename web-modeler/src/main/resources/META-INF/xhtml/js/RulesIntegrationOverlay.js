@@ -31,13 +31,18 @@ define(
 
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
 							"parameters", "Parameters",
-							"../../images/icons/mapping.gif");
+							"plugins/bpm-modeler/images/icons/database_link.png");
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
-							"drl", "DRL", "../../images/icons/bricks.png");
+							"drl", "DRL",
+							"plugins/bpm-modeler/images/icons/script.png");
 
-					this.typeDeclarationsTextarea = jQuery("#rulesIntegrationOverlay #typeDeclarationsTextarea");
+					this.typeDeclarationsTextarea = m_utils
+							.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
+					
+					this.editorAnchor = m_utils.jQuerySelect("#ruleSetEditorDiv").get(0);
+					this.editorAnchor.id = "ruleSetEditorDiv" + Math.floor((Math.random()*100000) + 1);
 					this.ruleSetEditor = m_codeEditorAce
-							.getDrlEditor("ruleSetEditorDiv");
+							.getDrlEditor(this.editorAnchor.id);
 
 					var self = this;
 
@@ -46,7 +51,8 @@ define(
 					// supported in jquery ui 1.8.19
 					// Once we move to version 1.9+ we should be able to replace this with
 					// activate event handling.
-					this.configTab = jQuery("a[href='#configurationTab']");
+					this.configTab = m_utils
+							.jQuerySelect("a[href='#configurationTab']");
 					this.configTab
 							.click(function() {
 								self.ruleSetEditor
@@ -60,7 +66,8 @@ define(
 						self.submitDrlChanges();
 					});
 
-					this.drlTextarea = jQuery("#drlTab #drlTextarea");
+					this.drlTextarea = m_utils
+							.jQuerySelect("#drlTab #drlTextarea");
 
 					this.typeDeclarationsTextarea.prop("disabled", true);
 					this.drlTextarea.prop("disabled", true);
@@ -72,7 +79,8 @@ define(
 								supportsOrdering : false,
 								supportsDataMappings : false,
 								supportsDescriptors : false,
-								supportsDataTypeSelection : true
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : false
 							});
 				};
 
@@ -106,7 +114,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>"
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>"
 								}
 							});
 				};
@@ -128,8 +136,9 @@ define(
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationsDrl = function() {
 					var typeDeclarations = {};
+					var alreadyDeclaredTypes = {};
 					var drl = "";
-
+					var self = this;
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 
@@ -143,10 +152,53 @@ define(
 								.findTypeDeclaration(accessPoint.structuredDataTypeFullId)
 
 						typeDeclarations[accessPoint.structuredDataTypeFullId] = typeDeclaration;
-
-						drl += this.createTypeDeclarationDrl(typeDeclarations,
-								typeDeclaration);
+						
+						alreadyDeclaredTypes[typeDeclaration.modelId+":"+typeDeclaration.id] = typeDeclaration;
+						this.createTypeDeclarationDrl(typeDeclarations,
+								typeDeclaration,alreadyDeclaredTypes);
 					}
+					// Create the type declaration itself
+					drl="";
+					if(alreadyDeclaredTypes!=null){
+					jQuery.each(alreadyDeclaredTypes, function(i, elementDefinition) {
+							drl+="declare " + elementDefinition.id + "\n";
+
+							jQuery.each(elementDefinition.getElements(), function(i, element) {
+								var type = element.type;
+
+								// Strip prefix
+
+								if (element.type.indexOf(':') !== -1) {
+									type = element.type.split(":")[1];
+								}
+
+								var childTypeDeclaration = typeDeclaration.model
+										.findTypeDeclarationBySchemaName(type);
+
+								if (!childTypeDeclaration) {
+									if (element.cardinality == "many") {
+										drl += "   " + element.name
+										+ ": java.util.ArrayList;\n";
+									}
+									else{
+									drl += "   " + element.name + ": "
+											+ self.mapXsdTypeToJava(element.type)
+											+ ";\n";
+									}
+								} else {
+									if (element.cardinality == "many") {
+										drl += "   " + element.name
+												+ ": java.util.ArrayList;\n";
+									} else {
+										drl += "   " + element.name + ": "
+												+ childTypeDeclaration.id + ";\n";
+									}
+								}
+							});
+
+							drl += "end\n\n";
+					});
+						}
 
 					return drl;
 				};
@@ -155,56 +207,20 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.createTypeDeclarationDrl = function(
-						typeDeclarations, typeDeclaration) {
+						typeDeclarations, typeDeclaration,alreadyDeclaredTypes) {
 					var drl = "";
 					var self = this;
-
+					
 					// Create DRL for dependent structures first
 
-					jQuery
-							.each(
-									typeDeclaration.getBody().elements,
-									function(i, element) {
-										var type = element.type;
-
-										// Strip prefix
-
-										if (element.type.indexOf(':') !== -1) {
-											type = element.type.split(":")[1];
-										}
-
-										var childTypeDeclaration = typeDeclaration.model
-												.findTypeDeclarationBySchemaName(type);
-
-										if (childTypeDeclaration != null) {
-											if (childTypeDeclaration
-													.isSequence()
-													&& !typeDeclarations[childTypeDeclaration
-															.getFullId()]) {
-
-												drl += self
-														.createTypeDeclarationDrl(
-																typeDeclarations,
-																childTypeDeclaration);
-											} else {
-												drl += "   "
-														+ element.name
-														+ ": "
-														+ self
-																.mapXsdTypeToJava("xsd:string")
-														+ ";\n";
-											}
-										}
-									});
-
-					// Create the type declaration itself
-
-					drl += "declare " + typeDeclaration.id + "\n";
-
-					jQuery.each(typeDeclaration.getBody().elements, function(i,
-							element) {
+					for ( var i = 0; i < typeDeclaration.getElementCount(); i++) {
+						//jQuery
+						//	.each(
+						//typeDeclaration.getElements(),
+						//function(i, element) {
+						var element = typeDeclaration.getElements()[i];
 						var type = element.type;
-
+						//if(alreadyDeclaredTypes.containstypeDeclaration.id)
 						// Strip prefix
 
 						if (element.type.indexOf(':') !== -1) {
@@ -214,19 +230,23 @@ define(
 						var childTypeDeclaration = typeDeclaration.model
 								.findTypeDeclarationBySchemaName(type);
 
-						if (!childTypeDeclaration) {
-							drl += "   " + element.name + ": "
-									+ self.mapXsdTypeToJava(element.type)
-									+ ";\n";
-						} else {
-							drl += "   " + element.name + ": "
-									+ childTypeDeclaration.id + ";\n";
+						if (childTypeDeclaration != null) {
+
+							if (childTypeDeclaration.isSequence()
+									&& !typeDeclarations[childTypeDeclaration
+											.getFullId()]) {
+								alreadyDeclaredTypes[childTypeDeclaration.modelId+":"+childTypeDeclaration.id] = childTypeDeclaration ;
+								drl += self.createTypeDeclarationDrl(
+										typeDeclarations, childTypeDeclaration,alreadyDeclaredTypes);
+							} else {
+								drl += "   " + element.name + ": "
+										+ self.mapXsdTypeToJava("xsd:string")
+										+ ";\n";
+							}
 						}
-					});
-
-					drl += "end\n\n";
-
-					return drl;
+						//			});
+					}
+					
 				}
 
 				/**
@@ -241,9 +261,9 @@ define(
 					} else if (xsdType == "xsd:short") {
 						return "short";
 					} else if (xsdType == "xsd:int") {
-						return "int";
+						return "Integer";
 					} else if (xsdType == "xsd:long") {
-						return "long";
+						return "Long";
 					} else if (xsdType == "xsd:float") {
 						return "float";
 					} else if (xsdType == "xsd:double") {
@@ -282,17 +302,22 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.submitDrlChanges = function(
-						parameterDefinitionsChanges) {
+						changes) {
 					this.view
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor
-											.getValue()
+											.getValue(),
+									"stardust:rulesOverlay::signatureDefinition" : JSON
+											.stringify(
+													this
+															.createSignatureJson(this.parameterDefinitionsPanel.parameterDefinitions),
+													null, 3)
 								}
 							});
 				};
@@ -343,8 +368,7 @@ define(
 						}
 					}
 
-					signatureJson.structures = m_typeDeclaration
-							.generateJsonRepresentation(typeDeclarations);
+					signatureJson.structures = this.generateJsonRepresentation(typeDeclarations,this);
 
 					m_utils.debug(signatureJson);
 					m_utils.debug(JSON.stringify(signatureJson, null, 3));
@@ -352,6 +376,76 @@ define(
 					return signatureJson;
 				};
 
+				/**
+				 *
+				 */
+				 RulesIntegrationOverlay.prototype.generateJsonRepresentation=function(typeDeclarations,overlay) {
+					var json = {};
+
+					for ( var n = 0; n < typeDeclarations.length; ++n) {
+						this.generateJsonRepresentationRecursively(json,
+								typeDeclarations[n],overlay);
+					}
+
+					return json;
+				}
+
+				/**
+				 *
+				 */
+				 RulesIntegrationOverlay.prototype.generateJsonRepresentationRecursively=function(
+						typeDeclarationsJson, typeDeclaration,overlay) {
+					if (typeDeclarationsJson[typeDeclaration.id]) {
+						return;
+					}
+
+					var typeDeclarationJson = {};
+
+					typeDeclarationsJson[typeDeclaration.id] = typeDeclarationJson;
+
+					jQuery
+							.each(
+									typeDeclaration.getElements(),
+									function(i, element) {
+										var type = element.type;
+
+										// Strip prefix
+
+										if (element.type.indexOf(':') !== -1) {
+											type = element.type.split(":")[1];
+										}
+
+										var childTypeDeclaration = typeDeclaration.model
+												.findTypeDeclarationBySchemaName(type);
+
+										if (childTypeDeclaration != null) {
+											if (childTypeDeclaration.isSequence()) {
+												typeDeclarationJson[element.name] = childTypeDeclaration.id;
+
+												overlay.generateJsonRepresentationRecursively(
+														typeDeclarationsJson,
+														childTypeDeclaration,overlay);
+											} else {
+												if (element.cardinality == "many") {
+													typeDeclarationJson[element.name] = [];
+													typeDeclarationJson[element.name]
+															.push(element.type);
+												} else {
+													typeDeclarationJson[element.name] = element.type;
+												}
+											}
+										} else {
+											if (element.cardinality == "many") {
+												typeDeclarationJson[element.name] = [];
+												typeDeclarationJson[element.name]
+														.push(element.type);
+											} else {
+												typeDeclarationJson[element.name] = overlay.mapXsdTypeToJava(element.type);
+											}
+										}
+									});
+				}
+				
 				/**
 				 *
 				 */
@@ -367,7 +461,7 @@ define(
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "rulesIntegrationOverlay",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
-									"carnot:engine:camel::routeEntries":"<to uri=\"isb://service/BRMS/stateless\"/>",
+									"carnot:engine:camel::routeEntries" : "<to uri=\"isb://service/BRMS/stateless\"/>",
 									"stardust:rulesOverlay::drl" : this
 											.createDrl(),
 									"stardust:rulesOverlay::ruleSetDrl" : this.ruleSetEditor

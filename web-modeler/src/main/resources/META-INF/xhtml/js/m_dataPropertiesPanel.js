@@ -13,17 +13,14 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		m_constants, m_commandsController, m_command, m_extensionManager, m_model, m_propertiesPanel,
 		m_propertiesPage) {
 
-	var dataPropertiesPanel = null;
-
 	return {
 		initialize : function(diagram) {
-			dataPropertiesPanel = new DataPropertiesPanel();
+			var dataPropertiesPanel = new DataPropertiesPanel();
 
 			m_commandsController.registerCommandHandler(dataPropertiesPanel);
 
 			dataPropertiesPanel.initialize(diagram);
-		},
-		getInstance : function(element) {
+			
 			return dataPropertiesPanel;
 		}
 	};
@@ -40,7 +37,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		m_utils.inheritFields(this, propertiesPanel);
 		m_utils.inheritMethods(DataPropertiesPanel.prototype, propertiesPanel);
 
-		this.viewLink = jQuery("#dataPropertiesPanel #viewLink");
+		this.viewLink = m_utils.jQuerySelect("#dataPropertiesPanel #viewLink");
 
 		this.data = null;
 
@@ -67,11 +64,33 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		 */
 		DataPropertiesPanel.prototype.openView = function() {
 			m_utils.debug("Open View");
-			this.viewManager
-					.openView("dataView", "dataId=" + this.data.id
-							+ "&modelId=" + "notsetyet" + "&dataName="
-							+ this.data.name + "&fullId="
-							+ this.data.getFullId(), this.data.getFullId());
+
+			var data = this.data;
+
+			//If external data, then use the external data's identifiers to open view.
+			if (this.data.externalReference) {
+				data = m_model.findData(this.data.dataFullId);
+			}
+
+			if (data && data.model) {
+				this.viewManager
+				.openView(
+						"dataView",
+						"dataId="
+								+ encodeURIComponent(data.id)
+								+ "&modelId="
+								+ encodeURIComponent(data.model.id)
+								+ "&dataName="
+								+ encodeURIComponent(data.name)
+								+ "&fullId="
+								+ encodeURIComponent(data
+										.getFullId())
+								+ "&uuid="
+								+ data.uuid
+								+ "&modelUUID="
+								+ data.model.uuid,
+								data.uuid);
+			}
 		};
 
 		/**

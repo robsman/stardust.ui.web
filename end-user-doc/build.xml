@@ -26,10 +26,10 @@
    
    <property name="artifactId" value="ipp-end-user-doc" />
 
-
    <import file="../../build.tools/commons-build.xml" />
 
    <property name="documentation.dir" location="../../documentation" />
+   <property name="misc.dir" value="${documentation.dir}/org.eclipse.stardust.docs.misc" />
 
 	<target name="init">
 		<property name="build.dir" location="${project.dir}/build"/>
@@ -42,11 +42,14 @@
 	<target name="initBuild" depends="init">
 		<property name="build.lib" location="${build.dir}/lib" />
 		<property name="build.src" location="${build.dir}/src" />
-		<property name="build.src.bpmdoc" location="${build.src}/META-INF/doc/bpm" />
-		<property name="build.src.portaldoc" location="${build.src}/META-INF/doc/portal" />
+      <property name="build.src.doc" location="${build.src}/META-INF/doc" />
+      <property name="build.src.bpmdoc" location="${build.src.doc}/bpm" />
+      <property name="build.src.portaldoc" location="${build.src.doc}/portal" />
+      <property name="build.src.miscdoc" location="${build.src.doc}/misc" />
 
       <property name="enduser.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.enduser"/>
       <property name="bpm.doc.path" location="${documentation.dir}/org.eclipse.stardust.docs.analyst"/>
+      <property name="misc.doc.path" location="${misc.dir}/html/portal"/>
 
 		<property name="end.user.doc.jarfile" value="${artifactId}.jar" />
 		<property name="end.user.doc.jar" location="${build.lib}/${end.user.doc.jarfile}" />
@@ -55,8 +58,10 @@
 	<target name="initBuildDirectories" depends="initBuild">
 		<mkdir dir="${build.lib}"/>
 		<mkdir dir="${build.src}"/>
+      <mkdir dir="${build.src.doc}"/>
 		<mkdir dir="${build.src.bpmdoc}"/>
 		<mkdir dir="${build.src.portaldoc}"/>
+      <mkdir dir="${build.src.miscdoc}"/>
 	</target>
 
 	<target name="prepareSources" depends="initBuildDirectories">
@@ -69,68 +74,153 @@
          <filter token="artup" value="${product.artup}" />
       </filterset>
 
+	   <!-- copy styles images -->
+      <copy todir="${build.src.doc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}" includes="images/**"/>
+      </copy>
+      <!-- copy style sheets -->
+      <copy todir="${build.src.doc}/styles" overwrite="true">
+         <fileset dir="${styles.dir}">
+            <include name="**/*.css"/>
+            <include name="**/*.js"/>
+         </fileset>
+         <filterset refid="filter.product" />
+      </copy>
+
       <copy todir="${build.src}/" overwrite="true">
          <fileset dir="${project.res}">
-            <exclude name="**/styles/**"/>
+            <exclude name="**/styles/**"/> 
          </fileset>
          <filterset refid="filter.product" />
       </copy>
 
       <!-- copy business process modeler doc -->
-      <copy todir="${build.src.bpmdoc}/styles" overwrite="true">
-         <fileset dir="${styles.dir}">
-            <include name="**/*.css"/>
-            <include name="**/*.js"/>
-         </fileset>
+
+      <copy file="${bpm.doc.path}/html/toc.html" todir="${build.src.doc}" >
          <filterset refid="filter.product" />
       </copy>
-      <copy todir="${build.src.bpmdoc}/styles" overwrite="true">
-         <fileset dir="${styles.dir}" includes="images/**"/>
-      </copy>
+      <replace file="${build.src.doc}/toc.html" token="handbooks" value="bpm" /> 
+      <!-- copy images without filtering -->
       <copy todir="${build.src.bpmdoc}" >
-         <fileset dir="${bpm.doc.path}/html">
-            <include name="**/*.html"/>
-            <include name="**/*.htm"/>
-            <exclude name="**/styles/**"/>
-         </fileset>
-         <filterset refid="filter.product" />
-      </copy>
-      <copy todir="${build.src.bpmdoc}" >
-         <fileset dir="${bpm.doc.path}/html">
+         <fileset dir="${bpm.doc.path}/html/handbooks">
             <include name="**/*.png"/>
             <include name="**/*.gif"/>
             <include name="**/*.jpg"/>
-            <exclude name="**/styles/**"/>
          </fileset>
+      </copy>
+      <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+      <!-- level 1 -->
+            <copy todir="${build.src.bpmdoc}" >
+               <fileset dir="${bpm.doc.path}/html/handbooks">
+                  <include name="*/*.html"/>
+                  <include name="*/*.htm"/>
+               </fileset>
+               <filterset refid="filter.product" />
+               <filterchain>
+                   <tokenfilter>
+                      <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../portal/"/>
+                      <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                   </tokenfilter>
+               </filterchain>
+            </copy>
+
+      <!-- level 2 -->
+            <copy todir="${build.src.bpmdoc}" >
+               <fileset dir="${bpm.doc.path}/html/handbooks">
+                  <include name="*/*/*.html"/>
+                  <include name="*/*/*.htm"/>
+               </fileset>
+               <filterset refid="filter.product" />
+               <filterchain>
+                   <tokenfilter>
+                       <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../../portal/"/>
+                      <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                   </tokenfilter>
+               </filterchain>
+            </copy>
+ 
+      <!-- copy end user doc -->
+      
+      <!-- copy images without filtering -->
+      <copy todir="${build.src.portaldoc}" >
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="**/*.png"/>
+            <include name="**/*.gif"/>
+            <include name="**/*.jpg"/>
+         </fileset>
+      </copy>
+      <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+      <!-- level 1 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*.html"/>
+            <include name="*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
+      
+      <!-- level 2 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*/*.html"/>
+            <include name="*/*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+      </copy>
+      
+      <!-- level 3 -->
+      <copy todir="${build.src.portaldoc}" overwrite="true">
+         <fileset dir="${enduser.doc.path}/html/handbooks">
+            <include name="*/*/*/*.html"/>
+            <include name="*/*/*/*.htm"/>
+         </fileset>
+         <filterset refid="filter.product" />
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../toc.html"/>
+             </tokenfilter>
+         </filterchain>
       </copy>
 
-      <!-- copy end user doc -->
-      <copy todir="${build.src.portaldoc}/styles" overwrite="true">
-         <fileset dir="${styles.dir}">
-            <include name="**/*.css"/>
-            <include name="**/*.js"/>
-         </fileset>
-         <filterset refid="filter.product" />
-      </copy>
-      <copy todir="${build.src.portaldoc}/styles" overwrite="true">
-         <fileset dir="${styles.dir}" includes="images/**"/>
-      </copy>
-      <copy todir="${build.src.portaldoc}" overwrite="true">
-         <fileset dir="${enduser.doc.path}/html">
+	   <!-- copy portal issues residing in misc plugins -->
+      <copy todir="${build.src.miscdoc}" overwrite="true">
+         <fileset dir="${misc.doc.path}">
             <include name="**/*.html"/>
             <include name="**/*.htm"/>
-            <exclude name="**/styles/**"/>
+            <exclude name="toc.html" />
          </fileset>
          <filterset refid="filter.product" />
-      </copy>
-      <copy todir="${build.src.portaldoc}" >
-         <fileset dir="${enduser.doc.path}/html">
+         <filterchain>
+             <tokenfilter>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../bpm/"/>
+                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../toc.html"/>
+             </tokenfilter>
+         </filterchain>
+     </copy>
+      <copy todir="${build.src.miscdoc}" >
+         <fileset dir="${misc.doc.path}">
             <include name="**/*.png"/>
             <include name="**/*.gif"/>
             <include name="**/*.jpg"/>
-            <exclude name="**/styles/**"/>
          </fileset>
-      </copy>
+      </copy>     
 	</target>
 
    <target name="init.ivy">

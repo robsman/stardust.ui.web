@@ -51,6 +51,7 @@ define(
 							.mapInputId("bindingInformation");
 					this.interruptingInput = this
 							.mapInputId("interruptingInput");
+
 					this.throwingInput = this.mapInputId("throwingInput");
 					this.catchingInput = this.mapInputId("catchingInput");
 					this.eventClassSelect = this.mapInputId("eventClassSelect");
@@ -72,6 +73,8 @@ define(
 										page.submitChanges({modelElement: {interrupting: page.interruptingInput
 											.prop("checked")}});
 									});
+
+
 					this.throwingInput.change({
 						"page" : this
 					}, function(event) {
@@ -101,10 +104,17 @@ define(
 					}, function(event) {
 						var page =
 							event.data.page;
-
-						page
-								.getModelElement().eventClass = page.eventClassSelect.val();
-						page.submitChanges({modelElement: page.getModelElement()});
+						var eventClass = page.eventClassSelect.val();
+						var modelElement = page.getModelElement();
+						modelElement.eventClass = eventClass;
+						if (eventClass == m_constants.ERROR_EVENT_CLASS) {
+							modelElement.interrupting = true;
+							if (!modelElement.attributes) {
+								modelElement.attributes = {};
+							}
+							modelElement.attributes["carnot:engine:exceptionName"] = "java.lang.Exception";
+						}
+						page.submitChanges({modelElement: modelElement});
 					});
 				};
 
@@ -148,7 +158,13 @@ define(
 				EventBasicPropertiesPage.prototype.populateEventClassSelect = function() {
 					this.eventClassSelect.empty();
 
-					var eventClasses = m_event.getPossibleEventClasses(this.getModelElement().eventType, this.getModelElement().interrupting,
+					var interrupting = this.getModelElement().interrupting;
+
+					if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
+						interrupting = true;
+					}
+
+					var eventClasses = m_event.getPossibleEventClasses(this.getModelElement().eventType, interrupting,
 							this.getModelElement().throwing,
 							this.getModelElement().isBoundaryEvent(), false/* subProcess */);
 
@@ -175,23 +191,23 @@ define(
 							|| this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
 						this.catchingInput.hide();
 						this.throwingInput.hide();
-						$("label[for='catchingInput']").hide();
-						$("label[for='throwingInput']").hide();
+						m_utils.jQuerySelect("label[for='catchingInput']").hide();
+						m_utils.jQuerySelect("label[for='throwingInput']").hide();
 					} else {
 						this.catchingInput.show();
 						this.throwingInput.show();
-						$("label[for='catchingInput']").show();
-						$("label[for='throwingInput']").show();
+						m_utils.jQuerySelect("label[for='catchingInput']").show();
+						m_utils.jQuerySelect("label[for='throwingInput']").show();
 					}
 
 					if (this.getModelElement().eventType == m_constants.STOP_EVENT_TYPE) {
 						this.interruptingInput.hide();
 						this.participantOutput.hide();
-						$("label[for='interruptingInput']").hide();
+						m_utils.jQuerySelect("label[for='interruptingInput']").hide();
 					} else {
 						this.interruptingInput.show();
 						this.participantOutput.show();
-						$("label[for='interruptingInput']").show();
+						m_utils.jQuerySelect("label[for='interruptingInput']").show();
 					}
 
 					this.setInterrupting(this.getModelElement().interrupting);
@@ -201,17 +217,39 @@ define(
 					if (this.getModelElement().eventType == m_constants.INTERMEDIATE_EVENT_TYPE) {
 						m_dialog.makeVisible(this.intermediateEventPanel);
 						this.bindingInformation.empty();
+						this.participantOutput.hide();
+//						this.catchingInput.prop("checked", true);
+//						this.throwingInput.prop("checked", false);
+//						this.catchingInput.prop("disabled", true);
+//						this.throwingInput.prop("disabled", true);
+
+						this.catchingInput.hide();
+						this.throwingInput.hide();
+						$("label[for='catchingInput']").hide();
+						$("label[for='throwingInput']").hide();
+
+						if (this.getModelElement().eventClass == m_constants.ERROR_EVENT_CLASS) {
+							this.interruptingInput.prop("checked", true);
+							this.interruptingInput.prop("disabled", true);
+						} else {
+							if (this.getModelElement().isBoundaryEvent()) {
+								this.interruptingInput.prop("disabled", false);
+							} else {
+								this.interruptingInput.prop("checked", false);
+								this.interruptingInput.prop("disabled", true);
+							}
+						}
 
 						// Display, whether event is bound
 
 						if (this.getModelElement().isBoundaryEvent()) {
+							var hostActivityName = this.getElement().bindingActivitySymbol.modelElement.name;
 							this.bindingInformation
 									.append(m_i18nUtils
 											.getProperty(
 													"modeler.eventPropertiesPanel.basicPropertiesPage.boundMessage")
 											.replace(
-													"{0}",
-													this.getModelElement().bindingActivityUuid));
+													"{0}", hostActivityName));
 						} else {
 							this.bindingInformation
 									.append(m_i18nUtils

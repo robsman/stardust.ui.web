@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.eclipse.stardust.ui.web.bpm_reporting" />
+
+	<bean name="bpmReportingMessages"
+		class="org.eclipse.stardust.ui.web.bpm_reporting.portal.messages.Messages"
+		scope="session">
+	</bean>
+
+	<bean id="reportingService"
+		class="org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService"
+		scope="session">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="reportDefinitionView"
+		class="org.eclipse.stardust.ui.web.bpm_reporting.portal.ReportDefinitionView">
+	</bean>
+
+</beans>

@@ -134,9 +134,7 @@
 
    <bean name="categoryTreeMessageBean" class="org.eclipse.stardust.ui.web.bcc.CategoryTreeMessageBean"
         scope="session">
-   </bean>         
-
-   <!-- **************************************************
+   </bean>	<bean name="deputyTeamMemberBean" class="org.eclipse.stardust.ui.web.bcc.views.DeputyTeamMemberBean"        scope="portalTab">   </bean>      <!-- **************************************************
    		********** REPORTING BEANS ********** 
    	************************************************** -->
 

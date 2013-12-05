@@ -68,6 +68,8 @@ public class Constants
    public static final String SKIN_FOLDER = "/public/skins";
    public static final String PLUGIN_ROOT_FOLDER_PATH = "/plugins/";
    
+   public static final String CONTEXT_PARAM_REPORTING_URI = "ag.carnot.processportal.integration.REPORTING_URL";
+   
    public ActivityInstanceStates getActivityInstanceState()
    {
       return activityInstanceStates;

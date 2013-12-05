@@ -181,6 +181,11 @@ public class ProcessTableEntryUserObject extends NodeUserObject
       return tableEntry.getState();
    }
 
+   public String getAbortedUser()
+   {
+      return tableEntry.getAbortedUser();
+   }
+
    @Override
    public String getStyleClass()
    {

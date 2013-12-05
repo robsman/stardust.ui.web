@@ -4,11 +4,13 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.createInternalId;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ProcessType;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.emf.ecore.EObject;
 
@@ -20,6 +22,7 @@ import org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.model.ApplicationJto;
 import org.eclipse.stardust.ui.web.modeler.model.ModelJto;
+import org.eclipse.stardust.ui.web.modeler.model.ModelParticipantJto;
 import org.eclipse.stardust.ui.web.modeler.model.ProcessDefinitionJto;
 
 public class Bpmn2CoreElementsBuilder
@@ -95,6 +98,29 @@ public class Bpmn2CoreElementsBuilder
       }
 
       return application;
+   }
+
+   public Resource createModelParticipant(Definitions model, ModelParticipantJto jto)
+   {
+      Resource participant = Bpmn2Utils.bpmn2Factory().createResource();
+
+      participant.setName(jto.name);
+      participant.setId( !isEmpty(jto.id)
+            ? jto.id
+            : Bpmn2Utils.deriveElementIdFromName(jto.name));
+
+      setExtensionAttribute(participant, "uuid", Bpmn2Utils.createInternalId());
+
+      // apply defaults
+      JsonObject participantDetails = new JsonObject();
+      participantDetails.addProperty(ModelerConstants.PARTICIPANT_TYPE_PROPERTY, jto.participantType); // TODO participantType?
+      if ( !isEmpty(jto.parentUUID))
+      {
+         participantDetails.addProperty(ModelerConstants.PARENT_UUID_PROPERTY, jto.parentUUID);
+      }
+      Bpmn2ExtensionUtils.setExtensionFromJson(participant, "core", participantDetails);
+
+      return participant;
    }
 
    public void attachToModel(Definitions model, RootElement element)

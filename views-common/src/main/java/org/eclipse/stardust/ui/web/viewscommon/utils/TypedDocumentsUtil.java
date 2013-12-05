@@ -12,12 +12,14 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.common.log.LogManager;
@@ -30,6 +32,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
@@ -46,6 +49,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
@@ -127,7 +131,31 @@ public class TypedDocumentsUtil
          }
       }
 
-      return new ArrayList<TypedDocument>(typedDocumentsData.values());
+      return new ArrayList<TypedDocument>(filterWithReadAccess(typedDocumentsData.values()));
+   }
+   
+   /**
+    * 
+    * @param documentsList
+    * @return
+    */
+   private static List<TypedDocument> filterWithReadAccess(Collection<TypedDocument> documentsList)
+   {
+      List<TypedDocument> updatedDocumentList = CollectionUtils.newArrayList();
+      DocumentManagementService dms = DocumentMgmtUtility.getDocumentManagementService();
+      for (TypedDocument doc : documentsList)
+      {
+         if (null != doc.getDocument())
+         {
+            if (null != dms.getDocument(doc.getDocument().getId()))
+            {
+               updatedDocumentList.add(doc);
+            }
+         }
+         else
+            updatedDocumentList.add(doc);
+      }
+      return updatedDocumentList;
    }
 
    /**
@@ -140,7 +168,7 @@ public class TypedDocumentsUtil
       updateTypedDocument(typedDocument.getProcessInstance().getOID(), typedDocument.getDataPath().getId(),
             typedDocument.getDataDetails().getId(), typedDocument.getDocument());
    }
-
+   
    /**
     * @param processInstanceOID
     * @param dataPathId

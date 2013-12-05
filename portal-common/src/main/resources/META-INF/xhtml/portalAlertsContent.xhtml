@@ -1,0 +1,35 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup rendered="#{ippAlertManager.alertsCount > 0}">
+		<table width="100%" cellpadding="0" cellspacing="0">
+			<c:forEach items="#{ippAlertManager.alerts}" var="alert">
+				<tr>
+					<td class="portalAlertEntryImage">
+						<ice:graphicImage value="#{alert.iconUrl}" height="32" width="32" />
+					</td>
+					<td class="portalAlertEntryData">
+						<ice:panelGroup>
+							<ice:outputText value="#{alert.senderFullName} - " styleClass="portalAlertEntryUserName" />
+							<ice:panelGroup style="display: inline;"> <!-- panelTooltip="alertToolTip" -->
+								<ice:commandLink actionListener="#{ippAlertManager.processAlertAction}" styleClass="action-link">
+									<pc:automationTag value="auto-FW-Alerts-ProcessActionLink" />
+									<ice:outputText value="#{alert.displayText}" styleClass="action-link portalAlertEntryHandler" />
+									<f:attribute name="alertItem" value="#{alert}" />
+								</ice:commandLink>
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:outputText value="#{alert.humanReadableTimeStamp}" styleClass="portalAlertEntryTime" />
+					</td>
+				</tr>
+			</c:forEach>
+		</table>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{ippAlertManager.alertsCount eq 0}">
+		<ice:outputText value="#{common_msgPropsBean['portalFramework.alerts.noAlerts']}" />
+	</ice:panelGroup>
+</f:view>

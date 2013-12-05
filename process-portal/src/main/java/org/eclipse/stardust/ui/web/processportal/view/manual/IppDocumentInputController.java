@@ -76,6 +76,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    private Document documentToBeMoved;
    private Document documentToBeDeleted;
    private boolean disableAutoDownload;
+   private Boolean readable = null;
 
    /**
     * @param path
@@ -115,6 +116,15 @@ public class IppDocumentInputController extends DocumentInputController implemen
          setOpenLabel(document.getName());
          MIMEType mimeType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
          setOpenIcon(mimeType.getCompleteIconPath());
+         readable = true;
+         if (!(document instanceof RawDocument))
+         {
+            // TODO : review later
+            if (null == DocumentMgmtUtility.getDocumentManagementService().getDocument(document.getId()))
+            {
+               readable = false;
+            }
+         }
       }
       else
       {
@@ -126,7 +136,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    @Override
    public void viewDocument()
    {
-      if (null != document)
+      if (null != document && isReadable())
       {
          if (!fireEvent(DocumentInputEventType.TO_BE_VIEWED, null))
          {
@@ -196,7 +206,6 @@ public class IppDocumentInputController extends DocumentInputController implemen
             "views.genericRepositoryView.specificDocument.uploadFile", label));
       attributes.setOpenDocumentFlag(openDocument);
       attributes.setEnableOpenDocument(enableOpenDocument);
-
       fileUploadDialog.setCallbackHandler(new FileUploadCallbackHandler()
       {
          public void handleEvent(FileUploadEvent eventType)
@@ -210,7 +219,12 @@ public class IppDocumentInputController extends DocumentInputController implemen
                   rawDocument.setDescription(fileWrapper.getDescription());
                   rawDocument.setComments(fileWrapper.getComments());
                   rawDocument.setDocumentType(fileWrapper.getDocumentType());
-
+                  if(fileWrapper.isOpenDocument())
+                  {
+                     // disableAutoDownload : To Suppress autoDownload for
+                     // unsupportedFileType on DocumentViewer open after upload
+                     disableAutoDownload = true;
+                  }
                   if (!fireEvent(DocumentInputEventType.TO_BE_UPLOADED, getFileSystemDocument(rawDocument)))
                   {
                      setValue(rawDocument);
@@ -244,7 +258,7 @@ public class IppDocumentInputController extends DocumentInputController implemen
    public void deleteDocument()
    {
       // check if the document is JCR document
-      if (!(document instanceof RawDocument))
+      if (!(document instanceof RawDocument) && isReadable())
       {
          MessagePropertiesBean propsBean = MessagePropertiesBean.getInstance();
 
@@ -527,5 +541,10 @@ public class IppDocumentInputController extends DocumentInputController implemen
    public void setEnableOpenDocument(boolean enableOpenDocument)
    {
       this.enableOpenDocument = enableOpenDocument;
+   }
+
+   public boolean isReadable()
+   {
+      return readable;
    }
 }

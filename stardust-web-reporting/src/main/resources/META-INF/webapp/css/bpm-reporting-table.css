@@ -1,0 +1,35 @@
+/**
+* Overwrites for datatable
+*/
+table.display tr.odd.gradeA {
+	background-color: #FFFFFF;
+}
+
+table.display tr.odd.gradeA td {
+	border-bottom: 1px solid #E7E7E7;
+}
+
+table.display tr.odd.gradeA td.sorting_1 {
+	background-color: #FFFFFF;
+}
+
+table.display tr.even.gradeA {
+	background-color: #FFFFFF;
+}
+
+table.display tr.even.gradeA td {
+	border-bottom: 1px solid #E7E7E7;
+}
+
+table.display tr.even.gradeA td.sorting_1 {
+	background-color: #FFFFFF;
+}
+
+#reportTable_info {
+	padding: 3px;
+	font-size: 11px;
+	background-image: -webkit-linear-gradient(top, #E6E6E6, #FFFFFF);
+	background-image: -moz-linear-gradient(top, #E6E6E6, #FFFFFF);
+	background-image: -ms-linear-gradient(top, #E6E6E6, #FFFFFF);
+	background-image: -o-linear-gradient(top, #E6E6E6, #FFFFFF);
+}

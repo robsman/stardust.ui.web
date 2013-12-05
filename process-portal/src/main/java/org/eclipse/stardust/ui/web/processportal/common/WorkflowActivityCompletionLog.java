@@ -26,6 +26,7 @@ public class WorkflowActivityCompletionLog implements Serializable
    final private ActivityInstance nextActivity;
    final private boolean success;
    final private boolean closeViewAndProceed;
+   final private boolean delayViewClose;
 
    /**
     * @param completedActivity
@@ -34,13 +35,14 @@ public class WorkflowActivityCompletionLog implements Serializable
     * @param closeViewAndProceed
     */
    public WorkflowActivityCompletionLog(ActivityInstance completedActivity, ActivityInstance nextActivity,
-         boolean success, boolean closeViewAndProceed)
+         boolean success, boolean closeViewAndProceed, boolean delayViewClose)
    {
       super();
       this.completedActivity = completedActivity;
       this.nextActivity = nextActivity;
       this.success = success;
       this.closeViewAndProceed = closeViewAndProceed;
+      this.delayViewClose = delayViewClose;
    }
 
    public ActivityInstance getCompletedActivity()
@@ -62,4 +64,10 @@ public class WorkflowActivityCompletionLog implements Serializable
    {
       return closeViewAndProceed;
    }
+
+   public boolean isDelayViewClose()
+   {
+      return delayViewClose;
+   }
+   
 }

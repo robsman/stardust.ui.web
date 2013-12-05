@@ -48,7 +48,8 @@ define(
 				this.flyOutMenuBackground = null;
 				this.leftFlyOutMenuItems = [];
 				this.rightFlyOutMenuItems = [];
-				this.bottomFlyOutMenuItems = [];
+				this.bottomFlyOutMenuItems = []; //botton right aligned (RA)
+				this.bottomRAFlyOutMenuItems = [];
 
 				/**
 				 *
@@ -167,8 +168,10 @@ define(
 
 					// Event handling
 
-					element
-							.dblclick(Drawable_doubleClickEditableTextPrimitiveClosure);
+					if (!this.diagram.process.isReadonly()) {
+						element
+								.dblclick(Drawable_doubleClickEditableTextPrimitiveClosure);
+					}
 				};
 
 				Drawable.prototype.createProximitySensor = function() {
@@ -181,10 +184,12 @@ define(
 						callbackScope : this
 					};
 
-					// this.proximitySensor.mouseover(mouseOverClosure);
-					this.proximitySensor.hover(
-							Drawable_proximityHoverInClosure,
-							Drawable_proximityHoverOutClosure);
+					if (!this.diagram.process.isReadonly()) {
+						// this.proximitySensor.mouseover(mouseOverClosure);
+						this.proximitySensor.hover(
+								Drawable_proximityHoverInClosure,
+								Drawable_proximityHoverOutClosure);
+					}
 				};
 
 				/**
@@ -290,7 +295,19 @@ define(
 
 						++n;
 					}
-				}
+					
+					n = this.bottomRAFlyOutMenuItems.length - 1;
+					while (n >= 0) {
+						this.bottomRAFlyOutMenuItems[n].attr({
+							x : x + width - FLY_OUT_MENU_EMPTY_MARGIN - n
+									* (16 + FLY_OUT_MENU_ITEM_MARGIN),
+							y : y + height
+									+ FLY_OUT_MENU_CONTENT_MARGIN
+									- FLY_OUT_MENU_ITEM_MARGIN - 16
+						});
+						--n;
+					}
+				};
 
 				/**
 				 *
@@ -345,6 +362,18 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+					var length = this.bottomRAFlyOutMenuItems.length;
+					while (n < length) {
+						this.bottomRAFlyOutMenuItems[n].show();
+						this.bottomRAFlyOutMenuItems[n].toFront();
+						this.bottomRAFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_END_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+
+						++n;
+					}
 				};
 
 				/**
@@ -388,6 +417,18 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+					var length = this.bottomRAFlyOutMenuItems.length; 
+					while (n < length) {
+						this.bottomRAFlyOutMenuItems[n].animate({
+							"fill-opacity" : FLY_OUT_MENU_START_OPACITY
+						}, m_constants.DRAWABLE_FLY_OUT_MENU_FADE_TIME, '>');
+						this.bottomRAFlyOutMenuItems[n].hide();
+
+						++n;
+					}
+					
 					if (this.diagram.currentFlyOutSymbol
 							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
 						this.diagram.currentFlyOutSymbol = null;
@@ -399,7 +440,7 @@ define(
 				 *
 				 */
 				Drawable.prototype.addFlyOutMenuItems = function(left, right,
-						bottom) {
+						bottom, bottomRA) {
 
 					this.leftFlyOutMenuItems = new Array();
 
@@ -442,11 +483,27 @@ define(
 
 						++n;
 					}
+					
+					this.bottomRAFlyOutMenuItems = new Array();
+
+					if (bottomRA) {
+						n = 0;
+						var length = bottomRA.length;
+						while (n < length) {
+							this.bottomRAFlyOutMenuItems[n] = this
+									.createFlyOutMenuItem(bottomRA[n].imageUrl,
+											bottomRA[n].imageWidth,
+											bottomRA[n].imageHeight,
+											bottomRA[n].clickHandler);
+
+							++n;
+						}
+					}
 				};
 
 				Drawable.prototype.createFlyOutMenuItem = function(imageUrl,
 						imageWidth, imageHeight, clickHandler) {
-					var item = m_canvasManager.drawImageAt(imageUrl, 0, 0,
+					var item = this.diagram.canvasManager.drawImageAt(imageUrl, 0, 0,
 							imageWidth, imageHeight);
 
 					item.attr({
@@ -457,11 +514,18 @@ define(
 						callbackScope : this
 					};
 
-					item.click(clickHandler);
-					item.hover(Drawable_hoverInFlyMenuItemClosure,
-							Drawable_hoverOutFlyMenuItemClosure);
-					item.hover(Drawable_hoverInFlyMenuItemClosure,
-							Drawable_hoverOutFlyMenuItemClosure);
+					if (!this.diagram.process.isReadonly()) {
+						var self = this;
+						item.click(function() {
+							if (self.diagram.mode === self.diagram.NORMAL_MODE) {
+								clickHandler.call(this);								
+							}
+						});
+						item.hover(Drawable_hoverInFlyMenuItemClosure,
+								Drawable_hoverOutFlyMenuItemClosure);
+						item.hover(Drawable_hoverInFlyMenuItemClosure,
+								Drawable_hoverOutFlyMenuItemClosure);
+					}
 
 					return item;
 				};
@@ -520,6 +584,15 @@ define(
 
 						++n;
 					}
+					
+					n = 0;
+
+					while (n < this.bottomRAFlyOutMenuItems.length) {
+						this.bottomRAFlyOutMenuItems[n].remove();
+
+						++n;
+					}
+					
 					if (this.diagram.currentFlyOutSymbol
 							&& this.diagram.currentFlyOutSymbol.oid == this.oid) {
 						this.diagram.currentFlyOutSymbol = null;
@@ -546,7 +619,7 @@ define(
 				 *
 				 */
 				Drawable.prototype.showDashboard = function(dashboardContent) {
-					m_canvasManager.drawRectangle(
+					this.diagram.canvasManager.drawRectangle(
 							this.getDashboardX(), this.getDashboardY(), 220,
 							120, {
 								"stroke" : "#bbbbbb",
@@ -560,7 +633,7 @@ define(
 
 					for ( var contentItem in dashboardContent) {
 						if (dashboardContent[contentItem].type == "valueList") {
-							m_canvasManager
+							this.diagram.canvasManager
 									.drawTextNode(this.getDashboardX() + 10,
 											this.getDashboardY() + yOffset,
 											dashboardContent[contentItem].title)
@@ -576,7 +649,7 @@ define(
 
 							var attributes = dashboardContent[contentItem].attributes;
 							for ( var attribute in attributes) {
-								m_canvasManager
+								this.diagram.canvasManager
 										.drawTextNode(
 												this.getDashboardX() + 10,
 												this.getDashboardY() + yOffset,
@@ -588,7 +661,7 @@ define(
 													"font-weight" : "bold",
 													"font-size" : m_constants.DEFAULT_FONT_SIZE - 1
 												}).show();
-								m_canvasManager
+								this.diagram.canvasManager
 										.drawTextNode(
 												this.getDashboardX() + 160,
 												this.getDashboardY() + yOffset,
@@ -603,7 +676,7 @@ define(
 								yOffset += 20;
 							}
 						} else if (dashboardContent[contentItem].type == "plot") {
-							m_canvasManager
+							this.diagram.canvasManager
 									.drawTextNode(this.getDashboardX() + 10,
 											this.getDashboardY() + yOffset,
 											dashboardContent[contentItem].title)
@@ -624,7 +697,7 @@ define(
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset - 80);
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"arrow-end" : "block-wide-long",
 								"stroke" : "#333333",
 								"stroke-width" : 1.0
@@ -635,7 +708,7 @@ define(
 							pathString += "M" + (this.getDashboardX() + 10) + " " + (this.getDashboardY() + yOffset);
 							pathString += "L" + (this.getDashboardX() + 210) + " " + (this.getDashboardY() + yOffset);
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"arrow-end" : "block-wide-long",
 								"stroke" : "#333333",
 								"stroke-width" : 1.0
@@ -653,7 +726,7 @@ define(
 								}
 							}
 
-							m_canvasManager.drawPath(pathString, {
+							this.diagram.canvasManager.drawPath(pathString, {
 								"stroke" : "red",
 								"stroke-width" : 1.5
 							}).show();
@@ -680,6 +753,9 @@ define(
 			}
 
 			function Drawable_hoverOutFlyMenuItemClosure(event) {
+				if (this.removed) {
+					return;
+				}
 				this.attr({
 					"fill" : "white",
 					"fill-opacity" : 1

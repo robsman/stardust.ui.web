@@ -15,17 +15,13 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_propertiesPage"],
 		function(m_utils, m_constants, m_commandsController, m_propertiesPanel, m_propertiesPage) {
 
-			var controlFlowPropertiesPanel = null;
-
 			return {
 				initialize : function(diagram) {
-					controlFlowPropertiesPanel = new ControlFlowPropertiesPanel();
+					var controlFlowPropertiesPanel = new ControlFlowPropertiesPanel();
 
 					m_commandsController.registerCommandHandler(controlFlowPropertiesPanel);
 
 					controlFlowPropertiesPanel.initialize(diagram);
-				},
-				getInstance : function(element) {
 					return controlFlowPropertiesPanel;
 				}
 			};

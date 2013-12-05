@@ -89,9 +89,12 @@ var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
 var CStyleFoldMode = require("./folding/cstyle").FoldMode;
 
 var Mode = function() {
-    this.$tokenizer = new Tokenizer(new JavaScriptHighlightRules().getRules());
+    var highlighter = new JavaScriptHighlightRules();
+
+    this.$tokenizer = new Tokenizer(highlighter.getRules());
     this.$outdent = new MatchingBraceOutdent();
     this.$behaviour = new CstyleBehaviour();
+    this.$keywordList = highlighter.$keywordList;
     this.foldingRules = new CStyleFoldMode();
 };
 oop.inherits(Mode, TextMode);
@@ -218,9 +221,10 @@ var JavaScriptHighlightRules = function() {
         "constant.language":
             "null|Infinity|NaN|undefined",
         "support.function":
-            "alert"
+            "alert",
+        "constant.language.boolean": "true|false"
     }, "identifier");
-    var kwBeforeRe = "case|do|else|finally|in|instanceof|return|throw|try|typeof|yield";
+    var kwBeforeRe = "case|do|else|finally|in|instanceof|return|throw|try|typeof|yield|void";
     var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*\\b";
 
     var escapedRe = "\\\\(?:x[0-9a-fA-F]{2}|" + // hex
@@ -240,7 +244,6 @@ var JavaScriptHighlightRules = function() {
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
                 token : "comment", // multi line comment
-                merge : true,
                 regex : /\/\*/,
                 next : "comment"
             }, {
@@ -306,15 +309,12 @@ var JavaScriptHighlightRules = function() {
                 regex : "(:)(\\s*)(function)(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                token : "constant.language.boolean",
-                regex : /(?:true|false)\b/
-            }, {
                 token : "keyword",
                 regex : "(?:" + kwBeforeRe + ")\\b",
                 next : "regex_allowed"
             }, {
                 token : ["punctuation.operator", "support.function"],
-                regex : /(\.)(s(?:h(?:ift|ow(?:Mod(?:elessDialog|alDialog)|Help))|croll(?:X|By(?:Pages|Lines)?|Y|To)?|t(?:opzzzz|rike)|i(?:n|zeToContent|debar|gnText)|ort|u(?:p|b(?:str(?:ing)?)?)|pli(?:ce|t)|e(?:nd|t(?:Re(?:sizable|questHeader)|M(?:i(?:nutes|lliseconds)|onth)|Seconds|Ho(?:tKeys|urs)|Year|Cursor|Time(?:out)?|Interval|ZOptions|Date|UTC(?:M(?:i(?:nutes|lliseconds)|onth)|Seconds|Hours|Date|FullYear)|FullYear|Active)|arch)|qrt|lice|avePreferences|mall)|h(?:ome|andleEvent)|navigate|c(?:har(?:CodeAt|At)|o(?:s|n(?:cat|textual|firm)|mpile)|eil|lear(?:Timeout|Interval)?|a(?:ptureEvents|ll)|reate(?:StyleSheet|Popup|EventObject))|t(?:o(?:GMTString|S(?:tring|ource)|U(?:TCString|pperCase)|Lo(?:caleString|werCase))|est|a(?:n|int(?:Enabled)?))|i(?:s(?:NaN|Finite)|ndexOf|talics)|d(?:isableExternalCapture|ump|etachEvent)|u(?:n(?:shift|taint|escape|watch)|pdateCommands)|j(?:oin|avaEnabled)|p(?:o(?:p|w)|ush|lugins.refresh|a(?:ddings|rse(?:Int|Float)?)|r(?:int|ompt|eference))|e(?:scape|nableExternalCapture|val|lementFromPoint|x(?:p|ec(?:Script|Command)?))|valueOf|UTC|queryCommand(?:State|Indeterm|Enabled|Value)|f(?:i(?:nd|le(?:ModifiedDate|Size|CreatedDate|UpdatedDate)|xed)|o(?:nt(?:size|color)|rward)|loor|romCharCode)|watch|l(?:ink|o(?:ad|g)|astIndexOf)|a(?:sin|nchor|cos|t(?:tachEvent|ob|an(?:2)?)|pply|lert|b(?:s|ort))|r(?:ou(?:nd|teEvents)|e(?:size(?:By|To)|calc|turnValue|place|verse|l(?:oad|ease(?:Capture|Events)))|andom)|g(?:o|et(?:ResponseHeader|M(?:i(?:nutes|lliseconds)|onth)|Se(?:conds|lection)|Hours|Year|Time(?:zoneOffset)?|Da(?:y|te)|UTC(?:M(?:i(?:nutes|lliseconds)|onth)|Seconds|Hours|Da(?:y|te)|FullYear)|FullYear|A(?:ttention|llResponseHeaders)))|m(?:in|ove(?:B(?:y|elow)|To(?:Absolute)?|Above)|ergeAttributes|a(?:tch|rgins|x))|b(?:toa|ig|o(?:ld|rderWidths)|link|ack))\b(?=\()/
+                regex : /(\.)(s(?:h(?:ift|ow(?:Mod(?:elessDialog|alDialog)|Help))|croll(?:X|By(?:Pages|Lines)?|Y|To)?|t(?:op|rike)|i(?:n|zeToContent|debar|gnText)|ort|u(?:p|b(?:str(?:ing)?)?)|pli(?:ce|t)|e(?:nd|t(?:Re(?:sizable|questHeader)|M(?:i(?:nutes|lliseconds)|onth)|Seconds|Ho(?:tKeys|urs)|Year|Cursor|Time(?:out)?|Interval|ZOptions|Date|UTC(?:M(?:i(?:nutes|lliseconds)|onth)|Seconds|Hours|Date|FullYear)|FullYear|Active)|arch)|qrt|lice|avePreferences|mall)|h(?:ome|andleEvent)|navigate|c(?:har(?:CodeAt|At)|o(?:s|n(?:cat|textual|firm)|mpile)|eil|lear(?:Timeout|Interval)?|a(?:ptureEvents|ll)|reate(?:StyleSheet|Popup|EventObject))|t(?:o(?:GMTString|S(?:tring|ource)|U(?:TCString|pperCase)|Lo(?:caleString|werCase))|est|a(?:n|int(?:Enabled)?))|i(?:s(?:NaN|Finite)|ndexOf|talics)|d(?:isableExternalCapture|ump|etachEvent)|u(?:n(?:shift|taint|escape|watch)|pdateCommands)|j(?:oin|avaEnabled)|p(?:o(?:p|w)|ush|lugins.refresh|a(?:ddings|rse(?:Int|Float)?)|r(?:int|ompt|eference))|e(?:scape|nableExternalCapture|val|lementFromPoint|x(?:p|ec(?:Script|Command)?))|valueOf|UTC|queryCommand(?:State|Indeterm|Enabled|Value)|f(?:i(?:nd|le(?:ModifiedDate|Size|CreatedDate|UpdatedDate)|xed)|o(?:nt(?:size|color)|rward)|loor|romCharCode)|watch|l(?:ink|o(?:ad|g)|astIndexOf)|a(?:sin|nchor|cos|t(?:tachEvent|ob|an(?:2)?)|pply|lert|b(?:s|ort))|r(?:ou(?:nd|teEvents)|e(?:size(?:By|To)|calc|turnValue|place|verse|l(?:oad|ease(?:Capture|Events)))|andom)|g(?:o|et(?:ResponseHeader|M(?:i(?:nutes|lliseconds)|onth)|Se(?:conds|lection)|Hours|Year|Time(?:zoneOffset)?|Da(?:y|te)|UTC(?:M(?:i(?:nutes|lliseconds)|onth)|Seconds|Hours|Da(?:y|te)|FullYear)|FullYear|A(?:ttention|llResponseHeaders)))|m(?:in|ove(?:B(?:y|elow)|To(?:Absolute)?|Above)|ergeAttributes|a(?:tch|rgins|x))|b(?:toa|ig|o(?:ld|rderWidths)|link|ack))\b(?=\()/
             }, {
                 token : ["punctuation.operator", "support.function.dom"],
                 regex : /(\.)(s(?:ub(?:stringData|mit)|plitText|e(?:t(?:NamedItem|Attribute(?:Node)?)|lect))|has(?:ChildNodes|Feature)|namedItem|c(?:l(?:ick|o(?:se|neNode))|reate(?:C(?:omment|DATASection|aption)|T(?:Head|extNode|Foot)|DocumentFragment|ProcessingInstruction|E(?:ntityReference|lement)|Attribute))|tabIndex|i(?:nsert(?:Row|Before|Cell|Data)|tem)|open|delete(?:Row|C(?:ell|aption)|T(?:Head|Foot)|Data)|focus|write(?:ln)?|a(?:dd|ppend(?:Child|Data))|re(?:set|place(?:Child|Data)|move(?:NamedItem|Child|Attribute(?:Node)?)?)|get(?:NamedItem|Element(?:sBy(?:Name|TagName)|ById)|Attribute(?:Node)?)|blur)\b(?=\()/
@@ -329,7 +329,7 @@ var JavaScriptHighlightRules = function() {
                 regex : identifierRe
             }, {
                 token : "keyword.operator",
-                regex : /!|\$|%|&|\*|\-\-|\-|\+\+|\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\|\||\?\:|\*=|%=|\+=|\-=|&=|\^=|\b(?:in|instanceof|new|delete|typeof|void)/,
+                regex : /--|\+\+|[!$%&*+\-~]|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\|\||\?\:|\*=|%=|\+=|\-=|&=|\^=/,
                 next  : "regex_allowed"
             }, {
                 token : "punctuation.operator",
@@ -349,16 +349,12 @@ var JavaScriptHighlightRules = function() {
             }, {
                 token: "comment",
                 regex: /^#!.*$/
-            }, {
-                token : "text",
-                regex : /\s+/
             }
         ],
         "regex_allowed": [
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
                 token : "comment", // multi line comment
-                merge : true,
                 regex : "\\/\\*",
                 next : "comment_regex_allowed"
             }, {
@@ -368,7 +364,6 @@ var JavaScriptHighlightRules = function() {
                 token: "string.regexp",
                 regex: "\\/",
                 next: "regex",
-                merge: true
             }, {
                 token : "text",
                 regex : "\\s+"
@@ -386,26 +381,25 @@ var JavaScriptHighlightRules = function() {
                 token: "string.regexp",
                 regex: "/\\w*",
                 next: "start",
-                merge: true
             }, {
                 token : "invalid",
                 regex: /\{\d+,?(?:\d+)?}[+*]|[+*$^?][+*]|[$^][?]|\?{3,}/
             }, {
                 token : "constant.language.escape",
-                regex: /\(\?[:=!]|\)|{\d+,?(?:\d+)?}|{,\d+}|[+*]\?|[(|)$^+*?]/
+                regex: /\(\?[:=!]|\)|{\d+,?(?:\d+)?}|{,\d+}|[+*]\?|[()$^+*?]/
             }, {
-                token: "string.regexp",
-                regex: /{|[^{\[\/\\(|)$^+*?]+/,
-                merge: true
+                token : "constant.language.delimiter",
+                regex: /\|/
             }, {
                 token: "constant.language.escape",
                 regex: /\[\^?/,
                 next: "regex_character_class",
-                merge: true
             }, {
                 token: "empty",
-                regex: "",
+                regex: "$",
                 next: "start"
+            }, {
+                defaultToken: "string.regexp"
             }
         ],
         "regex_character_class": [
@@ -416,18 +410,15 @@ var JavaScriptHighlightRules = function() {
                 token: "constant.language.escape",
                 regex: "]",
                 next: "regex",
-                merge: true
             }, {
                 token: "constant.language.escape",
                 regex: "-"
             }, {
-                token: "string.regexp.charachterclass",
-                regex: /[^\]\-\\]+/,
-                merge: true
-            }, {
                 token: "empty",
-                regex: "",
+                regex: "$",
                 next: "start"
+            }, {
+                defaultToken: "string.regexp.charachterclass"
             }
         ],
         "function_arguments": [
@@ -437,11 +428,9 @@ var JavaScriptHighlightRules = function() {
             }, {
                 token: "punctuation.operator",
                 regex: "[, ]+",
-                merge: true
             }, {
                 token: "punctuation.operator",
                 regex: "$",
-                merge: true
             }, {
                 token: "empty",
                 regex: "",
@@ -449,28 +438,12 @@ var JavaScriptHighlightRules = function() {
             }
         ],
         "comment_regex_allowed" : [
-            {
-                token : "comment", // closing comment
-                regex : ".*?\\*\\/",
-                merge : true,
-                next : "regex_allowed"
-            }, {
-                token : "comment", // comment spanning whole line
-                merge : true,
-                regex : ".+"
-            }
+            {token : "comment", regex : "\\*\\/", next : "regex_allowed"},
+            {defaultToken : "comment"}
         ],
         "comment" : [
-            {
-                token : "comment", // closing comment
-                regex : ".*?\\*\\/",
-                merge : true,
-                next : "start"
-            }, {
-                token : "comment", // comment spanning whole line
-                merge : true,
-                regex : ".+"
-            }
+            {token : "comment", regex : "\\*\\/", next : "start"},
+            {defaultToken : "comment"}
         ],
         "qqstring" : [
             {
@@ -478,18 +451,14 @@ var JavaScriptHighlightRules = function() {
                 regex : escapedRe
             }, {
                 token : "string",
-                regex : '[^"\\\\]+',
-                merge : true
-            }, {
-                token : "string",
                 regex : "\\\\$",
                 next  : "qqstring",
-                merge : true
             }, {
                 token : "string",
                 regex : '"|$',
                 next  : "start",
-                merge : true
+            }, {
+                defaultToken: "string"
             }
         ],
         "qstring" : [
@@ -498,18 +467,14 @@ var JavaScriptHighlightRules = function() {
                 regex : escapedRe
             }, {
                 token : "string",
-                regex : "[^'\\\\]+",
-                merge : true
-            }, {
-                token : "string",
                 regex : "\\\\$",
                 next  : "qstring",
-                merge : true
             }, {
                 token : "string",
                 regex : "'|$",
                 next  : "start",
-                merge : true
+            }, {
+                defaultToken: "string"
             }
         ]
     };
@@ -536,21 +501,10 @@ var DocCommentHighlightRules = function() {
             token : "comment.doc.tag",
             regex : "@[\\w\\d_]+" // TODO: fix email addresses
         }, {
-            token : "comment.doc",
-            merge : true,
-            regex : "\\s+"
+            token : "comment.doc.tag",
+            regex : "\\bTODO\\b"
         }, {
-            token : "comment.doc",
-            merge : true,
-            regex : "TODO"
-        }, {
-            token : "comment.doc",
-            merge : true,
-            regex : "[^@\\*]+"
-        }, {
-            token : "comment.doc",
-            merge : true,
-            regex : "."
+            defaultToken : "comment.doc"
         }]
     };
 };
@@ -560,7 +514,6 @@ oop.inherits(DocCommentHighlightRules, TextHighlightRules);
 DocCommentHighlightRules.getStartRule = function(start) {
     return {
         token : "comment.doc", // doc comment
-        merge : true,
         regex : "\\/\\*(?=\\*)",
         next  : start
     };
@@ -569,7 +522,6 @@ DocCommentHighlightRules.getStartRule = function(start) {
 DocCommentHighlightRules.getEndRule = function (start) {
     return {
         token : "comment.doc", // closing comment
-        merge : true,
         regex : "\\*\\/",
         next  : start
     };
@@ -934,7 +886,7 @@ var CstyleBehaviour = function () {
         if (!range.isMultiLine() && (selected == '"' || selected == "'")) {
             var line = session.doc.getLine(range.start.row);
             var rightChar = line.substring(range.start.column + 1, range.start.column + 2);
-            if (rightChar == '"') {
+            if (rightChar == selected) {
                 range.end.column++;
                 return range;
             }
@@ -993,7 +945,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-define('ace/mode/css', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/css_highlight_rules', 'ace/mode/matching_brace_outdent', 'ace/worker/worker_client', 'ace/mode/behaviour/cstyle', 'ace/mode/folding/cstyle'], function(require, exports, module) {
+define('ace/mode/css', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/css_highlight_rules', 'ace/mode/matching_brace_outdent', 'ace/worker/worker_client', 'ace/mode/behaviour/css', 'ace/mode/folding/cstyle'], function(require, exports, module) {
 
 
 var oop = require("../lib/oop");
@@ -1002,13 +954,15 @@ var Tokenizer = require("../tokenizer").Tokenizer;
 var CssHighlightRules = require("./css_highlight_rules").CssHighlightRules;
 var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
 var WorkerClient = require("../worker/worker_client").WorkerClient;
-var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
+var CssBehaviour = require("./behaviour/css").CssBehaviour;
 var CStyleFoldMode = require("./folding/cstyle").FoldMode;
 
 var Mode = function() {
-    this.$tokenizer = new Tokenizer(new CssHighlightRules().getRules(), "i");
+    var highlighter = new CssHighlightRules();
+    this.$tokenizer = new Tokenizer(highlighter.getRules(), "i");
     this.$outdent = new MatchingBraceOutdent();
-    this.$behaviour = new CstyleBehaviour();
+    //this.$behaviour = new CstyleBehaviour();
+    this.$keywordList = highlighter.$keywordList;
     this.foldingRules = new CStyleFoldMode();
 };
 oop.inherits(Mode, TextMode);
@@ -1090,7 +1044,6 @@ var CssHighlightRules = function() {
     var base_ruleset = [
         {
             token : "comment", // multi line comment
-            merge : true,
             regex : "\\/\\*",
             next : "ruleset_comment"
         }, {
@@ -1139,7 +1092,6 @@ var CssHighlightRules = function() {
 
     var base_comment = [{
           token : "comment", // comment spanning whole line
-          merge : true,
           regex : ".+"
     }];
 
@@ -1167,7 +1119,6 @@ var CssHighlightRules = function() {
     this.$rules = {
         "start" : [{
             token : "comment", // multi line comment
-            merge : true,
             regex : "\\/\\*",
             next : "comment"
         }, {
@@ -1194,7 +1145,6 @@ var CssHighlightRules = function() {
 
         "media" : [ {
             token : "comment", // multi line comment
-            merge : true,
             regex : "\\/\\*",
             next : "media_comment"
         }, {
@@ -1235,6 +1185,77 @@ exports.CssHighlightRules = CssHighlightRules;
 
 });
 
+define('ace/mode/behaviour/css', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/behaviour', 'ace/mode/behaviour/cstyle', 'ace/token_iterator'], function(require, exports, module) {
+
+
+var oop = require("../../lib/oop");
+var Behaviour = require("../behaviour").Behaviour;
+var CstyleBehaviour = require("./cstyle").CstyleBehaviour;
+var TokenIterator = require("../../token_iterator").TokenIterator;
+
+var CssBehaviour = function () {
+
+    this.inherit(CstyleBehaviour);
+
+    this.add("colon", "insertion", function (state, action, editor, session, text) {
+        if (text === ':') {
+            var cursor = editor.getCursorPosition();
+            var iterator = new TokenIterator(session, cursor.row, cursor.column);
+            var token = iterator.getCurrentToken();
+            if (token && token.value.match(/\s+/)) {
+                token = iterator.stepBackward();
+            }
+            if (token && token.type === 'support.type') {
+                var line = session.doc.getLine(cursor.row);
+                var rightChar = line.substring(cursor.column, cursor.column + 1);
+                if (rightChar === ':') {
+                    return {
+                       text: '',
+                       selection: [1, 1]
+                    }
+                }
+                if (!line.substring(cursor.column).match(/^\s*;/)) {
+                    return {
+                       text: ':;',
+                       selection: [1, 1]
+                    }
+                }
+            }
+        }
+    });
+
+    this.add("colon", "deletion", function (state, action, editor, session, range) {
+        var selected = session.doc.getTextRange(range);
+        if (!range.isMultiLine() && selected === ':') {
+            var line = session.doc.getLine(range.start.row);
+            var rightChar = line.substring(range.end.column, range.end.column + 1);
+            if (rightChar === ';') {
+                range.end.column ++;
+                return range;
+            }
+        }
+    });
+
+    this.add("semicolon", "insertion", function (state, action, editor, session, text) {
+        if (text === ';') {
+            var cursor = editor.getCursorPosition();
+            var line = session.doc.getLine(cursor.row);
+            var rightChar = line.substring(cursor.column, cursor.column + 1);
+            if (rightChar === ';') {
+                return {
+                   text: '',
+                   selection: [1, 1]
+                }
+            }
+        }
+    });
+
+}
+oop.inherits(CssBehaviour, CstyleBehaviour);
+
+exports.CssBehaviour = CssBehaviour;
+});
+
 define('ace/mode/html_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/lang', 'ace/mode/css_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/xml_util', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
 
 
@@ -1268,7 +1289,6 @@ var HtmlHighlightRules = function() {
     this.$rules = {
         start : [{
             token : "text",
-            merge : true,
             regex : "<\\!\\[CDATA\\[",
             next : "cdata"
         }, {
@@ -1276,7 +1296,6 @@ var HtmlHighlightRules = function() {
             regex : "<\\?.*?\\?>"
         }, {
             token : "comment",
-            merge : true,
             regex : "<\\!--",
             next : "comment"
         }, {
@@ -1300,23 +1319,12 @@ var HtmlHighlightRules = function() {
         }, {
             token : "constant.character.entity",
             regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
-        }, {
-            token : "text",
-            regex : "[^<]+"
-        } ],
+        }],
     
         cdata : [ {
             token : "text",
             regex : "\\]\\]>",
             next : "start"
-        }, {
-            token : "text",
-            merge : true,
-            regex : "\\s+"
-        }, {
-            token : "text",
-            merge : true,
-            regex : ".+"
         } ],
 
         comment : [ {
@@ -1324,9 +1332,7 @@ var HtmlHighlightRules = function() {
             regex : ".*?-->",
             next : "start"
         }, {
-            token : "comment",
-            merge : true,
-            regex : ".+"
+            defaultToken : "comment"
         } ]
     };
     
@@ -1362,34 +1368,24 @@ define('ace/mode/xml_util', ['require', 'exports', 'module' ], function(require,
 function string(state) {
     return [{
         token : "string",
-        regex : '".*?"'
-    }, {
-        token : "string", // multi line string start
-        merge : true,
-        regex : '["].*',
+        regex : '"',
         next : state + "_qqstring"
     }, {
         token : "string",
-        regex : "'.*?'"
-    }, {
-        token : "string", // multi line string start
-        merge : true,
-        regex : "['].*",
+        regex : "'",
         next : state + "_qstring"
     }];
 }
 
 function multiLineString(quote, state) {
-    return [{
-        token : "string",
-        merge : true,
-        regex : ".*?" + quote,
-        next : state
-    }, {
-        token : "string",
-        merge : true,
-        regex : '.+'
-    }];
+    return [
+        {token : "string", regex : quote, next : state},
+        {
+            token : "constant.language.escape",
+            regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
+        },
+        {defaultToken : "string"}
+    ];
 }
 
 exports.tag = function(states, name, nextState, tagMap) {
@@ -1404,7 +1400,6 @@ exports.tag = function(states, name, nextState, tagMap) {
             else
                 return "meta.tag.tag-name";
         },
-        merge : true,
         regex : "[-_a-zA-Z0-9:]+",
         next : name + "_embed_attribute_list" 
     }, {
@@ -1417,9 +1412,8 @@ exports.tag = function(states, name, nextState, tagMap) {
     states[name + "_qqstring"] = multiLineString("\"", name + "_embed_attribute_list");
     
     states[name + "_embed_attribute_list"] = [{
-        token : "meta.tag",
-        merge : true,
-        regex : "\/?>",
+        token : "meta.tag.r",
+        regex : "/?>",
         next : nextState
     }, {
         token : "keyword.operator",

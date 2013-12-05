@@ -8,9 +8,9 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
 <title>Generic Endpoint</title>
-<link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+<!-- <link rel="stylesheet" type="text/css"
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" /> -->
 </head>
 <body>
 	<div id="genericEndpointOverlay">
@@ -19,25 +19,20 @@
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 						<tr>
-							<td><label for="camelContextInput" id="camelContext">Camel
-									Context</label></td>
+							<td><label for="camelContextInput" id="camelContext">Camel Context</label></td>
 							<td><input id="camelContextInput" type="text"></input></td>
 						</tr>
+						<tr>
+							<td><label for="invocationPatternInput">Invocation Pattern</label></td>
+							<td><select id="invocationPatternInput"/></td>
+						</tr>
+
+						<tr>
+							<td><label for="invocationTypeInput">Invocation Type</label></td>
+							<td><select id="invocationTypeInput"/></td>
+						</tr>
+
 					</table>
-				</td>
-			</tr>
-			<tr>
-				<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div>
-				</td>
-			</tr>
-			<tr>
-				<td><textarea id="routeTextarea" cols="50" rows="5"
-						class="code">
-																</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div>
 				</td>
 			</tr>
 			<tr>
@@ -47,8 +42,7 @@
 			</tr>
 			<tr>
 				<td><textarea id="additionalBeanSpecificationTextarea"
-						cols="50" rows="5" class="code">
-								</textarea>
+						class="code overlaysDefaultTextArea"></textarea>
 				</td>
 			</tr>
 		</table>
@@ -86,7 +80,7 @@
 											<table>
 												<tr>
 													<td><input id="deleteParameterDefinitionButton"
-														type="image" src="../../images/icons/delete.png"
+														type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 														title="Delete" alt="Delete" class="toolbarButton" /></td>
 												</tr>
 											</table>
@@ -112,7 +106,7 @@
 							style="margin-top: 10px;">
 							<tr>
 								<td><input id="addParameterDefinitionButton" type="image"
-									src="../../images/icons/add.png" title="Add" alt="Add"
+									src="plugins/bpm-modeler/images/icons/add.png" title="Add" alt="Add"
 									class="toolbarButton" /></td>
 								<td></td>
 							</tr>
@@ -158,6 +152,42 @@
 							</tr>
 						</table>
 					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="producerRouteTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><input id="processContextHeadersInput" type="checkbox"></input></td>
+								<td><label for="processContextHeadersInput">Include Process Context Headers</label></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
+				</tr>
+				<tr>
+					<td><textarea id="producerRouteTextarea" class="code overlaysDefaultTextArea"></textarea></td>
+				</tr>
+				<tr>
+					<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
+				</tr>
+			</table>
+		</div>
+		<div id="consumerRouteTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
+				</tr>
+				<tr>
+					<td><textarea id="consumerRouteTextarea" class="code overlaysDefaultTextArea"></textarea></td>
+				</tr>
+				<tr>
+					<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
 				</tr>
 			</table>
 		</div>

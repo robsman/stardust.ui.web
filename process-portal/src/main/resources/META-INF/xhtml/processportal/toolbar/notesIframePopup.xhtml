@@ -14,8 +14,6 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 		<ui:include src="/plugins/common/I18NInclude.xhtml" />
-		<script type="text/javascript"
-			src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortal.js" />
 
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
@@ -27,6 +25,7 @@
 		</c:forEach>
 		
 		<script>
+			var alreadyClicked = false;
 			function windowLoaded()
 			{
 				var iFrameId = #{activityDetailsBean.notesIframePopupId};
@@ -37,14 +36,38 @@
 					advanceArgs.width = document.documentElement.scrollWidth + 20;
 					advanceArgs.height = document.documentElement.scrollHeight + 20;
 					
-					if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+					if (parent.BridgeUtils)
 					{
-						advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 17; 
+						parent.BridgeUtils.FrameManager.resizeAndReposition(iFrameId, advanceArgs);
 					}
-
-					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					else
+					{
+						parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					}
 				}	
 			}
+			
+			function closeNotesIframe()
+			{
+				if(alreadyClicked)
+				{
+					ev.preventDefault();
+					if (evt.stopPropagation){
+						evt.stopPropagation();
+					}
+				    if (evt.cancelBubble != null){ //Cancel event bubble
+					    evt.cancelBubble = true;
+					}
+					return false;
+				}
+				else
+				{
+					alreadyClicked = true;
+					window.setTimeout(function() {parent.BridgeUtils.View.syncActiveView();},200);
+					return true;
+				}
+			}
+			
 		</script>
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
@@ -52,7 +75,7 @@
 			<ice:panelGroup style="background-color: #EAEAEA;">
 				<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
-						actionListener="#{activityDetailsBean.openNotes}">
+						actionListener="#{activityDetailsBean.openNotes}" immediate="true" onclick="closeNotesIframe();">
 						<pc:automationTag value="auto-PP-NotesView-ActionsNew"/>
 					<f:param name="createNote" value="true" />
 						<ice:panelGrid columns="2">
@@ -68,7 +91,7 @@
 					value="#{ippActivityPanelController.notes}" var="note" varStatus="noteIndex">
 					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
-							actionListener="#{activityDetailsBean.openNotes}">
+							actionListener="#{activityDetailsBean.openNotes}" immediate="true" onclick="closeNotesIframe();">
 							<pc:automationTag value="auto-PP-NotesView-ActionsOpen" />
 							<f:attribute name="noteTimestamp" value="#{note.timeStampAsDate}" />
 							<f:attribute name="noteIndex" value="${noteIndex.index}" />

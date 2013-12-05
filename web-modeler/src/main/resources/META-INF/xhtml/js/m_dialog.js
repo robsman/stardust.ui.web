@@ -22,22 +22,22 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 			element.removeClass("invisible");
 		},
 		showWaitCursor : function(element) {
-			jQuery("body").css("cursor", "wait");
+			m_utils.jQuerySelect("body").css("cursor", "wait");
 		},
 		showAutoCursor : function(element) {
-			jQuery("body").css("cursor", "auto");
+			m_utils.jQuerySelect("body").css("cursor", "auto");
 		},
 		registerForNumericFormatValidation : function(input) {
-//			input = jQuery(input);
+//			input = m_utils.jQuerySelect(input);
 //
 //			input.keyup(function() {
-//				var val = jQuery(this).val();
+//				var val = m_utils.jQuerySelect(this).val();
 //				if (isNaN(val)) {
 //					val = val.replace(/[^0-9\.]/g, '');
 //					if (val.split('.').length > 2)
 //						val = val.replace(/\.+$/, "");
 //				}
-//				jQuery(this).val(val);
+//				m_utils.jQuerySelect(this).val(val);
 //			});
 		}
 	};

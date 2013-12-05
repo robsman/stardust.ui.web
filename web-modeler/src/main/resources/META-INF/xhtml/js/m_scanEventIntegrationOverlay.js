@@ -194,10 +194,12 @@ define(
 
 						for ( var i in this.scopeModel.dataItems) {
 							var dataItem = this.scopeModel.dataItems[i];
-							if (dataItem.dataType === m_constants.DOCUMENT_DATA_TYPE) {
-								this.documentDataList.append("<option value='"
-										+ dataItem.getFullId() + "'>"
-										+ dataItem.name + "</option>");
+							if (!dataItem.externalReference) {
+								if (dataItem.dataType === m_constants.DOCUMENT_DATA_TYPE) {
+									this.documentDataList.append("<option value='"
+											+ dataItem.getFullId() + "'>"
+											+ dataItem.name + "</option>");
+								}
 							}
 						}
 					}

@@ -15,7 +15,7 @@
 
 require
 		.config({
-			baseUrl : "../../../",
+			baseUrl: "../../../",
 			paths : {
 				'jquery' : [ 'bpm-modeler/js/libs/jquery/jquery-1.7.2',
 						'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
@@ -27,8 +27,8 @@ require
 						'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
 
 				'jquery-ui' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.8.19.min',
-						'//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min' ],
+						'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
+						'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min' ],
 				'jquery.download' : [
 						'bpm-modeler/js/libs/jquery/plugins/download.jQuery',
 						'https://raw.github.com/filamentgroup/jQuery-File-Download/master/jQuery.download' ],

@@ -5,13 +5,18 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
-	
 
-	
-		<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
+	<ice:panelGroup>
+		<script type="text/javascript"
+			src="#{facesContext.externalContext.requestContextPath}/plugins/views-common/scripts/documentUtil.js" />
+	</ice:panelGroup>
+
+	<ui:include src="/plugins/views-common/dialogs/delegation.xhtml" />
 		<ui:include src="/plugins/views-common/dialogs/abortActivity.xhtml" />
 		<ui:include src="/plugins/views-common/contentmgmt/views/notificationMessage.xhtml" />
-	
+		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean" value="#{worklistTableBean.workListConfirmationDialog}" />
+		</ui:include>
       
       <ice:panelGroup>
 		<pc:automationTag value="auto-PP-WorkList-DataTable"/>			

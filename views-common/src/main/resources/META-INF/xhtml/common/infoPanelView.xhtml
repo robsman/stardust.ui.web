@@ -1,0 +1,29 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:component>
+		<c:if
+			test="#{(infoPanelBean!=null) and (infoPanelBean.notificationMsg!=null)}">
+			<ice:panelGrid columns="2"
+				styleClass="form-panel-summary-bar">
+				<ice:column>
+				<ice:graphicImage
+					url="/plugins/views-common/images/icons/information-gray.png"
+					style="margin-left:7px;margin-top:-2px;" />
+					</ice:column>
+				<ice:column>
+					<ice:outputText value="#{infoPanelBean.notificationMsg}"
+						styleClass="form-panel-summary-bar-text">
+					</ice:outputText>
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						action="#{infoPanelBean.reset}" immediate="true"
+						styleClass="windowClose" />
+				</ice:column>
+			</ice:panelGrid>
+		</c:if>
+	</ui:component>
+</f:view>

@@ -58,40 +58,40 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       case TO_BE_ACTIVATED:
          String uri = provideIframePanelUri(activityInstance, event.getView());
 
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
+//                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
          break;
 
       case TO_BE_DEACTIVATED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
-         
+
       case CLOSED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.closeContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.closeContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
-         
+
       case LAUNCH_PANELS_ACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
       case FULL_SCREENED:
       case RESTORED_TO_NORMAL:
       case PINNED:
       case PERSPECTIVE_CHANGED:
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-               "InfinityBpm.ProcessPortal.resizeContentFrame('"
-                     + getContentFrameId(activityInstance) + "');");
+//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
+//               "InfinityBpm.ProcessPortal.resizeContentFrame('"
+//                     + getContentFrameId(activityInstance) + "');");
          break;
       }
    }
-   
+
    public String getEventScript(ActivityInstance activityInstance, ViewEvent event)
    {
       String eventScript = "";
-     
+
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
@@ -110,7 +110,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          eventScript = "InfinityBpm.ProcessPortal.closeContentFrame('"
                + getContentFrameId(activityInstance) + "');";
          break;
-         
+
       case LAUNCH_PANELS_ACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
       case FULL_SCREENED:
@@ -121,10 +121,10 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
                + getContentFrameId(activityInstance) + "');";
          break;
       }
-      
+
       return eventScript;
    }
-   
+
    public String getContextId(ActivityInstance ai)
    {
       return PredefinedConstants.JSF_CONTEXT;
@@ -135,7 +135,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       return PanelIntegrationStrategy.EMBEDDED_IFRAME;
    }
 
-   
+
    public String provideIframePanelUri(ActivityInstance ai, View view)
    {
       String uri = null;
@@ -143,7 +143,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       try
       {
          FacesContext jsfContext = FacesContext.getCurrentInstance();
-         
+
          // must prefix root relative URIs with the current context root
          if (isIceFacesPanel(ai))
          {
@@ -168,10 +168,10 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          uri += (-1 == uri.indexOf("?")) ? "?" : "&";
          uri += IframePanelConstants.QSTR_VIEW_URL + "=" + new String(Base64.encode(view.getUrl().getBytes()));
       }
-      
+
       return uri;
-   }   
-   
+   }
+
    public String providePanelUri(ActivityInstance ai)
    {
       // delegate to default controller
@@ -189,15 +189,16 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          // start new interaction
          ModelCache modelCache = ModelCache.findModelCache();
          SessionContext ippSessionContext = SessionContext.findSessionContext();
-         
+
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if (null == interaction)
          {
             interaction = new Interaction(ippSessionContext.getUser(),
-                  modelCache.getModel(ai.getModelOID()), ai, getContextId(ai));
+                  modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
+                  ippSessionContext.getServiceFactory());
 
             interaction.setInDataValues(inData);
-            
+
             registry.registerInteraction(interaction);
          }
 
@@ -218,15 +219,15 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      
+
       if ((ClosePanelScenario.COMPLETE == scenario)
             || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
-         
+
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
                facesContext, InteractionRegistry.BEAN_ID);
-         
+
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if ((null != interaction)
                && (Interaction.Status.Complete == interaction.getStatus()))
@@ -236,7 +237,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          }
 
          Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
-         
+
          sessionMap.put(IframePanelConstants.KEY_COMMAND, scenario.getId());
          sessionMap.put(IframePanelConstants.KEY_INTERACTION_ID,
                Interaction.getInteractionId(ai));
@@ -246,8 +247,9 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
                   VIEW_ID_NON_IFACE_FACELET_CONTAINER);
          }
 
+         System.out.println("************************ HERE1 **********************");
          JavascriptContext.addJavascriptCall(facesContext,
-               "InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
+               "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
                      + getContentFrameId(ai) + "', '" + scenario.getId() + "');");
 
          // close panel asynchronously after ICEfaces page responds via JavaScript
@@ -258,7 +260,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          // destroy interaction
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
                facesContext, InteractionRegistry.BEAN_ID);
-         
+
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if (null != interaction)
          {
@@ -273,24 +275,24 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
    public Map getOutDataValues(ActivityInstance ai)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      
+
       Map<String, ? extends Serializable> outData = null;
 
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
             facesContext, InteractionRegistry.BEAN_ID);
-      
+
       Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
       if (null != interaction)
       {
          outData = interaction.getOutDataValues();
-         
+
          // destroy interaction
          registry.unregisterInteraction(interaction.getId());
       }
-      
+
       return outData;
    }
-   
+
    private static boolean isIceFacesPanel(ActivityInstance ai)
    {
       String panelUrl = SpiUtils.DEFAULT_JSF_ACTIVITY_CONTROLLER.providePanelUri(ai);

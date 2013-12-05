@@ -6,25 +6,21 @@ package org.eclipse.stardust.ui.web.modeler.edit.model.element;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Resource;
-
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -85,15 +81,14 @@ public class ApplicationTypeChangeCommandHandler
             && !attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
                   .isJsonNull())
       {
-         getModelBuilderFacade().setAttribute(
+         ModelBuilderFacade.setAttribute(
                applicationType,
                "carnot:engine:camel::applicationIntegrationOverlay",
                attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
                      .getAsString());
          
          // Flag for new implementation
-         
-         getModelBuilderFacade().setBooleanAttribute(
+         ModelBuilderFacade.setBooleanAttribute(
                applicationType,
                "carnot:engine:camel::supportsMultipleAccessPoints", true);
       }
@@ -122,10 +117,12 @@ public class ApplicationTypeChangeCommandHandler
    {
       String appId = extractString(request, ModelerConstants.ID_PROPERTY);
       ApplicationType application = getModelBuilderFacade().findApplication(model, appId);
-
-      synchronized (model)
+      if (application != null)
       {
-         model.getApplication().remove(application);
+         synchronized (model)
+         {
+            ModelElementEditingUtils.deleteIdentifiable(application);
+         }
       }
    }
 

@@ -36,7 +36,7 @@ define(
 						.createPropertiesPage(propertiesPanel,
 								"implementationPropertiesPage",
 								"Implementation", // TODO I18N
-								"../../images/icons/wrench.png");
+								"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
@@ -61,7 +61,7 @@ define(
 					this.heading
 							.append(m_i18nUtils
 									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
-					jQuery("label[for='applicationList']")
+					m_utils.jQuerySelect("label[for='applicationList']")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.propertiesPage.activity.implementation.application"));
@@ -150,37 +150,11 @@ define(
 				 */
 				ActivityImplementationPropertiesPage.prototype.checkCompatibility = function(
 						application) {
-					if (this.getModelElement().taskType == m_constants.USER_TASK_TYPE
-							&& !application.interactive) {
-						return false;
+					if (this.getModelElement().taskType === application.getCompatibleActivityTaskType()) {
+						return true
 					}
 
-					if (this.getModelElement().taskType != m_constants.USER_TASK_TYPE
-							&& application.interactive) {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.SCRIPT_TASK_TYPE
-							&& application.applicationType != "messageTransformationBean") {
-						return false;
-					}
-
-					if (this.getModelElement().taskType != m_constants.SCRIPT_TASK_TYPE
-							&& application.applicationType == "messageTransformationBean") {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.SEND_TASK_TYPE
-							&& !(application.applicationType == "jms" || application.applicationType == "mailBean")) {
-						return false;
-					}
-
-					if (this.getModelElement().taskType == m_constants.RECEIVE_TASK_TYPE
-							&& application.applicationType != "jms") {
-						return false;
-					}
-
-					return true;
+					return false;
 				}
 
 				/**

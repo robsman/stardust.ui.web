@@ -1,0 +1,14 @@
+{
+    "name": "Default",
+    "id": "default",
+    "rel": "stylesheet",
+    "stylesheets": [
+        "plugins/common/css/common-html5-fw-bridge.css",
+        "plugins/common/css/common-icons.css",
+        "plugins/views-common/css/views-common-icons.css",
+        "plugins/bpm-modeler/css/bpm-modeler-icons.css"PORAL_SKIN_STYLE_SHEETS
+    ],
+    "scripts": [
+    	"plugins/common/js/BridgeUtils.js"
+    ]
+}

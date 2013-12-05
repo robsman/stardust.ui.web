@@ -136,7 +136,9 @@
 								</ice:commandButton>
 
 								<script type="text/javascript" language="javascript">
-									softClick('input', 'onLoadActionButton');
+								<!-- Current window is not available at UiUtils -->
+									parent.UiUtils.softClick(this.window,
+											'input', 'onLoadActionButton');
 								</script>
 							</ice:panelGroup>
 						</f:facet>

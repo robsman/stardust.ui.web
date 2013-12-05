@@ -14,9 +14,6 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
 
-		<script type="text/javascript"
-			src="#{facesContext.externalContext.requestContextPath}/plugins/processportal/IppProcessPortal.js" />
-
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
@@ -37,14 +34,22 @@
 					advanceArgs.width = document.documentElement.scrollWidth + 20;
 					advanceArgs.height = document.documentElement.scrollHeight;
 
-					if (parent.ippPortalMain.InfinityBpm.Core.isFF())
+					if (parent.BridgeUtils)
 					{
-						advanceArgs.anchorYAdjustment = advanceArgs.anchorYAdjustment - 17; 
+						parent.BridgeUtils.FrameManager.resizeAndReposition(iFrameId, advanceArgs);
 					}
-
-					parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					else
+					{
+						parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeAndRepositionContentFrame(iFrameId, advanceArgs);
+					}
 				}
 			}
+			
+			function closeCaseIframe()
+			{
+				window.setTimeout(function() {parent.BridgeUtils.View.syncActiveView();},200);
+			}
+			
 		</script>
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
@@ -53,7 +58,7 @@
 			<ice:panelGrid columns="1">
 				<!-- Added to give same spacing -->
 				<ice:commandLink styleClass="action-link"
-					actionListener="#{activityDetailsBean.openAttachToCase}">
+					actionListener="#{activityDetailsBean.openAttachToCase}" immediate="true" onclick="closeCaseIframe();">
 					<pc:automationTag
 						value="auto-PP-ActivityPnl-ToolbarCase-AttachCase" />
 					<ice:panelGrid columns="2" style="margin-left:2px;">
@@ -71,7 +76,7 @@
 				<!-- Create Case with permission -->
 				<ice:commandLink styleClass="action-link"
 					actionListener="#{activityDetailsBean.openCreateCase}"
-					rendered="#{activityDetailsBean.enableCreateCase}">
+					rendered="#{activityDetailsBean.enableCreateCase}" immediate="true" onclick="closeCaseIframe();">
 					<pc:automationTag
 						value="auto-PP-ActivityPnl-ToolbarCase-CreateCase" />
 					<ice:panelGrid columns="1" style="margin-left:2px;">

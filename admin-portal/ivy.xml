@@ -37,7 +37,7 @@
 
    <publications>
       <artifact name="ipp-administration-perspective" type="jar" conf="ipp-administration-perspective-compile, ipp-administration-perspective-runtime, ipp-administration-perspective-provided" />
-      <artifact name="ipp-administration-perspective" type="jar" conf="ipp-administration-perspective-sources" m:classifier="sources" />
+      <artifact name="ipp-administration-perspective" type="source" ext="jar" conf="ipp-administration-perspective-sources" m:classifier="sources" />
       
       <artifact name="ipp-administration-perspective" type="pom" conf="pom" ext="pom" />
    </publications>

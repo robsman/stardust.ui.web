@@ -25,11 +25,11 @@ define(
 	
 
 			function i18nannotation() {
-				jQuery("#annotationbasic")
+				m_utils.jQuerySelect("#annotationbasic")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.annotation.basic"));
-				$("label[for='contentTextarea']")
+				m_utils.jQuerySelect("label[for='contentTextarea']")
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.diagram.toolbar.tool.annotation.content"));
@@ -41,7 +41,7 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "basicPropertiesPage",
 						"General Properties",
-						"../../images/icons/table.png");
+						"plugins/bpm-modeler/images/icons/table.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(AnnotationBasicPropertiesPage.prototype,

@@ -11,16 +11,20 @@
 package org.eclipse.stardust.ui.web.common.app;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.PreferencePage;
@@ -52,6 +56,7 @@ import org.springframework.beans.factory.InitializingBean;
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
+import com.icesoft.faces.webapp.http.servlet.ServletExternalContext;
 
 
 /**
@@ -67,7 +72,7 @@ public class PortalApplication
    public static final String BEAN_NAME = "ippPortalApp";
 
    private static final Logger trace = LogManager.getLogger(PortalApplication.class);
- 
+
    public static final int TAB_DISPLAY_MODE = 0;
 
    public static final int GRID_DISPLAY_MODE = 1;
@@ -75,7 +80,7 @@ public class PortalApplication
    public static final int VERTICAL_SPLIT_DISPLAY_MODE = 2;
 
    public static final int HORIZONTAL_SPLIT_DISPLAY_MODE = 3;
-   
+
    public static final String PIN_VIEW_MODE_VERTICAL = "vertical";
 
    public static final String PIN_VIEW_MODE_HORIZONTAL = "horizontal";
@@ -93,7 +98,7 @@ public class PortalApplication
    private List<View> activeViewBreadCrumb;
 
    private List<View> displayedViews;
-   
+
    private List<View> overflowedViews;
 
    private View dummyViewForOverflowTab;
@@ -101,27 +106,26 @@ public class PortalApplication
    private boolean showOverflowTabs;
 
    private int maxTabDisplay = -1;
-   
+
    private boolean pinViewOpened = false;
 
    private String pinViewOrientation;
 
    private View pinView;
-   
+
    private ArrayList<View> focusViewStack = new ArrayList<View>();
-   
+
    private List<String> skinFiles;
-   
+
    // Only one view can be in focus i.e. active in entire portal
    // This view can exist anywhere - TabSet, PinView
    private View activeView;
 
    private UserProvider userProvider;
-   
-   private PortalApplicationEventScript portalApplicationEventScript; 
-   
+
+   private PortalApplicationEventScript portalApplicationEventScript;
+
    private TimeZone clientTimeZone = null;
-   private boolean overflowTabPopupOpened = false;
 
    private RuntimeEnvironmentInfoProvider runtimeEnvironmentInfoProvider;
    private String version;
@@ -143,27 +147,30 @@ public class PortalApplication
    {
       return (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
    }
-   
+
    /**
     * @throws Exception
     */
    public void afterPropertiesSet() throws Exception
    {
+      // eagerly instantiate label provider to be able to access it via REST API
+      MessagePropertiesBean.getInstance();
+
       launchPanelsActivated = true;
       fullScreenModeActivated = false;
       displayMode = TAB_DISPLAY_MODE;
 
       dummyViewForOverflowTab = new View(null, "/dummy.xhtml");
-      
+
       refreshSkin();
 
       loadPerspective();
 
       retrieveRuntimeEnvInfo();
-      
+
       logoutUri = (String) FacesContext.getCurrentInstance().getExternalContext()
             .getInitParameter(CONTEXT_PARAM_LOGOUT_URI);
-      
+
       SessionRendererHelper.addCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()));
    }
 
@@ -174,7 +181,7 @@ public class PortalApplication
    {
       return  userProvider.getUser();
    }
-   
+
    /**
     * @return
     */
@@ -188,7 +195,7 @@ public class PortalApplication
 
       return null;
    }
-   
+
    /**
     * @return
     */
@@ -206,12 +213,10 @@ public class PortalApplication
       {
          launchPanelsActivated = true;
 
-         closeOverflowTabIframePopup();
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
 
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_ACTIVATED);
-
-         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
 
          if (isPinViewOpened())
          {
@@ -229,8 +234,6 @@ public class PortalApplication
       if (isLaunchPanelsActivated())
       {
          launchPanelsActivated = false;
-
-         closeOverflowTabIframePopup();
 
          getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.LAUNCH_PANELS_DEACTIVATED);
@@ -254,18 +257,16 @@ public class PortalApplication
       {
          getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
 
-         closeOverflowTabIframePopup();
-
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_FULL_SCREENED);
          if(!success)
          {
             return;
          }
-   
+
          FacesContext context = FacesContext.getCurrentInstance();
          String identityUrl = (String) context.getExternalContext().getRequestParameterMap().get("identityUrl");
-         
+
          View newView;
          if (StringUtils.isNotEmpty(identityUrl))
          {
@@ -275,19 +276,19 @@ public class PortalApplication
          {
             newView = getActiveView();
          }
-         
+
          if (null != newView)
          {
             getPortalUiController().setFocusView(newView);
             setActiveView(newView);
-      
+
             fullScreenModeActivated = true;
 
             // Vetoed not processed here. This is FYI only event,
             // As this view already returned success for TO_BE_FULL_SCREENED
             getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                   ViewEventType.FULL_SCREENED);
-      
+
             // Required to refresh page
             FacesUtils.refreshPage();
          }
@@ -312,35 +313,35 @@ public class PortalApplication
          // broadcast activation events
          setFocusView(getFocusView());
 
-         closeOverflowTabIframePopup();
-
          boolean success = getPortalUiController().broadcastVetoableViewEvent(getFocusView(),
                ViewEventType.TO_BE_RESTORED_TO_NORMAL);
          if(!success)
          {
             return;
          }
-         
+
          fullScreenModeActivated = false;
-         
+
+         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
+
          // Vetoed not processed here. This is FYI only event,
          // As this view already returned success for TO_BE_FULL_SCREENED
          getPortalUiController().broadcastNonVetoableViewEvent(getFocusView(),
                ViewEventType.RESTORED_TO_NORMAL);
-         getPortalUiController().broadcastNonVetoablePerspectiveEvent(PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
+
          FacesUtils.refreshPage();
       }
    }
 
    /**
-    * 
+    *
     * @return
     */
    public String getPortalHeader()
    {
       return FacesUtils.getPortalTitle();
    }
-  
+
    /**
     * @param viewDef
     * @param url
@@ -382,7 +383,7 @@ public class PortalApplication
       return getPortalUiController().createView(viewId, viewKey, viewParams,
             messageBean, nestedView);
    }
-   
+
    /**
     * nested parameter should be false when calling this. In short nesting is not supported in this API
     */
@@ -391,7 +392,7 @@ public class PortalApplication
       View focusView = getFocusView();
       int focusViewIndex = viewIndex;
       closeView(focusView);
-      
+
       View newView = getPortalUiController().openView();
       addToDisplayedViews(newView, true, focusViewIndex);
    }
@@ -406,7 +407,7 @@ public class PortalApplication
       View focusView = getFocusView();
       int focusViewIndex = viewIndex;
       closeView(focusView);
-      
+
       View newView = getPortalUiController().openViewById(viewId, params, msgBean, false);
       addToDisplayedViews(newView, true, focusViewIndex);
    }
@@ -417,24 +418,6 @@ public class PortalApplication
    public void openView()
    {
       addToDisplayedViews(getPortalUiController().openView(), true);
-   }
-   
-   /**
-    * Opens the overFlow view selected from the Iframe and closes iframe and renders the
-    * session
-    */
-   public void openOverflowView()
-   {
-      FacesContext context = FacesContext.getCurrentInstance();
-      String viewUrl = (String) context.getExternalContext().getRequestParameterMap().get("viewUrl");      
-      openView(viewUrl, null);
-
-      if (overflowTabPopupOpened)
-      {
-         closeOverflowTabIframePopup();
-      }
-
-      renderPortalSession();
    }
 
    /**
@@ -531,7 +514,7 @@ public class PortalApplication
       addToDisplayedViews(view, true, viewIndex);
       return view;
    }
-   
+
    /**
     * @param viewId
     * @param viewKey
@@ -603,10 +586,10 @@ public class PortalApplication
          addToDisplayedViews(focusView);
          return true;
       }
-      
+
       return false;
    }
-   
+
    /**
     * @param view
     */
@@ -616,7 +599,7 @@ public class PortalApplication
       getPortalUiController().setActiveView(view);
       setActiveViewBreadCrumb();
    }
-   
+
    /**
     * @return
     */
@@ -634,12 +617,28 @@ public class PortalApplication
    }
 
    /**
+    * @return
+    */
+   public void printOpenViews()
+   {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Open Views::");
+         List<View> openViews = getOpenViews();
+         for (View view : openViews)
+         {
+            trace.debug("\t" + view);
+         }
+      }
+   }
+
+   /**
     *
     */
    public void setActiveViewBreadCrumb()
    {
       List<View> views = new ArrayList<View>();
-      
+
       View view = getActiveView();
       if (view != null)
       {
@@ -711,7 +710,7 @@ public class PortalApplication
       // As we only have one view as pin view
       setActiveView(pinView);
    }
-   
+
    /**
     * @return
     */
@@ -801,14 +800,14 @@ public class PortalApplication
    {
       pinViewOpened = false;
       pinView = null;
-      
+
       List<View> allViews = getOpenViews();
-      
+
       for (View view : allViews)
       {
-         closeView(view);         
+         closeView(view);
       }
-     
+
       addToDisplayedViews(getLastFocusView());
    }
 
@@ -847,7 +846,7 @@ public class PortalApplication
    {
       closeView(view, false);
    }
-   
+
    /**
     * @param view
     * @param force
@@ -865,25 +864,25 @@ public class PortalApplication
       }
    }
 
-   
+
    /**
-    * 
+    *
     */
    public void openPinViewHorizontal()
    {
       checkAndOpenPinViewInNewMode(PIN_VIEW_MODE_HORIZONTAL);
    }
-   
+
    /**
-    * 
+    *
     */
    public void openPinViewVertical()
    {
       checkAndOpenPinViewInNewMode(PIN_VIEW_MODE_VERTICAL);
    }
-   
+
    /**
-    * 
+    *
     */
    public void restorePinView()
    {
@@ -892,7 +891,7 @@ public class PortalApplication
          togglePinView();
       }
    }
-   
+
    /**
     * Renders the Portal Session using Session Renderer
     */
@@ -922,49 +921,25 @@ public class PortalApplication
    /**
     * @return
     */
-   public String logout()
+   public void logout()
    {
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#PortalApplication.logout() invoked...");
-      }
+      String script=null;
       // Close All Open Views
       closeAllViews();
-      
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#closeAllViews()...");
-      }
-      
-      // If All Views are successfully closed, then fire logout 
+      // If All Views are successfully closed, then fire logout
       if (getOpenViewsSize() == 0)
       {
          // don't directly logout, but redirect main page towards logout
-         String logoutScript = "InfinityBpm.Core.closeSession();";
+         String logoutScript = "parent.BridgeUtils.logout(true);";
          //JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), logoutScript);
-         addEventScript(logoutScript); // This is required since addJavascriptCall does not work if JSF Page refresh is involved 
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("#addEventScript(logoutScript)...");
-         }
+         addEventScript(logoutScript); // This is required since addJavascriptCall does not work if JSF Page refresh is involved
          SessionRendererHelper.removeCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()));
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("#SessionRendererHelper.removeCurrentSession(SessionRendererHelper.getPortalSessionRendererId(getLoggedInUser()))...");
-         }
       }
       else
       {
-         if (trace.isDebugEnabled())
-         {
-            trace.debug("Not all Views got closed successully. Cannot logout...");
-         }
+         script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
       }
-      if (trace.isDebugEnabled())
-      {
-         trace.debug("#Returning from Logout....");
-      }
-      return null;
+      addEventScript(script);
    }
 
    /**
@@ -977,7 +952,7 @@ public class PortalApplication
    }
 
    /**
-    * 
+    *
     */
    private void togglePinView()
    {
@@ -994,8 +969,6 @@ public class PortalApplication
       pinViewOpened = !pinViewOpened;
       launchPanelsActivated = !pinViewOpened;
 
-      closeOverflowTabIframePopup();
-
       if(pinViewOpened)
       {
          if(fullScreenModeActivated)
@@ -1004,12 +977,12 @@ public class PortalApplication
          pinView = getFocusView();
          int index = displayedViews.indexOf(pinView);
          removeFromDisplayedViews(pinView);
-         
+
          View nextFocusView = index < displayedViews.size()
                ? displayedViews.get(index)
                : displayedViews.get(displayedViews.size()-1);
          setFocusView(nextFocusView);
-         
+
          // Make pin view as Active
          setActiveView(pinView);
 
@@ -1051,18 +1024,16 @@ public class PortalApplication
                {
                   displayedViews.add(viewIndex, view);
                }
-      
+
                if(getMaxTabDisplay() < displayedViews.size())
                {
                   displayedViews.remove(0);
                }
 
                buildOverflowViews();
-      
+
                addDummyOverflowView();
             }
-      
-            closeOverflowTabIframePopup();
 
             int index = view != null ? displayedViews.indexOf(view) : -1;
             setViewIndex(index);
@@ -1075,11 +1046,13 @@ public class PortalApplication
             getPortalUiController().setFocusView(getLastFocusView());
             setActiveView(view);
          }
-         
+
          if(justOpened)
          {
             firePostOpenLifeCycleEvent(view);
          }
+
+         handleViewOpenForHTML5(view);
       }
       else
       {
@@ -1090,11 +1063,188 @@ public class PortalApplication
       }
    }
 
+   /**
+    * @param view
+    */
+   private void handleViewOpenForHTML5(View view)
+   {
+      if (StringUtils.isEmpty(view.getParamValue("standaloneMode")))
+      {
+         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+         String contextPath = externalContext.getRequestContextPath();
+
+         String url = "singleViewId=_PERSPECTIVE_ID_::_VIEW_ID_&standaloneMode=true&singleViewKey=_VIEW_KEY_";
+         url = StringUtils.replace(url, "_PERSPECTIVE_ID_", encodeUrl(view.getDefinition().getDefinedIn()));
+         url = StringUtils.replace(url, "_VIEW_ID_", encodeUrl(view.getDefinition().getName()));
+         url = StringUtils.replace(url, "_VIEW_KEY_", encodeUrl(view.getViewKey()));
+
+         if (externalContext instanceof ServletExternalContext)
+         {
+            HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+            String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                  + contextPath + "/plugins/common/portalSingleViewMain.iface?";
+            url = urlBase + url;
+            
+            // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views
+            processHTML5OpenViewCall(view, url,
+                  !view.getDefinition().getInclude().toLowerCase().equals("htmlframeadapter.xhtml"));
+         }
+         else
+         {
+            trace.error("Other than Servlet Context is not Supported");
+         }
+      }
+      else // Comes here when view is opened from Mega Menu
+      {
+         // Currently only one "Portal Configuration"
+         // TODO
+         String html5FWViewId = "/ippPortal/configurationTreeView";
+         view.getViewParams().put("html5FWViewId", html5FWViewId);
+      }
+   }
+
+   /**
+    * @param view
+    * @param url
+    * @param ext
+    */
+   public void processHTML5OpenViewCall(View view, String url, Boolean ext)
+   {
+      String viewId = "";
+      if (ext)
+      {
+         viewId = "Ext/:type/:id";
+      }
+      else
+      {
+         if (StringUtils.isEmpty(view.getViewKey()))
+         {
+            return;
+         }
+
+         viewId = "Int/" + view.getDefinition().getName() + "/:id";
+      }
+
+      String typeId = view.getDefinition().getName();
+      String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "";
+
+      // Save HTML5 FW View Id, for to be used at the time of closing
+      String html5FWViewId = "/ippPortal/configurationTreeView/" + viewId;
+      html5FWViewId = StringUtils.replace(html5FWViewId, ":type", typeId);
+      html5FWViewId = StringUtils.replace(html5FWViewId, ":id", id);
+      view.getViewParams().put("html5FWViewId", html5FWViewId);
+
+      String script = "parent.BridgeUtils.View.openView('" + html5FWViewId + "', '" + viewId
+            + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
+      script = StringUtils.replace(script, "_TYPE_", typeId);
+      script = StringUtils.replace(script, "_ID_", id);
+      script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
+      script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
+      script = StringUtils.replace(script, "_URL_", url);
+      script = StringUtils.replace(script, "_CUSTOM_", view.getParamsAsJson());
+
+      addEventScript(script);
+   }
+
+   /**
+    * @param iconUrl
+    * @return
+    */
+   public static String deriveIconClass(String iconUrl)
+   {
+      String icon = "";
+      if (StringUtils.isNotEmpty(iconUrl))
+      {
+         int slashIndex = iconUrl.lastIndexOf("/");
+         if (slashIndex > -1)
+         {
+            icon = iconUrl.substring(slashIndex+1, iconUrl.lastIndexOf("."));
+         }
+      }
+      return icon;
+   }
+
+   /**
+    * 
+    * @param view
+    */
+   public void updateViewIconClass(View view)
+   {
+      String iconClass = deriveIconClass(view.getIcon());
+
+      String popupScript;
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
+      {
+         popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "', '" + html5FWViewId + "');";
+      }
+      else
+      {
+         popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "');";
+      }
+      addEventScript(popupScript);
+   }
+
+   /**
+    * 
+    * @param view
+    */
+   public void updateViewTitle(View view)
+   {
+      String title = view.getFullLabel();
+
+      String popupScript;
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
+      {
+         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "', '" + html5FWViewId + "');";
+      }
+      else
+      {
+         popupScript = "parent.BridgeUtils.View.setTitle('" + title + "');";   
+      }
+      
+      addEventScript(popupScript);
+   }
+   
+   /**
+    * @param view
+    */
+   private void handleViewCloseForHTML5(View view)
+   {
+      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      if (StringUtils.isNotEmpty(html5FWViewId))
+      {
+         String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+         addEventScript(script);
+      }
+   }
+
+   /**
+    * @param str
+    * @return
+    */
+   private String encodeUrl(String str)
+   {
+      if (str != null)
+      {
+         try
+         {
+            return URLEncoder.encode(str, "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+         }
+      }
+
+      return str;
+   }
+
    public int getViewIndex(View view)
    {
       return displayedViews.indexOf(view);
-   }   
-   
+   }
+
    /**
     * @param view
     * @param justOpened
@@ -1119,7 +1269,7 @@ public class PortalApplication
    {
       portalUiController.broadcastNonVetoableViewEvent(view, ViewEventType.POST_OPEN_LIFECYCLE);
    }
-   
+
    /**
     * Build Overflow View List
     */
@@ -1134,7 +1284,7 @@ public class PortalApplication
    }
 
    /**
-    * 
+    *
     */
    public void refreshSkin()
    {
@@ -1152,7 +1302,7 @@ public class PortalApplication
    }
 
    /**
-    * 
+    *
     */
    private void loadPerspective()
    {
@@ -1170,16 +1320,16 @@ public class PortalApplication
 
    public boolean isExternalAuthentication()
    {
-      return userProvider.isExternalAuthentication();      
+      return userProvider.isExternalAuthentication();
    }
-   
+
    public boolean isExternalAuthorization()
    {
       return userProvider.isExternalAuthorization();
    }
 
    /**
-    * 
+    *
     */
    private void retrieveRuntimeEnvInfo()
    {
@@ -1204,31 +1354,7 @@ public class PortalApplication
          catch (Exception e)
          {
             trace.error("Could not retrieve Copyright Information", e);
-         }         
-      }
-   }
-   
-   /**
-    * 
-    * @return
-    */
-   public boolean isOverflowTabPopupOpened()
-   {
-      return overflowTabPopupOpened;
-   }
-   
-   /**
-    * 
-    */
-   public void toggleOverflowTabIframePopup()
-   {
-      if (overflowTabPopupOpened)
-      {
-         closeOverflowTabIframePopup();
-      }
-      else
-      {
-         openOverflowTabIframePopup();
+         }
       }
    }
 
@@ -1250,54 +1376,6 @@ public class PortalApplication
       return advanceArgs;
    }
 
-   /**
-    * 
-    */
-   public void openOverflowTabIframePopup()
-   {
-      String iFrameId = getOverflowTabIframePopupId();
-      String url = "'" + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
-            + "/plugins/common/overflowTabIframePopup.iface?random=" + System.currentTimeMillis() + "'";
-
-      String script = "InfinityBpm.ProcessPortal.createOrActivateContentFrame(" + iFrameId + ", " + url + ", "
-            + getOverflowTabIframePopupArgs() + ");";
-      PortalApplication.getInstance().addEventScript(script);
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-      overflowTabPopupOpened = true;
-   }
-
-   /**
-    * closes the popup from portal application like completing activity
-    */
-   public void closeOverflowTabIframePopup()
-   {
-      if (overflowTabPopupOpened)
-      {
-         String iFrameId = getOverflowTabIframePopupId();
-         String script = "InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
-
-         PortalApplication.getInstance().addEventScript(script);
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-
-         overflowTabPopupOpened = false;
-      }
-   }
-
-   /**
-    * closes the popup in case any menu option from the popup is selected
-    */
-   public void closeOverflowTabIframePopupSelf()
-   {
-      if (overflowTabPopupOpened)
-      {
-         String iFrameId = getOverflowTabIframePopupId();
-         String script = "parent.ippPortalMain.InfinityBpm.ProcessPortal.closeContentFrame(" + iFrameId + ");";
-
-         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
-
-         overflowTabPopupOpened = false;
-      }
-   }
 
    /**
     * @param view
@@ -1324,7 +1402,7 @@ public class PortalApplication
    {
       getPortalUiController().broadcastViewDataEvent(event);
    }
-   
+
    /**
     *
     */
@@ -1346,21 +1424,25 @@ public class PortalApplication
    private void handleViewClose(View closedView, View focusView, boolean forceClose)
    {
       resetWindowWidth();
+      // Closing current View trigger's call to setFocusView(nextOpenView), which will
+      // try to open next child views, closing child views first will setFocusView(null)
+      // as child views will be already closed
+      closeChildViews(closedView, forceClose);
       removeFromDisplayedViews(closedView);
-      
+
       if(focusView == closedView)
          setFocusView(getLastFocusView());
       else
          setFocusView(getFocusView()); // This is required because the index of focus view would have changed
-      
+
       if(getOpenViewsSize() == 0) // If this is the last view closed, activate launch Panels
       {
          launchPanelsActivated = true;
          fullScreenModeActivated = false;
          restorePinView();
       }
-      
-      closeChildViews(closedView, forceClose);
+
+      handleViewCloseForHTML5(closedView);
    }
 
    /**
@@ -1435,7 +1517,7 @@ public class PortalApplication
          focusViewStack.remove(view);
       focusViewStack.add(view);
    }
-   
+
    /**
     * @param view
     */
@@ -1444,7 +1526,7 @@ public class PortalApplication
       if(focusViewStack.contains(view))
          focusViewStack.remove(view);
    }
-   
+
    /**
     * @return
     */
@@ -1493,7 +1575,7 @@ public class PortalApplication
    public boolean isClientTimeZoneSet()
    {
       //Following fix was added as part of CRNT-20962 but later on with the new Icefaces jars the issue got resolved
-      //Keeping the following code as comment it may required in future   
+      //Keeping the following code as comment it may required in future
       /*         String userAgent = FacesUtils.getUserAgent();
       try
       {
@@ -1512,7 +1594,7 @@ public class PortalApplication
          trace.error("Not supporting client timezone. Server Time will be referred", e);
       }*/
       return clientTimeZone != null;
-   }   
+   }
 
    /**
     * @param view
@@ -1621,7 +1703,7 @@ public class PortalApplication
    {
       this.pinViewOpened = pinViewOpened;
    }
-   
+
    public String getPinViewOrientation()
    {
       return pinViewOrientation;
@@ -1631,17 +1713,17 @@ public class PortalApplication
    {
       return pinView;
    }
-   
+
    public List<String> getSkinFiles()
    {
       return skinFiles;
    }
-   
+
    public View getActiveView()
    {
       return activeView;
    }
-   
+
    public void setUserProvider(UserProvider userProvider)
    {
       this.userProvider = userProvider;
@@ -1654,7 +1736,7 @@ public class PortalApplication
    {
       return portalApplicationEventScript.getEventScripts();
    }
-   
+
    /**
     * @param eventScript
     */
@@ -1668,7 +1750,7 @@ public class PortalApplication
     */
    public void cleanEventScripts()
    {
-      portalApplicationEventScript.cleanEventScripts();      
+      portalApplicationEventScript.cleanEventScripts();
    }
 
    public PortalApplicationEventScript getPortalApplicationEventScript()
@@ -1680,7 +1762,7 @@ public class PortalApplication
    {
       this.portalApplicationEventScript = portalApplicationEventScript;
    }
-   
+
    /**
     * @param event
     */
@@ -1700,8 +1782,8 @@ public class PortalApplication
    /**
     * New value would be a Json Object, with following Info
     *   type: String
-    *   data: Object 
-    * 
+    *   data: Object
+    *
     * @param event
     */
    public void messageReceived(ValueChangeEvent event)
@@ -1738,7 +1820,7 @@ public class PortalApplication
                MessagePropertiesBean.getInstance().getString("portalFramework.error.messageProcessError"), e);
       }
    }
-   
+
    public String getMessageBlank()
    {
       return "empty";
@@ -1788,7 +1870,7 @@ public class PortalApplication
 
       return maxTabDisplay;
    }
-   
+
    public String getLocaleString()
    {
       return getLocaleObject().toString();

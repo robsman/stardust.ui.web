@@ -23,6 +23,9 @@ define(
 				m_angularContextUtils, m_modelerUtils) {
 			return {
 				initialize : function(fullId) {
+					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
+					m_utils.showWaitCursor();
+
 					var view = new XsdStructuredDataTypeView();
 
 					// TODO Unregister!
@@ -31,6 +34,7 @@ define(
 					m_commandsController.registerCommandHandler(view);
 
 					view.initialize(m_model.findTypeDeclaration(fullId));
+					m_utils.hideWaitCursor();
 				}
 			};
 
@@ -55,25 +59,27 @@ define(
 					this.internationalizeStaticData();
 
 					this.id = "xsdStructuredDataTypeView";
-					this.tree = jQuery("table#typeDeclarationsTable");
-					this.tableBody = jQuery("table#typeDeclarationsTable tbody");
-					this.addButton = jQuery("#addElementButton");
-					this.deleteButton = jQuery("#deleteElementButton");
-					this.upButton = jQuery("#moveElementUpButton");
-					this.downButton = jQuery("#moveElementDownButton");
-					this.structureDefinitionHintPanel = jQuery("#structureDefinitionHintPanel");
-					this.visibilitySelect = jQuery("#publicVisibilityCheckbox");
-					this.structureKindSelect = jQuery("#structureKind select");
-					this.minimumLengthEdit = jQuery("#minLenghtInput");
-					this.maximumLengthEdit = jQuery("#maxLenghtInput");
+					this.view = m_utils.jQuerySelect("#" + this.id);
 
-					this.propertiesTree = m_propertiesTree.create("fieldPropertiesTable");
+					this.tree = m_utils.jQuerySelect("table#typeDeclarationsTable");
+					this.tableBody = m_utils.jQuerySelect("table#typeDeclarationsTable tbody");
+					this.addButton = m_utils.jQuerySelect("#addElementButton");
+					this.deleteButton = m_utils.jQuerySelect("#deleteElementButton");
+					this.upButton = m_utils.jQuerySelect("#moveElementUpButton");
+					this.downButton = m_utils.jQuerySelect("#moveElementDownButton");
+					this.structureDefinitionHintPanel = m_utils.jQuerySelect("#structureDefinitionHintPanel");
+					this.visibilitySelect = m_utils.jQuerySelect("#publicVisibilityCheckbox");
+					this.structureKindSelect = m_utils.jQuerySelect("#structureKind select");
+					this.baseTypeSelect = m_utils.jQuerySelect("#baseTypeSelect select");
+					this.minimumLengthEdit = m_utils.jQuerySelect("#minLenghtInput");
+					this.maximumLengthEdit = m_utils.jQuerySelect("#maxLenghtInput");
+					this.focusAttr = {};
 
 					var view = this;
 
 					this.visibilitySelect.change(function(event) {
 						var currentVisibility = view.typeDeclaration.attributes["carnot:engine:visibility"];
-						var newVisibility = jQuery(event.target).is(":checked") ? "Public" : "Private";
+						var newVisibility = m_utils.jQuerySelect(event.target).is(":checked") ? "Public" : "Private";
 						if (currentVisibility !== newVisibility) {
 							view.submitChanges({
 										attributes : {
@@ -85,10 +91,10 @@ define(
 					this.structureKindSelect.change(
 						function(event) {
 							var doSubmit = false;
-							if (("struct" === jQuery(event.target).val()) && !view.typeDeclaration.isSequence()) {
+							if (("struct" === m_utils.jQuerySelect(event.target).val()) && !view.typeDeclaration.isSequence()) {
 								view.typeDeclaration.switchToComplexType();
 								doSubmit = true;
-							} else if (("enum" === jQuery(event.target).val()) && view.typeDeclaration.isSequence()) {
+							} else if (("enum" === m_utils.jQuerySelect(event.target).val()) && view.typeDeclaration.isSequence()) {
 								view.typeDeclaration.switchToEnumeration();
 								doSubmit = true;
 							}
@@ -102,6 +108,22 @@ define(
 							}
 						});
 
+					this.baseTypeSelect
+							.change(function(event) {
+								if (m_utils.jQuerySelect(event.target).val() == "None") {
+									view.typeDeclaration.setBaseType();
+								} else {
+									view.typeDeclaration.setBaseType(m_model
+											.findElementByUuid(m_utils.jQuerySelect(
+													event.target).val()));
+								}
+
+								view
+										.submitChanges({
+											typeDeclaration : view.typeDeclaration.typeDeclaration
+										});
+							});
+
 					var self = this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
 						$scope.$watch("minLength", function(newValue, oldValue) {
@@ -109,12 +131,23 @@ define(
 								if (newValue == "" || validateRange(parseInt(newValue), $scope.maxLength)){
 									if (newValue == "") {
 										$scope.minLength = undefined;
-										self.typeDeclaration.getTypeDeclaration().minLength = undefined;
+//										self.typeDeclaration.getTypeDeclaration().minLength = undefined;
+										self.typeDeclaration.deleteFacet("minLength");
 									} else {
-										self.typeDeclaration.getTypeDeclaration().minLength = parseInt(newValue);
+										//self.typeDeclaration.getTypeDeclaration().minLength = parseInt(newValue);
+										self.typeDeclaration.deleteFacet("minLength");
+										self.typeDeclaration.addFacet({
+											classifier : "minLength",
+											name : parseInt(newValue)
+										});
 									}
 									if ($scope.maxLength) {
-										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt($scope.maxLength);
+										//self.typeDeclaration.getTypeDeclaration().maxLength = parseInt($scope.maxLength);
+										self.typeDeclaration.deleteFacet("maxLength");
+										self.typeDeclaration.addFacet({
+											classifier : "maxLength",
+											name : parseInt($scope.maxLength)
+										});
 									}
 									$scope.minMaxError = false;
 									self.submitChanges({
@@ -130,12 +163,23 @@ define(
 								if (newValue == "" || validateRange($scope.minLength, parseInt(newValue))){
 									if (newValue == "") {
 										$scope.maxLength = undefined;
-										self.typeDeclaration.getTypeDeclaration().maxLength = undefined;
+										//self.typeDeclaration.getTypeDeclaration().maxLength = undefined;
+										self.typeDeclaration.deleteFacet("maxLength");
 									} else {
-										self.typeDeclaration.getTypeDeclaration().maxLength = parseInt(newValue);
+										//self.typeDeclaration.getTypeDeclaration().maxLength = parseInt(newValue);
+										self.typeDeclaration.deleteFacet("maxLength");
+										self.typeDeclaration.addFacet({
+											classifier : "maxLength",
+											name : parseInt(newValue)
+										});
 									}
 									if ($scope.minLength) {
-										self.typeDeclaration.getTypeDeclaration().minLength = parseInt($scope.minLength);
+										//self.typeDeclaration.getTypeDeclaration().minLength = parseInt($scope.minLength);
+										self.typeDeclaration.deleteFacet("minLength");
+										self.typeDeclaration.addFacet({
+											classifier : "minLength",
+											name : parseInt($scope.minLength)
+										});
 									}
 									$scope.minMaxError = false;
 									self.submitChanges({
@@ -154,77 +198,214 @@ define(
 
 							return true;
 						}
-					});
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
 
 					if (typeDeclaration.getType() === "importedStructuredDataType") {
 						m_modelerUtils.disableToolbarControl(this.addButton);
 						m_modelerUtils.disableToolbarControl(this.deleteButton);
 						m_modelerUtils.disableToolbarControl(this.upButton);
 						m_modelerUtils.disableToolbarControl(this.downButton);
+						this.baseTypeSelect.attr("disabled", true);
 					} else {
-						jQuery(this.addButton).click(
+						m_utils.jQuerySelect(this.addButton).click(
 								function(event) {
-									jQuery("tr.selected", view.tableBody)
+									m_utils.jQuerySelect("tr.selected", view.tableBody)
 											.removeClass("selected")
 									view.addElement();
 									rowAdded = true;
 								});
-						jQuery(this.deleteButton).click(
+						m_utils.jQuerySelect(this.deleteButton).click(
 								function(event) {
-									view.removeElement(jQuery("tr.selected",
+									view.removeElement(m_utils.jQuerySelect("tr.selected",
 											view.tableBody));
 								});
-						jQuery(this.upButton).click(
+						m_utils.jQuerySelect(this.upButton).click(
 								function(event) {
-									view.moveElementUp(jQuery("tr.selected",
+									view.moveElementUp(m_utils.jQuerySelect("tr.selected",
 											view.tableBody));
 									rowMoved = true;
 								});
-						jQuery(this.downButton).click(
+						m_utils.jQuerySelect(this.downButton).click(
 								function(event) {
-									view.moveElementDown(jQuery("tr.selected",
+									view.moveElementDown(m_utils.jQuerySelect("tr.selected",
 											view.tableBody));
 									rowMoved = true;
 								});
 					}
 
+					this.populateBaseTypeSelectMenu(typeDeclaration);
+					this.setBaseType(typeDeclaration);
+
 					this.initializeModelElementView(typeDeclaration);
+					this.view.css("visibility", "visible");
+				};
+
+				XsdStructuredDataTypeView.prototype.populateBaseTypeSelectMenu = function(typeDeclaration) {
+					var optionsString = "<option value='None'>" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.none") + "</option>";
+
+					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
+					if (typeDeclaration) {
+						var thisModel = m_model.findModelForElement(typeDeclaration.uuid);
+						for (var i in thisModel.typeDeclarations) {
+							if (thisModel.typeDeclarations[i].uuid !== typeDeclaration.uuid
+									&& thisModel.typeDeclarations[i].isSequence()
+									&& (typeDeclaration.getType() === "importedStructuredDataType"
+										|| thisModel.typeDeclarations[i].getType() !== "importedStructuredDataType")) {
+								optionsString += "<option value='" + thisModel.typeDeclarations[i].uuid + "'>" + thisModel.typeDeclarations[i].name + "</option>";
+							}
+						}
+					}
+					optionsString += "</optgroup>";
+
+					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+					var allModels = m_model.getModels();
+					for ( var i in allModels) {
+						var model = allModels[i];
+
+						if (model == typeDeclaration.model) {
+							continue;
+						}
+
+						for ( var n in model.typeDeclarations) {
+							var typeDeclarationN = model.typeDeclarations[n];
+							if (m_modelElementUtils
+									.hasPublicVisibility(typeDeclarationN)
+									&& typeDeclarationN.isSequence()
+									&& (typeDeclaration.getType() === "importedStructuredDataType" || typeDeclarationN
+											.getType() !== "importedStructuredDataType")) {
+								var x = "<option value='" + typeDeclarationN.uuid + "' ";
+								x += ">" + model.name + "/"
+										+ typeDeclarationN.name + "</option>";
+								optionsString += x;
+							}
+						}
+					}
+					optionsString += "</optgroup>";
+
+					this.baseTypeSelect.html(optionsString);
+				};
+
+				XsdStructuredDataTypeView.prototype.setBaseType = function(
+						typeDeclaration) {
+					var baseTypeDeclaration = null;
+
+					if (typeDeclaration
+							&& "enumStructuredDataType" !== typeDeclaration.getType()) {
+						if (typeDeclaration.getTypeDeclaration()
+								&& typeDeclaration.getTypeDeclaration().base) {
+							baseTypeDeclaration = this
+									.resolveBaseType(typeDeclaration);
+
+								if (baseTypeDeclaration == null) {
+									this.errorMessages.push(m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.parentStrTypeNotResolved")
+											+ " " + typeDeclaration.getTypeDeclaration().base);
+
+								if (this.baseTypeSelect.val() != 'pleaseSpecify') {
+									var optionsString = "<option value='pleaseSpecify'>"
+											+ m_i18nUtils.getProperty("modeler.general.toBeDefined")
+											+ "</option>";
+									this.baseTypeSelect.append(optionsString);
+									this.baseTypeSelect.val('pleaseSpecify');
+								}
+							} else {
+								this.baseTypeSelect.val(baseTypeDeclaration.uuid);
+							}
+						} else {
+							this.baseTypeSelect.val("None");
+						}	
+					}
+				};
+
+				/**
+				 * resolve base type from current and other models
+				 */
+				XsdStructuredDataTypeView.prototype.resolveBaseType = function(
+						typeDeclaration) {
+					var basetypeDecl = null;
+					 {
+						var baseTypeId = typeDeclaration.getTypeDeclaration().base
+								.substring(typeDeclaration.getTypeDeclaration().base
+										.indexOf(":") + 1);
+						//get from current model
+						basetypeDecl = typeDeclaration.model.typeDeclarations[baseTypeId];
+
+						//search in other models
+						if (!basetypeDecl
+								&& typeDeclaration.getTypeDeclaration().base
+										.indexOf(":") != -1) {
+							var nsMappingPrefix = typeDeclaration
+									.getTypeDeclaration().base.split(":")[0];
+							var nameSpace = typeDeclaration.typeDeclaration.schema.nsMappings[nsMappingPrefix];
+
+							if (!nameSpace
+									|| !typeDeclaration.typeDeclaration.schema.locations) {
+								return null;
+							}
+							var location = typeDeclaration.typeDeclaration.schema.locations[nameSpace];
+
+							if (!location) {
+								return null;
+							}
+							var modelIdTypeId = m_typeDeclaration
+									.parseQName(location);
+
+							referenceModel = m_model.findModel(modelIdTypeId.namespace);
+
+							if (!referenceModel) {
+								return null;
+							}
+
+							jQuery.each(referenceModel.typeDeclarations, function(i,
+									declaration) {
+								if (declaration.id === modelIdTypeId.name) {
+									basetypeDecl = declaration;
+									return false;
+								}
+							});
+						}
+						return basetypeDecl;
+					}
 				};
 
 				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
-					jQuery("#publicVisibility")
+					m_utils.jQuerySelect("#publicVisibility")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-					jQuery("tr#structureKind td.label")
+					m_utils.jQuerySelect("tr#structureKind td.label")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType")
 											+ ":");
-					jQuery("tr#structureKind select option.label-struct")
+					m_utils.jQuerySelect("tr#structureKind select option.label-struct")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType.composite"));
-					jQuery("tr#structureKind select option.label-enum")
+					m_utils.jQuerySelect("tr#structureKind select option.label-enum")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType.enumeration"));
-					jQuery("tr#minimumLength td.label")
+					m_utils.jQuerySelect("tr#minimumLength td.label")
 					.text(
 							m_i18nUtils
 									.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minLength") + ":");
-					jQuery("tr#maximumLength td.label")
+					m_utils.jQuerySelect("tr#maximumLength td.label")
 					.text(
 							m_i18nUtils
 									.getProperty("modeler.model.propertyView.structuredTypes.enumeration.maxLength") + ":");
-					jQuery("#intMinLengthError, #intMaxLengthError")
+					m_utils.jQuerySelect("#intMinLengthError, #intMaxLengthError")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.primitiveType.error.number"));
-					jQuery("#minGreaterThanMax")
+					m_utils.jQuerySelect("#minGreaterThanMax")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minGreaterThanMaxError"));
+					m_utils.jQuerySelect("tr#baseTypeSelect td.label")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.propertyView.structuredTypes.parentType") + ":");
 				};
 
 				/**
@@ -237,9 +418,26 @@ define(
 
 					var self = this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
-						$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
-						$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
-					});
+						if (self.typeDeclaration && self.typeDeclaration.getTypeDeclaration()) {
+//							$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
+//							$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
+							var facets = self.typeDeclaration.getFacets();
+							if (facets) {
+								var minVal;
+								var maxVal;
+								for (var i in facets) {
+									if (facets[i].classifier === "minLength") {
+										minVal = facets[i].name;
+									}
+									if (facets[i].classifier === "maxLength") {
+										maxVal = facets[i].name;
+									}
+								}
+								$scope.minLength = minVal;
+								$scope.maxLength = maxVal;
+							}
+						}
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
 
 					this.updateViewIcon();
 
@@ -247,6 +445,7 @@ define(
 					m_utils.debug(this.typeDeclaration);
 
 					this.initializeTypeDeclaration();
+
 				};
 
 				/**
@@ -273,14 +472,21 @@ define(
 						this.showErrorMessages();
 						return;
 					}
-					jQuery(this.typeDeclaration.isSequence() ? ".show-when-struct" : ".show-when-enum").show();
-					jQuery(this.typeDeclaration.isSequence() ? ".show-when-enum" : ".show-when-struct").hide();
+					m_utils.jQuerySelect(this.typeDeclaration.isSequence() ? ".show-when-struct" : ".show-when-enum").show();
+					m_utils.jQuerySelect(this.typeDeclaration.isSequence() ? ".show-when-enum" : ".show-when-struct").hide();
 
 					this.visibilitySelect.prop("checked", (!this.typeDeclaration.attributes["carnot:engine:visibility"]
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
 
+					this.clearErrorMessages();
+					this.setBaseType(this.typeDeclaration);
+
 					this.refreshElementsTable();
+					this.showErrorMessages();
+
+					//restore focus if the entry is changed
+					this.restoreFocus();
 				};
 
 				/**
@@ -292,8 +498,6 @@ define(
 					this.submitChanges({
 						typeDeclaration : this.typeDeclaration.typeDeclaration
 					});
-
-					this.refreshElementsTable();
 				};
 
 				/**
@@ -303,9 +507,9 @@ define(
 					var view = this;
 
 					var isValidName = view.validateElementName(nameInput);
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						var oldName = jQuery(tableRow).data("elementName");
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						var oldName = m_utils.jQuerySelect(tableRow).data("elementName");
 						var newName = nameInput.val();
 						if (isValidName) {
 							typeDeclaration.renameElement(oldName, newName);
@@ -318,28 +522,38 @@ define(
 						}
 					});
 
-					if (isValidName) {
-						view.refreshElementsTable();
-					}
-
 					return isValidName;
 				};
 
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.setElementType = function(tableRows, typeName) {
+				XsdStructuredDataTypeView.prototype.setElementType = function(tableRows, dataValue) {
 					var view = this;
 
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.setElementType(jQuery(tableRow).data("elementName"), typeName);
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						var typeName = dataValue;
+						var location = null;
+
+						if (dataValue.indexOf("#location:") != -1) {
+							typeName = dataValue.substr(dataValue.indexOf("#typeName:") + 10);
+							location = dataValue.substring(dataValue.indexOf("#location:") + 10, dataValue.indexOf("#typeName:"));
+						}
+
+						if (location) {
+							if (!typeDeclaration.typeDeclaration.schema.locations) {
+								typeDeclaration.typeDeclaration.schema.locations = {};
+							}
+							typeDeclaration.typeDeclaration.schema.locations[m_typeDeclaration
+									.parseQName(typeName).namespace] = location;
+						}
+
+						typeDeclaration.setElementType(m_utils.jQuerySelect(tableRow).data("elementName"), typeName);
 
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
@@ -349,15 +563,13 @@ define(
 				XsdStructuredDataTypeView.prototype.setElementCardinality = function(tableRows, cardinality) {
 					var view = this;
 
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.setElementCardinality(jQuery(tableRow).data("elementName"), cardinality);
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						typeDeclaration.setElementCardinality(m_utils.jQuerySelect(tableRow).data("elementName"), cardinality);
 
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
@@ -367,43 +579,43 @@ define(
 				XsdStructuredDataTypeView.prototype.removeElement = function(tableRows) {
 					var view = this;
 
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.removeElement(jQuery(tableRow).data("elementName"));
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						typeDeclaration.removeElement(m_utils.jQuerySelect(tableRow).data("elementName"));
 
 						view.submitChanges({
 							typeDeclaration : typeDeclaration.typeDeclaration
 						});
-
-						view.refreshElementsTable();
 					});
 				};
 
 				XsdStructuredDataTypeView.prototype.moveElementUp = function(tableRows) {
 					var view = this;
 
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), -1);
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						var moved = typeDeclaration.moveElement(m_utils.jQuerySelect(tableRow).data("elementName"), -1);
 
-						view.submitChanges({
-							typeDeclaration : typeDeclaration.typeDeclaration
-						});
-
+						if (moved) {
+							view.submitChanges({
+								typeDeclaration : typeDeclaration.typeDeclaration
+							});
+						}
 					});
 				};
 
 				XsdStructuredDataTypeView.prototype.moveElementDown = function(tableRows) {
 					var view = this;
 
-					jQuery(tableRows).each(function(i, tableRow) {
-						var typeDeclaration = jQuery(tableRow).data("typeDeclaration");
-						typeDeclaration.moveElement(jQuery(tableRow).data("elementName"), 1);
+					m_utils.jQuerySelect(tableRows).each(function(i, tableRow) {
+						var typeDeclaration = m_utils.jQuerySelect(tableRow).data("typeDeclaration");
+						var moved = typeDeclaration.moveElement(m_utils.jQuerySelect(tableRow).data("elementName"), 1);
 
-						view.submitChanges({
-							typeDeclaration : typeDeclaration.typeDeclaration
-						});
-
+						if (moved) {
+							view.submitChanges({
+								typeDeclaration : typeDeclaration.typeDeclaration
+							});
+						}
 					});
 				};
 
@@ -411,31 +623,36 @@ define(
 
 					row.data("typeDeclaration", this.typeDeclaration);
 					row.data("elementName", element.name);
+					row.data("element", element);
+
+					if (element.inherited) {
+						row.addClass("locked");
+					}
 
 					var elementName = element.name;
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
-					var nameColumn = jQuery("<td class='elementCell'></td>").appendTo(row);
-					if ( !this.typeDeclaration.isReadOnly()) {
+					var nameColumn = m_utils.jQuerySelect("<td class='elementCell'></td>").appendTo(row);
+					if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
 						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
 					}
 
-					var typeColumn = jQuery("<td class='typeCell'></td>").appendTo(row);
+					var typeColumn = m_utils.jQuerySelect("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
-						if ( !this.typeDeclaration.isReadOnly()) {
-							typeColumn.append(this.getTypeSelectList(schemaType));
+						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+							typeColumn.append(this.getTypeSelectList(schemaType, element));
 						} else {
-							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : ""));
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : (element.type ? element.type : "")));
 						}
 					}
 
-					var cardinalityColumn = jQuery("<td class='cardinalityCell'></td>").appendTo(row);
+					var cardinalityColumn = m_utils.jQuerySelect("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
-						if ( !this.typeDeclaration.isReadOnly()) {
-							var cardinalityBox = jQuery("<select size='1' class='cardinalitySelect'></select>");
+						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+							var cardinalityBox = m_utils.jQuerySelect("<select size='1' class='cardinalitySelect'></select>");
 							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
 								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
 							});
@@ -447,7 +664,7 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
-					var selectedRowId = jQuery("table#typeDeclarationsTable tr.selected").first().attr('id');
+					var selectedRowIndex = m_utils.jQuerySelect("table#typeDeclarationsTable tr.selected").first().index();
 
 					// TODO merge instead of fully rebuild table
 					this.tableBody.empty();
@@ -471,11 +688,19 @@ define(
 
 						jQuery.each(childRows, function(i, childRow) {
 							childRow.addClass("child-of-" + parentPath);
+							if (parentRow.hasClass("locked")) {
+								childRow.addClass("locked");
+							}
 							view.tableBody.append(childRow);
 						});
 					});
 
-					jQuery("table#typeDeclarationsTable #" + selectedRowId).addClass("selected");
+					m_utils.jQuerySelect("table#typeDeclarationsTable tr").eq(selectedRowIndex).addClass("selected");
+
+					//update properties/annotation table
+					if(this.propertiesTree){
+						m_propertiesTree.refresh(this.propertiesTree, m_utils.jQuerySelect(m_utils.jQuerySelect("tr.selected", this.tableBody)).data("element"), view);
+					}
 
 					//this.tree.tableScroll("undo");
 					this.tree.tableScroll({
@@ -485,7 +710,7 @@ define(
 					this.tree.treeTable({
 						indent: 14,
 						onNodeShow: function() {
-							m_structuredTypeBrowser.insertChildElementRowsLazily(jQuery(this));
+							m_structuredTypeBrowser.insertChildElementRowsLazily(m_utils.jQuerySelect(this));
 						}
 					});
 
@@ -495,10 +720,10 @@ define(
 
 					// Scrolls down if the a row is added
 					if (rowAdded) {
-						jQuery("div.tablescroll_wrapper").scrollTop(
-								jQuery("div.tablescroll_wrapper table")
+						m_utils.jQuerySelect("div.tablescroll_wrapper").scrollTop(
+								m_utils.jQuerySelect("div.tablescroll_wrapper table")
 										.height());
-						jQuery("tr:last", "div.tablescroll_wrapper table")
+						m_utils.jQuerySelect("tr:last", "div.tablescroll_wrapper table")
 								.find("input.nameInput").focus();
 						rowAdded = false;
 					}
@@ -506,18 +731,18 @@ define(
 					// Keeps the selected row within the wrapper div's view port
 					// TODO - check if the logic can be simplified.
 					if (rowMoved) {
-						var wrapperDiv = jQuery("div.tablescroll_wrapper");
+						var wrapperDiv = m_utils.jQuerySelect("div.tablescroll_wrapper");
 						var divTop = wrapperDiv.position().top;
 						var divBottom = wrapperDiv.position().top
 								+ wrapperDiv.height();
-						var selectedRow = jQuery("div.tablescroll_wrapper table tr.selected");
+						var selectedRow = m_utils.jQuerySelect("div.tablescroll_wrapper table tr.selected");
 						var rowPosition = selectedRow.position();
 						if (rowPosition
 								&& !((rowPosition.top > (divTop + selectedRow
 										.height())) && (rowPosition.top < (divBottom - selectedRow
 										.height())))) {
 							wrapperDiv.scrollTop(rowPosition.top
-									- jQuery("div.tablescroll_wrapper table")
+									- m_utils.jQuerySelect("div.tablescroll_wrapper table")
 											.position().top
 									- selectedRow.height());
 							rowMoved = false;
@@ -531,21 +756,98 @@ define(
 				XsdStructuredDataTypeView.prototype.bindTableEventHandlers = function() {
 					var view = this;
 
-					jQuery("tr", this.tableBody).mousedown(
+					m_utils.jQuerySelect("tr", this.tableBody).mousedown(
 						function() {
-							jQuery("tr.selected", view.tableBody).removeClass("selected");
-							jQuery(this).addClass("selected");
+							m_utils.jQuerySelect("tr.selected", view.tableBody).removeClass("selected");
+							m_utils.jQuerySelect(this).addClass("selected");
+							view.propertiesTree = m_propertiesTree.create(m_utils.jQuerySelect(this).data("element"), view);
 						});
 
-					jQuery(".nameInput", this.tree).on("change", function(event) {
-							return view.renameElement(jQuery(event.target).closest("tr"), jQuery(event.target));
+					m_utils.jQuerySelect(".nameInput", this.tree).on("change", function(event) {
+							return view.renameElement(m_utils.jQuerySelect(event.target).closest("tr"), m_utils.jQuerySelect(event.target));
 						});
-					jQuery(".typeSelect", this.tree).on("change", function(event) {
-							view.setElementType(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+
+					m_utils.jQuerySelect(".nameInput", this.tree).on("keydown", function(event) {
+						if (event.which == 9) { //tab key pressed
+							if(!event.shiftKey){
+								view.preserveFocus(m_utils.jQuerySelect(this), true);
+							}
+						}
+					});
+
+					m_utils.jQuerySelect(".typeSelect", this.tree).on("change", function(event) {
+							view.preserveFocus(m_utils.jQuerySelect(this), false);
+							view.setElementType(m_utils.jQuerySelect(event.target).closest("tr"), m_utils.jQuerySelect(event.target).val());
 						});
-					jQuery(".cardinalitySelect", this.tree).on("change", function(event) {
-							view.setElementCardinality(jQuery(event.target).closest("tr"), jQuery(event.target).val());
+
+					m_utils.jQuerySelect(".cardinalitySelect", this.tree).on("keydown", function(event) {
+						if (event.which == 9) { //tab key pressed
+							if(!event.shiftKey){
+								view.preserveFocus(m_utils.jQuerySelect(this), true);
+								view.restoreFocus();
+								event.preventDefault();
+							}
+						}
+					});
+
+					m_utils.jQuerySelect(".cardinalitySelect", this.tree).on("change", function(event) {
+							view.preserveFocus(m_utils.jQuerySelect(this), false);
+							view.setElementCardinality(m_utils.jQuerySelect(event.target).closest("tr"), m_utils.jQuerySelect(event.target).val());
 						});
+				};
+
+				/**
+				 *  record the focus attributes (row, column)
+				 */
+				XsdStructuredDataTypeView.prototype.preserveFocus = function(
+						element, focusNext) {
+					this.focusAttr.rowIndex = element.closest("tr").index();
+					this.focusAttr.colIndex = element.closest("td").index();
+					this.focusAttr.focusNext = focusNext;
+				};
+
+				/**
+				 *	restore the focus attributes (row, column)
+				 */
+				XsdStructuredDataTypeView.prototype.restoreFocus = function() {
+					if (this.focusAttr.rowIndex == 'undefined'
+							|| this.focusAttr.colIndex == 'undefined') {
+						return;
+					}
+					var lastRowIndex = m_utils.jQuerySelect(".nameInput:last", this.tree)
+							.closest("tr").index();
+
+					if (2 == this.focusAttr.colIndex
+							&& lastRowIndex == this.focusAttr.rowIndex
+							&& this.focusAttr.focusNext) {
+
+						this.addButton.focus();
+
+					} else {
+						var columnId = {
+							0 : ".nameInput",
+							1 : ".typeSelect",
+							2 : ".cardinalitySelect"
+						};
+
+						var nextRowIndex = this.focusAttr.rowIndex;
+						if (this.focusAttr.colIndex == 2
+								&& this.focusAttr.focusNext) {
+							nextRowIndex++;
+						}
+
+						var nextColIndex = this.focusAttr.colIndex;
+						if (this.focusAttr.focusNext) {
+							nextColIndex = (this.focusAttr.colIndex + 1) % 3;
+						}
+
+						var cell = m_utils.jQuerySelect("table#typeDeclarationsTable tr").eq(
+								nextRowIndex).find("td").eq(nextColIndex).find(
+								columnId[nextColIndex]);
+						cell.focus();
+					}
+					//reset
+					this.focusAttr = {};
 				};
 
 				/**
@@ -563,7 +865,7 @@ define(
 				/**
 				 *
 				 */
-				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType) {
+				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType, element) {
 					var select = "<select size='1' class='typeSelect'>";
 					var selected = false;
 
@@ -587,7 +889,8 @@ define(
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
 
-						if (thisTypeDeclaration.uuid != typeDeclaration.uuid) {
+						if (thisTypeDeclaration.uuid != typeDeclaration.uuid
+								&& typeDeclaration.getType() !== "importedStructuredDataType") {
 							var tdType = typeDeclaration.asSchemaType();
 							if (tdType) {
 								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
@@ -601,33 +904,36 @@ define(
 					});
 					select += "</optgroup>";
 
-//					Disabling selection of external structured types as there isn't kernel support for it yet
-//					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
-//					 for ( var i in m_model.getModels()) {
-//							var model = m_model.getModels()[i];
-//
-//							if (model == this.typeDeclaration.model) {
-//								continue;
-//							}
-//
-//							for ( var n in model.typeDeclarations) {
-//								var typeDeclaration = model.typeDeclarations[n];
-//								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
-//										var tdType = typeDeclaration.asSchemaType();
-//										if (tdType) {
-//											var x = "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
-//											if ( !schemaType.isBuiltinType()) {
-//												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
-//												selected = true;
-//											}
-//											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
-//											select += x;
-//										}
-//								 }
-//							}
-//						}
-//
-//					select += "</optgroup>";
+					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
+					 for ( var i in m_model.getModels()) {
+							var model = m_model.getModels()[i];
+
+							if (model == this.typeDeclaration.model) {
+								continue;
+							}
+
+							for ( var n in model.typeDeclarations) {
+								var typeDeclaration = model.typeDeclarations[n];
+								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
+										var tdType = typeDeclaration.asSchemaType();
+										if (tdType) {
+											var typeName = "{" + tdType.nsUri + "}" + tdType.name;
+											var dataValue = "#location:" + "{" + model.id + "}" + tdType.name + "#typeName:" + typeName;
+
+											var x = "<option value='" + dataValue + "' ";
+											if (schemaType && !schemaType.isBuiltinType()) {
+												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+												selected = true;
+											}
+											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";
+											select += x;
+										}
+								 }
+							}
+						}
+
+					select += "</optgroup>";
+
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
 
@@ -644,10 +950,14 @@ define(
 					select += "</optgroup>";
 
 					if (!selected) {
+						this.errorMessages.push(element.name  + " : " + m_i18nUtils
+								.getProperty("modeler.model.propertyView.structuredTypes.nestedStrTypeNotResolved")
+								+ " " + element.type);
+
 						select += "<option value=\"other\" selected>"
 						+ m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.other")
-						+ "</option>"
+								.getProperty("modeler.general.toBeDefined")
+						+ "</option>";
 					}
 
 					select += "</select>";
@@ -663,8 +973,7 @@ define(
 
 					this.nameInput.removeClass("error");
 
-					if (this.nameInput.val() == null
-							|| this.nameInput.val() == "") {
+					if (m_utils.isEmptyString(this.nameInput.val())) {
 						this.errorMessages
 								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyDataType"));
 						this.nameInput.addClass("error");
@@ -684,7 +993,7 @@ define(
 
 					nameInput.removeClass("error");
 
-					if ((nameInput.val() == null) || (this.nameInput.val() === "")) {
+					if (m_utils.isEmptyString(nameInput.val())) {
 						this.errorMessages
 								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.emptyName"));
 						nameInput.addClass("error");
@@ -701,6 +1010,15 @@ define(
 							}
 						} else {
 							// TODO validate against enum pattern, if any
+						}
+						
+						// Check for duplicates.
+						for (var i in this.getModelElement().getElements()) {
+							if (this.getModelElement().getElements()[i].name === nameInput.val()) {
+								this.errorMessages
+								.push(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.errorMessage.duplicateName"));
+								break;
+							}
 						}
 					}
 
@@ -753,6 +1071,8 @@ define(
 						}
 					}
 					if (refresh) {
+						this.populateBaseTypeSelectMenu(typeDeclaration);
+						this.setBaseType(typeDeclaration);
 						this.refreshElementsTable();
 					}
 				};

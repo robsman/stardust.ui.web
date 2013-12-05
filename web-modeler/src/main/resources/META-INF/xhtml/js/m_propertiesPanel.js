@@ -29,11 +29,17 @@ define(
 
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
 					currentPropertiesPanel = element.propertiesPanel;
 
 					if (currentPropertiesPanel != null) {
+						if (currentPropertiesPanel.diagram && currentPropertiesPanel.diagram.process
+								&& currentPropertiesPanel.diagram.process.isReadonly()) {
+							m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
+						}
+
 						currentPropertiesPanel.setElement(element);
 						currentPropertiesPanel.show(page);
 					}
@@ -45,9 +51,15 @@ define(
 						processPropertiesPanel) {
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
 					currentPropertiesPanel = processPropertiesPanel;
+
+					if (currentPropertiesPanel.diagram && currentPropertiesPanel.diagram.process
+							&& currentPropertiesPanel.diagram.process.isReadonly()) {
+						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
+					}
 
 					currentPropertiesPanel.show();
 				},
@@ -64,17 +76,17 @@ define(
 			 */
 			function PropertiesPanel(id) {
 				this.id = id;
-				this.panel = jQuery("#" + this.id);
-				this.propertiesPageList = jQuery("#propertiesPageList");
-				this.applyButton = jQuery("#" + this.id + " #applyButton");
-				this.resetButton = jQuery("#" + this.id + " #resetButton");
-				this.errorMessagesRow = jQuery("#" + this.id
+				this.panel = m_utils.jQuerySelect("#" + this.id);
+				this.propertiesPageList = m_utils.jQuerySelect("#propertiesPageList");
+				this.applyButton = m_utils.jQuerySelect("#" + this.id + " #applyButton");
+				this.resetButton = m_utils.jQuerySelect("#" + this.id + " #resetButton");
+				this.errorMessagesRow = m_utils.jQuerySelect("#" + this.id
 						+ " #errorMessagesRow");
-				this.errorMessagesList = jQuery("#" + this.id
+				this.errorMessagesList = m_utils.jQuerySelect("#" + this.id
 						+ " #errorMessagesList");
 				this.propertiesPages = [];
 				this.errorMessages = [];
-				this.helpPanel = jQuery("#" + this.id + " #helpPanel");
+				this.helpPanel = m_utils.jQuerySelect("#" + this.id + " #helpPanel");
 				this.lastSelectedPageIndex = 0;
 
 				/**
@@ -115,7 +127,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.mapInputId = function(inputId) {
-					return jQuery("#" + this.id + " #" + inputId);
+					return m_utils.jQuerySelect("#" + this.id + " #" + inputId);
 				};
 
 				/**
@@ -134,7 +146,9 @@ define(
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
 					var extensions = {};
-
+					
+					var propertiesPanel = m_utils.jQuerySelect("#" + this.id + " #propertiesPagesCell");
+					
 					for ( var n = 0; n < propertiesPages.length; n++) {
 						var extension = propertiesPages[n];
 
@@ -144,7 +158,7 @@ define(
 								&& extension.visibility == "preview") {
 
 							if (extension.pageHtmlUrl == null) {
-								m_dialog.makeInvisible(jQuery("#" + this.id
+								m_dialog.makeInvisible(m_utils.jQuerySelect("#" + this.id
 										+ " #" + extension.id));
 							}
 
@@ -155,12 +169,11 @@ define(
 								+ extension.id);
 
 						if (extension.pageHtmlUrl != null) {
-							var pageDiv = jQuery("<div id=\""
+							var pageDiv = m_utils.jQuerySelect("<div id=\""
 									+ extension.id
 									+ "\" class=\"propertiesPage\"></div>");
 
-							jQuery("#" + this.id + " #propertiesPagesCell")
-									.append(pageDiv);
+							propertiesPanel.append(pageDiv);
 
 							// TODO this variable may be overwritten in the
 							// loop, find mechanism to pass data to load
@@ -169,7 +182,7 @@ define(
 							var panel = this;
 
 							// TODO - review
-							// Replaced jQuery(<div>).load call with a synchronous ajax request as, the
+							// Replaced m_utils.jQuerySelect(<div>).load call with a synchronous ajax request as, the
 							// async load request caused the property page tabs to not get loaded in time,
 							// and in Chrome browser, these tabs didn't get displayed in the first instance.
 							m_communicationController
@@ -184,7 +197,7 @@ define(
 															+ " "
 															+ err.statusText;
 
-													jQuery(this).append(msg);
+													m_utils.jQuerySelect(this).append(msg);
 													m_utils.debug(msg);
 												},
 												success : function(data) {
@@ -246,10 +259,10 @@ define(
 								+ this.propertiesPages[n].imageUrl
 								+ "\" title=\"" + this.propertiesPages[n].title
 								+ "\" alt=\"" + this.propertiesPages[n].title
-								+ "\" class=\"toolbarButton\" />" + "</td>"
+								+ "\" class=\"toolbarButton noDataChange\" />" + "</td>"
 								+ "</tr>");
 
-						jQuery(
+						m_utils.jQuerySelect(
 								"#propertiesPageList #"
 										+ this.propertiesPages[n].id
 										+ "ListItem")
@@ -272,7 +285,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.disablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+					m_utils.jQuerySelect("#" + this.id + " #" + id + "ListItem").prop(
 							"disabled", true);
 				};
 
@@ -280,7 +293,7 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.enablePropertiesPage = function(id) {
-					jQuery("#" + this.id + " #" + id + "ListItem").prop(
+					m_utils.jQuerySelect("#" + this.id + " #" + id + "ListItem").prop(
 							"disabled", false);
 				};
 
@@ -378,6 +391,10 @@ define(
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setElement(this.element);
 
+						// Update the selectable property pages list
+						// for the given profile
+						currentPropertiesPanel.show();
+
 						return;
 					}
 
@@ -393,12 +410,22 @@ define(
 							&& 0 != object.changes.modified.length) {
 
 						for ( var i = 0; i < object.changes.modified.length; i++) {
-							if (object.changes.modified[i].oid == this.element.oid) {
+							// TODO - improve logic
+							// Ideally all comparisons should be made using UUID only
+							// As some elemements may not have UUID, for now,
+							// compares using UUID if present, else compares using OID as before.
+							if ((object.changes.modified[i].uuid && this.element.uuid
+									&& object.changes.modified[i].uuid == this.element.uuid) 
+									|| ((!object.changes.modified[i].uuid || !this.element.uuid) 
+											&& object.changes.modified[i].oid == this.element.oid)) {
 								m_utils.inheritFields(this.element,
 										object.changes.modified[i]);
 								this.setElement(this.element);
 							} else if (this.element.modelElement != null
-									&& object.changes.modified[i].oid == this.element.modelElement.oid) {
+									&& ((object.changes.modified[i].uuid && this.element.modelElement.uuid
+											&& object.changes.modified[i].uuid == this.element.modelElement.uuid)
+											|| ((!object.changes.modified[i].uuid || !this.element.modelElement.uuid)
+													&& object.changes.modified[i].oid == this.element.modelElement.oid))) {
 								m_utils
 										.debug("Changes to be applied to Model Element of Properties Page:");
 								m_utils.debug(this.element.modelElement);

@@ -9,13 +9,13 @@
 <head>
 <title>Modeler Canvas</title>
 <link rel="stylesheet" type="text/css"
-	href="../../css/thirdparty/jquery/jquery-ui-1.8.19.css"></link>
-<link href="../../css/lightdust.css" rel="stylesheet" type="text/css" />
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-	data-main="../../js/uiMashupApplicationViewMain"
-	src="../../js/libs/require/2.0.5/require.js"></script>
+	data-main="plugins/bpm-modeler/js/uiMashupApplicationViewMain"
+	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 <style type="text/css" media="screen">
-#markupTextareaDiv {
+.markupTextareaDivClass {
 	position: relative;
 	height: 250px;
 	border: 1px solid grey;
@@ -23,7 +23,7 @@
 </style>
 </head>
 <body>
-	<div id="uiMashupApplicationView" class="panel" style="visibility: hidden;">
+	<div id="uiMashupApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -31,29 +31,32 @@
 					<div class="errorMessagesPanel">
 						<ul id="errorMessagesList">
 						</ul>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
 						style="margin-bottom: 10px;">
 						<tr id="guidOutputRow">
-							<td><label for="guidOutput">UUID</label></td>
-							<td><div id="guidOutput" class="output">168999</div></td>
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
 						</tr>
 						<tr id="idOutputRow">
-							<td><label for="idOutput">ID</label></td>
-							<td><div id="idOutput" class="output"></div></td>
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
 						</tr>
 						<tr>
 							<td><label for="nameInput" id="applicationName">Application
-									Name</label></td>
+									Name</label>
+							</td>
 							<td><input id="nameInput" type="text" style="width: 200px;"></input>
 							</td>
 						</tr>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 			<tr>
 				<td><label for="descriptionTextarea" id="description">Description</label>
@@ -71,23 +74,21 @@
 							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
 							</td>
 							<td><label for="publicVisibilityCheckbox"
-								id="publicVisibility">Public Visibility</label>
-							</td>
+								id="publicVisibility">Public Visibility</label></td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td>
 					<div id="propertiesTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
-							<li><a href="#configurationTab"><img
-									src="../../images/icons/table.png"></img><span
-									class="tabLabel" id="configuration">Configuration</span>
-							</a>
-							</li>
 							<li><a href="#parametersTab"><img
-									src="../../images/icons/database_link.png"></img><span
-									class="tabLabel" id="parameters">Parameters</span>
+									src="plugins/bpm-modeler/images/icons/database_link.png"></img><span
+									class="tabLabel" id="parameters">Parameters</span> </a></li>
+							<li><a href="#configurationTab"><img
+									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
+									class="tabLabel" id="configuration">Configuration</span>
 							</a>
 							</li>
 						</ul>
@@ -99,24 +100,31 @@
 										<table cellpadding="0" cellspacing="0" class="layoutTable"
 											style="margin-bottom: 10px;">
 											<tr>
-												<td><input id="viaUriInput" type="radio"></input></td>
-												<td><label for="viaUriInput" id="url">Via URI</label></td>
-												<td><input id="embeddedInput" type="radio"></input></td>
-												<td><label for="embeddedInput" id="url">Embedded</label>
+												<td><input id="viaUriInput" type="radio"></input>
+												</td>
+												<td><label for="viaUriInput">Via URI</label>
+												</td>
+												<td><input id="embeddedInput" type="radio"></input>
+												</td>
+												<td><label for="embeddedInput">Embedded</label>
 												</td>
 											</tr>
-										</table></td>
+										</table>
+									</td>
 								</tr>
 								<tr id="viaUriRow">
 									<td>
 										<table cellpadding="0" cellspacing="0" class="layoutTable"
 											style="margin-bottom: 10px;">
 											<tr>
-												<td><label for="urlInput" id="url">URL</label></td>
+												<td><label for="urlInput">URL</label>
+												</td>
 												<td><input id="urlInput" type="text"
-													style="width: 500px;"></input></td>
+													style="width: 500px;"></input>
+												</td>
 											</tr>
-										</table></td>
+										</table>
+									</td>
 								</tr>
 								<tr id="embeddedRow">
 									<td>
@@ -124,33 +132,94 @@
 											style="margin-bottom: 10px; width: 100%">
 											<tr>
 												<td>
-													<table id="generateTable" cellpadding="0" cellspacing="0" class="layoutTable">
+													<table id="generateTable" cellpadding="0" cellspacing="0"
+														class="layoutTable" style="margin-bottom: 10px;">
 														<tr>
-															<td><a id="generateMarkupForAngularLink">Generate
-																	Markup for HTML5/Angular JS &raquo;</a></td>
+															<td><table>
+																	<tr>
+																		<td><a id="generateMarkupForAngularLink">Generate
+																				Markup for HTML5/Angular JS &raquo;</a>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<table style="margin-top: 10px;">
+																				<tr>
+																					<td><label for="numberOfLabelInputPairsInput">Numbers of Label/Input
+																							Pairs per Column</label>
+																					</td>
+																					<td><input id="numberOfLabelInputPairsInput" type="number"></input>
+																					</td>
+																				</tr>
+																				<tr>
+																					<td valign="top">
+																					<table>
+																							<tr>
+																								<td><input id="generateCompleteButtonInput" type="checkbox"></input>
+																								</td>
+																								<td><label fr="generateCompleteButtonInput">Generate Complete Button</label>
+																								</td>
+																							</tr>
+																							<tr>
+																								<td><input id="generateSuspendButtonInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateSuspendButtonInput">Generate Suspend Button</label>
+																								</td>
+																							</tr>
+																							<tr>
+																								<td><input id="generateAbortButtonInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateAbortButtonInput">Generate Abort Button</label>
+																								</td>
+																							</tr>
+																							<tr>
+																								<td><input id="generateQaPassButtonInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateQaPassButtonInput">Generate QA Success
+																										Button</label></td>
+																							</tr>
+																							<tr>
+																								<td><input id="generateQaFailButtonInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateQaFailButtonInput">Generate QA Fail Button</label>
+																								</td>
+																							</tr>
+																						</table></td>
+																					<td valign="top">
+																					<table>
+																							<tr>
+																								<td><input id="generateTabsForFirstLevelInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateTabsForFirstLevelInput">Generate Tabs for First Level Non-Primitive Elements</label>
+																								</td>
+																							</tr>
+																							<tr>
+																								<td><input id="generateTabsForFirstLevelTablesInput" type="checkbox"></input>
+																								</td>
+																								<td><label for="generateTabsForFirstLevelTablesInput">Generate Tabs for First Level Tables</label>
+																								</td>
+																							</tr>
+																						</table></td>
+																				</tr>
+																			</table>
+																		</td>
+																	</tr>
+																</table></td>
 														</tr>
-														<tr>
-															<td><a id="generateMarkupForJQueryLink">Generate
-																	Markup for JQuery &raquo;</a></td>
-														</tr>
-														<tr>
-															<td><a id="generateMarkupForWrapper"><div
-																		style="margin-bottom: 10px;">Generate HTML5
-																		Framework Wrapper Code only &raquo;</div>
-															</a></td>
-														</tr>
-													</table></td>
-											</tr>
-											<tr>
-												<td><label for="markupTextarea">HTML Markup</label>
+													</table>
 												</td>
 											</tr>
 											<tr>
-												<td><textarea id="markupTextarea" cols="150" rows="25"
-														style="display: none;"></textarea>
-													<div id="markupTextareaDiv"></div></td>
+												<td><label for="markupTextarea">HTML Markup</label></td>
 											</tr>
-										</table></td>
+											<tr>
+												<td><textarea id="markupTextarea"
+														style="display: none; width: 100%; height: 300px"></textarea>
+													<div id="markupTextareaDiv" class="markupTextareaDivClass"></div>
+												</td>
+											</tr>
+										</table>
+									</td>
 								</tr>
 							</table>
 						</div>
@@ -171,13 +240,12 @@
 															<table>
 																<tr>
 																	<td><input id="deleteParameterDefinitionButton"
-																		type="image" src="../../images/icons/delete.png"
+																		type="image" src="plugins/bpm-modeler/images/icons/delete.png"
 																		title="Delete" alt="Delete" class="toolbarButton" />
 																	</td>
 																</tr>
 															</table>
-														</div>
-													</td>
+														</div></td>
 												</tr>
 												<tr>
 													<td>
@@ -186,11 +254,11 @@
 																cellspacing="0">
 																<tbody />
 															</table>
-														</div></td>
+														</div>
+													</td>
 												</tr>
 											</table>
-										</div>
-									</td>
+										</div></td>
 								</tr>
 								<tr>
 									<td>
@@ -198,59 +266,64 @@
 											class="fieldSetTable" style="margin-top: 10px;">
 											<tr>
 												<td><input id="addParameterDefinitionButton"
-													type="image" src="../../images/icons/add.png" title="Add"
-													alt="Add" class="toolbarButton" /></td>
+													type="image" src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+													alt="Add" class="toolbarButton" />
+												</td>
 												<td></td>
 											</tr>
 											<tr>
 												<td><label for="parameterDefinitionNameInput" id="name">Name</label>
 												</td>
 												<td><input id="parameterDefinitionNameInput"
-													type="text" style="width: 200px;"/>
-												</td>
+													type="text" style="width: 200px;" /></td>
 											</tr>
 											<tr>
 												<td><label for="parameterDefinitionDirectionSelect"
-													id="direction">Direction</label></td>
+													id="direction">Direction</label>
+												</td>
 												<td><select id="parameterDefinitionDirectionSelect">
-												</select></td>
-											</tr>
-											<tr>
-												<td><label for="dataTypeSelect" id="dataType">Data
-														Type</label>
-												</td>
-												<td><select id="dataTypeSelect" size="1">
-												</select></td>
-											</tr>
-											<tr id="primitiveDataTypeRow">
-												<td><label for="primitiveDataTypeSelect"
-													id="primitiveType" />Primitive Type</label>
-												</td>
-												<td><select id="primitiveDataTypeSelect" size="1">
 												</select>
 												</td>
 											</tr>
+											<tr>
+												<td><label for="dataTypeSelect" id="dataType">Data
+														Type</label></td>
+												<td><select id="dataTypeSelect" size="1">
+												</select>
+												</td>
+											</tr>
+											<tr id="primitiveDataTypeRow">
+												<td><label for="primitiveDataTypeSelect"
+													id="primitiveType">Primitive Type</label></td>
+												<td><select id="primitiveDataTypeSelect" size="1">
+												</select></td>
+											</tr>
 											<tr id="structuredDataTypeRow">
 												<td><label for="structuredDataTypeSelect">Data
-														Structure</label></td>
+														Structure</label>
+												</td>
 												<td><select id="structuredDataTypeSelect" size="1">
-												</select></td>
+												</select>
+												</td>
 											</tr>
 											<tr id="documentTypeRow">
 												<td><label for="documentTypeSelect">Document
-														Type</label></td>
+														Type</label>
+												</td>
 												<td><select id="documentTypeSelect" size="1">
-												</select></td>
+												</select>
+												</td>
 											</tr>
-										</table>
-									</td>
+										</table></td>
 								</tr>
 							</table>
 						</div>
-					</div>
-				</td>
+					</div></td>
 			</tr>
 		</table>
 	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/uiMashupApplicationViewMain.js"></script>
+
 </body>
 </html>

@@ -27,6 +27,7 @@ public class PortalErrorClass extends ErrorCase
    public final static PortalErrorClass UNKNOWN_ERROR_OCCURED_DURING_LOGIN = new PortalErrorClass("CWP01005");
    public final static PortalErrorClass NO_DEPLOYED_MODEL = new PortalErrorClass("CWP01006");
    public final static PortalErrorClass UNABLE_TO_DELEGATE_ACTIVITY_NOT_IN_WORKLIST = new PortalErrorClass("CWP01007");
+   public final static PortalErrorClass ACTIVITY_ALREADY_ACTIVATED = new PortalErrorClass("CONC03102");
 
    private PortalErrorClass detailErrorClass;
 
@@ -82,6 +83,8 @@ public class PortalErrorClass extends ErrorCase
          {"CWP01005", BpmPortalErrorMessages.getString("CWP01005")},
          {"CWP01006", BpmPortalErrorMessages.getString("CWP01006")},
          {"CWP01007", BpmPortalErrorMessages.getString("CWP01007")},
+         {"CONC03102", BpmPortalErrorMessages.getString("CONC03102")},
       };
    }
+   
 }

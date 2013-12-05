@@ -8,13 +8,19 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-body {
+/* body {
 	color: #4d4d4d;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 	line-height: 1.5;
-}
+} */
 
+.nativeHtmlViewPanel {
+	width: 100%;
+	overflow: auto;
+	margin-left: 10px;
+}
+ 
 label {
 	color: #4d4d4d;
 	margin-right: 10px;
@@ -37,6 +43,7 @@ select {
 	font-size: 11px;
 	min-width: 100px;
 	height: 21px;
+	width: auto;
 	color: #4d4d4d;
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
@@ -53,10 +60,6 @@ input {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 	color: #4d4d4d;
-	border: 1px solid #9b9b9b; /* Gradient #9B9B9B - #C8C8C8 */
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
 }
 
 input[type="text"] {
@@ -112,10 +115,8 @@ input[type=image] {
 	background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
 	background-image: -ms-linear-gradient(top, #ffffff, #f2f2f2);
 	background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
-	border: 1px solid #9B9B9B; /*Gradient #CBCBCB - #9B9B9B*/
-	border-radius: 2px;
-	-moz-border-radius: 2px;
 	padding: 2px;
+	margin: 0 5px 0 0
 }
 
 input[type=image]:focus {
@@ -125,6 +126,14 @@ input[type=image]:focus {
 input[type=text].rightAligned {
 	text-align: right;
 	padding-right: 3px;
+}
+
+input[type="checkbox"] {
+	margin: 0 5px 2px 0 !important;
+}
+
+input[type="radio"] {
+	margin: 0 5px 3px 0 !important;
 }
 
 textarea {
@@ -196,7 +205,6 @@ table.layoutTable tr {
 }
 
 table.layoutTable td {
-	padding: 0px;
 	margin: 0px;
 	vertical-align: top;
 }
@@ -361,7 +369,7 @@ div.toolBar {
 }
 
 .selected-tool {
-	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
+	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
 }
@@ -378,7 +386,7 @@ input.toolbarButton .disabled {
 }
 
 input.toolbarButton:hover {
-	background: url(../../images/icons/toolbarIconSelectHover.png) center repeat-x
+	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700;
 	cursor: pointer;
 }
@@ -566,6 +574,14 @@ td.inDataPathListItem {
 	width: 20px;
 }
 
+td.inoutDataPathListItem {
+	background: url("../images/icons/datapath-in-out.png") no-repeat;
+	padding-left: 20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 20px;
+}
+
 td.outDataPathListItem {
 	background: url("../images/icons/datapath-out.png") no-repeat;
 	padding-left: 20px;
@@ -645,4 +661,46 @@ td.mapping {
 	position: relative !important;
 	height: 250px;
 	border: 1px solid #BBBBBB !important;
+}
+
+/* Structured type view */
+tr.locked {
+	background-color: #F2F2F2 !important;
+}
+
+/* Overlays */
+
+.overlaysDefaultTextArea {
+	width: 400px;
+	height: 200px;
+}
+
+/* Modeler Tooltip */
+.modelerTooltip {
+	visibility: hidden;
+	position: absolute;
+	background: url("../images/tooltip-background.png") top
+		repeat-x #ffffe0;;
+	min-width: 250px;
+	min-height: 100px;
+	border: 1px solid #999;
+	color: #c99400;
+	z-index: 10000
+}
+
+.modelerTooltipHeader {
+	font-size: 12px
+	min-height: 15px;
+	padding-left: 5px;
+	padding-top: 5px;
+	font-weight: bold;
+	color: black;
+}
+
+.modelerTooltipBody {
+	padding-top: 5px;
+	border-top: 1px dotted #FFCC00;
+	margin-left: 5px;
+	margin-right: 5px;
+	color: #CC6600 !important
 }

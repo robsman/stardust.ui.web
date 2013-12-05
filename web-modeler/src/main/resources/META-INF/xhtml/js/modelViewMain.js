@@ -14,14 +14,14 @@
  */
 
 require.config({
-	baseUrl: "../../../",
+	baseUrl: "plugins/",
 	paths : {
 		'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],
 		'json' : ['bpm-modeler/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2'],
 		'raphael' : ['bpm-modeler/js/libs/raphael/2.0.1/raphael', '//cdnjs.cloudflare.com/ajax/libs/raphael/2.0.1/raphael-min'],
 		'angularjs' : ['bpm-modeler/js/libs/angular/angular-1.0.2', '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min'],
 
-		'jquery-ui': ['bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.8.19.min', '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min'],
+		'jquery-ui': ['bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min'],
 		'jquery.download': ['bpm-modeler/js/libs/jquery/plugins/download.jQuery', 'https://raw.github.com/filamentgroup/jQuery-File-Download/master/jQuery.download'],
 		'jquery.jeditable': ['bpm-modeler/js/libs/jquery/plugins/jquery.jeditable', 'https://raw.github.com/tuupola/jquery_jeditable/bae12d99ab991cd915805667ef72b8c9445548e0/jquery.jeditable'],
 		'jquery.form': ['bpm-modeler/js/libs/jquery/plugins/jquery.form', 'https://raw.github.com/malsup/form/5d413a0169b673c9ee81d5f458b1c955ff1b8027/jquery.form'],
@@ -37,6 +37,10 @@ require.config({
 	shim: {
 		'json': {
 			exports: "JSON"
+		},
+		'angularjs': {
+			require: "jquery",
+			exports: "angular"
 		},
 		'i18n': {
 			exports: "InfinityBPMI18N"
@@ -67,6 +71,7 @@ require(["require",
          //"extensions_jquery",
          "bpm-modeler/js/m_utils",
          "i18n",
+         "bpm-modeler/angular/app",
 		 "common-plugins",
 		 "bpm-modeler/js/m_communicationController",
 		 "bpm-modeler/js/m_urlUtils",
@@ -75,7 +80,12 @@ require(["require",
 		 "bpm-modeler/js/m_commandsController",
 		 "bpm-modeler/js/m_view",
 		 "bpm-modeler/js/m_modelView"], function(require) {
-	require("bpm-modeler/js/m_modelView").initialize(
-			jQuery.url(window.location.search).param("modelId"));
+
+	//require("bpm-modeler/angular/app").init();
+
+//		require("bpm-modeler/js/m_modelView").initialize(
+//			jQuery.url(window.location.search).param("modelId"));
+
+		require("bpm-modeler/js/m_modelView").initialize(BridgeUtils.View.getActiveViewParams().param("modelId"));
 });
 

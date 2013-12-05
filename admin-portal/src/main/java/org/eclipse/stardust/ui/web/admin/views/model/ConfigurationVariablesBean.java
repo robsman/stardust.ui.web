@@ -665,6 +665,7 @@ public class ConfigurationVariablesBean extends UIComponentBean
             DialogStyle.COMPACT, this);
       configVariableConfirmationDialog.setTitle(title);
       configVariableConfirmationDialog.setMessage(this.getMessages().getString("confirmSaveConfiguration.info"));
+      configVariableConfirmationDialog.setFromView(currentView);
       configVariableConfirmationDialog.openPopup();
    }
 

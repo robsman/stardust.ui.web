@@ -105,20 +105,34 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
 
          private InputStream createClasspathInputStream(URI uri) throws IOException
          {
+            String path = uri.path();
+            boolean isAbsolute = path.startsWith("/");
+
+            // (fh) treat all paths as absolute paths
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Getting resource from context class loader: " + path);
+            }
             ClassLoader ctxCl = Thread.currentThread().getContextClassLoader();
-            URL resourceUrl = ctxCl.getResource(uri.path());
+            // (fh) classloaders are considering all paths to be absolute
+            // a path starting with a "/" is incorrect since first segment would then be empty
+            URL resourceUrl = ctxCl.getResource(isAbsolute ? path.substring(1) : path);
+
             if (resourceUrl == null)
             {
-               ClassLoader cl = WebModelerUriConverter.class.getClassLoader();
-               if (cl != ctxCl)
+               if (trace.isDebugEnabled())
                {
-                  resourceUrl = cl.getResource(uri.path());
+                  trace.debug("Getting resource from class: " + path);
+               }
+               // (fh) classes are considering paths to be absolute only if they have a leading "/"
+               // otherwise they are relative to the class package.
+               resourceUrl = WebModelerUriConverter.class.getResource(isAbsolute ? path : "/" + path);
+               if (resourceUrl == null)
+               {
+                  return null;
                }
             }
-            if (resourceUrl == null)
-            {
-               return null;
-            }
+
             if (trace.isDebugEnabled())
             {
                trace.debug("Resolved '" + uri + "' to '" + resourceUrl + "'.");

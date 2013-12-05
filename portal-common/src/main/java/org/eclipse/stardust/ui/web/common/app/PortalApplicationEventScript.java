@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -49,11 +50,16 @@ public class PortalApplicationEventScript implements Serializable
    public String getEventScripts()
    {
       StringBuffer es = new StringBuffer();
-      es.append("InfinityBpm.Core.resizePortalMainWindow(" + System.currentTimeMillis() + ");");
+
+//      String resizeScript = "InfinityBpm.Core.resizePortalMainWindow(" + System.currentTimeMillis() + ");";
+//      es.append("try{" + resizeScript + "}catch(e){}");
 
       for (String eventScript : getCleanedupScripts())
       {
+         es.append("try{");
+         es.append("parent.BridgeUtils.log(\"" + StringUtils.replace(eventScript, "\"", "\\\"")+ "\", 'i');");
          es.append(eventScript);
+         es.append("}catch(e){}");
          es.append("\n");
       }
 
@@ -61,11 +67,11 @@ public class PortalApplicationEventScript implements Serializable
 
       String scripts = es.toString();
 
-      if (resetWindowWidth)
-      {
-         scripts = "InfinityBpm.Core.resetWindowWidth();\n" + scripts;
-         resetWindowWidth = false;
-      }
+//      if (resetWindowWidth)
+//      {
+//         scripts = "try{InfinityBpm.Core.resetWindowWidth();}catch(e){}\n" + scripts;
+//         resetWindowWidth = false;
+//      }
 
       if (trace.isDebugEnabled())
       {
@@ -79,7 +85,7 @@ public class PortalApplicationEventScript implements Serializable
     * Cleans the scripts as necessary
     * @return
     */
-   private List<String> getCleanedupScripts()
+   public List<String> getCleanedupScripts()
    {
       try
       {
@@ -88,7 +94,8 @@ public class PortalApplicationEventScript implements Serializable
          for (int i = 0; i < cleanScripts.size(); ++i)
          {
             String script = cleanScripts.get(i).trim();
-            if (script.startsWith("InfinityBpm.ProcessPortal.closeContentFrame('"))
+            if (script.startsWith("InfinityBpm.ProcessPortal.closeContentFrame('") || 
+                  script.startsWith("InfinityBpm.ProcessPortal.deactivateContentFrame('"))
             {
                int idxOpeningQuote = script.indexOf("'");
                int idxClosingQuote = script.indexOf("'", idxOpeningQuote + 1);
@@ -122,6 +129,7 @@ public class PortalApplicationEventScript implements Serializable
    public void addEventScript(String eventScript)
    {
       onceRead = false;
+
       this.eventScripts.add(eventScript);
    }
 

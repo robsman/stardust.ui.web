@@ -15,11 +15,11 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_activitySymbol",
 				"bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_annotationSymbol",
-				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_swimlanePropertiesPanel","bpm-modeler/js/m_modelerUtils","bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_modelerUtils","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_model, m_symbol, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_dataSymbol, m_annotationSymbol,
-				m_propertiesPanel, m_swimlanePropertiesPanel, m_modelerUtils,m_i18nUtils) {
+				m_propertiesPanel, m_modelerUtils,m_i18nUtils) {
 
 			return {
 				createSwimlaneSymbol : function(diagram, parentSymbol) {
@@ -110,8 +110,7 @@ define(
 					}
 
 					this.containedSymbols = [];
-					this.propertiesPanel = m_swimlanePropertiesPanel
-							.getInstance();
+					this.propertiesPanel = this.diagram.swimlanePropertiesPanel;
 					this.borderRectangle = null;
 					this.topRectangle = null;
 					this.text = null;
@@ -177,6 +176,8 @@ define(
 								this, this.annotationSymbols[n]);
 						this.annotationSymbols[n].updateServerSideCoordinates();
 					}
+					
+					this.diagram.lastSymbol = null;
 				};
 
 				/**
@@ -301,7 +302,7 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.createPrimitives = function() {
-					this.borderRectangle = m_canvasManager
+					this.borderRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -314,7 +315,7 @@ define(
 
 					this.addToPrimitives(this.borderRectangle);
 
-					this.topRectangle = m_canvasManager
+					this.topRectangle = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -330,7 +331,7 @@ define(
 
 					this.addToPrimitives(this.topRectangle);
 
-					this.text = m_canvasManager
+					this.text = this.diagram.canvasManager
 							.drawTextNode(
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x + 0.5 * this.width)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -351,9 +352,9 @@ define(
 					this.addToPrimitives(this.text);
 
 
-					this.minimizeIcon = m_canvasManager
+					this.minimizeIcon = this.diagram.canvasManager
 							.drawImageAt(
-									"../../images/icons/min.png",
+									"plugins/bpm-modeler/images/icons/min.png",
 									this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 											+ this.width - 20)
 											: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -368,9 +369,9 @@ define(
 
 					this.addToPrimitives(this.minimizeIcon);
 
-					this.maximizeIcon = m_canvasManager
+					this.maximizeIcon = this.diagram.canvasManager
 					.drawImageAt(
-							"../../images/icons/max.png",
+							"plugins/bpm-modeler/images/icons/max.png",
 							this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL ? (this.x
 									+ this.width - 20)
 									: (this.x + 0.5 * m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT),
@@ -497,7 +498,7 @@ define(
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenuBackground = function(
 						x, y, height, width) {
-					this.flyOutMenuBackground = m_canvasManager
+					this.flyOutMenuBackground = this.diagram.canvasManager
 							.drawRectangle(
 									this.x,
 									this.y,
@@ -517,9 +518,11 @@ define(
 						callbackScope : this
 					};
 
-					this.flyOutMenuBackground.hover(
-							SwimlaneSymbol_hoverInFlyOutMenuClosure,
-							SwimlaneSymbol_hoverOutFlyOutMenuClosure);
+					if (!this.diagram.process.isReadonly()) {
+						this.flyOutMenuBackground.hover(
+								SwimlaneSymbol_hoverInFlyOutMenuClosure,
+								SwimlaneSymbol_hoverOutFlyOutMenuClosure);
+					}
 				};
 
 				/**
@@ -528,14 +531,22 @@ define(
 				SwimlaneSymbol.prototype.initializeEventHandling = function() {
 					this.borderRectangle.auxiliaryProperties.callbackScope = this;
 
+					// Exclude Click from readonly check to show properties panel
 					this.borderRectangle.click(SwimlaneSymbol_clickClosure);
-					this.borderRectangle.hover(SwimlaneSymbol_hoverInClosure,
-							SwimlaneSymbol_hoverOutClosure);
+
+					if (!this.diagram.process.isReadonly()) {
+						this.borderRectangle.hover(SwimlaneSymbol_hoverInClosure,
+								SwimlaneSymbol_hoverOutClosure);
+					}
 					this.topRectangle.auxiliaryProperties.callbackScope = this;
 
+					// Exclude Click from readonly check to show properties panel
 					this.topRectangle.click(SwimlaneSymbol_clickClosure);
-					this.topRectangle.hover(SwimlaneSymbol_topRect_hoverInClosure,
+					if (!this.diagram.process.isReadonly()) {
+						this.topRectangle.hover(SwimlaneSymbol_topRect_hoverInClosure,
 							SwimlaneSymbol_topRect_hoverOutClosure);
+					}
+
 					this.minimizeIcon
 							.click(SwimlaneSymbol_minimizeClickClosure);
 					this.maximizeIcon
@@ -628,12 +639,12 @@ define(
 				 */
 				SwimlaneSymbol.prototype.createFlyOutMenu = function() {
 					this.addFlyOutMenuItems([], [ {
-						imageUrl : "../../images/icons/shrink-to-fit.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/shrink-to-fit.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : SwimlaneSymbol_shrinkToFitClickClosure
 					}, {
-						imageUrl : "../../images/icons/delete.png",
+						imageUrl : "plugins/bpm-modeler/images/icons/delete.png",
 						imageWidth : 16,
 						imageHeight : 16,
 						clickHandler : SwimlaneSymbol_removeClosure
@@ -652,7 +663,7 @@ define(
 									 "L" + (this.x + this.width - offset) + "," + (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT - offset) +
 									 "L" + (this.x + offset) + "," + (this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT - offset) +
 									 "Z";
-					return m_canvasManager.drawPath(pathString, {
+					return this.diagram.canvasManager.drawPath(pathString, {
 						"stroke" : "white",
 						"stroke-width" : m_constants.PROXIMITY_SENSOR_MARGIN,
 						"opacity" : 0
@@ -689,18 +700,18 @@ define(
 				SwimlaneSymbol.prototype.proximityHoverIn = function(event) {
 					if (this.diagram.isInNormalMode()) {
 						var scrollPos = m_modelerUtils.getModelerScrollPosition();
-						var xPos=event.pageX - this.diagram.X_OFFSET;
-						var yPos=event.pageY - this.diagram.Y_OFFSET;
+						var xPos=event.pageX - this.diagram.getCanvasPosition().left;
+						var yPos=event.pageY - this.diagram.getCanvasPosition().top;
 
 						var offset = m_constants.PROXIMITY_SENSOR_MARGIN;
 						//the lane x co-ord , width minus proximity width will give the right proximity margin
-						var rigthProximityMargin=this.x + this.width - offset - this.diagram.X_OFFSET;
+						var rigthProximityMargin=this.x + this.width - offset - this.diagram.getCanvasPosition().left;
 						// the lane x co-ord and proximity width will give the left proximity margin
 						var leftProximityMargin=this.x + offset;
 						// the lane y co-ord ,TopBoxHeight and proximity width will give the top proximity margin
 						var topProximityMargin=this.y + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT + offset;
 						// the lane height minus proximity width will give the bottom proximity margin
-						var bottomProximityMargin = this.height - offset -this.diagram.Y_OFFSET;
+						var bottomProximityMargin = this.height - offset -this.diagram.getCanvasPosition().top;
 
 						// If the mouse pointer is on edge of top header
 						// the flyout menu should appear below Header and within swimlane
@@ -709,17 +720,17 @@ define(
 								xPos = rigthProximityMargin - offset;
 							}
 							yPos = topProximityMargin - offset;
-							this.adjustFlyOutMenu(xPos + scrollPos.left, yPos);
+							this.adjustFlyOutMenu(xPos, yPos);
 						}
-						else if((rigthProximityMargin - scrollPos.left) < parseInt(xPos.valueOf())){
-							this.adjustFlyOutMenu(rigthProximityMargin - offset,yPos+scrollPos.top);
+						else if((rigthProximityMargin) < parseInt(xPos.valueOf())){
+							this.adjustFlyOutMenu(rigthProximityMargin - offset,yPos);
 						}
-						else if((leftProximityMargin - scrollPos.left) > parseInt(xPos.valueOf())){
-							this.adjustFlyOutMenu(leftProximityMargin -  offset,yPos+scrollPos.top);
+						else if((leftProximityMargin) > parseInt(xPos.valueOf())){
+							this.adjustFlyOutMenu(leftProximityMargin -  offset,yPos);
 						}
 						else if(bottomProximityMargin < parseInt(yPos.valueOf())){
-							this.adjustFlyOutMenu(xPos + scrollPos.left, this.y
-									+ bottomProximityMargin + scrollPos.top + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
+							this.adjustFlyOutMenu(xPos, this.y
+									+ bottomProximityMargin + m_constants.POOL_SWIMLANE_TOP_BOX_HEIGHT);
 						}
  						else {
 							return;
@@ -802,10 +813,8 @@ define(
 
 						var scrollPos = m_modelerUtils
 								.getModelerScrollPosition();
-						var xPos = event.pageX - this.diagram.X_OFFSET
-								+ scrollPos.left;
-						var yPos = event.pageY - this.diagram.Y_OFFSET
-								+ scrollPos.top;
+						var xPos = event.pageX - this.diagram.getCanvasPosition().left;
+						var yPos = event.pageY - this.diagram.getCanvasPosition().top;
 						// get the right x margin
 						var xMargin = this.x + this.width;
 						// if the box extends from the box, move to left
@@ -1369,6 +1378,14 @@ define(
 						this.x -= this.symbolXOffset;
 					} else {
 						this.y -= this.symbolYOffset;
+					}
+
+					//Perform client side adjustments
+					for ( var n in this.parentSymbol.laneSymbols) {
+						for ( var c in this.parentSymbol.laneSymbols[n].containedSymbols) {
+							this.parentSymbol.laneSymbols[n].containedSymbols[c]
+									.performClientSideAdj();
+						}
 					}
 				};
 

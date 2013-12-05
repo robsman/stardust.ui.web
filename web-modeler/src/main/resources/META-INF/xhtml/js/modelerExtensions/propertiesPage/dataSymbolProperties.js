@@ -20,7 +20,7 @@ define([ 'bpm-modeler/js/m_dataBasicPropertiesPage',
 		}, {
 			panelId : "dataPropertiesPanel",
 			id : "commentsPropertiesPage",
-			pageHtmlUrl : "modelElementCommentsPropertiesPage.html",
+			pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 			provider : m_modelElementCommentsPropertiesPage,
 			visibility : "always"
 		}, ]

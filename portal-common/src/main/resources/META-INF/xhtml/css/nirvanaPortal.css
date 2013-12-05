@@ -230,6 +230,35 @@ div#loginBox .buttonContainer input{
 	border: none;
 }
 
+.topMenu .iceMnuItm .iceOutTxt {
+	color: #FFFFFF;
+}
+
+/* Style for Perspective Menu - copy of topMenu bar style*/
+.topMenuIframeBar {
+	background: none;
+	border-top: none;
+	border-bottom: none;
+	color: #DDDDDD;
+	margin-top:-2px;
+}
+
+.topMenuIframeBar .menuItm a{
+	color: #ffffff;
+}
+
+.topMenuIframeBar .menuItm:hover{
+	text-decoration:none;
+	 background: url("../images/menuTop-item-hover.jpg") repeat-x scroll center top transparent;
+	padding:none;
+}
+
+.topMenuIframeBar .menuItm span, .menuItm a:hover {
+	text-decoration:none;
+}
+
+/* Perspective Menu Ends*/
+
 .leftContentTd{
 	vertical-align: top;
 	width: 200px;
@@ -238,10 +267,23 @@ div#loginBox .buttonContainer input{
 	background:url(../images/toolbar-shadow.jpg) top repeat-x;
 }
 
+.leftContentTdCol{
+	vertical-align: top;
+	border-right:1px solid #CCCCCC;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
+.leftContentTdOnly{
+	vertical-align: top;
+	min-width: 200px;
+	border-right:1px solid #CCCCCC;
+	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+}
+
 .rightContentTd{
+	padding-top: 5px;
 	vertical-align: top;
 	height: 100%;
-	background:url(../images/toolbar-shadow.jpg) top repeat-x;
 }
 
 .toolbar{
@@ -292,7 +334,7 @@ div#loginBox .buttonContainer input{
 .contentContainer {
 	width: 100%;
 	height: auto;
-	min-height: 80%;
+	min-height: 75%;
 }
 
 html, body {
@@ -314,13 +356,29 @@ html, body {
 	padding: 0 10px;
 }
 
+.viewToolbar {
+	line-height: 28px;
+	text-align: right;
+}
+
+.breadCrumbsToolbarWrapper {
+	background:url(../images/toolbar-BG-border-bottom.png) center repeat-x;
+	width: 100%;
+}
+
+.breadCrumbsColumn {
+	vertical-align: bottom;
+}
+
+.toolbarColumn {
+}
+
 .breadcrumbs{
-	border-bottom: 0 dotted #DDDDDD;
-	height: 25px;
 	line-height: 25px;
 	white-space: nowrap;
-	padding-left:15px;
 	width: auto;
+	padding-left: 0px;
+	float: left;
 }
 
 .breadcrumbs a{
@@ -349,7 +407,7 @@ html, body {
 .contentFiller{
 	height: 3em;
 }
-	
+
 .footer{
 	height:20px;
 	border-top:1px solid #CCCCCC;
@@ -545,7 +603,7 @@ html, body {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	
+
 }
 
 .processAndDocsMenuBarItemLabel {
@@ -677,7 +735,7 @@ html, body {
 	background: transparent;
 	border: none;
 	padding-left: 5px;
-	padding-right: 15px; 
+	padding-right: 15px;
 	white-space: nowrap;
 }
 
@@ -797,7 +855,6 @@ body, table {
 	height: 20px;
 	line-height: 20px;
 	border-bottom: 1px solid #CCCCCC;
-	background: url(../images/panelHeader-BG.png) bottom repeat-x;
 	white-space: nowrap;
 	clear: both;
 	margin: 5px 0;
@@ -839,7 +896,7 @@ img
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
 	border:1px solid #CCCCCC;
 	border-bottom:1px solid #999999;
-	border-right:1px solid #999999;		
+	border-right:1px solid #999999;
 	/* min-width: 60px; */
 	cursor: pointer;
 }
@@ -864,7 +921,7 @@ img
 	padding: 2px;
 }
 
-.toolbar-button:hover 
+.toolbar-button:hover
 {
 	border: 1px dotted black;
 	margin: 2px;
@@ -888,7 +945,7 @@ img
 	height: 16px;
 }
 
-.heading 
+.heading
 {
 	height: 20px;
 	line-height: 20px;
@@ -951,9 +1008,9 @@ img
     border: 1px solid #d9d9d9;
     width: 100%;
     margin-bottom: 8px;
-	border-bottom: 1px solid #0a246a; 
-	padding-bottom: 2px;  
-	margin-right: 5px;  
+	border-bottom: 1px solid #0a246a;
+	padding-bottom: 2px;
+	margin-right: 5px;
 }
 
 .pane-header .iceOutTxt
@@ -977,7 +1034,7 @@ img
 .category-tree
 {
     background-color: #ffffff;
-    padding: 5px; 
+    padding: 5px;
     border: none;
 }
 
@@ -1088,10 +1145,10 @@ img
 	border: none;
 	background-color: #f0f0f0;
 }
-	
+
 .content-viewer
 {
-	/*background-color: #d4d0c8;*/	
+	/*background-color: #d4d0c8;*/
 }
 
 /* Action Link */
@@ -1109,8 +1166,8 @@ img
 
 .grid-display-mode-cell
 {
-	width: 400px; 
-	height: 300px; 
+	width: 400px;
+	height: 300px;
 	border: 1px #bbbbbb solid;
 }
 
@@ -1170,12 +1227,12 @@ img
 
 .left-aligned-grid-cell
 {
-	text-align: left;	
+	text-align: left;
 }
 
 .right-aligned-grid-cell
 {
-	text-align: right;	
+	text-align: right;
 }
 .panel-tab-label
 {
@@ -1209,7 +1266,7 @@ img
 	background:#FFFFE0;
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
-	
+
 	scrollbar-base-color: #FFFFE0;
 	scrollbar-arrow-color: #cc9900;
 	scrollbar-3dlight-color: #ffcc00;
@@ -1218,7 +1275,7 @@ img
 	scrollbar-highlight-color: #FFFFFF;
 	scrollbar-shadow-color: #ffcc00;
 	scrollbar-track-color: #fff7bf;
-}	
+}
 
 /* ********** META WIDGET : GENERAL ALIGNMENT - START ********** */
 .table-form
@@ -1272,7 +1329,7 @@ img
 	background-color: transparent;
 	padding: 0;
 	vertical-align: middle;
-	
+
 }
 
 .manAvtyValAdprPnlBrdrCenter {
@@ -1286,7 +1343,7 @@ img
 .manAvtyValAdprPnlBrdrEast {
 	background-color: transparent;
 	padding: 0;
-	text-align: right;	
+	text-align: right;
 }
 
 .manAvtyValAdprPnlPos .manAvtyValAdprPnlPosElem {
@@ -1370,22 +1427,22 @@ img
 .once-only-action-link {
 	color: #444444;
 	text-decoration: underline;
-} 
+}
 
 .once-only-action-link .iceOutTxt {
 	color: #444444;
 	text-decoration: underline;
-} 
+}
 
 /* ********* Process Quick access pop panel - Start ********** */
 .processQuickAccessPopup{
 	white-space: nowrap;
 	left:1178px;
-	position:absolute;	
+	position:absolute;
 	width:auto;
 	border:1px solid #D9D9D9;
-	color:#666666;	
-	padding:0;z-index:1100;		
+	color:#666666;
+	padding:0;z-index:1100;
 
 }
 /* ********* Process Quick access pop panel - End ********** */
@@ -1432,7 +1489,7 @@ img
 }
 
 .modelMenuBarSubMenu {
-	border: 1px solid #000000;	
+	border: 1px solid #000000;
 	width: auto;
 }
 
@@ -1441,9 +1498,9 @@ img
 	color: #000000;
 	border: none;
 	background-color: white;
-	background-image: none;	
+	background-image: none;
 	text-align: left;
-	
+
 }
 
 /* select option with icon */
@@ -1453,7 +1510,7 @@ select.icon-menu option {
  	background-repeat: no-repeat;
 	padding: 2px 0 5px 20px;
 	vertical-align: middle;
-	background-image:url(../images/icons/key.png);	
+	background-image:url(../images/icons/key.png);
 }
 
 /* ********* Session Control - Start ********** */
@@ -1551,7 +1608,7 @@ select.icon-menu option {
 
 .stdMenuBarSubMenu .iceMnuItmLabel{
 	white-space: wrap;
-	color: #000000;		
+	color: #000000;
 }
 
 .stdMenuBar .iceMnuItm a {
@@ -1576,10 +1633,10 @@ select.icon-menu option {
 }
 
 .stdMenuBarSubMenu a .iceMnuItmLabel{
-	color: #000000;		
+	color: #000000;
 }
 .stdMenuBarSubMenu a:hover .iceMnuItmLabel{
-	color: #000000;		
+	color: #000000;
 }
 
 .stdMenuBarItem-dis a,.stdMenuBarItem-dis span,.stdMenuBarItem-dis a:hover
@@ -1600,7 +1657,7 @@ select.icon-menu option {
 	width: 5%;
 }
 
-.joinProcessCol2 {	
+.joinProcessCol2 {
 	padding-right: 0px;
 	margin-right: 0px;
 }
@@ -1738,7 +1795,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 
 /* Action Panel */
 
-.actionPanel .iceCmdLnk 
+.actionPanel .iceCmdLnk
 {
 	color: #444444;
 	text-decoration: underline;
@@ -1946,11 +2003,47 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 /******** context-portal.css Style Ends**********/
 
 /* ********* Tooltip for Participant Single Select AutoComplete Text ********** */
-.participantAutoCplRow 
+.participantAutoCplRow
 {
-	white-space: normal; 
+	white-space: normal;
 	word-wrap: break-word;
 	width:85px;
 	display: inline-block;
 }
 /***************Participant Single Select AutoComplete Ends *******************/
+
+/* ********* Info Panel Style Starts ********** */
+.form-panel-summary-bar
+{
+	padding: 2px;
+	border-radius: 8px;
+	border:1px solid rgb(153, 153, 153);
+	width: 100%;
+	margin-top:5px;
+}
+
+.form-panel-summary-bar .windowClose {
+	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
+	border: none;
+	float: right;
+	padding-top: 5px;
+	padding-right: 10px;
+	cursor: pointer;
+}
+
+.form-panel-summary-barCol1
+{
+	width: 30px;
+}
+
+.form-panel-summary-bar-text
+{
+	color: rgb (77, 77, 77);
+	padding: 8px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+	line-height: 24px;
+	font-size:13px;
+}
+
+/***************Info Panel Style Ends *******************/

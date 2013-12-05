@@ -36,25 +36,26 @@ define(
 			 * 
 			 */
 			function ServiceWrapperWizard() {
-				this.unsupportedPanel = jQuery("#unsupportedPanel");
-				this.wizardPanel = jQuery("#wizardPanel");
-				this.introLabel = jQuery("#introLabel");
-				this.modelInput = jQuery("#modelInput");
-				this.processDefinitionNameInput = jQuery("#processDefinitionNameInput");
-				this.requestDataTypeInput = jQuery("#requestDataTypeInput");
-				this.requestDataNameInput = jQuery("#requestDataNameInput");
-				this.responseDataTypeInput = jQuery("#responseDataTypeInput");
-				this.responseDataNameInput = jQuery("#responseDataNameInput");
-				this.serviceInvocationActivityNameInput = jQuery("#serviceInvocationActivityNameInput");
-				this.preprocessingRulesApplicationSelect = jQuery("#preprocessingRulesApplicationSelect");
-				this.postprocessingRulesApplicationSelect = jQuery("#postprocessingRulesApplicationSelect");
-				this.createWebServiceInput = jQuery("#createWebServiceInput");
-				this.createRestServiceInput = jQuery("#createRestServiceInput");
-				this.transientInput = jQuery("#transientInput");
-				this.createTestWrapperProcessInput = jQuery("#createTestWrapperProcessInput");
-				this.createButton = jQuery("#createButton");
-				this.cancelButton = jQuery("#cancelButton");
-
+				this.unsupportedPanel = m_utils.jQuerySelect("#unsupportedPanel");
+				this.wizardPanel = m_utils.jQuerySelect("#wizardPanel");
+				this.introLabel = m_utils.jQuerySelect("#introLabel");
+				this.modelInput = m_utils.jQuerySelect("#modelInput");
+				this.processDefinitionNameInput = m_utils.jQuerySelect("#processDefinitionNameInput");
+				this.requestDataTypeInput = m_utils.jQuerySelect("#requestDataTypeInput");
+				this.requestDataNameInput = m_utils.jQuerySelect("#requestDataNameInput");
+				this.responseDataTypeInput = m_utils.jQuerySelect("#responseDataTypeInput");
+				this.responseDataNameInput = m_utils.jQuerySelect("#responseDataNameInput");
+				this.serviceInvocationActivityNameInput = m_utils.jQuerySelect("#serviceInvocationActivityNameInput");
+				this.preprocessingApplicationSelect = m_utils.jQuerySelect("#preprocessingApplicationSelect");
+				this.postprocessingApplicationSelect = m_utils.jQuerySelect("#postprocessingApplicationSelect");
+				this.createWebServiceInput = m_utils.jQuerySelect("#createWebServiceInput");
+				this.createRestServiceInput = m_utils.jQuerySelect("#createRestServiceInput");
+				this.transientInput = m_utils.jQuerySelect("#transientInput");
+				this.createTestWrapperProcessInput = m_utils.jQuerySelect("#createTestWrapperProcessInput");
+				this.createButton = m_utils.jQuerySelect("#createButton");
+				this.cancelButton = m_utils.jQuerySelect("#cancelButton");
+				this.closeButton = m_utils.jQuerySelect("#dialogCloseIcon");
+				
 				var self = this;
 
 				this.createButton.click({
@@ -71,6 +72,10 @@ define(
 					closePopup();
 				});
 
+				this.closeButton.click(function(event) {
+					closePopup();
+				});
+				
 				/**
 				 * 
 				 */
@@ -83,8 +88,7 @@ define(
 				 */
 				ServiceWrapperWizard.prototype.checkCompatibility = function(
 						application) {
-					return application.applicationType == "camelSpringProducerApplication"
-							&& application.attributes["carnot:engine:camel::applicationIntegrationOverlay"] == "rulesIntegrationOverlay";
+					return true;
 				};
 
 				/**
@@ -185,15 +189,15 @@ define(
 							+ " Response Data");
 
 					this
-							.populateRulesApplicationSelect(this.preprocessingRulesApplicationSelect);
+							.populateApplicationSelect(this.preprocessingApplicationSelect);
 					this
-							.populateRulesApplicationSelect(this.postprocessingRulesApplicationSelect);
+							.populateApplicationSelect(this.postprocessingApplicationSelect);
 				};
 
 				/**
 				 * 
 				 */
-				ServiceWrapperWizard.prototype.populateRulesApplicationSelect = function(
+				ServiceWrapperWizard.prototype.populateApplicationSelect = function(
 						select) {
 					select.empty();
 					select.append("<option value='"
@@ -267,9 +271,9 @@ define(
 						processDefinitionName : this.processDefinitionNameInput
 								.val(),
 						requestDataTypeFullId : this.requestDataTypeInput.val(),
-						preprocessingRulesApplicationFullId : this.preprocessingRulesApplicationSelect
+						preprocessingApplicationFullId : this.preprocessingApplicationSelect
 								.val() == m_constants.TO_BE_DEFINED ? null
-								: this.preprocessingRulesApplicationSelect
+								: this.preprocessingApplicationSelect
 										.val(),
 						requestDataName : this.requestDataNameInput.val(),
 						responseDataTypeFullId : this.responseDataTypeInput
@@ -278,9 +282,9 @@ define(
 						serviceInvocationActivityName : this.serviceInvocationActivityNameInput
 								.val(),
 						applicationFullId : this.application.getFullId(),
-						postprocessingRulesApplicationFullId : this.postprocessingRulesApplicationSelect
+						postprocessingApplicationFullId : this.postprocessingApplicationSelect
 								.val() == m_constants.TO_BE_DEFINED ? null
-								: this.postprocessingRulesApplicationSelect
+								: this.postprocessingApplicationSelect
 										.val(),
 						createWebService : this.createWebServiceInput
 								.prop("checked"),
