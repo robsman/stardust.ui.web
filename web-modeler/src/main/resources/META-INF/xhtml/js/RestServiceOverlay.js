@@ -979,6 +979,9 @@ define(
 					this.httpBasicAuthUserInput.removeClass("error");
 					this.httpBasicAuthPwdInput.removeClass("error");
 					this.httpBasicAuthPwdInput.removeClass("warn");
+					this.customSecurityTokenKeyInput.removeClass("error");
+					this.customSecurityTokenValueInput.removeClass("error");
+					this.customSecurityTokenValueInput.removeClass("warn");
 
 					if (m_utils.isEmptyString(this.uriInput.val())) 
 					{
@@ -1006,6 +1009,28 @@ define(
 						{
 							this.view.errorMessages.push("You should be using a configuration variable."); // TODO I18N
 							this.httpBasicAuthPwdInput.addClass("warn");
+						}
+					}
+					
+					if ("customSecTok" === this.securityModeSelect.val())
+					{
+						if (m_utils.isEmptyString(this.customSecurityTokenKeyInput.val())) 
+						{
+							this.view.errorMessages.push("Token Key for Custom Security Token must not be empty.");
+							this.customSecurityTokenKeyInput.addClass("error");
+							return false;
+						}
+						
+						if (m_utils.isEmptyString(this.customSecurityTokenValueInput.val())) 
+						{
+							this.view.errorMessages.push("Token Value for Custom Security Token must not be empty.");
+							this.customSecurityTokenValueInput.addClass("error");
+							return false;
+						}
+						else if (this.customSecurityTokenValueInput.val().indexOf("${") == 0)
+						{
+							this.view.errorMessages.push("You should be using a configuration variable.");
+							this.customSecurityTokenValueInput.addClass("warn");
 						}
 					}
 
