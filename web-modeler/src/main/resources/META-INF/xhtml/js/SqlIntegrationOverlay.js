@@ -67,10 +67,16 @@ define(
 					this.expectedResultSetInput = m_utils
 							.jQuerySelect("#parametersTab #expectedResultSetInput");
 					this.expectedResultSetInput.empty();		
-					this.expectedResultSetInput.append("<option value='SelectList' selected>List</option>");
+					this.expectedResultSetInput.append("<option value='"+m_constants.TO_BE_DEFINED+"'>"+m_i18nUtils.getProperty("None")+"</option>"); + "'>"
+					this.expectedResultSetInput.append("<option value='SelectList'>List</option>");
 					this.expectedResultSetInput.append("<option value='SelectOne'>One</option>");
+					
+					+ 
 					this.expectedResultSetInput.change(function() {
-						if (self.expectedResultSetInput.val() == "SelectList") {
+						if (self.expectedResultSetInput.val() == m_constants.TO_BE_DEFINED) {
+							self.view.submitModelElementAttributeChange(
+									"stardust:sqlScriptingOverlay::outputType",null);
+							} else	if (self.expectedResultSetInput.val() == "SelectList") {
 						self.view.submitModelElementAttributeChange(
 								"stardust:sqlScriptingOverlay::outputType","SelectList");
 						} else if (self.expectedResultSetInput.val() == "SelectOne") {
@@ -690,9 +696,11 @@ define(
 
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-					if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null || this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
-					this.expectedResultSetInput.val("SelectList");
-					this.expectedResultSetInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
+					//if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null || this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
+					if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]!=null)
+						this.expectedResultSetInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
+					else
+						this.expectedResultSetInput.val(m_constants.TO_BE_DEFINED);
 					
 					this.codeEditor
 							.getEditor()
@@ -1065,6 +1073,8 @@ define(
 					
 					if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != "" && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="SelectOne" ) {
 					sqlQuery+="?outputType=SelectOne";
+					}else if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != "" && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="SelectList" ) {
+						sqlQuery+="?outputType=SelectList";
 					}
 					
 					if (sqlQuery != null && sqlQuery != "" && sqlQuery.indexOf('?')!=-1 ) {
