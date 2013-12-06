@@ -91,6 +91,7 @@ body, table {
    padding: 2px 5px;
    text-align: left;
    vertical-align: top;
+   border: 1px solid #D9D9D9;
 }
 
 .panel-list-toolbar-tbl-cell {
@@ -159,6 +160,10 @@ body, table {
 	text-align: left;
 	width: 200px;
    padding: 3px;
+}
+
+.panel-list-tbl-cell .panel-input {
+	border: none;
 }
 
 .panel-select .panel-checkbox {
