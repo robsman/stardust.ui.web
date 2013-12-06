@@ -111,33 +111,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				};
 			});
 
-			angularModule.directive('sdPostData', function() {
-				return {
-					require : 'ngModel',
-					link : function(scope, elm, attr, ngModelCtrl) {
-						if (attr.ngModel.indexOf(BINDING_PREFIX) == 0) {
-							log("Watching for: " + attr.ngModel);
-							scope.$watch(attr.ngModel, function(newValue, oldValue) {
-								if (scope.initState && scope.initState.success && 
-										newValue != undefined && newValue != oldValue) {
-									// Format of ngModel is dm['X']['Y']
-									var binding = attr.ngModel.substr(BINDING_PREFIX.length + 2);
-									var dataMapping = binding.substr(0, binding.indexOf("']"));
-	
-									if (dataMapping) {
-										// TODO: Post Only changed value and not full Data Mapping 
-										log("Posting Data for Data Mapping: " + dataMapping);
-										var transferData = {};
-										transferData[dataMapping] = scope[BINDING_PREFIX][dataMapping];
-										postData(interactionEndpoint, "/outData/" + dataMapping, transferData, {});
-									}
-								}
-							}, true);
-						}
-					}
-				};
-			});
-
 			angularModule.directive('sdDate', function($parse) {
 				return {
 					require : 'ngModel',

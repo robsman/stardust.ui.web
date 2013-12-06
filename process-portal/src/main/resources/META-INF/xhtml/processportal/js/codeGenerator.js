@@ -236,7 +236,6 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else {
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain, attributes: {'ng-model-onblur': null}});
-					//elem.attributes["sd-post-data"] = null;
 					elem.attributes['class'] = "panel-select";
 					for(var i in path.enumValues) {
 						var val = path.enumValues[i];
@@ -259,7 +258,6 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					}
 
 					elem.attributes["ng-model-onblur"] = null;
-					//elem.attributes["sd-post-data"] = null;
 
 					if (path.properties["InputPreferences_mandatory"] != undefined && 
 							path.properties["InputPreferences_mandatory"] == "true") {
