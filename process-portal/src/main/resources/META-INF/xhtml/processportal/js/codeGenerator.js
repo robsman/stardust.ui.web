@@ -184,9 +184,13 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							elemTd.children.push(elemPrimitive.children[0]);
 						}
 					} else {
-						var elemLink = htmlElement.create("a", {parent: elemTd, 
-							value: isReadonly(path) ? getI18NLabel("panel.list.view") : getI18NLabel("panel.list.edit")});
-						
+						var linkValue = isReadonly(path) ? getI18NLabel("panel.list.view") : getI18NLabel("panel.list.edit");
+						if (child.isList) {
+							var loopChild = loopVar + "['" + child.id + "']";
+							linkValue += " ({{ {'true': " + loopChild + ".length, false: '0'}[" + loopChild + " != undefined] }})";
+						}
+						var elemLink = htmlElement.create("a", {parent: elemTd, value: linkValue});
+
 						elemLink.attributes["ng-click"] = "openNestedList(" + loopVar + ", '" + child.fullXPath + 
 							"', $index, '" + listBinding.replace(/'/g, '\\\'') + "', '" + getI18NLabel(path) + "', '" + 
 							getI18NLabel(child) + "', " + isReadonly(path) + ")";
