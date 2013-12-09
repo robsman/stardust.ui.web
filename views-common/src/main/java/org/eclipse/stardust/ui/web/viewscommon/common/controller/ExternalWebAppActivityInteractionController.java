@@ -41,12 +41,12 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
+import org.eclipse.stardust.engine.core.runtime.command.impl.ExtractSessionInfoCommand;
 import org.eclipse.stardust.engine.core.runtime.internal.SessionManager;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
-import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController.ExtractSessionInfoCommand.SessionInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController;
@@ -249,7 +249,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          if (null != contextConfigManager)
          {
             // retrieve real credentials
-            SessionInfo sessionInfo = (SessionInfo) ServiceFactoryUtils
+            ExtractSessionInfoCommand.SessionInfo sessionInfo = (ExtractSessionInfoCommand.SessionInfo) ServiceFactoryUtils
                   .getWorkflowService().execute(new ExtractSessionInfoCommand());
 
             if (!isEmpty(sessionInfo.tokens) || MashupControllerUtils.isAlwaysEnabled())
@@ -383,31 +383,5 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       }
 
       return outData;
-   }
-
-   public static class ExtractSessionInfoCommand implements ServiceCommand
-   {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public Serializable execute(ServiceFactory sf)
-      {
-         Map<String, String> credentials = SessionManager.instance().getSessionTokens();
-         return new SessionInfo(credentials);
-      }
-
-      public static class SessionInfo implements Serializable
-      {
-         private static final long serialVersionUID = 1L;
-
-         public final Map<String, String> tokens;
-
-         public SessionInfo(Map<String, String> tokens)
-         {
-            this.tokens = (null != tokens) //
-                  ? tokens
-                  : Collections.<String, String> emptyMap();
-         }
-      }
    }
 }
