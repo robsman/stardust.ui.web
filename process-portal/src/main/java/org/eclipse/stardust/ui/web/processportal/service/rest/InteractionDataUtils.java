@@ -62,9 +62,18 @@ public class InteractionDataUtils
          {
             if (entry.getKey().equals(dm.getId()))
             {
-               System.out.print("DM: " + entry.getKey());
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("DM: " + entry.getKey());
+               }
+
                Object value = evaluateClientSideOutMapping(model, entry.getValue(), dm);
-               System.out.println(", Value: " + value);
+
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug(", Value: " + value);
+               }
+
                ret.put(entry.getKey(), (Serializable)value);
                break;
             }

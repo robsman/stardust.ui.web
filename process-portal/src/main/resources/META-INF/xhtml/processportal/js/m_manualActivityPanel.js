@@ -196,6 +196,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							"<span ng-show=\"$last\">{{bCrumb.label}}</span>" +
 							"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
 					"<div class=\"panel-list-dialog-content\"></div>" + 
+					"<div class=\"panel-list-dialog-footer\">" +
+						"<input type=\"button\" value=\"Close\" class=\"panel-list-dialog-footer-control\" ng-click=\"closeNestedList()\" /></div>" +
 				"</div>";
 
 			var data = codeGenerator.create(configuration).generate(json, BINDING_PREFIX, i18nLabelProvider());
@@ -482,7 +484,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					success = true;
 				}, failure: function() {
 					success = false;
-					alert(i18nLabelProvider("panel.save.error", "Failure to save data"));
+					alert(i18nLabelProvider().getLabel("panel.save.error", "Failure to save data"));
 				}});
 			}
 			return success;
@@ -518,13 +520,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function openNestedList(binding, xPath, index, listBinding, parentLabel, childLabel, readonly) {
 			var path = getPath(xPath);
 			
-			var breadcrumbLabel = (index + 1) + ". " + i18nLabelProvider("panel.list.dialog.breadcrumb.of") + " " + 
+			var breadcrumbLabel = (index + 1) + ". " + i18nLabelProvider().getLabel("panel.list.dialog.breadcrumb.of") + " " + 
 				parentLabel + " / " + childLabel;
 			
 			var scope = angular.element(document).scope();
 			
 			if (!scope.showNestedDM) {
-				scope.nestedDMTitle = readonly ? i18nLabelProvider("panel.list.dialog.view") : i18nLabelProvider("panel.list.dialog.edit");
+				scope.nestedDMTitle = readonly ? i18nLabelProvider().getLabel("panel.list.dialog.view") : i18nLabelProvider().getLabel("panel.list.dialog.edit");
 				scope.showNestedDM = true;
 
 				var documentSize = {
@@ -540,6 +542,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				var scrollPos = getWindowScrollPosition(window);
 		    	var dialogLeft, dialogTop;
 				try {
+					var elemDialogContent = jQuery(".panel-list-dialog-content");
+					elemDialogContent.width(windowSize.width * 0.85);
+					elemDialogContent.height(windowSize.height * 0.65);
+					
 					var elemDialog = jQuery(".panel-list-dialog");
 					var widthOffset = elemDialog.width();
 		    		var heightOffset = elemDialog.height();
@@ -603,7 +609,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 			var json = [];
 			json.push(path);
-			var data = codeGenerator.create().generate(json, nestedBindingPrefix, i18nLabelProvider, parentXPath, "nForm" + nestedIndex);
+			var data = codeGenerator.create().generate(json, nestedBindingPrefix, i18nLabelProvider(), parentXPath, "nForm" + nestedIndex);
 			
 			for (var key in data.binding) {
 				if (binding[key] == undefined) {

@@ -215,6 +215,23 @@ body, table {
 	height: 480px;
 }
 
+.panel-list-dialog-footer {
+	line-height: 30px;
+	border-top: 1px solid lightgray;
+	padding: 5px;
+}
+
+.panel-list-dialog-footer-control {
+	margin: 9px 4px 4px 9px;
+	cursor: pointer;
+	background: url("../../common/css/css-images/button-background.png") repeat-x scroll center bottom #FFFFFF;
+	padding: 3px 10px;
+	border-color: #CCCCCC #999999 #999999 #CCCCCC;
+	border-style: solid;
+	border-width: 1px;
+	color: #333333;
+}
+
 .panel-list-dialog-modal-iframe {
 	position: absolute;
 	left: 0;
