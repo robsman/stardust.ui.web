@@ -262,6 +262,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function massageInData(data) {
 			addIfBlankArray(dataMappings, data);
+			processForPrimitives(dataMappings, data);
 		}
 		
 		/*
@@ -301,6 +302,45 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
+		function processForPrimitives(arrPaths, data) {
+			for (var key in arrPaths) {
+				if (arrPaths[key].isPrimitive) {
+					if (arrPaths[key].typeName == "duration") {
+
+						var parts = arrPaths[key].fullXPath.substring(1).split("/");
+						var lastPart = parts[parts.length - 1];
+						var currentBinding = data;
+						for(var i = 0; i < parts.length - 1; i++) {
+							currentBinding = currentBinding[parts[i]];
+							if (currentBinding == undefined) {
+								break;
+							}
+						}
+						
+						if (currentBinding && currentBinding[lastPart] && 
+								null != currentBinding[lastPart] && "" != currentBinding[lastPart]) {
+							try {
+								// Remove Trailing Zeros
+								var periods = currentBinding[lastPart].split(":");
+								var value = "";
+								for(var j = 0; j < periods.length; j++) {
+									value += (parseInt(periods[j])) + ":";
+								}
+								currentBinding[lastPart] = value.substring(0, value.length - 1);
+							} catch(e) {
+								// TODO
+							}
+						}
+					} 
+				} else if (arrPaths[key].children) {
+					processForPrimitives(arrPaths[key].children, data);
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
 		function addToList(list) {
 			var $scope = angular.element(document).scope();
 			if (list != undefined) {
@@ -312,10 +352,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function selectListItem(event, obj) {
-			if (obj.$$selected == undefined || obj.$$selected == false) {
-				obj.$$selected = true;
-			} else {
-				obj.$$selected = false;
+			// Select if target is Row/Column 
+			if (event.target.localName.toLowerCase() == "td" || event.target.localName.toLowerCase() == "tr") {
+				if (obj.$$selected == undefined || obj.$$selected == false) {
+					obj.$$selected = true;
+				} else {
+					obj.$$selected = false;
+				}
 			}
 		}
 

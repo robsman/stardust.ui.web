@@ -148,6 +148,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			elemTBodyTr.attributes["ng-class"] = "{'panel-list-tbl-row-sel': " 
 				+ loopVar + ".$$selected, 'panel-list-tbl-row': !" + loopVar + ".$$selected}";
 			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + listBinding;
+			var innerForm = "innerForm"
+			elemTBodyTr.attributes["ng-form"] = innerForm;
 			if (!isReadonly(path)) {
 				elemTBodyTr.attributes["ng-click"] = "selectListItem($event, " + loopVar + ")";
 			}
@@ -155,7 +157,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (path.isPrimitive) { // List of Primitives
 				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
 				var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
-				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar, idExpr: "$index"});
+				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar, ngFormName: innerForm});
 			} else { // List of Structures
 				for (var i in path.children) {
 					if (preferences.tableColumns > 0 && i >= preferences.tableColumns) {
@@ -168,7 +170,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					if (child.isPrimitive) {
 						var elemPrimitive = generatePriEnum(null, child, 
-								{noLabel: true, ngModel: loopVar + "['" + child.id + "']", idExpr: "$index"});
+								{noLabel: true, ngModel: loopVar + "['" + child.id + "']", ngFormName: innerForm});
 						if (elemPrimitive.children.length > 1) { // Control with Validation
 							var elemWrapperTr = htmlElement.create("tr", {parent: 
 								htmlElement.create("table", {parent: elemTd, attributes: {cellpadding: 0, cellspacing: 0}})});
@@ -261,7 +263,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					if (path.properties["InputPreferences_mandatory"] != undefined && 
 							path.properties["InputPreferences_mandatory"] == "true") {
-						validations.push({type: "ng-required", value: true, msg: "Required"});
+						validations.push({type: "ng-required", value: true, msg: getI18NLabel("validation.err.Required")});
 					}
 
 					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
@@ -275,7 +277,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							validations.push({type: "ng-pattern", value: valInfo.pattern, 
 								msg: getI18NLabel("validation.err." + valInfo.key)});
 						}
-						elem.attributes['maxlength'] = getMaxLength(path);
+
+						var maxLength = getMaxLength(path);
+						if (maxLength) {
+							elem.attributes['maxlength'] = maxLength;
+						}
 
 						addCustomDirective(path, elem);
 					}
@@ -293,14 +299,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						elem.attributes['id'] = id;
 						elem.attributes['name'] = id;
 
+						var ngFormName = options.ngFormName ? options.ngFormName : formElemName;
 						for (var i = 0; i < validations.length; i++) {
 							elem.attributes[validations[i].type] = validations[i].value;
-							var showExpr = formElemName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
+							var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
 							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
 								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 						}
 
-						var showExpr = formElemName + "[" + formId + "].$invalid";
+						var showExpr = ngFormName + "[" + formId + "].$invalid";
 						htmlElement.create("span", {parent: elemMain, 
 							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 					}
@@ -366,6 +373,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else if (path.typeName == "time") {
 				ret.key = "time";
 			} else if (path.typeName == "duration") {
+				ret.pattern = /^(\+|-)?([\d]{0,6})((:(\+|-)?([\d]{0,6})){5})$/;
 				ret.key = "duration";
 			}
 
