@@ -149,6 +149,15 @@ public class ManualActivityRestlet
          {
             // Client Messages Bundle
             readBundle(ResourceBundle.getBundle("processportal-client", messageBean.getLocaleObject()), data);
+            
+            // Get required values from other bundle
+            ResourceBundle rb = ResourceBundle.getBundle("views-common-messages", messageBean.getLocaleObject());
+            data.append("common.process.priority.options.1").append("=")
+                  .append(rb.getString("common.process.priority.options.1")).append("\n");
+            data.append("common.process.priority.options.0").append("=")
+                  .append(rb.getString("common.process.priority.options.0")).append("\n");
+            data.append("common.process.priority.options.-1").append("=")
+                  .append(rb.getString("common.process.priority.options.-1")).append("\n");
 
             // Model Bundle
             readBundle(ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject()), data);

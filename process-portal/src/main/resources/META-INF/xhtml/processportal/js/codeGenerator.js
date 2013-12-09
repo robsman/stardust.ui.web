@@ -39,16 +39,16 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 		var bindingPrefix;
 		var bindingData;
-		var i18nCallbackFunc;
+		var i18nLabelProvider;
 		var ignoreXPath;
 		var formElemName;
 
 		/*
 		 * 
 		 */
-		CodeGenerator.prototype.generate = function(paths, prefix, i18nCallback, ignoreParentXPath, formName) {
+		CodeGenerator.prototype.generate = function(paths, prefix, i18nProvider, ignoreParentXPath, formName) {
 			bindingPrefix = prefix;
-			i18nCallbackFunc = i18nCallback;
+			i18nLabelProvider = i18nProvider;
 			ignoreXPath = ignoreParentXPath;
 			formElemName = formName;
 			if (!formElemName) {
@@ -74,7 +74,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var html = elemForm.toHtml();
 
 			bindingPrefix = undefined;
-			i18nCallbackFunc = undefined;
+			i18nLabelProvider = undefined;
 			ignoreXPath = undefined;
 			formElemName = undefined;
 
@@ -239,9 +239,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain, attributes: {'ng-model-onblur': null}});
 					elem.attributes['class'] = "panel-select";
-					for(var i in path.enumValues) {
-						var val = path.enumValues[i];
-						var elemOpt = htmlElement.create("option", {parent: elem, value: val, attributes: {value: val}});
+					var enumValues = getI18NEnumerationLabels(path);
+					for(var key in enumValues) {
+						var elemOpt = htmlElement.create("option", 
+								{parent: elem, value: enumValues[key], attributes: {value: key}});
 					}
 				} else {
 					var elemWrapper = htmlElement.create("div", {parent: elemMain});
@@ -621,8 +622,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		function getI18NLabel(val) {
 			var label;
 
-			if (i18nCallbackFunc) {
-				label = i18nCallbackFunc(val);
+			if (i18nLabelProvider && i18nLabelProvider.getLabel) {
+				label = i18nLabelProvider.getLabel(val);
 			}
 
 			if (label == undefined || label == null || label == "") {
@@ -630,6 +631,26 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			return label;
+		};
+
+		/*
+		 * 
+		 */
+		function getI18NEnumerationLabels(path) {
+			var labels;
+
+			if (i18nLabelProvider && i18nLabelProvider.getEnumerationLabels) {
+				labels = i18nLabelProvider.getEnumerationLabels(path);
+			}
+			
+			if (labels == undefined) {
+				labels = {};
+				for(var i in path.enumValues) {
+					labels["" + path.enumValues[i]] = path.enumValues[i];	
+				}
+			}
+
+			return labels;
 		};
 
 		/*

@@ -198,7 +198,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					"<div class=\"panel-list-dialog-content\"></div>" + 
 				"</div>";
 
-			var data = codeGenerator.create(configuration).generate(json, BINDING_PREFIX, i18nLabelProvider);
+			var data = codeGenerator.create(configuration).generate(json, BINDING_PREFIX, i18nLabelProvider());
 			data.html += nestedListsDiv;
 			document.getElementsByTagName("body")[0].innerHTML = data.html;
 			
@@ -223,26 +223,60 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		}
 
 		/*
-		 * val: path object or string
+		 *
 		 */
-		function i18nLabelProvider(val, defaultValue) {
-			var key = val;
+		function i18nLabelProvider() {
+			return {
+				getLabel : getLabel,
+				getEnumerationLabels : getEnumerationLabels,
+				getDescription : getDescription
+			};
+			
+			/*
+			 * val: path object or string
+			 */
+			function getLabel(val, defaultValue) {
+				var key = val;
 
-			if (("string" != typeof (val))) {
-				var parts = val.fullXPath.substring(1).split("/");
-				if (parts.length == 1) { // First Level means Data/DataMapping
-					key = "Data." + val.id + ".Name";
-				} else { // More than 1 level means XSD
-					var prefix = "";
-					for(var i = 0; i < parts.length; i++) {
-						prefix += parts[i] + ".";
+				if (("string" != typeof (val))) {
+					var parts = val.fullXPath.substring(1).split("/");
+					if (parts.length == 1) { // First Level means Data/DataMapping
+						key = "Data." + val.id + ".Name";
+					} else { // More than 1 level means XSD
+						var prefix = "";
+						for(var i = 0; i < parts.length; i++) {
+							prefix += parts[i] + ".";
+						}
+						key = "StructuredType." + prefix + "Name";
 					}
-					key = "StructuredType." + prefix + "Name";
 				}
+
+				var value = InfinityBPMI18N.manualActivity.getProperty(key, defaultValue);
+				return value;
 			}
 
-			var value = InfinityBPMI18N.manualActivity.getProperty(key, defaultValue);
-			return value;
+			/*
+			 * 
+			 */
+			function getEnumerationLabels(path) {
+				var labels;
+				if (path.typeName == "PROCESS_PRIORITY") {
+					labels = {};
+					for(var i in path.enumValues) {
+						var optKey = "" + path.enumValues[i];
+						var i18nKey = "common.process.priority.options." + optKey;
+						labels[optKey] = InfinityBPMI18N.manualActivity.getProperty(i18nKey);
+					}
+				}
+				return labels;
+			}
+
+			/*
+			 * 
+			 */
+			function getDescription(path) {
+				// TODO
+			}
 		}
 
 		/*
@@ -331,7 +365,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								// TODO
 							}
 						}
-					} 
+					}
 				} else if (arrPaths[key].children) {
 					processForPrimitives(arrPaths[key].children, data);
 				}
