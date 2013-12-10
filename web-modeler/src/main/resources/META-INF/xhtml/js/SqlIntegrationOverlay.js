@@ -11,7 +11,7 @@
 /**
  * Utility functions for dialog programming.
  * 
- * @author 
+ * @author
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
@@ -66,26 +66,37 @@ define(
 							.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 					this.expectedResultSetInput = m_utils
 							.jQuerySelect("#parametersTab #expectedResultSetInput");
-					this.expectedResultSetInput.empty();		
-					this.expectedResultSetInput.append("<option value='"+m_constants.TO_BE_DEFINED+"'>"+m_i18nUtils.getProperty("None")+"</option>"); + "'>"
-					this.expectedResultSetInput.append("<option value='SelectList'>List</option>");
-					this.expectedResultSetInput.append("<option value='SelectOne'>One</option>");
-					
-					+ 
-					this.expectedResultSetInput.change(function() {
-						if (self.expectedResultSetInput.val() == m_constants.TO_BE_DEFINED) {
-							self.view.submitModelElementAttributeChange(
-									"stardust:sqlScriptingOverlay::outputType",null);
-							} else	if (self.expectedResultSetInput.val() == "SelectList") {
-						self.view.submitModelElementAttributeChange(
-								"stardust:sqlScriptingOverlay::outputType","SelectList");
-						} else if (self.expectedResultSetInput.val() == "SelectOne") {
-							self.view.submitModelElementAttributeChange(
-								"stardust:sqlScriptingOverlay::outputType","SelectOne");
-						}
-						
-					});
-							
+					this.expectedResultSetInput.empty();
+					this.expectedResultSetInput.append("<option value='"
+							+ m_constants.TO_BE_DEFINED + "'>"
+							+ m_i18nUtils.getProperty("None") + "</option>");
+					+"'>"
+					this.expectedResultSetInput
+							.append("<option value='SelectList'>List</option>");
+					this.expectedResultSetInput
+							.append("<option value='SelectOne'>One</option>");
+
+					+this.expectedResultSetInput
+							.change(function() {
+								if (self.expectedResultSetInput.val() == m_constants.TO_BE_DEFINED) {
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::outputType",
+													null);
+								} else if (self.expectedResultSetInput.val() == "SelectList") {
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::outputType",
+													"SelectList");
+								} else if (self.expectedResultSetInput.val() == "SelectOne") {
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::outputType",
+													"SelectOne");
+								}
+
+							});
+
 					this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv")
 							.get(0);
 					this.editorAnchor.id = "codeEditorDiv"
@@ -94,14 +105,12 @@ define(
 					this.codeEditor = m_codeEditorAce
 							.getSQLCodeEditor(this.editorAnchor.id);
 					this.codeEditor.loadLanguageTools();
-					
+
 					this.connectionTypeSelect = m_utils
 							.jQuerySelect("#dataSourceTab #connectionTypeSelect");
 					this.databaseTypeSelect = m_utils
 							.jQuerySelect("#dataSourceTab #databaseTypeSelect");
-					
-							
-							
+
 					this.urlInput = m_utils
 							.jQuerySelect("#dataSourceTab #urlInput");
 					this.driverInput = m_utils
@@ -131,12 +140,15 @@ define(
 					this.jndiConfigTab = m_utils.jQuerySelect("#jndiConfigTab");
 
 					this.dbUrlConfig = m_utils.jQuerySelect("#dbUrlConfig");
-					this.dbDriverConfig = m_utils.jQuerySelect("#dbDriverConfig");
-					this.showHideOthersDbConfig(true);// hide by default; show only when others is selected
+					this.dbDriverConfig = m_utils
+							.jQuerySelect("#dbDriverConfig");
+					this.showHideOthersDbConfig(true);// hide by default; show
+														// only when others is
+														// selected
 					this.hostDbConfig = m_utils.jQuerySelect("#hostDbConfig");
 					this.portConfig = m_utils.jQuerySelect("#portConfig");
 					this.dbNameConfig = m_utils.jQuerySelect("#dbNameConfig");
-					
+
 					this.databaseTypeSelect.empty();
 					this.databaseTypeSelect
 							.append("<option value='oracle'>Oracle</option>");
@@ -169,167 +181,207 @@ define(
 								if (self.databaseTypeSelect.val() == "others") {
 									self.showHideCommonDbConfig(true);
 									self.showHideOthersDbConfig();
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::hostname",null);
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::port" ,null);
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::dbname",null);
-									
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::hostname",
+													null);
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::port",
+													null);
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::dbname",
+													null);
+
 								} else {
 									self.showHideCommonDbConfig();
 									self.showHideOthersDbConfig(true);
-									
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::databasetype",self.databaseTypeSelect.val());
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::url",null);
-									self.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::driverClassName",null);
+
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::databasetype",
+													self.databaseTypeSelect
+															.val());
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::url",
+													null);
+									self.view
+											.submitModelElementAttributeChange(
+													"stardust:sqlScriptingOverlay::driverClassName",
+													null);
 								}
 							});
 
-					this.urlInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::url":
-										event.data.panel.urlInput.val()
-								}
-							}
-						});
-					
-					});
-					
-					this.driverInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::driverClassName":
-									event.data.panel.driverInput.val()
-								}
-							}
-						});
-					
-					});
+					this.urlInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::url" : event.data.panel.urlInput
+																	.val()
+														}
+													}
+												});
 
-					this.hostInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::hostname":
-									event.data.panel.hostInput.val()
-								}
-							}
-						});
-					
-					});
-					
-					this.portInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::port":
-									event.data.panel.portInput.val()
-								}
-							}
-						});
-					
-					});
+									});
 
-					this.dataBaseNameInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::dbname":
-									event.data.panel.dataBaseNameInput.val()
-								}
-							}
-						});
-					
-					});
-					
-					this.userNameInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::username":
-									event.data.panel.userNameInput.val()
-								}
-							}
-						});
-					
-					});
-					
-					
-					
-					
-					this.passwordInput.change({
-						panel : this
-					},
-					function(event) {
-						if (!event.data.panel.validate()) {
-							return;
-						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::password":
-									event.data.panel.passwordInput.val()
-								}
-							}
-						});
-					
-					});
-					
-					
-					
-					this.useCVforPassowrdInput.change({
-						panel : this
-					},
-					function(event) {
-					//	self.submitChanges();
-						
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
-									"stardust:sqlScriptingOverlay::useCVforPassowrd":
-									event.data.panel.useCVforPassowrdInput.prop("checked") ? event.data.panel.useCVforPassowrdInput.prop("checked"): null
+					this.driverInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::driverClassName" : event.data.panel.driverInput
+																	.val()
+														}
+													}
+												});
 
-								}
-							}
-						});
-					});
+									});
+
+					this.hostInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::hostname" : event.data.panel.hostInput
+																	.val()
+														}
+													}
+												});
+
+									});
+
+					this.portInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::port" : event.data.panel.portInput
+																	.val()
+														}
+													}
+												});
+
+									});
+
+					this.dataBaseNameInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::dbname" : event.data.panel.dataBaseNameInput
+																	.val()
+														}
+													}
+												});
+
+									});
+
+					this.userNameInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::username" : event.data.panel.userNameInput
+																	.val()
+														}
+													}
+												});
+
+									});
+
+					this.passwordInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										if (!event.data.panel.validate()) {
+											return;
+										}
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::password" : event.data.panel.passwordInput
+																	.val()
+														}
+													}
+												});
+
+									});
+
+					this.useCVforPassowrdInput
+							.change(
+									{
+										panel : this
+									},
+									function(event) {
+										// self.submitChanges();
+
+										event.data.panel
+												.submitChanges({
+													modelElement : {
+														attributes : {
+															"stardust:sqlScriptingOverlay::useCVforPassowrd" : event.data.panel.useCVforPassowrdInput
+																	.prop("checked") ? event.data.panel.useCVforPassowrdInput
+																	.prop("checked")
+																	: null
+
+														}
+													}
+												});
+									});
 
 					var self = this;
 
@@ -346,7 +398,7 @@ define(
 
 									var filteredAccessPoints = [];
 									var index = 0;
-									for ( var n = 0; n < self.getApplication().contexts.application.accessPoints.length; n++) {
+									for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; n++) {
 										var parameterDefinition = self
 												.getApplication().contexts.application.accessPoints[n];
 
@@ -376,7 +428,7 @@ define(
 								} else {
 									var accessPoints = {};
 									var defaultAccessPoints = [];
-									for ( var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
+									for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
 										var parameterDefinition = self
 												.getApplication().contexts.application.accessPoints[n];
 
@@ -403,7 +455,7 @@ define(
 									if (structuredData) {
 
 										var alreadyExists = false;
-										for ( var n = 0; n < inAccessPoint.length; ++n) {
+										for (var n = 0; n < inAccessPoint.length; ++n) {
 											var param = inAccessPoint[n];
 											if (param.direction == "IN"
 													&& param.id == structuredData.id
@@ -466,7 +518,7 @@ define(
 													null);
 									var accessPoints = [];
 									var index = 0;
-									for ( var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
+									for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
 										var parameterDefinition = self
 												.getApplication().contexts.application.accessPoints[n];
 
@@ -490,7 +542,7 @@ define(
 
 									var accessPoints = {};
 									var defaultAccessPoints = [];
-									for ( var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
+									for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
 										var parameterDefinition = self
 												.getApplication().contexts.application.accessPoints[n];
 
@@ -502,6 +554,7 @@ define(
 									}
 									var outAccessPoint = self.getApplication().contexts.application.accessPoints;
 									var structuredData;// =self.getScopeModel().findData(self.outputBodyAccessPointInput.val());
+									var isStructuredData = false;
 									for ( var i in self.getScopeModel().typeDeclarations) {
 										if (self.getScopeModel().typeDeclarations[i]
 												.isSequence()) {
@@ -510,14 +563,29 @@ define(
 													.val()) {
 												structuredData = self
 														.getScopeModel().typeDeclarations[i];
+												isStructuredData = true;
 												break;
 											}
 										}
 									}
+
+									for ( var i in self.getScopeModel().dataItems) {
+
+										if (self.getScopeModel().dataItems[i].id
+												.toLowerCase() == self.outputBodyAccessPointInput
+												.val()) {
+											structuredData = self
+													.getScopeModel().dataItems[i];
+											isStructuredData = false;
+											break;
+										}
+
+									}
+
 									if (structuredData) {
 
 										var alreadyExists = false;
-										for ( var n = 0; n < outAccessPoint.length; ++n) {
+										for (var n = 0; n < outAccessPoint.length; ++n) {
 											var param = outAccessPoint[n];
 											if (param.id == structuredData.id
 													.toLowerCase()) {
@@ -528,22 +596,37 @@ define(
 										if (!outAccessPoint[structuredData.id
 												.toLowerCase()]
 												&& !alreadyExists) {
-
-											outAccessPoint
-													.push({
-														id : structuredData.id
-																.toLowerCase(),
-														name : structuredData.name
-																.toLowerCase(),
-														dataType : "struct",
-														direction : "OUT",
-														structuredDataTypeFullId : structuredData
-																.getFullId(),
-														attributes : {
-															"stardust:predefined" : true,
-															"carnot:engine:dataType" : structuredData.id
-														}
-													});
+											if (isStructuredData) {
+												outAccessPoint
+														.push({
+															id : structuredData.id
+																	.toLowerCase(),
+															name : structuredData.name
+																	.toLowerCase(),
+															dataType : "struct",
+															direction : "OUT",
+															structuredDataTypeFullId : structuredData
+																	.getFullId(),
+															attributes : {
+																"stardust:predefined" : true,
+																"carnot:engine:dataType" : structuredData.id
+															}
+														});
+											} else {
+												outAccessPoint
+														.push({
+															id : structuredData.id
+																	.toLowerCase(),
+															name : structuredData.name
+																	.toLowerCase(),
+															dataType : "primitive",
+															primitiveDataType : structuredData.dataType,
+															direction : "OUT",
+															attributes : {
+																"stardust:predefined" : true
+															}
+														});
+											}
 										}
 										// if
 										// (!accessPoints[self.outputBodyAccessPointInput.val()])
@@ -580,7 +663,6 @@ define(
 								supportsOtherData : false
 							});
 
-					
 					// Predefined access points
 
 					this.view.submitChanges({
@@ -591,38 +673,37 @@ define(
 							}
 						}
 					});
-					
-					
-					
+
 					this.update();
 				};
 
 				/**
 				 * 
 				 */
-				SqlIntegrationOverlay.prototype.showHideOthersDbConfig= function(hide) {
-					if(hide){
+				SqlIntegrationOverlay.prototype.showHideOthersDbConfig = function(
+						hide) {
+					if (hide) {
 						this.dbUrlConfig.hide();
 						this.dbDriverConfig.hide();
-					}else{
+					} else {
 						this.dbUrlConfig.show();
 						this.dbDriverConfig.show();
 					}
 				}
-				SqlIntegrationOverlay.prototype.showHideCommonDbConfig= function(hide) {
-					if(hide){
+				SqlIntegrationOverlay.prototype.showHideCommonDbConfig = function(
+						hide) {
+					if (hide) {
 						this.hostDbConfig.hide();
 						this.portConfig.hide();
 						this.dbNameConfig.hide();
-						
-					}else{
+
+					} else {
 						this.hostDbConfig.show();
 						this.portConfig.show();
 						this.dbNameConfig.show();
 					}
 				}
 
-				
 				/**
 				 * 
 				 */
@@ -658,7 +739,6 @@ define(
 								}
 							});
 
-					
 				};
 
 				/**
@@ -685,23 +765,27 @@ define(
 					this.inputBodyAccessPointInput = this
 							.populateDataStructuresSelectInput(
 									this.inputBodyAccessPointInput, this
-											.getScopeModel(), true);
+											.getScopeModel(), true, "IN");
 					this.outputBodyAccessPointInput = this
 							.populateDataStructuresSelectInput(
 									this.outputBodyAccessPointInput, this
-											.getScopeModel(), true);
+											.getScopeModel(), true, "OUT");
 
 					this.inputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
 
 					this.outputBodyAccessPointInput
 							.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-					//if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null || this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
-					if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]!=null)
-						this.expectedResultSetInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
+					// if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null
+					// ||
+					// this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
+					if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null)
+						this.expectedResultSetInput
+								.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
 					else
-						this.expectedResultSetInput.val(m_constants.TO_BE_DEFINED);
-					
+						this.expectedResultSetInput
+								.val(m_constants.TO_BE_DEFINED);
+
 					this.codeEditor
 							.getEditor()
 							.getSession()
@@ -744,14 +828,12 @@ define(
 						this.portConfig.hide();
 						this.dbUrlConfig.show();
 						this.dbDriverConfig.show();
-						
 
 					} else {
 						this.hostDbConfig.show();
 						this.portConfig.show();
 						this.dbUrlConfig.hide();
 						this.dbDriverConfig.hide();
-						
 
 						this.hostInput
 								.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
@@ -776,135 +858,148 @@ define(
 							.prop(
 									"checked",
 									this.getApplication().attributes["stardust:sqlScriptingOverlay::useCVforPassowrd"]);
-					
-					this.parameterDefinitionsTableBody=this.parameterDefinitionsPanel.parameterDefinitionsTableBody;
+
+					this.parameterDefinitionsTableBody = this.parameterDefinitionsPanel.parameterDefinitionsTableBody;
 					this.initializeParameterDefinitionsTable();
-					this.parameterDefinitionsPanel.selectCurrentParameterDefinition();
-					//this.parameterDefinitionsPanel.populateParameterDefinitionFields();
+					this.parameterDefinitionsPanel
+							.selectCurrentParameterDefinition();
+					// this.parameterDefinitionsPanel.populateParameterDefinitionFields();
 				};
-				
+
 				SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {
 					this.parameterDefinitionsTableBody.empty();
 
-					for ( var m = 0; m < this.parameterDefinitionsPanel.parameterDefinitions.length; ++m) {
+					for (var m = 0; m < this.parameterDefinitionsPanel.parameterDefinitions.length; ++m) {
 						var parameterDefinition = this.parameterDefinitionsPanel.parameterDefinitions[m];
-						if(parameterDefinition.id===this.inputBodyAccessPointInput.val() || parameterDefinition.id===this.outputBodyAccessPointInput.val()){
-							
-						}else{
-						var content = "<tr id=\"" + m + "\">";
+						if (parameterDefinition.id === this.inputBodyAccessPointInput
+								.val()
+								|| parameterDefinition.id === this.outputBodyAccessPointInput
+										.val()) {
 
-						content += "<td class=\"";
+						} else {
+							var content = "<tr id=\"" + m + "\">";
 
-						if (parameterDefinition.direction == "IN") {
-							if (this.parameterDefinitionsPanel.options.supportsDescriptors) {
-								if (parameterDefinition.descriptor) {
-									content += "descriptorDataPathListItem";
-								} else if (parameterDefinition.keyDescriptor) {
-									content += "keyDescriptorDataPathListItem";
+							content += "<td class=\"";
+
+							if (parameterDefinition.direction == "IN") {
+								if (this.parameterDefinitionsPanel.options.supportsDescriptors) {
+									if (parameterDefinition.descriptor) {
+										content += "descriptorDataPathListItem";
+									} else if (parameterDefinition.keyDescriptor) {
+										content += "keyDescriptorDataPathListItem";
+									} else {
+										content += "inDataPathListItem";
+									}
 								} else {
 									content += "inDataPathListItem";
 								}
+							} else if (parameterDefinition.direction == "INOUT") {
+								content += "inoutDataPathListItem";
 							} else {
-								content += "inDataPathListItem";
+								content += "outDataPathListItem";
 							}
-						} else if (parameterDefinition.direction == "INOUT") {
-							content += "inoutDataPathListItem";
-						} else {
-							content += "outDataPathListItem";
-						}
 
-						content += "\" style=\"width: "
-								+ this.parameterDefinitionsPanel.options.directionColumnWidth
-								+ "\"></td>";
+							content += "\" style=\"width: "
+									+ this.parameterDefinitionsPanel.options.directionColumnWidth
+									+ "\"></td>";
 
-						content += "<td style=\"width: "
-								+ this.parameterDefinitionsPanel.options.nameColumnWidth + "\">"
-								+ parameterDefinition.name;
-						content += "</td>";
-
-						if (this.parameterDefinitionsPanel.options.supportsDataTypeSelection) {
 							content += "<td style=\"width: "
-									+ this.parameterDefinitionsPanel.options.typeColumnWidth + "\">";
-							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += m_typeDeclaration
-										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
-								// Convert
-							} else {
-								if (parameterDefinition.structuredDataTypeFullId) {
-									content += m_model
-											.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
-								}
-								// Format
-							}
-
+									+ this.parameterDefinitionsPanel.options.nameColumnWidth
+									+ "\">" + parameterDefinition.name;
 							content += "</td>";
-						}
 
-						if (this.parameterDefinitionsPanel.options.supportsDataMappings) {
-							content += "<td style=\"width: "
-									+ this.parameterDefinitionsPanel.options.mappingColumnWidth + "\">";
+							if (this.parameterDefinitionsPanel.options.supportsDataTypeSelection) {
+								content += "<td style=\"width: "
+										+ this.parameterDefinitionsPanel.options.typeColumnWidth
+										+ "\">";
+								if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
+									content += m_typeDeclaration
+											.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
+									// Convert
+								} else {
+									if (parameterDefinition.structuredDataTypeFullId) {
+										content += m_model
+												.stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
+									}
+									// Format
+								}
 
-							if (parameterDefinition.dataFullId != null
-									&& m_model
-											.findData(parameterDefinition.dataFullId)) {
-								var data = m_model
-										.findData(parameterDefinition.dataFullId);
+								content += "</td>";
+							}
 
-								content += data.name;
+							if (this.parameterDefinitionsPanel.options.supportsDataMappings) {
+								content += "<td style=\"width: "
+										+ this.parameterDefinitionsPanel.options.mappingColumnWidth
+										+ "\">";
 
-								if (this.options.supportsDataPathes) {
-									if (parameterDefinition.dataPath != null) {
-										content += ".";
-										content += parameterDefinition.dataPath;
+								if (parameterDefinition.dataFullId != null
+										&& m_model
+												.findData(parameterDefinition.dataFullId)) {
+									var data = m_model
+											.findData(parameterDefinition.dataFullId);
+
+									content += data.name;
+
+									if (this.options.supportsDataPathes) {
+										if (parameterDefinition.dataPath != null) {
+											content += ".";
+											content += parameterDefinition.dataPath;
+										}
 									}
 								}
+
+								content += "</td>";
 							}
 
-							content += "</td>";
+							var newValue = m_i18nUtils
+									.getProperty("modeler.element.properties.commonProperties.inputText.new");
+							content = content.replace(">New", ">" + newValue);
+							newValue = m_i18nUtils
+									.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
+							content = content.replace("String", newValue);
+
+							this.parameterDefinitionsTableBody.append(content);
+
+							m_utils
+									.jQuerySelect(
+											this.parameterDefinitionsPanel.options.scope
+													+ "table#parameterDefinitionsTable tr")
+									.mousedown(
+											{
+												panel : this
+											},
+											function(event) {
+												// event.data.panel.deselectParameterDefinitions();
+												event.data.panel.parameterDefinitionsPanel
+														.deselectParameterDefinitions()
+												m_utils.jQuerySelect(this)
+														.addClass("selected");
+
+												var index = m_utils
+														.jQuerySelect(this)
+														.attr("id");
+
+												// event.data.panel.currentParameterDefinition
+												// =
+												// event.data.panel.parameterDefinitions[index];
+												event.data.panel.parameterDefinitionsPanel.currentParameterDefinition = event.data.panel.parameterDefinitionsPanel.parameterDefinitions[index];
+												event.data.panel.parameterDefinitionsPanel.selectedRowIndex = index;
+
+												event.data.panel.parameterDefinitionsPanel
+														.populateParameterDefinitionFields();
+											});
 						}
+					}
 
-						var newValue = m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.inputText.new");
-						content = content.replace(">New", ">" + newValue);
-						newValue = m_i18nUtils
-								.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
-						content = content.replace("String", newValue);
-
-						this.parameterDefinitionsTableBody.append(content);
-
-						m_utils.jQuerySelect(
-								this.parameterDefinitionsPanel.options.scope
-										+ "table#parameterDefinitionsTable tr")
-								.mousedown(
-										{
-											panel : this
-										},
-										function(event) {
-											//event.data.panel.deselectParameterDefinitions();
-											event.data.panel.parameterDefinitionsPanel.deselectParameterDefinitions()
-											m_utils.jQuerySelect(this).addClass("selected");
-
-											var index = m_utils.jQuerySelect(this).attr("id");
-
-											//event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
-											event.data.panel.parameterDefinitionsPanel.currentParameterDefinition = event.data.panel.parameterDefinitionsPanel.parameterDefinitions[index];
-											event.data.panel.parameterDefinitionsPanel.selectedRowIndex = index;
-
-											event.data.panel.parameterDefinitionsPanel
-													.populateParameterDefinitionFields();
-										});
-					}}
-
-					
 					return parameterDefinitionsTable;
 				}
-				
+
 				SqlIntegrationOverlay.prototype.createIntrinsicAccessPoints = function() {
 					var accessPoints = this.getApplication().contexts.application.accessPoints;
 					var defaultAccessPoints = this.getApplication().contexts.application.accessPoints;
 					var addCamelSqlQueryVar = true, addCamelSqlUpdateCountVar = true, addCamelSqlRowCountVar = true;
 
-					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
+					for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
 						if (parameterDefinition.id == "CamelSqlQuery") {
 							addCamelSqlQueryVar = false;
@@ -971,7 +1066,7 @@ define(
 
 				SqlIntegrationOverlay.prototype.populateDataStructuresSelectInput = function(
 						structuredDataTypeSelect, scopeModel,
-						restrictToCurrentModel) {
+						restrictToCurrentModel, direction) {
 					// var structuredDataTypeSelect;
 					structuredDataTypeSelect.empty();
 					structuredDataTypeSelect.append("<option value='"
@@ -996,6 +1091,17 @@ define(
 											.toLowerCase() + "'>"
 									+ scopeModel.typeDeclarations[i].name
 									+ "</option>");
+						}
+						if (direction == "OUT") {
+							for ( var i in scopeModel.dataItems) {
+
+								structuredDataTypeSelect
+										.append("<option value='"
+												+ scopeModel.dataItems[i].id
+														.toLowerCase() + "'>"
+												+ scopeModel.dataItems[i].name
+												+ "</option>");
+							}
 						}
 					}
 					return structuredDataTypeSelect;
@@ -1036,16 +1142,18 @@ define(
 							+ "\" />";
 					beanDefinition += "<property name=\"driverClassName\" value=\""
 							+ driverClassName + "\" />";
-					if(this.userNameInput.val()!=""){
-						beanDefinition += "<property name=\"username\" value=\""+ this.userNameInput.val() + "\" />";
+					if (this.userNameInput.val() != "") {
+						beanDefinition += "<property name=\"username\" value=\""
+								+ this.userNameInput.val() + "\" />";
 					}
-					if (this.useCVforPassowrdInput.prop("checked") && this.passwordInput.val() !="") {
+					if (this.useCVforPassowrdInput.prop("checked")
+							&& this.passwordInput.val() != "") {
 						beanDefinition += "<property name=\"password\" value=\"${"
 								+ this.passwordInput.val() + ":Password}\" />";
 					} else {
-						if(this.passwordInput.val()!=""){
-						beanDefinition += "<property name=\"password\" value=\""
-								+ this.passwordInput.val() + "\" />";
+						if (this.passwordInput.val() != "") {
+							beanDefinition += "<property name=\"password\" value=\""
+									+ this.passwordInput.val() + "\" />";
 						}
 					}
 					beanDefinition += "</bean>";
@@ -1065,33 +1173,38 @@ define(
 					/* var dataSourceName = this.dataSourceNameInput.val(); */
 
 					if (sqlQuery != null && sqlQuery != "") {
-						
-						sqlQuery = m_utils.encodeXmlPredfinedCharacters(sqlQuery);
+
+						sqlQuery = m_utils
+								.encodeXmlPredfinedCharacters(sqlQuery);
 					}
-					var questionMarkExists=false;
-					
-					
-					if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != "" && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="SelectOne" ) {
-					sqlQuery+="?outputType=SelectOne";
-					}else if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != "" && this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="SelectList" ) {
-						sqlQuery+="?outputType=SelectList";
+					var questionMarkExists = false;
+
+					if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null
+							&& this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != ""
+							&& this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectOne") {
+						sqlQuery += "?outputType=SelectOne";
+					} else if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null
+							&& this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != ""
+							&& this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] == "SelectList") {
+						sqlQuery += "?outputType=SelectList";
 					}
-					
-					if (sqlQuery != null && sqlQuery != "" && sqlQuery.indexOf('?')!=-1 ) {
-					questionMarkExists=true;
+
+					if (sqlQuery != null && sqlQuery != ""
+							&& sqlQuery.indexOf('?') != -1) {
+						questionMarkExists = true;
 					}
-					if(questionMarkExists)
-					route += "<to uri=\"sql:"
-							+ sqlQuery
-							+ "&dataSource=#"
-							+ this.getDataSourceName()
-							+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />"
+					if (questionMarkExists)
+						route += "<to uri=\"sql:"
+								+ sqlQuery
+								+ "&dataSource=#"
+								+ this.getDataSourceName()
+								+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />"
 					else
-					route += "<to uri=\"sql:"
-							+ sqlQuery
-							+ "?dataSource=#"
-							+ this.getDataSourceName()
-							+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
+						route += "<to uri=\"sql:"
+								+ sqlQuery
+								+ "?dataSource=#"
+								+ this.getDataSourceName()
+								+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
 
 					var outBodyAccessPoint = this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"];
 					if (this.getApplication().contexts.application.accessPoints.length > 0) {
@@ -1124,8 +1237,7 @@ define(
 				/**
 				 * 
 				 */
-				SqlIntegrationOverlay.prototype.submitChanges = function(
-						) {
+				SqlIntegrationOverlay.prototype.submitChanges = function() {
 					this.view
 							.submitChanges({
 								attributes : {
@@ -1133,8 +1245,16 @@ define(
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : "sendReceive",
 									"carnot:engine:camel::invocationType" : "synchronous",
-									"carnot:engine:camel::inBodyAccessPoint":(this.inputBodyAccessPointInput.val()!=null && this.inputBodyAccessPointInput.val()!=m_constants.TO_BE_DEFINED)?this.inputBodyAccessPointInput.val():null,
-									"carnot:engine:camel::outBodyAccessPoint":(this.outputBodyAccessPointInput.val()!=null && this.outputBodyAccessPointInput.val()!=m_constants.TO_BE_DEFINED)?this.outputBodyAccessPointInput.val():null,
+									"carnot:engine:camel::inBodyAccessPoint" : (this.inputBodyAccessPointInput
+											.val() != null && this.inputBodyAccessPointInput
+											.val() != m_constants.TO_BE_DEFINED) ? this.inputBodyAccessPointInput
+											.val()
+											: null,
+									"carnot:engine:camel::outBodyAccessPoint" : (this.outputBodyAccessPointInput
+											.val() != null && this.outputBodyAccessPointInput
+											.val() != m_constants.TO_BE_DEFINED) ? this.outputBodyAccessPointInput
+											.val()
+											: null,
 									"stardust:sqlScriptingOverlay::sqlQuery" : this.codeEditor
 											.getEditor().getSession()
 											.getValue(),
@@ -1222,7 +1342,7 @@ define(
 						 this.outputBodyAccessPointInput.addClass("error"); 
 						 valid = false;
 					}*/
-					
+
 					/*
 					if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
 						 this.view.errorMessages .push("No SQL Query provided."); 
@@ -1252,7 +1372,7 @@ define(
 							 valid = false;
 						}
 					}
-					*/
+					 */
 					return true;
 				};
 			}
