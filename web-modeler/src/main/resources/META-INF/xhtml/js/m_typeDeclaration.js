@@ -776,7 +776,7 @@ define(
 			SchemaType.prototype.resolveElementTypeFromElement = function(element) {
 				if (element && element.type) {
 
-					var typeQName = parseQName(element.type);
+					var typeQName = parseQName(element.type, this.schema);
 					if (!typeQName.prefix) {
 						// no ns prefix, resolve to containing schema
 						var type = findType(this.schema, typeQName.name);
@@ -903,21 +903,33 @@ define(
 				return undefined;
 			}
 
-			function parseQName(name) {
+			function parseQName(name, schema) {
 				if (name && ("{" === name.charAt(0))) {
 					return {
 						namespace : name.substr(1, name.length).split("}")[0],
 						name : name.substr(1, name.length).split("}")[1]
 					};
 				} else if (name && (0 <= name.indexOf(":"))) {
+					derivedNS = findNamespaceForPrefix(name, schema);
 					return {
 						prefix : name.split(":")[0],
-						name : name.split(":")[1]
+						name : name.split(":")[1],
+						namespace : derivedNS
 					};
 				} else {
 					return {
 						name : name
 					};
+				}
+			}
+
+			/**
+			 * 
+			 */
+			function findNamespaceForPrefix(qualifiedType, schema) {
+				var nsPrefix = qualifiedType.split(":")[0];
+				if (nsPrefix && schema && schema.nsMappings) {
+					return schema.nsMappings[nsPrefix];
 				}
 			}
 

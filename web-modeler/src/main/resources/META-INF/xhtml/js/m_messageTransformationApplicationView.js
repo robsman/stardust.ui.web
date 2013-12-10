@@ -748,7 +748,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeTableRowsRecursively = function(
 						output, accessPoint, element, parentPath, scopeModel,
-						elementName, elementType) {
+						elementName, elementType, schema) {
 
 					elementName = elementName ? elementName
 							: element ? element.name : null;
@@ -823,6 +823,9 @@ define(
 									var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 									var schemaType = typeDeclaration.asSchemaType();
 									var childSchemaType = schemaType.resolveElementTypeFromElement(childElement);
+									if (!childSchemaType && schema) {
+										childSchemaType = schema.resolveElementTypeFromElement(childElement);
+									}
 									if (childSchemaType && childSchemaType.isStructure()) {
 										var childElementsArray = [];
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);
@@ -832,7 +835,7 @@ define(
 										this.initializeTableRowsRecursively(output, accessPoint,
 												childElementsArray, path,
 												childSchemaType.model, elemName,
-												((childSchemaType.type && childSchemaType.type.type) ? childSchemaType.type.type : childSchemaType.name));
+												((childSchemaType.type && childSchemaType.type.type) ? childSchemaType.type.type : childSchemaType.name), childSchemaType);
 									} else {
 										this.initializeTableRowsRecursively(output,
 												accessPoint, childElement, path,
