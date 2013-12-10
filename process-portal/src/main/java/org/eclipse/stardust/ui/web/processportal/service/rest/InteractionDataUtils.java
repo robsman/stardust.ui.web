@@ -50,8 +50,11 @@ public class InteractionDataUtils
     * @return
     */
    @SuppressWarnings("unchecked")
-   public static Map<String, Serializable> unmarshalData(Model model, ApplicationContext context, Map<String, Object> elem)
+   public static Map<String, Serializable> unmarshalData(Model model, ApplicationContext context,
+         Map<String, Object> elem) throws DataException
    {
+      Map<String, Throwable> errors = new HashMap<String, Throwable>();
+
       Map<String, Serializable> ret = new HashMap<String, Serializable>();
 
       List<DataMapping> dataMappings = context.getAllOutDataMappings();
@@ -62,24 +65,36 @@ public class InteractionDataUtils
          {
             if (entry.getKey().equals(dm.getId()))
             {
-               if (trace.isDebugEnabled())
+               try
                {
-                  trace.debug("DM: " + entry.getKey());
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug("DM: " + entry.getKey());
+                  }
+   
+                  Object value = evaluateClientSideOutMapping(model, entry.getValue(), dm);
+   
+                  if (trace.isDebugEnabled())
+                  {
+                     trace.debug(", Value: " + value);
+                  }
+   
+                  ret.put(entry.getKey(), (Serializable)value);
                }
-
-               Object value = evaluateClientSideOutMapping(model, entry.getValue(), dm);
-
-               if (trace.isDebugEnabled())
+               catch(Exception e)
                {
-                  trace.debug(", Value: " + value);
+                  errors.put(entry.getKey(), e);
                }
-
-               ret.put(entry.getKey(), (Serializable)value);
                break;
             }
          }
       }
 
+      if (errors.size() > 0)
+      {
+         throw new DataException(errors);
+      }
+         
       return ret;
    }
 

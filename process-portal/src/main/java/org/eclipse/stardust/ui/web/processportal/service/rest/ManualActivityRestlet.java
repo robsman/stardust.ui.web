@@ -93,42 +93,77 @@ public class ManualActivityRestlet
    }
 
    @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("outData")
    @POST
-   public void outData(String json)
+   public Response outData(String json)
    {
       Interaction interaction = getInteraction();
 
       JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
 
-      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-            interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+      JsonObject ret = new JsonObject();
 
-      interaction.setOutDataValues(data);
+      try
+      {
+         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+               interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+         interaction.setOutDataValues(data);
+      }
+      catch (DataException e)
+      {
+         JsonObject errors = new JsonObject();
+         ret.add("errors", errors);
+
+         for (Entry<String, Throwable> entry : e.getErrors().entrySet())
+         {
+            errors.add(entry.getKey(), new JsonPrimitive(entry.getValue().getMessage()));
+         }
+      }
+      
+      return Response.ok(ret.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("outData/{parameterId}")
    @POST
-   public void outData(@PathParam("parameterId") String parameterId, String json)
+   public Response outData(@PathParam("parameterId") String parameterId, String json)
    {
       Interaction interaction = getInteraction();
 
       JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
 
-      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-            interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+      JsonObject ret = new JsonObject();
 
-      // This will have only one value, so loop will execute once only
-      for (Entry<String, Serializable> entry : data.entrySet())
+      try
       {
-         if(null == interaction.getOutDataValues())
+         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+               interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+   
+         // This will have only one value, so loop will execute once only
+         for (Entry<String, Serializable> entry : data.entrySet())
          {
-            interaction.setOutDataValues(new HashMap<String, Serializable>());
+            if(null == interaction.getOutDataValues())
+            {
+               interaction.setOutDataValues(new HashMap<String, Serializable>());
+            }
+            
+            interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
          }
-         
-         interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
       }
+      catch (DataException e)
+      {
+         JsonObject errors = new JsonObject();
+         ret.add("errors", errors);
+
+         for (Entry<String, Throwable> entry : e.getErrors().entrySet())
+         {
+            errors.add(entry.getKey(), new JsonPrimitive(entry.getValue().getMessage()));
+         }
+      }
+
+      return Response.ok(ret.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    @Produces(MediaType.TEXT_PLAIN)

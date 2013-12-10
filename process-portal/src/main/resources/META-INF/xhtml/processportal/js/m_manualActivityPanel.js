@@ -480,8 +480,20 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var success = false;
 			if (isFormValid()) {
 				var $scope = angular.element(document).scope();
-				postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {success: function() {
-					success = true;
+				postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {success: function(retData) {
+					if (retData && retData.errors) {
+						success = false;
+						
+						var msg = i18nLabelProvider().getLabel("panel.save.error", "Failure to save data");
+						msg += "\n";
+						for(var key in retData.errors) {
+							msg += "\n" + key + " -> " + retData.errors[key];
+						}
+
+						alert(msg);
+					} else {
+						success = true;	
+					}
 				}, failure: function() {
 					success = false;
 					alert(i18nLabelProvider().getLabel("panel.save.error", "Failure to save data"));
