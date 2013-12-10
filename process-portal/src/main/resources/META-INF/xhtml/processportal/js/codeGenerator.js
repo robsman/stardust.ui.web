@@ -293,8 +293,6 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						if (options.idExpr) {
 							formId = "'" + id + "' + " + options.idExpr;
 							id += "{{" + options.idExpr + "}}";
-							
-							elem.attributes['sd-dynamic-id'] = null;
 						}
 
 						elem.attributes['id'] = id;

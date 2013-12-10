@@ -146,15 +146,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				};
 			});
 
-			angularModule.directive('sdDynamicId', function() {
-				return {
-			        restrict: 'A',
-			        link: function(scope, elm, attr, ctrl) {
-			        },
-			        transclude: true
-			    };
-			});
-
 			angularModule.controller('ManualActivityCtrl', function($compile) {
 				angularCompile = $compile;
 			});
