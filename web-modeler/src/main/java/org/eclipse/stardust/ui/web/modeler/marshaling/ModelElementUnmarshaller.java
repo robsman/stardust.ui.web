@@ -1767,10 +1767,20 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                   if (transition != null)
                   {
                      transition.setFrom(newHostActivity);
-                     if(isBoundary)
+                     if (isBoundary)
                      {
                         FeatureMap mixedNode = transition.getExpression().getMixed();
-                        ModelUtils.setCDataString(mixedNode, "ON_BOUNDARY_EVENT(" + eventHandler.getId() + ')', true);
+                        ModelUtils.setCDataString(mixedNode, "ON_BOUNDARY_EVENT("
+                              + eventHandler.getId() + ')', true);
+                     }
+                     else
+                     {
+                        FeatureMap mixedNode = transition.getExpression().getMixed();
+                        String expression = ModelUtils.getCDataString(mixedNode);
+                        if (expression.startsWith("ON_BOUNDARY_EVENT"))
+                        {
+                           ModelUtils.setCDataString(mixedNode, "true", true);
+                        }
                      }
                   }
                }
@@ -2245,7 +2255,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                     	else
                     	{
                         accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
-                              context, id, name, primitiveDataType, direction);
+                                    context, id, name, primitiveDataType, direction);
                      }
                      }
                      else if (dataType.equals(ModelerConstants.STRUCTURED_DATA_TYPE_KEY))
