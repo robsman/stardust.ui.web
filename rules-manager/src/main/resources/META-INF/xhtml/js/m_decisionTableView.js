@@ -159,6 +159,8 @@ define(
 				    /*Hook for the change event of our table: Saved for undo redo functionality*/
 				    var afterChangeFunc=function(changes,source){
 				    	console.log("Decision Table Change event , native...");
+				    	console.log(changes);
+				    	var colHdr;
 						var settings=uiElements.decisionTableInstance.getSettings();
 						var dataSnapshot={
 							columns: settings.columns.slice(0),
@@ -171,6 +173,21 @@ define(
 						lastCmdID=cmd.id;
 						m_ruleSetCommandDispatcher.trigger(cmd);
 						ruleSet.state.isDirty=true;
+						
+						/*Check the data changed to determine if we need to raise an alert*/
+						if(changes){
+							colHdr=uiElements.decisionTableInstance.getColHeader(changes[0][1]);
+							colHdr=colHdr.split("|");
+							if(colHdr.length===3){
+								if(colHdr[0]==="lock-on-active" && 
+								   colHdr[2]==="Attribute" && 
+								   changes[0][3]===false){
+									uiElements.alertPanel.removeClass("view-hide",250,"linear");
+						    		uiElements.alertPanelMsg.text(m_i18nUtils.getProperty(
+						    				"rules.propertyView.decisiontableview.alertpanel.warning.lockOnActive"));
+								}
+							}
+						}
 				    };
 					uiElements.decisionTableInstance.addHook('afterChange',afterChangeFunc);
 					uiElements.decisionTableInstance.addHook("afterColumnResize",function(col,size){
@@ -434,7 +451,7 @@ define(
 				    });
 				    
 				    /*Listen for clicks to hide our alert messages if they are visible.*/
-				    uiElements.mainView.on("click",function(){
+				    uiElements.alertPanel.on("click",function(){
 				    	if(uiElements.alertPanel.hasClass("view-hide")===false){
 				    		uiElements.alertPanel.addClass("view-hide");
 				    	}
