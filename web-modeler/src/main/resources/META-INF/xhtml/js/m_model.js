@@ -32,7 +32,7 @@ define(
 				getModels : getModels,
 
 				getErroredModels : getErroredModels,
-
+				
 				createModel : function() {
 					return new Model();
 				},
@@ -53,18 +53,6 @@ define(
 
 				findTypeDeclaration : function(fullId) {
 					return findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
-				},
-				
-				isEnumTypeDeclaration : function(fullId) {
-					try{
-						var typeDeclaration = findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
-						if (typeDeclaration.getType() == "enumStructuredDataType") {
-							return true;
-						}
-					}catch (e) {
-						return false;
-					}
-					return false;
 				},
 				
 				findData : function(fullId) {
@@ -230,7 +218,7 @@ define(
 
 				return ids[1];
 			}
-
+			
       function attachModel(model) {
         getModels()[model.id] = model;
       }

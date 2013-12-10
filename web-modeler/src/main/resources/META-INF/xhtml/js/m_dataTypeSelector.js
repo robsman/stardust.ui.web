@@ -475,7 +475,7 @@ define(
 						this.setPrimitiveDataType(data.primitiveDataType);
 					} else if (data.dataType == m_constants.STRUCTURED_DATA_TYPE) {
 						// If enum type show as Primitive
-						if (m_model.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
+						if (this.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
 								this.dataTypeSelect.val("primitive");
 								this.setPrimitiveDataType(data.structuredDataTypeFullId,true);
 							}else {
@@ -490,6 +490,24 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				DataTypeSelector.prototype.isEnumTypeDeclaration = function(
+						fullId) {
+					try {
+						var typeDeclaration = m_model
+								.findModel(m_model.stripModelId(fullId)).typeDeclarations[m_model
+								.stripElementId(fullId)];
+						if (typeDeclaration.getType() == "enumStructuredDataType") {
+							return true;
+						}
+					} catch (e) {
+						return false;
+					}
+					return false;
+				};
+				
+				/**
 				 *
 				 */
 				DataTypeSelector.prototype.getDataType = function(data) {
@@ -498,7 +516,7 @@ define(
 					if (this.dataTypeSelect.val() == m_constants.PRIMITIVE_DATA_TYPE) {
 						data.primitiveDataType = this.primitiveDataTypeSelect
 								.val();
-						if(m_model.isEnumTypeDeclaration(data.primitiveDataType)){
+						if(this.isEnumTypeDeclaration(data.primitiveDataType)){
 							data.structuredDataTypeFullId = this.primitiveDataTypeSelect.val();
 						}
 					} else if (this.dataTypeSelect.val() == m_constants.STRUCTURED_DATA_TYPE) {
@@ -523,7 +541,7 @@ define(
 					if (primitiveDataType == null) {
 						primitiveDataType = "String";
 					}
-					if (this.isSupportedPrimitiveDataType(primitiveDataType) || isEnum || m_model.isEnumTypeDeclaration(primitiveDataType)) {
+					if (this.isSupportedPrimitiveDataType(primitiveDataType) || isEnum || this.isEnumTypeDeclaration(primitiveDataType)) {
 							this.primitiveDataTypeSelect.val(primitiveDataType);
 					}else {
 							this.primitiveDataTypeSelect
@@ -657,7 +675,7 @@ define(
 						if (m_constants.PRIMITIVE_DATA_TYPE == this.dataTypeSelect
 								.val()) {
 							primitiveDataType =this.primitiveDataTypeSelect.val();
-							if(m_model.isEnumTypeDeclaration(primitiveDataType)){
+							if(this.isEnumTypeDeclaration(primitiveDataType)){
 								structTypeFullId = this.primitiveDataTypeSelect.val();
 							}
 						} else if (m_constants.STRUCTURED_DATA_TYPE == this.dataTypeSelect

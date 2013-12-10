@@ -190,7 +190,7 @@ define(
 				 */
 				DataView.prototype.updateDefaultValueForEnum = function(
 						primitiveDataTypeSelect) {
-					if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect)){
+					if(this.dataTypeSelector.isEnumTypeDeclaration(primitiveDataTypeSelect)){
 						this.populateEnumsForType(primitiveDataTypeSelect);
 					}
 				};
@@ -316,7 +316,7 @@ define(
 									self.timestampInputText.val(dateValue);
 								}
 							}else {
-								if(m_model.isEnumTypeDeclaration(primitiveDataTypeSelect.val())){
+								if(self.dataTypeSelector.isEnumTypeDeclaration(primitiveDataTypeSelect.val())){
 									if(null!=defaultValue){
 										self.enumInputSelect.val(defaultValue);	
 									}

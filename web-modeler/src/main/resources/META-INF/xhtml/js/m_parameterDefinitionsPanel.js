@@ -558,8 +558,7 @@ define(
 							&& data.dataType === m_constants.STRUCTURED_DATA_TYPE
 							&& this.dataTypeSelector.dataTypeSelect.val() === m_constants.PRIMITIVE_DATA_TYPE
 							&& data.structuredDataTypeFullId === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
-						if (m_model
-								.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
+						if (this.dataTypeSelector.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
 							return true;
 						}
 					}
@@ -611,8 +610,14 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.typeColumnWidth + "\">";
 							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += m_typeDeclaration
-										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
+								if (this.dataTypeSelector
+										.isEnumTypeDeclaration(parameterDefinition.primitiveDataType)) {
+									content += m_model
+											.stripElementId(parameterDefinition.primitiveDataType);
+								} else {
+									content += m_typeDeclaration
+											.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO	
+								}
 								// Convert
 							} else {
 								if (parameterDefinition.structuredDataTypeFullId) {
