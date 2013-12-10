@@ -174,9 +174,16 @@ define(["bpm-modeler/js/m_model",
    * array of strings representing the distinct dot-notation path to each element.
    * For Example: Person.Name,Person.Name.Firts,Person.Name.Last etc...*/
   var parseTypeToStringFrags=function(typeDecl,name){
-	  var elements=typeDecl.getElements();
-	  var elementCount=elements.length;
+	  var elements;
+	  var elementCount;
 	  var results=[];
+	  
+	  if(!typeDecl || !typeDecl.getElements ){
+		  return name || "";
+	  }
+	  elements=typeDecl.getElements();
+	  elementCount=elements.length;
+	  
 	  while(elementCount--){
 			temp=elements[elementCount];
 			results.push(name + "." + temp.name);
