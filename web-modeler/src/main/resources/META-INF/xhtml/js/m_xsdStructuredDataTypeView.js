@@ -984,7 +984,7 @@ define(
 				 *
 				 */
 				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType, element) {
-					var select = "<select size='1' style='width: 90%;'>";
+					var select = "<select size='1' class='typeSelect' style='width: 90%;'>";
 					var selected = false;
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.primitives") + "'>";
