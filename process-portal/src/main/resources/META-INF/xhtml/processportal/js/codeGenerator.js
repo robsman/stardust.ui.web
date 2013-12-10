@@ -364,6 +364,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				ret.pattern = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
 				ret.key = "double";
 			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
+				ret.pattern = /^(\+|-)?([\d]{0,2})$/;
 				ret.key = "byte";
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				ret.key = "char";
@@ -396,7 +397,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
 				return 620;
 			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
-				return 2;
+				return 3;
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				return 1;
 			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
@@ -406,7 +407,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else if (path.typeName == "time") {
 				return 8;
 			} else if (path.typeName == "duration") {
-				return 41;
+				return 50;
 			}
 		}
 
