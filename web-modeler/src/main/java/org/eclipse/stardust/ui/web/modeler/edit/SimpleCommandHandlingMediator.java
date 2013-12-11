@@ -20,6 +20,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry.ICommandHandlerInvoker;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 
 @Component
@@ -39,13 +40,13 @@ public class SimpleCommandHandlingMediator
       return false;
    }
 
-   public void broadcastChange(EditingSession session, JsonObject commndJson)
+   public void broadcastChange(EditingSession session, CommandJto commandJto, JsonObject changeJson)
    {
       for (IChangeListener listener : changeListeners)
       {
          try
          {
-            listener.onCommand(session, commndJson);
+            listener.onCommand(session, commandJto, changeJson);
          }
          catch (Exception e)
          {

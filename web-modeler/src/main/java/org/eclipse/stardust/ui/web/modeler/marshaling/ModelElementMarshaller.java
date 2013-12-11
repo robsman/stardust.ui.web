@@ -41,10 +41,11 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeDescriptionJto;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.CommandJto;
+
 import org.eclipse.xsd.XSDSchema;
 
 import com.google.gson.JsonArray;

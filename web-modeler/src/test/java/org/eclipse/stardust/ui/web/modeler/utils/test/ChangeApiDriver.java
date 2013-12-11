@@ -1,14 +1,14 @@
 package org.eclipse.stardust.ui.web.modeler.utils.test;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singletonList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 
@@ -26,7 +26,7 @@ public class ChangeApiDriver
    public JsonObject performChange(String commandId, String modelId,
          Object targetElementId, JsonObject changeJson) throws IOException
    {
-      ChangeDescriptorJto changeJto = new ChangeDescriptorJto();
+      ChangeDescriptionJto changeJto = new ChangeDescriptionJto();
       if (targetElementId instanceof String)
       {
          if (!isEmpty(modelId) && modelId.equals(targetElementId))
@@ -47,8 +47,13 @@ public class ChangeApiDriver
       CommandJto cmdJto = new CommandJto();
       cmdJto.commandId = commandId;
       cmdJto.modelId = modelId;
-      cmdJto.changeDescriptions.add(changeJto);
+      cmdJto.changeDescriptions = singletonList(changeJto);
 
+      return performChange(cmdJto);
+   }
+
+   public JsonObject performChange(CommandJto cmdJto)
+   {
       return requestExecutor.applyChange((JsonObject) jsonIo.gson().toJsonTree(cmdJto));
    }
 
@@ -60,20 +65,5 @@ public class ChangeApiDriver
    public JsonObject updateModelElement(String modelId, long targetElementOid, JsonObject changeJson) throws IOException
    {
       return performChange("modelElement.update", modelId, targetElementOid, changeJson);
-   }
-
-   public static class CommandJto
-   {
-      public String commandId;
-      public String modelId;
-
-      public List<ChangeDescriptorJto> changeDescriptions = newArrayList();
-   }
-
-   public static class ChangeDescriptorJto
-   {
-      public String uuid;
-      public String oid;
-      public JsonObject changes = new JsonObject();
    }
 }

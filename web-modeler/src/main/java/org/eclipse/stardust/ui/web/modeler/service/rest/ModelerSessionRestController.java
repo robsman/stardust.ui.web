@@ -47,6 +47,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetPostprocessingService;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
@@ -363,7 +365,8 @@ public class ModelerSessionRestController
             jto.isUndo = true;
             result = toJson(jto);
 
-            commandHandlingMediator().broadcastChange(undoneChange.getSession(), result);
+            // TODO include full command?
+            commandHandlingMediator().broadcastChange(undoneChange.getSession(), null, result);
 
             return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -402,7 +405,8 @@ public class ModelerSessionRestController
             jto.isRedo = true;
             result = toJson(jto);
 
-            commandHandlingMediator().broadcastChange(redoneChange.getSession(), result);
+            // TODO include full command?
+            commandHandlingMediator().broadcastChange(redoneChange.getSession(), null, result);
 
             return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -530,7 +534,7 @@ public class ModelerSessionRestController
    /**
     * @param editingSession TODO
     * @param commandId
-    * @param commandJson
+    * @param commandJto
     * @return
     */
    private Response applyGlobalChange(EditingSession editingSession, String commandId, EObject model, CommandJto commandJto)
@@ -633,7 +637,8 @@ public class ModelerSessionRestController
 
          JsonObject changeJto = toJson(toJto(change));
 
-         commandHandlingMediator().broadcastChange(change.getSession(), changeJto);
+         commandHandlingMediator().broadcastChange(change.getSession(), commandJto,
+               changeJto);
 
          ModelerSessionRestController.CommandJto = null;
 
@@ -775,9 +780,9 @@ public class ModelerSessionRestController
       return new CommandHandlingMediator()
       {
          @Override
-         public void broadcastChange(EditingSession session, JsonObject commndJson)
+         public void broadcastChange(EditingSession session, org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto commandJto, JsonObject changeJson)
          {
-            mediator.broadcastChange(session, commndJson);
+            mediator.broadcastChange(session, commandJto, changeJson);
          }
 
          @Override
@@ -859,23 +864,5 @@ public class ModelerSessionRestController
       public String ownerName;
 
       public boolean canBreakEditLock = false;
-   }
-
-   public static class CommandJto
-   {
-      public String commandId;
-      public String modelId;
-
-      public String account;
-
-      public List<ChangeDescriptionJto> changeDescriptions;
-   }
-
-   public static class ChangeDescriptionJto
-   {
-      public String uuid;
-      public String oid;
-
-      public JsonObject changes;
    }
 }
