@@ -256,12 +256,12 @@ define(
 							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
 									+ "</option>");
 
-					if (this.scopeModel) {
+					if (this.scopeModel && !this.hideEnumerations) {
 						this.primitiveDataTypeSelect
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.enum.thisModel") + "'>");
 
 						for ( var i in this.scopeModel.typeDeclarations) {
-							if (this.hideEnumerations && !this.scopeModel.typeDeclarations[i].isSequence()) continue;
+							if (!this.scopeModel.typeDeclarations[i].isSequence()) continue;
 							if (this.scopeModel.typeDeclarations[i]
 							.getType() == "enumStructuredDataType"){
 								this.primitiveDataTypeSelect
@@ -273,7 +273,7 @@ define(
 						}
 					}
 
-					if (!this.restrictToCurrentModel) {
+					if (!this.restrictToCurrentModel && !this.hideEnumerations) {
 						this.primitiveDataTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.enum.otherModels") + "'>");
 
@@ -288,7 +288,7 @@ define(
 										.hasPublicVisibility(m_model
 												.getModels()[n].typeDeclarations[m])) {
 
-									if (this.hideEnumerations && !m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
+									if (!m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
 										if (m_model.getModels()[n].typeDeclarations[m]
 												.getType() == "enumStructuredDataType") {
 											this.primitiveDataTypeSelect
