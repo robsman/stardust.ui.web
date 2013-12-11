@@ -15,6 +15,7 @@
 		<jaxrs:serviceBeans>
 			<ref bean="documentRepositoryRestletBean" />
             <ref bean="ippMashupConfigCallbackController" />
+            <ref bean="fileUploadRestlet" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
 
@@ -23,5 +24,7 @@
 
     <bean id="ippMashupConfigCallbackController"
         class="org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController" />
-
+        
+ 	<bean id="fileUploadRestlet"
+		class="org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileUploadRestlet" />	
 </beans>

@@ -36,7 +36,7 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType PJPG = new MIMEType("image/pjpeg", "jpg", "document-image.png", "PJPEG");
    public static final MIMEType XPNG = new MIMEType("image/x-png", "jpg", "document-image.png", "X-PNG");
    public static final MIMEType GIF = new MIMEType("image/gif", "gif", "document-image.png", "GIF");
-	public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] { "tif", "tiff" }, "images.png", "Tiff");
+   public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] { "tif", "tiff" }, "images.png", "Tiff");
    public static final MIMEType PDF = new MIMEType("application/pdf", "pdf", "document-pdf-text.png", "PDF");
    public static final MIMEType RTF = new MIMEType("text/rtf", "rtf", "document-word-text.png", "");
    public static final MIMEType DOC = new MIMEType("application/msword", "doc", "document-word-text.png", "");
@@ -96,10 +96,10 @@ public class MimeTypesHelper implements Serializable
     * @param contentType
     * @return
     */
-   public static String getExtension(String contentType)
+   public String getExtensionI(String contentType)
    {
       if(org.eclipse.stardust.common.StringUtils.isNotEmpty(contentType)){
-         for (MIMEType mimeType : getInstance().allMimeTypes)
+         for (MIMEType mimeType : allMimeTypes)
          {
             if (mimeType.getType().equalsIgnoreCase(contentType))
             {
@@ -110,12 +110,17 @@ public class MimeTypesHelper implements Serializable
       return "";
    }
 
+   public static String getExtension(String contentType)
+   {
+      return getInstance().getExtensionI(contentType);
+   }
+   
    /**
     * @param fileName
     * @param type
     * @return
     */
-   public static MIMEType detectMimeType(String fileName, String type)
+   public MIMEType detectMimeTypeI(String fileName, String type)
    {
       MIMEType requiredMimeType = null;
 
@@ -126,12 +131,11 @@ public class MimeTypesHelper implements Serializable
          {
             extension = StringUtils.substringAfterLast(fileName, ".");
          }
-         MimeTypesHelper mimeTypeUtils = getInstance();
 
          // check if file extension mapping is defined
          if (org.eclipse.stardust.common.StringUtils.isNotEmpty(extension))
          {
-            for (MIMEType mimeType : mimeTypeUtils.allMimeTypes)
+            for (MIMEType mimeType : allMimeTypes)
             {
                if (mimeType.containsExtension(extension))
                {
@@ -144,7 +148,7 @@ public class MimeTypesHelper implements Serializable
          // check if there is a mapping defined for content type
          if (null == requiredMimeType)
          {
-            for (MIMEType mimeType : mimeTypeUtils.allMimeTypes)
+            for (MIMEType mimeType : allMimeTypes)
             {
                if (mimeType.getType().equalsIgnoreCase(type))
                {
@@ -173,14 +177,18 @@ public class MimeTypesHelper implements Serializable
       return requiredMimeType;
    }
 
+   public static MIMEType detectMimeType(String fileName, String type)
+   {
+      return getInstance().detectMimeTypeI(fileName, type);
+   }
+
    /**
     * @param type
     * @return
     */
-   public static MIMEType findByType(String type)
+   public MIMEType findByTypeI(String type)
    {
-      MimeTypesHelper mimeTypeUtils = getInstance();
-      for (MIMEType mimeType : mimeTypeUtils.allMimeTypes)
+      for (MIMEType mimeType : allMimeTypes)
       {
          if (mimeType.getType().equalsIgnoreCase(type))
          {
@@ -188,6 +196,11 @@ public class MimeTypesHelper implements Serializable
          }
       }
       return null;
+   }
+   
+   public static MIMEType findByType(String type)
+   {
+     return getInstance().findByTypeI(type);
    }
 
    /**

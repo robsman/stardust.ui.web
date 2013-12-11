@@ -12,6 +12,7 @@
  * TODO: Convert and move most of the things to Angular directive
  * 
  * @author Subodh.Godbole
+ * 
  */
 
 define(["processportal/js/codeGenerator"], function(codeGenerator){
@@ -82,6 +83,34 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.closeNestedList = closeNestedList;
 				$scope.showNestedList = showNestedList;
 			});
+			
+			/**
+			 * TODO remove it later
+			 */
+				 /*jQuery( "#upload-file" )
+			      .button()
+			      .click(function() {
+			    	  if (parent.iPopupDialog) {
+							parent.iPopupDialog.openPopup({
+								attributes : {
+									width : "600px",
+									height : "400px",
+									src : "../common/popups/fileUploadPopupDialogContent.html"
+								},
+								payload : {
+									title : "modeler.messages.confirm",
+									message: "Upload a document to " + "Document Path Label",
+									documentTypeName: "documentTypeName",
+									acceptFunction : function(fileUploadDetails) {
+										alert(fileUploadDetails.fileId);
+									}
+								}
+							});
+						} else {
+							alert("not available");
+						}
+			        //jQuery( "#dialog-form" ).dialog( "open" );
+			      });*/
 		};
 
 		/*
@@ -116,20 +145,20 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					require : 'ngModel',
 					link : function(scope, elm, attr, ctrl) {
 						var ngModel = $parse(attr.ngModel);
-						jQuery(function() {
+					jQuery(function() {
 							elm.datepicker({
 								dateFormat : clientDateFormat,
-								onSelect : function(dateText, inst) {
-									scope.$apply(function(scope) {
+							onSelect : function(dateText, inst) {
+								scope.$apply(function(scope) {
 										// Convert to Server Format
 										var value = formatDate(dateText, clientDateFormat, SERVER_DATE_FORMAT);
 
-										// Change binded variable
+									// Change binded variable
 										ngModel.assign(scope, value);
-									});
-								}
-							});
+								});
+							}
 						});
+					});
 
 						ctrl.$formatters.unshift(function(viewValue) {
 							// Convert to Client Format
@@ -388,6 +417,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 			}
 		}
+		
+		
 
 		/*
 		 * 
@@ -398,9 +429,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				removeSelectedElements(list);
 				if (list.length == 0) {
 					list.push({});
+			}
 				}
 			}
-		}
 
 		/*
 		 * 
@@ -423,7 +454,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var ret = $scope.form.$valid;
 			if (ret) {
 				ret = areNestedFormsValid();
-			}
+		}
 			return ret;
 		}
 
@@ -493,11 +524,76 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			return success;
 		}
 
-		/*
-		 * 
+		/**
+		 * @param xPath
+		 * @author Yogesh.Manware
 		 */
 		function openDocument(xPath) {
 			log("TODO: " + xPath);
+			//TODO document deletion
+			//TODO Mouse tooltip to display document name
+
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			
+			var currentBindings = $scope[BINDING_PREFIX];
+			var lastPart = parts[parts.length - 1];
+			
+			if (!currentBindings[lastPart] || !currentBindings[lastPart].docId) {
+				//Document is not set
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog.openPopup({
+						attributes : {
+							width : "600px",
+							height : "400px",
+							src : "../views-common/popups/fileUploadPopupDialogContent.html"
+						},
+						payload : {
+							title : i18nLabelProvider().getLabel("panel.fileUpload.dialog.title"),
+							message: i18nLabelProvider().getLabel("panel.fileUpload.dialog.msg").replace("{0}", i18nLabelProvider(xPath)),
+							documentTypeName: currentBindings[lastPart].docTypeName,
+							acceptFunction : function(fileUploadData) {
+								//TODO post changes
+								//change image icon - file uploaded now
+								//display delete icon on right click
+								runInAngularContext(function($scope){
+									//Form Data
+									currentBindings[lastPart].fileDescription = fileUploadData.fileDescription;
+									currentBindings[lastPart].openDocument = fileUploadData.openDocument;
+									currentBindings[lastPart].versionComment = fileUploadData.versionComment;
+									
+									//File data
+									currentBindings[lastPart].docId = fileUploadData.fileDetails.uuid;
+									currentBindings[lastPart].docIcon = fileUploadData.fileDetails.docIcon;
+									currentBindings[lastPart].docName = fileUploadData.fileDetails.fileName;
+									currentBindings[lastPart].contentType = fileUploadData.fileDetails.contentType;
+									currentBindings[lastPart].type = "FILE_SYSTEM";
+								});
+								//open view using parent.postmessage
+								/*if(fileUploadData.openDocument){
+									var msg = {};
+									msg.type = "OpenView";
+									msg.data = {};
+									msg.data.viewId = "documentView";
+									msg.data.params = {};
+									msg.data.params.fileSystemDocumentId = fileUploadData.fileDetails.uuid;
+									
+									parent.postMessage(JSON.stringify(msg), "*");
+								}*/
+							}
+						}
+					});
+				} else {
+					alert("not available");
+				}
+				
+			}else{
+				//Document is set
+				var currentBinding = currentBindings[lastPart];
+				//Open document
+				
+			}
+
 		}
 
 		/*

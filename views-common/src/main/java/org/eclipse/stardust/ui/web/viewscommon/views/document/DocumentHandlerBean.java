@@ -54,6 +54,7 @@ import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
@@ -275,24 +276,44 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       documentContentInfo = (IDocumentContentInfo) thisView.getViewParams().get("documentInfo");
 
-      if (null == documentContentInfo && null != thisView.getViewParams().get("documentId"))
+      if (null == documentContentInfo)
       {
-         String documentId = (String) thisView.getViewParams().get("documentId");
+         if(null != thisView.getViewParams().get("documentId")){
+            String documentId = (String) thisView.getViewParams().get("documentId");
 
-         try
-         {
-            documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
-            thisView.getViewParams().put("documentInfo", documentContentInfo);
+            try
+            {
+               documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+               thisView.getViewParams().put("documentInfo", documentContentInfo);
+            }
+            catch (ResourceNotFoundException e)
+            {
+               viewEvent.setVetoed(true);
+               ExceptionHandler.handleException(e);
+               return false;
+            }   
          }
-         catch (ResourceNotFoundException e)
+         else if (null != thisView.getViewParams().get("fileSystemDocumentId"))
          {
-            viewEvent.setVetoed(true);
-            ExceptionHandler.handleException(e);
-            return false;
+            FileStorage fileStorage = FileStorage.getInstance();
+            InputParameters params = fileStorage.pullFile((String) thisView.getViewParams()
+                  .get("fileSystemDocumentId")); 
+            documentContentInfo = params.getDocumentContentInfo();
+            
+            thisView.getViewParams().put("documentInfo", documentContentInfo);
+            
+            dataPathId = params.getDataPathId();
+            dataId = params.getDataId();
+            
+            processInstance = ProcessInstanceUtils.getProcessInstance(params.getProcessInstancOid());
          }
       }
 
-      processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
+      if (processInstance == null)
+      {
+         processInstance = (ProcessInstance) thisView.getViewParams().get(
+               "processInstance");
+      }
 
       if (null == processInstance)
       {
@@ -1268,5 +1289,71 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       return disableAutoDownload;
    }
 
+   /**
+    * 
+    * @author Yogesh.Manware
+    *
+    */
+   public static class InputParameters
+   {
+      private IDocumentContentInfo documentContentInfo;
 
+      private long processInstancOid;
+
+      private String dataPathId;
+
+      private String dataId;
+
+      private boolean disableAutoDownload = false;
+      
+      public IDocumentContentInfo getDocumentContentInfo()
+      {
+         return documentContentInfo;
+      }
+
+      public void setDocumentContentInfo(IDocumentContentInfo documentContentInfo)
+      {
+         this.documentContentInfo = documentContentInfo;
+      }
+
+      public long getProcessInstancOid()
+      {
+         return processInstancOid;
+      }
+
+      public void setProcessInstancOid(long processInstancOid)
+      {
+         this.processInstancOid = processInstancOid;
+      }
+
+      public String getDataPathId()
+      {
+         return dataPathId;
+      }
+
+      public void setDataPathId(String dataPathId)
+      {
+         this.dataPathId = dataPathId;
+      }
+
+      public String getDataId()
+      {
+         return dataId;
+      }
+
+      public void setDataId(String dataId)
+      {
+         this.dataId = dataId;
+      }
+
+      public boolean isDisableAutoDownload()
+      {
+         return disableAutoDownload;
+      }
+
+      public void setDisableAutoDownload(boolean disableAutoDownload)
+      {
+         this.disableAutoDownload = disableAutoDownload;
+      }
+   }
 }

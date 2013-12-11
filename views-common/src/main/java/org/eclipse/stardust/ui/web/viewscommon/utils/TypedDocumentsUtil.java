@@ -248,19 +248,28 @@ public class TypedDocumentsUtil
       return DocumentTypeUtils.getDocumentTypeFromData(relevantModel, data);
    }
 
-
    /**
-    * Helps to retrieve I18ned DocumentType (Structured Data label)
-    * 
+    * Helps to retrieve I18ned DocumentType (Structured Data label) 
     * @param docType
     * @return
     */
    public static String getDocumentTypeLabel(DocumentType docType)
    {
+      DeployedModel model = ModelUtils.getModelForDocumentType(docType);
+      return getDocumentTypeLabel(docType, model);
+   }
+   
+   /**
+    * Helps to retrieve I18ned DocumentType (Structured Data label)
+    * @param docType
+    * @param model
+    * @return
+    */
+   public static String getDocumentTypeLabel(DocumentType docType, DeployedModel model)
+   {
       String label = "";
       if (null != docType)
       {
-         DeployedModel model = ModelUtils.getModelForDocumentType(docType);
          if (null != model)
          {
             TypeDeclaration typeDeclaration = model.getTypeDeclaration(docType);
@@ -277,6 +286,7 @@ public class TypedDocumentsUtil
       }
       return label;
    }
+   
    
    /**
     * @param path

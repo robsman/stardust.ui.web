@@ -37,7 +37,7 @@
       <conf name="jsf-myfaces-module-runtime" description="JSF API and Implementation Classes - MyFaces - Runtime Scope" />
       
       <conf name="compile" extends="ipp-portal-common-compile, ipp-portal-common-provided" visibility="private" description="IPP Portal Common" />
-   
+
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
@@ -89,14 +89,6 @@
       <!-- spring-webmvc contains the DispatcherServlet which is necessary for spring remoting -->
       <dependency org="org.springframework" name="spring-webmvc" transitive="false" rev="${spring-webmvc.version}" conf="ipp-portal-common-runtime->default"/>
 
-	<dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-portal-common-compile->default" >
-         <exclude org="org.apache.cxf" module="cxf-api" />
-         <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
-         <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
-         <exclude org="javax.ws.rs" module="jsr311-api" />
-         <exclude org="com.sun.xml.bind" module="jaxb-impl" />
-      </dependency>
- 
       <!-- ipp-portal-common-provided -->
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="ipp-portal-common-provided->default" />
       <dependency org="javax.el" name="el-api" rev="${el-api.version}" conf="ipp-portal-common-provided->default" />
@@ -147,7 +139,7 @@
          <exclude org="commons-el" module="commons-el"/>
          <exclude org="commons-collections" module="commons-collections"/>
          <exclude org="commons-logging" module="commons-logging"/>
-      </dependency>      
+      </dependency>
       <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-collections" name="commons-collections" rev="${commons-collections.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
@@ -182,7 +174,7 @@
       <dependency org="commons-discovery" name="commons-discovery" rev="${commons-discovery.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="commons-logging" module="commons-logging"/>
       </dependency>
-      
+
       <dependency org="com.sun.media" name="jai_imageio" rev="${jai_imageio.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.media" module="jai_core" />
       </dependency>

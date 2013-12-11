@@ -19,20 +19,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import javax.servlet.ServletContext;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
+import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 /**
  * @author Subodh.Godbole
+ * @author Yogesh.Manware
  *
  */
 public class JsonHelper
@@ -40,14 +51,14 @@ public class JsonHelper
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
 
    private String dateFormat = "yyyy-MM-dd";
-
+  
    /**
     * 
     */
    public JsonHelper()
    {
    }
-
+   
    /**
     * @param dateFormat
     */
@@ -59,7 +70,6 @@ public class JsonHelper
    /*
     * 
     */
-   @SuppressWarnings({"unchecked", "rawtypes"})
    public void toJson(Map<String, ? extends Serializable> data, JsonObject parent)
    {
       for (Entry<String, ? extends Serializable> entry : data.entrySet())
@@ -68,26 +78,83 @@ public class JsonHelper
          {
             continue;
          }
-         
-         if (entry.getValue() instanceof Map)
-         {
-            JsonObject json = new JsonObject();
-            parent.add(entry.getKey(), json);
-            toJson((Map)entry.getValue(), json);
-         }
-         else if (entry.getValue() instanceof List)
-         {
-            JsonArray json = new JsonArray();
-            parent.add(entry.getKey(), json);
-            toJson((List)entry.getValue(), json);
-         }
-         else // Primitive
-         {
-            JsonPrimitive primitive = toJson(entry.getValue());
-            parent.add(entry.getKey(), primitive);
-         }
+         toJson(entry.getKey(), entry.getValue(), parent);
       }
    }
+   
+   /**
+    * 
+    * @param document
+    * @param dataId
+    * @param elemDM
+    * @param model
+    * @param servletContext
+    */
+   public void toJsonDocument(Object document, String dataId, JsonObject elemDM,
+         Model model, ServletContext servletContext)
+   {
+      trace.debug("create document json...");
+      
+      String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(model.getData(dataId));
+      
+      elemDM.add(DOCUMENT.TYPE_ID, new JsonPrimitive(typeDeclarationId));
+      elemDM.add(
+            DOCUMENT.TYPE_NAME,
+            new JsonPrimitive(
+                  TypedDocumentsUtil.getDocumentTypeLabel(DocumentTypeUtils.getDocumentType(
+                        typeDeclarationId, model), (DeployedModel) model)));
+
+      org.eclipse.stardust.engine.api.runtime.Document doc = (org.eclipse.stardust.engine.api.runtime.Document) document;
+
+      if (doc != null)
+      {
+         elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.JCR.toString()));
+
+         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
+               "ippMimeTypesHelper", servletContext);
+         MIMEType mType = mimeTypesHelper.detectMimeTypeI(doc.getName(),
+               doc.getContentType());
+
+         elemDM.add(DOCUMENT.ID, new JsonPrimitive(doc.getId()));
+         elemDM.add(DOCUMENT.NAME, new JsonPrimitive(doc.getName()));
+         elemDM.add(DOCUMENT.ICON, new JsonPrimitive(DOCUMENT.DOC_PATH + "mime-types/"
+               + mType.getIconPath()));
+
+      }
+      else
+      {
+         elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.NONE.toString()));
+         elemDM.add(DOCUMENT.ICON, new JsonPrimitive(DOCUMENT.DOC_PATH
+               + "page_white_error.png"));
+      }
+   }
+   
+  /**
+   *  
+   * @param key
+   * @param value
+   * @param parent
+   */
+   public void toJson(String key, Object value, JsonObject parent){
+      if (value instanceof Map)
+      {
+         JsonObject json = new JsonObject();
+         parent.add(key, json);
+         toJson((Map)value, json);
+      }
+      else if (value instanceof List)
+      {
+         JsonArray json = new JsonArray();
+         parent.add(key, json);
+         toJson((List)value, json);
+      }
+      else // Primitive
+      {
+         JsonPrimitive primitive = toJson(value);
+         parent.add(key, primitive);
+      }
+   }
+   
    
    /*
     * 

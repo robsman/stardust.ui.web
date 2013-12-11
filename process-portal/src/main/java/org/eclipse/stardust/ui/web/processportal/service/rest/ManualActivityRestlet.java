@@ -32,6 +32,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -40,10 +45,6 @@ import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementUtils;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 /**
  * @author Subodh.Godbole
@@ -86,8 +87,7 @@ public class ManualActivityRestlet
       Interaction interaction = getInteraction();
 
       Map<String, ? extends Serializable> inData = interaction.getInDataValues();
-      JsonObject root = new JsonObject();
-      new JsonHelper().toJson(inData, root);
+      JsonObject root = InteractionDataUtils.marshalData(interaction.getModel(), interaction.getDefinition(), inData, servletContext);
       
       return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
@@ -106,10 +106,10 @@ public class ManualActivityRestlet
 
       try
       {
-         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-               interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
-         interaction.setOutDataValues(data);
-      }
+      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+            interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
+      interaction.setOutDataValues(data);
+   }
       catch (DataException e)
       {
          JsonObject errors = new JsonObject();
@@ -138,20 +138,20 @@ public class ManualActivityRestlet
 
       try
       {
-         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-               interaction.getDefinition(), new JsonHelper().toObject(jsonElem));
+      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+            interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
    
-         // This will have only one value, so loop will execute once only
-         for (Entry<String, Serializable> entry : data.entrySet())
+      // This will have only one value, so loop will execute once only
+      for (Entry<String, Serializable> entry : data.entrySet())
+      {
+         if(null == interaction.getOutDataValues())
          {
-            if(null == interaction.getOutDataValues())
-            {
-               interaction.setOutDataValues(new HashMap<String, Serializable>());
-            }
-            
-            interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
+            interaction.setOutDataValues(new HashMap<String, Serializable>());
          }
+         
+         interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
       }
+   }
       catch (DataException e)
       {
          JsonObject errors = new JsonObject();
@@ -196,7 +196,7 @@ public class ManualActivityRestlet
 
             // Model Bundle
             readBundle(ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject()), data);
-         }
+            }
          catch (Exception e)
          {
             if (trace.isDebugEnabled())

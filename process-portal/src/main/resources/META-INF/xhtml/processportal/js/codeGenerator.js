@@ -32,7 +32,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} 
 			if (prefs.tableColumns == undefined) {
 				prefs.tableColumns = 0;
-			}
+		}
 		}
 
 		var preferences = prefs;
@@ -245,39 +245,39 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								{parent: elem, value: enumValues[key], attributes: {value: key}});
 					}
 				} else {
-					var elemWrapper = htmlElement.create("div", {parent: elemMain});
-					var validations = [];
+						var elemWrapper = htmlElement.create("div", {parent: elemMain});
+						var validations = [];
 
-					if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
-						elem = htmlElement.create("textarea", {parent: elemWrapper});
-						if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
-							elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
+						if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
+							elem = htmlElement.create("textarea", {parent: elemWrapper});
+							if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
+								elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
+							}
+							if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
+								elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
+							}
+						} else {
+							elem = htmlElement.create("input", {parent: elemWrapper});
 						}
-						if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
-							elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
-						}
-					} else {
-						elem = htmlElement.create("input", {parent: elemWrapper});
-					}
 
-					elem.attributes["ng-model-onblur"] = null;
+						elem.attributes["ng-model-onblur"] = null;
 
-					if (path.properties["InputPreferences_mandatory"] != undefined && 
-							path.properties["InputPreferences_mandatory"] == "true") {
+						if (path.properties["InputPreferences_mandatory"] != undefined && 
+								path.properties["InputPreferences_mandatory"] == "true") {
 						validations.push({type: "ng-required", value: true, msg: getI18NLabel("validation.err.Required")});
-					}
+						}
 
-					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-						elem.attributes['type'] = "checkbox";
-						elem.attributes['class'] = "panel-checkbox";
-					} else {
-						elem.attributes['type'] = "text";
-						elem.attributes['class'] = "panel-input";
+						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+							elem.attributes['type'] = "checkbox";
+							elem.attributes['class'] = "panel-checkbox";
+						} else {
+							elem.attributes['type'] = "text";
+							elem.attributes['class'] = "panel-input";
 						var valInfo = getValidationPattern(path);
 						if (valInfo.pattern) {
 							validations.push({type: "ng-pattern", value: valInfo.pattern, 
 								msg: getI18NLabel("validation.err." + valInfo.key)});
-						}
+							}
 
 						var maxLength = getMaxLength(path);
 						if (maxLength) {
@@ -285,32 +285,32 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						}
 
 						addCustomDirective(path, elem);
-					}
+							}
 
-					if (validations.length > 0) {
-						var id = "id" + Math.floor((Math.random() * 100000) + 1);
+						if (validations.length > 0) {
+							var id = "id" + Math.floor((Math.random() * 100000) + 1);
 						var formId = "'" + id + "'";
 						if (options.idExpr) {
 							formId = "'" + id + "' + " + options.idExpr;
 							id += "{{" + options.idExpr + "}}";
 						}
 
-						elem.attributes['id'] = id;
-						elem.attributes['name'] = id;
+							elem.attributes['id'] = id;
+							elem.attributes['name'] = id;
 
 						var ngFormName = options.ngFormName ? options.ngFormName : formElemName;
-						for (var i = 0; i < validations.length; i++) {
-							elem.attributes[validations[i].type] = validations[i].value;
+							for (var i = 0; i < validations.length; i++) {
+								elem.attributes[validations[i].type] = validations[i].value;
 							var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
-							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
-						}
+								htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+									attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
+							}
 
 						var showExpr = ngFormName + "[" + formId + "].$invalid";
-						htmlElement.create("span", {parent: elemMain, 
-							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
+							htmlElement.create("span", {parent: elemMain, 
+								attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
+						}
 					}
-				}
 
 				if(path.properties["InputPreferences_styleClass"] != undefined) {
 					var clazz = path.properties["InputPreferences_styleClass"];
@@ -450,10 +450,14 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function generateDocument(parent, path) {
+			var binding = convertFullIdToBinding(path);
 			var docLink = htmlElement.create("a", {parent: parent, attributes: {href: ""}});
 			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "')";
 			htmlElement.create("img", {parent: docLink, 
-				attributes: {src: "../../plugins/views-common/images/icons/mime-types/document-text.png"}});
+				//attributes: {src: "../../plugins/views-common/images/icons/mime-types/document-text.png"}});
+				// attributes: {"ng-src": "{{getDocIcon(" + binding + ")}}", alt: "{{" + binding + ".docName}}"}});
+				//attributes: {"ng-src": "../../plugins/views-common/images/icons/mime-types/{{" + binding + ".docIcon}}"}});
+				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
 			return docLink;
 		}
 
@@ -596,7 +600,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var binding = bindingPrefix ? bindingPrefix : "";
 			var currentBindingData = bindingData;
 			for (var i in parts) {
-				binding += "['" + parts[i] + "']";
+					binding += "['" + parts[i] + "']";
 
 				if (currentBindingData[parts[i]] == undefined) {
 					if (i < parts.length - 1) {

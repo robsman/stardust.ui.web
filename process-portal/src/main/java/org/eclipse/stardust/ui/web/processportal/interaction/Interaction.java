@@ -169,4 +169,8 @@ public class Interaction
       Active, Incomplete, Complete, Aborted
    }
 
+   public ActivityInstance getActivityInstance()
+   {
+      return activityInstance;
+   }
 }

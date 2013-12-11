@@ -37,8 +37,14 @@ public class RawDocument implements Document
    private String description;
    private String comments;
    private DocumentType documentType;
-
+   
+   //Pass in following parameters
+   private String contentType = "unknown";
+   private String name = "unknown";
+   private String physicalPath = "unknown";
+   
    /**
+    * 
     * @param fileInfo
     */
    public RawDocument(FileInfo fileInfo)
@@ -46,13 +52,17 @@ public class RawDocument implements Document
       this.fileInfo = fileInfo;
       properties = new HashMap<String, Serializable>();
    }
-
+   
+   public RawDocument()
+   {
+   }
+   
    /* (non-Javadoc)
     * @see org.eclipse.stardust.engine.api.runtime.DocumentInfo#getContentType()
     */
    public String getContentType()
    {
-      return (null != fileInfo) ? fileInfo.getContentType() : null;
+      return (null != fileInfo) ? fileInfo.getContentType() : contentType;
    }
 
    /* (non-Javadoc)
@@ -60,7 +70,7 @@ public class RawDocument implements Document
     */
    public String getName()
    {
-      return (null != fileInfo) ? fileInfo.getFileName() : null;
+      return (null != fileInfo) ? fileInfo.getFileName() : name;
    }
 
    /* (non-Javadoc)
@@ -148,6 +158,26 @@ public class RawDocument implements Document
    {
       return "not-yet-set";
    }
+   
+   public String getPhysicalPath()
+   {
+      return (null != fileInfo) ? fileInfo.getPhysicalPath() : physicalPath;
+   }
+
+   public void setPhysicalPath(String physicalPath)
+   {
+      this.physicalPath = physicalPath;
+   }
+
+   public void setContentType(String contentType)
+   {
+      this.contentType = contentType;
+   }
+
+   public void setName(String name)
+   {
+      this.name = name;
+   }
 
    /**************** Unsupported Operations ****************/
 
@@ -156,10 +186,7 @@ public class RawDocument implements Document
       throw new UnsupportedOperationException();
    }
 
-   public void setContentType(String arg0)
-   {
-      throw new UnsupportedOperationException();
-   }
+  
 
    public void setDocumentAnnotations(DocumentAnnotations arg0)
    {
@@ -180,12 +207,7 @@ public class RawDocument implements Document
    {
       throw new UnsupportedOperationException();
    }
-
-   public void setName(String arg0)
-   {
-      throw new UnsupportedOperationException();
-   }
-
+ 
    public void setOwner(String arg0)
    {
       throw new UnsupportedOperationException();

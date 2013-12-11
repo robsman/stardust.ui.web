@@ -1,0 +1,154 @@
+<!-- The file extension was changed from xhtml to html as it caused issues on JBoss environment when accessed from IE8. -->
+<html>
+<head>
+<link href="../../bpm-modeler/css/lightdust.css" rel="stylesheet"
+	type="text/css" />
+<link href="../../common/css/iPopupDialogStyle.css" rel="stylesheet"
+	type="text/css" />
+
+<script type="text/javascript"
+	data-main="../../views-common/js/fileUploadMain"
+	src="../../bpm-modeler/js/libs/require/2.0.5/require.js"></script>
+
+<style>
+.iPopupDialogContentArea {
+	padding-left: 25px;
+}
+
+.popupDialogHdr {
+	background: #3c7882;
+	color: #ffffff;
+	font-weight: bold;
+	white-space: normal;
+	width: auto;
+	height: 3em;
+	/*    border-radius: 5px 5px 0px 0px; 
+	-moz-border-radius: 5px 5px 0px 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;*/
+	border-bottom: 1px solid #2e5c63;
+}
+
+.popupDialogHdr .headerText {
+	color: #FFFFFF;
+	float: left;
+	font-family: Arial;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 20px;
+	padding: 0 10px;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.pnlPopUpBrdrDialogCenter {
+	border: none;
+	font-weight: nor;
+	text-align: left;
+	vertical-align: top;
+	padding: 10px 10px 10px 10px;
+	line-height: 18px;
+	background-color: #FFFFFF;
+}
+
+#bar {
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #D9D9D9;
+	height: 17px;
+	width: 300px;
+}
+
+#percent {
+	text-align: center;
+	position: relative;
+	background-color: transparent;
+	width: 100%;
+	z-index: 1;
+	"
+}
+
+.popupTextArea {
+	height: 30px;
+	width: 200px;
+}
+</style>
+
+</head>
+
+<body style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+	<div id="titleBar" class="popupDialogHdr">
+		<span id="titleText" class="iPopupDialogTitleText"></span> <input
+			id="dialogCloseIcon" type="button" title="Close"
+			class="iPopupDialogCloseControl" />
+	</div>
+	<!-- <form id="IPP_form_upload" enctype="multipart/form-data" method="post"> -->
+	<div id="contentArea" class="pnlPopUpBrdrDialogCenter"
+		style="height: 230px">
+		<div class="iPopupDialogSpacerDiv"></div>
+
+		<table border="0">
+			<tr>
+				<td><div id="fileUploadMsg" class="output" /></td>
+			</tr>
+			<tr>
+
+			</tr>
+			<tr>
+				<td><label for="documentType"> Document Type </label></td>
+				<td><output id="documentType" class="output" /></td>
+			</tr>
+			<tr>
+				<td><label for="fileDescription"> File Description </label></td>
+				<td><input id="fileDescription" type="textarea"
+					class="popupTextArea" /></td>
+			</tr>
+			<tr>
+				<td><label for="versionComment"> Version Comments </label></td>
+				<td><input id="versionComment" type="textarea"
+					class="popupTextArea" /></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td><label for="fileUploadForm"> Select file for Upload
+				</label>
+				</td>
+			</tr>
+			<tr>
+				<td><form id="fileUploadForm" method="post"
+						enctype="multipart/form-data">
+						<input type="file" size="60" name="myfile"> <input
+							type="submit" value="Upload">
+					</form></td>
+			</tr>
+			<tr>
+				<td>
+					<div id="progress">
+						<div id="bar">
+							<div id="percent">0%</div>
+						</div>
+
+					</div></td>
+			</tr>
+			<tr>
+				<td>
+					<div id="message"></div>
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td><input id="openDocument" type="checkbox" /></td>
+				<td><label for="openDocument"> Open Document </label></td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div id="fileUploadControls" class="iPopupDialogControlsArea">
+		<input id="acceptButton" type="button" value="Upload"
+			class="iPopupDialogControlButton" /> <input id="cancelButton"
+			type="button" value="Cancel" class="iPopupDialogControlButton" />
+	</div>
+	</form>
+</body>
+</html>

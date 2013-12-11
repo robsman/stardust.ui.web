@@ -347,6 +347,11 @@
 		scope="session">
 	</bean>
 	
+	<bean name="fileStorage"
+		class="org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage"
+		scope="session">
+	</bean>
+	
 	<bean name="partitionPreferenceCache"
 		class="org.eclipse.stardust.ui.web.viewscommon.core.PartitionPreferenceCache"
 		scope="session">
