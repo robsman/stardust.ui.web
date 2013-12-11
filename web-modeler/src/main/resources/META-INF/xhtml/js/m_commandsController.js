@@ -38,9 +38,9 @@ define(
 							errorCallback);
 				},
 
-				submitCommand : function(command) {
+				submitCommand : function(command, withBroadcast) {
 					if (isValid(command)) {
-						return getInstance().submitCommand(command);
+						return getInstance().submitCommand(command, withBroadcast);
 					}
 				},
 				registerCommandHandler : function(commandHandler, manualUnload) {
@@ -239,10 +239,13 @@ define(
 				/**
 				 *
 				 */
-				CommandsController.prototype.submitCommand = function(command) {
+				CommandsController.prototype.submitCommand = function(command, withBroadcast) {
 					var url = m_communicationController.getEndpointUrl()
 							+ command.path;
 					var obj = [];
+
+					// make parameter default to true
+					withBroadcast = (typeof withBroadcast !== 'undefined') ? withBroadcast : true;
 
 					if (command.operation != null) {
 						url += "/" + command.operation;
@@ -267,13 +270,15 @@ define(
 															.debug("\n===> Receive Command Confirmation:\n");
 													m_utils.debug(command);
 
-													getInstance()
-															.broadcastCommand(
-																	command);
-													deferred.resolve();
+													if (withBroadcast) {
+														getInstance().broadcastCommand(command);
+													}
+													deferred.resolve(command);
 												},
 												"error" : function(response) {
-                          getInstance().broadcastError(command, response);
+													if (withBroadcast) {
+														getInstance().broadcastError(command, response);
+													}
 													deferred.reject(response);
 												}
 											};
@@ -315,17 +320,18 @@ define(
 													m_utils.debug(command);
 
 													if (!command.problems) {
-														getInstance()
-																.broadcastCommand(
-																		command);
-														deferred.resolve();
+														if (withBroadcast) {
+															getInstance().broadcastCommand(command);
+														}
+														deferred.resolve(command);
 													} else {
-														deferred
-																.reject(command);
+														deferred.reject(command);
 													}
 												},
 												"error" : function(response) {
-                          getInstance().broadcastError(command, response);
+													if (withBroadcast) {
+														getInstance().broadcastError(command, response);
+													}
 													deferred.reject(response);
 												}
 											};
