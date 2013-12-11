@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -28,8 +29,8 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
@@ -41,6 +42,7 @@ import org.eclipse.stardust.ui.web.common.spi.env.RuntimeEnvironmentInfoProvider
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.UserUtils;
 import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
@@ -80,8 +82,11 @@ public class HTML5FrameworkServices
       MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
             MessagePropertiesBean.class, servletContext);
 
-      contents = StringUtils.replace(contents, "PORTAL_TITLE",
-            messageBean.getString("portalFramework.config.PORTAL_TITLE"));
+      String headerKey = servletContext.getInitParameter(Constants.LOGIN_HEADING);
+      String bundleBasName = servletContext.getInitParameter(Constants.COMMON_MESSAGE_BUNDLE);
+      Locale loc = new Locale(locale);
+      contents = StringUtils
+            .replace(contents, "PORTAL_TITLE", FacesUtils.getPortalTitle(headerKey, bundleBasName, loc));
       contents = StringUtils.replace(contents, "SIDEBAR_LABEL",
             messageBean.getString("portalFramework.config.SIDEBAR_LABEL"));
       String commonMenuConfigStr = (String) RestControllerUtils.resolveSpringBean("commonMenuConfig", servletContext);

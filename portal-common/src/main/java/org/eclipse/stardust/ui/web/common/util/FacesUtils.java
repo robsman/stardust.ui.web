@@ -599,14 +599,21 @@ public class FacesUtils implements Constants
     */
    public static String getPortalTitle()
    {
+      String headingNlsKey = FacesContext.getCurrentInstance().getExternalContext().getInitParameter(LOGIN_HEADING);
+      // If message-bundle not found, search in common message bundle
+      String baseName = FacesContext.getCurrentInstance().getExternalContext().getInitParameter(COMMON_MESSAGE_BUNDLE);
+      return getPortalTitle(headingNlsKey, baseName, getLocaleFromRequest());
+   }
+
+   public static String getPortalTitle(String headerKey, String bundleBasName, Locale locale)
+   {
       String result = null;
 
-      String headingNlsKey = FacesContext.getCurrentInstance().getExternalContext().getInitParameter(LOGIN_HEADING);
-      if (!StringUtils.isEmpty(headingNlsKey) && (-1 != headingNlsKey.indexOf("#")))
+      if (!StringUtils.isEmpty(headerKey) && (-1 != headerKey.indexOf("#")))
       {
          String bundleName = null;
          String nlsKey = null;
-         Iterator<String> i = StringUtils.split(headingNlsKey, "#");
+         Iterator<String> i = StringUtils.split(headerKey, "#");
          if (i.hasNext())
          {
             bundleName = i.next();
@@ -618,7 +625,7 @@ public class FacesUtils implements Constants
 
          if (!StringUtils.isEmpty(bundleName) && !StringUtils.isEmpty(nlsKey))
          {
-            result = getString(getLocaleFromRequest(), bundleName, nlsKey);
+            result = getString(locale, bundleName, nlsKey, bundleBasName);
          }
       }
 
@@ -630,14 +637,15 @@ public class FacesUtils implements Constants
       return result;
    }
 
-   /**
-    * 
-    * @param locale
-    * @param bundleName
-    * @param key
-    * @return
-    */
-   public static String getString(Locale locale, String bundleName, String key)
+  /**
+   * 
+   * @param locale
+   * @param bundleName
+   * @param key
+   * @param bundleBasName
+   * @return
+   */
+   public static String getString(Locale locale, String bundleName, String key, String bundleBasName)
    {
       String text = null;
       String failureMsg = null;
@@ -649,12 +657,9 @@ public class FacesUtils implements Constants
             text = bundle != null ? bundle.getString(key) : null;
             if (text == null)
             {
-               // If message-bundle not found, search in common message bundle
-               String baseName = FacesContext.getCurrentInstance().getExternalContext()
-                     .getInitParameter(COMMON_MESSAGE_BUNDLE);
-               if (baseName != null)
+               if (bundleBasName != null)
                {
-                  bundle = ResourceBundle.getBundle(baseName, locale, getCurrentClassLoader());
+                  bundle = ResourceBundle.getBundle(bundleBasName, locale, getCurrentClassLoader());
                   text = bundle != null ? bundle.getString(key) : null;
                }
             }
