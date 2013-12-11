@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
@@ -692,48 +693,36 @@ public class ModelService
 	 */
    public void saveAllModels()
    {
-      // TODO
-      // Temporarily commenting selective save as not all changes have moved to change
-      // protocol yet.
-      // After that this can be uncommented
-      /*
-       * Set<String> changedModels =
-       * UnsavedModelsTracker.getInstance().getUnsavedModels(); for (String modelId :
-       * changedModels) { ModelType model =
-       * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
-       * getModelManagementStrategy().saveModel(model); } }
-       *
-       * //Clear the unsaved models' list.
-       * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
-       */
-
-      // TODO
-      // Temporarily saving all models as not all changes have moved to change protocol
-      // yet.
-      // After that happens this code can be deleted.
-      Collection<ModelType> models = getModelManagementStrategy().getModels().values();
-
-      for (ModelType model : models)
+      ModelRepository modelRepository = currentSession().modelRepository();
+      List<ModelType> modelsToBeSaved = newArrayList();
+      for (ModelType xpdlModel : getModelManagementStrategy().getModels().values())
       {
-         if ( !currentSession().canSaveModel(model.getId()))
+         // do only save if the model was actually changed (which implies an edit lock)
+         EObject nativeModel = modelRepository.findModel(xpdlModel.getId());
+         if (currentSession().getSession().isTrackingModel(nativeModel))
          {
-            throw new MissingWritePermissionException(
-                  "Failed to (re-)validate edit lock on model " + model.getId());
+            if (!currentSession().canSaveModel(xpdlModel.getId()))
+            {
+               throw new MissingWritePermissionException(
+                     "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
+            }
+
+            modelsToBeSaved.add(xpdlModel);
          }
       }
 
-      for (ModelType model : models)
+      for (ModelType xpdlModel : modelsToBeSaved)
       {
          try
          {
-            if (!getModelBuilderFacade().isReadOnly(model))
+            if (!getModelBuilderFacade().isReadOnly(xpdlModel))
             {
-               getModelManagementStrategy().saveModel(model);
+               getModelManagementStrategy().saveModel(xpdlModel);
             }
          }
          catch (Exception e)
          {
-            trace.warn("Failed saving model " + getModelFileName(model.getId()), e);
+            trace.warn("Failed saving model " + getModelFileName(xpdlModel.getId()), e);
          }
       }
       currentSession().reset();

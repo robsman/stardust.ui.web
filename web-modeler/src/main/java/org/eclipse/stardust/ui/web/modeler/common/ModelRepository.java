@@ -90,6 +90,11 @@ public class ModelRepository
       };
    }
 
+   public String getModelId(EObject model)
+   {
+      return getModelBinding(model).getModelId(model);
+   }
+
    public String getModelFileName(EObject model)
    {
       for (ModelType xpdlModel : session.modelManagementStrategy().getModels().values())

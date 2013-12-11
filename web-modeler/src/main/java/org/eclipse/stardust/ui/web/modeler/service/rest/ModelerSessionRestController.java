@@ -42,7 +42,6 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
-import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -631,9 +630,6 @@ public class ModelerSessionRestController
          {
             change.getMetadata().put("account", commandJto.account);
          }
-
-         // Notify unsaved models tracker of the change to the model.
-         UnsavedModelsTracker.getInstance().notifyModelModfied(modelBinding.getModelId(model));
 
          JsonObject changeJto = toJson(toJto(change));
 

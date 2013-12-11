@@ -553,38 +553,49 @@ public class TestModelEditLocking
    }
 
    @Test
-   public void testModelLockedByOtherPreventsSaveAllByMe() throws Exception
+   public void testOtherModelLockedByOtherDoesNotPreventSaveAllByMe() throws Exception
    {
       createOtherSession();
 
       assertModelIsNotLocked(MODEL_ID, OTHER_MODEL_ID);
 
-      modelLockManager.lockForEditing(otherSession, MODEL_ID);
+      modelLockManager.lockForEditing(otherSession, OTHER_MODEL_ID);
 
-      assertModelIsLockedByOther(MODEL_ID);
-      assertModelIsNotLocked(OTHER_MODEL_ID);
-
-      // saveModel via service
-      try
-      {
-         modelService.saveAllModels();
-
-         assertThat("Expected an exception.", true, is(false));
-      }
-      catch (MissingWritePermissionException mwpe)
-      {
-         assertThat(mwpe.getMessage(), startsWith("Failed"));
-      }
+      assertModelIsNotLocked(MODEL_ID);
+      assertModelIsLockedByOther(OTHER_MODEL_ID);
 
       // saveModel via REST facade
       Response response = modelerRestController.saveAllModels();
 
-      assertThat(response.getStatus(), is(Status.CONFLICT.getStatusCode()));
-      assertThat(response.getEntity(), is(instanceOf(String.class)));
-      assertThat((String) response.getEntity(), startsWith("Missing write permission"));
+      assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 
-      assertModelIsLockedByOther(MODEL_ID);
+      assertModelIsNotLocked(MODEL_ID);
+      assertModelIsLockedByOther(OTHER_MODEL_ID);
+   }
+
+   @Test
+   public void testOtherModelLockedByOtherDoesNotPreventSaveAllOfModelsChangedByMe() throws Exception
+   {
+      assertModelIsNotLocked(MODEL_ID, OTHER_MODEL_ID);
+
+      testModelGetsLockedUponChange();
+
+      assertModelIsLockedByMe(MODEL_ID);
       assertModelIsNotLocked(OTHER_MODEL_ID);
+
+      createOtherSession();
+      modelLockManager.lockForEditing(otherSession, OTHER_MODEL_ID);
+
+      assertModelIsLockedByMe(MODEL_ID);
+      assertModelIsLockedByOther(OTHER_MODEL_ID);
+
+      // saveModel via REST facade
+      Response response = modelerRestController.saveAllModels();
+
+      assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+
+      assertModelIsNotLocked(MODEL_ID);
+      assertModelIsLockedByOther(OTHER_MODEL_ID);
    }
 
    @Test
