@@ -3,7 +3,11 @@ define(["bpm-modeler/js/m_model",
         "bpm-modeler/js/m_urlUtils",
         "rules-manager/js/m_i18nUtils",
         "rules-manager/js/hotDecisionTable/m_typeMapper"],
-		function(m_model,m_drlAttributes,m_urlUtils,m_i18nUtils,m_typeMapper){
+		function(m_model,
+				m_drlAttributes,
+				m_urlUtils,
+				m_i18nUtils,
+				m_typeMapper){
   
   /*************************************************
    * Parse the result of a typeDeclarations.getBody() 
@@ -413,8 +417,8 @@ define(["bpm-modeler/js/m_model",
 	    		}
 	    	}
 	    	else{
-	    		if(paramDef.primitiveDataType==="Enumeration"){
-	    			typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+	    		typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+	    		if(typeDecl.getType()==="enumStructuredDataType"){
 	    			typeBody=enumerationParser(typeDecl);
 	    			temp=fx(typeBody,paramDef,typeDecl);
 	    		}
