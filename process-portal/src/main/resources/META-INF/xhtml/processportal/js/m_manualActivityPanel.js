@@ -399,7 +399,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function addToList(list) {
-			var $scope = angular.element(document).scope();
 			if (list != undefined) {
 				list.push({});
 			}
@@ -425,7 +424,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function removeFromList(list) {
-			var $scope = angular.element(document).scope();
 			if (list) {
 				removeSelectedElements(list);
 				if (list.length == 0) {
