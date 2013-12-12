@@ -66,7 +66,7 @@
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}" transitive="false" conf="ipp-views-common-compile->default" />
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}" transitive="false" conf="ipp-views-common-compile->default" />
 
-	  <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-portal-common-compile->default" >
+	  <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-views-common-compile->default" >
          <exclude org="org.apache.cxf" module="cxf-api" />
          <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
          <exclude org="org.codehaus.woodstox" module="woodstox-core-asl" />
