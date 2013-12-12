@@ -24,15 +24,6 @@
    </parent>
 -->
 
-   <properties>
-      <ipp.version>1.1.0-NIGHTLY-SNAPSHOT</ipp.version>
-   </properties>
-
-   <dependencyManagement>
-      <dependencies>
-      </dependencies>
-   </dependencyManagement>
-
    <dependencies>
       <!-- IMPORTANT: these dependencies must be in sync with those of ivy.xml -->
 
