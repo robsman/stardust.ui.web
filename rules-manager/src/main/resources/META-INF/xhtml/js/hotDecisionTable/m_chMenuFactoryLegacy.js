@@ -84,6 +84,7 @@ define(["./m_operators"],function(operators){
 				  case "checkbox":
 					  colType=operators.MenuCategory.CAT_BOOLEAN;
 					  break;
+				  case "dateTime":
 				  case "date":
 					  colType=operators.MenuCategory.CAT_DATE;
 					  break;
