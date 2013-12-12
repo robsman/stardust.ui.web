@@ -435,8 +435,10 @@ define(["bpm-modeler/js/m_model",
 	    		}
 	    	}
 	    	else{
-	    		typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
-	    		if(typeDecl.getType()==="enumStructuredDataType"){
+	    		if(paramDef.structuredDataTypeFullId){
+	    			typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId);
+				}
+	    		if(typeDecl && typeDecl.getType()==="enumStructuredDataType"){
 	    			typeBody=enumerationParser(typeDecl);
 	    			temp=fx(typeBody,paramDef,typeDecl);
 	    		}
