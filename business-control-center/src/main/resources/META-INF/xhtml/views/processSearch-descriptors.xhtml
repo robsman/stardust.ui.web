@@ -107,13 +107,13 @@
 								
 								 <ice:panelGroup
 									rendered="#{descriptorItem.type eq 'Enumeration'}">
-									<ice:selectManyMenu value="#{descriptorItem.enumValueList}"
+									<ice:selectManyListbox value="#{descriptorItem.enumValueList}"
 										valueChangeListener="#{descriptorItem.enumValueChangeListener}">
 										<pc:automationTag
 											value="auto-BCC-ProcSrch-Descriptors-EnumVal"
 											standAlone="false" />
 									<f:selectItems value="#{descriptorItem.enumList}" /> 
-									</ice:selectManyMenu>
+									</ice:selectManyListbox>
 								</ice:panelGroup>
 								
 								
