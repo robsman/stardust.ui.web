@@ -66,9 +66,11 @@ define(["jquery"],function($){
 		  case "INTEGER":
 			  hotType={type: "numeric","default":0};
 			  break;
-		  case "DATETIME":
-		  case "DATE":
 		  case "TIMESTAMP":
+		  case "XSD:DATETIME":
+			  hotType={type:"dateTime", "default": today, dateFormat: format};
+			  break;
+		  case "XSD:DATE":
 			  hotType={type:"date", "default": today,dateFormat: format};
 			  break;
 		  case "BOOLEAN":
