@@ -1,11 +1,13 @@
 define(["bpm-modeler/js/m_model",
         "./m_drlAttributes",
         "bpm-modeler/js/m_urlUtils",
+        "bpm-modeler/js/m_typeDeclaration",
         "rules-manager/js/m_i18nUtils",
         "rules-manager/js/hotDecisionTable/m_typeMapper"],
 		function(m_model,
 				m_drlAttributes,
 				m_urlUtils,
+				m_typeDeclaration,
 				m_i18nUtils,
 				m_typeMapper){
   
@@ -108,7 +110,7 @@ define(["bpm-modeler/js/m_model",
         	  attr: {title: typeDecl.description || m_typeMapper.ippToFriendlyText( obj.type)},
         	  metadata: {
         		  ref: paramDef || obj,
-        		  type: obj.type || 'na',
+        		  type: getUnQualifiedNameIfBuiltInType(obj.type, typeDecl) || 'na',
         		  isParamDef:!!paramDef}
         	  };
         /*an obj with a body prop means it has children we need to add*/
@@ -133,6 +135,22 @@ define(["bpm-modeler/js/m_model",
         data.push(temp); 
       }
     return data;
+  };
+  
+  /**
+   * 
+   */
+  var getUnQualifiedNameIfBuiltInType = function(type, typeDecl) {
+	  if (type && typeDecl && (typeDecl.typeDeclaration && typeDecl.typeDeclaration.schema) || typeDecl.schema) {
+		  var schema = (typeDecl.typeDeclaration && typeDecl.typeDeclaration.schema) || typeDecl.schema;
+		  var qName = m_typeDeclaration.parseQName(type, schema);
+		  if (qName && qName.name && qName.namespace
+				  && "http://www.w3.org/2001/XMLSchema" == qName.namespace) {
+			  return qName.name;
+		  }
+	  }
+	  
+	  return type;
   };
   
   /*util function for returning a java type for a xsd type*/
