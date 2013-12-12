@@ -27,6 +27,9 @@ define(
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var view = new UiMashupApplicationView();
 					i18uimashupproperties();
 					// TODO Unregister!
@@ -38,6 +41,20 @@ define(
 					m_utils.hideWaitCursor();
 				}
 			};
+			
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
 
 			var editorToolbarGroups = [ {
 				name : 'clipboard',

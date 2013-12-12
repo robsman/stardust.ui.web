@@ -799,7 +799,11 @@ define(
 					if(!m_utils.isEmptyString(this.httpBasicAuthPwdInput.val()))
 					{
 						var rawPwd = m_utils.encodeXmlPredfinedCharacters(this.httpBasicAuthPwdInput.val());
-							rawPwd = "RAW(" + rawPwd + ")";	
+						if(this.httpBasicAuthUsingCVInput.prop("checked")){
+							rawPwd = "${"+rawPwd+ ":Password}";
+						}
+						rawPwd = "RAW(" + rawPwd + ")";
+								
 						return rawPwd;
 					}
 					return this.httpBasicAuthPwdInput.val();
@@ -814,6 +818,11 @@ define(
 						var lastIdex = rawPwd.lastIndexOf(")");
 						var originePwd = rawPwd.substring(firstIdex+1,lastIdex);
 						originePwd = m_utils.decodeXmlPredfinedCharacters(originePwd);
+						if(originePwd.indexOf("${") !=-1){
+							var firstIdex = rawPwd.indexOf("${");
+							var lastIdex = rawPwd.lastIndexOf(":");
+							originePwd = rawPwd.substring(firstIdex+1,lastIdex);
+						}
 						return originePwd;
 					}
 					return this.httpBasicAuthPwdInput.val();
@@ -887,8 +896,8 @@ define(
 					this.crossDomainInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
 					this.setSecurityMode(this.getApplication().attributes["stardust:restServiceOverlay::securityMode"]);
 					this.httpBasicAuthUserInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthUser"]);
-					this.httpBasicAuthPwdInput.val(this.getHttpBasicAuthOriginePwd(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]));
 					this.httpBasicAuthUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthCV"]);
+					this.httpBasicAuthPwdInput.val(this.getHttpBasicAuthOriginePwd(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]));
 					this.customSecurityTokenKeyInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenKey"]);
 					this.customSecurityTokenValueInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]);
 					this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);

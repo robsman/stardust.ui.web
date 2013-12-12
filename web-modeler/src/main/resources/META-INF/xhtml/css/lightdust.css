@@ -22,9 +22,11 @@
 }
  
 label {
-	color: #4d4d4d;
+	color: #708090;
 	margin-right: 10px;
 	font-size: 11px;
+	white-space: nowrap;
+	font-weight: normal;
 	font-family: Helvetica, Arial, sans-serif;
 }
 
@@ -191,8 +193,31 @@ a:hover {
 	margin-bottom: 10px;
 }
 
+.clplPanelHeading {
+	font-size: 11px;
+	font-color: #4D4D4D;
+	border-bottom: 1px solid #E7E7E7;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	cursor :pointer
+}
+
+.clplPanelHeading img{
+	padding : 5px 5px 4px 2px;
+	float:left;
+}
+
+.clplPanelHeading label{
+	color: #2F6871;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size :11px;
+	font-weight:bold;
+	float:none;
+	padding : 0px 4px 0px 0px;
+	cursor :pointer
+}
 .output {
-	font-style: italic;
+	font-style: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 }
 
