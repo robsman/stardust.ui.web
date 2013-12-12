@@ -532,6 +532,8 @@ define(
 					this.expressionEditor.setSessionData("$keywordList",completerStrings);
 					var that=this;
 
+					this.submitChanges(this.determineTransformationChanges());
+
 
 
 					// TODO - these things below were possible with CodeMirror editor out of box
@@ -909,9 +911,6 @@ define(
 									"accessPoint" : tableRows[tableRow].accessPoint
 								}, function(event) {
 									event.data.view.deleteAccessPoint(event.data.accessPoint);
-									event.data.view
-									.submitChanges(event.data.view
-											.determineTransformationChanges());
 								});
 							}
 
@@ -984,9 +983,6 @@ define(
 									"accessPoint" : tableRows[tableRow].accessPoint
 								}, function(event) {
 									event.data.view.deleteAccessPoint(event.data.accessPoint);
-									event.data.view
-									.submitChanges(event.data.view
-											.determineTransformationChanges());
 								});
 							}
 
