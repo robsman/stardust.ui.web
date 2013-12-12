@@ -22,11 +22,13 @@ define(
 			"rules-manager/js/m_i18nMapper",
 			"rules-manager/js/m_ruleSetCommandDispatcher",
 			"rules-manager/js/m_ruleSetCommand",
-			"rules-manager/js/hotDecisionTable/m_utilities"],
+			"rules-manager/js/hotDecisionTable/m_utilities",
+			"rules-manager/js/hotDecisionTable/m_customCellTypes"],
 		function(m_utils,CommandsDispatcher,m_i18nUtils,m_jsfViewManager, RuleSet,
 				hotDecisionTable,tableConfig,treeFactory,
 				typeParser,operatorMenuFactory,m_i18nMapper,
-				m_ruleSetCommandDispatcher,m_ruleSetCommand,m_utilities) {
+				m_ruleSetCommandDispatcher,m_ruleSetCommand,
+				m_utilities,m_customCellTypes) {
 			return {
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
@@ -93,6 +95,10 @@ define(
 					this.nameInput = m_utils.jQuerySelect("#DecisionTableView #nameInput");
 					this.lastModificationDateOutput = m_utils.jQuerySelect("#DecisionTableView #lastModificationDateOutput");
 					
+					/*Bind custom cell types to Handsontable.*/
+					m_customCellTypes.bind("dateTime",Handsontable);
+					
+					console.log(Handsontable);
 					/*For brevity , access command constants using shorthand*/
 					cnstCMD=m_ruleSetCommand.commands;
 					
@@ -170,7 +176,7 @@ define(
 						};
 						var cmd=m_ruleSetCommand.decTableDataCmd(
 								ruleSet,decTable,snapshotBuilder(settings)(),undefined);
-						lastCmdID=cmd.id;
+						lastCmdID=cmd.eventID; /*keep track so we can filter out echos from the dispatcher*/
 						m_ruleSetCommandDispatcher.trigger(cmd);
 						ruleSet.state.isDirty=true;
 						
@@ -197,11 +203,12 @@ define(
 				    /*bind UIElements to events from our top level command processor*/
 				    m_ruleSetCommandDispatcher.register(uiElements.decisionTableInstance.rootElement,cnstCMD.decTableDataCmd);
 				    uiElements.decisionTableInstance.rootElement.on(cnstCMD.decTableDataCmd,function(event,data){
-				    	var elementID=data.elementID;
-				    	var newVal=data.changes[0].value.after;
-				    	var snapShot;
-				    	console.log("DecisionTable.Data.Change received from sink");
-				    	if (elementID === decTable.uuid) {
+				    	var elementID=data.elementID,
+					    	eventID=data.eventID,
+					    	newVal=data.changes[0].value.after,
+					    	snapShot;
+
+				    	if (elementID === decTable.uuid && lastCmdID !== eventID) {
 							uiElements.decisionTableInstance.removeHook("afterChange",afterChangeFunc);
 							snapShot=snapshotBuilder(newVal)();
 							decTable.setTableData(snapShot);

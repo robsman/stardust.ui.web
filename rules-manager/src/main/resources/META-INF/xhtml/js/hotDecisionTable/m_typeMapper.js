@@ -1,7 +1,9 @@
 /*Implement all type mapping functions here (any function which
  * maps to or from an IPP type).
  * */
-define(["jquery"],function($){
+define(["jquery",
+        "rules-manager/js/hotDecisionTable/m_utilities"],
+        function($,m_utilities){
 
 	var format="yy-mm-dd",
 	    today = new Date();
@@ -68,7 +70,10 @@ define(["jquery"],function($){
 			  break;
 		  case "TIMESTAMP":
 		  case "XSD:DATETIME":
-			  hotType={type:"dateTime", "default": today, dateFormat: format};
+			  hotType={
+				  "type" : "dateTime", 
+				  "default": m_utilities.formatDate(new Date(),"yyyy-MM-dd hh:mm:ss")
+				  };
 			  break;
 		  case "XSD:DATE":
 			  hotType={type:"date", "default": today,dateFormat: format};
