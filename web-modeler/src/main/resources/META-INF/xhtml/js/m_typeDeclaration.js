@@ -1151,8 +1151,8 @@ define(
 					return getXsdExtraTypes();
 				},
 
-				parseQName : function(qName) {
-					return parseQName(qName);
+				parseQName : function(qName, schema) {
+					return parseQName(qName, schema);
 				},
 
 				getPrimitiveTypeLabel : function(type) {
