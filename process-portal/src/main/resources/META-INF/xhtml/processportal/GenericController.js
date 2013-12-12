@@ -358,7 +358,7 @@ if (!window.bpm.portal.GenericController) {
 					$(function() {
 						element.datepicker({
 							inline : true,
-							dateFormat : 'dd.mm.yy',
+							dateFormat : 'yy-mm-dd',
 							onSelect : function(dateText, inst) {
 								scope.$apply(function(scope) {
 									// Change binded variable
