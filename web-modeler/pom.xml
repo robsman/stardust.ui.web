@@ -3,10 +3,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
-      <groupId>com.infinity.bpm</groupId>
+      <groupId>org.eclipse.stardust</groupId>
       <artifactId>product-parent</artifactId>
       <version>9.9.9-SNAPSHOT</version>
-      <relativePath>../../../sungard/product/product-parent/pom.xml</relativePath>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
@@ -201,17 +201,6 @@
          </plugin>
       </plugins>
    </build>
-
-   <repositories>
-      <repository>
-         <id>ipp-repo</id>
-         <url>https://infinity.sungard.com/repository/ipp-libs</url>
-      </repository>
-      <repository>
-         <id>ipp-repo-dev</id>
-         <url>https://infinity.sungard.com/repository/ipp-libs-dev</url>
-      </repository>
-   </repositories>
 
    <profiles>
       <profile>
