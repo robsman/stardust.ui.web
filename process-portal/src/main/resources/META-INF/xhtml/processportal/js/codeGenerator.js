@@ -451,14 +451,19 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 */
 		function generateDocument(parent, path) {
 			var binding = convertFullIdToBinding(path);
-			var docLink = htmlElement.create("a", {parent: parent, attributes: {href: ""}});
-			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "')";
+			
+			var elemWrapper = htmlElement.create("div", {parent: parent});
+			
+			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
+			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "','" + getI18NLabel(path) + "')";
 			htmlElement.create("img", {parent: docLink, 
-				//attributes: {src: "../../plugins/views-common/images/icons/mime-types/document-text.png"}});
-				// attributes: {"ng-src": "{{getDocIcon(" + binding + ")}}", alt: "{{" + binding + ".docName}}"}});
-				//attributes: {"ng-src": "../../plugins/views-common/images/icons/mime-types/{{" + binding + ".docIcon}}"}});
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
-			return docLink;
+			
+			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
+			docLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
+			htmlElement.create("img", {parent: docLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
+			
+			return elemWrapper;
 		}
 
 		/*

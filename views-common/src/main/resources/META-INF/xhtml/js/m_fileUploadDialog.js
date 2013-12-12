@@ -41,7 +41,8 @@ define(function() {
 			document.getElementById('titleText').innerHTML = payloadObj.title;
 			document.getElementById('cancelButton').value = "CANCEL";
 			document.getElementById('cancelButton').onclick = closePopup;
-
+			jQuery("#openDocument").prop("checked", true);
+			
 			document.getElementById('acceptButton').value = "OK";
 			document.getElementById('acceptButton').onclick = function() {
 				var details = {};
@@ -51,7 +52,7 @@ define(function() {
 				details.fileDetails = JSON.parse(jQuery(fileDetails).text());
 				payloadObj.acceptFunction(details);
 				closePopup();
-			}
+			};
 
 			jQuery("#fileUploadMsg").html(payloadObj.message);
 			jQuery("#documentType").html(payloadObj.documentTypeName);

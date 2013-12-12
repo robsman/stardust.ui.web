@@ -87,7 +87,8 @@ public class ManualActivityRestlet
       Interaction interaction = getInteraction();
 
       Map<String, ? extends Serializable> inData = interaction.getInDataValues();
-      JsonObject root = InteractionDataUtils.marshalData(interaction.getModel(), interaction.getDefinition(), inData, servletContext);
+      JsonObject root = InteractionDataUtils.marshalData(interaction, inData,
+            servletContext);
       
       return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }

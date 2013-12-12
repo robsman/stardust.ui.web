@@ -33,7 +33,6 @@ public class FileStorage implements Serializable
    public String pullPath(String uuid)
    {
       String path = uuidPathMap.get(uuid);
-      // uuidPathMap.remove(uuid);
       return path;
    }
 
@@ -48,7 +47,6 @@ public class FileStorage implements Serializable
    public InputParameters pullFile(String uuid)
    {
       InputParameters path = uuidDocumentHandlerInputParamtMap.get(uuid);
-      // uuidDocumentHandlerInputParamtMap.remove(uuid);
       return path;
    }
 

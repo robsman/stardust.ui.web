@@ -23,12 +23,13 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
  */
 public abstract class AbstractDocumentContentInfo implements IDocumentContentInfo
 {
+   private static final long serialVersionUID = 7734607092312164144L;
    protected String name = "";
    protected String author = null;
    protected String id;
    protected String idLabel;
    protected DocumentType documentType;
-   protected boolean modifyPrivilege;
+   protected Boolean modifyPrivilege;
 
    protected String description = "";
    protected String comments = "";
@@ -42,8 +43,8 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    protected boolean supportVersioning;
    protected JCRVersionTracker versionTracker;
    
-   protected boolean contentEditable = true;
-   protected boolean metaDataEditable = true;
+   protected Boolean contentEditable = true;
+   protected Boolean metaDataEditable = true;
    protected boolean showDetails = true;
    
    public IDocumentContentInfo saveFile(String filePath)
@@ -133,7 +134,7 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
 
    public String getIcon()
    {
-      return mimeType.getCompleteIconPath();
+      return getMimeType().getCompleteIconPath();
    }
 
    public DocumentType getDocumentType()
@@ -143,7 +144,7 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    
    public boolean isModifyPrivilege()
    {
-      return modifyPrivilege;
+      return modifyPrivilege.booleanValue();
    }
 
    public String getId()

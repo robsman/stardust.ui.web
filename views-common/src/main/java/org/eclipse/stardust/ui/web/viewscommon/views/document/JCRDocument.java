@@ -24,6 +24,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FormatterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 
@@ -66,8 +67,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
  */
 public class JCRDocument extends AbstractDocumentContentInfo
 {
+   private static final long serialVersionUID = 2872951885703599491L;
    private Document document;
    
+   private boolean readOnly = false;
    /**
     * @param document
     */
@@ -120,6 +123,8 @@ public class JCRDocument extends AbstractDocumentContentInfo
    
    public void initialize(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
+      this.readOnly = readOnly;
+      
       this.document = doc;
       supportVersioning = true;
       if (null == vTracker)
@@ -133,7 +138,6 @@ public class JCRDocument extends AbstractDocumentContentInfo
 
       name = document.getName();
 
-      mimeType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
       properties = document.getProperties();
 
       description = RepositoryUtility.getDescription(document);
@@ -141,24 +145,12 @@ public class JCRDocument extends AbstractDocumentContentInfo
       annotations = document.getDocumentAnnotations();
       documentType = document.getDocumentType();
       
-      if (readOnly)
-      {
-         modifyPrivilege = false;
-      }
-      else
-      {
-         modifyPrivilege = DMSHelper.hasPrivilege(getDocument().getId(), DmsPrivilege.MODIFY_PRIVILEGE);
-      }
-      
       id = document.getId();
       if (!versionTracker.isLatestVersion())
       {
          id = document.getRevisionId();
       }
       idLabel = id;
-      
-      contentEditable = modifyPrivilege && null != versionTracker && versionTracker.isLatestVersion();
-      metaDataEditable = contentEditable;
    }
 
    /* (non-Javadoc)
@@ -274,6 +266,54 @@ public class JCRDocument extends AbstractDocumentContentInfo
       document.setName(org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(physicalPath, File.separator));
       byte[] contentByte = DocumentMgmtUtility.getFileSystemDocumentContent(physicalPath);
       return save(contentByte);
+   }
+   
+   public MIMEType getMimeType()
+   {
+      if (mimeType == null)
+      {
+         mimeType = MimeTypesHelper.detectMimeType(document.getName(),
+               document.getContentType());
+      }
+      return mimeType;
+   }
+
+   public boolean isModifyPrivilege()
+   {
+      if (modifyPrivilege == null)
+      {
+         if (readOnly)
+         {
+            modifyPrivilege = false;
+         }
+         else
+         {
+            modifyPrivilege = DMSHelper.hasPrivilege(getDocument().getId(),
+                  DmsPrivilege.MODIFY_PRIVILEGE);
+         }
+      }
+
+      return modifyPrivilege.booleanValue();
+   }
+
+   public boolean isContentEditable()
+   {
+      if (contentEditable == null)
+      {
+         contentEditable = isModifyPrivilege() && null != versionTracker
+               && versionTracker.isLatestVersion();
+      }
+
+      return contentEditable;
+   }
+
+   public boolean isMetaDataEditable()
+   {
+      if (metaDataEditable == null)
+      {
+         metaDataEditable = isContentEditable();
+      }
+      return metaDataEditable;
    }
    
    public String getAuthor()

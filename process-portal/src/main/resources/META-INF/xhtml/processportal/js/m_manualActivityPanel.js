@@ -82,6 +82,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.openNestedList = openNestedList;
 				$scope.closeNestedList = closeNestedList;
 				$scope.showNestedList = showNestedList;
+				$scope.deleteDocument = deleteDocument;
 			});
 			
 			/**
@@ -528,9 +529,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * @param xPath
 		 * @author Yogesh.Manware
 		 */
-		function openDocument(xPath) {
+		function openDocument(xPath, documentPathLabel) {
 			log("TODO: " + xPath);
-			//TODO document deletion
 			//TODO Mouse tooltip to display document name
 
 			var $scope = angular.element(document).scope();
@@ -538,6 +538,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			
 			var currentBindings = $scope[BINDING_PREFIX];
 			var lastPart = parts[parts.length - 1];
+			
+			documentPathLabel = i18nLabelProvider().getLabel("panel.fileUpload.dialog.msg").replace("{0}", documentPathLabel);
+			
 			
 			if (!currentBindings[lastPart] || !currentBindings[lastPart].docId) {
 				//Document is not set
@@ -550,7 +553,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						},
 						payload : {
 							title : i18nLabelProvider().getLabel("panel.fileUpload.dialog.title"),
-							message: i18nLabelProvider().getLabel("panel.fileUpload.dialog.msg").replace("{0}", i18nLabelProvider(xPath)),
+							message: documentPathLabel,							
 							documentTypeName: currentBindings[lastPart].docTypeName,
 							acceptFunction : function(fileUploadData) {
 								//TODO post changes
@@ -568,18 +571,17 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 									currentBindings[lastPart].docName = fileUploadData.fileDetails.fileName;
 									currentBindings[lastPart].contentType = fileUploadData.fileDetails.contentType;
 									currentBindings[lastPart].type = "FILE_SYSTEM";
-								});
-								//open view using parent.postmessage
-								/*if(fileUploadData.openDocument){
-									var msg = {};
-									msg.type = "OpenView";
-									msg.data = {};
-									msg.data.viewId = "documentView";
-									msg.data.params = {};
-									msg.data.params.fileSystemDocumentId = fileUploadData.fileDetails.uuid;
 									
-									parent.postMessage(JSON.stringify(msg), "*");
-								}*/
+									if(fileUploadData.openDocument){
+										var transferData = {};
+										transferData[lastPart] = currentBindings[lastPart];
+										postData(interactionEndpoint, "/outData/" + lastPart, transferData, {});
+									}	
+								});
+								
+								if(fileUploadData.openDocument){
+									openDocumentViewer(fileUploadData.fileDetails.uuid);
+								}
 							}
 						}
 					});
@@ -588,14 +590,27 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 				
 			}else{
-				//Document is set
+				// Document is already set - open it!
 				var currentBinding = currentBindings[lastPart];
-				//Open document
-				
+				openDocumentViewer(currentBinding.docId);
 			}
-
 		}
-
+		
+		/**
+		 * open document view using parent.postmessage
+		 *  
+		 */
+		function openDocumentViewer(docId){
+			var msg = {};
+			msg.type = "OpenView";
+			msg.data = {};
+			msg.data.viewId = "documentView";
+			msg.data.params = {};
+			msg.data.params.fileSystemJCRDocumentId = docId;
+			
+			parent.postMessage(JSON.stringify(msg), "*");			
+		}
+		
 		/*
 		 * 
 		 */
@@ -768,6 +783,38 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 		}
 
+		/**
+		 * 
+		 * @param param
+		 */
+		function deleteDocument(xPath) {
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			
+			var currentBindings = $scope[BINDING_PREFIX];
+			var lastPart = parts[parts.length - 1];
+			
+			if (currentBindings[lastPart] && currentBindings[lastPart].docId) {
+				//	Document is set
+				currentBindings[lastPart].type = "none";
+				
+				var transferData = {};
+				transferData[lastPart] = currentBindings[lastPart];
+				
+				postData(interactionEndpoint, "/outData/" + lastPart, transferData, {success: function(retData) {
+					currentBindings[lastPart].docId = null;
+					currentBindings[lastPart].docIcon = "../../plugins/views-common/images/icons/page_white_error.png";
+					currentBindings[lastPart].type = "none";
+				}, failure: function() {
+					success = false;
+					alert(i18nLabelProvider().getLabel("panel.save.error", "Failure to save data"));
+				}});
+			}else{
+				// TODO: Document is not set - this should never happen 
+			}
+		}
+		
+		
 		/*
 		 * 
 		 */

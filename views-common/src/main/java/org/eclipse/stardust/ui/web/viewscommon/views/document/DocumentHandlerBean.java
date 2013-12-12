@@ -293,11 +293,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                return false;
             }   
          }
-         else if (null != thisView.getViewParams().get("fileSystemDocumentId"))
+         else if (null != thisView.getViewParams().get("fileSystemJCRDocumentId"))
          {
             FileStorage fileStorage = FileStorage.getInstance();
             InputParameters params = fileStorage.pullFile((String) thisView.getViewParams()
-                  .get("fileSystemDocumentId")); 
+                  .get("fileSystemJCRDocumentId")); 
             documentContentInfo = params.getDocumentContentInfo();
             
             thisView.getViewParams().put("documentInfo", documentContentInfo);

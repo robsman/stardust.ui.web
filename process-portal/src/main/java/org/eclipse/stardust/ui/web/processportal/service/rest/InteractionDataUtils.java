@@ -61,19 +61,20 @@ public class InteractionDataUtils
 {
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
    
-   
-  /**
-   * 
-   * @param model
-   * @param context
-   * @param inData
-   * @param servletContext
-   * @return
-   */
+   /**
+    * 
+    * @param interaction
+    * @param inData
+    * @param servletContext
+    * @return
+    */
    @SuppressWarnings("unchecked")
-   public static JsonObject marshalData(Model model, ApplicationContext context,
+   public static JsonObject marshalData(Interaction interaction,
          Map<String, ? extends Serializable> inData, ServletContext servletContext)
    {
+      Model model = interaction.getModel();
+      ApplicationContext context =  interaction.getDefinition();
+      
       JsonObject root = new JsonObject();
       JsonHelper jsonHelper = new JsonHelper();
       List<DataMapping> dataMappings = context.getAllInDataMappings();
@@ -88,8 +89,8 @@ public class InteractionDataUtils
                
                if (ModelUtils.isDocumentType(model, dm))
                {
-                  jsonHelper.toJsonDocument(entry.getValue(), dm.getDataId(), elemDM,
-                        model, servletContext);
+                  jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model,
+                        servletContext, interaction);
                }
                else
                {
@@ -241,40 +242,50 @@ public class InteractionDataUtils
          Model model, DataMapping outMapping, Interaction interaction,
          ServletContext servletContext)
    {
-      // File system document
-      RawDocument rawDocument = new RawDocument();
-
-      rawDocument.setName((String) details.get(DOCUMENT.FILE_NAME));
-      rawDocument.setContentType((String) details.get(DOCUMENT.CONTENT_TYPE));
-
-      rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
-      rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
-
       // pull physical path
       FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
             "fileStorage", servletContext);
       String uuid = (String) details.get(DOCUMENT.ID);
       String path = fileStorage.pullPath(uuid);
+      InputParameters inputParam = fileStorage.pullFile(uuid);
+      FileSystemJCRDocument fileSystemJCRDoc;
+      
+      if (inputParam == null)
+      {
+         // File system document
+         RawDocument rawDocument = new RawDocument();
 
-      rawDocument.setPhysicalPath(path);
+         rawDocument.setName((String) details.get(DOCUMENT.FILE_NAME));
+         rawDocument.setContentType((String) details.get(DOCUMENT.CONTENT_TYPE));
 
-      // set Document Type
-      DocumentType dType = DocumentTypeUtils.getDocumentType(
-            (String) details.get(DOCUMENT.TYPE_ID), model);
-      rawDocument.setDocumentType(dType);
+         rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
+         rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
 
-      FileSystemJCRDocument fileSystemJCRDoc = getFileSystemDocument(rawDocument,
-            interaction, servletContext);
+         rawDocument.setPhysicalPath(path);
 
-      InputParameters inputParam = new InputParameters();
-      inputParam.setDocumentContentInfo(fileSystemJCRDoc);
-      inputParam.setDataId(outMapping.getDataId());
-      inputParam.setDataPathId(outMapping.getDataPath());
-      inputParam.setProcessInstancOid(interaction.getActivityInstance()
-            .getProcessInstance()
-            .getOID());
+         // set Document Type
+         DocumentType dType = DocumentTypeUtils.getDocumentType(
+               (String) details.get(DOCUMENT.TYPE_ID), model);
+         rawDocument.setDocumentType(dType);
 
-      fileStorage.pushFile(uuid, inputParam);
+         fileSystemJCRDoc = getFileSystemDocument(rawDocument, interaction,
+               servletContext);
+
+         inputParam = new InputParameters();
+         inputParam.setDocumentContentInfo(fileSystemJCRDoc);
+         inputParam.setDataId(outMapping.getDataId());
+         inputParam.setDataPathId(outMapping.getDataPath());
+         inputParam.setProcessInstancOid(interaction.getActivityInstance()
+               .getProcessInstance()
+               .getOID());
+
+         fileStorage.pushFile(uuid, inputParam);
+
+      }
+      else
+      {
+         fileSystemJCRDoc = (FileSystemJCRDocument) inputParam.getDocumentContentInfo();
+      }
 
       return fileSystemJCRDoc;
    }

@@ -31,16 +31,20 @@ import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
-import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
+import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean.InputParameters;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 /**
  * @author Subodh.Godbole
  * @author Yogesh.Manware
@@ -90,12 +94,12 @@ public class JsonHelper
     * @param model
     * @param servletContext
     */
-   public void toJsonDocument(Object document, String dataId, JsonObject elemDM,
-         Model model, ServletContext servletContext)
+   public void toJsonDocument(Object document, DataMapping dm, JsonObject elemDM,
+         Model model, ServletContext servletContext, Interaction interaction)
    {
       trace.debug("create document json...");
       
-      String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(model.getData(dataId));
+      String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(model.getData(dm.getDataId()));
       
       elemDM.add(DOCUMENT.TYPE_ID, new JsonPrimitive(typeDeclarationId));
       elemDM.add(
@@ -108,6 +112,22 @@ public class JsonHelper
 
       if (doc != null)
       {
+         //TODO: check path
+         //new JCRDocument(document, getPath().isReadonly());
+         JCRDocument jcrDocument = new JCRDocument(doc, false);
+         InputParameters inputParam = new InputParameters();
+         inputParam.setDocumentContentInfo(jcrDocument);
+         inputParam.setDataId(dm.getDataId());
+         inputParam.setDataPathId(dm.getDataPath());
+         inputParam.setProcessInstancOid(interaction.getActivityInstance()
+               .getProcessInstance()
+               .getOID());
+         
+         FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
+               "fileStorage", servletContext);
+         fileStorage.pushFile(doc.getId(), inputParam);
+         
+         //prepare response
          elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.JCR.toString()));
 
          MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
