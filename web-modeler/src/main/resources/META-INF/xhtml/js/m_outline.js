@@ -77,12 +77,23 @@ define(
       OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
         // alias to be used from jQuery.each callbacks
         var self = this;
-
+        	modelTreeType="model",
+        	isLocked=this.model.isReadonly(),
+        	isEditLocked=this.model.isReadonly() && 
+				         this.model.editLock && 
+				         ("lockedByOther" === this.model.editLock.lockStatus);
+        
+        if(isLocked){
+        	modelTreeType="lockedModel";
+        	if(isEditLocked){
+        		modelTreeType="lockedModelForEdit";
+        	}
+        }
         // Model
         var modelNode = this.nodeBuilder.buildNode({
           attr : {
             "id" : this.model.uuid,
-            "rel" : this.model.isReadonly() ? "lockedModel" : "model",
+            "rel" : modelTreeType,
             "elementId" : this.model.id
           },
           data : this.model.name
@@ -267,6 +278,8 @@ define(
 
         if (model.isReadonly() && model.editLock
             && ("lockedByOther" === model.editLock.lockStatus)) {
+        	
+        	modelNode.attr("rel", model.isReadonly() ? "lockedModelForEdit" : "model");
           modelNode.attr("title", m_i18nUtils
               .getProperty("modeler.outline.model.statusLocked")
               + " " + model.editLock.ownerName);
@@ -437,7 +450,8 @@ define(
 
 			var renameNodeHandler = function(event, data) {
 				if (data.rslt.obj.attr('rel') == 'model'
-					|| data.rslt.obj.attr('rel') == 'lockedModel') {
+					|| data.rslt.obj.attr('rel') == 'lockedModel'
+					|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
 					var model = m_model.findModelByUuid(data.rslt.obj
 							.attr("id"));
 
@@ -464,7 +478,7 @@ define(
 			};
 
 			var renameElementViewLabel = function(type, uuid, name) {
-				if (type == 'model' || type == 'lockedModel') {
+				if (type == 'model' || type == 'lockedModel' || type == "lockedModelForEdit" ) {
 					renameView("modelView", uuid, "modelName", name);
 				} else if (type == 'process') {
 					renameView("processDefinitionView", uuid, "processName",
@@ -692,7 +706,8 @@ define(
 							contextmenu : {
 								"items" : function(node) {
 									if ('model' == node.attr('rel')
-											|| 'lockedModel' == node.attr('rel')) {
+											|| 'lockedModel' == node.attr('rel')
+											|| 'lockedModelForEdit' == node.attr('rel')) {
 										var ctxMenu =  {
 											"ccp" : false,
 											"create" : false,
@@ -1294,6 +1309,19 @@ define(
 												"structuredTypes",
 												"data" ]
 									},
+									"lockedModelForEdit" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/model-locked-for-edit.png"
+										},
+										"valid_children" : [
+												"participants",
+												"process",
+												"applications",
+												"structuredTypes",
+												"data" ]
+									},
 									"erroredModel" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -1587,7 +1615,8 @@ define(
 								"select_node.jstree",
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model'
-											|| data.rslt.obj.attr('rel') == 'lockedModel') {
+											|| data.rslt.obj.attr('rel') == 'lockedModel'
+											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -2787,7 +2816,7 @@ define(
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
-
+					var modelTreeType="model";
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
@@ -2874,7 +2903,14 @@ define(
 
 								// Change model icon in case the read-only factor has changed.
 								if (m_constants.MODEL === modelElement.type) {
-									node.attr("rel", (modelElement.isReadonly() ? "lockedModel" : "model"));
+									modelTreeType="model";
+									if(modelElement.isReadonly()){
+										modelTreeType="lockedModel";
+										if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
+											modelTreeType="lockedModelForEdit";
+										}
+									}
+									node.attr("rel", modelTreeType);
 									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
 										var isModelLockCommand = true;
 									}
