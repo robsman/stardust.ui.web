@@ -14,12 +14,15 @@ define(
 				"bpm-modeler/js/m_modelElement", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_elementConfiguration",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils",
+				"processportal/js/codeGenerator" ],
 		function(m_utils, m_urlUtils, m_constants, m_model, m_modelElement,
 				m_command, m_commandsController, m_elementConfiguration,
-				m_i18nUtils) {
+				m_i18nUtils, codeGenerator) {
 			var markup = "";
 			var indentLevel = 0;
+
+			var THE_NEW_WAY = true;
 
 			return {
 				create : function(options) {
@@ -124,6 +127,12 @@ define(
 					writeTag("<link rel='stylesheet' type='text/css' href='"
 							+ m_urlUtils.getContextName()
 							+ "/plugins/processportal/css/bpm-form.css'></link>");
+
+					if (THE_NEW_WAY) {
+						writeTag("<link rel='stylesheet' type='text/css' href='"
+								+ m_urlUtils.getContextName()
+								+ "/plugins/processportal/css/manual-activity.css'></link>");
+					}
 				};
 
 				/**
@@ -199,6 +208,111 @@ define(
 						parameterDefinitions) {
 					writeTag("<body>");
 					indentUp();
+
+					if (THE_NEW_WAY) {
+						this.generateNewWay(parameterDefinitions);
+					} else {
+						this.generateTheOldWay(parameterDefinitions);
+					}
+
+					indentDown();
+					writeTag("</body>");
+				}
+
+				/**
+				 * 
+				 */
+				MarkupGenerator.prototype.generateNewWay = function(parameterDefinitions) {
+					var jsonDMs = [];
+					for ( var n = 0; n < parameterDefinitions.length; ++n) {
+						var parameterDefinition = parameterDefinitions[n];
+
+						var readonly = (parameterDefinition.direction == m_constants.IN_ACCESS_POINT);
+						var jsonDM;
+						if (parameterDefinition.dataType == "primitive") {
+							jsonDM =  {};
+							jsonDM.id = parameterDefinition.id;
+							jsonDM.fullXPath = "/" + parameterDefinition.id;
+							jsonDM.readonly = readonly;
+							jsonDM.typeName = parameterDefinition.primitiveDataType;
+							jsonDM.isPrimitive = true;
+							jsonDM.isList = false;
+							jsonDM.isEnum = false;
+							jsonDM.properties = {};
+						} else if (parameterDefinition.dataType == "struct" || parameterDefinition.dataType == "dmsDocument") {
+							var typeDeclaration = m_model.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+							jsonDM = buildDataMappings(typeDeclaration.model, typeDeclaration, parameterDefinition.id, "", readonly);
+						}
+						
+						jsonDMs.push(jsonDM);
+					}
+					console.log("UI Mashup Json Tree ->");
+					console.log(jsonDMs);
+					
+					var prefs = {
+						layoutColumns: this.options.numberOfPrimitivesPerColumns,
+						ngModelSepAsDot: true,
+						pluginsUrl: m_urlUtils.getContextName() + "/plugins",
+						skipMultiCardinalityNested: true
+					};
+					var data = codeGenerator.create(prefs).generate(jsonDMs);
+					writeTag(data.html);
+					indentUp();
+					this.generateButtons();
+					indentDown();
+				}
+
+				/**
+				 * 
+				 */
+				function buildDataMappings (model, typeDeclaration, id, parentXPath, readonly) {
+					var jsonRet = {};
+					jsonRet.id = id;
+					jsonRet.fullXPath = parentXPath + "/" + id;
+					jsonRet.readonly = readonly;
+					jsonRet.typeName = typeDeclaration.id;
+					jsonRet.isPrimitive = false;
+					jsonRet.isList = false;
+					jsonRet.isEnum = false;
+					jsonRet.children = [];
+					jsonRet.properties = {};
+					
+					jQuery.each(typeDeclaration.getElements(), function(i, element) {
+						var jsonChild = {};
+						var type = element.type;
+						// Strip prefix
+						if (element.type.indexOf(':') !== -1) {
+							type = element.type.split(":")[1];
+						}
+						var childTypeDeclaration = model.findTypeDeclarationBySchemaName(type);
+
+						if (childTypeDeclaration == null) { // Primitive
+							jsonChild.id = element.name;
+							jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
+							jsonChild.readonly = readonly;
+							jsonChild.typeName = type;
+							jsonChild.isPrimitive = true;
+							jsonChild.isList = element.cardinality === "many" ? true : false;
+							jsonChild.isEnum = false;
+							jsonChild.properties = {};
+						} else { // XSD
+							if (element.cardinality === "required") {
+								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
+							} else { // element.cardinality === "many"
+								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
+								jsonChild.isList = true;
+							}
+						}
+						jsonRet.children.push(jsonChild);
+					});
+					
+					return jsonRet;
+				}
+
+				/**
+				 * 
+				 */
+				MarkupGenerator.prototype.generateTheOldWay = function(parameterDefinitions) {
 					writeTag("<table>");
 					indentUp();
 					writeTag("<tr>");
@@ -250,6 +364,26 @@ define(
 					indentUp();
 					writeTag("<td>");
 					indentUp();
+					
+					this.generateButtons();
+					
+					indentDown();
+					writeTag("</td>");
+					indentDown();
+					writeTag("</tr>");
+					indentDown();
+					writeTag("</table>");
+					writeTag("<div id='validationErrorMessageDialog' title=''>");
+					indentUp();
+					writeTag("<p>Correct your validation errors first.</p>");
+					indentDown();
+					writeTag("</div>");
+				};
+
+				/**
+				 * 
+				 */
+				MarkupGenerator.prototype.generateButtons = function() {
 					writeTag("<table id='buttonTable'>");
 					indentUp();
 					writeTag("<tr>");
@@ -299,21 +433,6 @@ define(
 					writeTag("</tr>");
 					indentDown();
 					writeTag("</table>");
-					indentDown();
-					writeTag("</td>");
-					indentDown();
-					writeTag("</tr>");
-					indentDown();
-					writeTag("</table>");
-					writeTag("<div id='validationErrorMessageDialog' title=''>");
-					indentUp();
-					writeTag("<p>Correct your validation errors first.</p>");
-					indentDown();
-					writeTag("</div>");
-					indentDown();
-					writeTag("</body>");
-
-					return markup;
 				};
 
 				/**

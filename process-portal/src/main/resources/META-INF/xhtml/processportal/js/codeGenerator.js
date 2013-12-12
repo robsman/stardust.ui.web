@@ -25,14 +25,23 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 	function CodeGenerator(prefs) {
 		// Set Defaults
 		if (prefs == undefined) {
-			prefs = {layoutColumns: 3, tableColumns: 0};
-		} else {
-			if (prefs.layoutColumns == undefined) {
-				prefs.layoutColumns = 3;
-			} 
-			if (prefs.tableColumns == undefined) {
-				prefs.tableColumns = 0;
+			prefs = {};
 		}
+		
+		if (prefs.layoutColumns == undefined) {
+			prefs.layoutColumns = 3;
+		} 
+		if (prefs.tableColumns == undefined) {
+			prefs.tableColumns = 0;
+		}
+		if (prefs.ngModelSepAsDot == undefined) {
+			prefs.ngModelSepAsDot = false;
+		}
+		if (prefs.pluginsUrl == undefined) {
+			prefs.pluginsUrl = "../../plugins";
+		}
+		if (prefs.skipMultiCardinalityNested == undefined) {
+			prefs.skipMultiCardinalityNested = false;
 		}
 
 		var preferences = prefs;
@@ -65,7 +74,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemValidationBar = htmlElement.create("div", {parent: elemMain, 
 				attributes: {class: "panel-validation-summary-bar", "ng-show": showExpr}});
 			htmlElement.create("span", {parent: elemValidationBar, attributes: {class: "panel-validation-summary-bar-img"}});
-			htmlElement.create("span", {parent: elemValidationBar, value: getI18NLabel("validation.err"), 
+			htmlElement.create("span", {parent: elemValidationBar, value: getI18NLabel("validation.err", "Form contains error(s)."), 
 				attributes: {class: "panel-validation-summary-bar-text"}});
 
 			// Generate
@@ -121,7 +130,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ")";
 			}
 			htmlElement.create("img", {parent: elemAddButton, 
-				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/add.png"}});
+				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png"}});
 			
 			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
@@ -132,7 +141,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
 			}
 			htmlElement.create("img", {parent: elemRemoveButton, 
-				attributes: {src: "../../plugins/stardust-ui-form-jsf/public/css/images/delete.png"}});
+				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png"}});
 
 			// Table
 			var elemTbl = htmlElement.create("table", {parent: elemMain, 
@@ -165,12 +174,18 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					}
 
 					var child = path.children[i];
-					htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child), attributes: {class: "panel-list-tbl-header"}});
-					var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
+					
+					// Table Head
+					if (child.isPrimitive || !preferences.skipMultiCardinalityNested) {
+						htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child), attributes: {class: "panel-list-tbl-header"}});
+						var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
+					}
 
+					// Table Body
 					if (child.isPrimitive) {
+						var loopNgModel = preferences.ngModelSepAsDot ? (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
 						var elemPrimitive = generatePriEnum(null, child, 
-								{noLabel: true, ngModel: loopVar + "['" + child.id + "']", ngFormName: innerForm});
+								{noLabel: true, ngModel: loopNgModel, ngFormName: innerForm});
 						if (elemPrimitive.children.length > 1) { // Control with Validation
 							var elemWrapperTr = htmlElement.create("tr", {parent: 
 								htmlElement.create("table", {parent: elemTd, attributes: {cellpadding: 0, cellspacing: 0}})});
@@ -185,8 +200,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						} else { // Only Control no Validation
 							elemTd.children.push(elemPrimitive.children[0]);
 						}
-					} else {
-						var linkValue = isReadonly(path) ? getI18NLabel("panel.list.view") : getI18NLabel("panel.list.edit");
+					} else if (!preferences.skipMultiCardinalityNested) {
+						var linkValue = isReadonly(path) ? getI18NLabel("panel.list.view", "View") : getI18NLabel("panel.list.edit", "Edit");
 						if (child.isList) {
 							var loopChild = loopVar + "['" + child.id + "']";
 							linkValue += " ({{ {'true': " + loopChild + ".length, false: '0'}[" + loopChild + " != undefined] }})";
@@ -245,39 +260,39 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								{parent: elem, value: enumValues[key], attributes: {value: key}});
 					}
 				} else {
-						var elemWrapper = htmlElement.create("div", {parent: elemMain});
-						var validations = [];
+					var elemWrapper = htmlElement.create("div", {parent: elemMain});
+					var validations = [];
 
-						if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
-							elem = htmlElement.create("textarea", {parent: elemWrapper});
-							if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
-								elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
-							}
-							if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
-								elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
-							}
-						} else {
-							elem = htmlElement.create("input", {parent: elemWrapper});
+					if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
+						elem = htmlElement.create("textarea", {parent: elemWrapper});
+						if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
+							elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
 						}
-
-						elem.attributes["ng-model-onblur"] = null;
-
-						if (path.properties["InputPreferences_mandatory"] != undefined && 
-								path.properties["InputPreferences_mandatory"] == "true") {
-						validations.push({type: "ng-required", value: true, msg: getI18NLabel("validation.err.Required")});
+						if (path.properties["StringInputPreferences_textAreaColumns"] != undefined) {
+							elem.attributes["cols"] = path.properties["StringInputPreferences_textAreaColumns"];
 						}
+					} else {
+						elem = htmlElement.create("input", {parent: elemWrapper});
+					}
 
-						if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-							elem.attributes['type'] = "checkbox";
-							elem.attributes['class'] = "panel-checkbox";
-						} else {
-							elem.attributes['type'] = "text";
-							elem.attributes['class'] = "panel-input";
+					elem.attributes["ng-model-onblur"] = null;
+
+					if (path.properties["InputPreferences_mandatory"] != undefined && 
+							path.properties["InputPreferences_mandatory"] == "true") {
+						validations.push({type: "ng-required", value: true, msg: getI18NLabel("validation.err.Required", "Required")});
+					}
+
+					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+						elem.attributes['type'] = "checkbox";
+						elem.attributes['class'] = "panel-checkbox";
+					} else {
+						elem.attributes['type'] = "text";
+						elem.attributes['class'] = "panel-input";
 						var valInfo = getValidationPattern(path);
 						if (valInfo.pattern) {
 							validations.push({type: "ng-pattern", value: valInfo.pattern, 
-								msg: getI18NLabel("validation.err." + valInfo.key)});
-							}
+								msg: getI18NLabel("validation.err." + valInfo.key, "Invalid " + valInfo.key)});
+						}
 
 						var maxLength = getMaxLength(path);
 						if (maxLength) {
@@ -285,32 +300,32 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						}
 
 						addCustomDirective(path, elem);
-							}
+					}
 
-						if (validations.length > 0) {
-							var id = "id" + Math.floor((Math.random() * 100000) + 1);
+					if (validations.length > 0) {
+						var id = "id" + Math.floor((Math.random() * 100000) + 1);
 						var formId = "'" + id + "'";
 						if (options.idExpr) {
 							formId = "'" + id + "' + " + options.idExpr;
 							id += "{{" + options.idExpr + "}}";
 						}
 
-							elem.attributes['id'] = id;
-							elem.attributes['name'] = id;
+						elem.attributes['id'] = id;
+						elem.attributes['name'] = id;
 
 						var ngFormName = options.ngFormName ? options.ngFormName : formElemName;
-							for (var i = 0; i < validations.length; i++) {
-								elem.attributes[validations[i].type] = validations[i].value;
+						for (var i = 0; i < validations.length; i++) {
+							elem.attributes[validations[i].type] = validations[i].value;
 							var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
-								htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-									attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
-							}
+							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
+						}
 
 						var showExpr = ngFormName + "[" + formId + "].$invalid";
-							htmlElement.create("span", {parent: elemMain, 
-								attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
-						}
+						htmlElement.create("span", {parent: elemMain, 
+							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 					}
+				}
 
 				if(path.properties["InputPreferences_styleClass"] != undefined) {
 					var clazz = path.properties["InputPreferences_styleClass"];
@@ -605,7 +620,15 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var binding = bindingPrefix ? bindingPrefix : "";
 			var currentBindingData = bindingData;
 			for (var i in parts) {
-					binding += "['" + parts[i] + "']";
+				if (binding == "") {
+					binding = parts[i];
+				} else {
+					if (preferences.ngModelSepAsDot) {
+						binding += "." + parts[i];
+					} else {
+						binding += "['" + parts[i] + "']";
+					}
+				}
 
 				if (currentBindingData[parts[i]] == undefined) {
 					if (i < parts.length - 1) {
@@ -627,17 +650,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		/*
 		 * val : path object or string
 		 */
-		function getI18NLabel(val) {
+		function getI18NLabel(val, defaultValue) {
 			var label;
 
 			if (i18nLabelProvider && i18nLabelProvider.getLabel) {
-				label = i18nLabelProvider.getLabel(val);
+				label = i18nLabelProvider.getLabel(val, defaultValue);
 			}
 
-			if (label == undefined || label == null || label == "") {
-				label = convertToLabel(("string" == typeof (val))? val : val.id);
+			if ((label == undefined || label == null || label == "") && ("string" != typeof (val))) {
+				label = convertToLabel(val.id);
 			}
 
+			if ((label == null || label == "") && defaultValue != undefined) {
+				label = defaultValue;
+			}
 			return label;
 		};
 

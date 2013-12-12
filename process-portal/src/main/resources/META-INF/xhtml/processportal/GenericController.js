@@ -73,7 +73,7 @@ if (!window.bpm.portal.GenericController) {
 																		var key = attr.ngModel
 																				.split(".")[0];
 
-																		if (key === "$tableIterator") {
+																		if (key === "$tableIterator" || key === "Obj") {
 																			// Change
 																			// is
 																			// coming
@@ -82,7 +82,12 @@ if (!window.bpm.portal.GenericController) {
 																			// table
 																			// iterator
 
-																			var attributes = event.target.parentNode.parentNode.attributes;
+																			var attributes;
+																			if (key === "$tableIterator") {
+																				attributes = event.target.parentNode.parentNode.attributes;
+																			} else {
+																				attributes = event.target.parentNode.parentNode.parentNode.attributes;
+																			}
 
 																			for (n in attributes) {
 																				if (attributes[n].name === "ng-repeat") {
@@ -433,6 +438,54 @@ if (!window.bpm.portal.GenericController) {
 			this.angular.element(document.body).scope().$apply();
 		};
 
+		/*
+		 * 
+		 */
+		GenericController.prototype.addToList = function(list) {
+			if (list != undefined) {
+				list.push({});
+			}
+		};
+
+		/*
+		 * 
+		 */
+		GenericController.prototype.selectListItem = function(event, obj) {
+			// Select if target is Row/Column 
+			if (event.target.localName.toLowerCase() == "td" || event.target.localName.toLowerCase() == "tr") {
+				if (obj.$$selected == undefined || obj.$$selected == false) {
+					obj.$$selected = true;
+				} else {
+					obj.$$selected = false;
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		GenericController.prototype.removeFromList = function(list) {
+			if (list) {
+				removeSelectedElements(list);
+				if (list.length == 0) {
+					list.push({});
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		function removeSelectedElements(arr) {
+			for(var i = 0 ; i < arr.length; i++) {
+				if (arr[i].$$selected) {
+					arr.splice(i, 1);
+					removeSelectedElements(arr);
+					break;
+				}
+			}
+		};
+		
 		/**
 		 * Add row to "to many"-table.
 		 */
@@ -542,6 +595,8 @@ if (!window.bpm.portal.GenericController) {
 		GenericController.prototype.postSingle = function(key) {
 			console.log("Posting element " + key);
 			console.log(this[key]);
+
+			this.interaction.transfer = {};
 
 			// Need a deep copy in order to be able to remove internal variables
 
