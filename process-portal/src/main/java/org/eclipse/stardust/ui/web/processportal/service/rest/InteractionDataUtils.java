@@ -89,8 +89,7 @@ public class InteractionDataUtils
                
                if (ModelUtils.isDocumentType(model, dm))
                {
-                  jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model,
-                        servletContext, interaction);
+                  jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model, interaction);
                }
                else
                {
@@ -435,5 +434,7 @@ public class InteractionDataUtils
       protected static final String VERSION_COMMENT = "versionComment";
       
       protected static final String TYPEJ = "type";
+      
+      protected static final String VIEW_KEY = "viewKey";
    }
 }

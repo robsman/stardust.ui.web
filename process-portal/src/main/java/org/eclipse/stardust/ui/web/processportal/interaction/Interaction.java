@@ -22,6 +22,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityPath;
 
@@ -53,6 +54,8 @@ public class Interaction
    private Status status;
 
    private ServiceFactory serviceFactory;
+   
+   private Map<String, DocumentController> documentControllers;
 
    public static String getInteractionId(ActivityInstance ai)
    {
@@ -172,5 +175,15 @@ public class Interaction
    public ActivityInstance getActivityInstance()
    {
       return activityInstance;
+   }
+
+   public Map<String, DocumentController> getDocumentControllers()
+   {
+      return documentControllers;
+   }
+
+   public void setDocumentControllers(Map<String, DocumentController> documentControllers)
+   {
+      this.documentControllers = documentControllers;
    }
 }

@@ -37,14 +37,12 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
+import org.eclipse.stardust.ui.web.processportal.interaction.DocumentController;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean.InputParameters;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 /**
  * @author Subodh.Godbole
  * @author Yogesh.Manware
@@ -95,7 +93,7 @@ public class JsonHelper
     * @param servletContext
     */
    public void toJsonDocument(Object document, DataMapping dm, JsonObject elemDM,
-         Model model, ServletContext servletContext, Interaction interaction)
+         Model model, Interaction interaction)
    {
       trace.debug("create document json...");
       
@@ -112,33 +110,19 @@ public class JsonHelper
 
       if (doc != null)
       {
-         //TODO: check path
-         //new JCRDocument(document, getPath().isReadonly());
-         JCRDocument jcrDocument = new JCRDocument(doc, false);
-         InputParameters inputParam = new InputParameters();
-         inputParam.setDocumentContentInfo(jcrDocument);
-         inputParam.setDataId(dm.getDataId());
-         inputParam.setDataPathId(dm.getDataPath());
-         inputParam.setProcessInstancOid(interaction.getActivityInstance()
-               .getProcessInstance()
-               .getOID());
-         
-         FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
-               "fileStorage", servletContext);
-         fileStorage.pushFile(doc.getId(), inputParam);
-         
          //prepare response
          elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.JCR.toString()));
-
-         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
-               "ippMimeTypesHelper", servletContext);
-         MIMEType mType = mimeTypesHelper.detectMimeTypeI(doc.getName(),
-               doc.getContentType());
+         
+         DocumentController dc = interaction.getDocumentControllers().get(doc.getId());
+         
+         MIMEType mType = dc.getDocumentViewerInputParameters().getDocumentContentInfo().getMimeType();
 
          elemDM.add(DOCUMENT.ID, new JsonPrimitive(doc.getId()));
          elemDM.add(DOCUMENT.NAME, new JsonPrimitive(doc.getName()));
          elemDM.add(DOCUMENT.ICON, new JsonPrimitive(DOCUMENT.DOC_PATH + "mime-types/"
                + mType.getIconPath()));
+         
+         elemDM.add(DOCUMENT.VIEW_KEY, new JsonPrimitive(dc.getViewKey()));
 
       }
       else

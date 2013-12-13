@@ -578,7 +578,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								});
 								
 								if(fileUploadData.openDocument){
-									openDocumentViewer(fileUploadData.fileDetails.uuid);
+									openDocumentViewer(fileUploadData.fileDetails.uuid, fileUploadData.fileDetails.uuid);
 								}
 							}
 						}
@@ -590,7 +590,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}else{
 				// Document is already set - open it!
 				var currentBinding = currentBindings[lastPart];
-				openDocumentViewer(currentBinding.docId);
+				openDocumentViewer(currentBinding.docId, currentBinding.viewKey);
 			}
 		}
 		
@@ -598,13 +598,14 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * open document view using parent.postmessage
 		 *  
 		 */
-		function openDocumentViewer(docId){
+		function openDocumentViewer(docId,  viewKey){
 			var msg = {};
 			msg.type = "OpenView";
 			msg.data = {};
 			msg.data.viewId = "documentView";
 			msg.data.params = {};
 			msg.data.params.fileSystemJCRDocumentId = docId;
+			msg.data.params.viewKey = viewKey;
 			
 			parent.postMessage(JSON.stringify(msg), "*");			
 		}

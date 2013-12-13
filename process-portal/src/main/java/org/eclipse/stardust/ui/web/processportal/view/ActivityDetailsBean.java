@@ -543,6 +543,11 @@ public class ActivityDetailsBean extends UIComponentBean
             }
             
             performAutoOperations(event.getView());
+            
+            if (isLoadSuccessful())
+            {
+               fireEventForViewEventAwareInteractionController(activityInstance, event);
+            }
          }
       }
       else if (ViewEventType.TO_BE_DEACTIVATED == event.getType())

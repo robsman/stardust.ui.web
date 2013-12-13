@@ -106,8 +106,13 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          interaction.setConfiguration(configuration);
 
          registry.registerInteraction(interaction);
+         
+         //initialize Document Controllers
+         DocumentHelper.initializeDocumentControllers(interaction, inData);
       }
    }
+
+
 
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#closePanel(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario)
@@ -257,6 +262,10 @@ public class ManualActivityIframeInteractionController implements IActivityInter
                + getContentFrameId(activityInstance) + "');";
          break;
          
+      case POST_OPEN_LIFECYCLE:
+         DocumentHelper.openMappedDocuments(activityInstance, event.getView());
+         break;
+
       case LAUNCH_PANELS_ACTIVATED:
       case LAUNCH_PANELS_DEACTIVATED:
       case FULL_SCREENED:
