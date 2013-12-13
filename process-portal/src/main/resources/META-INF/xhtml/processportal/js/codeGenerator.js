@@ -490,6 +490,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
 			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "','" + getI18NLabel(path) + "')";
+			docLink.attributes["title"] = "{{" + binding + ".docName}}";
+			
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
 			
