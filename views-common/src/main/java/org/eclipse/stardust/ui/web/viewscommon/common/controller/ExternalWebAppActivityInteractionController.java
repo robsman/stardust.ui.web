@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.faces.context.FacesContext;
@@ -37,13 +38,13 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
 import org.eclipse.stardust.engine.core.runtime.command.impl.ExtractSessionInfoCommand;
 import org.eclipse.stardust.engine.core.runtime.internal.SessionManager;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -237,6 +238,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       uriBuilder.append("&") //
             .append(PARAM_SERVICES_BASE_URI).append("=").append(servicesBaseUri);
 
+      
+      uriBuilder.append(getPrimitiveInParams(ai));
+
       // Append Hash
       uriBuilder.append(uriHash);
       
@@ -277,6 +281,37 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       }
 
       return fc.getExternalContext().encodeResourceURL(panelUri);
+   }
+
+   /**
+    * @param ai
+    * @return
+    */
+   private Object getPrimitiveInParams(ActivityInstance ai)
+   {
+      StringBuilder sb = new StringBuilder();
+
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+      if (null != registry)
+      {
+         Interaction interaction = registry.getInteraction(getInteractionId(ai));
+         if (null != interaction)
+         {
+            for (Entry<String, ? extends Serializable> entry : interaction.getInDataValues().entrySet())
+            {
+               if (entry.getValue() instanceof Map || entry.getValue() instanceof List
+                     || entry.getValue() instanceof Document)
+               {
+                  // Ignore
+               }
+               else
+               {
+                  sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+               }
+            }
+         }
+      }
+      return sb.toString();
    }
 
    private String expandUriTemplate(String uriTemplate, HttpServletRequest req)
