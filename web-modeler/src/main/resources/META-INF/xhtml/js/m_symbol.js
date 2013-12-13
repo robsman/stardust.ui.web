@@ -2489,6 +2489,9 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.drag = function(dX, dY, x, y) {
+					if (this.diagram.mode === "CONNECTION_MODE") {
+						return;
+					}
 					if (this.dragConnection == null) {
 						return;
 					}
@@ -2562,6 +2565,16 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.dragStart = function() {
+					// TODO - review
+					// The code to make connection is duplicated here as when an anchor point is clicked (in connection mode)
+					// the drag event gets fired instead of the click.
+					// This is a workaround and not a clean solution.
+					if (this.diagram.mode === "CONNECTION_MODE" && this.diagram.currentConnection) {
+						this.diagram.currentConnection.setSecondAnchorPointNoComplete(this);
+						this.diagram.setAnchorPoint(this);
+						this.symbol.hideAnchorPoints();
+						return;
+					}
 					this.symbol.diagram.mode = this.symbol.diagram.SYMBOL_MOVE_MODE;
 					for ( var n in this.symbol.connections) {
 						if (this.symbol.connections[n].selected) {
