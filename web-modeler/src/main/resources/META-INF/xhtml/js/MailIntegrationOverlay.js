@@ -94,12 +94,14 @@ define(
 					this.ccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #ccInput");
 					this.bccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #bccInput");
 					this.identifierInSubjectInput = m_utils.jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
-					this.mailTemplateEditor = m_utils.jQuerySelect("#mailIntegrationOverlay #mailTemplateEditor");
+					this.mailTemplateEditor = m_utils.jQuerySelect("#mailIntegrationOverlay #mailTemplateEditor").get(0);
+					var rdmNo = Math.floor((Math.random()*100000) + 1);
+					this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
 					this.responseTypeSelect = m_utils.jQuerySelect("#responseTab #responseTypeSelect");
 					this.responseOptionsTypeSelect = m_utils.jQuerySelect("#responseTab #responseOptionsTypeSelect");
 					this.responseHttpUrlInput = m_utils.jQuerySelect("#responseTab #responseHttpUrlInput");
 
-					CKEDITOR.replace("mailTemplateEditor", {
+					CKEDITOR.replace(this.mailTemplateEditor.id, {
 						toolbarGroups : editorToolbarGroups
 					});
 
@@ -277,7 +279,7 @@ define(
 						self.submitChanges();
 					});
 
-					CKEDITOR.instances["mailTemplateEditor"].on('blur',
+					CKEDITOR.instances[this.mailTemplateEditor.id].on('blur',
 							function(e) {
 								self.submitChanges();
 							});
@@ -300,7 +302,7 @@ define(
 
 						output += self.inputDataTextarea.val();
 
-						var markup = CKEDITOR.instances["mailTemplateEditor"]
+						var markup = CKEDITOR.instances[self.mailTemplateEditor.id]
 								.getData();
 
 						if (self.responseTypeSelect != "none") {
@@ -330,7 +332,7 @@ define(
 
 					if (this.getModelElement()
 							&& this.getModelElement().isReadonly()) {
-						CKEDITOR.instances["mailTemplateEditor"].config.readOnly = true;
+						CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
 					}
 				};
 
@@ -717,7 +719,7 @@ define(
 					this.bccInput
 							.val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
 
-					CKEDITOR.instances["mailTemplateEditor"]
+					CKEDITOR.instances[this.mailTemplateEditor.id]
 							.setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
 
 					this.responseOptionsTypeSelect
@@ -865,7 +867,7 @@ define(
 
 					route += "\n";
 
-					var markup = CKEDITOR.instances["mailTemplateEditor"]
+					var markup = CKEDITOR.instances[this.mailTemplateEditor.id]
 							.getData();
 
 					if (this.responseTypeSelect != "none") {
@@ -1012,7 +1014,7 @@ define(
 											.val(),
 									"stardust:emailOverlay::bcc" : this.bccInput
 											.val(),
-									"stardust:emailOverlay::mailTemplate" : CKEDITOR.instances["mailTemplateEditor"]
+									"stardust:emailOverlay::mailTemplate" : CKEDITOR.instances[this.mailTemplateEditor.id]
 											.getData()
 								}
 							});
