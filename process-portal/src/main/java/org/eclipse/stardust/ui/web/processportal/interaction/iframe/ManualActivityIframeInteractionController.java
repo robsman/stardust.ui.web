@@ -17,7 +17,6 @@ import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.Ifram
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -40,11 +39,8 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 
 /**
  * @author Subodh.Godbole
@@ -194,47 +190,17 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          Interaction interaction = registry.getInteraction(getInteractionId(ai));
          if (null != interaction)
          {
-            outData = interaction.getOutDataValues();
             //convert Raw document to jcr document 
-            transformDocuments(outData, ai);
+            trace.debug("converting file system documents to JCR documents. - started");
+            DocumentHelper.transformDocuments(interaction);
+            trace.debug("converting file system documents to JCR documents. - finished");
+            outData = interaction.getOutDataValues();
          }
 
          registry.unregisterInteraction(interaction.getId());
       }
       return outData;
    }
-   
-   /**
-    * @param outData
-    * @param ai
-    * @author Yogesh.Manware
-    */
-  
-   private void transformDocuments(Map<String, Serializable> outData, ActivityInstance ai)
-   {
-      trace.debug("converting file system documents to JCR documents. - started");
-      Map<String, Serializable> convertedDocs = new HashMap<String, Serializable>();
-      for (Entry<String, ? extends Serializable> dataEntry : outData.entrySet())
-      {
-         if (dataEntry.getValue() instanceof FileSystemJCRDocument)
-         {
-            FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) dataEntry.getValue();
-            //set activity instance documents folder
-            String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(ai.getProcessInstance());
-            fileSystemDoc.setJcrParentFolder(parentFolder);
-            
-            //convert file system document to JCR document
-            JCRDocument jcrDoc = (JCRDocument) fileSystemDoc.save(fileSystemDoc.retrieveContent());
-            convertedDocs.put(dataEntry.getKey(), jcrDoc.getDocument());
-         }
-      }
-
-      for (Entry<String, Serializable> entry : convertedDocs.entrySet())
-      {
-         outData.put(entry.getKey(), entry.getValue());
-      }
-      trace.debug("converting file system documents to JCR documents. - finished");
-   }   
    
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController#getEventScript(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.common.event.ViewEvent)

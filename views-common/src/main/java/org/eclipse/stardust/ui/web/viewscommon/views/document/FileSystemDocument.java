@@ -136,6 +136,11 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
       return new FileSystemDocument(getId(), documentType, isContentEditable());
    }
 
+   public boolean delete()
+   {
+      return this.file.delete();
+   }
+   
    public Date getDateLastModified()
    {
       return new Date(file.lastModified());

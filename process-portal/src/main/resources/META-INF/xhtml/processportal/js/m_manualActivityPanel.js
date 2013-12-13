@@ -603,9 +603,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			msg.type = "OpenView";
 			msg.data = {};
 			msg.data.viewId = "documentView";
+			msg.data.viewKey = viewKey;
+			
 			msg.data.params = {};
 			msg.data.params.fileSystemJCRDocumentId = docId;
-			msg.data.params.viewKey = viewKey;
 			
 			parent.postMessage(JSON.stringify(msg), "*");			
 		}

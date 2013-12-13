@@ -55,7 +55,7 @@ public class Interaction
 
    private ServiceFactory serviceFactory;
    
-   private Map<String, DocumentController> documentControllers;
+   private Map<String, IppDocumentController> documentControllers;
 
    public static String getInteractionId(ActivityInstance ai)
    {
@@ -177,12 +177,12 @@ public class Interaction
       return activityInstance;
    }
 
-   public Map<String, DocumentController> getDocumentControllers()
+   public Map<String, IppDocumentController> getDocumentControllers()
    {
       return documentControllers;
    }
 
-   public void setDocumentControllers(Map<String, DocumentController> documentControllers)
+   public void setDocumentControllers(Map<String, IppDocumentController> documentControllers)
    {
       this.documentControllers = documentControllers;
    }

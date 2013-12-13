@@ -42,6 +42,8 @@ import org.eclipse.stardust.engine.core.struct.sxml.Node;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
+import org.eclipse.stardust.ui.web.processportal.interaction.IppDocumentController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.DocumentHelper;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.RawDocument;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
@@ -144,7 +146,7 @@ public class InteractionDataUtils
                      trace.debug(", Value: " + value);
                   }
    
-                  if (value instanceof Serializable)
+                  if (value instanceof Serializable || value == null)
                   {
                      ret.put(entry.getKey(), (Serializable) value);
                   }
@@ -217,6 +219,9 @@ public class InteractionDataUtils
             else
             {
                // document removed or no change
+               IppDocumentController dc = interaction.getDocumentControllers().get(
+                     outMapping.getId());
+               dc.delete();
             }
          }
       }
@@ -244,9 +249,13 @@ public class InteractionDataUtils
       // pull physical path
       FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
             "fileStorage", servletContext);
+      
       String uuid = (String) details.get(DOCUMENT.ID);
+      
       String path = fileStorage.pullPath(uuid);
+      
       InputParameters inputParam = fileStorage.pullFile(uuid);
+      
       FileSystemJCRDocument fileSystemJCRDoc;
       
       if (inputParam == null)
@@ -267,19 +276,14 @@ public class InteractionDataUtils
                (String) details.get(DOCUMENT.TYPE_ID), model);
          rawDocument.setDocumentType(dType);
 
-         fileSystemJCRDoc = getFileSystemDocument(rawDocument, interaction,
-               servletContext);
+         fileSystemJCRDoc = DocumentHelper.getFileSystemDocument(rawDocument,
+               interaction, servletContext);
 
-         inputParam = new InputParameters();
-         inputParam.setDocumentContentInfo(fileSystemJCRDoc);
-         inputParam.setDataId(outMapping.getDataId());
-         inputParam.setDataPathId(outMapping.getDataPath());
-         inputParam.setProcessInstancOid(interaction.getActivityInstance()
-               .getProcessInstance()
-               .getOID());
-
-         fileStorage.pushFile(uuid, inputParam);
-
+         IppDocumentController dc = interaction.getDocumentControllers().get(outMapping.getId());
+         
+         dc.setDocument(fileSystemJCRDoc);
+         
+         fileStorage.pushFile(uuid, dc.getDocumentViewerInputParameters());
       }
       else
       {
@@ -295,64 +299,12 @@ public class InteractionDataUtils
     * @param outMapping
     * @return
     */
-   private static org.eclipse.stardust.engine.api.runtime.Document getDocument(Interaction interaction, DataMapping outMapping)
+   private static org.eclipse.stardust.engine.api.runtime.Document getDocument(
+         Interaction interaction, DataMapping outMapping)
    {
-      for (Entry<String, ? extends Serializable> entry : interaction.getInDataValues()
-            .entrySet())
-      {
-         if (entry.getKey().equals(outMapping.getDataId()))
-         {
-            JsonObject elemDM = new JsonObject();
-            if (ModelUtils.isDocumentType(interaction.getModel(), outMapping))
-            {
-               String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(interaction.getModel().getData(outMapping.getDataId()));
-
-               elemDM.add("docTypeId", new JsonPrimitive(typeDeclarationId));
-
-               return (org.eclipse.stardust.engine.api.runtime.Document) entry.getValue();
-            }
-         }
-      }
-      return null;
-   }  
-   
-   /**
-    * @param doc
-    * @return
-    */
-   private static FileSystemJCRDocument getFileSystemDocument(org.eclipse.stardust.engine.api.runtime.Document doc, Interaction interaction, ServletContext servletContext)
-   {
-      if (doc instanceof RawDocument)
-      {
-         RawDocument rawDocument = (RawDocument) doc;
-
-         //         String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(interaction.getActivityInstance()
-         //               .getProcessInstance());
-         
-         FileSystemDocumentAttributes fileSystemDocumentAttributes = new FileSystemDocumentAttributes();
-         MessagesViewsCommonBean viewBean = (MessagesViewsCommonBean) RestControllerUtils.resolveSpringBean(
-               "views_common_msgPropsBean", servletContext);
-
-         fileSystemDocumentAttributes.setResourcePath(rawDocument.getPhysicalPath());
-         fileSystemDocumentAttributes.setDocumentType(doc.getDocumentType());
-         
-         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
-               "ippMimeTypesHelper", servletContext);
-         
-         MIMEType mimeType = mimeTypesHelper.detectMimeTypeI(rawDocument.getName(),
-               rawDocument.getContentType());
-         
-         fileSystemDocumentAttributes.setMimeType(mimeType);
-         fileSystemDocumentAttributes.setEditable(true);
-
-         fileSystemDocumentAttributes.setDefaultAuthor(viewBean.getString("views.documentView.properties.author.default"));
-         fileSystemDocumentAttributes.setDefaultAuthor(viewBean.getString("views.documentView.properties.id.default"));
-         
-         return new FileSystemJCRDocument(fileSystemDocumentAttributes, null,
-               rawDocument.getDescription(), rawDocument.getComments());
-      }
-
-      return null;
+      IppDocumentController dc = interaction.getDocumentControllers().get(
+            outMapping.getId());
+      return dc.getJCRDocument();
    }
    
    /**

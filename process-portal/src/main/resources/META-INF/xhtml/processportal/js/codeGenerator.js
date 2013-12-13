@@ -493,9 +493,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
 			
-			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
-			docLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
-			htmlElement.create("img", {parent: docLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
+			var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
+			docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
+			htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
+			docDelLink.attributes["ng-show"] = binding + ".docId";
 			
 			return elemWrapper;
 		}

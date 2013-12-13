@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import javax.servlet.ServletContext;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -36,12 +34,10 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
-import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
-import org.eclipse.stardust.ui.web.processportal.interaction.DocumentController;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
+import org.eclipse.stardust.ui.web.processportal.interaction.IppDocumentController;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 /**
  * @author Subodh.Godbole
@@ -113,7 +109,7 @@ public class JsonHelper
          //prepare response
          elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.JCR.toString()));
          
-         DocumentController dc = interaction.getDocumentControllers().get(doc.getId());
+         IppDocumentController dc = interaction.getDocumentControllers().get(dm.getId());
          
          MIMEType mType = dc.getDocumentViewerInputParameters().getDocumentContentInfo().getMimeType();
 
