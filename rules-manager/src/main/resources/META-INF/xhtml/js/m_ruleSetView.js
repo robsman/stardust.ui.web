@@ -41,10 +41,28 @@ define(
 				initialize : function(uuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 					var view = new RuleSetView();
+					
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					view.initialize(ruleSet,options);
 				}
 			};
 
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
+			
 			/**
 			 * 
 			 */

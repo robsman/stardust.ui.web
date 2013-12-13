@@ -26,6 +26,9 @@ define(
 				 m_typeParser,m_autoCompleters,m_utilities) {
 			return {
 				initialize : function(uuid,techRuleID,options) {
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
 					var techRule=ruleSet.findTechnicalRuleByUuid(techRuleID);
 					var view = new TechnicalRuleView();
@@ -33,7 +36,20 @@ define(
 				}
 			};
 
-
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
+			
 			function TechnicalRuleView() {
 
 				TechnicalRuleView.prototype.initialize = function(ruleSet,techRule,options) {
