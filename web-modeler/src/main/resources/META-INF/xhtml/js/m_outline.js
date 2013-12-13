@@ -170,10 +170,19 @@ define(
         if (data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
           return undefined;
         }
+        
+        var showAsPrimitive = null;
+        if (data.structuredDataTypeFullId) {
+        	var typeDeclaration = m_model.findModel(m_model
+					.stripModelId(data.structuredDataTypeFullId)).typeDeclarations[m_model
+					.stripElementId(data.structuredDataTypeFullId)];
+        	showAsPrimitive = typeDeclaration ? typeDeclaration.isEnumeration():false;
+		}
+        
         return this.nodeBuilder.buildNode({
           attr : {
             "id" : data.uuid,
-            "rel" : data.dataType,
+            "rel" : showAsPrimitive != true ? data.dataType : "primitive",
             "elementId" : data.id,
             "modelId" : this.model.id,
             "oid" : data.oid,
@@ -2891,8 +2900,20 @@ define(
 
 								// Change icon in case the date type changes
 								if (m_constants.DATA === modelElement.type) {
-									node.attr("rel",
-											obj.changes.modified[i].dataType);
+									if (modelElement.structuredDataTypeFullId) {
+										var typeDeclaration = m_model.findModel(m_model
+												.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
+												.stripElementId(modelElement.structuredDataTypeFullId)];
+										if(typeDeclaration.isEnumeration()){
+											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);	
+										}else{
+											node.attr("rel",
+													obj.changes.modified[i].dataType);
+										}
+									} else {
+										node.attr("rel",
+												obj.changes.modified[i].dataType);
+									}
 								}
 
 								// Change struct type icon in case the type

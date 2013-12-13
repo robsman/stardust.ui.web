@@ -495,16 +495,15 @@ define(
 				DataTypeSelector.prototype.isEnumTypeDeclaration = function(
 						fullId) {
 					try {
-						var typeDeclaration = m_model
-								.findModel(m_model.stripModelId(fullId)).typeDeclarations[m_model
+						var typeDeclaration = m_model.findModel(m_model
+								.stripModelId(fullId)).typeDeclarations[m_model
 								.stripElementId(fullId)];
-						if (typeDeclaration.getType() == "enumStructuredDataType") {
-							return true;
-						}
+						return typeDeclaration ? typeDeclaration
+								.isEnumeration() : false;
 					} catch (e) {
 						return false;
 					}
-					return false;
+
 				};
 				
 				/**

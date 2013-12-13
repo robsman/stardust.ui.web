@@ -84,6 +84,15 @@ define(
 					return (null != this.typeDeclaration.type)
 							&& (this.typeDeclaration.type.classifier === 'ExternalReference');
 				};
+				
+				TypeDeclaration.prototype.isEnumeration = function() {
+					if (this.getType() === "enumStructuredDataType") {
+						return true;
+					}else{
+						return false;
+					}
+					return false;
+				};
 
 				/**
 				 *
@@ -1127,7 +1136,7 @@ define(
 
 					return json;
 				},
-
+				
 				/**
 				 *
 				 * @param {string}
