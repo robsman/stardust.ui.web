@@ -33,11 +33,29 @@ define(
 				initialize : function(ruleSetUuid,decTableUuid,options) {
 					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
 					var decTable=ruleSet.findDecisionTableByUuid(decTableUuid);
+					
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var view = new DecisionTableView();
 					view.initialize(ruleSet,decTable,options);
 				}
 			};
 
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
+			
 			function DecisionTableView() {
 				
 				this.initialize = function(ruleSet,decTable,options) {
