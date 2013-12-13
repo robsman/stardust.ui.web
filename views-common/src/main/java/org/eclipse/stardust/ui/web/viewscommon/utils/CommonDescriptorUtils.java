@@ -372,12 +372,17 @@ public class CommonDescriptorUtils
          {
             Data data = model.getData(dataPath.getData());
             String type = (String) data.getAttribute(Constants.DATA_TYPE_ATTR);
+            Object carnotType = data.getAttribute("carnot:engine:type");
             if (StringUtils.isNotEmpty(type))
             {
                if (type.equals(Constants.ENUM_STRUCT_TYPE))
                {
                   return true;
                }
+            }
+            if(carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+            {
+                  return true;                  
             }
          }
       }

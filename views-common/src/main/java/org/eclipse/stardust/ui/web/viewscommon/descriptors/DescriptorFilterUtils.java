@@ -511,7 +511,14 @@ public class DescriptorFilterUtils
                }
                else
                {
-                  dataFilter = DataFilter.like(dataId, filterValueStr, caseSensitive);
+                  if (CommonDescriptorUtils.isEnumerationData(dataPath))
+                  {
+                     dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
+                  }
+                  else
+                  {
+                     dataFilter = DataFilter.like(dataId, filterValueStr, caseSensitive);
+                  }
                }
             }
          }
