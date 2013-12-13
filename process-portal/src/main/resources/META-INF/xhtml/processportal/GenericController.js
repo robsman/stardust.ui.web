@@ -73,7 +73,7 @@ if (!window.bpm.portal.GenericController) {
 																		var key = attr.ngModel
 																				.split(".")[0];
 
-																		if (key === "$tableIterator" || key === "Obj") {
+																		if (key === "$tableIterator" || key === "$listIterator") {
 																			// Change
 																			// is
 																			// coming

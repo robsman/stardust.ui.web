@@ -149,7 +149,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemTHead = htmlElement.create("thead", {parent: elemTbl});
 			var elemTBody = htmlElement.create("tbody", {parent: elemTbl});
 
-			var loopVar = "Obj";
+			var loopVar = "$listIterator";
 
 			var elemTHeadTr = htmlElement.create("tr", {parent: elemTHead});
 			var elemTBodyTr = htmlElement.create("tr", {parent: elemTBody});
