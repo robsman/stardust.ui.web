@@ -205,6 +205,7 @@ a:hover {
 .clplPanelHeading img{
 	padding : 5px 5px 4px 2px;
 	float:left;
+	height:7px;
 }
 
 .clplPanelHeading label{
@@ -214,8 +215,10 @@ a:hover {
 	font-weight:bold;
 	float:none;
 	padding : 0px 4px 0px 0px;
-	cursor :pointer
+	cursor :pointer;
+	height:13px;
 }
+
 .output {
 	font-style: Helvetica, Arial, sans-serif;
 	font-size: 11px;
