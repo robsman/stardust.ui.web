@@ -799,6 +799,7 @@ define(
 					if(!m_utils.isEmptyString(this.httpBasicAuthPwdInput.val()))
 					{
 						var rawPwd = m_utils.encodeXmlPredfinedCharacters(this.httpBasicAuthPwdInput.val());
+						rawPwd = this.convertPasswordToConfigVariable(rawPwd, true);
 							rawPwd = "RAW(" + rawPwd + ")";	
 						return rawPwd;
 					}
@@ -814,9 +815,34 @@ define(
 						var lastIdex = rawPwd.lastIndexOf(")");
 						var originePwd = rawPwd.substring(firstIdex+1,lastIdex);
 						originePwd = m_utils.decodeXmlPredfinedCharacters(originePwd);
+						originePwd = this.convertConfigVariableToPassword(originePwd);
 						return originePwd;
 					}
 					return this.httpBasicAuthPwdInput.val();
+				};
+				
+				RestServiceOverlay.prototype.convertConfigVariableToPassword = function(originePwd) {	
+					
+					if(!m_utils.isEmptyString(originePwd))
+					{
+						if(originePwd.indexOf("${") > -1){
+							var firstIdex = originePwd.indexOf("${");
+							var lastIdex = originePwd.lastIndexOf(":");
+							originePwd = originePwd.substring(firstIdex+2,lastIdex);
+						}
+						return originePwd;
+					}
+					return originePwd;
+				};
+				
+				RestServiceOverlay.prototype.convertPasswordToConfigVariable = function(originePwd, basicAuthentication) {	
+					if(basicAuthentication  == true && this.httpBasicAuthUsingCVInput.prop("checked")){
+						originePwd = "${"+originePwd+ ":Password}";	
+					}else if(basicAuthentication == false && this.customSecurityTokenUsingCVInput.prop("checked")){
+						originePwd = "${"+originePwd+ ":Password}";
+					}
+					
+					return originePwd;
 				};
 
 				/**
@@ -887,11 +913,12 @@ define(
 					this.crossDomainInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::crossDomain"]);
 					this.setSecurityMode(this.getApplication().attributes["stardust:restServiceOverlay::securityMode"]);
 					this.httpBasicAuthUserInput.val(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthUser"]);
-					this.httpBasicAuthPwdInput.val(this.getHttpBasicAuthOriginePwd(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]));
 					this.httpBasicAuthUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthCV"]);
+					this.httpBasicAuthPwdInput.val(this.getHttpBasicAuthOriginePwd(this.getApplication().attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]));
 					this.customSecurityTokenKeyInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenKey"]);
-					this.customSecurityTokenValueInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]);
 					this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);
+					this.customSecurityTokenValueInput.val(this.convertConfigVariableToPassword(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]));
+					
 					
 				};
 
@@ -917,7 +944,7 @@ define(
 									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
 										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
-									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenValue" : this.convertPasswordToConfigVariable(this.customSecurityTokenValueInput.val(), false),
 									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked") 
 										? this.customSecurityTokenUsingCVInput.prop("checked") : null
 								}
@@ -951,7 +978,7 @@ define(
 									"stardust:restServiceOverlay::httpBasicAuthCV" : this.httpBasicAuthUsingCVInput.prop("checked") 
 										? this.httpBasicAuthUsingCVInput.prop("checked") : null,
 									"stardust:restServiceOverlay::customSecurityTokenKey" : this.customSecurityTokenKeyInput.val(),
-									"stardust:restServiceOverlay::customSecurityTokenValue" : this.customSecurityTokenValueInput.val(),
+									"stardust:restServiceOverlay::customSecurityTokenValue" : this.convertPasswordToConfigVariable(this.customSecurityTokenValueInput.val(), false),
 									"stardust:restServiceOverlay::customSecurityTokenCV" : this.customSecurityTokenUsingCVInput.prop("checked") 
 										? this.customSecurityTokenUsingCVInput.prop("checked") : null
 								}
