@@ -148,11 +148,84 @@ if (!window.bpm.portal.GenericController) {
 				console.log(this.interaction.transfer[x]);
 
 				this[x] = this.interaction.transfer[x];
+				if (!isPrimitive(this[x])) {
+					if (isValidObject(this[x])) {
+						processTransferObject(this[x]);
+					} else {
+						this[x] = ""; // This is not valid Object, then it must be empty primitive
+					}
+				}
 			}
 
 			this.mergeControllerWithScope();
 			this.updateView();
 		};
+
+		/*
+		 * 
+		 */
+		function processTransferObject(obj) {
+			for(var key in obj) {
+				var vp = isValidParam(key);
+				if (vp) {
+					if (!isPrimitive(obj[key])) {
+						if (obj[key].length) { // Array
+							for(var i in obj[key]) {
+								processTransferObject(obj[key][i]);
+							}
+						} else { // Object
+							if (isValidObject(obj[key])) {
+								processTransferObject(obj[key]);
+							} else {
+								obj[key] = ""; // This is not valid Object, then it must be empty primitive
+							}
+						}
+					}
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		function isValidParam(attr) {
+			return (attr.indexOf("_") != 0 && !endsWith(attr, "_asArray"));
+		}
+
+		/*
+		 * 
+		 */
+		function endsWith(str, subStr) {
+			return str.lastIndexOf(subStr) == str.length - 8;
+		}
+
+		/*
+		 * 
+		 */
+		function isPrimitive(obj) {
+			if (typeof obj != "object" || typeof obj == "string") {
+				return true;
+			} else {
+				for(var key in obj) {
+					if (key == "toString" && typeof obj[key] == "function") {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/*
+		 * 
+		 */
+		function isValidObject(obj) {
+			for(var key in obj) {
+				if (isValidParam(key)) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		/**
 		 *
