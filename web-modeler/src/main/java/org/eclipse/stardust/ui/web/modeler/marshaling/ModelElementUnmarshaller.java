@@ -655,6 +655,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
             if (dataMapping.getData().getId().equals(dataFlowConnection.getDataSymbol().getData().getId()))
             {
                dataMapping.setName(extractAsString(dataFlowJson, ModelerConstants.NAME_PROPERTY));
+               dataMapping.setId(extractAsString(dataFlowJson, ModelerConstants.NAME_PROPERTY));
             }
          }
       }
