@@ -209,8 +209,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				"<iframe ng-show=\"showNestedDM\" class=\"panel-list-dialog-modal-iframe\"" +
 					"style=\"width: {{sizes.frameWidth}}; height: {{sizes.frameHeight}};\" src=\"about:blank\"></iframe>\n" +
 				"<div ng-show=\"showNestedDM\" class=\"panel-list-dialog\" style=\"left: {{sizes.dialogLeft}}; top: {{sizes.dialogTop}}\">" + 
-					"<div class=\"panel-list-dialog-title\">{{nestedDMTitle}}" + 
-						"<span class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\">X</span></div>" + 
+					"<div class=\"panel-list-dialog-title\">" +
+						"<span class=\"panel-list-dialog-title-text\">{{nestedDMTitle}}</span>" + 
+						"<input type=\"button\" class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\"></input></div>" + 
 					"<div class=\"panel-list-dialog-breadcrumb\">" + 
 						"<span class=\"panel-list-dialog-breadcrumb-item\" ng-repeat=\"bCrumb in nestedDMs\">" + 
 							"<a href=\"\" ng-click=\"showNestedList($index)\" ng-show=\"!$last\">{{bCrumb.label}}</a>" + 
