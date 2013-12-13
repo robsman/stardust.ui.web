@@ -162,6 +162,10 @@ body, table {
    padding: 3px;
 }
 
+.panel-input-number {
+	text-align: right;
+}
+
 .panel-list-tbl-cell .panel-input {
 	border: none;
 }

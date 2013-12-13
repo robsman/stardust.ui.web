@@ -302,6 +302,10 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						addCustomDirective(path, elem);
 					}
 
+					if(isNumber(path)) {
+						elem.attributes['class'] += " panel-input-number";
+					}
+
 					if (validations.length > 0) {
 						var id = "id" + Math.floor((Math.random() * 100000) + 1);
 						var formId = "'" + id + "'";
@@ -393,6 +397,21 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			return ret;
+		}
+
+		/*
+		 * 
+		 */
+		function isNumber(path) {
+			if (path.typeName == "integer" || path.typeName == "int" || path.typeName == "java.lang.Integer" || 
+					path.typeName == "short" || path.typeName == "java.lang.Short" ||
+					path.typeName == "long" || path.typeName == "java.lang.Long" ||
+					path.typeName == "float" || path.typeName == "java.lang.Float" ||
+					path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		/*
