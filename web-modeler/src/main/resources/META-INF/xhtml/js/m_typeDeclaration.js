@@ -88,8 +88,17 @@ define(
 				TypeDeclaration.prototype.isEnumeration = function() {
 					if (this.getType() === "enumStructuredDataType") {
 						return true;
-					}else{
-						return false;
+					} else {
+						// imported types could also be enumerations
+						// checks for presense of a facet with classifier enumeration
+						var facets = this.getFacets();
+						if (facets && facets.length > 0) {
+							for (var f in facets) {
+								if (facets[f].classifier === "enumeration") {
+									return true;
+								}
+							}
+						}
 					}
 					return false;
 				};

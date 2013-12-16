@@ -262,8 +262,7 @@ define(
 
 						for ( var i in this.scopeModel.typeDeclarations) {
 							if (this.scopeModel.typeDeclarations[i].isSequence()) continue;
-							if (this.scopeModel.typeDeclarations[i]
-							.getType() == "enumStructuredDataType"){
+							if (this.scopeModel.typeDeclarations[i].isEnumeration()){
 								this.primitiveDataTypeSelect
 								.append("<option value='" + this.scopeModel.typeDeclarations[i].getFullId() + "'>"
 										+ this.scopeModel.typeDeclarations[i].name
