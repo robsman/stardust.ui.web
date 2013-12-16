@@ -33,6 +33,7 @@ public class JsfViewUpdaterBean
          view.getViewParams().putAll(viewParams);
          view.resolveLabelAndDescription();
          PortalApplication.getInstance().updateViewTitle(view);
+         PortalApplication.getInstance().updateViewIconClass(view);
       }
    }
 
