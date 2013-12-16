@@ -313,7 +313,7 @@ define(
 						// adjusted
 						this.adjustCurrentLaneCoordinates(swimlaneSymbol);
 						//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
-						swimlaneSymbol.createAndSubmitCreateCommand();
+						swimlaneSymbol.createAndSubmitCreateCommand(true);
 					} else {
 						m_messageDisplay.showMessage(m_i18nUtils.getProperty(
 										"modeler.swimlane.error.participantExist")
