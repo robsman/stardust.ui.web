@@ -256,7 +256,7 @@ define(
 							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
 									+ "</option>");
 
-					if (this.scopeModel && this.hideEnumerations != false) {
+					if (this.scopeModel && this.hideEnumerations != true) {
 						this.primitiveDataTypeSelect
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.enum.thisModel") + "'>");
 
@@ -272,7 +272,7 @@ define(
 						}
 					}
 
-					if (!this.restrictToCurrentModel && this.hideEnumerations != false) {
+					if (!this.restrictToCurrentModel && this.hideEnumerations != true) {
 						this.primitiveDataTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.enum.otherModels") + "'>");
 
