@@ -90,7 +90,8 @@ define(
 								supportsDataMappings : true,
  								supportsDescriptors : false,
  								supportsDataTypeSelection : true,
- 								supportsDocumentTypes : false
+ 								supportsDocumentTypes : false,
+ 								hideEnumerations:true
 							});
 
 					var self = this;

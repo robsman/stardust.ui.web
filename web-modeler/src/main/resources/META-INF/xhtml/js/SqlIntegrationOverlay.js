@@ -660,7 +660,8 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
 								supportsDocumentTypes : false,
-								supportsOtherData : false
+								supportsOtherData : false,
+								hideEnumerations:true
 							});
 
 					// Predefined access points
