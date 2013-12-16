@@ -127,7 +127,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (isReadonly(path)) {
 				elemAddButton.attributes["disabled"] = true;
 			} else {
-				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ")";
+				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", " + path.isPrimitive + ")";
 			}
 			htmlElement.create("img", {parent: elemAddButton, 
 				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png"}});
@@ -166,7 +166,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (path.isPrimitive) { // List of Primitives
 				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
 				var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
-				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopVar, ngFormName: innerForm});
+				
+				var loopNgModel = preferences.ngModelSepAsDot ? (loopVar + ".$value") : (loopVar + "['$value']");
+				generatePriEnum(elemTd, path, {noLabel: true, ngModel: loopNgModel, ngFormName: innerForm});
 			} else { // List of Structures
 				for (var i in path.children) {
 					if (preferences.tableColumns > 0 && i >= preferences.tableColumns) {

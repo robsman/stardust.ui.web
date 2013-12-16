@@ -311,27 +311,23 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope[BINDING_PREFIX] = bindings;
 				jQuery.extend($scope[BINDING_PREFIX], data);
 				
-				massageInData($scope[BINDING_PREFIX]);
+				marshalInData($scope[BINDING_PREFIX]);
 			});
 		};
 
 		/*
 		 * 
 		 */
-		function massageInData(data) {
-			addIfBlankArray(dataMappings, data);
-			processForPrimitives(dataMappings, data);
+		function marshalInData(data) {
+			marshalForLists(dataMappings, data);
+			marshalForPrimitives(dataMappings, data);
 		}
 		
 		/*
 		 * 
 		 */
-		function addIfBlankArray(arrPaths, data) {
+		function marshalForLists(arrPaths, data) {
 			for (var key in arrPaths) {
-				if (arrPaths[key].readonly) {
-					continue;
-				}
-				
 				if (arrPaths[key].isList) {
 					var parts = arrPaths[key].fullXPath.substring(1).split("/");
 					var currentBinding = data;
@@ -344,15 +340,19 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 					if (currentBinding) {
 						if (currentBinding.length == 0) {
-							currentBinding.push(arrPaths[key].isPrimitive ? "" : {});
+							currentBinding.push(arrPaths[key].isPrimitive ? {$value: ""} : {});
 						} else {
 							if (arrPaths[key].children) {
-								addIfBlankArray(arrPaths[key].children, data);
+								marshalForLists(arrPaths[key].children, data);
+							} else {
+								for(var k in currentBinding) {
+									currentBinding[k] = {$value: currentBinding[k]};
+								}
 							}
 						}
 					}
 				} else if (arrPaths[key].children) {
-					addIfBlankArray(arrPaths[key].children, data);
+					marshalForLists(arrPaths[key].children, data);
 				}
 			}
 		}
@@ -360,7 +360,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function processForPrimitives(arrPaths, data) {
+		function marshalForPrimitives(arrPaths, data) {
 			for (var key in arrPaths) {
 				if (arrPaths[key].isPrimitive) {
 					if (arrPaths[key].typeName == "duration") {
@@ -391,7 +391,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						}
 					}
 				} else if (arrPaths[key].children) {
-					processForPrimitives(arrPaths[key].children, data);
+					marshalForPrimitives(arrPaths[key].children, data);
 				}
 			}
 		}
@@ -399,9 +399,48 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function addToList(list) {
+		function unmarshalOutData(data) {
+			unmarshalForLists(dataMappings, data);
+		}
+
+		/*
+		 * 
+		 */
+		function unmarshalForLists(arrPaths, data) {
+			for (var key in arrPaths) {
+				if (arrPaths[key].isList) {
+					var parts = arrPaths[key].fullXPath.substring(1).split("/");
+					var currentBinding = data;
+					for(var i = 0; i < parts.length; i++) {
+						currentBinding = currentBinding[parts[i]];
+						if (currentBinding == undefined) {
+							break;
+						}
+					}
+
+					if (currentBinding) {
+						if (currentBinding.length > 0) {
+							if (arrPaths[key].children) {
+								unmarshalForLists(arrPaths[key].children, data);
+							} else {
+								for(var k in currentBinding) {
+									currentBinding[k] = currentBinding[k].$value;
+								}
+							}
+						}
+					}
+				} else if (arrPaths[key].children) {
+					unmarshalForLists(arrPaths[key].children, data);
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function addToList(list, primitive) {
 			if (list != undefined) {
-				list.push({});
+				list.push(primitive ? {$value: ""} : {});
 			}
 		}
 
@@ -502,7 +541,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var success = false;
 			if (isFormValid()) {
 				var $scope = angular.element(document).scope();
-				postData(interactionEndpoint, "/outData", $scope[BINDING_PREFIX], {success: function(retData) {
+				var toPost = jQuery.extend(true, {}, $scope[BINDING_PREFIX]);
+				unmarshalOutData(toPost);
+				postData(interactionEndpoint, "/outData", toPost, {success: function(retData) {
 					if (retData && retData.errors) {
 						success = false;
 						
@@ -729,7 +770,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			for (var key in data.binding) {
 				if (binding[key] == undefined) {
 					jQuery.extend(binding, data.binding);
-					// massageInData(scope[BINDING_PREFIX]);
+					// marshalInData(scope[BINDING_PREFIX]);
 					break;
 				} else {
 					break;
