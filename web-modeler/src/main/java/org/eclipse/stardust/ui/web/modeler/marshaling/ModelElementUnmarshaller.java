@@ -167,8 +167,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
    private static final Logger logger = LogManager.getLogger(ModelElementUnmarshaller.class);
 
    /**
-	 *
-	 */
+   *
+   */
    public ModelElementUnmarshaller()
    {
       propertiesMap = newHashMap();
@@ -2037,7 +2037,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                else if (dataType.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
                {
 
-            	  // ID is set to null to enforce ID generation at server side
+               // ID is set to null to enforce ID generation at server side
                   accessPoint = getModelBuilderFacade().createDocumentAccessPoint(
                         trigger, null, name, direction);
 
@@ -2137,25 +2137,26 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(applicationJson, ModelerConstants.TYPE_PROPERTY))
       {
-	  JsonPrimitive typeJson = applicationJson.get(ModelerConstants.TYPE_PROPERTY).getAsJsonPrimitive();
+         JsonPrimitive typeJson = applicationJson.get(ModelerConstants.TYPE_PROPERTY).getAsJsonPrimitive();
 
-	  if (!application.getType().getId().equals(typeJson.getAsString()))
-		  {
-		  ModelType modelType = ModelUtils.findContainingModel(application);
-		  ApplicationTypeType type = getModelBuilderFacade()
-			.findApplicationTypeType(modelType, typeJson.getAsString());
+         if (!application.getType().getId().equals(typeJson.getAsString()))
+      {
+            ModelType modelType = ModelUtils.findContainingModel(application);
+            ApplicationTypeType type = getModelBuilderFacade()
+               .findApplicationTypeType(modelType, typeJson.getAsString());
 
-		  if (type != null)
-		  {
-			  application.setType(type);
-		  }
-		  }
+            if (type != null)
+            {
+               application.setType(type);
+            }
+      }
       }
 
       // (fh) must update before changing the attributes so we can compare with old values.
       if (WebServiceApplicationUtils.isWebServiceApplication(application))
       {
-         WebServiceApplicationUtils.updateWebServiceApplication(application, applicationJson);
+         WebServiceApplicationUtils.updateWebServiceApplication(modelingSession().uuidMapper(),
+               application, applicationJson);
       }
 
       storeAttributes(application, applicationJson);
@@ -2201,19 +2202,19 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                   if (hasNotJsonNull(accessPointJson, ModelerConstants.ATTRIBUTES_PROPERTY))
                   {
-                	  JsonObject attributeJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
-                	  if (hasNotJsonNull(attributeJson, "stardust:predefined"))
-                	  {
-                		// TODO : create ModelerConstans entry
-                		predefined = attributeJson.get("stardust:predefined").getAsBoolean();
-                	  }
+                     JsonObject attributeJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+                     if (hasNotJsonNull(attributeJson, "stardust:predefined"))
+                     {
+                     // TODO : create ModelerConstans entry
+                     predefined = attributeJson.get("stardust:predefined").getAsBoolean();
+                     }
                   }
 
                   String id = null;
 
                   if (predefined)
                   {
-                	  id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+                     id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
                   }
 
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
@@ -2236,7 +2237,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                               ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY)
                               .getAsString();
                         String structuredDataFullId = null;
-                    	if (hasNotJsonNull(accessPointJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                     if (hasNotJsonNull(accessPointJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
                         {
                            structuredDataFullId = accessPointJson.get(
                                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
@@ -2253,8 +2254,8 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
                                       accessPoint, typeDeclaration);
                              }
                         }
-                    	else
-                    	{
+                     else
+                     {
                         accessPoint = getModelBuilderFacade().createPrimitiveAccessPoint(
                                     context, id, name, primitiveDataType, direction);
                      }

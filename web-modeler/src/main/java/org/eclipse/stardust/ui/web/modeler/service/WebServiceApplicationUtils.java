@@ -31,6 +31,7 @@ import org.eclipse.stardust.engine.extensions.jaxws.addressing.EndpointReference
 import org.eclipse.stardust.engine.extensions.jaxws.addressing.WSAddressing;
 import org.eclipse.stardust.engine.extensions.jaxws.app.IBasicAuthenticationParameters;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
@@ -44,7 +45,7 @@ import com.google.gson.JsonObject;
 public final class WebServiceApplicationUtils
 {
    private static final Logger trace = LogManager.getLogger(WebServiceApplicationUtils.class);
-   
+
    private static final String ENDPOINT_ADDRESS_LABEL = "Endpoint Address";
    private static final String ENDPOINT_REFERENCE_LABEL = "WS-Addressing EndpointReference";
    private static final String AUTHENTICATION_LABEL = "Authentication";
@@ -58,14 +59,15 @@ public final class WebServiceApplicationUtils
             PredefinedConstants.WS_APPLICATION.equals(applicationType.getId());
    }
 
-   public static void updateWebServiceApplication(ApplicationType application, JsonObject applicationJson)
+   public static void updateWebServiceApplication(EObjectUUIDMapper mapper,
+         ApplicationType application, JsonObject applicationJson)
    {
       if (applicationJson.has("attributes"))
       {
          JsonObject attributes = GsonUtils.safeGetAsJsonObject(applicationJson, "attributes");
          updateAddressing(application, attributes);
          updateSecurity(application, attributes);
-         updateService(application, attributes);
+         updateService(mapper, application, attributes);
       }
    }
 
@@ -141,7 +143,7 @@ public final class WebServiceApplicationUtils
          {
             accessPoints.remove(auth);
          }
-         
+
          if (authentication != null)
          {
             createSerializableAccessPoint(application,
@@ -151,7 +153,7 @@ public final class WebServiceApplicationUtils
       }
    }
 
-   private static void updateService(ApplicationType application, JsonObject attributes)
+   private static void updateService(EObjectUUIDMapper mapper, ApplicationType application, JsonObject attributes)
    {
       if (attributes.has(WSConstants.WS_WSDL_URL_ATT)
             || attributes.has(WSConstants.WS_SERVICE_NAME_ATT)
@@ -160,7 +162,7 @@ public final class WebServiceApplicationUtils
       {
          application.getAccessPoint().retainAll(saveAccessPoints(application, WSConstants.WS_ENDPOINT_ADDRESS_ID,
                WSConstants.WS_ENDPOINT_REFERENCE_ID, WSConstants.WS_AUTHENTICATION_ID));
-         
+
          String wsdlUrl = GsonUtils.safeGetAsString(attributes, WSConstants.WS_WSDL_URL_ATT);
          if (StringUtils.isEmpty(wsdlUrl))
          {
@@ -171,7 +173,7 @@ public final class WebServiceApplicationUtils
                return;
             }
          }
-         
+
          String serviceName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_SERVICE_NAME_ATT);
          String portName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_PORT_NAME_ATT);
          String operationName = GsonUtils.safeGetAsString(attributes, WSConstants.WS_OPERATION_NAME_ATT);
@@ -192,7 +194,7 @@ public final class WebServiceApplicationUtils
                }
             }
          }
-         
+
          String oldServiceName = AttributeUtil.getAttributeValue(application, WSConstants.WS_SERVICE_NAME_ATT);
          if (serviceName == null)
          {
@@ -210,7 +212,7 @@ public final class WebServiceApplicationUtils
             AttributeUtil.setAttribute(application, WSConstants.WS_OPERATION_NAME_ATT, null);
             return;
          }
-         
+
          String oldPortName = AttributeUtil.getAttributeValue(application, WSConstants.WS_PORT_NAME_ATT);
          if (portName == null)
          {
@@ -227,7 +229,7 @@ public final class WebServiceApplicationUtils
             AttributeUtil.setAttribute(application, WSConstants.WS_OPERATION_NAME_ATT, null);
             return;
          }
-         
+
          String oldOperationName = AttributeUtil.getAttributeValue(application, WSConstants.WS_OPERATION_NAME_ATT);
          String oldOperationInputName = AttributeUtil.getAttributeValue(application, WSConstants.WS_OPERATION_INPUT_NAME_ATT);
          String oldOperationOutputName = AttributeUtil.getAttributeValue(application, WSConstants.WS_OPERATION_OUTPUT_NAME_ATT);
@@ -241,7 +243,7 @@ public final class WebServiceApplicationUtils
             operationInputName = oldOperationInputName;
             operationOutputName = oldOperationOutputName;
          }
- 
+
          Definition definition = JaxWSResource.getDefinition(wsdlUrl);
          Binding binding = null;
          if (serviceName.equals(WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart()))
@@ -331,7 +333,7 @@ public final class WebServiceApplicationUtils
             attributes.addProperty(WSConstants.WS_INPUT_ORDER_ATT, ModelService.getPartsOrder(message));
             if (message != null)
             {
-               createAccessPoints(application, message, DirectionType.IN_LITERAL, wsdlUrl);
+               createAccessPoints(mapper, application, message, DirectionType.IN_LITERAL, wsdlUrl);
             }
          }
          Output output = operation.getOutput();
@@ -345,7 +347,7 @@ public final class WebServiceApplicationUtils
             attributes.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, ModelService.getPartsOrder(message));
             if (message != null)
             {
-               createAccessPoints(application, message, DirectionType.OUT_LITERAL, wsdlUrl);
+               createAccessPoints(mapper, application, message, DirectionType.OUT_LITERAL, wsdlUrl);
             }
          }
       }
@@ -370,23 +372,23 @@ public final class WebServiceApplicationUtils
       return savedAccessPoints;
    }
 
-   private static void createAccessPoints(ApplicationType application, Message message,
-         DirectionType direction, String wsdlUrl)
+   private static void createAccessPoints(EObjectUUIDMapper mapper,
+         ApplicationType application, Message message, DirectionType direction, String wsdlUrl)
    {
       @SuppressWarnings("unchecked")
       Iterator<Part> i = message.getOrderedParts(null).iterator();
       while (i.hasNext())
       {
          Part part = i.next();
-         createAccessPoints(application, part, direction, wsdlUrl);
+         createAccessPoints(mapper, application, part, direction, wsdlUrl);
       }
    }
 
-   public static void createAccessPoints(ApplicationType application, Part part,
-         DirectionType direction, String wsdlUrl)
+   public static void createAccessPoints(EObjectUUIDMapper mapper,
+         ApplicationType application, Part part, DirectionType direction, String wsdlUrl)
    {
       createPlainXmlAccessPoint(application, part, direction);
-      createStructAccessPoint(application, part, direction, wsdlUrl);
+      createStructAccessPoint(mapper, application, part, direction, wsdlUrl);
    }
 
    private static void createPlainXmlAccessPoint(ApplicationType application, Part part, DirectionType direction)
@@ -416,8 +418,8 @@ public final class WebServiceApplicationUtils
       }
    }
 
-   private static void createStructAccessPoint(ApplicationType application, Part part,
-         DirectionType direction, String wsdlUrl)
+   private static void createStructAccessPoint(EObjectUUIDMapper mapper,
+         ApplicationType application, Part part, DirectionType direction, String wsdlUrl)
    {
       // try to find corresponding type for the part
       QName qname = part.getElementName();
@@ -425,16 +427,16 @@ public final class WebServiceApplicationUtils
       {
          qname = part.getTypeName();
       }
-      
+
       if (qname != null && !XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI()))
       {
          ModelType model = ModelUtils.findContainingModel(application);
          TypeDeclarationType typeDeclaration = findMatchingTypeDeclaration(model, qname);
          if (typeDeclaration == null)
          {
-            typeDeclaration = createExternalReference(model, qname, wsdlUrl);
+            typeDeclaration = createExternalReference(mapper, model, qname, wsdlUrl);
          }
-         
+
          String id = part.getName() + WSConstants.STRUCT_POSTFIX;
          String name = id + " (" + typeDeclaration.getName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
          String transformationType = null;
@@ -443,7 +445,7 @@ public final class WebServiceApplicationUtils
             // force IN/INOUT structured data values to be transformed to DOM
             transformationType = StructDataTransformerKey.DOM;
          }
-         
+
          AccessPointType ap = AccessPointUtil.createAccessPoint(id, name, direction, ModelUtils.getDataType(
                application, StructuredDataConstants.STRUCTURED_DATA));
          // (fh) the access point must be added to the container before setting the reference to the type declaration
@@ -452,8 +454,8 @@ public final class WebServiceApplicationUtils
       }
    }
 
-   private static TypeDeclarationType createExternalReference(ModelType model,
-         QName qname, String wsdlUrl)
+   private static TypeDeclarationType createExternalReference(EObjectUUIDMapper mapper,
+         ModelType model, QName qname, String wsdlUrl)
    {
       XpdlFactory factory = XpdlFactory.eINSTANCE;
       TypeDeclarationsType declarations = model.getTypeDeclarations();
@@ -470,6 +472,7 @@ public final class WebServiceApplicationUtils
       externalReference.setXref(qname.toString());
       declaration.setExternalReference(externalReference);
       declarations.getTypeDeclaration().add(declaration);
+      mapper.map(declaration);
       return declaration;
    }
 
@@ -532,7 +535,7 @@ public final class WebServiceApplicationUtils
       }
       return null;
    }
-   
+
    private static String getOperationName(String operationName,
          String operationInputName, String operationOutputName)
    {
