@@ -171,27 +171,17 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          type = ProcessPortalConstants.DOUBLE_TYPE;
       }
-      else if(dataClass == String.class || dataClass == Character.class)
+      else if (dataClass == String.class || dataClass == Character.class)
       {
-         Object carnotType = getDataDetails().getAttribute("carnot:engine:type");
          Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
-         if (!dataTypeId.equals("struct") && carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+         if (dataTypeId.equals("struct") && isEnumerationType(model, dataMapping))
          {
             populateEnumValues(model, dataMapping);
             type = ProcessPortalConstants.ENUM_TYPE;
          }
          else
          {
-            if (dataTypeId.equals("struct") && isEnumerationType(model, dataMapping))
-            {
-               populateEnumValues(model, dataMapping);
-               type = ProcessPortalConstants.ENUM_TYPE;
-            }
-            else
-            {
-               type = ProcessPortalConstants.STRING_TYPE;
-            }
-                        
+            type = ProcessPortalConstants.STRING_TYPE;
          }
       }
       else if (dataClass == Map.class || dataClass == List.class
@@ -203,6 +193,12 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             // "STRUCTURED_TYPE" should not be returned for serializables.
             type = ProcessPortalConstants.STRUCTURED_TYPE;
          }
+      }
+      else if(dataClass instanceof Class<?>)
+      {
+         Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+         populateEnumValues(model, dataMapping);
+         type = !enumList.isEmpty() ? ProcessPortalConstants.ENUM_TYPE : null;
       }
       return type;
    }
@@ -422,15 +418,6 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    public void enumValueChangeListener(ValueChangeEvent event)
    {
-      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
-      {
-         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
-         event.queue();
-
-         return;
-      }
-      else
-      {
          if (event.getNewValue() != null)
          {
             setEnumValueList((String[]) event.getNewValue());
@@ -439,7 +426,6 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          {
             setEnumValueList(null);
          }
-      }
    }
 
    public String[] getEnumValueList()
