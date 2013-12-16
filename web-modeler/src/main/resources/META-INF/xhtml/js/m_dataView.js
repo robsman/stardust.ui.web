@@ -213,7 +213,6 @@ define(
 					this.data = data;
 
 					this.initializeModelElement(data);
-					this.updateViewIcon();
 
 					this.dataTypeSelector.setScopeModel(this.data.model);
 					this.dataTypeSelector.setDataType(this.data);
@@ -232,14 +231,20 @@ define(
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
+					this.updateViewIcon();
 				};
 
 				/**
 				 * TODO - handle unsupported data types too.?
 				 */
 				DataView.prototype.updateViewIcon = function() {
-					var dataViewIcon = m_elementConfiguration
-							.getIconForElementType(this.data.dataType);
+					var dataViewIcon = null;
+					if (this.dataTypeSelector.dataTypeSelect.val() == m_constants.PRIMITIVE_DATA_TYPE) {
+						dataViewIcon = m_elementConfiguration.getIconForElementType(m_constants.PRIMITIVE_DATA_TYPE);
+					} else {
+						dataViewIcon = m_elementConfiguration.getIconForElementType(this.data.dataType);
+					}
+					
 					if (dataViewIcon) {
 						viewManager.updateView("dataView",
 								m_constants.VIEW_ICON_PARAM_KEY + "="
