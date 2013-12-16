@@ -125,7 +125,7 @@ public abstract class PopupUIComponentBean extends UIComponentBean
       String htmlFWViewId = "";
       if (null != fromView)
       {
-         htmlFWViewId = (String)fromView.getParamValue("html5FWViewId");   
+         htmlFWViewId = fromView.getHtml5FwViewId();   
       }
       String popupScript = "parent.BridgeUtils.Dialog.open(" + fromlaunchPanels + ", '" + htmlFWViewId + "');";
       PortalApplication.getInstance().addEventScript(popupScript);

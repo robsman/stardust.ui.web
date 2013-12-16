@@ -36,8 +36,10 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  */
 public class View extends AbstractUiElement implements TabScopeManager
 {
-   public static final String PRE_DESCRIPTION = "description";
+   private static final long serialVersionUID = 8000517199194284012L;
 
+   public static final String PRE_DESCRIPTION = "description";
+   
    private ViewState viewState;
 
    private View openerView;
@@ -71,6 +73,8 @@ public class View extends AbstractUiElement implements TabScopeManager
    private Map<String, Object> viewParams = CollectionUtils.newTreeMap();
 
    private String identityUrl;
+   
+   private String html5FwViewId = null;
 
    /**
     * @param definition
@@ -98,7 +102,7 @@ public class View extends AbstractUiElement implements TabScopeManager
       this.id = createIdFromUrl(url);
 
       String[] strings = url.split("\\?");
-      String path = strings[0];
+      
       String params = strings.length > 1 ? strings[1] : "";
 
       this.definition = definition;
@@ -140,8 +144,41 @@ public class View extends AbstractUiElement implements TabScopeManager
       }
 
       resolveLabelAndDescription();
+      
    }
 
+   /**
+    * 
+    */
+   private void generateHTML5FrameworkId()
+   {
+      if (getDefinition() != null)
+      {
+         boolean ext = !getDefinition().getInclude().toLowerCase().endsWith(".html");
+         String viewId;
+         if (ext)
+         {
+            viewId = "Ext/:type/:id";
+         }
+         else
+         {
+            if (StringUtils.isEmpty(getViewKey()))
+            {
+               return;
+            }
+
+            viewId = "Int/" + getDefinition().getName() + "/:id";
+         }
+
+         String typeId = getDefinition().getName();
+         String id = StringUtils.isNotEmpty(getViewKey()) ? getViewKey() : "";
+
+         html5FwViewId = "/ippPortal/configurationTreeView/" + viewId;
+         html5FwViewId = StringUtils.replace(html5FwViewId, ":type", typeId);
+         html5FwViewId = StringUtils.replace(html5FwViewId, ":id", id);
+      }
+   }
+   
    public static String createURL(ViewDefinition definition, String viewKey)
    {
       String appendix = isEmpty(viewKey) ? "" : "?" + viewKey;
@@ -670,5 +707,14 @@ public class View extends AbstractUiElement implements TabScopeManager
    public String getViewKey()
    {
       return viewKey;
+   }
+
+   public String getHtml5FwViewId()
+   {
+      if (html5FwViewId == null)
+      {
+         generateHTML5FrameworkId();
+      }
+      return html5FwViewId;
    }
 }
