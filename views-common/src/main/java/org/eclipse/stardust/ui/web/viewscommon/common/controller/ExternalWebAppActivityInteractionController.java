@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.faces.context.FacesContext;
@@ -38,7 +37,6 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
-import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
@@ -287,27 +285,33 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
     * @param ai
     * @return
     */
+   @SuppressWarnings("unchecked")
    private Object getPrimitiveInParams(ActivityInstance ai)
    {
       StringBuilder sb = new StringBuilder();
 
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
-      if (null != registry)
+      Interaction interaction = (null != registry) ? registry.getInteraction(getInteractionId(ai)) : null;
+      if (null != interaction)
       {
-         Interaction interaction = registry.getInteraction(getInteractionId(ai));
-         if (null != interaction)
+         for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
          {
-            for (Entry<String, ? extends Serializable> entry : interaction.getInDataValues().entrySet())
+            try
             {
-               if (entry.getValue() instanceof Map || entry.getValue() instanceof List
-                     || entry.getValue() instanceof Document)
+               if (ClientSideDataFlowUtils.isPrimitiveType(interaction.getModel(), inMapping.getApplicationAccessPoint()))
                {
-                  // Ignore
+                  String paramId = inMapping.getApplicationAccessPoint().getId();
+                  Object value = interaction.getInDataValues().get(paramId);
+                  if (null != value)
+                  {
+                     sb.append("&").append(paramId).append("=").append(value);
+                  }
                }
-               else
-               {
-                  sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-               }
+            }
+            catch (Exception e)
+            {
+               trace.warn("Failed evaluating client side of IN data mapping "
+                     + inMapping.getId() + " on activity instance " + ai);
             }
          }
       }
