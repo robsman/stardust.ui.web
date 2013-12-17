@@ -559,14 +559,14 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
-						height : 200
+						height : 400
 					});
 					this.inputTable.treeTable({
 						indent: 14
 					});
 
 					this.outputTable.tableScroll({
-						height : 200
+						height : 400
 					});
 					this.outputTable.treeTable({
 						indent: 14
