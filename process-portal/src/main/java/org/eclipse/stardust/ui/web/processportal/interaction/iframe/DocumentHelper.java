@@ -163,7 +163,6 @@ public class DocumentHelper
     */
    public static void transformDocuments(Interaction interaction)
    {
-
       Map<String, Serializable> convertedDocs = new HashMap<String, Serializable>();
       Map<String, Serializable> outData = interaction.getOutDataValues();
 
@@ -171,23 +170,26 @@ public class DocumentHelper
 
       for (Entry<String, ? extends Serializable> dataEntry : outData.entrySet())
       {
-         if (dataEntry.getValue() == null)
+         if (dcs.get(dataEntry.getKey()) != null)
          {
-            // delete document
-            DocumentHelper.deleteDocuments(dcs.get(dataEntry.getKey())
-                  .getDocsTobeDeleted());
-         }
-         else if (dataEntry.getValue() instanceof FileSystemJCRDocument)
-         {
-            FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) dataEntry.getValue();
-            // set activity instance documents folder
-            String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(interaction.getActivityInstance()
-                  .getProcessInstance());
-            fileSystemDoc.setJcrParentFolder(parentFolder);
+            if (dataEntry.getValue() == null)
+            {
+               // delete document
+               DocumentHelper.deleteDocuments(dcs.get(dataEntry.getKey())
+                     .getDocsTobeDeleted());
+            }
+            else if (dataEntry.getValue() instanceof FileSystemJCRDocument)
+            {
+               FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) dataEntry.getValue();
+               // set activity instance documents folder
+               String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(interaction.getActivityInstance()
+                     .getProcessInstance());
+               fileSystemDoc.setJcrParentFolder(parentFolder);
 
-            // convert file system document to JCR document
-            JCRDocument jcrDoc = (JCRDocument) fileSystemDoc.save(fileSystemDoc.retrieveContent());
-            convertedDocs.put(dataEntry.getKey(), jcrDoc.getDocument());
+               // convert file system document to JCR document
+               JCRDocument jcrDoc = (JCRDocument) fileSystemDoc.save(fileSystemDoc.retrieveContent());
+               convertedDocs.put(dataEntry.getKey(), jcrDoc.getDocument());
+            }
          }
       }
 

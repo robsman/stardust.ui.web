@@ -21,7 +21,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.Assert;
 import org.eclipse.stardust.common.log.LogManager;
@@ -47,11 +46,7 @@ import org.eclipse.stardust.ui.web.processportal.interaction.iframe.DocumentHelp
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.RawDocument;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean.InputParameters;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument.FileSystemDocumentAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
 
 /**
@@ -91,15 +86,22 @@ public class InteractionDataUtils
                
                if (ModelUtils.isDocumentType(model, dm))
                {
-                  jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model, interaction);
+                  jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model,
+                        interaction);
+                  root.add(dm.getId(), elemDM);
+               }
+               else if (ModelUtils.isStructuredType(model, dm))
+               {
+                  if (entry.getValue() != null)
+                  {
+                     jsonHelper.toJson(entry.getKey(), entry.getValue(), elemDM);
+                     root.add(dm.getId(), elemDM);
+                  }
                }
                else
                {
-                  jsonHelper.toJson(entry.getKey(), entry.getValue(), elemDM);
+                  jsonHelper.toJson(dm.getId(), entry.getValue(), root);
                }
-               
-               root.add(dm.getId(), elemDM);
-               
                break;
             }
          }
@@ -322,6 +324,7 @@ public class InteractionDataUtils
       StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
       Document document;
 
+      //TODO: code breaks here
       Node[] nodes = converter.toDom(data, "", true);
       Assert.condition(nodes.length == 1);
       document = new Document((Element) nodes[0]);

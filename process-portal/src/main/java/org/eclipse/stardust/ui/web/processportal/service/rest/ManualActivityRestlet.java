@@ -86,11 +86,21 @@ public class ManualActivityRestlet
    {
       Interaction interaction = getInteraction();
 
-      Map<String, ? extends Serializable> inData = interaction.getInDataValues();
-      JsonObject root = InteractionDataUtils.marshalData(interaction, inData,
-            servletContext);
-      
-      return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      if (interaction != null)
+      {
+         Map<String, ? extends Serializable> inData = interaction.getInDataValues();
+         
+         JsonObject root = InteractionDataUtils.marshalData(interaction, inData,
+               servletContext);
+         
+         return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      else
+      {
+         trace.error("Interaction is null for interaction Id: " + interactionId);
+      }
+
+      return Response.ok("[]", MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    @Consumes(MediaType.APPLICATION_JSON)

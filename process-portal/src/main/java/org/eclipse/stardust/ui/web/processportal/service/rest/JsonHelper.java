@@ -32,12 +32,13 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.IppDocumentController;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 /**
  * @author Subodh.Godbole
@@ -93,14 +94,17 @@ public class JsonHelper
    {
       trace.debug("create document json...");
       
-      String typeDeclarationId = DocumentTypeUtils.getMetaDataTypeDeclarationId(model.getData(dm.getDataId()));
+      DocumentType docType = ModelUtils.getDocumentTypeFromData(model, model.getData(dm.getDataId()));
       
-      elemDM.add(DOCUMENT.TYPE_ID, new JsonPrimitive(typeDeclarationId));
+      if (docType != null)
+      {
+         elemDM.add(DOCUMENT.TYPE_ID, new JsonPrimitive(docType.getDocumentTypeId()));
+      }
+
       elemDM.add(
             DOCUMENT.TYPE_NAME,
-            new JsonPrimitive(
-                  TypedDocumentsUtil.getDocumentTypeLabel(DocumentTypeUtils.getDocumentType(
-                        typeDeclarationId, model), (DeployedModel) model)));
+            new JsonPrimitive(TypedDocumentsUtil.getDocumentTypeLabel(docType,
+                  (DeployedModel) model)));
 
       org.eclipse.stardust.engine.api.runtime.Document doc = (org.eclipse.stardust.engine.api.runtime.Document) document;
 
