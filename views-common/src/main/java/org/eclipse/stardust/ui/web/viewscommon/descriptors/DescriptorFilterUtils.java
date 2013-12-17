@@ -275,6 +275,10 @@ public class DescriptorFilterUtils
                   {
                      dataFilter = getDateFilter(dataPath, (DateRange) filterValue);
                   }
+                  else if(dataPath.getMappedType() instanceof Class<?>)
+                  {
+                     dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                  }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
                   {
@@ -477,7 +481,7 @@ public class DescriptorFilterUtils
             }
          }
       }// For String type
-      else if (String.class.equals(dataPath.getMappedType()))
+      else if (String.class.equals(dataPath.getMappedType()) || dataPath.getMappedType() instanceof Class<?>)
       {
          if (filterValue instanceof String && !StringUtils.isEmpty((String) filterValue))
          {
@@ -513,7 +517,7 @@ public class DescriptorFilterUtils
                {
                   if (CommonDescriptorUtils.isEnumerationData(dataPath))
                   {
-                     dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
+                     dataFilter = DataFilter.isEqual(dataId, filterValueStr);
                   }
                   else
                   {
