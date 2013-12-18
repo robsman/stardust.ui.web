@@ -117,10 +117,10 @@ public class ManualActivityRestlet
 
       try
       {
-      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-            interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
-      interaction.setOutDataValues(data);
-   }
+         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+               interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
+         interaction.setOutDataValues(data);
+      }
       catch (DataException e)
       {
          JsonObject errors = new JsonObject();
