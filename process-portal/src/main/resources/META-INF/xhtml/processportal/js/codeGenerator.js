@@ -126,6 +126,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			elemAddButton.attributes["href"] = "";
 			if (isReadonly(path)) {
 				elemAddButton.attributes["disabled"] = true;
+				elemAddButton.attributes["class"] = "disabled";
 			} else {
 				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", " + path.isPrimitive + ")";
 			}
@@ -137,6 +138,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			elemRemoveButton.attributes["href"] = "";
 			if (isReadonly(path)) {
 				elemRemoveButton.attributes["disabled"] = true;
+				elemRemoveButton.attributes["class"] = "disabled";
 			} else {
 				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
 			}
