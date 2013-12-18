@@ -107,9 +107,11 @@ public class StructuredTypeChangeTracker implements ChangePostprocessor
       {
          for (ApplicationType application : model.getApplication())
          {
-            if (application.getType()
-                  .getId()
-                  .equals(ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID))
+            if (application.getType() != null
+                  && application.getType()
+                        .getId()
+                        .equals(
+                              ModelerConstants.MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID))
             {
                for (AccessPointType accessPoint : application.getAccessPoint())
                {
