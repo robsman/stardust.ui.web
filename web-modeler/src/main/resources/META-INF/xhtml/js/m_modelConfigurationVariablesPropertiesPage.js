@@ -102,8 +102,14 @@ define(
 					}, function(event) {
 						event.data.page.refreshConfigurationVariables();
 					});
+					
+					var rdmNo = Math.floor((Math.random()*100000) + 1);
+					this.deleteConfigurationVariableDialog = m_utils.jQuerySelect("#deleteConfigurationVariableDialog").get(0);
+					this.deleteConfigurationVariableDialog.id = "deleteConfigurationVariableDialog" + rdmNo;
 
-					m_utils.jQuerySelect("#deleteConfigurationVariableDialog").dialog({
+					var self = this;
+
+					jQuery(this.deleteConfigurationVariableDialog).dialog({
 						autoOpen : false,
 						draggable : true,
 						title : m_i18nUtils.getProperty("modeler.propertyView.modelView.configurationVariables.deleteDialog.title"),
@@ -111,46 +117,44 @@ define(
 						height : "auto",
 						open : function() {
 							m_utils.jQuerySelect(
-									"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+									"#" + self.deleteConfigurationVariableDialog.id + " #emptyLiteralRadio")
 									.prop("checked", true);
 							m_utils.jQuerySelect(
-									"#deleteConfigurationVariableDialog #literalValueInput")
+									"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 									.val("");
 							m_utils.jQuerySelect(
-									"#deleteConfigurationVariableDialog #literalValueInput")
+									"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 									.prop('disabled', true);
 						}
 					});
 
 					m_utils.jQuerySelect(
-							"#deleteConfigurationVariableDialog input[name='deleteVariableOptions']")
+							"#" + self.deleteConfigurationVariableDialog.id + " input[name='deleteVariableOptions']")
 							.click(
 									function() {
 										if (m_utils.jQuerySelect(
-												"#deleteConfigurationVariableDialog #withLiteralRadio")
+												"#" + self.deleteConfigurationVariableDialog.id + " #withLiteralRadio")
 												.prop("checked")) {
 											m_utils.jQuerySelect(
-													"#deleteConfigurationVariableDialog #literalValueInput")
+													"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 													.prop('disabled', false).focus();
 
 										} else {
 											m_utils.jQuerySelect(
-													"#deleteConfigurationVariableDialog #literalValueInput")
+													"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 													.val("");
 											m_utils.jQuerySelect(
-													"#deleteConfigurationVariableDialog #literalValueInput")
+													"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 													.prop('disabled', true);
 										}
 									});
 
-					m_utils.jQuerySelect("#deleteConfigurationVariableDialog #closeButton")
+					m_utils.jQuerySelect("#" + self.deleteConfigurationVariableDialog.id + " #closeButton")
 							.click(
 									function() {
-										m_utils.jQuerySelect(
-												"#deleteConfigurationVariableDialog")
-												.dialog("close");
+										jQuery(self.deleteConfigurationVariableDialog).dialog("close");
 									});
-					m_utils.jQuerySelect("#deleteConfigurationVariableDialog #applyButton")
+					m_utils.jQuerySelect("#" + self.deleteConfigurationVariableDialog.id + " #applyButton")
 							.click(
 									{
 										page : this
@@ -163,24 +167,24 @@ define(
 										var deleteOptions = "{}";
 
 										if (m_utils.jQuerySelect(
-												"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+												"#" + self.deleteConfigurationVariableDialog.id + " #emptyLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "emptyLiteral"
 											};
 										} else if (m_utils.jQuerySelect(
-												"#deleteConfigurationVariableDialog #defaultValueRadio")
+												"#" + self.deleteConfigurationVariableDialog.id + " #defaultValueRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "defaultValue"
 											};
 										} else if (m_utils.jQuerySelect(
-												"#deleteConfigurationVariableDialog #withLiteralRadio")
+												"#" + self.deleteConfigurationVariableDialog.id + " #withLiteralRadio")
 												.prop("checked")) {
 											deleteOptions = {
 												mode : "withLiteral",
 												literalValue : m_utils.jQuerySelect(
-														"#deleteConfigurationVariableDialog #literalValueInput")
+														"#" + self.deleteConfigurationVariableDialog.id + " #literalValueInput")
 														.val()
 											};
 										}
@@ -214,9 +218,7 @@ define(
 					});
 
 					deleteStatus.done(function() {
-						m_utils.jQuerySelect(
-								"#deleteConfigurationVariableDialog").dialog(
-								"close");
+						jQuery(this.deleteConfigurationVariableDialog).dialog("close");
 					});
 
 				};
@@ -274,6 +276,7 @@ define(
 										.getContextName()
 								+ "/plugins/bpm-modeler/images/icons/delete.png'/>");
 
+						var self = this;
 						button
 								.click(
 										{
@@ -285,12 +288,9 @@ define(
 											if (event.data.page.currentConfigurationVariable.references.length > 0) {
 												m_utils
 														.jQuerySelect(
-																"#deleteConfigurationVariableDialog #emptyLiteralRadio")
+																"#" + self.deleteConfigurationVariableDialog.id + " #emptyLiteralRadio")
 														.prop("checked", true);
-												m_utils
-														.jQuerySelect(
-																"#deleteConfigurationVariableDialog")
-														.dialog("open");
+												jQuery(self.deleteConfigurationVariableDialog).dialog("open");
 											}else{
 												var deleteOptions = {
 													mode : "emptyLiteral"
