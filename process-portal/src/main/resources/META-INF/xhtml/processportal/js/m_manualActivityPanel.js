@@ -401,6 +401,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function unmarshalOutData(data) {
 			unmarshalForLists(dataMappings, data);
+			removeInternalVariables(data);
 		}
 
 		/*
@@ -431,6 +432,27 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					}
 				} else if (arrPaths[key].children) {
 					unmarshalForLists(arrPaths[key].children, data);
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function removeInternalVariables(object) {
+			for (key in object) {
+				if (key.indexOf("$") == 0) {
+					delete object[key];
+				} else if (object[key] != null) {
+					// http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+					if (Object.prototype.toString.call(object[key]) === "[object Array]") {
+						var arr = object[key];
+						for (var n in arr) {
+							removeInternalVariables(arr[n]);
+						}
+					} else if (typeof object[key] == "object") {
+						removeInternalVariables(object[key]);
+					}
 				}
 			}
 		}
