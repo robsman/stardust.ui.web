@@ -139,7 +139,8 @@ public class JsonHelper
    * @param value
    * @param parent
    */
-   public void toJson(String key, Object value, JsonObject parent){
+   public void toJson(String key, Object value, JsonObject parent)
+   {  
       if (value instanceof Map)
       {
          JsonObject json = new JsonObject();
@@ -152,7 +153,7 @@ public class JsonHelper
          parent.add(key, json);
          toJson((List)value, json);
       }
-      else // Primitive
+      else if(value != null) // Primitive
       {
          JsonPrimitive primitive = toJson(value);
          parent.add(key, primitive);

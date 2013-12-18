@@ -90,14 +90,6 @@ public class InteractionDataUtils
                         interaction);
                   root.add(dm.getId(), elemDM);
                }
-               else if (ModelUtils.isStructuredType(model, dm))
-               {
-                  if (entry.getValue() != null)
-                  {
-                     jsonHelper.toJson(entry.getKey(), entry.getValue(), elemDM);
-                     root.add(dm.getId(), elemDM);
-                  }
-               }
                else
                {
                   jsonHelper.toJson(dm.getId(), entry.getValue(), root);
