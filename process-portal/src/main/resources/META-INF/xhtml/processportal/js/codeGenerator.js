@@ -490,18 +490,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			var elemWrapper = htmlElement.create("div", {parent: parent});
 			
-			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
-			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "','" + getI18NLabel(path) + "')";
+			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: "", style: "text-decoration:none;"}});
+			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "','" + getI18NLabel(path) + "', " + isReadonly(path) + ")";
 			docLink.attributes["title"] = "{{" + binding + ".docName}}";
 			
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
 			
-			var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
-			docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
-			htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
-			docDelLink.attributes["ng-show"] = binding + ".docId";
-			
+			if(!isReadonly(path)){
+				var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
+				docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
+				htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
+				docDelLink.attributes["ng-show"] = binding + ".docId";	
+			}
+
 			return elemWrapper;
 		}
 

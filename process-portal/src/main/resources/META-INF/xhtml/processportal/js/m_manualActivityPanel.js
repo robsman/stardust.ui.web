@@ -591,10 +591,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * @param xPath
 		 * @author Yogesh.Manware
 		 */
-		function openDocument(xPath, documentPathLabel) {
-			log("TODO: " + xPath);
-			//TODO Mouse tooltip to display document name
-
+		function openDocument(xPath, documentPathLabel, readonly) {
 			var $scope = angular.element(document).scope();
 			var parts = xPath.substring(1).split("/");
 			
@@ -603,10 +600,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			
 			documentPathLabel = i18nLabelProvider().getLabel("panel.fileUpload.dialog.msg").replace("{0}", documentPathLabel);
 			
-			
 			if (!currentBindings[lastPart] || !currentBindings[lastPart].docId) {
 				//Document is not set
-				if (parent.iPopupDialog) {
+				if (!readonly && parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup({
 						attributes : {
 							width : "600px",
@@ -648,7 +644,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						}
 					});
 				} else {
-					alert("not available");
+					//alert("not available");
 				}
 				
 			}else{
@@ -668,9 +664,11 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			msg.data = {};
 			msg.data.viewId = "documentView";
 			msg.data.viewKey = viewKey;
+			msg.data.nested = true;
 			
 			msg.data.params = {};
 			msg.data.params.fileSystemJCRDocumentId = docId;
+			
 			
 			parent.postMessage(JSON.stringify(msg), "*");			
 		}

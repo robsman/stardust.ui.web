@@ -21,8 +21,8 @@
 }
 
 .iPopupDialogCloseControl {
-	background: url("../images/icons/dialog-windowbttn-close.png") no-repeat scroll 0 50% transparent;
-	border: medium none;
+	background: url("../images/icons/dialog-windowbttn-close.png") no-repeat scroll 0 50% transparent !important;
+	border: medium none !important;
 	cursor: pointer;
 	float: right;
 	padding: 5px 10px;
