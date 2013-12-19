@@ -77,7 +77,91 @@ define(["bpm-modeler/js/m_model",
 	  return facetsObj;
   };
   
+  /*Parses a typeDecl recursively to build a JSTREE JSON structure. Only for the initial call should
+   * the paramDef parameter be present. The paramDef parameter is used to construct the root node 
+   * which we will attach all our iterative and recursive resutls to (ultimately).*/
+  var fx2=function(typeDecl,paramDef){
+	  var elements, 		/*children of our typeDecl*/
+		  elementCount, 	/*number of elements*/
+		  temp,				/*temp JSON object represetning a node in our JSTREE*/
+		  childSchemaType,	/*child type-decl we will pass to our recursion*/
+		  results=[],		/*collected tree nodes we will attach to our root*/
+		  tempEnum,			/*temp object when parsing enums*/
+		  obj,				/*temp element in our while loop*/
+		  root;				/*root JSTREE node parsed from our paramDef, attach results to this*/
+	  
+	  /*Presence of truthy paramDef parameter tells us we our processing the root node in the tree.
+	   *So, build our root node so that we have something to attach our results to when all is fini.*/
+	  if(paramDef){
+		  root={
+			  data: {title:paramDef.name, icon:seqImage}, 
+          	  attr: {title: ''},
+          	  children:[],
+          	  metadata: {
+          		  ref: paramDef ,
+          		  type:  'na',
+          		  isParamDef:true}  
+		  };
+	  }
+	  
+	  /*Extract what will become our child nodes*/
+	  elements=typeDecl.getElements();
+	  elementCount=elements.length;
+	  
+	  /*loop through elements building nodes and recursively building child nodes where appropriate.*/
+	  while(elementCount--){
+		  obj=elements[elementCount];
+		  
+		  /*Handle enumerations-Enumerations have children but we need to flatten them for our purposes as 
+		   *our tree represents enumerations as a single node with no children */
+		  if(obj.facets){
+			  tempEnum=facetBuilder(obj.facets);
+			  tempEnum.name=obj.name;
+			  tempEnum.type="enumeration";
+			  obj=tempEnum;
+		  }
+		  
+		  /*Build jstree node, default to elementImage for the icon*/
+		  temp={
+				  data: {title:obj.name, icon: elementImage}, 
+	          	  attr: {title: typeDecl.description || m_typeMapper.ippToFriendlyText( obj.type)},
+	          	  metadata: {
+	          		  ref: obj,
+	          		  type: getUnQualifiedNameIfBuiltInType(obj.type, typeDecl) || 'na',
+	          		  isParamDef:false}
+          };
+		  
+		  /*Testing to see if we can resolve our temp object as a typeDeclaration itself. */
+		  if (typeof typeDecl.asSchemaType === "function") {
+      		childSchemaType = typeDecl.asSchemaType().resolveElementType(obj.name);	
+  		  } 
+		  else if (typeof typeDecl.resolveElementType === "function") {
+  			childSchemaType = typeDecl.resolveElementType(obj.name);	
+      	  }
+		  
+		  /*Our temp object is actually a typeDecl (and not an enumeration) that we need to 
+		   * parse further.*/
+		  if (childSchemaType && childSchemaType.type && temp.metadata.type !=="enumeration") {
+			temp.data.icon=seqImage;
+			temp.children=fx2(childSchemaType);
+          } 
+		  
+		  results.push(temp);
+	  }
+	  
+	  /*if root is truthy then we are done and need to append our collected results and return
+	   *else we are in a recursive call and we will just return our results so they can be used
+	   *as children to treenode.*/
+	  if(root){
+		  root.children=results;
+		  return [root];
+	  }else{
+		  return results;
+	  }
+  };
+  
   var fx=function(body,paramDef,typeDecl){
+
     var data=[], /*hold our result and our recursively returned children*/
 	    temp,    /*an item to be pushed onto data[]*/
 	    i,       /*loop counter*/	    
@@ -194,7 +278,7 @@ define(["bpm-modeler/js/m_model",
   
   /* Given a type declaration and a name root, parse the type declaration into an
    * array of strings representing the distinct dot-notation path to each element.
-   * For Example: Person.Name,Person.Name.Firts,Person.Name.Last etc...*/
+   * For Example: Person.Name,Person.Name.First,Person.Name.Last etc...*/
   var parseTypeToStringFrags=function(typeDecl,name){
 	  var elements;
 	  var elementCount;
@@ -419,8 +503,8 @@ define(["bpm-modeler/js/m_model",
 		    		else{
 		    			typeBody[0].name=paramDef.name; /*Give the agnostic typeBody context from our paramDef*/
 		    		}
-		    		jstreeDataNode=fx(typeBody,paramDef,typeDecl); /*walk the JSON and build our tree*/	
-		    		
+		    		//jstreeDataNode=fx(typeBody,paramDef,typeDecl); /*walk the JSON and build our tree*/	
+		    		jstreeDataNode=fx2(typeDecl,paramDef);
 		    		if(paramDef.direction==="IN" || paramDef.direction==="INOUT"){
 		    			jsConditionNodes.push(jstreeDataNode);
 		    		}
