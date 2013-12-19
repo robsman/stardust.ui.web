@@ -146,20 +146,20 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					require : 'ngModel',
 					link : function(scope, elm, attr, ctrl) {
 						var ngModel = $parse(attr.ngModel);
-					jQuery(function() {
-							elm.datepicker({
-								dateFormat : clientDateFormat,
-							onSelect : function(dateText, inst) {
-								scope.$apply(function(scope) {
+						jQuery(function() {
+								elm.datepicker({
+									dateFormat : clientDateFormat,
+									onSelect : function(dateText, inst) {
+									scope.$apply(function(scope) {
 										// Convert to Server Format
 										var value = formatDate(dateText, clientDateFormat, SERVER_DATE_FORMAT);
-
-									// Change binded variable
+	
+										// Change binded variable
 										ngModel.assign(scope, value);
-								});
-							}
+									});
+								}
+							});
 						});
-					});
 
 						ctrl.$formatters.unshift(function(viewValue) {
 							// Convert to Client Format
@@ -490,9 +490,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				removeSelectedElements(list);
 				if (list.length == 0) {
 					list.push({});
-			}
 				}
 			}
+		}
 
 		/*
 		 * 
@@ -515,7 +515,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var ret = $scope.form.$valid;
 			if (ret) {
 				ret = areNestedFormsValid();
-		}
+			}
 			return ret;
 		}
 
