@@ -130,6 +130,9 @@ public class DescriptorFilterUtils
             if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
             {
                String myXPath = dataPath.getAccessPath();
+               // Pepper models, return null for Access Path, Eclipse model returns "" for
+               // Structured Enum
+               myXPath = myXPath == null  ?  "" : myXPath;
                if (null != myXPath && !myXPath.contains("["))
                {   
                   // this is important and maybe needs discussion:
