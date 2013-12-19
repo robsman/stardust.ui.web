@@ -443,11 +443,17 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
+					m_utils.jQuerySelect("#hideGeneralProperties label")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+			
+					m_utils.jQuerySelect("#showGeneralProperties label")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+				
 					m_utils.jQuerySelect("#publicVisibility")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-					m_utils.jQuerySelect("tr#structureKind td.label")
+					m_utils.jQuerySelect("tr#structureKind > td > label")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType")
@@ -476,7 +482,7 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minGreaterThanMaxError"));
-					m_utils.jQuerySelect("tr#baseTypeSelect td.label")
+					m_utils.jQuerySelect("tr#baseTypeSelect > td > label")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.parentType") + ":");

@@ -41,6 +41,10 @@ define(
 				 *
 				 */
 				EventBasicPropertiesPage.prototype.initialize = function() {
+					
+					m_utils.jQuerySelect("label[for='eventClassSelect']")
+						.text(m_i18nUtils.getProperty("modeler.eventPropertiesPanel.heading.startEvent.eventClass"));
+					
 					this.initializeBasicPropertiesPage();
 
 					this.namePanel = this.mapInputId("annotationName");
@@ -280,12 +284,12 @@ define(
 					if (this.propertiesPanel.participant != null &&
 							(this.propertiesPanel.element.modelElement.eventClass == m_constants.NONE_EVENT_CLASS ||
 									this.propertiesPanel.element.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS)) {
-						this.participantOutput.append("Started by <b>"
+						this.participantOutput.append(m_i18nUtils.getProperty("modeler.eventPropertiesPanel.heading.startEvent.startedBy") +  " <b>"
 								+ this.propertiesPanel.participant.name
 								+ ".</b>");
 					} else {
 						this.participantOutput
-								.append("No starting participant.</b>");
+								.append(m_i18nUtils.getProperty("modeler.eventPropertiesPanel.heading.startEvent.noparticipant") + "</b>");
 					}
 				};
 

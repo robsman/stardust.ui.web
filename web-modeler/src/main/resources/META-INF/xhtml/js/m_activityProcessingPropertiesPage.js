@@ -26,7 +26,22 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processingPropertiesPage",
 						"Processing",  "plugins/bpm-modeler/images/icons/arrow-circle.png");
-
+				
+				
+				/*Internationalization*/
+				m_utils.jQuerySelect("#processingPropertiesPage > .heading")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.heading"));
+				m_utils.jQuerySelect("label[for='singleProcessingTypeInput']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.single"));
+				m_utils.jQuerySelect("label[for='parallelMultiProcessingTypeInput']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.parallellMulti"));
+				m_utils.jQuerySelect("label[for='sequentialMultiProcessingTypeInput']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.sequentialMulti"));
+				m_utils.jQuerySelect("label[for='listDataMappingInput']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.listDataMapping"));
+				m_utils.jQuerySelect("label[for='itemDataList']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.itemData"));
+				
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
 						ActivityProcessingPropertiesPage.prototype,

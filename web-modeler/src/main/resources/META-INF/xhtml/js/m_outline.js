@@ -551,7 +551,9 @@ define(
 											.getProperty("modeler.messages.confirm.yes"),
 									cancelButtonText : m_i18nUtils
 											.getProperty("modeler.messages.confirm.no"),
-									acceptFunction : reloadOutlineTree
+									acceptFunction : reloadOutlineTree ,
+									checkboxLabelText:	m_i18nUtils
+										.getProperty("modeler.messages.confirm.saveModelsPriorToReload")
 								}
 							});
 				}

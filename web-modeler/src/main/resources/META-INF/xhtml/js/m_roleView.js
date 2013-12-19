@@ -48,13 +48,19 @@ define(
 			}
 
 		function i18nRoleScreen() {
-
-			   m_utils.jQuerySelect("label[for='guidOutput']")
+				
+				m_utils.jQuerySelect("#hideGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+	
+				m_utils.jQuerySelect("#showGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+		
+				m_utils.jQuerySelect("label[for='guidOutput']")
 		        	.text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-		   	  m_utils.jQuerySelect("label[for='idOutput']")
+		   	  	m_utils.jQuerySelect("label[for='idOutput']")
 			        .text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.id"));
