@@ -131,7 +131,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", " + path.isPrimitive + ")";
 			}
 			htmlElement.create("img", {parent: elemAddButton, 
-				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png"}});
+				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png", class: "panel-image"}});
 			
 			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
@@ -143,7 +143,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
 			}
 			htmlElement.create("img", {parent: elemRemoveButton, 
-				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png"}});
+				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png", class: "panel-image"}});
 
 			// Table
 			var elemTbl = htmlElement.create("table", {parent: elemMain, 

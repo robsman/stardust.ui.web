@@ -8,6 +8,10 @@ body, table {
 	cursor: default;
 }
 
+.panel-image {
+	border: medium none;
+}
+
 .panel-invalid-msg {
 	color: red;
 }
