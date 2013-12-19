@@ -69,12 +69,14 @@ define(["jquery",
 			  hotType={type: "numeric","default":0};
 			  break;
 		  case "TIMESTAMP":
+		  case "DATETIME":
 		  case "XSD:DATETIME":
 			  hotType={
 				  "type" : "dateTime", 
 				  "default": m_utilities.formatDate(new Date(),"yyyy-MM-dd hh:mm:ss")
 				  };
 			  break;
+		  case "DATE":
 		  case "XSD:DATE":
 			  hotType={type:"date", "default": today,dateFormat: format};
 			  break;

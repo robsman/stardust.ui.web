@@ -1,23 +1,23 @@
 define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 	var attributes={
 		"salience":{
-			type:"xsd:int",
+			type:"int",
 			defaultValue:0,
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.salience.tooltip","NA")},
 		"enabled":{
-			type:"xsd:boolean",
+			type:"boolean",
 			defaultValue:"false",
 			description: m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.enabled.tooltip","NA")},
 		"date-effective":{
-			type:"xsd:date",
+			type:"date",
 			defaultValue:"",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.date-effective.tooltip","NA")},
 		"date-expires":{
-			type:"xsd:date",
+			type:"date",
 			defaultValue:"",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.date-expires.tooltip","NA")},
 		"no-loop":{
-			type:"xsd:boolean",
+			type:"boolean",
 			defaultValue:"false",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.no-loop.tooltip","NA")},
 		"agenda-group":{
@@ -29,15 +29,15 @@ define(["rules-manager/js/m_i18nUtils"],function(m_i18nUtils){
 			defaultValue:"NA",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.activation-group.tooltip","NA")},
 		"duration":{
-			type:"xsd:double",
+			type:"double",
 			defaultValue:0,
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.duration.tooltip","NA")},
 		"auto-focus":{
-			type:"xsd:boolean",
+			type:"boolean",
 			defaultValue:"false",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.auto-focus.tooltip","NA")},
 		"lock-on-active":{
-			type:"xsd:boolean",
+			type:"boolean",
 			defaultValue:"false",
 			description:m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.node.attribute.lock-on-active.tooltip","NA")},
 		"ruleflow-group":{
