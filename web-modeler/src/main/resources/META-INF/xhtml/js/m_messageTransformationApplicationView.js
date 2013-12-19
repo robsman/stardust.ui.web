@@ -892,28 +892,10 @@ define(
 						content += "<td class='typeCell'>" + tableRows[tableRow].typeName;
 						+"</td>";
 
-						var deleteTooltip = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete");
 						if (source) {
-							content += "<td class='inputActionsCell'>";
-							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class='deleteAction' title='" + deleteTooltip + "'></div>";
-							}
-							content += "</td>";
 							content += "</tr>";
-
 							tableBody.append(content);
-
-							// Add click event handler for "delete" action
-							if (tableRows[tableRow].parentPath == null) {
-								var deleteIcon = m_utils.jQuerySelect("#sourceTable #" + rowId + " .deleteAction");
-								deleteIcon.click({
-									"view" : this,
-									"accessPoint" : tableRows[tableRow].accessPoint
-								}, function(event) {
-									event.data.view.deleteAccessPoint(event.data.accessPoint);
-								});
-							}
-
+							
 							var dataElement = m_utils.jQuerySelect("#sourceTable #" + rowId
 									+ " .data-element");
 
@@ -951,9 +933,6 @@ define(
 							content += "<td class='problemCell' />";
 							content += "<td class='outputActionsCell'>";
 							content += "<div class='clearMappingAction' title='" + clearMappingTooltip + "'></div>";
-							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class='deleteAction' title='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete") + "'></div>";
-							}
 							content += "</td>";
 							content += "</tr>";
 
@@ -973,17 +952,6 @@ define(
 							}
 							else {
 								clearMappingIcon.addClass("disabled");
-							}
-
-							// Add click event handler for "delete" action
-							if (tableRows[tableRow].parentPath == null) {
-								var deleteIcon = m_utils.jQuerySelect("#targetTable #" + rowId + " .deleteAction");
-								deleteIcon.click({
-									"view" : this,
-									"accessPoint" : tableRows[tableRow].accessPoint
-								}, function(event) {
-									event.data.view.deleteAccessPoint(event.data.accessPoint);
-								});
 							}
 
 							var row = m_utils.jQuerySelect("#targetTable #" + rowId);
