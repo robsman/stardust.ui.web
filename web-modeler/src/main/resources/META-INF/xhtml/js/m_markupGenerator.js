@@ -253,7 +253,8 @@ define(
 						layoutColumns: this.options.numberOfPrimitivesPerColumns,
 						ngModelSepAsDot: true,
 						pluginsUrl: m_urlUtils.getContextName() + "/plugins",
-						skipMultiCardinalityNested: true
+						skipMultiCardinalityNested: true,
+						splitDateTimeFields: false
 					};
 					var data = codeGenerator.create(prefs).generate(jsonDMs);
 					writeTag(data.html);

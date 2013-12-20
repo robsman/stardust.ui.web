@@ -43,6 +43,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		if (prefs.skipMultiCardinalityNested == undefined) {
 			prefs.skipMultiCardinalityNested = false;
 		}
+		if (prefs.splitDateTimeFields == undefined) {
+			prefs.splitDateTimeFields = true;
+		}
 
 		var preferences = prefs;
 
@@ -311,41 +314,43 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					}
 
 					// Handle Date and Time
-					if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time") {
-						if (path.typeName == "time") {
-							elem.attributes['ng-show'] = "false"; // Permonently Hide Date Part
-						} else {
-							elem.attributes['class'] = "panel-input-dateTime-date " + elem.attributes['class'];
+					if (preferences.splitDateTimeFields) {
+						if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time") {
+							if (path.typeName == "time") {
+								elem.attributes['ng-show'] = "false"; // Permonently Hide Date Part
+							} else {
+								elem.attributes['class'] = "panel-input-dateTime-date " + elem.attributes['class'];
+							}
+	
+							// Input field for Time Part
+							var elem2 = htmlElement.create("input", {parent: elemWrapper});
+							elem2.attributes["ng-model-onblur"] = null;
+							elem2.attributes['type'] = "text";
+							elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
+							elem2.attributes['maxlength'] = 5; // HH:mm
+							
+							var validations2 = [];
+							validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
+								msg: getI18NLabel("validation.err.time", "Invalid Time")});
+	
+							processValidations(elem2, validations2, 
+									options.ngFormName ? options.ngFormName : formElemName, elemWrapper, elemMain);
+	
+							// (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
+							var ngModel2 = options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel;
+							if (ngModel2.lastIndexOf("']") > -1) {
+								var index = ngModel2.lastIndexOf("']");
+								var part1 = ngModel2.substring(0, index);
+								var part2 = ngModel2.substring(index);
+								ngModel2 = part1 + "_timePart" + part2;
+							} else {
+								ngModel2 += "_timePart";
+							}
+	
+							elem2.attributes['ng-model'] = ngModel2;
 						}
-
-						// Input field for Time Part
-						var elem2 = htmlElement.create("input", {parent: elemWrapper});
-						elem2.attributes["ng-model-onblur"] = null;
-						elem2.attributes['type'] = "text";
-						elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
-						elem2.attributes['maxlength'] = 5; // HH:mm
-						
-						var validations2 = [];
-						validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
-							msg: getI18NLabel("validation.err.time", "Invalid Time")});
-
-						processValidations(elem2, validations2, 
-								options.ngFormName ? options.ngFormName : formElemName, elemWrapper, elemMain);
-
-						// (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
-						var ngModel2 = options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel;
-						if (ngModel2.lastIndexOf("']") > -1) {
-							var index = ngModel2.lastIndexOf("']");
-							var part1 = ngModel2.substring(0, index);
-							var part2 = ngModel2.substring(index);
-							ngModel2 = part1 + "_timePart" + part2;
-						} else {
-							ngModel2 += "_timePart";
-						}
-
-						elem2.attributes['ng-model'] = ngModel2;
 					}
-					
+
 					processValidations(elem, validations, 
 							options.ngFormName ? options.ngFormName : formElemName, elemWrapper, elemMain);
 				}
