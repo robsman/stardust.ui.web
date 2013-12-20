@@ -501,9 +501,12 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function getCustomFilter(path) {
-			if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime"
-					|| path.typeName == "java.util.Calendar" || path.typeName == "time") {
+			if (path.typeName == "date" || path.typeName == "java.util.Date") {
 				return "sdFilterDate";
+			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
+				return "sdFilterDateTime";
+			} else if (path.typeName == "time") {
+				return "sdFilterTime";
 			}
 		}
 
