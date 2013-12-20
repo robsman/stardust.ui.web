@@ -468,6 +468,8 @@ public class ActivityDetailsBean extends UIComponentBean
          hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
          hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
          hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+        
+         fireEventForViewEventAwareInteractionController(activityInstance, event);
       }
       else if (ViewEventType.TO_BE_ACTIVATED == event.getType())
       {
