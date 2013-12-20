@@ -175,6 +175,14 @@ body, table {
 	text-align: right;
 }
 
+.panel-input-dateTime-date {
+	width: 100px;
+}
+
+.panel-input-dateTime-time {
+	width: 97px;
+}
+
 .panel-list-tbl-cell .panel-input {
 	border: none;
 }

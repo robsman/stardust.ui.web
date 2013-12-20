@@ -310,29 +310,44 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						elem.attributes['class'] += " panel-input-number";
 					}
 
-					if (validations.length > 0) {
-						var id = "id" + Math.floor((Math.random() * 100000) + 1);
-						var formId = "'" + id + "'";
-						if (options.idExpr) {
-							formId = "'" + id + "' + " + options.idExpr;
-							id += "{{" + options.idExpr + "}}";
+					// Handle Date and Time
+					if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time") {
+						if (path.typeName == "time") {
+							elem.attributes['ng-show'] = "false"; // Permonently Hide Date Part
+						} else {
+							elem.attributes['class'] = "panel-input-dateTime-date " + elem.attributes['class'];
 						}
 
-						elem.attributes['id'] = id;
-						elem.attributes['name'] = id;
+						// Input field for Time Part
+						var elem2 = htmlElement.create("input", {parent: elemWrapper});
+						elem2.attributes["ng-model-onblur"] = null;
+						elem2.attributes['type'] = "text";
+						elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
+						elem2.attributes['maxlength'] = 5; // HH:mm
+						
+						var validations2 = [];
+						validations2.push({type: "ng-pattern", value: /^(0?[1-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
+							msg: getI18NLabel("validation.err.time", "Invalid Time")});
 
-						var ngFormName = options.ngFormName ? options.ngFormName : formElemName;
-						for (var i = 0; i < validations.length; i++) {
-							elem.attributes[validations[i].type] = validations[i].value;
-							var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
-							htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
-								attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
+						processValidations(elem2, validations2, 
+								options.ngFormName ? options.ngFormName : formElemName, elemWrapper, elemMain);
+
+						// (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
+						var ngModel2 = options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel;
+						if (ngModel2.lastIndexOf("']") > -1) {
+							var index = ngModel2.lastIndexOf("']");
+							var part1 = ngModel2.substring(0, index);
+							var part2 = ngModel2.substring(index);
+							ngModel2 = part1 + "_timePart" + part2;
+						} else {
+							ngModel2 += "_timePart";
 						}
 
-						var showExpr = ngFormName + "[" + formId + "].$invalid";
-						htmlElement.create("span", {parent: elemMain, 
-							attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
+						elem2.attributes['ng-model'] = ngModel2;
 					}
+					
+					processValidations(elem, validations, 
+							options.ngFormName ? options.ngFormName : formElemName, elemWrapper, elemMain);
 				}
 
 				if(path.properties["InputPreferences_styleClass"] != undefined) {
@@ -356,6 +371,31 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			return elemMain;
 		};
+
+		/*
+		 * 
+		 */
+		function processValidations(elem, validations, ngFormName, elemWrapper, elemMain) {
+			if (validations.length > 0) {
+				var id = "id" + Math.floor((Math.random() * 100000) + 1);
+				var formId = "'" + id + "'";
+
+				elem.attributes['id'] = id;
+				elem.attributes['name'] = id;
+
+				//var ngFormName = options.ngFormName ? options.ngFormName : formElemName;
+				for (var i = 0; i < validations.length; i++) {
+					elem.attributes[validations[i].type] = validations[i].value;
+					var showExpr = ngFormName + "[" + formId + "].$error." + validations[i].type.split("-")[1];
+					htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
+						attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
+				}
+
+				var showExpr = ngFormName + "[" + formId + "].$invalid";
+				htmlElement.create("span", {parent: elemMain, 
+					attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
+			}
+		}
 
 		/*
 		 * 

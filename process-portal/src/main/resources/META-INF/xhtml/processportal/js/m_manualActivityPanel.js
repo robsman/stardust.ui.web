@@ -30,6 +30,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		var REST_END_POINT = "/services/rest/process-portal/manualActivity/";
 		var BINDING_PREFIX = "dm";
 		var SERVER_DATE_FORMAT = "yy-mm-dd";
+		var SERVER_DATE_TIME_FORMAT_SEPARATOR = "T";
 
 		var angularCompile;
 		
@@ -364,7 +365,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			for (var key in arrPaths) {
 				if (arrPaths[key].isPrimitive) {
 					if (arrPaths[key].typeName == "duration") {
-
 						var parts = arrPaths[key].fullXPath.substring(1).split("/");
 						var lastPart = parts[parts.length - 1];
 						var currentBinding = data;
@@ -389,6 +389,65 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								// TODO
 							}
 						}
+					} else if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date") {
+						var parts = arrPaths[key].fullXPath.substring(1).split("/");
+						var lastPart = parts[parts.length - 1];
+						var currentBinding = data;
+						for(var i = 0; i < parts.length - 1; i++) {
+							currentBinding = currentBinding[parts[i]];
+							if (currentBinding == undefined) {
+								break;
+							}
+						}
+						
+						if (currentBinding) {
+							var value = currentBinding[lastPart];
+							var datePart;
+							if (value) {
+								try {
+									var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // To get 2 parts
+									if (dateParts.length >= 1) {
+										datePart = dateParts[0];
+									}
+								} catch(e) {
+									log(e);
+								}
+							}
+							currentBinding[lastPart] = datePart;
+						}
+					} else if (arrPaths[key].typeName == "dateTime" || 
+							arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
+						var parts = arrPaths[key].fullXPath.substring(1).split("/");
+						var lastPart = parts[parts.length - 1];
+						var currentBinding = data;
+						for(var i = 0; i < parts.length - 1; i++) {
+							currentBinding = currentBinding[parts[i]];
+							if (currentBinding == undefined) {
+								break;
+							}
+						}
+						
+						if (currentBinding) {
+							var value = currentBinding[lastPart];
+							var datePart;
+							var timePart;
+							if (value) {
+								try {
+									var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
+									if (dateParts.length >= 1) {
+										datePart = dateParts[0];
+									}
+									if (dateParts.length >= 2) {
+										var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
+										timePart = timeParts[0] + ":" + timeParts[1];
+									}
+								} catch(e) {
+									log(e);
+								}
+							}
+							currentBinding[lastPart] = datePart;
+							currentBinding[lastPart + "_timePart"] = timePart;
+						}
 					}
 				} else if (arrPaths[key].children) {
 					marshalForPrimitives(arrPaths[key].children, data);
@@ -401,6 +460,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function unmarshalOutData(data) {
 			unmarshalForLists(dataMappings, data);
+			unmarshalForPrimitives(dataMappings, data);
 			removeInternalVariables(data);
 		}
 
@@ -432,6 +492,48 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					}
 				} else if (arrPaths[key].children) {
 					unmarshalForLists(arrPaths[key].children, data);
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function unmarshalForPrimitives(arrPaths, data) {
+			for (var key in arrPaths) {
+				if (arrPaths[key].isPrimitive) {
+					if (arrPaths[key].typeName == "dateTime" || 
+							arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
+						var parts = arrPaths[key].fullXPath.substring(1).split("/");
+						var lastPart = parts[parts.length - 1];
+						var currentBinding = data;
+						for(var i = 0; i < parts.length - 1; i++) {
+							currentBinding = currentBinding[parts[i]];
+							if (currentBinding == undefined) {
+								break;
+							}
+						}
+
+						if (currentBinding) {
+							var dateValue = currentBinding[lastPart];
+							var timeValue = currentBinding[lastPart + "_timePart"];
+							
+							var value = "";
+							if (dateValue) {
+								value = dateValue;
+							}
+							if (timeValue) {
+								if (value.length > 0) {
+									value += SERVER_DATE_TIME_FORMAT_SEPARATOR;
+								}
+								value += timeValue + ":00"; // Add seconds part
+							}
+							currentBinding[lastPart] = value;
+							delete currentBinding[lastPart + "_timePart"];
+						}
+					}
+				} else if (arrPaths[key].children) {
+					unmarshalForPrimitives(arrPaths[key].children, data);
 				}
 			}
 		}
@@ -875,7 +977,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				// TODO: Document is not set - this should never happen 
 			}
 		}
-		
 		
 		/*
 		 * 
