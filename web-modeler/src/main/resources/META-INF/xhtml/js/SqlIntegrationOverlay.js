@@ -1152,7 +1152,7 @@ define(
 										+ m_i18nUtils
 												.getProperty("modeler.general.thisModel")
 										+ "'>");
-
+						if (direction == "IN") {
 						for ( var i in scopeModel.typeDeclarations) {
 							if (!scopeModel.typeDeclarations[i].isSequence())
 								continue;
@@ -1161,6 +1161,7 @@ define(
 											.toLowerCase() + "'>"
 									+ scopeModel.typeDeclarations[i].name
 									+ "</option>");
+						}
 						}
 						if (direction == "OUT") {
 							for ( var i in scopeModel.dataItems) {
