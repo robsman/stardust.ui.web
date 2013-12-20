@@ -326,7 +326,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						elem2.attributes['maxlength'] = 5; // HH:mm
 						
 						var validations2 = [];
-						validations2.push({type: "ng-pattern", value: /^(0?[1-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
+						validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
 							msg: getI18NLabel("validation.err.time", "Invalid Time")});
 
 						processValidations(elem2, validations2, 

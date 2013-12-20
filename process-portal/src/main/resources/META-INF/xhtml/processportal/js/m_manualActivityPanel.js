@@ -924,25 +924,25 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function getPath(xPath) {
 			var parts = xPath.substring(1).split("/");
 			var found;
-			var currentBinding = dataMappings;
+			var currentPath = dataMappings;
 			for(var i = 0; i < parts.length; i++) {
 				found = false;
-				for(var j in currentBinding) {
-					if (parts[i] == currentBinding[j].id) {
+				for(var j in currentPath) {
+					if (parts[i] == currentPath[j].id) {
 						found = true;
-						currentBinding = currentBinding[j];
+						currentPath = currentPath[j];
 						break;
 					} 
 				}
 				if (found) {
-					if (i < parts.length - 1) { // Last Part
-						currentBinding = currentBinding.children;
+					if (i < parts.length - 1) { // Not Last Part
+						currentPath = currentPath.children;
 					}
 				} else {
 					return null;
 				}
 			}
-			return currentBinding;
+			return currentPath;
 		}
 
 		/*
