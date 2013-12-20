@@ -302,15 +302,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function marshalForLists(arrPaths, data) {
 			for (var key in arrPaths) {
 				if (arrPaths[key].isList) {
-					var parts = arrPaths[key].fullXPath.substring(1).split("/");
-					var currentBinding = data;
-					for(var i = 0; i < parts.length; i++) {
-						currentBinding = currentBinding[parts[i]];
-						if (currentBinding == undefined) {
-							break;
-						}
-					}
-
+					var currentBinding = getBinding(arrPaths[key], data, true);
 					if (currentBinding) {
 						if (currentBinding.length == 0) {
 							currentBinding.push(arrPaths[key].isPrimitive ? {$value: ""} : {});
@@ -337,16 +329,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			for (var key in arrPaths) {
 				if (arrPaths[key].isPrimitive) {
 					if (arrPaths[key].typeName == "duration") {
-						var parts = arrPaths[key].fullXPath.substring(1).split("/");
-						var lastPart = parts[parts.length - 1];
-						var currentBinding = data;
-						for(var i = 0; i < parts.length - 1; i++) {
-							currentBinding = currentBinding[parts[i]];
-							if (currentBinding == undefined) {
-								break;
-							}
-						}
-						
+						var bindingInfo = getBinding(arrPaths[key], data);
+						var currentBinding = bindingInfo.binding;
+						var lastPart = bindingInfo.lastPart;
 						if (currentBinding && currentBinding[lastPart] && 
 								null != currentBinding[lastPart] && "" != currentBinding[lastPart]) {
 							try {
@@ -362,16 +347,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							}
 						}
 					} else if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date") {
-						var parts = arrPaths[key].fullXPath.substring(1).split("/");
-						var lastPart = parts[parts.length - 1];
-						var currentBinding = data;
-						for(var i = 0; i < parts.length - 1; i++) {
-							currentBinding = currentBinding[parts[i]];
-							if (currentBinding == undefined) {
-								break;
-							}
-						}
-						
+						var bindingInfo = getBinding(arrPaths[key], data);
+						var currentBinding = bindingInfo.binding;
+						var lastPart = bindingInfo.lastPart;
 						if (currentBinding) {
 							var value = currentBinding[lastPart];
 							var datePart;
@@ -389,16 +367,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						}
 					} else if (arrPaths[key].typeName == "dateTime" || 
 							arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
-						var parts = arrPaths[key].fullXPath.substring(1).split("/");
-						var lastPart = parts[parts.length - 1];
-						var currentBinding = data;
-						for(var i = 0; i < parts.length - 1; i++) {
-							currentBinding = currentBinding[parts[i]];
-							if (currentBinding == undefined) {
-								break;
-							}
-						}
-						
+						var bindingInfo = getBinding(arrPaths[key], data);
+						var currentBinding = bindingInfo.binding;
+						var lastPart = bindingInfo.lastPart;
 						if (currentBinding) {
 							var value = currentBinding[lastPart];
 							var datePart;
@@ -442,15 +413,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function unmarshalForLists(arrPaths, data) {
 			for (var key in arrPaths) {
 				if (arrPaths[key].isList) {
-					var parts = arrPaths[key].fullXPath.substring(1).split("/");
-					var currentBinding = data;
-					for(var i = 0; i < parts.length; i++) {
-						currentBinding = currentBinding[parts[i]];
-						if (currentBinding == undefined) {
-							break;
-						}
-					}
-
+					var currentBinding = getBinding(arrPaths[key], data, true);
 					if (currentBinding) {
 						if (currentBinding.length > 0) {
 							if (arrPaths[key].children) {
@@ -476,16 +439,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				if (arrPaths[key].isPrimitive) {
 					if (arrPaths[key].typeName == "dateTime" || 
 							arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
-						var parts = arrPaths[key].fullXPath.substring(1).split("/");
-						var lastPart = parts[parts.length - 1];
-						var currentBinding = data;
-						for(var i = 0; i < parts.length - 1; i++) {
-							currentBinding = currentBinding[parts[i]];
-							if (currentBinding == undefined) {
-								break;
-							}
-						}
-
+						var bindingInfo = getBinding(arrPaths[key], data);
+						var currentBinding = bindingInfo.binding;
+						var lastPart = bindingInfo.lastPart;
 						if (currentBinding) {
 							var dateValue = currentBinding[lastPart];
 							var timeValue = currentBinding[lastPart + "_timePart"];
@@ -987,6 +943,37 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 			}
 			return currentBinding;
+		}
+
+		/*
+		 * 
+		 */
+		function getBinding(path, data, upToLastLevel) {
+			var ret;
+
+			var parts = path.fullXPath.substring(1).split("/");
+			var lastPart = parts[parts.length - 1];
+			var currentBinding = data;
+			for(var i = 0; i < parts.length - 1; i++) {
+				currentBinding = currentBinding[parts[i]];
+				if (currentBinding == undefined) {
+					break;
+				}
+			}
+
+			if (upToLastLevel) {
+				if (currentBinding) {
+					ret = currentBinding[lastPart];
+				}
+			} else {
+				ret = {};
+				if (currentBinding) {
+					ret.binding = currentBinding;
+					ret.lastPart = lastPart;
+				}
+			}
+
+			return ret;
 		}
 
 		/*
