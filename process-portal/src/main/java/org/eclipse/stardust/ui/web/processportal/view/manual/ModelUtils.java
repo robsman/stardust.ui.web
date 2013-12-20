@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.reflect.Reflect;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -109,9 +110,7 @@ public class ModelUtils
    public static boolean isPrimitiveType(Model model, DataMapping mapping)
    {
       Class<?> type = mapping.getMappedType();
-      if (Boolean.class == type || Long.class == type || Integer.class == type || Double.class == type ||
-            Float.class == type || Short.class == type || Byte.class == type ||
-            String.class == type || Character.class == type || Date.class == type || Calendar.class == type)
+      if (isSimplePrimitive(type))
       {
          return true;
       }
@@ -119,6 +118,16 @@ public class ModelUtils
       return PrimitiveXmlUtils.isPrimitiveType(model, mapping);
    }
    
+   public static boolean isSimplePrimitive(Class<?> type)
+   {
+      if (Boolean.class == type || Long.class == type || Integer.class == type || Double.class == type ||
+            Float.class == type || Short.class == type || Byte.class == type ||
+            String.class == type || Character.class == type || Date.class == type || Calendar.class == type)
+      {
+         return true;
+      }
+      return false;
+   }
    /**
     * @param model
     * @param mapping
@@ -139,10 +148,37 @@ public class ModelUtils
             }
          }
       }
-      
+      else if(!isSimplePrimitive(mapping.getMappedType()))
+      {
+         Object carnotType = getDataDetails(mapping).getAttribute("carnot:engine:type");
+         if (carnotType != null && carnotType.equals("Enumeration"))
+         {
+            Set<TypedXPath> xpaths = getXPaths(model, mapping);
+            for (TypedXPath path : xpaths)
+            {
+               if (path.getParentXPath() == null)
+               {
+                  isEnum = path.isEnumeration();
+                  break;
+               }
+            }
+         }
+      }
+
       return isEnum;
    }
 
+   /**
+    * 
+    * @return
+    */
+   private static DataDetails getDataDetails(DataMapping dataMapping)
+   {
+      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+      Data data = model.getData(dataMapping.getDataId());
+
+      return (DataDetails)data;
+   }
    /**
     * @param model
     * @param mapping
