@@ -679,7 +679,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				if (!readonly && parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup({
 						attributes : {
-							width : "55%",
+							width : "50%",
 							height : "45%",
 							src : "../views-common/popups/fileUploadPopupDialogContent.html"
 						},

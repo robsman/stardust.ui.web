@@ -537,12 +537,17 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			docLink.attributes["title"] = "{{" + binding + ".docName}}";
 			
 			htmlElement.create("img", {parent: docLink, 
-				attributes: {"ng-src": "{{" + binding + ".docIcon}}"}});
+				attributes: {"ng-src": "{{" + binding + ".docIcon}}", class: "panel-image"}});
+
+			if (isReadonly(path)) {
+				docLink.attributes["disabled"] = true;
+				docLink.attributes["class"] = "disabled";
+			} 
 			
 			if(!isReadonly(path)){
 				var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
 				docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
-				htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png"}});
+				htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png", class: "panel-image"}});
 				docDelLink.attributes["ng-show"] = binding + ".docId";	
 			}
 
