@@ -112,6 +112,11 @@ public class DocumentHelper
       Map<String, Serializable> convertedDocs = new HashMap<String, Serializable>();
       Map<String, Serializable> outData = interaction.getOutDataValues();
 
+      if (outData == null)
+      {
+         return;
+      }
+      
       Map<String, ManualActivityDocumentController> dcs = interaction.getDocumentControllers();
 
       for (Entry<String, ? extends Serializable> dataEntry : outData.entrySet())
