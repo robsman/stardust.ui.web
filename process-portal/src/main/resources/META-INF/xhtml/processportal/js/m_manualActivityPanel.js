@@ -359,6 +359,14 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							} else {
 								for(var k in currentBinding) {
 									currentBinding[k] = {$value: currentBinding[k]};
+									
+									if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" ||
+											arrPaths[key].typeName == "dateTime" || 
+											arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
+										if (!isReadonly(arrPaths[key])) {
+											marshalDateTimesValue(arrPaths[key], currentBinding[k], "$value");
+										}
+									}
 								}
 							}
 						}
@@ -408,54 +416,41 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function marshalDateTimes(path, data) {
-			if (isReadonly(path)) {
+			if (isReadonly(path) || path.isList) {
 				return;
 			}
 
-			if (path.typeName == "date" || path.typeName == "java.util.Date") {
-				var bindingInfo = getBinding(path, data);
-				var currentBinding = bindingInfo.binding;
-				var lastPart = bindingInfo.lastPart;
-				if (currentBinding) {
-					var value = currentBinding[lastPart];
-					var datePart;
-					if (value) {
-						try {
-							var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // To get 2 parts
-							if (dateParts.length >= 1) {
-								datePart = dateParts[0];
-							}
-						} catch(e) {
-							log(e);
+			var bindingInfo = getBinding(path, data);
+			marshalDateTimesValue(path, bindingInfo.binding, bindingInfo.lastPart);
+		}
+
+		/*
+		 * 
+		 */
+		function marshalDateTimesValue(path, binding, lastPart) {
+			if (binding) {
+				var haveTime = path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time";
+				
+				var value = binding[lastPart];
+				var datePart;
+				var timePart;
+				if (value) {
+					try {
+						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
+						if (dateParts.length >= 1) {
+							datePart = dateParts[0];
 						}
+						if (haveTime && dateParts.length >= 2) {
+							var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
+							timePart = timeParts[0] + ":" + timeParts[1];
+						}
+					} catch(e) {
+						log(e);
 					}
-					currentBinding[lastPart] = datePart;
 				}
-			} else if (path.typeName == "dateTime" || 
-					path.typeName == "java.util.Calendar" || path.typeName == "time") {
-				var bindingInfo = getBinding(path, data);
-				var currentBinding = bindingInfo.binding;
-				var lastPart = bindingInfo.lastPart;
-				if (currentBinding) {
-					var value = currentBinding[lastPart];
-					var datePart;
-					var timePart;
-					if (value) {
-						try {
-							var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
-							if (dateParts.length >= 1) {
-								datePart = dateParts[0];
-							}
-							if (dateParts.length >= 2) {
-								var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
-								timePart = timeParts[0] + ":" + timeParts[1];
-							}
-						} catch(e) {
-							log(e);
-						}
-					}
-					currentBinding[lastPart] = datePart;
-					currentBinding[lastPart + "_timePart"] = timePart;
+				binding[lastPart] = datePart;
+				if (haveTime) {
+					binding[lastPart + "_timePart"] = timePart;
 				}
 			}
 		}
@@ -482,6 +477,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								unmarshalForLists(arrPaths[key].children, data);
 							} else {
 								for(var k in currentBinding) {
+									if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" ||
+											arrPaths[key].typeName == "dateTime" || 
+											arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
+										if (!isReadonly(arrPaths[key])) {
+											unmarshalDateTimesValue(currentBinding[k], "$value");
+										}
+									}
 									currentBinding[k] = currentBinding[k].$value;
 								}
 							}
@@ -503,31 +505,54 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 
 				if (arrPaths[key].isPrimitive) {
-					if (arrPaths[key].typeName == "dateTime" || 
-							arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
-						var bindingInfo = getBinding(arrPaths[key], data);
-						var currentBinding = bindingInfo.binding;
-						var lastPart = bindingInfo.lastPart;
-						if (currentBinding) {
-							var dateValue = currentBinding[lastPart];
-							var timeValue = currentBinding[lastPart + "_timePart"];
-							
-							var value = "";
-							if (dateValue) {
-								value = dateValue;
-							}
-							if (timeValue) {
-								if (value.length > 0) {
-									value += SERVER_DATE_TIME_FORMAT_SEPARATOR;
-								}
-								value += timeValue + ":00"; // Add seconds part
-							}
-							currentBinding[lastPart] = value;
-							delete currentBinding[lastPart + "_timePart"];
-						}
+					if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" || 
+							arrPaths[key].typeName == "dateTime" || arrPaths[key].typeName == "java.util.Calendar" || 
+							arrPaths[key].typeName == "time") {
+						unmarshalDateTimes(arrPaths[key], data);
 					}
 				} else if (arrPaths[key].children) {
 					unmarshalForPrimitives(arrPaths[key].children, data);
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function unmarshalDateTimes(path, data) {
+			if (path.isList) {
+				return;
+			}
+
+			if (path.typeName == "dateTime" || 
+					path.typeName == "java.util.Calendar" || path.typeName == "time") {
+				var bindingInfo = getBinding(path, data);
+				unmarshalDateTimesValue(bindingInfo.binding, bindingInfo.lastPart);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function unmarshalDateTimesValue(binding, lastPart) {
+			if (binding) {
+				var dateValue = binding[lastPart];
+				var timeValue = binding[lastPart + "_timePart"];
+				
+				var value = "";
+				if (dateValue) {
+					value = dateValue;
+				}
+				if (timeValue) {
+					if (value.length > 0) {
+						value += SERVER_DATE_TIME_FORMAT_SEPARATOR;
+					}
+					value += timeValue + ":00"; // Add seconds part
+				}
+
+				binding[lastPart] = value;
+				if (binding[lastPart + "_timePart"]) {
+					delete binding[lastPart + "_timePart"];
 				}
 			}
 		}
