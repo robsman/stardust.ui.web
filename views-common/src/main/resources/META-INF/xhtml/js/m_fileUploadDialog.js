@@ -26,11 +26,13 @@ define(function() {
 	 */
 	function FileUploadDialog() {
 		var REST_END_POINT = "/services/rest/views-common/ippfileupload/upload";
+		var REST_END_POINT_I18N = "/services/rest/views-common/ippfileupload/i18n";
 
 		/*
 		 * 
 		 */
 		FileUploadDialog.prototype.initialize = function() {
+			
 			var urlPrefix = window.location.href;
 			urlPrefix = urlPrefix.substring(0, urlPrefix.indexOf("/plugins"));
 
@@ -38,17 +40,18 @@ define(function() {
 
 			console.log("Interaction Rest End Point: " + interactionEndpoint);
 
-			document.getElementById('titleText').innerHTML = payloadObj.title;
+			InfinityBPMI18N.initPluginProps({
+				pluginName : "fileUploadBundle",
+				singleEndPoint : urlPrefix + REST_END_POINT_I18N
+			});
 
+			var messageBundle = InfinityBPMI18N.fileUploadBundle;
+			
 			var cancelButton = jQuery("#cancelButton"); 
-			cancelButton.val("CANCEL");
 			cancelButton.click(closePopup);
-			jQuery("#openDocument").prop("checked", true);
-			
-			//document.getElementById('acceptButton').value = "OK";
-			var acceptButton = jQuery("#acceptButton"); 
-			acceptButton.val("OK");
-			
+			jQuery("#dialogCloseIcon").click(closePopup);
+
+			var acceptButton = jQuery("#acceptButton");
 			acceptButton.click(function() {
 				var details = {};
 				details.fileDescription = jQuery("#fileDescription").val();
@@ -58,14 +61,33 @@ define(function() {
 				payloadObj.acceptFunction(details);
 				closePopup();
 			});
-
-			jQuery("#fileUploadMsg").html(payloadObj.message);
+			
+			jQuery("#openDocument").prop("checked", true);
+			jQuery("#fileUploadForm").attr("action", interactionEndpoint);
 			jQuery("#documentType").html(payloadObj.documentTypeName);
 
-			//document.getElementById('dialogCloseIcon').onclick = closePopup;
-			jQuery("#dialogCloseIcon").click(closePopup);
-
-			jQuery("#fileUploadForm").attr("action", interactionEndpoint);
+			//set labels and other data
+			if (payloadObj.title) {
+				jQuery("#titleText").html(payloadObj.title);
+			} else {
+				jQuery("#titleText").html(messageBundle.getProperty("title"));
+			}
+			if (payloadObj.message) {
+				jQuery("#fileUploadMsg").html(payloadObj.message);
+			}
+			
+			jQuery("#dialogCloseIcon").attr("title", messageBundle.getProperty("close"));
+			jQuery("#documentTypeLabel").html(messageBundle.getProperty("documentType"));
+			jQuery("#fileDescriptionLabel").html(messageBundle.getProperty("desciription"));
+			jQuery("#versionCommentLabel").html(messageBundle.getProperty("comments"));
+			jQuery("#fileUploadFormLabel").html(messageBundle.getProperty("formLabel"));
+			jQuery("#openDocumentLabel").html(messageBundle.getProperty("openDocument"));
+			
+			cancelButton.attr("value", messageBundle.getProperty("close"));
+			acceptButton.attr("value", messageBundle.getProperty("ok"));
+			
+			jQuery("#uploadButton").val(messageBundle.getProperty("upload"));
+			
 			var fileDetails = null;
 			var options = {
 				beforeSend : function() {
@@ -89,13 +111,13 @@ define(function() {
 				complete : function(response) {
 					fileDetails = response.responseText;
 					jQuery("#confirmationMessage").html(
-							"<span>" + "File Uploaded Successfully."
+							"<span>" + messageBundle.getProperty("confirmationMsg")
 									+ "</span>");
 				},
 				error : function() {
 					jQuery("#confirmationMessage")
 							.html(
-									"<font color='red'> ERROR: unable to upload files</font>");
+									"<font color='red'>" + messageBundle.getProperty("errorMsg") + "</font>");
 				}
 			};
 			jQuery("#fileUploadForm").ajaxForm(options);

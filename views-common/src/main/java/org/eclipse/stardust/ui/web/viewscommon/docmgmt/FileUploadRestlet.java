@@ -15,25 +15,32 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import javax.activation.DataHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -48,6 +55,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 public class FileUploadRestlet
 {
    private static final String DOC_PATH = "../../plugins/views-common/images/icons/";
+   
+   private static final String BUNDLE_NAME = "file-upload-dialog";
 
    @Context
    protected ServletContext servletContext;
@@ -121,6 +130,45 @@ public class FileUploadRestlet
       }
    }
 
+   /**
+    * 
+    * @param locale
+    * @return
+    */
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("i18n")
+   @GET
+   public Response i18n()
+   {
+      try
+      {
+         StringBuffer bundleData = new StringBuffer();
+
+         MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+               MessagePropertiesBean.class, servletContext);
+
+         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, messageBean.getLocaleObject());
+
+         String key;
+         Enumeration<String> keys = bundle.getKeys();
+         while (keys.hasMoreElements())
+         {
+            key = keys.nextElement();
+            bundleData.append(key).append("=").append(bundle.getString(key)).append("\n");
+         }
+
+         return Response.ok(bundleData.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }   
+   
    /**
     * @param header
     * @return
