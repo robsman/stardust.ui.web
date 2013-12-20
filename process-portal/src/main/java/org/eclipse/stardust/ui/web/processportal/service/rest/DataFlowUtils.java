@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.Money;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Data;
@@ -40,6 +41,9 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 public class DataFlowUtils
 {
    public final static QName NOTES_NAMESPACE = new QName("http://eclipse.org/stardust/ws/v2012a/api", "Note");
+
+   private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+   private static final String DATE_FORMAT = "yyyy-MM-dd";
 
    private static final Logger trace = LogManager.getLogger(DataFlowUtils.class);
 
@@ -223,7 +227,7 @@ public class DataFlowUtils
       }
       else if (Type.Timestamp == targetType)
       {
-         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd", Locale.getDefault(), TimeZone.getDefault());
+         Date date = parseDate(value);
          return date;
       }
       else if (Type.Char == targetType)
@@ -232,7 +236,7 @@ public class DataFlowUtils
       }
       else if (Type.Calendar == targetType)
       {
-         Date date = DateUtils.parseDateTime(value, "yyyy-MM-dd", Locale.getDefault(), TimeZone.getDefault());
+         Date date = parseDate(value);
          Calendar cal = Calendar.getInstance();
          if (null != date)
          {
@@ -245,5 +249,27 @@ public class DataFlowUtils
          trace.warn("Ignoring primitive type code " + targetType);
       }
       return value;
+   }
+   
+   /**
+    * @param value
+    * @return
+    */
+   private static Date parseDate(String value)
+   {
+      Date date;
+      date = DateUtils.parseDateTime(value, DATE_TIME_FORMAT, Locale.getDefault(), TimeZone.getDefault());
+      if (null == date)
+      {
+         date = DateUtils.parseDateTime(value, DATE_FORMAT, Locale.getDefault(), TimeZone.getDefault());
+         if (null == date)
+         {
+            throw new PublicException("Could not parse date/time/datetime '"
+                  + value
+                  + "' using standard XSD date/time/datetime formats '"
+                  + DATE_TIME_FORMAT + "', '" + DATE_FORMAT + "'.");
+         }
+      }
+      return date;
    }
 }
