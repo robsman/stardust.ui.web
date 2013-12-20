@@ -547,10 +547,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}", class: "panel-image"}});
 
-			if (isReadonly(path)) {
+			/*if (isReadonly(path)) {
 				docLink.attributes["disabled"] = true;
 				docLink.attributes["class"] = "disabled";
 			} 
+			 */			
 			
 			if(!isReadonly(path)){
 				var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
