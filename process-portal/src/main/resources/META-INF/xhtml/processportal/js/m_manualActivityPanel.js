@@ -797,7 +797,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			msg.data.params.processInstanceOId = fileDetails.processInstanceOId;
 			msg.data.params.dataPathId = fileDetails.dataPathId;
 			msg.data.params.dataId = fileDetails.dataId;
-			msg.data.params.docTypeId = fileDetails.docTypeId;
+			//msg.data.params.docTypeId = fileDetails.docTypeId;
 			msg.data.params.disableAutoDownload = false;
 			
 			//Form data, post it to server only if it is not jcr document

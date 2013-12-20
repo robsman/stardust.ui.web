@@ -19,10 +19,12 @@ import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.CorrespondenceCapable;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
 import org.eclipse.stardust.ui.common.form.FormGenerator;
@@ -51,7 +53,6 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -350,11 +351,21 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
          FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) documentContentInfo;
          String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
          fileSystemDoc.setJcrParentFolder(parentFolder);
-         String dType = (String) thisView.getViewParams().get("docTypeId");
-         if (StringUtils.isNotEmpty(dType))
+
+         
+      }
+      
+      if (processInstance != null)
+      {
+         // String docTypeId = (String) thisView.getViewParams().get("docTypeId");
+         if (documentContentInfo.getDocumentType() == null && this.dataId != null)
          {
-            documentContentInfo.setDocumentType(DocumentTypeUtils.getDocumentType(dType,
-                  ModelUtils.getModel(processInstance.getModelOID())));
+            Model model = ModelUtils.getModel(processInstance.getModelOID());
+            DocumentType docType = ModelUtils.getDocumentTypeFromData(model, model.getData(this.dataId));
+            if (docType != null)
+            {
+               documentContentInfo.setDocumentType(docType);
+            }
          }
       }
       
