@@ -22,6 +22,7 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
@@ -118,6 +119,11 @@ public class ModelUtils
       return PrimitiveXmlUtils.isPrimitiveType(model, mapping);
    }
    
+   /**
+    * 
+    * @param type
+    * @return
+    */
    public static boolean isSimplePrimitive(Class<?> type)
    {
       if (Boolean.class == type || Long.class == type || Integer.class == type || Double.class == type ||
@@ -128,6 +134,22 @@ public class ModelUtils
       }
       return false;
    }
+   
+   /**
+    * 
+    * @param mapping
+    * @return
+    */
+   public static boolean isPrimitiveAsEnum(DataMapping mapping)
+   {
+      Object carnotType = getDataDetails(mapping).getAttribute(PredefinedConstants.TYPE_ATT);
+      if (carnotType != null && carnotType.equals("Enumeration"))
+      {
+         return true;
+      }
+      return false;
+   }
+   
    /**
     * @param model
     * @param mapping
@@ -136,7 +158,7 @@ public class ModelUtils
    public static boolean isEnumerationType(Model model, DataMapping mapping)
    {
       boolean isEnum = false;
-      if (isStructuredType(model, mapping))
+      if (isStructuredType(model, mapping) || isPrimitiveAsEnum(mapping))
       {
          Set<TypedXPath> xpaths = getXPaths(model, mapping);
          for (TypedXPath path : xpaths)
@@ -145,22 +167,6 @@ public class ModelUtils
             {
                isEnum = path.isEnumeration();
                break;
-            }
-         }
-      }
-      else if(!isSimplePrimitive(mapping.getMappedType()))
-      {
-         Object carnotType = getDataDetails(mapping).getAttribute("carnot:engine:type");
-         if (carnotType != null && carnotType.equals("Enumeration"))
-         {
-            Set<TypedXPath> xpaths = getXPaths(model, mapping);
-            for (TypedXPath path : xpaths)
-            {
-               if (path.getParentXPath() == null)
-               {
-                  isEnum = path.isEnumeration();
-                  break;
-               }
             }
          }
       }
