@@ -29,7 +29,6 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
 import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConverter;
@@ -38,16 +37,11 @@ import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.core.struct.sxml.Document;
 import org.eclipse.stardust.engine.core.struct.sxml.Element;
 import org.eclipse.stardust.engine.core.struct.sxml.Node;
-import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
-import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
-import org.eclipse.stardust.ui.web.processportal.interaction.IppDocumentController;
-import org.eclipse.stardust.ui.web.processportal.interaction.iframe.DocumentHelper;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.RawDocument;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean.InputParameters;
-import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocument;
 
 /**
  * @author Subodh.Godbole
@@ -58,16 +52,18 @@ public class InteractionDataUtils
 {
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
    
+
    /**
     * 
     * @param interaction
     * @param inData
     * @param servletContext
+    * @param qualifiedResponse
     * @return
     */
    @SuppressWarnings("unchecked")
    public static JsonObject marshalData(Interaction interaction,
-         Map<String, ? extends Serializable> inData, ServletContext servletContext)
+         Map<String, ? extends Serializable> inData, ServletContext servletContext, boolean qualifiedResponse)
    {
       Model model = interaction.getModel();
       ApplicationContext context =  interaction.getDefinition();
@@ -87,7 +83,7 @@ public class InteractionDataUtils
                if (ModelUtils.isDocumentType(model, dm))
                {
                   jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model,
-                        interaction);
+                        interaction, qualifiedResponse);
                   root.add(dm.getId(), elemDM);
                }
                else
@@ -101,13 +97,17 @@ public class InteractionDataUtils
 
       return root;
    }
-   
+
    /**
     * Converts Data back as per the Data Types
-    * @param elem
+    * 
+    * @param model
     * @param context
-    * @param interaction 
+    * @param elem
+    * @param interaction
+    * @param servletContext
     * @return
+    * @throws DataException
     */
    @SuppressWarnings("unchecked")
    public static Map<String, Serializable> unmarshalData(Model model,
@@ -199,23 +199,29 @@ public class InteractionDataUtils
          if (value instanceof Map<? , ? >)
          {
             Map<String, Object> details = (Map<String, Object>) value;
-            
-            if (details.get(DOCUMENT.TYPEJ).equals(DOCUMENT.TYPE.FILE_SYSTEM.toString()))
+
+            ManualActivityDocumentController dc = interaction.getDocumentControllers().get(outMapping.getId());
+            if (details.get("deleteDocument") != null)
             {
-               result = createDocument(details, model, outMapping, interaction,
-                     servletContext);
+               // document removed or no change
+               dc.delete((String) details.get(DOCUMENT.ID));
             }
-            else if (details.get(DOCUMENT.TYPEJ).equals(DOCUMENT.TYPE.JCR.toString()))
+            else if (dc.isJCRDocument()) // document is uploaded and saved from viewer
             {
                // JCR document
-               result = getDocument(interaction, outMapping);
+               result = dc.getJCRDocument();
             }
             else
             {
-               // document removed or no change
-               IppDocumentController dc = interaction.getDocumentControllers().get(
-                     outMapping.getId());
-               dc.delete();
+               // document is uploaded and not saved from viewer
+               result = (String) details.get(DOCUMENT.ID);
+
+               // use this data when creating JCR document
+               RawDocument rawDocument = new RawDocument();
+               rawDocument.setName((String) details.get(DOCUMENT.NAME));
+               rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
+               rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
+               dc.setRawDocument(rawDocument);
             }
          }
       }
@@ -225,80 +231,6 @@ public class InteractionDataUtils
       }
 
       return result;
-   }
-   
-   /**
-    * 
-    * @param details
-    * @param model
-    * @param outMapping
-    * @param interaction
-    * @param servletContext
-    * @return
-    */
-   private static FileSystemJCRDocument createDocument(Map<String, Object> details,
-         Model model, DataMapping outMapping, Interaction interaction,
-         ServletContext servletContext)
-   {
-      // pull physical path
-      FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
-            "fileStorage", servletContext);
-      
-      String uuid = (String) details.get(DOCUMENT.ID);
-      
-      String path = fileStorage.pullPath(uuid);
-      
-      InputParameters inputParam = fileStorage.pullFile(uuid);
-      
-      FileSystemJCRDocument fileSystemJCRDoc;
-      
-      if (inputParam == null)
-      {
-         // File system document
-         RawDocument rawDocument = new RawDocument();
-
-         rawDocument.setName((String) details.get(DOCUMENT.FILE_NAME));
-         rawDocument.setContentType((String) details.get(DOCUMENT.CONTENT_TYPE));
-
-         rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
-         rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
-
-         rawDocument.setPhysicalPath(path);
-
-         // set Document Type
-         DocumentType dType = DocumentTypeUtils.getDocumentType(
-               (String) details.get(DOCUMENT.TYPE_ID), model);
-         rawDocument.setDocumentType(dType);
-
-         fileSystemJCRDoc = DocumentHelper.getFileSystemDocument(rawDocument,
-               interaction, servletContext);
-
-         IppDocumentController dc = interaction.getDocumentControllers().get(outMapping.getId());
-         
-         dc.setDocument(fileSystemJCRDoc);
-         
-         fileStorage.pushFile(uuid, dc.getDocumentViewerInputParameters());
-      }
-      else
-      {
-         fileSystemJCRDoc = (FileSystemJCRDocument) inputParam.getDocumentContentInfo();
-      }
-
-      return fileSystemJCRDoc;
-   }
-   
-   /**
-    * 
-    * @param interaction
-    * @param outMapping
-    * @return
-    */
-   private static org.eclipse.stardust.engine.api.runtime.Document getDocument(
-         Interaction interaction, DataMapping outMapping)
-   {
-      IppDocumentController dc = interaction.getDocumentControllers().get(
-            outMapping.getId());
-      return dc.getJCRDocument();
    }
    
    /**
@@ -316,7 +248,6 @@ public class InteractionDataUtils
       StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
       Document document;
 
-      //TODO: code breaks here
       Node[] nodes = converter.toDom(data, "", true);
       Assert.condition(nodes.length == 1);
       document = new Document((Element) nodes[0]);
@@ -339,49 +270,5 @@ public class InteractionDataUtils
       }
 
       return returnValue;
-   }
-   
-   protected static class DOCUMENT
-   {
-      protected enum TYPE
-      {
-         FILE_SYSTEM ("FILE_SYSTEM"), JCR ("JCR"), NONE ("none");
-         private String type;
-
-         TYPE(String type)
-         {
-            this.type = type;
-         }
-
-         @Override
-         public String toString()
-         {
-            return this.type;
-         }
-      }
-
-      protected static final String DOC_PATH = "../../plugins/views-common/images/icons/";
-      
-      protected static final String TYPE_ID = "docTypeId";
-      
-      protected static final String TYPE_NAME = "docTypeName";
-
-      protected static final String ID = "docId";
-
-      protected static final String NAME = "docName";
-
-      protected static final String ICON = "docIcon";
-
-      protected static final String FILE_NAME = "fileName";
-
-      protected static final String CONTENT_TYPE = "contentType";
-
-      protected static final String DESCRIPTION = "fileDescription";
-
-      protected static final String VERSION_COMMENT = "versionComment";
-      
-      protected static final String TYPEJ = "type";
-      
-      protected static final String VIEW_KEY = "viewKey";
    }
 }

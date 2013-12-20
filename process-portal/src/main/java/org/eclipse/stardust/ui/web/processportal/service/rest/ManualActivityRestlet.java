@@ -37,6 +37,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -91,7 +92,7 @@ public class ManualActivityRestlet
          Map<String, ? extends Serializable> inData = interaction.getInDataValues();
          
          JsonObject root = InteractionDataUtils.marshalData(interaction, inData,
-               servletContext);
+               servletContext, false);
          
          return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
       }
@@ -103,6 +104,36 @@ public class ManualActivityRestlet
       return Response.ok("[]", MediaType.APPLICATION_JSON_TYPE).build();
    }
 
+   /**
+    * @return
+    */
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("inData/{parameterId}")
+   @GET
+   public Response inData(@PathParam("parameterId") String parameterId)
+   {
+      Interaction interaction = getInteraction();
+
+      if (interaction != null)
+      {
+         Map<String, ? extends Serializable> inData = interaction.getInDataValues();
+         Map<String, Serializable> filteredInData = CollectionUtils.newHashMap();
+         filteredInData.put(parameterId, inData.get(parameterId));
+         
+         JsonObject root = InteractionDataUtils.marshalData(interaction, filteredInData,
+               servletContext, true);
+         
+         return Response.ok(root.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      else
+      {
+         trace.error("Interaction is null for interaction Id: " + interactionId);
+      }
+
+      return Response.ok("[]", MediaType.APPLICATION_JSON_TYPE).build();
+   }
+   
+   
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("outData")

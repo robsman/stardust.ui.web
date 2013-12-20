@@ -35,10 +35,8 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
-import org.eclipse.stardust.ui.web.processportal.interaction.IppDocumentController;
-import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils.DOCUMENT;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 /**
  * @author Subodh.Godbole
@@ -84,53 +82,52 @@ public class JsonHelper
    /**
     * 
     * @param document
-    * @param dataId
+    * @param dm
     * @param elemDM
     * @param model
-    * @param servletContext
+    * @param interaction
+    * @param qualifiedResponse
     */
-   public void toJsonDocument(Object document, DataMapping dm, JsonObject elemDM,
-         Model model, Interaction interaction)
+   public void toJsonDocument(Object document, DataMapping dm, JsonObject elemDM, Model model, Interaction interaction,
+         boolean qualifiedResponse)
    {
       trace.debug("create document json...");
-      
-      DocumentType docType = ModelUtils.getDocumentTypeFromData(model, model.getData(dm.getDataId()));
-      
+
+      ManualActivityDocumentController dc = interaction.getDocumentControllers().get(dm.getId());
+
+      if (dc.isJCRDocument())
+      {
+         elemDM.add(DOCUMENT.ID, new JsonPrimitive(dc.getDocument().getId()));
+         elemDM.add(DOCUMENT.NAME, new JsonPrimitive(dc.getDocument().getName()));
+      }
+
+      if (qualifiedResponse)
+      {
+         trace.debug("created quailified response...");
+         return;
+      }
+
+      DocumentType docType = dc.getDocumentType();
+
       if (docType != null)
       {
          elemDM.add(DOCUMENT.TYPE_ID, new JsonPrimitive(docType.getDocumentTypeId()));
+         elemDM.add(DOCUMENT.TYPE_NAME,
+               new JsonPrimitive(TypedDocumentsUtil.getDocumentTypeLabel(docType, (DeployedModel) model)));
       }
 
-      elemDM.add(
-            DOCUMENT.TYPE_NAME,
-            new JsonPrimitive(TypedDocumentsUtil.getDocumentTypeLabel(docType,
-                  (DeployedModel) model)));
+      elemDM.add(DOCUMENT.DOC_INTERACTION_ID, new JsonPrimitive(dc.getDocInteractionId()));
+      elemDM.add(DOCUMENT.PROCESS_INSTANCE_OID, new JsonPrimitive(interaction.getActivityInstance()
+            .getProcessInstanceOID()));
 
-      org.eclipse.stardust.engine.api.runtime.Document doc = (org.eclipse.stardust.engine.api.runtime.Document) document;
+      elemDM.add(DOCUMENT.DATA_ID, new JsonPrimitive(dc.getDataMapping().getDataId()));
 
-      if (doc != null)
+      if (dc.getDataMapping().getDataPath() != null)
       {
-         //prepare response
-         elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.JCR.toString()));
-         
-         IppDocumentController dc = interaction.getDocumentControllers().get(dm.getId());
-         
-         MIMEType mType = dc.getDocumentViewerInputParameters().getDocumentContentInfo().getMimeType();
-
-         elemDM.add(DOCUMENT.ID, new JsonPrimitive(doc.getId()));
-         elemDM.add(DOCUMENT.NAME, new JsonPrimitive(doc.getName()));
-         elemDM.add(DOCUMENT.ICON, new JsonPrimitive(DOCUMENT.DOC_PATH + "mime-types/"
-               + mType.getIconPath()));
-         
-         elemDM.add(DOCUMENT.VIEW_KEY, new JsonPrimitive(dc.getViewKey()));
-
+         elemDM.add(DOCUMENT.DATA_PATH_ID, new JsonPrimitive(dc.getDataMapping().getDataPath()));
       }
-      else
-      {
-         elemDM.add(DOCUMENT.TYPEJ, new JsonPrimitive(DOCUMENT.TYPE.NONE.toString()));
-         elemDM.add(DOCUMENT.ICON, new JsonPrimitive(DOCUMENT.DOC_PATH
-               + "page_white_error.png"));
-      }
+
+      elemDM.add(DOCUMENT.ICON, new JsonPrimitive(dc.getIconPath()));
    }
    
   /**

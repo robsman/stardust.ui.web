@@ -56,54 +56,53 @@ public class FileUploadRestlet
    @Path("upload")
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   public Response uploadFile(List<Attachment> attachments,
-         @Context HttpServletRequest request)
+   public Response uploadFile(List<Attachment> attachments, @Context HttpServletRequest request)
    {
       JsonObject response = null;
-      for (Attachment attr : attachments)
+      for (Attachment attachment : attachments)
       {
-         DataHandler handler = attr.getDataHandler();
+         DataHandler dataHandler = attachment.getDataHandler();
          try
          {
-            InputStream stream = handler.getInputStream();
-            MultivaluedMap<String, String> map = attr.getHeaders();
-            FileInfo fileInfo = getFileName(map);
-            
-            FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean("fileStorage", servletContext);
-            
-            // file path
-            // TODO : generate unique ids
-            String filePath = fileStorage.getStoragePath(servletContext) + fileInfo.getName();
-            File f = new File(filePath);
+            InputStream inputStream = dataHandler.getInputStream();
+            MultivaluedMap<String, String> headers = attachment.getHeaders();
 
-            OutputStream out = new FileOutputStream(f);
+            FileInfo fileInfo = getFileName(headers);
+
+            FileStorage fileStorage = (FileStorage) RestControllerUtils
+                  .resolveSpringBean("fileStorage", servletContext);
+
+            // file path
+            String filePath = fileStorage.getStoragePath(servletContext) + fileInfo.name;
+            File uploadedFile = new File(filePath);
+
+            OutputStream outputStream = new FileOutputStream(uploadedFile);
 
             int read = 0;
             byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
+            while ((read = inputStream.read(bytes)) != -1)
             {
-               out.write(bytes, 0, read);
+               outputStream.write(bytes, 0, read);
             }
-            stream.close();
-            out.flush();
-            out.close();
-           
- 
-            //Store path in session
+            inputStream.close();
+
+            outputStream.flush();
+            outputStream.close();
+
+            // Store file path in session
             String uuid = fileStorage.pushPath(filePath);
 
-            // document icon
+            // get document icon
             MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
                   "ippMimeTypesHelper", servletContext);
-            
-            MIMEType mType = mimeTypesHelper.detectMimeTypeI(fileInfo.getName(), fileInfo.getContentType());
+            MIMEType mType = mimeTypesHelper.detectMimeTypeI(fileInfo.name, fileInfo.contentType);
 
             String docIcon = DOC_PATH + "mime-types/" + mType.getIconPath();
-            
+
             response = new JsonObject();
             response.add("uuid", new JsonPrimitive(uuid));
-            response.add("contentType", new JsonPrimitive(fileInfo.getContentType()));
-            response.add("fileName", new JsonPrimitive(fileInfo.getName()));
+            response.add("contentType", new JsonPrimitive(fileInfo.contentType));
+            response.add("fileName", new JsonPrimitive(fileInfo.name));
             response.add("docIcon", new JsonPrimitive(docIcon));
          }
          catch (Exception e)
@@ -136,51 +135,29 @@ public class FileUploadRestlet
          if ((filename.trim().startsWith("filename")))
          {
             String[] name = filename.split("=");
-            String finalFileName = name[1].trim().replaceAll("\"", "");
-            fileInfo.setName(finalFileName);
-         }
-         else if ((filename.trim().startsWith("Content-Type")))
-         {
-            String[] contentType = filename.split("=");
-            String finalContentType = contentType[1].trim().replaceAll("\"", "");
-            fileInfo.setContentType(finalContentType);
+            fileInfo.name = name[1].trim().replaceAll("\"", "");
          }
       }
-      fileInfo.setContentType(header.getFirst("Content-Type"));
+
+      fileInfo.contentType = header.getFirst("Content-Type");
 
       return fileInfo;
    }
 
+   /**
+    * 
+    * @author Yogesh.Manware
+    * 
+    */
    private class FileInfo
    {
       String name;
-
       String contentType;
 
       public FileInfo()
       {
          name = "unknown";
          contentType = "unknown";
-      }
-
-      public String getName()
-      {
-         return name;
-      }
-
-      public void setName(String name)
-      {
-         this.name = name;
-      }
-
-      public String getContentType()
-      {
-         return contentType;
-      }
-
-      public void setContentType(String contentType)
-      {
-         this.contentType = contentType;
       }
    }
 }

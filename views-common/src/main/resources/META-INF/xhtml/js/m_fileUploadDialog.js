@@ -39,12 +39,17 @@ define(function() {
 			console.log("Interaction Rest End Point: " + interactionEndpoint);
 
 			document.getElementById('titleText').innerHTML = payloadObj.title;
-			document.getElementById('cancelButton').value = "CANCEL";
-			document.getElementById('cancelButton').onclick = closePopup;
+
+			var cancelButton = jQuery("#cancelButton"); 
+			cancelButton.val("CANCEL");
+			cancelButton.click(closePopup);
 			jQuery("#openDocument").prop("checked", true);
 			
-			document.getElementById('acceptButton').value = "OK";
-			document.getElementById('acceptButton').onclick = function() {
+			//document.getElementById('acceptButton').value = "OK";
+			var acceptButton = jQuery("#acceptButton"); 
+			acceptButton.val("OK");
+			
+			acceptButton.click(function() {
 				var details = {};
 				details.fileDescription = jQuery("#fileDescription").val();
 				details.versionComment = jQuery("#versionComment").val();
@@ -52,45 +57,45 @@ define(function() {
 				details.fileDetails = JSON.parse(jQuery(fileDetails).text());
 				payloadObj.acceptFunction(details);
 				closePopup();
-			};
+			});
 
 			jQuery("#fileUploadMsg").html(payloadObj.message);
 			jQuery("#documentType").html(payloadObj.documentTypeName);
-			
-			document.getElementById('dialogCloseIcon').onclick = closePopup;
+
+			//document.getElementById('dialogCloseIcon').onclick = closePopup;
+			jQuery("#dialogCloseIcon").click(closePopup);
 
 			jQuery("#fileUploadForm").attr("action", interactionEndpoint);
 			var fileDetails = null;
 			var options = {
 				beforeSend : function() {
-					jQuery("#progress").show();
+					jQuery("#fileUploadprogress").show();
 					// clear everything
-					jQuery("#bar").width('0%');
-					jQuery("#message").html("");
-					jQuery("#percent").html("0%");
+					jQuery("#progressBar").width('0%');
+					jQuery("#confirmationMessage").html("");
+					jQuery("#fileUploadPercent").html("0%");
 				},
 				uploadProgress : function(event, position, total,
 						percentComplete) {
-					jQuery("#bar").width(percentComplete + '%');
-					jQuery("#percent").html(percentComplete + '%');
+					jQuery("#progressBar").width(percentComplete + '%');
+					jQuery("#fileUploadPercent").html(percentComplete + '%');
 
 				},
 				success : function() {
-					jQuery("#bar").width('100%');
-					jQuery("#percent").html('100%');
+					jQuery("#progressBar").width('50%');
+					jQuery("#fileUploadPercent").html('100%');
 
 				},
 				complete : function(response) {
 					fileDetails = response.responseText;
-					jQuery("#message").html(
-							"<font color='green'>" + "File Uploaded Successfully."
-									+ "</font>");
+					jQuery("#confirmationMessage").html(
+							"<span>" + "File Uploaded Successfully."
+									+ "</span>");
 				},
 				error : function() {
-					jQuery("#message")
+					jQuery("#confirmationMessage")
 							.html(
 									"<font color='red'> ERROR: unable to upload files</font>");
-
 				}
 			};
 			jQuery("#fileUploadForm").ajaxForm(options);

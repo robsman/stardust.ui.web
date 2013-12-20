@@ -85,34 +85,6 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.showNestedList = showNestedList;
 				$scope.deleteDocument = deleteDocument;
 			});
-			
-			/**
-			 * TODO remove it later
-			 */
-				 /*jQuery( "#upload-file" )
-			      .button()
-			      .click(function() {
-			    	  if (parent.iPopupDialog) {
-							parent.iPopupDialog.openPopup({
-								attributes : {
-									width : "600px",
-									height : "400px",
-									src : "../common/popups/fileUploadPopupDialogContent.html"
-								},
-								payload : {
-									title : "modeler.messages.confirm",
-									message: "Upload a document to " + "Document Path Label",
-									documentTypeName: "documentTypeName",
-									acceptFunction : function(fileUploadDetails) {
-										alert(fileUploadDetails.fileId);
-									}
-								}
-							});
-						} else {
-							alert("not available");
-						}
-			        //jQuery( "#dialog-form" ).dialog( "open" );
-			      });*/
 		};
 
 		/*
@@ -707,8 +679,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				if (!readonly && parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup({
 						attributes : {
-							width : "600px",
-							height : "400px",
+							width : "55%",
+							height : "45%",
 							src : "../views-common/popups/fileUploadPopupDialogContent.html"
 						},
 						payload : {
@@ -716,31 +688,21 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							message: documentPathLabel,							
 							documentTypeName: currentBindings[lastPart].docTypeName,
 							acceptFunction : function(fileUploadData) {
-								//TODO post changes
-								//change image icon - file uploaded now
-								//display delete icon on right click
 								runInAngularContext(function($scope){
 									//Form Data
-									currentBindings[lastPart].fileDescription = fileUploadData.fileDescription;
-									currentBindings[lastPart].openDocument = fileUploadData.openDocument;
-									currentBindings[lastPart].versionComment = fileUploadData.versionComment;
-									
+									var params = {};
+									params.description = fileUploadData.fileDescription;
+									params.comments = fileUploadData.versionComment;
+									currentBindings[lastPart].params = params;
+
 									//File data
 									currentBindings[lastPart].docId = fileUploadData.fileDetails.uuid;
 									currentBindings[lastPart].docIcon = fileUploadData.fileDetails.docIcon;
 									currentBindings[lastPart].docName = fileUploadData.fileDetails.fileName;
-									currentBindings[lastPart].contentType = fileUploadData.fileDetails.contentType;
-									currentBindings[lastPart].type = "FILE_SYSTEM";
-									
-									if(fileUploadData.openDocument){
-										var transferData = {};
-										transferData[lastPart] = currentBindings[lastPart];
-										postData(interactionEndpoint, "/outData/" + lastPart, transferData, {});
-									}	
 								});
 								
 								if(fileUploadData.openDocument){
-									openDocumentViewer(fileUploadData.fileDetails.uuid, fileUploadData.fileDetails.uuid);
+									openDocumentViewer(currentBindings[lastPart]);
 								}
 							}
 						}
@@ -750,9 +712,22 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 				
 			}else{
-				// Document is already set - open it!
-				var currentBinding = currentBindings[lastPart];
-				openDocumentViewer(currentBinding.docId, currentBinding.viewKey);
+				// Document is already set - get latest data from server!
+				getData(interactionEndpoint, "/inData/" + lastPart, {success: function(retData) {
+					if (retData[lastPart].docId) {
+						// it is JCR document
+						currentBindings[lastPart].docId = retData[lastPart].docId;
+						// reset client side stale data
+						currentBindings[lastPart].params = null;
+					}else{
+						// it is file system document so no change in client side data
+					}
+				}, failure: function() {
+					success = false;
+					alert("Failure while getting data");
+				}});
+				
+				openDocumentViewer(currentBindings[lastPart]);
 			}
 		}
 		
@@ -760,18 +735,29 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * open document view using parent.postmessage
 		 *  
 		 */
-		function openDocumentViewer(docId,  viewKey){
+		function openDocumentViewer(fileDetails){
 			var msg = {};
 			msg.type = "OpenView";
 			msg.data = {};
 			msg.data.viewId = "documentView";
-			msg.data.viewKey = viewKey;
+			msg.data.viewKey = "documentOID=" + fileDetails.docId;
 			msg.data.nested = true;
 			
 			msg.data.params = {};
-			msg.data.params.fileSystemJCRDocumentId = docId;
 			
+			msg.data.params.documentId = fileDetails.docId;
+			msg.data.params.docInteractionId = fileDetails.docInteractionId;
+			msg.data.params.processInstanceOId = fileDetails.processInstanceOId;
+			msg.data.params.dataPathId = fileDetails.dataPathId;
+			msg.data.params.dataId = fileDetails.dataId;
+			msg.data.params.docTypeId = fileDetails.docTypeId;
+			msg.data.params.disableAutoDownload = false;
 			
+			//Form data, post it to server only if it is not jcr document
+			if (fileDetails.params) {
+				msg.data.params.description = fileDetails.params.description;
+				msg.data.params.comments = fileDetails.params.comments;
+			}
 			parent.postMessage(JSON.stringify(msg), "*");			
 		}
 		
@@ -960,15 +946,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			
 			if (currentBindings[lastPart] && currentBindings[lastPart].docId) {
 				//	Document is set
-				currentBindings[lastPart].type = "none";
-				
 				var transferData = {};
 				transferData[lastPart] = currentBindings[lastPart];
+				transferData[lastPart].deleteDocument = true;
 				
 				postData(interactionEndpoint, "/outData/" + lastPart, transferData, {success: function(retData) {
 					currentBindings[lastPart].docId = null;
 					currentBindings[lastPart].docIcon = "../../plugins/views-common/images/icons/page_white_error.png";
-					currentBindings[lastPart].type = "none";
 				}, failure: function() {
 					success = false;
 					alert(i18nLabelProvider().getLabel("panel.save.error", "Failure to save data"));

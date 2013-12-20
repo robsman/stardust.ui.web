@@ -35,10 +35,10 @@ import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent.ViewDataEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -51,14 +51,15 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.CallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
@@ -67,9 +68,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog.FileSaveCallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEventListener.DocumentEventType;
 
@@ -107,6 +108,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean disableAutoDownload = false;
    private String loadUnsuccessfulMsg;
    private ConfirmationDialog confirmationDialog;
+   
+   private String docInteractionId = null;
 
    private String autoDownloadLinkId;
 
@@ -278,35 +281,44 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       if (null == documentContentInfo)
       {
-         if(null != thisView.getViewParams().get("documentId")){
-            String documentId = (String) thisView.getViewParams().get("documentId");
-
+         String documentId = (String) thisView.getViewParams().get("documentId");
+         
+         if (null != documentId)
+         {
             try
             {
-               documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+               // first check if it is a file system document
+               FileStorage fileStorage = FileStorage.getInstance();
+               documentContentInfo = fileStorage.retrieveFile((documentId));
+
+               if (documentContentInfo == null)
+               {
+                  documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+               }
+               
                thisView.getViewParams().put("documentInfo", documentContentInfo);
             }
-            catch (ResourceNotFoundException e)
+            catch (Exception e)
             {
                viewEvent.setVetoed(true);
                ExceptionHandler.handleException(e);
                return false;
-            }   
+            }
          }
-         else if (null != thisView.getViewParams().get("fileSystemJCRDocumentId"))
-         {
-            FileStorage fileStorage = FileStorage.getInstance();
-            InputParameters params = fileStorage.pullFile((String) thisView.getViewParams()
-                  .get("fileSystemJCRDocumentId")); 
-            documentContentInfo = params.getDocumentContentInfo();
-            
-            thisView.getViewParams().put("documentInfo", documentContentInfo);
-            
-            dataPathId = params.getDataPathId();
-            dataId = params.getDataId();
-            
-            processInstance = ProcessInstanceUtils.getProcessInstance(params.getProcessInstancOid());
-         }
+      }
+
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("docInteractionId")))
+      {
+         docInteractionId = (String) thisView.getViewParams().get("docInteractionId");
+      }
+
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("description")))
+      {
+         documentContentInfo.setDescription((String) thisView.getViewParams().get("description"));
+      }
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("comments")))
+      {
+         documentContentInfo.setComments((String) thisView.getViewParams().get("comments"));
       }
 
       if (processInstance == null)
@@ -332,6 +344,20 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
             processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid);
          }
       }
+      
+      if (documentContentInfo instanceof FileSystemJCRDocument && processInstance != null)
+      {
+         FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) documentContentInfo;
+         String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
+         fileSystemDoc.setJcrParentFolder(parentFolder);
+         String dType = (String) thisView.getViewParams().get("docTypeId");
+         if (StringUtils.isNotEmpty(dType))
+         {
+            documentContentInfo.setDocumentType(DocumentTypeUtils.getDocumentType(dType,
+                  ModelUtils.getModel(processInstance.getModelOID())));
+         }
+      }
+      
       Object embededViewObj = thisView.getViewParams().get("embededView");
 
       if (null != embededViewObj)
@@ -819,7 +845,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       PortalApplication.getInstance().broadcastViewDataEvent(
             new ViewDataEvent(thisView, ViewDataEventType.DATA_MODIFIED, documentContentInfo));
-
+      
+      if (docInteractionId != null)
+      {
+         Map<String, Object> result = CollectionUtils.newHashMap();
+         result.put("docInteractionId", docInteractionId);
+         result.put("document", documentContentInfo);
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView.getOpenerView(), ViewDataEventType.DATA_MODIFIED, result));
+      }
+      
       initializeBean();
 
       if(refreshViewer)
@@ -1287,73 +1322,5 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public boolean isDisableAutoDownload()
    {
       return disableAutoDownload;
-   }
-
-   /**
-    * 
-    * @author Yogesh.Manware
-    *
-    */
-   public static class InputParameters
-   {
-      private IDocumentContentInfo documentContentInfo;
-
-      private long processInstancOid;
-
-      private String dataPathId;
-
-      private String dataId;
-
-      private boolean disableAutoDownload = false;
-      
-      public IDocumentContentInfo getDocumentContentInfo()
-      {
-         return documentContentInfo;
-      }
-
-      public void setDocumentContentInfo(IDocumentContentInfo documentContentInfo)
-      {
-         this.documentContentInfo = documentContentInfo;
-      }
-
-      public long getProcessInstancOid()
-      {
-         return processInstancOid;
-      }
-
-      public void setProcessInstancOid(long processInstancOid)
-      {
-         this.processInstancOid = processInstancOid;
-      }
-
-      public String getDataPathId()
-      {
-         return dataPathId;
-      }
-
-      public void setDataPathId(String dataPathId)
-      {
-         this.dataPathId = dataPathId;
-      }
-
-      public String getDataId()
-      {
-         return dataId;
-      }
-
-      public void setDataId(String dataId)
-      {
-         this.dataId = dataId;
-      }
-
-      public boolean isDisableAutoDownload()
-      {
-         return disableAutoDownload;
-      }
-
-      public void setDisableAutoDownload(boolean disableAutoDownload)
-      {
-         this.disableAutoDownload = disableAutoDownload;
-      }
-   }
+   }  
 }

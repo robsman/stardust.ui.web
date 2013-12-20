@@ -29,9 +29,13 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
+import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
 import org.eclipse.stardust.ui.web.processportal.view.ActivityPanelConfigurationBean;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
@@ -41,6 +45,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.AbstractDocumentContentInfo;
 
 /**
  * @author Subodh.Godbole
@@ -205,12 +210,28 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController#getEventScript(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.common.event.ViewEvent)
     */
-   public String getEventScript(ActivityInstance activityInstance, ViewEvent event)
+   public String getEventScript(final ActivityInstance activityInstance, ViewEvent event)
    {
       String eventScript = "";
      
       switch (event.getType())
       {
+      case CREATED:
+         PortalApplication.getInstance().registerViewDataEventHandler(event.getView(), new ViewDataEventHandler()
+         {
+            public void handleEvent(ViewDataEvent event)
+            {
+               Interaction interaction = getInteraction(activityInstance);
+               if (event.getPayload() instanceof Map && interaction != null)
+               {
+                  @SuppressWarnings("unchecked")
+                  Map<String, Object> result = (Map<String, Object>) event.getPayload();
+                  DocumentHelper.updateDocuments((String) result.get(DOCUMENT.DOC_INTERACTION_ID),
+                        (AbstractDocumentContentInfo) result.get("document"), interaction);
+               }
+            }
+         });
+         break;
       case TO_BE_ACTIVATED:
          String uri = providePanelUri(activityInstance);
 
@@ -244,6 +265,20 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       }
 
       return eventScript;
+   }
+   
+   /**
+    * 
+    * @param activityInstance
+    * @return
+    */
+   private Interaction getInteraction(ActivityInstance activityInstance)
+   {
+      FacesContext facesContext = FacesContext.getCurrentInstance();
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+            InteractionRegistry.BEAN_ID);
+
+      return registry.getInteraction(Interaction.getInteractionId(activityInstance));
    }
 
    /* (non-Javadoc)

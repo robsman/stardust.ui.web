@@ -34,8 +34,9 @@
 
 .iPopupDialogContentArea {
 	width: 100%;
-	height: 120px;
+	height: 80%;
 	background-color: white;
+	padding-left: 25px;
 }
 
 .iPopupDialogContentTabCol1 {
@@ -66,7 +67,7 @@
 
 .iPopupDialogControlsArea {
 	width: 100%;
-	height: 45px;
+	height: 20%;
 	background: url("../images/footer-BG.jpg") repeat-x scroll center top #FFFFFF;
 	border-top: thin solid #CCCCCC;
 }
@@ -82,4 +83,41 @@
 	border-style: solid;
 	border-width: 1px;
 	color: #333333;
+}
+
+#progressBar {
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #D9D9D9;
+	height: 20px;
+	width: 42%;
+	margin-left: 10px;
+}
+
+#fileUploadPercent {
+	text-align: center;
+	position: relative;
+	background-color: transparent;
+	width: 100%;
+	z-index: 1;
+}
+
+.popupTextArea {
+	height: 30px;
+	width: 420px;
+}
+
+.iPopupDialogBody {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	margin: 0px;
+}
+
+.panelHeader {
+	border-bottom: 1px solid #CCCCCC;
+	clear: both;
+	height: 20px;
+	line-height: 20px;
+	margin: 5px 0;
+	white-space: nowrap;
 }
