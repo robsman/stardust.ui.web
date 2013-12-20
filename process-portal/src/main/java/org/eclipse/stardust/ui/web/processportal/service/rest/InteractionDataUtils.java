@@ -181,20 +181,7 @@ public class InteractionDataUtils
    {
       Object result = null;
 
-      if (ModelUtils.isStructuredType(model, outMapping))
-      {
-         Data data = model.getData(outMapping.getDataId());
-         if (data.getModelOID() != model.getModelOID())
-         {
-            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
-         }
-         result = evaluateStructMapping(model, outMapping, value, outMapping.getApplicationPath());
-      }
-      else if (ModelUtils.isPrimitiveType(model, outMapping))
-      {
-         result = (Serializable)DataFlowUtils.unmarshalPrimitiveValue(model, outMapping, value.toString());
-      }
-      else if (ModelUtils.isDocumentType(model, outMapping))
+      if (ModelUtils.isDocumentType(model, outMapping))
       {
          if (value instanceof Map<? , ? >)
          {
@@ -225,9 +212,23 @@ public class InteractionDataUtils
             }
          }
       }
+      else if (ModelUtils.isPrimitiveType(model, outMapping))
+      {
+         result = (Serializable)DataFlowUtils.unmarshalPrimitiveValue(model, outMapping, value.toString());
+      }
+      else if (ModelUtils.isStructuredType(model, outMapping))
+      {
+         Data data = model.getData(outMapping.getDataId());
+         if (data.getModelOID() != model.getModelOID())
+         {
+            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+         }
+         result = evaluateStructMapping(model, outMapping, value, outMapping.getApplicationPath());
+      }
       else
       {
          // TODO support additional types?
+         trace.warn("Ignored unsupported Out Data Mapping - " + outMapping.getId());
       }
 
       return result;
