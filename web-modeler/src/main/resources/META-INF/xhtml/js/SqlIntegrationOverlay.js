@@ -174,44 +174,50 @@ define(
 					});
 
 					this.databaseTypeSelect
-							.change(function() {
+							.change({
+								panel : this
+							},
+							function(event) {
 								if (!self.view.validate()) {
 									return;
 								}
-								if (self.databaseTypeSelect.val() == "others") {
-									self.showHideCommonDbConfig(true);
-									self.showHideOthersDbConfig();
-									self.view
+								if (event.data.panel.databaseTypeSelect.val() == "others") {
+									event.data.panel.showHideCommonDbConfig(true);
+									event.data.panel.showHideOthersDbConfig();
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::hostname",
 													null);
-									self.view
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::port",
 													null);
-									self.view
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::dbname",
 													null);
 
 								} else {
-									self.showHideCommonDbConfig();
-									self.showHideOthersDbConfig(true);
+									event.data.panel.showHideCommonDbConfig();
+									event.data.panel.showHideOthersDbConfig(true);
 
-									self.view
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::databasetype",
 													self.databaseTypeSelect
 															.val());
-									self.view
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::url",
 													null);
-									self.view
+									event.data.panel.view
 											.submitModelElementAttributeChange(
 													"stardust:sqlScriptingOverlay::driverClassName",
 													null);
 								}
+								
+								event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::additionalSpringBeanDefinitions" , event.data.panel.populateDataSourceBeanDefinition());
+								
 							});
 
 					this.urlInput
@@ -232,7 +238,16 @@ define(
 														}
 													}
 												});
-
+										
+										
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 									});
 
 					this.driverInput
@@ -253,6 +268,24 @@ define(
 														}
 													}
 												});
+										
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"stardust:sqlScriptingOverlay::driverClassName" : event.data.panel.driverInput
+															.val()
+												}
+											}
+										});
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 
 									});
 
@@ -274,6 +307,14 @@ define(
 														}
 													}
 												});
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 
 									});
 
@@ -295,7 +336,14 @@ define(
 														}
 													}
 												});
-
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 									});
 
 					this.dataBaseNameInput
@@ -316,7 +364,14 @@ define(
 														}
 													}
 												});
-
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 									});
 
 					this.userNameInput
@@ -337,7 +392,14 @@ define(
 														}
 													}
 												});
-
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 									});
 
 					this.passwordInput
@@ -358,7 +420,14 @@ define(
 														}
 													}
 												});
-
+										event.data.panel
+										.submitChanges({
+											modelElement : {
+												attributes : {
+													"carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
+												}
+											}
+										});
 									});
 
 					this.useCVforPassowrdInput
