@@ -269,7 +269,14 @@ define(
 									if(defaultValue!=null)
 										self.enumInputSelect.val(defaultValue);
 									$scope.enumDataType = true;
-									$scope.structEnum = structEnum;
+									if(structEnum){
+										if(!defaultValue){
+											self.submitModelElementAttributeChange("carnot:engine:defaultValue", self.enumInputSelect.val());											
+										}
+										self.enumInputSelect.attr("disabled","disabled");
+									}else{
+										self.enumInputSelect.removeAttr("disabled");
+									}
 									return;
 									}
 								$scope.defaultValue = defaultValue;
