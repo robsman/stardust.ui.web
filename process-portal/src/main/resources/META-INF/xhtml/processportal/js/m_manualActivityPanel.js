@@ -729,7 +729,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					parent.iPopupDialog.openPopup({
 						attributes : {
 							width : "50%",
-							height : "45%",
+							height : "60%",
 							src : "../views-common/popups/fileUploadPopupDialogContent.html"
 						},
 						payload : {
