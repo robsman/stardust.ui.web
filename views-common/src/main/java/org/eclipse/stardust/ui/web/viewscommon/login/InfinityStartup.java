@@ -61,7 +61,7 @@ public class InfinityStartup
       this.params = getParams(request);
       
       //read parameter
-      this.timeout = Parameters.instance().getInteger(TIMEOUT, 1000);
+      this.timeout = Parameters.instance().getInteger(TIMEOUT, 0);
    }
    
    private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
