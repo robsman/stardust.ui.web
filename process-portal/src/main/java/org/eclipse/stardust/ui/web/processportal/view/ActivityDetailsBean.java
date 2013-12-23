@@ -318,7 +318,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       super("activityPanel");
       this.title = "";
-      HTML_BASED = Parameters.instance().getBoolean("ManualActivity.Mode.HTML", false);
+      HTML_BASED = Parameters.instance().getBoolean("ManualActivity.Mode.HTML", true);
       trace.debug("Manual Activity HTML Mode = " + HTML_BASED);
    }
 
