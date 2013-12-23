@@ -2654,8 +2654,10 @@ define(
 						if (symbol == this.symbol) {
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
 								this.dragConnection.fromAnchorPoint = anchorPoint;
+								this.dragConnection.originalFromAnchorPoint = null;
 							} else {
 								this.dragConnection.toAnchorPoint = anchorPoint;
+								this.dragConnection.originalToAnchorPoint = null;
 							}
 						} else {
 							var newConnection = null;
