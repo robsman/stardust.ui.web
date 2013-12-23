@@ -547,12 +547,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}", class: "panel-image"}});
 
-			/*if (isReadonly(path)) {
-				docLink.attributes["disabled"] = true;
-				docLink.attributes["class"] = "disabled";
-			} 
-			 */			
-			
+			docLink.attributes["ng-disabled"] = "isDocumentLinkDisabled('" + path.fullXPath + "', " + isReadonly(path) + ")";
+			docLink.attributes["ng-class"] = "getDocumentLinkClass('" + path.fullXPath + "', " + isReadonly(path) + ")";
+				
 			if(!isReadonly(path)){
 				var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
 				docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";

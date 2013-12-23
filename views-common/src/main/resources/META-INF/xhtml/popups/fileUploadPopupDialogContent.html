@@ -60,19 +60,18 @@
 			id="fileUploadFormLabel"> Select file for Upload </span>
 		<div class="iPopupDialogSpacerDiv"></div>
 		<form id="fileUploadForm" method="post" enctype="multipart/form-data"
-			style="width: 80%">
+			style="width: 100%">
 			<input type="file" size="35" name="upload"
 				class="iPopupDialogControlButton"> <input id="uploadButton"
-				type="submit" value="Upload" class="iPopupDialogControlButton" />
+				type="submit" value="Upload" class="iPopupDialogControlButton" /> <span
+				id="confirmationMessage" style="color: green; margin: 10px"
+				class="iPopupDialogContentText"></span>
 		</form>
 		<div id="fileUploadprogress">
 			<div id="progressBar">
 				<div id="fileUploadPercent" class="iPopupDialogContentText">0%</div>
 			</div>
 		</div>
-
-		<div id="confirmationMessage" style="color: green; margin: 10px"
-			class="iPopupDialogContentText"></div>
 
 		<div class="panelHeader" style="width: 200px; height: 5px"></div>
 

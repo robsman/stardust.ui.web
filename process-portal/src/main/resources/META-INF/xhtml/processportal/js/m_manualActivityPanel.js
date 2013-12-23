@@ -84,6 +84,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.closeNestedList = closeNestedList;
 				$scope.showNestedList = showNestedList;
 				$scope.deleteDocument = deleteDocument;
+				$scope.isDocumentLinkDisabled = isDocumentLinkDisabled;
+				$scope.getDocumentLinkClass = getDocumentLinkClass;	 
 			});
 		};
 
@@ -712,7 +714,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * @param xPath
 		 * @author Yogesh.Manware
 		 */
-		function openDocument(xPath, documentPathLabel, readonly) {
+		function openDocument(xPath, documentPathLabel, readOnly) {
 			var $scope = angular.element(document).scope();
 			var parts = xPath.substring(1).split("/");
 			
@@ -723,7 +725,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			
 			if (!currentBindings[lastPart] || !currentBindings[lastPart].docId) {
 				//Document is not set
-				if (!readonly && parent.iPopupDialog) {
+				if (!readOnly && parent.iPopupDialog) {
 					parent.iPopupDialog.openPopup({
 						attributes : {
 							width : "50%",
@@ -749,7 +751,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								});
 								
 								if(fileUploadData.openDocument){
-									openDocumentViewer(currentBindings[lastPart]);
+									openDocumentViewer(currentBindings[lastPart], false);
 								}
 							}
 						}
@@ -774,7 +776,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					alert("Failure while getting data");
 				}});
 				
-				openDocumentViewer(currentBindings[lastPart]);
+				openDocumentViewer(currentBindings[lastPart], readOnly);
 			}
 		}
 		
@@ -782,7 +784,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * open document view using parent.postmessage
 		 *  
 		 */
-		function openDocumentViewer(fileDetails){
+		function openDocumentViewer(fileDetails, readOnly){
 			var msg = {};
 			msg.type = "OpenView";
 			msg.data = {};
@@ -799,6 +801,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			msg.data.params.dataId = fileDetails.dataId;
 			//msg.data.params.docTypeId = fileDetails.docTypeId;
 			msg.data.params.disableAutoDownload = false;
+			
+			if(msg.data.params){
+				msg.data.params.disableSaveAction = readOnly;	
+			}
 			
 			//Form data, post it to server only if it is not jcr document
 			if (fileDetails.params) {
@@ -1009,6 +1015,39 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 		}
 		
+		/**
+		 * 
+		 * @param xPath
+		 * @param readOnly
+		 * @returns {String}
+		 */
+		function getDocumentLinkClass(xPath, readOnly){
+			if(isDocumentLinkDisabled(xPath, readOnly)){
+				return "disabled";
+			}
+			return "";
+		}
+		
+		/**
+		 * 
+		 * @param xPath
+		 * @param readOnly
+		 * @returns {Boolean}
+		 */
+		function isDocumentLinkDisabled(xPath, readOnly){
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			
+			var currentBindings = $scope[BINDING_PREFIX];
+			var lastPart = parts[parts.length - 1];
+			
+			if(readOnly){
+				if(!currentBindings[lastPart].docId){
+					return true;	
+				}
+			}
+			return false;
+		}
 		/*
 		 * 
 		 */
