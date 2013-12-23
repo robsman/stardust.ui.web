@@ -162,6 +162,7 @@ if (!window.bpm.portal.GenericController) {
 		};
 
 		/*
+		 * Blank out empty primitives, so that on UI it won't show [object object]
 		 * 
 		 */
 		function processTransferObject(obj) {
@@ -424,30 +425,44 @@ if (!window.bpm.portal.GenericController) {
 							});
 
 			// Date Picker
-
 			this.angularModule.directive('sdDate', function($parse) {
-				return function(scope, element, attrs, controller) {
-					var ngModel = $parse(attrs.ngModel);
-					$(function() {
-						element.datepicker({
-							inline : true,
-							dateFormat : 'yy-mm-dd',
-							onSelect : function(dateText, inst) {
-								scope.$apply(function(scope) {
-									// Change binded variable
-									ngModel.assign(scope, dateText);
-									self
-											.postSingle(attrs.ngModel
-													.split(".")[0]);
-								});
-							}
+				return {
+					require : 'ngModel',
+					link : function(scope, element, attrs, controller) {
+						var ngModel = $parse(attrs.ngModel);
+						$(function() {
+							element.datepicker({
+								inline : true,
+								dateFormat : 'yy-mm-dd',
+								onSelect : function(dateText, inst) {
+									scope.$apply(function(scope) {
+										// Change binded variable
+										ngModel.assign(scope, dateText);
+										self
+												.postSingle(attrs.ngModel
+														.split(".")[0]);
+									});
+								}
+							});
 						});
-					});
+						
+						controller.$formatters.unshift(function(viewValue) {
+							// Strip off Time Part
+							// TODO: Support Time
+							if (viewValue && viewValue != null && viewValue != "") {
+								var dateParts = getPrimitiveValue(viewValue).split("T");
+								if (dateParts.length >= 1) {
+									viewValue = dateParts[0];
+								}
+							}
+							
+							return viewValue;
+						});
+					}
 				};
 			});
 
 			// Data Table
-
 			this.angularModule.directive('dataTable', function() {
 				return function(scope, element, attrs) {
 					console.log("Initialize data table");
@@ -477,6 +492,16 @@ if (!window.bpm.portal.GenericController) {
 			});
 		};
 
+		/*
+		 * 
+		 */
+		function getPrimitiveValue(value) {
+			if (typeof value == "object" && value.toString) {
+				return value.toString();
+			}
+			return value;
+		}
+		
 		/**
 		 * Bind all fields of GenericController to Angular scope.
 		 */
@@ -671,9 +696,15 @@ if (!window.bpm.portal.GenericController) {
 
 			this.interaction.transfer = {};
 
-			// Need a deep copy in order to be able to remove internal variables
-
-			this.interaction.transfer[key] = jQuery.extend(true, {}, this[key]);
+			var toPost;
+			if (isPrimitive(this[key])) {
+				toPost = this[key];
+			} else {
+				// Need a deep copy in order to be able to remove internal variables
+				toPost = jQuery.extend(true, {}, this[key]);
+			}
+				
+			this.interaction.transfer[key] = toPost;
 
 			// Cleanup internal ($) variables
 
