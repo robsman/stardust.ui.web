@@ -68,15 +68,13 @@
 								</ice:panelGroup>
 								<ice:panelGroup>
 									<ice:outputText
-										value="#{bpmModelerMessages['uploadmodelfile.message.uploadFileName']}" />
-									<ice:panelGroup />
+										value="#{bpmModelerMessages['uploadmodelfile.message.uploadFileName']} #{modelFileUploadDialog.uploadedFileName}" />									
 									<ice:outputText
 										value="#{bpmModelerMessages['uploadmodelfile.message.exists']}" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:outputText
-										value="#{bpmModelerMessages['uploadmodelfile.message.continue']}" />
-									<ice:panelGroup />
+										value="#{bpmModelerMessages['uploadmodelfile.message.continue']}" />									
 									<ice:outputText
 										value="#{bpmModelerMessages['uploadmodelfile.message.existingProcessModel']}" />
 									<ice:panelGroup styleClass="clearing" />
