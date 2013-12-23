@@ -160,7 +160,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var elemTBodyTr = htmlElement.create("tr", {parent: elemTBody});
 			
 			elemTBodyTr.attributes["ng-class"] = "{'panel-list-tbl-row-sel': " 
-				+ loopVar + ".$$selected, 'panel-list-tbl-row': !" + loopVar + ".$$selected}";
+				+ loopVar + ".$$selected, 'panel-list-tbl-row1': ($index % 2 == 0), 'panel-list-tbl-row2': ($index % 2 != 0) }";
 			elemTBodyTr.attributes["ng-repeat"] = loopVar + " in " + listBinding;
 			var innerForm = "innerForm"
 			elemTBodyTr.attributes["ng-form"] = innerForm;

@@ -85,12 +85,21 @@ body, table {
 	text-align: center;
 }
 
-.panel-list-tbl-row {
+.panel-list-tbl-row1, .panel-list-tbl-row2 {
 	border-left: 1px solid #D9D9D9;
 }
 
+.panel-list-tbl-row1 {
+	background-color: #FFFFFF;
+}
+
+.panel-list-tbl-row2 {
+	background-color: #F7F7F7;
+}
+
 .panel-list-tbl-row-sel {
-	background-color: #EEEEEE;
+	/*background-color: #FFFFCA;*/
+	background: #FFFFE0 url("../../common/css/css-images/row-selected.png") bottom repeat-x;
 }
 
 .panel-list-tbl-cell {
