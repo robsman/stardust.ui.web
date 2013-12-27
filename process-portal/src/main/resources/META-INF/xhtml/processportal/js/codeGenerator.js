@@ -128,14 +128,14 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 				elemAddButton.attributes["href"] = "";
-				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", " + path.isPrimitive + ")";
+				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", '" + path.fullXPath + "')";
 				htmlElement.create("img", {parent: elemAddButton, 
 					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png", class: "panel-image"}});
 				
 				var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
 						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
 				elemRemoveButton.attributes["href"] = "";
-				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
+				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ", '" + path.fullXPath + "')";
 				htmlElement.create("img", {parent: elemRemoveButton, 
 					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png", class: "panel-image"}});
 			}

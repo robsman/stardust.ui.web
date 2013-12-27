@@ -353,7 +353,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				if (binding != undefined) {
 					if (arrPaths[key].isList) {
 						if (binding.length == 0) {
-							binding.push(arrPaths[key].isPrimitive ? {$value: ""} : {});
+							addToList(binding, arrPaths[key].fullXPath);
 						} else {
 							for(var k in binding) {
 								if (arrPaths[key].children) {
@@ -546,9 +546,18 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function addToList(list, primitive) {
-			if (list != undefined) {
-				list.push(primitive ? {$value: ""} : {});
+		function addToList(list, xPath) {
+			var path = getPath(xPath);
+			if (path != null && list != undefined) {
+				if (path.isPrimitive) {
+					var defValue = "";
+					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
+						defValue = false;
+					}
+					list.push({$value: defValue});
+				} else {
+					list.push({});
+				}
 			}
 		}
 
@@ -565,17 +574,16 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 			}
 		}
-		
-		
 
 		/*
 		 * 
 		 */
-		function removeFromList(list) {
-			if (list) {
+		function removeFromList(list, xPath) {
+			var path = getPath(xPath);
+			if (path != null && list != undefined) {
 				removeSelectedElements(list);
 				if (list.length == 0) {
-					list.push({});
+					addToList(list, xPath);
 				}
 			}
 		}
