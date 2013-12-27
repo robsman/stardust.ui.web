@@ -157,9 +157,17 @@ public class ManualActivityRestlet
          JsonObject errors = new JsonObject();
          ret.add("errors", errors);
 
+         String msg;
          for (Entry<String, Throwable> entry : e.getErrors().entrySet())
          {
-            errors.add(entry.getKey(), new JsonPrimitive(entry.getValue().getMessage()));
+            trace.error(entry.getKey(), entry.getValue());
+
+            msg = entry.getValue().getMessage();
+            if (null == msg)
+            {
+               msg = entry.getValue().toString();
+            }
+            errors.add(entry.getKey(), new JsonPrimitive(msg));
          }
       }
       
