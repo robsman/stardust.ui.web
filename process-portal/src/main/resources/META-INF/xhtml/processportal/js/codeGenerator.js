@@ -189,7 +189,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					}
 
 					// Table Body
-					if (child.isPrimitive) {
+					if (child.isPrimitive && !child.isList) {
 						var loopNgModel = preferences.ngModelSepAsDot ? (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
 						var elemPrimitive = generatePriEnum(null, child, 
 								{noLabel: true, ngModel: loopNgModel, ngFormName: innerForm});

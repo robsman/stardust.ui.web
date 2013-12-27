@@ -341,75 +341,41 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function marshalInData(data) {
-			marshalForLists(dataMappings, data);
-			marshalForPrimitives(dataMappings, data);
+			marshalRecursively(dataMappings, data);
 		}
 		
 		/*
 		 * 
 		 */
-		function marshalForLists(arrPaths, data) {
+		function marshalRecursively(arrPaths, data, parentXPath) {
 			for (var key in arrPaths) {
-				if (arrPaths[key].isList) {
-					var currentBinding = getBinding(arrPaths[key], data, true);
-					if (currentBinding) {
-						if (currentBinding.length == 0) {
-							currentBinding.push(arrPaths[key].isPrimitive ? {$value: ""} : {});
+				var binding = getBinding(arrPaths[key], data, parentXPath, true);
+				if (binding != undefined) {
+					if (arrPaths[key].isList) {
+						if (binding.length == 0) {
+							binding.push(arrPaths[key].isPrimitive ? {$value: ""} : {});
 						} else {
-							if (arrPaths[key].children) {
-								marshalForLists(arrPaths[key].children, data);
-							} else {
-								for(var k in currentBinding) {
-									currentBinding[k] = {$value: currentBinding[k]};
-									
-									if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" ||
-											arrPaths[key].typeName == "dateTime" || 
-											arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
-										if (!isReadonly(arrPaths[key])) {
-											marshalDateTimesValue(arrPaths[key], currentBinding[k], "$value");
-										}
+							for(var k in binding) {
+								if (arrPaths[key].children) {
+									marshalRecursively(arrPaths[key].children, binding[k], arrPaths[key].fullXPath);
+								} else {
+									binding[k] = {$value: binding[k]};
+									if (isDatePath(arrPaths[key])) {
+										marshalDateTimesValue(arrPaths[key], binding[k], "$value");
 									}
 								}
 							}
 						}
-					}
-				} else if (arrPaths[key].children) {
-					marshalForLists(arrPaths[key].children, data);
-				}
-			}
-		}
-
-		/*
-		 * 
-		 */
-		function marshalForPrimitives(arrPaths, data) {
-			for (var key in arrPaths) {
-				if (arrPaths[key].isPrimitive) {
-					if (arrPaths[key].typeName == "duration") {
-						var bindingInfo = getBinding(arrPaths[key], data);
-						var currentBinding = bindingInfo.binding;
-						var lastPart = bindingInfo.lastPart;
-						if (currentBinding && currentBinding[lastPart] && 
-								null != currentBinding[lastPart] && "" != currentBinding[lastPart]) {
-							try {
-								// Remove Trailing Zeros
-								var periods = currentBinding[lastPart].split(":");
-								var value = "";
-								for(var j = 0; j < periods.length; j++) {
-									value += (parseInt(periods[j])) + ":";
-								}
-								currentBinding[lastPart] = value.substring(0, value.length - 1);
-							} catch(e) {
-								// TODO
-							}
+					} else if (arrPaths[key].isPrimitive) {
+						var bindingInfo = getBinding(arrPaths[key], data, parentXPath);
+						if (arrPaths[key].typeName == "duration") {
+							marshalDurationValue(bindingInfo.binding, bindingInfo.lastPart);
+						} else if (isDatePath(arrPaths[key])) {
+							marshalDateTimesValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
 						}
-					} else if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" || 
-							arrPaths[key].typeName == "dateTime" || arrPaths[key].typeName == "java.util.Calendar" || 
-							arrPaths[key].typeName == "time") {
-						marshalDateTimes(arrPaths[key], data);
-					}
-				} else if (arrPaths[key].children) {
-					marshalForPrimitives(arrPaths[key].children, data);
+					} else if (arrPaths[key].children) {
+						marshalRecursively(arrPaths[key].children, binding, arrPaths[key].fullXPath);
+					} 
 				}
 			}
 		}
@@ -417,25 +383,37 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function marshalDateTimes(path, data) {
-			if (isReadonly(path) || path.isList) {
-				return;
+		function marshalDurationValue(binding, lastPart) {
+			if (binding && binding[lastPart] && 
+					null != binding[lastPart] && "" != binding[lastPart]) {
+				try {
+					// Remove Trailing Zeros
+					var periods = binding[lastPart].split(":");
+					var value = "";
+					for(var j = 0; j < periods.length; j++) {
+						value += (parseInt(periods[j])) + ":";
+					}
+					binding[lastPart] = value.substring(0, value.length - 1);
+				} catch(e) {
+					// TODO
+				}
 			}
-
-			var bindingInfo = getBinding(path, data);
-			marshalDateTimesValue(path, bindingInfo.binding, bindingInfo.lastPart);
 		}
 
 		/*
 		 * 
 		 */
 		function marshalDateTimesValue(path, binding, lastPart) {
+			if (isReadonly(path)) {
+				return;
+			}
+
 			if (binding) {
 				var haveTime = path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time";
 				
 				var value = binding[lastPart];
-				var datePart;
-				var timePart;
+				var datePart = "";
+				var timePart = "";
 				if (value) {
 					try {
 						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
@@ -450,6 +428,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						log(e);
 					}
 				}
+
 				binding[lastPart] = datePart;
 				if (haveTime) {
 					binding[lastPart + "_timePart"] = timePart;
@@ -461,38 +440,38 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function unmarshalOutData(data) {
-			unmarshalForLists(dataMappings, data);
-			unmarshalForPrimitives(dataMappings, data);
+			unmarshalRecursively(dataMappings, data);
 			removeInternalVariables(data);
 		}
 
 		/*
 		 * 
 		 */
-		function unmarshalForLists(arrPaths, data) {
+		function unmarshalRecursively(arrPaths, data, parentXPath) {
 			for (var key in arrPaths) {
-				if (arrPaths[key].isList) {
-					var currentBinding = getBinding(arrPaths[key], data, true);
-					if (currentBinding) {
-						if (currentBinding.length > 0) {
-							if (arrPaths[key].children) {
-								unmarshalForLists(arrPaths[key].children, data);
-							} else {
-								for(var k in currentBinding) {
-									if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" ||
-											arrPaths[key].typeName == "dateTime" || 
-											arrPaths[key].typeName == "java.util.Calendar" || arrPaths[key].typeName == "time") {
-										if (!isReadonly(arrPaths[key])) {
-											unmarshalDateTimesValue(currentBinding[k], "$value");
-										}
+				var binding = getBinding(arrPaths[key], data, parentXPath, true);
+				if (binding != undefined) {
+					if (arrPaths[key].isList) {
+						if (binding.length > 0) {
+							for(var k in binding) {
+								if (arrPaths[key].children) {
+									unmarshalRecursively(arrPaths[key].children, binding[k], arrPaths[key].fullXPath);
+								} else {
+									if (isDatePath(arrPaths[key])) {
+										unmarshalDateTimesValue(arrPaths[key], binding[k], "$value");
 									}
-									currentBinding[k] = currentBinding[k].$value;
+									binding[k] = binding[k].$value;
 								}
 							}
 						}
+					} else if (arrPaths[key].isPrimitive) {
+						var bindingInfo = getBinding(arrPaths[key], data, parentXPath);
+						if (isDatePath(arrPaths[key])) {
+							unmarshalDateTimesValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
+						}
+					} else if (arrPaths[key].children) {
+						unmarshalRecursively(arrPaths[key].children, binding, arrPaths[key].fullXPath);
 					}
-				} else if (arrPaths[key].children) {
-					unmarshalForLists(arrPaths[key].children, data);
 				}
 			}
 		}
@@ -500,43 +479,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function unmarshalForPrimitives(arrPaths, data) {
-			for (var key in arrPaths) {
-				if (isReadonly(arrPaths[key])) {
-					continue;
-				}
-
-				if (arrPaths[key].isPrimitive) {
-					if (arrPaths[key].typeName == "date" || arrPaths[key].typeName == "java.util.Date" || 
-							arrPaths[key].typeName == "dateTime" || arrPaths[key].typeName == "java.util.Calendar" || 
-							arrPaths[key].typeName == "time") {
-						unmarshalDateTimes(arrPaths[key], data);
-					}
-				} else if (arrPaths[key].children) {
-					unmarshalForPrimitives(arrPaths[key].children, data);
-				}
-			}
-		}
-
-		/*
-		 * 
-		 */
-		function unmarshalDateTimes(path, data) {
-			if (path.isList) {
+		function unmarshalDateTimesValue(path, binding, lastPart) {
+			if (isReadonly(path)) {
 				return;
 			}
 
-			if (path.typeName == "dateTime" || 
-					path.typeName == "java.util.Calendar" || path.typeName == "time") {
-				var bindingInfo = getBinding(path, data);
-				unmarshalDateTimesValue(bindingInfo.binding, bindingInfo.lastPart);
+			if (path.typeName == "date" ||  path.typeName == "java.util.Date") {
+				return;
 			}
-		}
 
-		/*
-		 * 
-		 */
-		function unmarshalDateTimesValue(binding, lastPart) {
 			if (binding) {
 				var dateValue = binding[lastPart];
 				var timeValue = binding[lastPart + "_timePart"];
@@ -559,6 +510,18 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 		}
 
+		/*
+		 * 
+		 */
+		function isDatePath(path) {
+			if (path.typeName == "date" || path.typeName == "java.util.Date" || 
+					path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || 
+					path.typeName == "time") {
+				return true;
+			}
+			return false;
+		}
+		
 		/*
 		 * 
 		 */
@@ -1079,10 +1042,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		/*
 		 * 
 		 */
-		function getBinding(path, data, upToLastLevel) {
+		function getBinding(path, data, ignoreXPath, upToLastLevel) {
 			var ret;
 
-			var parts = path.fullXPath.substring(1).split("/");
+			var xPath = path.fullXPath;
+			if(ignoreXPath && xPath.indexOf(ignoreXPath) == 0) {
+				xPath = xPath.substring(ignoreXPath.length);
+			}
+
+			var parts = xPath.substring(1).split("/");
 			var lastPart = parts[parts.length - 1];
 			var currentBinding = data;
 			for(var i = 0; i < parts.length - 1; i++) {
