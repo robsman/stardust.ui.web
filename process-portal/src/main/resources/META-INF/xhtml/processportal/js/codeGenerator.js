@@ -737,7 +737,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			if ((label == undefined || label == null || label == "") && ("string" != typeof (val))) {
-				label = convertToLabel(val.id);
+				if (val.name != undefined && val.name != null && val.name != "" && val.name != val.id) {
+					label = val.name;
+				} else {
+					label = convertToLabel(val.id);
+				}
 			}
 
 			if ((label == null || label == "") && defaultValue != undefined) {

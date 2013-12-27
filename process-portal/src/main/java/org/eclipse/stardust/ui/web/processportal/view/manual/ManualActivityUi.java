@@ -120,6 +120,7 @@ public class ManualActivityUi
 
          if (null != path)
          {
+            path.setName(dataMapping.getName());
             manualActivityPath.getChildPaths().add(path);
          }
          else
