@@ -784,10 +784,13 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
                JsonObject modelElem = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
                // ModelElement Id for dataFlow is DataId, which duplicates in case of
                // IN-OUT mapping for data, using DATA MAPPING OID
-               connectionsJson.add(
-                     extractInt(
-                           connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-                           ModelerConstants.OID_PROPERTY).toString(), connectionJson);
+               if (null != modelElem && modelElem.has(ModelerConstants.OID_PROPERTY))
+               {
+                  connectionsJson.add(
+                        extractInt(
+                              connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                              ModelerConstants.OID_PROPERTY).toString(), connectionJson);
+               }
             }
          }
 
