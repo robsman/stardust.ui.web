@@ -118,35 +118,27 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			htmlElement.create("div", {parent: elemMain, value: getI18NLabel(path), attributes: {class: "panel-header"}});
 
 			// Toolbar
-			var elemToolbar = htmlElement.create("div", {parent: elemMain, attributes: {class: "panel-list-toolbar"}});
-			var elemToolbarTrTbl = htmlElement.create("table", 
-					{parent: elemToolbar, attributes: {class: "panel-list-toolbar-tbl", cellpadding: 0, cellspacing: 0}});
-			var elemToolbarTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", 
-					{parent: elemToolbarTrTbl}), attributes: {class: "panel-list-toolbar-tbl-row"}});
-			
-			var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", 
-					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
-			elemAddButton.attributes["href"] = "";
-			if (isReadonly(path)) {
-				elemAddButton.attributes["disabled"] = true;
-				elemAddButton.attributes["class"] = "disabled";
-			} else {
+			if (!isReadonly(path)) {
+				var elemToolbar = htmlElement.create("div", {parent: elemMain, attributes: {class: "panel-list-toolbar"}});
+				var elemToolbarTrTbl = htmlElement.create("table", 
+						{parent: elemToolbar, attributes: {class: "panel-list-toolbar-tbl", cellpadding: 0, cellspacing: 0}});
+				var elemToolbarTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", 
+						{parent: elemToolbarTrTbl}), attributes: {class: "panel-list-toolbar-tbl-row"}});
+				
+				var elemAddButton = htmlElement.create("a", {parent: htmlElement.create("td", 
+						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
+				elemAddButton.attributes["href"] = "";
 				elemAddButton.attributes["ng-click"] = "addToList(" + listBinding + ", " + path.isPrimitive + ")";
-			}
-			htmlElement.create("img", {parent: elemAddButton, 
-				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png", class: "panel-image"}});
-			
-			var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
-					{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
-			elemRemoveButton.attributes["href"] = "";
-			if (isReadonly(path)) {
-				elemRemoveButton.attributes["disabled"] = true;
-				elemRemoveButton.attributes["class"] = "disabled";
-			} else {
+				htmlElement.create("img", {parent: elemAddButton, 
+					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/add.png", class: "panel-image"}});
+				
+				var elemRemoveButton = htmlElement.create("a", {parent: htmlElement.create("td", 
+						{parent: elemToolbarTr, attributes: {class: "panel-list-toolbar-tbl-cell"}})});
+				elemRemoveButton.attributes["href"] = "";
 				elemRemoveButton.attributes["ng-click"] = "removeFromList(" + listBinding + ")";
+				htmlElement.create("img", {parent: elemRemoveButton, 
+					attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png", class: "panel-image"}});
 			}
-			htmlElement.create("img", {parent: elemRemoveButton, 
-				attributes: {src: preferences.pluginsUrl + "/stardust-ui-form-jsf/public/css/images/delete.png", class: "panel-image"}});
 
 			// Table
 			var elemTbl = htmlElement.create("table", {parent: elemMain, 
