@@ -1005,6 +1005,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				
 				postData(interactionEndpoint, "/outData/" + lastPart, transferData, {success: function(retData) {
 					currentBindings[lastPart].docId = null;
+					currentBindings[lastPart].docName = null;
 					currentBindings[lastPart].docIcon = "../../plugins/views-common/images/icons/page_white_error.png";
 				}, failure: function() {
 					success = false;
