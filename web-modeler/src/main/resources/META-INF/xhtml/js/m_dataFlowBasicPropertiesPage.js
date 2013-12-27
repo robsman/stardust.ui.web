@@ -202,19 +202,12 @@ define(
 										// TODO Usually we push less
 										// information, but current server code
 										// requires this
+										page.getModelElement().inputDataMapping.dataPath = page.inputDataPathInput.val();										
 										page
 												.submitChanges({
 													modelElement : {
-														inputDataMapping : {
-															id : page
-																	.getModelElement().inputDataMapping.id,
-															name : page
-																	.getModelElement().inputDataMapping.name,
-															accessPointId : page
-																	.getModelElement().inputDataMapping.accessPointId,
-															dataPath : page.inputDataPathInput
-																	.val()
-														},
+														inputDataMapping : page
+																.getModelElement().inputDataMapping,
 														outputDataMapping : page
 																.getModelElement().outputDataMapping
 													}
@@ -233,21 +226,14 @@ define(
 										// TODO Usually we push less
 										// information, but current server code
 										// requires this
+										page.getModelElement().outputDataMapping.dataPath = page.outputDataPathInput.val();
 										page
 												.submitChanges({
 													modelElement : {
 														inputDataMapping : page
 																.getModelElement().inputDataMapping,
-														outputDataMapping : {
-															id : page
-																	.getModelElement().outputDataMapping.id,
-															name : page
-																	.getModelElement().outputDataMapping.name,
-															accessPointId : page
-																	.getModelElement().outputDataMapping.accessPointId,
-															dataPath : page.outputDataPathInput
-																	.val()
-														}
+														outputDataMapping : page
+																.getModelElement().outputDataMapping
 													}
 												});
 									});
