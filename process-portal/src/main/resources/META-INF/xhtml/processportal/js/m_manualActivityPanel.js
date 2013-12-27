@@ -352,7 +352,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				var binding = getBinding(arrPaths[key], data, parentXPath, true);
 				if (binding != undefined) {
 					if (arrPaths[key].isList) {
-						if (binding.length == 0) {
+						if (binding.length == 0 && !isReadonly(arrPaths[key])) {
 							addToList(binding, arrPaths[key].fullXPath);
 						} else {
 							for(var k in binding) {
