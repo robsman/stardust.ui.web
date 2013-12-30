@@ -307,7 +307,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					// Handle Date and Time
 					if (preferences.splitDateTimeFields) {
-						if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time") {
+						if (path.typeName == "dateTime" || path.typeName == "java.util.Date" || 
+								path.typeName == "java.util.Calendar" || path.typeName == "time") {
 							if (path.typeName == "time") {
 								elem.attributes['ng-show'] = "false"; // Permonently Hide Date Part
 							} else {
@@ -426,9 +427,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				ret.key = "byte";
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				ret.key = "char";
-			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
+			} else if (path.typeName == "date") {
 				ret.key = "date";
-			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
+			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Date" || path.typeName == "java.util.Calendar") {
 				ret.key = "dateTime";
 			} else if (path.typeName == "time") {
 				ret.key = "time";
@@ -473,10 +474,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				return 3;
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				return 1;
-			} else if (path.typeName == "date" || path.typeName == "java.util.Date") {
+			} else if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
 				return 10;
-			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
-				return 19;
 			} else if (path.typeName == "time") {
 				return 8;
 			} else if (path.typeName == "duration") {
@@ -498,9 +497,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function getCustomFilter(path) {
-			if (path.typeName == "date" || path.typeName == "java.util.Date") {
+			if (path.typeName == "date") {
 				return "sdFilterDate";
-			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
+			} else if (path.typeName == "dateTime" || path.typeName == "java.util.Date" || path.typeName == "java.util.Calendar") {
 				return "sdFilterDateTime";
 			} else if (path.typeName == "time") {
 				return "sdFilterTime";

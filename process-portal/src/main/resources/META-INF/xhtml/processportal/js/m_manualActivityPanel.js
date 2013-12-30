@@ -418,7 +418,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 
 			if (binding) {
-				var haveTime = path.typeName == "dateTime" || path.typeName == "java.util.Calendar" || path.typeName == "time";
+				var haveTime = path.typeName == "dateTime" || path.typeName == "java.util.Date" 
+					|| path.typeName == "java.util.Calendar" || path.typeName == "time";
 				
 				var value = binding[lastPart];
 				var datePart = "";
@@ -493,7 +494,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				return;
 			}
 
-			if (path.typeName == "date" ||  path.typeName == "java.util.Date") {
+			if (path.typeName == "date") {
 				return;
 			}
 
