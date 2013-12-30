@@ -373,6 +373,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						} else if (isDatePath(arrPaths[key])) {
 							marshalDateTimesValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
 						}
+
+						if (arrPaths[key].isEnum) {
+							if (binding == null || binding == "") {
+								// Defaulting Enum Value to 1st in List
+								if (arrPaths[key].enumValues && arrPaths[key].enumValues.length >= 1) {
+									bindingInfo.binding[bindingInfo.lastPart] = arrPaths[key].enumValues[0];
+								}
+							}
+						}
 					} else if (arrPaths[key].children) {
 						marshalRecursively(arrPaths[key].children, binding, arrPaths[key].fullXPath);
 					} 
