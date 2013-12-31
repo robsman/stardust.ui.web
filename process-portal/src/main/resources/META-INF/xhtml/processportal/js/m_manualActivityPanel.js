@@ -514,7 +514,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				}
 
 				binding[lastPart] = value;
-				if (binding[lastPart + "_timePart"]) {
+				if (binding[lastPart + "_timePart"] != undefined) {
 					delete binding[lastPart + "_timePart"];
 				}
 			}
