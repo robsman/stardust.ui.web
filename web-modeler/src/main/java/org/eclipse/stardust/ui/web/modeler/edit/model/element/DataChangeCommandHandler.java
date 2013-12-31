@@ -232,10 +232,20 @@ public class DataChangeCommandHandler
       {
          dataFullID = model.getId() + ":";
       }
-
-      DataType data = getModelBuilderFacade().createStructuredData(model, null, name,
-            dataFullID);
-
+      DataType data = null;
+      TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(dataFullID);
+      // For Java bound ENUM's create primitive else structured Data
+      if (getModelBuilderFacade().isEnumerationJavaBound(typeDeclaration))
+      {
+         data = getModelBuilderFacade().createPrimitiveData(model, null, name, ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE);
+         getModelBuilderFacade().updateTypeForPrimitive(data, dataFullID);
+      }
+      else
+      {
+         data = getModelBuilderFacade().createStructuredData(model, null, name,
+               dataFullID);   
+      }
+      
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
