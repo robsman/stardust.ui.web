@@ -184,35 +184,35 @@ public class ManualActivityRestlet
    {
       Interaction interaction = getInteraction();
 
-      JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
+      JsonObject jsonElem = (JsonObject) new JsonParser().parse(json);
 
       JsonObject ret = new JsonObject();
 
       try
       {
-      Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-            interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
-   
-      // This will have only one value, so loop will execute once only
-      for (Entry<String, Serializable> entry : data.entrySet())
-      {
-         if(null == interaction.getOutDataValues())
+         Map<String, Object> jsonData = new JsonHelper().toObject(jsonElem);
+
+         for (Entry<String, Object> entry : jsonData.entrySet())
          {
-            interaction.setOutDataValues(new HashMap<String, Serializable>());
+            if (null == interaction.getOutDataValues())
+            {
+               interaction.setOutDataValues(new HashMap<String, Serializable>());
+            }
+
+            interaction.getOutDataValues().put(entry.getKey(), (Serializable) entry.getValue());
          }
-         
-         interaction.getOutDataValues().put(entry.getKey(), entry.getValue());
       }
-   }
-      catch (DataException e)
+      catch (Exception e)
       {
          JsonObject errors = new JsonObject();
          ret.add("errors", errors);
 
-         for (Entry<String, Throwable> entry : e.getErrors().entrySet())
+         String msg = e.getMessage();
+         if (null == msg)
          {
-            errors.add(entry.getKey(), new JsonPrimitive(entry.getValue().getMessage()));
+            msg = e.toString();
          }
+         errors.add("", new JsonPrimitive(msg));
       }
 
       return Response.ok(ret.toString(), MediaType.APPLICATION_JSON_TYPE).build();
