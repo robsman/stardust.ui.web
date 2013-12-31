@@ -142,33 +142,35 @@ public class ManualActivityRestlet
    {
       Interaction interaction = getInteraction();
 
-      JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
-
       JsonObject ret = new JsonObject();
 
       try
       {
-         Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
-               interaction.getDefinition(), new JsonHelper().toObject(jsonElem), getInteraction(), servletContext);
+         JsonObject jsonElem = (JsonObject)new JsonParser().parse(json);
+         Map<String, Object> jsonData = new JsonHelper().toObject(jsonElem);
+
+         Map<String, Serializable> data = new HashMap<String, Serializable>();
+         for (Entry<String, Object> entry : jsonData.entrySet())
+         {
+            if (entry.getValue() instanceof Serializable || entry.getValue() == null)
+            {
+               data.put(entry.getKey(), (Serializable)entry.getValue());
+            }
+         }
+
          interaction.setOutDataValues(data);
       }
-      catch (DataException e)
+      catch (Exception e)
       {
          JsonObject errors = new JsonObject();
          ret.add("errors", errors);
 
-         String msg;
-         for (Entry<String, Throwable> entry : e.getErrors().entrySet())
+         String msg = e.getMessage();
+         if (null == msg)
          {
-            trace.error(entry.getKey(), entry.getValue());
-
-            msg = entry.getValue().getMessage();
-            if (null == msg)
-            {
-               msg = entry.getValue().toString();
-            }
-            errors.add(entry.getKey(), new JsonPrimitive(msg));
+            msg = e.toString();
          }
+         errors.add("", new JsonPrimitive(msg));
       }
       
       return Response.ok(ret.toString(), MediaType.APPLICATION_JSON_TYPE).build();

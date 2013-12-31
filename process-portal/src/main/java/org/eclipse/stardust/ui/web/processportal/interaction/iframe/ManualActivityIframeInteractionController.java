@@ -17,6 +17,7 @@ import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.Ifram
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -33,9 +34,12 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
+import org.eclipse.stardust.ui.web.processportal.service.rest.DataException;
+import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils;
 import org.eclipse.stardust.ui.web.processportal.view.ActivityPanelConfigurationBean;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
@@ -118,6 +122,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#closePanel(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario)
     */
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -133,7 +138,38 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          if ((null != interaction) && (Interaction.Status.Complete == interaction.getStatus()))
          {
             // out data mapping was already performed
-            return true;
+            // Now validate data
+            try
+            {
+               if (null != interaction.getOutDataValues())
+               {
+                  Map<String, Serializable> data = InteractionDataUtils.unmarshalData(interaction.getModel(),
+                        interaction.getDefinition(), (Map)interaction.getOutDataValues(), interaction, null);
+                  interaction.setOutDataValues(data);
+               }
+               return true;
+            }
+            catch (DataException e)
+            {
+               interaction.setStatus(Interaction.Status.Active);
+
+               StringBuilder errors = new StringBuilder();
+               String msg;
+               for (Entry<String, Throwable> entry : e.getErrors().entrySet())
+               {
+                  trace.error(entry.getKey(), entry.getValue());
+
+                  msg = entry.getValue().getMessage();
+                  if (null == msg)
+                  {
+                     msg = entry.getValue().toString();
+                  }
+                  errors.append(entry.getKey()).append(" : ").append(msg).append("\n");
+               }
+               
+               MessageDialog.addErrorMessage(errors.toString());
+               return false;
+            }
          }
 
          JavascriptContext.addJavascriptCall(facesContext,
