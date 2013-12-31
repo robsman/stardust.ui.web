@@ -17,8 +17,10 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -304,7 +306,15 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                   Object value = interaction.getInDataValues().get(paramId);
                   if (null != value)
                   {
-                     sb.append("&").append(paramId).append("=").append(value);
+                     try
+                     {
+                        value = URLEncoder.encode(value.toString(), "UTF-8");
+                        sb.append("&").append(paramId).append("=").append(value);
+                     }
+                     catch(UnsupportedEncodingException ex)
+                     {
+                        trace.warn("Unable to Encode Primitive Value " + value + " for " + paramId + " hence skipped.");
+                     }
                   }
                }
             }
