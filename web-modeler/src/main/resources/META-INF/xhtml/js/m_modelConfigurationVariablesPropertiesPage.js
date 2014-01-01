@@ -194,7 +194,7 @@ define(
 										m_utils
 												.debug(event.data.page.currentConfigurationVariable);
 										m_utils.debug(deleteOptions);
-										event.data.page.submitDeleteCommand(deleteOptions,event);
+										event.data.page.submitDeleteCommand(self.deleteConfigurationVariableDialog, deleteOptions,event);
 									});
 				};
 
@@ -202,7 +202,7 @@ define(
 				 * 
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.submitDeleteCommand = function(
-						deleteOptions, event) {
+						configVariableDlg, deleteOptions, event) {
 					var changes = {
 						variableName : event.data.page.currentConfigurationVariable.name,
 						deleteOptions : deleteOptions
@@ -218,7 +218,7 @@ define(
 					});
 
 					deleteStatus.done(function() {
-						jQuery(this.deleteConfigurationVariableDialog).dialog("close");
+						jQuery(configVariableDlg).dialog("close");
 					});
 
 				};
@@ -296,7 +296,7 @@ define(
 													mode : "emptyLiteral"
 												};
 												
-											event.data.page.submitDeleteCommand(deleteOptions,event);
+											event.data.page.submitDeleteCommand(self.deleteConfigurationVariableDialog, deleteOptions,event);
 											}
 											
 										});
