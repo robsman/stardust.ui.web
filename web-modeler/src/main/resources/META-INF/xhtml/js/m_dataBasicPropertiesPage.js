@@ -266,13 +266,13 @@ define(
 								}
 							}else {
 									if(self.dataTypeSelector.isEnumTypeDeclaration(primitiveDataTypeSelect.val())){
-									if(defaultValue!=null)
+									if(defaultValue!=null){
 										self.enumInputSelect.val(defaultValue);
+									}else{
+										self.submitModelElementAttributeChange("carnot:engine:defaultValue", self.enumInputSelect.val());											
+									}
 									$scope.enumDataType = true;
 									if(structEnum){
-										if(!defaultValue){
-											self.submitModelElementAttributeChange("carnot:engine:defaultValue", self.enumInputSelect.val());											
-										}
 										self.enumInputSelect.attr("disabled","disabled");
 									}else{
 										self.enumInputSelect.removeAttr("disabled");

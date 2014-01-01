@@ -345,7 +345,7 @@ define(
 										self.enumInputSelect.val(defaultValue);	
 									}
 									$scope.enumDataType = true;
-									if(!defaultValue && structEnum){
+									if(!defaultValue){
 										self.submitModelElementAttributeChange("carnot:engine:defaultValue", self.enumInputSelect.val());
 									}
 									$scope.structEnum = structEnum;
