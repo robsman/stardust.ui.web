@@ -146,6 +146,81 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				};
 			});
 
+			angularModule.directive('sdValidate', function() {
+				return {
+					require : 'ngModel',
+					link : function(scope, elm, attr, ctrl) {
+						var validate = attr.sdValidate;
+						if (validate) {
+							var validatorFunc = function(value, toUI) {
+								var success = false;
+								var val;
+								
+								if (value == undefined || value == null || value == "") {
+									success = true;
+								} else {
+									try {
+										if (validate === "byte" || validate === "short" || validate === "integer") {
+											val = new Number(value);
+											if (!isNaN(val)) {
+												if (validate === "byte") {
+													if (val >= -128 && val <= 127) {
+														success = true;
+													}
+												} else if (validate === "short") {
+													if (val >= -32768 && val <= 32767) {
+														success = true;
+													}
+												} else if (validate === "integer") {
+													if (val >= -2147483648 && val <= 2147483647) {
+														success = true;
+													}
+												}
+											}
+										} else if (validate === "duration") {
+											var parts = value.split(":");
+											if (parts.length == 6) {
+												success = true;
+												for(var i in parts) {
+													val = new Number(parts[i]);
+													if (!isNaN(val)) {
+														if (val < -32768 || val > 32767) {
+															success = false;
+															break;
+														}
+													} else {
+														success = false;
+														break;
+													}
+												}
+											}
+										} else {
+											success = true;
+										}
+									} catch(e) {
+									}
+								}
+
+								if (success) {
+									ctrl.$setValidity('validate', true);
+									return value;
+								} else {
+									ctrl.$setValidity('validate', false);
+									return undefined;
+								}
+							};
+
+							ctrl.$formatters.unshift(function(value) {
+								return validatorFunc(value, true);
+							});
+							ctrl.$parsers.unshift(function(value) {
+								return validatorFunc(value, false);
+							});
+						}
+					}
+				};
+			});
+
 			angularModule.filter('sdFilterDate', function() {
 				return function(value) {
 					// Convert to Client Format

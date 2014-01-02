@@ -287,9 +287,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					} else {
 						elem.attributes['type'] = "text";
 						elem.attributes['class'] = "panel-input";
-						var valInfo = getValidationPattern(path);
-						if (valInfo.pattern) {
-							validations.push({type: "ng-pattern", value: valInfo.pattern, 
+						var valInfo = getValidationInfo(path);
+						if (valInfo.type) {
+							validations.push({type: valInfo.type, value: valInfo.value, 
 								msg: getI18NLabel("validation.err." + valInfo.key, "Invalid " + valInfo.key)});
 						}
 
@@ -405,25 +405,31 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		/*
 		 * 
 		 */
-		function getValidationPattern(path) {
+		function getValidationInfo(path) {
 			var ret = {};
 			if (path.typeName == "integer" || path.typeName == "int" ||path.typeName == "java.lang.Integer") {
-				ret.pattern = /^(\+|-)?([\d]{0,9})$/;
+				ret.type = "sd-validate";
+				ret.value = "integer";
 				ret.key = "integer";
 			} else if (path.typeName == "short" || path.typeName == "java.lang.Short") {
-				ret.pattern = /^(\+|-)?([\d]{0,9})$/;
+				ret.type = "sd-validate";
+				ret.value = "short";
 				ret.key = "short";
 			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
-				ret.pattern = /^(\+|-)?([\d]{0,18})$/;
+				ret.type = "ng-pattern";
+				ret.value = /^(\+|-)?([\d]{0,19})$/;
 				ret.key = "long";
 			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
-				ret.pattern = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.type = "ng-pattern";
+				ret.value = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
 				ret.key = "float";
 			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
-				ret.pattern = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
+				ret.type = "ng-pattern";
+				ret.value = /^[-+]?\d{0,308}(\.\d{1,309})?%?$/;
 				ret.key = "double";
 			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
-				ret.pattern = /^(\+|-)?([\d]{0,2})$/;
+				ret.type = "sd-validate";
+				ret.value = "byte";
 				ret.key = "byte";
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				ret.key = "char";
@@ -434,7 +440,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else if (path.typeName == "time") {
 				ret.key = "time";
 			} else if (path.typeName == "duration") {
-				ret.pattern = /^(\+|-)?([\d]{0,6})((:(\+|-)?([\d]{0,6})){5})$/;
+				ret.type = "sd-validate";
+				ret.value = "duration";
 				ret.key = "duration";
 			}
 
@@ -461,17 +468,17 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 */
 		function getMaxLength(path) {
 			if (path.typeName == "integer" || path.typeName == "int" ||path.typeName == "java.lang.Integer") {
-				return 10;
+				return 11;
 			} else if (path.typeName == "short" || path.typeName == "java.lang.Short") {
-				return 5;
+				return 6;
 			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
-				return 19;
+				return 20;
 			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
 				return 620;
 			} else if (path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
 				return 620;
 			} else if (path.typeName == "byte" || path.typeName == "java.lang.Byte") {
-				return 3;
+				return 4;
 			} else if (path.typeName == "character" || path.typeName == "java.lang.Character") {
 				return 1;
 			} else if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime" || path.typeName == "java.util.Calendar") {
@@ -479,7 +486,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			} else if (path.typeName == "time") {
 				return 8;
 			} else if (path.typeName == "duration") {
-				return 50;
+				return 41;
 			}
 		}
 
