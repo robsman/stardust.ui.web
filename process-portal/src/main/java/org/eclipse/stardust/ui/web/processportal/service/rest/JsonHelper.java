@@ -206,9 +206,9 @@ public class JsonHelper
 
       try
       {
-         if (value instanceof Float || value instanceof Double || value instanceof Number)
+         if (value instanceof Float || value instanceof Double)
          {
-            double doubleValue = ((Number)value).doubleValue();
+            Double doubleValue = ((Number)value).doubleValue();
             if (!Double.isInfinite(doubleValue) && !Double.isNaN(doubleValue))
             {
                BigDecimal decimalValue = new BigDecimal(doubleValue);
