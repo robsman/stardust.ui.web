@@ -85,7 +85,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				$scope.showNestedList = showNestedList;
 				$scope.deleteDocument = deleteDocument;
 				$scope.isDocumentLinkDisabled = isDocumentLinkDisabled;
-				$scope.getDocumentLinkClass = getDocumentLinkClass;	 
+				$scope.getDocumentLinkClass = getDocumentLinkClass;
+				$scope.showDocumentMenu = showDocumentMenu;
+				$scope.hideAllDocumentMenus = hideAllDocumentMenus;
 			});
 		};
 
@@ -202,6 +204,18 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				angularCompile = $compile;
 			});
 
+			angularModule.directive('ngRightClick', function($parse) {
+			    return function(scope, element, attrs) {
+			        var fn = $parse(attrs.ngRightClick);
+			        element.bind('contextmenu', function(event) {
+			            scope.$apply(function() {
+			                event.preventDefault();
+			                fn(scope, {$event:event});
+			            });
+			        });
+			    };
+			});	
+			
 			angular.bootstrap(document, [moduleName]);
 		};
 
@@ -697,10 +711,16 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 */
 		function openDocument(xPath, documentPathLabel, readOnly) {
 			var $scope = angular.element(document).scope();
+			
 			var parts = xPath.substring(1).split("/");
 			
 			var currentBindings = $scope[BINDING_PREFIX];
 			var lastPart = parts[parts.length - 1];
+			
+			if (currentBindings[lastPart].showDocMenu) {
+				currentBindings[lastPart].showDocMenu = false;
+				return;
+			}
 			
 			documentPathLabel = i18nLabelProvider().getLabel("panel.fileUpload.dialog.msg").replace("{0}", documentPathLabel);
 			
@@ -969,16 +989,78 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 		/**
 		 * 
-		 * @param param
+		 * @param xPath
+		 */
+		function showDocumentMenu(xPath) {
+			var typeDoc = getCurrentBindingFor(xPath);
+			var selectedTypeDocStatus = typeDoc.showDocMenu;
+
+			hideAllDocumentMenus_();
+			if (typeDoc.docId && !selectedTypeDocStatus) {
+				typeDoc.showDocMenu = true;
+			} else {
+				typeDoc.showDocMenu = false;
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		function hideAllDocumentMenus() {
+			var $scope = angular.element(document).scope();
+			
+			if ($scope.documentTimeout) {
+				clearTimeout($scope.documentTimeout);
+			}
+			
+			$scope.documentTimeout = setTimeout(function() {
+				runInAngularContext(hideAllDocumentMenus_());
+				;
+			}, 3000);
+		}
+		
+		/**
+		 * 
+		 */
+		function hideAllDocumentMenus_() {
+			var $scope = angular.element(document).scope();
+			var currentBindings = $scope[BINDING_PREFIX];
+			for ( var key in currentBindings) {
+				if (currentBindings[key].showDocMenu) {
+					currentBindings[key].showDocMenu = false;
+				}
+			}
+		}
+		
+		/**
+		 * 
+		 * @param xPath
+		 * @returns
+		 */
+		function getCurrentBindingFor(xPath) {
+			var $scope = angular.element(document).scope();
+			var parts = xPath.substring(1).split("/");
+			var lastPart = parts[parts.length - 1];
+
+			var currentBindings = $scope[BINDING_PREFIX];
+			return currentBindings[lastPart];
+		}		
+		
+		/**
+		 * 
+		 * @param xPath
 		 */
 		function deleteDocument(xPath) {
 			var $scope = angular.element(document).scope();
+			
 			var parts = xPath.substring(1).split("/");
 			
 			var currentBindings = $scope[BINDING_PREFIX];
 			var lastPart = parts[parts.length - 1];
 			
 			if (currentBindings[lastPart] && currentBindings[lastPart].docId) {
+				currentBindings[lastPart].showDocMenu = false;
+				
 				//	Document is set
 				var transferData = {};
 				transferData[lastPart] = currentBindings[lastPart];

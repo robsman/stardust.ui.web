@@ -283,3 +283,10 @@ body, table {
 .waiting {
 	cursor: wait;
 }
+
+.document-menu-popup {
+	border: 1px solid #D3D3D3;
+    margin-left: 10px;
+    position: absolute;
+    background-color: #F3F3F3;     
+}    

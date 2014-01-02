@@ -534,19 +534,28 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			var docLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: "", style: "text-decoration:none;"}});
 			docLink.attributes["ng-click"] = "openDocument('" + path.fullXPath + "','" + getI18NLabel(path) + "', " + isReadonly(path) + ")";
 			docLink.attributes["title"] = "{{" + binding + ".docName}}";
+			docLink.attributes["ng-right-click"] = "showDocumentMenu('" + path.fullXPath+ "')";
+			
+			if(!isReadonly(path)){
+				var docMenu = htmlElement.create("div", {parent: elemWrapper});
+				docMenu.attributes["class"] = "document-menu-popup";
+				docMenu.attributes["ng-show"] = binding + ".showDocMenu";
+				docMenu.attributes["ng-click"] = "deleteDocument('" + path.fullXPath+ "')";	
+				var menuTable = htmlElement.create("table", {parent: docMenu, attributes: {cellpadding: 2, cellspacing: 0}});
+				var menuTableTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: menuTable})});
+				var menuTableTd1 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
+				htmlElement.create("img", {parent: menuTableTd1, attributes: {"ng-src": "../../plugins/views-common/images/icons/page_white_delete.png", class: "panel-image"}});
+				var menuTableTd2 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
+				htmlElement.create("span", {parent: menuTableTd2, value:"Delete", attributes: {class: "panel-label"}});
+			}
+			
+			elemWrapper.attributes["ng-mouseleave"] = "hideAllDocumentMenus()";
 			
 			htmlElement.create("img", {parent: docLink, 
 				attributes: {"ng-src": "{{" + binding + ".docIcon}}", class: "panel-image"}});
-
+			
 			docLink.attributes["ng-disabled"] = "isDocumentLinkDisabled('" + path.fullXPath + "', " + isReadonly(path) + ")";
 			docLink.attributes["ng-class"] = "getDocumentLinkClass('" + path.fullXPath + "', " + isReadonly(path) + ")";
-				
-			if(!isReadonly(path)){
-				var docDelLink = htmlElement.create("a", {parent: elemWrapper, attributes: {href: ""}});
-				docDelLink.attributes["ng-click"] = "deleteDocument('" + path.fullXPath + "')";
-				htmlElement.create("img", {parent: docDelLink, attributes: {"ng-src": "../../plugins/views-common/images/icons/delete.png", class: "panel-image"}});
-				docDelLink.attributes["ng-show"] = binding + ".docId";	
-			}
 
 			return elemWrapper;
 		}
