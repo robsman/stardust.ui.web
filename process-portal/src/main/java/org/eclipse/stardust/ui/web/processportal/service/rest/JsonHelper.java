@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.processportal.service.rest;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,6 +39,8 @@ import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+
+
 /**
  * @author Subodh.Godbole
  * @author Yogesh.Manware
@@ -205,7 +208,16 @@ public class JsonHelper
       {
          if (value instanceof Float || value instanceof Double || value instanceof Number)
          {
-            ret = new JsonPrimitive((Number)value);               
+            double doubleValue = ((Number)value).doubleValue();
+            if (!Double.isInfinite(doubleValue) && !Double.isNaN(doubleValue))
+            {
+               BigDecimal decimalValue = new BigDecimal(doubleValue);
+               ret = new JsonPrimitive(decimalValue.toPlainString());
+            }
+            else
+            {
+               ret = new JsonPrimitive("");
+            }
          }
          else if (value instanceof Boolean)
          {
