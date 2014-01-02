@@ -93,15 +93,6 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    {
       this.view = view;
       processInstance = (ProcessInstance) view.getViewParams().get("processInstance");
-      // In HTML5 processInstanceOId is avaiable, processInstance is not passed as
-      // viewParam
-      if (null == processInstance)
-      {
-         Integer processInstanceOId = (Integer) view.getViewParams().get("processInstanceOId");
-         processInstance = processInstanceOId != null
-               ? ProcessInstanceUtils.getProcessInstance(processInstanceOId)
-               : null;
-      }
 
       setDocumentId(documentContentInfo);
       

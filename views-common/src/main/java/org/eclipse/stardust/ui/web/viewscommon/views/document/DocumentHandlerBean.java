@@ -343,6 +343,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                processInstanceOid = Long.valueOf((String) processInsOIdObj);
             }
             processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid);
+            thisView.getViewParams().put("processInstance", processInstance);
          }
       }
       
