@@ -56,6 +56,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.model.IInputFieldChangeLis
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IGenericInputField;
 import org.eclipse.stardust.ui.web.viewscommon.common.structureddata.ComplexTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -173,9 +174,9 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       }
       else if (dataClass == String.class || dataClass == Character.class)
       {
-         Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
-         if (dataTypeId.equals("struct") && isEnumerationType(model, dataMapping))
+         if (dataTypeId.equals("struct") && CommonDescriptorUtils.isEnumerationType(dataMapping))
          {
+            Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
             populateEnumValues(model, dataMapping);
             type = ProcessPortalConstants.ENUM_TYPE;
          }
@@ -203,27 +204,6 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       return type;
    }
 
-   /**
-    * 
-    * @param model
-    * @param dataMapping
-    * @return
-    */
-   private boolean isEnumerationType(Model model, DataMapping dataMapping)
-   {
-      boolean isEnum = false;
-      xpaths = XPathUtils.getXPaths(model, dataMapping);
-      for (TypedXPath path : xpaths)
-      {
-         if (path.getParentXPath() == null)
-         {
-            isEnum = path.isEnumeration();
-            break;
-         }
-      }
-      return isEnum;
-   }
-   
    /**
     * 
     */

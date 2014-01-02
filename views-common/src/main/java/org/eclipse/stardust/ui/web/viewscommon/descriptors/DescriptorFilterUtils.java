@@ -247,14 +247,14 @@ public class DescriptorFilterUtils
                            Set<Object> vals= (Set<Object>) filterValue;
                            for(Object obj:vals)
                            {
-                              dataFilterOrTerm = getStringFilter(dataPath, Integer.valueOf(obj.toString()), caseSensitive);
+                              dataFilterOrTerm = getStringFilter(mapping, dataPath, obj.toString(), caseSensitive);
                               term.add(dataFilterOrTerm);
                            }
                         }
                      }
                      else
                      {
-                        dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                        dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
                      }
                   }// for boolean
                   else if (Boolean.class.equals(dataPath.getMappedType()))
@@ -280,7 +280,7 @@ public class DescriptorFilterUtils
                   }
                   else if(dataPath.getMappedType() instanceof Class<?>)
                   {
-                     dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                     dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
                   }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
@@ -331,7 +331,8 @@ public class DescriptorFilterUtils
                   }
                   else
                   {
-                     if (dataFilter == null)
+                     // For multiple ENUM's 'OR' term is formed, dataFilter is null
+                     if (dataFilter == null && dataFilterOrTerm == null)
                      {
                         if (trace.isDebugEnabled())
                         {
@@ -453,6 +454,19 @@ public class DescriptorFilterUtils
     */
    public static DataFilter getStringFilter(DataPath dataPath, Object filterValue, boolean caseSensitive)
    {
+      return getStringFilter(null, dataPath, filterValue, caseSensitive);
+   }
+   
+   /**
+    * 
+    * @param mapping
+    * @param dataPath
+    * @param filterValue
+    * @param caseSensitive
+    * @return
+    */
+   public static DataFilter getStringFilter(GenericDataMapping mapping, DataPath dataPath, Object filterValue, boolean caseSensitive)
+   {
       DataFilter dataFilter = null;
       boolean isCaseDescriptor = isCaseDescriptor(dataPath);
       String dataId = isCaseDescriptor ? dataPath.getId() : getData(dataPath).getQualifiedId();
@@ -505,7 +519,7 @@ public class DescriptorFilterUtils
             {
                if (CommonDescriptorUtils.isStructuredData(dataPath))
                {
-                  if(CommonDescriptorUtils.isEnumerationData(dataPath))
+                  if (null != mapping && CommonDescriptorUtils.isEnumerationType(mapping))
                   {
                      dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
                   }
@@ -518,7 +532,7 @@ public class DescriptorFilterUtils
                }
                else
                {
-                  if (CommonDescriptorUtils.isEnumerationData(dataPath))
+                  if (CommonDescriptorUtils.isEnumerationPrimitive(dataPath))
                   {
                      dataFilter = DataFilter.isEqual(dataId, filterValueStr);
                   }
