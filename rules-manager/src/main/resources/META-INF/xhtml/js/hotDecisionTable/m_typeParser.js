@@ -112,9 +112,19 @@ define(["bpm-modeler/js/m_model",
 	  while(elementCount--){
 		  obj=elements[elementCount];
 		  
+		  
+		  /*Testing to see if we can resolve our temp object as a typeDeclaration itself. */
+		  var childSchemaType = undefined;
+		  if (typeof typeDecl.asSchemaType === "function") {
+      		childSchemaType = typeDecl.asSchemaType().resolveElementType(obj.name);	
+  		  } 
+		  if (!childSchemaType && typeof typeDecl.resolveElementType === "function") {
+  			childSchemaType = typeDecl.resolveElementType(obj.name);	
+      	  }
+		  
 		  /*Handle enumerations-Enumerations have children but we need to flatten them for our purposes as 
 		   *our tree represents enumerations as a single node with no children */
-		  if(obj.facets){
+		  if(childSchemaType && obj.facets && childSchemaType.isEnumeration()){
 			  tempEnum=facetBuilder(obj.facets);
 			  tempEnum.name=obj.name;
 			  tempEnum.type="enumeration";
@@ -131,21 +141,19 @@ define(["bpm-modeler/js/m_model",
 	          		  isParamDef:false}
           };
 		  
-		  /*Testing to see if we can resolve our temp object as a typeDeclaration itself. */
-		  if (typeof typeDecl.asSchemaType === "function") {
-      		childSchemaType = typeDecl.asSchemaType().resolveElementType(obj.name);	
-  		  } 
-		  else if (typeof typeDecl.resolveElementType === "function") {
-  			childSchemaType = typeDecl.resolveElementType(obj.name);	
-      	  }
-		  
 		  /*Our temp object is actually a typeDecl (and not an enumeration) that we need to 
 		   * parse further.*/
 		  if (childSchemaType && childSchemaType.type && temp.metadata.type !=="enumeration") {
 			temp.data.icon=seqImage;
 			temp.children=fx2(childSchemaType);
           } 
-		  
+		  /* TODO For elements with inline types the low level api needs to be used as they don't have explicit types
+		   * and no high level api exist to traverse such elements */
+		  else if (obj && obj.body) {
+  			temp.data.icon=seqImage;
+			temp.children=fx(obj.body, paramDef, typeDecl);
+          }
+
 		  results.push(temp);
 	  }
 	  

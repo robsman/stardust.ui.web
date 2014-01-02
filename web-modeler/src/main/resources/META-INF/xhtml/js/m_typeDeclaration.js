@@ -617,22 +617,24 @@ define(
 				};
 
 				TypeDeclaration.prototype.resolveSchemaType = function(name) {
-					var typeQName = parseQName(name);
-					if (typeQName.namespace) {
-						return resolveSchemaTypeFromModel("{"
-								+ typeQName.namespace + "}"
-										+ typeQName.name,
-								this.model,
-								this.typeDeclaration.schema ? this.typeDeclaration.schema.locations
-										: null);
-					} else {
-						// no ns prefix, resolve to containing schema
-						var schema = this.typeDeclaration.schema;
-						var schemaNsUri = schema.targetNamespace;
+					if (name) {
+						var typeQName = parseQName(name);
+						if (typeQName.namespace) {
+							return resolveSchemaTypeFromModel("{"
+	 								+ typeQName.namespace + "}"
+											+ typeQName.name,
+									this.model,
+									this.typeDeclaration.schema ? this.typeDeclaration.schema.locations
+											: null);
+						} else {
+							// no ns prefix, resolve to containing schema
+							var schema = this.typeDeclaration.schema;
+							var schemaNsUri = schema.targetNamespace;
 
-						var type = findType(schema, typeQName.name);
-						return new SchemaType(typeQName.name, schemaNsUri,
-								type, schema, this.model);
+							var type = findType(schema, typeQName.name);
+							return new SchemaType(typeQName.name, schemaNsUri,
+									type, schema, this.model);
+						}
 					}
 				};
 			}
