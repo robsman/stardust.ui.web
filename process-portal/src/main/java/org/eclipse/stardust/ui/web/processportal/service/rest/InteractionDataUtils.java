@@ -202,13 +202,15 @@ public class InteractionDataUtils
             {
                // document is uploaded and not saved from viewer
                result = (String) details.get(DOCUMENT.ID);
-
-               // use this data when creating JCR document
-               RawDocument rawDocument = new RawDocument();
-               rawDocument.setName((String) details.get(DOCUMENT.NAME));
-               rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
-               rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
-               dc.setRawDocument(rawDocument);
+               if (result != null)
+               {
+                  // use this data when creating JCR document
+                  RawDocument rawDocument = new RawDocument();
+                  rawDocument.setName((String) details.get(DOCUMENT.NAME));
+                  rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
+                  rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
+                  dc.setRawDocument(rawDocument);
+               }
             }
          }
       }
