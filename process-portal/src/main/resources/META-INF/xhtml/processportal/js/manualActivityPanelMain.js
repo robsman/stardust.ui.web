@@ -20,7 +20,7 @@ require.config({
 		'angularjs' : ['views-common/js/libs/angular/angular-1.0.2', '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min'],
 		'json' : ['views-common/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2']
 	},
-	shime: {
+	shim: {
 		'angularjs': {
 			require: "jquery",
 			exports: "angular"
