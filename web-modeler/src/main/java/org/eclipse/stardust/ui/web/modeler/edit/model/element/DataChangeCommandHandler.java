@@ -109,10 +109,10 @@ public class DataChangeCommandHandler
 
       if(duplicate)
       {
-         id = NameIdUtils.createIdFromName(null, declaration, id);    
+         id = NameIdUtils.createIdFromName(null, declaration, id);
          name = id;
       }
-      
+
       declaration.setId(id);
       declaration.setName(name);
 
@@ -223,17 +223,19 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       String dataFullID = null;
+      TypeDeclarationType typeDeclaration = null;
       if (hasNotJsonNull(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
       {
          dataFullID = extractString(request,
                ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+         typeDeclaration = getModelBuilderFacade().findTypeDeclaration(dataFullID);
       }
       else
       {
          dataFullID = model.getId() + ":";
       }
       DataType data = null;
-      TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(dataFullID);
+
       // For Java bound ENUM's create primitive else structured Data
       if (getModelBuilderFacade().isEnumerationJavaBound(typeDeclaration))
       {
@@ -243,9 +245,9 @@ public class DataChangeCommandHandler
       else
       {
          data = getModelBuilderFacade().createStructuredData(model, null, name,
-               dataFullID);   
+               dataFullID);
       }
-      
+
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(data);
