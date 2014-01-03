@@ -206,13 +206,40 @@ public class JsonHelper
 
       try
       {
-         if (value instanceof Float || value instanceof Double)
+         if (value instanceof Double)
          {
             Double doubleValue = ((Number)value).doubleValue();
             if (!Double.isInfinite(doubleValue) && !Double.isNaN(doubleValue))
             {
-               BigDecimal decimalValue = new BigDecimal(doubleValue);
-               ret = new JsonPrimitive(decimalValue.toPlainString());
+               if (doubleValue.toString().contains("E") || doubleValue.toString().contains("e"))
+               {
+                  BigDecimal decimalValue = new BigDecimal(doubleValue);
+                  ret = new JsonPrimitive(decimalValue.toPlainString());
+               }
+               else
+               {
+                  ret = new JsonPrimitive(doubleValue);
+               }
+            }
+            else
+            {
+               ret = new JsonPrimitive("");
+            }
+         }
+         else if (value instanceof Float)
+         {
+            Float floatValue = ((Number)value).floatValue();
+            if (!Float.isInfinite(floatValue) && !Float.isNaN(floatValue))
+            {
+               if (floatValue.toString().contains("E") || floatValue.toString().contains("e"))
+               {
+                  BigDecimal decimalValue = new BigDecimal(floatValue);
+                  ret = new JsonPrimitive(decimalValue.toPlainString());
+               }
+               else
+               {
+                  ret = new JsonPrimitive(floatValue);
+               }
             }
             else
             {
