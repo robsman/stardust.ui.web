@@ -19,7 +19,9 @@ public class TestChangeListener implements IChangeListener
    @Override
    public void onCommand(EditingSession session, CommandJto commandJto, JsonObject changeJson)
    {
-      logger.debug("[session: " + session.getId() + "] - command: " + commandJto + " - change: " + changeJson);
+      if (logger.isDebugEnabled())
+      {
+         logger.debug("[session: " + session.getId() + "] - command: " + commandJto + " - change: " + changeJson);
+      }
    }
-
 }

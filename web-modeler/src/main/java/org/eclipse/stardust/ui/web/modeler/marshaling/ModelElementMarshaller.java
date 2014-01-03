@@ -11,15 +11,13 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJso
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -45,7 +43,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
-
 import org.eclipse.xsd.XSDSchema;
 
 import com.google.gson.JsonArray;
@@ -2766,7 +2763,28 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
    @Override
    public JsonObject toModelJson(EObject model)
    {
-      return toModelJson((ModelType) model);
+      try
+      {
+         init();
+         return toModelJson((ModelType) model);
+      }
+      finally
+      {
+         done();
+      }
+   }
+
+   private static ThreadLocal<Map<EObject, JsonObject>> jsonCache =
+         new ThreadLocal<Map<EObject,JsonObject>>();
+
+   public void done()
+   {
+      jsonCache.remove();
+   }
+
+   public void init()
+   {
+      jsonCache.set(CollectionUtils.<EObject, JsonObject>newMap());
    }
 
    @Override
@@ -3223,17 +3241,14 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       XSDSchema schema = structType.getSchema();
       if (null != schema)
       {
-         String componentId = null;
-         if (type instanceof SchemaTypeType)
+         Map<EObject, JsonObject> cache = jsonCache.get();
+         JsonObject schemaJson = cache.get(schema);
+         if (schemaJson == null)
          {
-            componentId = structType.getId();
+            schemaJson = XsdSchemaUtils.toSchemaJson(schema);
+            cache.put(schema, schemaJson);
          }
-         else if (type instanceof ExternalReferenceType)
-         {
-            componentId = ((ExternalReferenceType) type).getXref();
-         }
-         typeDeclarationJson.add("schema",
-               XsdSchemaUtils.toSchemaJson(schema, componentId));
+         typeDeclarationJson.add("schema", schemaJson);
       }
 
       structJson.addProperty(ModelerConstants.TYPE_PROPERTY,

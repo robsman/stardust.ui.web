@@ -119,32 +119,38 @@ public class ModelerSessionRestController
       }
 
       ModelMarshaller marshaller;
-      if ( !isEmpty(jto.modelId))
+      if (!isEmpty(jto.modelId))
       {
-         EObject model = modelService.currentSession()
-               .modelRepository()
-               .findModel(jto.modelId);
-         marshaller = modelService.currentSession()
-               .modelRepository()
-               .getModelBinding(model)
-               .getMarshaller();
+         ModelingSession currentSession = modelService.currentSession();
+         ModelRepository modelRepository = currentSession.modelRepository();
+         EObject model = modelRepository.findModel(jto.modelId);
+         ModelBinding<EObject> modelBinding = modelRepository.getModelBinding(model);
+         marshaller = modelBinding.getMarshaller();
       }
       else
       {
          marshaller = modelService.modelElementMarshaller();
       }
 
-      for (EObject changedObject : change.getModifiedElements())
+      try
       {
-         jto.changes.modified.add(marshaller.toJson(changedObject));
+         marshaller.init();
+         for (EObject changedObject : change.getModifiedElements())
+         {
+            jto.changes.modified.add(marshaller.toJson(changedObject));
+         }
+         for (EObject addedObject : change.getAddedElements())
+         {
+            jto.changes.added.add(marshaller.toJson(addedObject));
+         }
+         for (EObject removedObject : change.getRemovedElements())
+         {
+            jto.changes.removed.add(marshaller.toJson(removedObject));
+         }
       }
-      for (EObject addedObject : change.getAddedElements())
+      finally
       {
-         jto.changes.added.add(marshaller.toJson(addedObject));
-      }
-      for (EObject removedObject : change.getRemovedElements())
-      {
-         jto.changes.removed.add(marshaller.toJson(removedObject));
+         marshaller.done();
       }
 
       if (change.wasFailure())
@@ -631,15 +637,17 @@ public class ModelerSessionRestController
             change.getMetadata().put("account", commandJto.account);
          }
 
-         JsonObject changeJto = toJson(toJto(change));
+         ChangeJto jto = toJto(change);
+         JsonObject changeJto = toJson(jto);
 
          commandHandlingMediator().broadcastChange(change.getSession(), commandJto,
                changeJto);
 
          ModelerSessionRestController.CommandJto = null;
 
+         Object payload = jsonIo.writeJsonObject(changeJto);
          return Response.created(URI.create(toChangeUri(change))) //
-               .entity(jsonIo.writeJsonObject(changeJto))
+               .entity(payload)
                .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
