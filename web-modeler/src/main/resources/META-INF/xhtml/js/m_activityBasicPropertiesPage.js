@@ -34,6 +34,32 @@ define(
 			};
 
 			function i18nProcessActivityScreen() {
+				m_utils.jQuerySelect("label[for='subprocessModeSelect']")
+					.text(
+						m_i18nUtils
+								.getProperty("modeler.activity.propertyPages.controlling.executionMode.label"));
+				
+				m_utils.jQuerySelect("label[for='copyDataInput']")
+					.text(
+						m_i18nUtils
+								.getProperty("modeler.activity.propertyPages.controlling.copyalldata.label"));
+				
+				m_utils.jQuerySelect("option[value='synchShared']")
+					.text(
+						m_i18nUtils
+							.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchShared"));
+				
+				m_utils.jQuerySelect("option[value='synchSeparate']")
+				.text(
+					m_i18nUtils
+						.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchSeparate"));
+				
+				m_utils.jQuerySelect("option[value='asynchSeparate']")
+				.text(
+					m_i18nUtils
+						.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.asynchSeparate"));
+				
+				
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils

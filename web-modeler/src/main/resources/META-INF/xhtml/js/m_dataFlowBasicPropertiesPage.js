@@ -245,8 +245,7 @@ define(
 									},
 									function(event) {
 										var page = event.data.page;
-										var value = page.inputAccessPointSelectInput
-												.val();
+										var value = page.inputAccessPointSelectInput.val();
 
 										if (value == "DEFAULT") {
 											page.propertiesPanel.element.modelElement.inputDataMapping.accessPointContext = null;
@@ -432,7 +431,7 @@ define(
 					// required
 					if (dataFlow.activity.taskType != m_constants.TASK_ACTIVITY_TYPE) {
 						this.inputAccessPointSelectInput
-								.append("<option value='DEFAULT'>Default</option>"); // I18N
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.defaultLiteral") + "</option>"); // I18N
 					} else {
 						this.inputAccessPointSelectInput
 								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
@@ -464,7 +463,9 @@ define(
 							continue;
 						}
 
-						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='" + 
+								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group." + i)
+								+ "'/>"); // I18N
 
 						this.inputAccessPointSelectInput.append(group);
 
@@ -513,7 +514,7 @@ define(
 					// required
 					if (dataFlow.activity.taskType != m_constants.TASK_ACTIVITY_TYPE) {
 						this.outputAccessPointSelectInput
-								.append("<option value='DEFAULT'>Default</option>");
+								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.defaultLiteral") + "</option>");
 					} else {
 						this.outputAccessPointSelectInput
 								.append("<option value='DEFAULT'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
@@ -535,11 +536,14 @@ define(
 						if (count == 0) {
 							continue;
 						}
-
-						var group = m_utils.jQuerySelect("<optgroup label='" + i + "'/>"); // I18N
-
+						
+						var group = m_utils.jQuerySelect("<optgroup label='" + 
+								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group." + i)
+								+ "'/>"); // I18N
+						
 						this.outputAccessPointSelectInput.append(group);
 
+		
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
 
@@ -576,7 +580,9 @@ define(
 							&& (this.getModelElement().activity.attributes 
 									&& !this.getModelElement().activity.attributes["carnot:engine:subprocess:copyAllData"])) {
 						
-						var group = m_utils.jQuerySelect("<optgroup label='engine'/>"); // I18N
+						var group = m_utils.jQuerySelect("<optgroup label='"+
+								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group.engine")
+								+"'/>"); // I18N
 						inputElement.append(group);
 						for (var i in this.getModel().dataItems) {
 							var d = this.getModel().dataItems[i];

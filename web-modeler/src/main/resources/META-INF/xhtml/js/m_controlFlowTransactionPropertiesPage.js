@@ -10,9 +10,9 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
-				"bpm-modeler/js/m_propertiesPage" ],
+				"bpm-modeler/js/m_propertiesPage","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_propertiesPage) {
+				m_propertiesPage,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowTransactionPropertiesPage(
@@ -41,6 +41,12 @@ define(
 				/**
 				 *
 				 */
+				m_utils.jQuerySelect("label[for='forkOnTraversalInput']")
+					.text(m_i18nUtils.getProperty("modeler.controlflow.transaction.properties.behavior.forkontraversal.label"));
+				
+				m_utils.jQuerySelect("#transactionalBehaviorLabel")
+				.text(m_i18nUtils.getProperty("modeler.controlflow.transaction.properties.behavior.label"));
+				
 				ControlFlowTransactionPropertiesPage.prototype.initialize = function() {
 					this.forkOnTraversalInput = this
 							.mapInputId("forkOnTraversalInput");

@@ -252,7 +252,7 @@ define(
 								.isCurrentProfileIn(this.propertiesPages[n].profiles)) {
 							continue;
 						}
-
+						
 						this.propertiesPageList.append("<tr>" + "<td>"
 								+ "<input id=\"" + this.propertiesPages[n].id
 								+ "ListItem\" type=\"image\" src=\""

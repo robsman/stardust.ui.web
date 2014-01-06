@@ -35,7 +35,7 @@ define(
 				var propertiesPage = m_propertiesPage
 						.createPropertiesPage(propertiesPanel,
 								"implementationPropertiesPage",
-								"Implementation", // TODO I18N
+								m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"), 
 								"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -47,7 +47,7 @@ define(
 				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.initialize = function() {
-					this.heading = this.mapInputId("heading");
+					this.heading = this.mapInputId("implementationHeading");
 					this.noImplementationRow = this
 							.mapInputId("noImplementationRow");
 					this.noImplementationLabel = this
@@ -61,6 +61,7 @@ define(
 					this.heading
 							.append(m_i18nUtils
 									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
+					
 					m_utils.jQuerySelect("label[for='applicationList']")
 							.text(
 									m_i18nUtils

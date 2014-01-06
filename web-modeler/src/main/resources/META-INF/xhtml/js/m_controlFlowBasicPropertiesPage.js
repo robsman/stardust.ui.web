@@ -15,9 +15,9 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", 
 		  "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_dataTraversal", 
 		  "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_parsingUtils",
-		  "bpm-modeler/js/m_autoCompleters" ],
+		  "bpm-modeler/js/m_autoCompleters","bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_basicPropertiesPage, m_dataTraversal, 
-				 m_codeEditorAce,m_parsingUtils,m_autoCompleters) {
+				 m_codeEditorAce,m_parsingUtils,m_autoCompleters,m_i18nUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ControlFlowBasicPropertiesPage(
@@ -88,6 +88,21 @@ define(
 
 					var page = this;
 					
+					/*Internationalization work for elements unique to  panel contents  (the panel title has to be set conditionally
+					 * based on the element chosen (see setElement))*/
+					m_utils.jQuerySelect("label[for='nameInput']")
+						.text(m_i18nUtils.getProperty('modeler.element.properties.commonProperties.name'));
+					
+					m_utils.jQuerySelect("label[for='descriptionInput']")
+						.text(m_i18nUtils.getProperty('modeler.element.properties.commonProperties.description'));
+					
+					m_utils.jQuerySelect("label[for='conditionExpressionInput']")
+						.text(m_i18nUtils.getProperty('modeler.propertyPanel.data.conditionalsequenceFlow.conditonexpression.input.label'));
+					
+					m_utils.jQuerySelect("label[for='otherwiseInput']")
+						.text(m_i18nUtils.getProperty('modeler.propertyPanel.data.conditionalsequenceFlow.otherwise.input.label'));
+					
+					
 					/*Retrieve a javascript code editor for our condition panel*/
 					this.conditionExpressionInputEditor = m_codeEditorAce.getJSCodeEditor(this.conditionExpressionDiv.id);
 					
@@ -127,6 +142,7 @@ define(
 				 *
 				 */
 				ControlFlowBasicPropertiesPage.prototype.setElement = function() {
+					
 					this.setModelElement();
 					this.descriptionInput
 							.val(this.propertiesPanel.element.modelElement.description);
@@ -145,13 +161,15 @@ define(
 							this.setTitle("Default Sequence Flow");
 						} else {
 							this.conditionExpressionInputEditor.enable();
-							this.setTitle("Conditional Sequence Flow");
+							/*Conditional  Flow*/
+							this.setTitle(m_i18nUtils.getProperty("modeler.propertyPanel.data.conditionalsequenceFlow.title"));
 						}
 
 						this.conditionPanel.removeAttr("class");
 					} else {
 						this.conditionPanel.attr("class", "invisible");
-						this.setTitle("Sequence Flow");
+						/*Sequence Flow*/
+						this.setTitle(m_i18nUtils.getProperty("modeler.propertyPanel.data.sequenceFlow.title"));
 					}
 				};
 
