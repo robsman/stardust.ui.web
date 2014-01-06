@@ -30,7 +30,7 @@ define(
 			function ControlFlowTransactionPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "transactionPropertiesPage",
-						"Transactional Behavior",
+						m_i18nUtils.getProperty("modeler.controlflow.transaction.properties.behavior.label"),
 						"plugins/bpm-modeler/images/icons/arrow-circle.png");
 
 				m_utils.inheritFields(this, propertiesPage);
