@@ -13,17 +13,10 @@
 		bean*=Instance of table bean class 
 	 -->
 
-	<ice:panelGroup rendered="#{col.columnName == 'to'}" style="text-align: center;" >
-		<ice:inputText partialSubmit="true" value="#{row.pageTo}" style="width: 25px;height: 10px;" valueChangeListener="#{bean.toValueChange}" >
-			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageTo" standAlone="false"/>
+	<ice:panelGroup rendered="#{col.columnName == 'pageRange'}" style="text-align: center;" >
+		<ice:inputText partialSubmit="true" value="#{row.pageRange}" style="width: 75px;height: 10px;" valueChangeListener="#{bean.pageRangeChange}" onclick="Event.stop(event);">
+			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageRange" standAlone="false"/>
 		 	<f:attribute name="row" value="#{row}" />
-		</ice:inputText>
-	</ice:panelGroup>
-
-	<ice:panelGroup rendered="#{col.columnName == 'from'}" style="text-align: center;">
-		<ice:inputText partialSubmit="true" value="#{row.pageFrom}" style="width: 25px;height: 10px" valueChangeListener="#{bean.fromValueChange}" >
-			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageFrom" standAlone="false"/>
-			<f:attribute name="row" value="#{row}" />
 		</ice:inputText>
 	</ice:panelGroup>
 
@@ -55,7 +48,7 @@
 	</ice:panelGroup>
 
 	<ice:panelGroup rendered="#{col.columnName == 'deletePages' and bean.deletePageEnable}" style="text-align: center;">
-		<ice:commandLink actionListener="#{row.toggleDeletePages}" rendered="#{bean.deletePageEnable}" partialSubmit="true" immediate="true" >
+		<ice:commandLink actionListener="#{row.toggleDeletePages}" rendered="#{bean.deletePageEnable}" partialSubmit="true" immediate="true" onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DeletePage" standAlone="false"/>			
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box-uncheck.png" rendered="#{not row.deletePages}" />
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box.png" rendered="#{row.deletePages}" />
@@ -64,7 +57,7 @@
 
 	<ice:panelGroup rendered="#{col.columnName == 'copyImageData'}" style="text-align: center;">
 		
-		<ice:commandLink actionListener="#{row.toggleCopyImageData}" partialSubmit="true" immediate="true" >
+		<ice:commandLink actionListener="#{row.toggleCopyImageData}" partialSubmit="true" immediate="true" onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-CopyImgData" standAlone="false"/>			
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box-uncheck.png" rendered="#{not row.copyImageData}" />
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box.png" rendered="#{row.copyImageData}" />
@@ -74,7 +67,7 @@
 
 	<ice:panelGroup rendered="#{col.columnName == 'copyProcessData'}" style="text-align: center;" >
 	
-		<ice:commandLink actionListener="#{row.toggleCopyProcessData}" partialSubmit="true" immediate="true" rendered="#{bean.processContextAvailable}">
+		<ice:commandLink actionListener="#{row.toggleCopyProcessData}" partialSubmit="true" immediate="true" rendered="#{bean.processContextAvailable}"  onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-CopyProcessData" standAlone="false"/>			
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box-uncheck.png" rendered="#{not row.copyProcessData}" />
 			<ice:graphicImage value="/plugins/views-common/images/icons/ui-check-box.png" rendered="#{row.copyProcessData}" />			
@@ -86,13 +79,13 @@
 	
 	<ice:panelGroup rendered="#{col.columnName == 'documentDescription'}" style="text-align: left;">
 		<ice:inputTextarea style="width: 150px" value="#{row.docDecription}" partialSubmit="true" 
-			rows="2" >
+			rows="2" onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-DocDescription" standAlone="false"/>
 		</ice:inputTextarea>	
 	</ice:panelGroup>
 	<ice:panelGroup rendered="#{col.columnName == 'versionComment'}" style="text-align: left;">
 		<ice:inputTextarea style="width: 150px" value="#{row.versionComment}" partialSubmit="true" 
-			rows="2" >
+			rows="2" onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-VersionComment" standAlone="false"/>
 		</ice:inputTextarea>	
 	</ice:panelGroup>
