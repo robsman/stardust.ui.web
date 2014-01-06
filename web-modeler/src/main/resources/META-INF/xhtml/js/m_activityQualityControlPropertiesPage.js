@@ -36,7 +36,7 @@ define(
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel, "qualityControlPropertiesPage",
-						"Quality Assurance");
+						m_i18nUtils.getProperty("modeler.propertiesPage.activity.qualityassurance.heading"));
 				
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
