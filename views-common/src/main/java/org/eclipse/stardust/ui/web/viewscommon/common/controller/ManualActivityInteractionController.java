@@ -67,4 +67,10 @@ public class ManualActivityInteractionController implements IActivityInteraction
       return outData;
    }
 
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
+
 }

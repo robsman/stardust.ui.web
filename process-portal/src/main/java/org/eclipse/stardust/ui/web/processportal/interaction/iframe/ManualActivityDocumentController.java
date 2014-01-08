@@ -27,6 +27,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
+import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.view.manual.RawDocument;
@@ -65,6 +66,8 @@ public class ManualActivityDocumentController
    private RawDocument rawDocument;
    
    private FileStorage fileStorage;
+   
+   private boolean opened = false;
 
    /**
     * 
@@ -116,24 +119,41 @@ public class ManualActivityDocumentController
       if (this.document != null)
       {
          Map<String, Object> params = CollectionUtils.newMap();
-         params.put("processInstance", interaction.getActivityInstance()
-               .getProcessInstance());
+         params.put("processInstance", interaction.getActivityInstance().getProcessInstance());
          params.put("dataPathId", dataMapping.getDataPath());
          params.put("dataId", dataMapping.getDataId());
          params.put("disableAutoDownload", true);
 
-         View documentView = DocumentViewUtil.openDataMappingDocument(
-               interaction.getActivityInstance().getProcessInstance(),
-               dataMapping.getDataId(), getDocument(), params);
-
-         PortalApplication.getInstance().registerViewDataEventHandler(documentView,
-               new ViewDataEventHandler()
+         View documentView = DocumentViewUtil.openDataMappingDocument(interaction.getActivityInstance()
+               .getProcessInstance(), dataMapping.getDataId(), getDocument(), params);
+         
+         opened = true;
+         
+         PortalApplication.getInstance().registerViewDataEventHandler(documentView, new ViewDataEventHandler()
+         {
+            public void handleEvent(ViewDataEvent event)
+            {
+               switch (event.getType())
                {
-                  public void handleEvent(ViewDataEvent event)
+               case DATA_MODIFIED:
+                  setDocument((AbstractDocumentContentInfo) event.getPayload());
+                  break;
+
+               case VIEW_STATE_CHANGED:
+                  if (event.getViewEvent() == null)
                   {
-                     setDocument((AbstractDocumentContentInfo) event.getPayload());
+                     break;
                   }
-               });
+                  if (ViewEventType.CLOSED.equals(event.getViewEvent().getType()))
+                  {
+                     opened = false;
+                  }
+                  break;
+               default:
+                  break;
+               }
+            }
+         });
 
          return documentView;
       }
@@ -293,6 +313,16 @@ public class ManualActivityDocumentController
    public String getDocInteractionId()
    {
       return docInteractionId;
+   }
+   
+   public boolean isOpened()
+   {
+      return opened;
+   }
+
+   public void setOpened(boolean opened)
+   {
+      this.opened = opened;
    }
 
    public static class DOCUMENT

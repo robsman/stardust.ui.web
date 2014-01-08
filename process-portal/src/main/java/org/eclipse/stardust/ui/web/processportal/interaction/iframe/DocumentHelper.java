@@ -169,6 +169,51 @@ public class DocumentHelper
       }
       return false;
    }
+   
+   /**
+    * 
+    * @param docInteractionId
+    * @param opened
+    * @param interaction
+    * @return
+    */
+   public static void updateDocumentState(String docInteractionId, boolean opened, Interaction interaction)
+   {
+      if (interaction == null)
+      {
+         return;
+      }
+
+      Map<String, ManualActivityDocumentController> dcs = interaction.getDocumentControllers();
+      if (docInteractionId.startsWith(interaction.getId()))
+      {
+         for (ManualActivityDocumentController dc : dcs.values())
+         {
+            if (docInteractionId.equals(dc.getDocInteractionId()))
+            {
+               dc.setOpened(opened);
+            }
+         }
+      }
+   }
+   
+   /**
+    * 
+    * @param interaction
+    * @return
+    */
+   public static boolean isTypedDocumentOpen(Interaction interaction)
+   {
+      Map<String, ManualActivityDocumentController> dcs = interaction.getDocumentControllers();
+      for (ManualActivityDocumentController dc : dcs.values())
+      {
+         if (dc.isOpened())
+         {
+            return true;
+         }
+      }
+      return false;
+   }
 
    /**
     * 

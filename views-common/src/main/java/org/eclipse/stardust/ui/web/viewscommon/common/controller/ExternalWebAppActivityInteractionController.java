@@ -433,4 +433,10 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       return outData;
    }
+
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
 }

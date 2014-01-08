@@ -263,6 +263,20 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          ((ViewEventHandler) contentHandler).handleEvent(event);
       }
+      
+      // notify view state change observers
+      if (docInteractionId != null)
+      {
+         Map<String, Object> result = CollectionUtils.newHashMap();
+         result.put("docInteractionId", docInteractionId);
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView.getOpenerView(), ViewDataEventType.VIEW_STATE_CHANGED, result, event));
+      }
+      else
+      {
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView, ViewDataEventType.VIEW_STATE_CHANGED, null, event));
+      }
    }
 
    /**

@@ -2008,10 +2008,25 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    private void showMappedDocumentWarningAndProcessActivity(WorkflowAction action)
    {
+      IActivityInteractionController interactionController = null;
+      
+      if (null != activityInstance)
+      {
+          interactionController = getInteractionController(activityInstance.getActivity());
+      }
+         
       try
       {
          if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && null != activityForm
                && activityForm.getDisplayedMappedDocuments(true, true).size() > 0)
+         {
+            mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
+                  DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);
+
+            mappedDocumentConfirmationDialog.openPopup();
+         }
+         else if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && (null != interactionController)
+               && interactionController.isTypedDocumentOpen(activityInstance))
          {
             mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);

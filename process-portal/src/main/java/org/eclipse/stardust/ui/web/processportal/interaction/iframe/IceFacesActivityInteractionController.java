@@ -296,4 +296,9 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       }
 
    }
+
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
 }

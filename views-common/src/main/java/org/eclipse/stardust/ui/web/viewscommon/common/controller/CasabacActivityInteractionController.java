@@ -104,4 +104,10 @@ public class CasabacActivityInteractionController implements IActivityInteractio
       }
    }
 
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
+
 }

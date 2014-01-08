@@ -111,4 +111,10 @@ public class JsfActivityInteractionController implements IActivityInteractionCon
       return outData;
    }
 
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+		return false;
+   }
+
 }

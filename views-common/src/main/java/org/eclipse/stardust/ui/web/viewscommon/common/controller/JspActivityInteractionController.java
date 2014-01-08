@@ -107,4 +107,10 @@ public class JspActivityInteractionController
       return outData;
    }
 
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
+
 }

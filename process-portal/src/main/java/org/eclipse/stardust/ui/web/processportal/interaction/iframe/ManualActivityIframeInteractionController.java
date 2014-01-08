@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
@@ -258,12 +259,46 @@ public class ManualActivityIframeInteractionController implements IActivityInter
             public void handleEvent(ViewDataEvent event)
             {
                Interaction interaction = getInteraction(activityInstance);
-               if (event.getPayload() instanceof Map && interaction != null)
+               switch (event.getType())
                {
-                  @SuppressWarnings("unchecked")
+               case DATA_MODIFIED:
+
+                  if (event.getPayload() instanceof Map && interaction != null)
+                  {
+                     @SuppressWarnings("unchecked")
+                     Map<String, Object> result = (Map<String, Object>) event.getPayload();
+                     DocumentHelper.updateDocuments((String) result.get(DOCUMENT.DOC_INTERACTION_ID),
+                           (AbstractDocumentContentInfo) result.get("document"), interaction);
+                  }
+                  break;
+
+               case VIEW_STATE_CHANGED:
                   Map<String, Object> result = (Map<String, Object>) event.getPayload();
-                  DocumentHelper.updateDocuments((String) result.get(DOCUMENT.DOC_INTERACTION_ID),
-                        (AbstractDocumentContentInfo) result.get("document"), interaction);
+
+                  if (event.getViewEvent() == null)
+                  {
+                     break;
+                  }
+
+                  Boolean opened = null;
+
+                  if (ViewEventType.CLOSED.equals(event.getViewEvent().getType()))
+                  {
+                     opened = false;
+                  }
+                  else if (ViewEventType.TO_BE_ACTIVATED.equals(event.getViewEvent().getType()))
+                  {
+                     opened = true;
+                  }
+                  if (opened != null)
+                  {
+                     DocumentHelper.updateDocumentState((String) result.get(DOCUMENT.DOC_INTERACTION_ID), opened,
+                           interaction);
+                  }
+                  break;
+
+               default:
+                  break;
                }
             }
          });
@@ -322,5 +357,17 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public void handleEvent(ActivityInstance ai, ViewEvent event)
    {      
+   }
+  
+   /*
+    * (non-Javadoc)
+    * 
+    * @see
+    * org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController
+    * #isTypedDocumentOpen(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
+    */
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return DocumentHelper.isTypedDocumentOpen(getInteraction(activityInstance));
    }
 }

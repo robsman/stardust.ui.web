@@ -300,4 +300,9 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       return !isEmpty(panelUrl)
             && (panelUrl.endsWith(".iface") || panelUrl.contains(".iface?"));
    }
+
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
 }
