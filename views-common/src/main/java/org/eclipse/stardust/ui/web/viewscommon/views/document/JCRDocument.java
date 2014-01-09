@@ -124,6 +124,10 @@ public class JCRDocument extends AbstractDocumentContentInfo
    public void initialize(Document doc, boolean readOnly, JCRVersionTracker vTracker)
    {
       this.readOnly = readOnly;
+      //reset
+      modifyPrivilege = null;
+      contentEditable = null;
+      metaDataEditable = null;
       
       this.document = doc;
       supportVersioning = true;
