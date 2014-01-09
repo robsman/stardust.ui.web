@@ -296,7 +296,6 @@ CheckboxRenderer
 input.htCheckboxRendererInput{
   text-align:center;
   width:15px;
-  background-color:#FF0000;
   margin-left:50% !important;
   margin-right:50% !important;
 }
