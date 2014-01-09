@@ -173,6 +173,10 @@ body, table {
 	white-space: nowrap;
 }
 
+.panel-wrapper {
+	white-space: nowrap;
+}
+
 .panel-input {
 	border: 1px solid #AAAAAA;
 	text-align: left;

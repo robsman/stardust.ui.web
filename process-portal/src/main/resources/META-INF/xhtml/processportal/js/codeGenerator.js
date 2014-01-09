@@ -259,7 +259,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								{parent: elem, value: enumValues[key], attributes: {value: key}});
 					}
 				} else {
-					var elemWrapper = htmlElement.create("div", {parent: elemMain});
+					var elemWrapper = htmlElement.create("div", {parent: elemMain, attributes: {class: "panel-wrapper"}});
 					var validations = [];
 
 					if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
