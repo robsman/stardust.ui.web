@@ -287,7 +287,7 @@ define(
 						}
 						var childTypeDeclaration = model.findTypeDeclarationBySchemaName(type);
 
-						if (childTypeDeclaration == null) { // Primitive
+						if (childTypeDeclaration == null || childTypeDeclaration.getType() == "enumStructuredDataType") { // Primitive
 							jsonChild.id = element.name;
 							jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
 							jsonChild.readonly = readonly;
@@ -296,6 +296,14 @@ define(
 							jsonChild.isList = element.cardinality === "many" ? true : false;
 							jsonChild.isEnum = false;
 							jsonChild.properties = {};
+							
+							if (childTypeDeclaration != null) {
+								jsonChild.isEnum = true;
+								jsonChild.enumValues = [];
+								jQuery.each(childTypeDeclaration.getTypeDeclaration().facets, function(i, facet) {
+									jsonChild.enumValues.push(facet.name);
+								});
+							}
 						} else { // XSD
 							if (element.cardinality === "required") {
 								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
