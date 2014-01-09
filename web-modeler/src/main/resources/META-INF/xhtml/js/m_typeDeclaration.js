@@ -84,7 +84,7 @@ define(
 					return (null != this.typeDeclaration.type)
 							&& (this.typeDeclaration.type.classifier === 'ExternalReference');
 				};
-				
+
 				TypeDeclaration.prototype.isEnumeration = function() {
 					if (this.getType() === "enumStructuredDataType") {
 						return true;
@@ -122,7 +122,7 @@ define(
 
 					return false;
 				};
-				
+
 				TypeDeclaration.prototype.isComplexTypeWithSimpleContent = function() {
 					if (this.getTypeDeclaration()
 							&& this.getTypeDeclaration().primitiveType
@@ -349,7 +349,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				TypeDeclaration.prototype.populateSequenceInstanceRecursivelyForAnonymousTypeElements = function(inlineTypeElement, instance, options) {
 					var thisObj = this;
@@ -363,7 +363,7 @@ define(
 									} else {
 										if (options.initializePrimitives) {
 											instance[element.name] = "";
-										}										
+										}
 									}
 								});
 							}
@@ -372,7 +372,7 @@ define(
 						thisObj.populateSequenceInstanceRecursively(inlineTypeElement, instance, options);
 					}
 				};
-				
+
 				/**
 				 *
 				 */
@@ -388,7 +388,7 @@ define(
 								icon : "XSDModelGroupSequence.gif",
 								classifier : "sequence",
 								body : []
-							}]							
+							}]
 						};
 						this.typeDeclaration.schema.types = types;
 					}
@@ -406,7 +406,7 @@ define(
 						td.facets = [];
 					}
 				};
-				
+
 				/**
 				 * Clear the Enum table, when Java Binding is available
 				 */
@@ -629,11 +629,13 @@ define(
 						} else {
 							// no ns prefix, resolve to containing schema
 							var schema = this.typeDeclaration.schema;
-							var schemaNsUri = schema.targetNamespace;
+							if (schema) {
+								var schemaNsUri = schema.targetNamespace;
 
-							var type = findType(schema, typeQName.name);
-							return new SchemaType(typeQName.name, schemaNsUri,
-									type, schema, this.model);
+								var type = findType(schema, typeQName.name);
+								return new SchemaType(typeQName.name, schemaNsUri,
+										type, schema, this.model);
+							}
 						}
 					}
 				};
@@ -752,7 +754,7 @@ define(
 					return facets;
 				}
 			};
-			
+
 
 			/**
 			 * @returns {Array}
@@ -792,7 +794,7 @@ define(
 				var element = this.getElement(elementName);
 				return this.resolveElementTypeFromElement(element);
 			};
-			
+
 			SchemaType.prototype.resolveElementTypeFromElement = function(element) {
 				if (element && element.type) {
 
@@ -814,7 +816,7 @@ define(
 									+ typeQName.namespace + "}"
 									+ typeQName.name, this.scope,
 									this.schema ? this.schema.locations : null);
-						} 
+						}
 						if (!resolvedSchema && this.schema) {
 							resolvedSchema = resolveSchemaTypeFromSchema(element.type, this.schema);
 						}
@@ -858,7 +860,7 @@ define(
 													if (declaration.typeDeclaration.type.xref === sqName) {
 														schema = declaration.typeDeclaration.schema;
 														return false;
-													} 
+													}
 												} else {
 													if (declaration.id === parsedName.name) {
 														schema = declaration.typeDeclaration.schema;
@@ -900,7 +902,7 @@ define(
 															if (declaration.typeDeclaration.type.xref === sqName) {
 																schema = declaration.typeDeclaration.schema;
 																return false;
-															} 
+															}
 														} else {
 															if (declaration.id === parsedName.name) {
 																schema = declaration.typeDeclaration.schema;
@@ -944,7 +946,7 @@ define(
 			}
 
 			/**
-			 * 
+			 *
 			 */
 			function findNamespaceForPrefix(qualifiedType, schema) {
 				var nsPrefix = qualifiedType.split(":")[0];
@@ -961,7 +963,7 @@ define(
 				// (fh) spec says we should search for elements
 				if (!parsedName.namespace
 						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
-					if (schema.elements) {
+					if (schema && schema.elements) {
 						jQuery.each(schema.elements, function() {
 							if (this.name === parsedName.name) {
 								element = this;
@@ -989,7 +991,7 @@ define(
 				// (fh) now search the type
 				if (!parsedName.namespace
 						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
-					if (schema.types) {
+					if (schema && schema.types) {
 						jQuery.each(schema.types, function() {
 							if (this.name === parsedName.name) {
 								type = this;
@@ -1147,7 +1149,7 @@ define(
 
 					return json;
 				},
-				
+
 				/**
 				 *
 				 * @param {string}
