@@ -23,6 +23,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 	 * 
 	 */
 	function CodeGenerator(prefs) {
+
+		var UPPER_CASE_CHAR_REG_EX = /^[A-Z]$/;
+
 		// Set Defaults
 		if (prefs == undefined) {
 			prefs = {};
@@ -813,7 +816,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function isUpperCase(char) {
-			return char == char.toUpperCase();
+			return UPPER_CASE_CHAR_REG_EX.test(char);
 		}
 	};
 });
