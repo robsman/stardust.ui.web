@@ -298,7 +298,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							elem.attributes['maxlength'] = maxLength;
 						}
 
-						addCustomDirective(path, elem);
+						var valInfo = addCustomDirective(path, elem);
+						if (valInfo.type) {
+							validations.push({type: valInfo.type, value: valInfo.value, 
+								msg: getI18NLabel("validation.err." + valInfo.key, "Invalid " + valInfo.key)});
+						}
 					}
 
 					if(isNumber(path)) {
@@ -494,10 +498,17 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		 * 
 		 */
 		function addCustomDirective(path, elem) {
+			var valInfo = {};
 			if (path.typeName == "date" || path.typeName == "java.util.Date" || path.typeName == "dateTime"
 					|| path.typeName == "java.util.Calendar" || path.typeName == "time") {
 				elem.attributes["sd-date"] = null;
+
+				valInfo.type = "sd-date";
+				valInfo.value = "date";
+				valInfo.key = "date";
 			}
+			
+			return valInfo;
 		}
 
 		/*

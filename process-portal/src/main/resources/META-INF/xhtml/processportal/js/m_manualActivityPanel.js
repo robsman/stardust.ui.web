@@ -127,20 +127,29 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								elm.datepicker({
 									dateFormat : clientDateFormat,
 									onSelect : function(dateText, inst) {
-									scope.$apply(function(scope) {
-										// Convert to Server Format
-										var value = formatDate(dateText, clientDateFormat, SERVER_DATE_FORMAT);
-	
-										// Change binded variable
-										ngModel.assign(scope, value);
-									});
-								}
+										scope.$apply(function(scope) {
+											ngModel.assign(scope, dateText);
+											ctrl.$setValidity('date', true);
+										});
+									}
 							});
 						});
 
-						ctrl.$formatters.unshift(function(viewValue) {
-							// Convert to Client Format
-							return formatDate(viewValue, SERVER_DATE_FORMAT, clientDateFormat);
+						ctrl.$parsers.unshift(function(value) {
+							var success = false;
+							try {
+								jQuery.datepicker.parseDate(clientDateFormat, value);
+								success = true;
+							} catch(e) {
+							}
+
+							if (success) {
+								ctrl.$setValidity('date', true);
+								return value;
+							} else {
+								ctrl.$setValidity('date', false);
+								return value;
+							}
 						});
 					}
 				};
@@ -517,7 +526,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					try {
 						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
 						if (dateParts.length >= 1) {
-							datePart = dateParts[0];
+							datePart = formatDate(dateParts[0], SERVER_DATE_FORMAT, clientDateFormat);
 						}
 						if (haveTime && dateParts.length >= 2) {
 							var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
@@ -583,17 +592,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 				return;
 			}
 
-			if (path.typeName == "date") {
-				return;
-			}
-
 			if (binding) {
 				var dateValue = binding[lastPart];
 				var timeValue = binding[lastPart + "_timePart"];
 				
 				var value = "";
 				if (dateValue) {
-					value = dateValue;
+					value = formatDate(dateValue, clientDateFormat, SERVER_DATE_FORMAT);
 				}
 				if (timeValue) {
 					if (value.length > 0) {
