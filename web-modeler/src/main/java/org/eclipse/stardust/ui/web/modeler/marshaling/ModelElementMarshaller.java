@@ -48,6 +48,7 @@ import org.eclipse.xsd.XSDSchema;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * IPP XPDL marshaller.
@@ -2127,7 +2128,17 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
             this.getModelBuilderFacade().isExternalReference(org));
 
       loadDescription(orgJson, org);
-      loadAttributes(org, orgJson);
+      JsonObject jsonAttributes = loadAttributes(org, orgJson);
+      JsonElement jsonDataId = jsonAttributes.get(PredefinedConstants.BINDING_DATA_ID_ATT);
+      if (jsonDataId instanceof JsonPrimitive)
+      {
+         String dataId = jsonDataId.getAsString();
+         DataType data = ModelUtils.findIdentifiableElement(model.getData(), dataId);
+         if (data != null && data.eIsProxy())
+         {
+            jsonAttributes.addProperty(PredefinedConstants.BINDING_DATA_ID_ATT, getDataFullID(model, data));
+         }
+      }
 
       return orgJson;
    }
@@ -3337,9 +3348,10 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
     *
     * @param element
     * @param json
+    * @return
     * @throws JSONException
     */
-   private void loadAttributes(EObject element, JsonObject json)
+   private JsonObject loadAttributes(EObject element, JsonObject json)
    {
       JsonObject attributes;
 
@@ -3463,6 +3475,8 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       {
          json.add(ModelerConstants.COMMENTS_PROPERTY, new JsonArray());
       }
+
+      return attributes;
    }
 
    protected void setNodeSymbolCoordinates(JsonObject nodeSymbolJson,

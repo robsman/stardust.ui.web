@@ -2587,6 +2587,37 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
       mapDeclaredProperties(organization, organizationJson,
             propertiesMap.get(OrganizationType.class));
+
+      // import bound data if from external model
+      JsonElement jsonAttributes = organizationJson.get(ModelerConstants.ATTRIBUTES_PROPERTY);
+      if (jsonAttributes instanceof JsonObject)
+      {
+         JsonElement jsonDataId = ((JsonObject) jsonAttributes).get(PredefinedConstants.BINDING_DATA_ID_ATT);
+         if (jsonDataId instanceof JsonPrimitive)
+         {
+            String dataId = jsonDataId.getAsString();
+            int ix = dataId.indexOf(':');
+            if (ix > 0)
+            {
+               ModelType model = ModelUtils.findContainingModel(organization);
+               if (dataId.substring(0, ix).equals(model.getId()))
+               {
+                  // same model, no need to qualify
+                  dataId = dataId.substring(ix + 1);
+               }
+               else
+               {
+                  DataType data = getModelBuilderFacade().importData(model, dataId);
+                  if (data != null)
+                  {
+                     dataId = data.getId();
+                  }
+               }
+               ((JsonObject) jsonAttributes).addProperty(PredefinedConstants.BINDING_DATA_ID_ATT, dataId);
+            }
+         }
+      }
+
       storeAttributes(organization, organizationJson);
       storeDescription(organization, organizationJson);
 
