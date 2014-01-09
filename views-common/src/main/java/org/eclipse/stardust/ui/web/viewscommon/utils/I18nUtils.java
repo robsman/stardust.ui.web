@@ -373,9 +373,6 @@ public class I18nUtils
          {
             label = findMatchingCaseDataPathLabel((DataPath) element, mode);
          }
-         // Used StringEscapeUtils.escapeHtml to escape special characters in Java.
-         // Ex. <,> with &lt; &gt;
-         label = StringEscapeUtils.escapeHtml(label);
       }
       catch (Exception e)
       {
