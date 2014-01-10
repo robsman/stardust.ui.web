@@ -50,7 +50,7 @@
       <dependency org="org.eclipse.stardust.modeling.core" name="ipp-bpm-model-validation" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-validation-runtime"/>
       <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model-builder" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-builder-compile"/>
 
-      <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
+      <!-- The following Eclipse dependencies are part of Eclipse 4.3.1 -->
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}" conf="stardust-web-modeler-compile->default"/>
       <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}" conf="stardust-web-modeler-compile->default">
          <exclude org="org.eclipse.emf" module="org.eclipse.emf.common" />
@@ -88,5 +88,9 @@
       </dependency>
       <dependency org="com.google.guava" name="guava" rev="${guava.version}" conf="test->default" transitive="false"/>
 
+      <override org="org.eclipse.emf" module="org.eclipse.emf.common" rev="${org.eclipse.emf.common.version}" />
+      <override org="org.eclipse.emf" module="org.eclipse.emf.ecore" rev="${org.eclipse.emf.ecore.version}" />
+
    </dependencies>
+
 </ivy-module>
