@@ -429,7 +429,15 @@ define(
 
 						return elements;
 					} else {
-						return this.getFacets();
+						var elems = [];
+						var allFacets = this.getFacets();
+						for (var f in allFacets) {
+							if (allFacets[f].classifier === "enumeration") {
+								elems.push(allFacets[f]);
+							}
+						}
+
+						return elems;
 					}
 				};
 
