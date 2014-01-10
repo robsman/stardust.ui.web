@@ -474,6 +474,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							marshalDurationValue(bindingInfo.binding, bindingInfo.lastPart);
 						} else if (isDatePath(arrPaths[key])) {
 							marshalDateTimesValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
+						}else if ("boolean" == arrPaths[key].typeName || "java.lang.Boolean" == arrPaths[key].typeName) {
+							if (binding == null || binding == "") {
+								marshalBooleanValue(bindingInfo.binding, bindingInfo.lastPart);	
+							}
 						}
 
 						if (arrPaths[key].isEnum) {
@@ -484,6 +488,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 								}
 							}
 						}
+						
 					} else if (arrPaths[key].children) {
 						marshalRecursively(arrPaths[key].children, binding, arrPaths[key].fullXPath);
 					} 
@@ -548,6 +553,17 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 		}
 
+		/*
+		 * 
+		 */
+		function marshalBooleanValue(binding, lastPart) {
+		try {
+				binding[lastPart] = false;
+			} catch(e) {
+				// TODO
+			}
+		}
+		
 		/*
 		 * 
 		 */
@@ -664,7 +680,16 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					}
 					list.push({$value: defValue});
 				} else {
-					list.push({});
+					var value = {};
+					for (var i in path.children) {
+						if (path.children[i].isPrimitive && !path.children[i].isList) {
+							if ("boolean" === path.children[i].typeName || "java.lang.Boolean" === path.children[i].typeName) {
+								var key = path.children[i].id;
+								value[key] = false;
+							}							
+						}
+					}
+					list.push(value);
 				}
 			}
 		}
