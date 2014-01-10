@@ -1505,7 +1505,7 @@ if (!window["BridgeUtils"].FrameManager) {
 						var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
 						var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
 						if (iFrameHeight == 0) {
-							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 20;
+							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 31;
 						}
 	
 						iFrameWith = iFrameWith + widthAdjustment;
