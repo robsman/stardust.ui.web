@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
@@ -424,7 +425,7 @@ public class ModelUtils
         {
            refModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
         }
-         if (typeDeclarationId.indexOf("typeDeclaration") == 0)
+         if (!StringUtils.isEmpty(typeDeclarationId) && typeDeclarationId.indexOf("typeDeclaration") == 0)
          {
             // For data created in current model, Structured type in different model
             try
