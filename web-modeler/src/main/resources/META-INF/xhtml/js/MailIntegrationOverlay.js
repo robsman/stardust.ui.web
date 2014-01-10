@@ -870,7 +870,7 @@ define(
 					var markup = CKEDITOR.instances[this.mailTemplateEditor.id]
 							.getData();
 
-					if (this.responseTypeSelect != "none") {
+					if (this.responseTypeSelect.val() != "none") {
 						markup += this.createResponseOptionString();
 					}
 
