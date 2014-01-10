@@ -46,7 +46,7 @@ public class UserPreferencesHelper implements Serializable
    private PreferenceProvider preferenceProvider;
    
    private String moduleId;
-   private PreferenceEditor userPreferencesEditor;
+   private transient PreferenceEditor userPreferencesEditor;
    private PreferenceStore userPreferencesStore;
 
    /**

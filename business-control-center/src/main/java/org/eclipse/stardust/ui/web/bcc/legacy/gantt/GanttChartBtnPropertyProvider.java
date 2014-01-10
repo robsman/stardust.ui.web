@@ -48,7 +48,7 @@ public class GanttChartBtnPropertyProvider
 
    protected IPreferencesManager pm;
 
-   protected IPreferenceEditor preferencesEditor;
+   protected transient IPreferenceEditor preferencesEditor;
 
    protected IPreferenceStore preferencesStore;
 

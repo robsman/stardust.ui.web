@@ -73,7 +73,7 @@ public class TrafficLightViewPropertyProvider
 
    private IPreferencesManager pm;
 
-   private IPreferenceEditor preferencesEditor;
+   private transient IPreferenceEditor preferencesEditor;
 
    private IPreferenceStore preferencesStore;
 
