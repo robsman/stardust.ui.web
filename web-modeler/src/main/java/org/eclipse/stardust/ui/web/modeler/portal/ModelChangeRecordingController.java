@@ -26,6 +26,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalUiController;
+import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent.PerspectiveEventType;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.modeler.edit.recording.ModelChangeRecorder;
 import org.eclipse.stardust.ui.web.modeler.edit.recording.ModelChangeRecording;
@@ -142,6 +144,9 @@ public class ModelChangeRecordingController extends AbstractLaunchPanel implemen
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
             activateSessionLogPanelIframeJS);
       PortalApplication.getInstance().addEventScript(activateSessionLogPanelIframeJS);
+
+      PortalUiController.getInstance().broadcastNonVetoablePerspectiveEvent(
+            PerspectiveEventType.LAUNCH_PANELS_ACTIVATED);
    }
 
    /**
@@ -155,5 +160,8 @@ public class ModelChangeRecordingController extends AbstractLaunchPanel implemen
             deactivateSessionLogPanelPanelIframeJS);
       PortalApplication.getInstance().addEventScript(
             deactivateSessionLogPanelPanelIframeJS);
+
+      PortalUiController.getInstance().broadcastNonVetoablePerspectiveEvent(
+            PerspectiveEventType.LAUNCH_PANELS_DEACTIVATED);
    }
 }
