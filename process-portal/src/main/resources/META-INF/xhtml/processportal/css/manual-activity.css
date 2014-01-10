@@ -98,8 +98,8 @@ body, table {
 }
 
 .panel-list-tbl-row-sel {
-	/*background-color: #FFFFCA;*/
-	background: #FFFFE0 url("../../common/css/css-images/row-selected.png") bottom repeat-x;
+	background-color: #CCEDFF;
+	/*background: #FFFFE0 url("../../common/css/css-images/row-selected.png") bottom repeat-x;*/
 }
 
 .panel-list-tbl-cell {
