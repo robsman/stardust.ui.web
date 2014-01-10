@@ -33,6 +33,8 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
@@ -44,6 +46,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
  */
 public class ModelUtils
 {
+   private static final Logger trace = LogManager.getLogger(ModelUtils.class);
+   
    public static enum SystemDefinedDataType
    {
       PROCESS_ID,
@@ -420,6 +424,21 @@ public class ModelUtils
         {
            refModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
         }
+         if (typeDeclarationId.indexOf("typeDeclaration") == 0)
+         {
+            // For data created in current model, Structured type in different model
+            try
+            {
+               String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
+               typeDeclarationId = parts[1];
+               Model newRefModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(parts[0]);
+               refModel = newRefModel != null ? newRefModel : refModel;
+            }
+            catch (Exception e)
+            {
+               trace.error("Error occured in Type declaration parsing", e);
+            }
+         }
       }
       else
       {
@@ -429,7 +448,6 @@ public class ModelUtils
 
       return XPathUtils.getXPaths(refModel, typeDeclarationId, dm.getDataPath());
    }
-
 
    /**
     * @return
