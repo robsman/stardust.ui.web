@@ -1,13 +1,14 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_constants",
+				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_typeDeclaration",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
 				"bpm-modeler/js/m_codeEditorAce"],
-		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
+		function(m_utils, m_i18nUtils, m_constants,m_dialog, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
 				m_parameterDefinitionsPanel, m_codeEditorAce) {
 			return {
@@ -956,6 +957,9 @@ define(
 				 */
 				RestServiceOverlay.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
+						
+						if(!this.validateParameterDefinitionsChanges(parameterDefinitionsChanges))
+							return;
 					this.view
 							.submitChanges({
 								contexts : {
@@ -996,13 +1000,38 @@ define(
 					}
 				};
 				
+				RestServiceOverlay.prototype.validateParameterDefinitionsChanges = function(parameterDefinitionsChanges) {
+					if(parameterDefinitionsChanges){
+					this.view.errorMessages=[];
+					this.view.errorMessagesList.empty();
+					m_dialog.makeInvisible(this.view.errorMessagesList);
+					
+					this.parameterDefinitionsPanel.parameterDefinitionNameInput.removeClass("error");
+					for ( var n = 0; n < parameterDefinitionsChanges.length; ++n) {
+						var parameterDefinition = parameterDefinitionsChanges[n];
 
+						if (parameterDefinition.name.indexOf("-") != -1 ) {
+							this.view.errorMessages.push(parameterDefinition.name+" is not a valid name."); 
+							this.parameterDefinitionsPanel.parameterDefinitionNameInput.addClass("error");
+						//	return false;
+						}
+
+
+					}
+					}
+					
+					if (this.view.errorMessages.length != 0){
+						this.view.showErrorMessages();
+						return false;
+					}
+				}
 				/**
 				 * 
 				 */
 				RestServiceOverlay.prototype.validate = function() {
 
 					this.uriInput.removeClass("error");
+					this.parameterDefinitionsPanel.parameterDefinitionNameInput.removeClass("error");
 					this.httpBasicAuthUserInput.removeClass("error");
 					this.httpBasicAuthPwdInput.removeClass("error");
 					this.httpBasicAuthPwdInput.removeClass("warn");
