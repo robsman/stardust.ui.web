@@ -423,8 +423,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				ret.value = "short";
 				ret.key = "short";
 			} else if (path.typeName == "long" || path.typeName == "java.lang.Long") {
-				ret.type = "ng-pattern";
-				ret.value = /^(\+|-)?([\d]{0,19})$/;
+				ret.type = "sd-validate";
+				ret.value = "long";
 				ret.key = "long";
 			} else if (path.typeName == "float" || path.typeName == "java.lang.Float") {
 				ret.type = "ng-pattern";

@@ -169,7 +169,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 									success = true;
 								} else {
 									try {
-										if (validate === "byte" || validate === "short" || validate === "integer") {
+										if (validate === "byte" || validate === "short" || validate === "integer" || validate === "long") {
 											val = new Number(value);
 											if (!isNaN(val)) {
 												if (validate === "byte") {
@@ -182,6 +182,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 													}
 												} else if (validate === "integer") {
 													if (val >= -2147483648 && val <= 2147483647) {
+														success = true;
+													}
+												} else if (validate === "long") {
+													if (val >= -9223372036854775808 && val <= 9223372036854775807) {
 														success = true;
 													}
 												}
