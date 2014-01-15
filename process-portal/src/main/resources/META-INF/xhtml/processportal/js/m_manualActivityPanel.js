@@ -688,10 +688,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 					var value = {};
 					for (var i in path.children) {
 						if (path.children[i].isPrimitive && !path.children[i].isList) {
+							var key = path.children[i].id;
+
 							if ("boolean" === path.children[i].typeName || "java.lang.Boolean" === path.children[i].typeName) {
-								var key = path.children[i].id;
 								value[key] = false;
-							}							
+							}
+
+							if (path.children[i].isEnum) {
+								marshalEnumValue(path.children[i], value, key);
+							}
 						}
 					}
 					list.push(value);
