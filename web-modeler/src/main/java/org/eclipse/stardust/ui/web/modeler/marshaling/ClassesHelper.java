@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public final class ClassesHelper
 {

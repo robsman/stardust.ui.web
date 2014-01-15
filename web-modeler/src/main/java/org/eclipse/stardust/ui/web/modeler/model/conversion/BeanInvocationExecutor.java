@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
@@ -48,8 +49,8 @@ public class BeanInvocationExecutor extends RequestExecutor
    @Override
    public JsonObject applyChange(JsonObject cmdJson)
    {
-      Response response = modelerSessionRestController.applyChange(jsonIo
-            .writeJsonObject(cmdJson));
+      Response response = modelerSessionRestController.applyChange(jsonIo.gson()
+            .fromJson(cmdJson, CommandJto.class));
 
       if (Status.CREATED.getStatusCode() == response.getStatus()
             || Status.OK.getStatusCode() == response.getStatus())
