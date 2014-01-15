@@ -29,11 +29,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -124,22 +137,17 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDTypeDefinition;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  *
  * @author Marc.Gille
  *
  */
-public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
+@Service
+@ModelingSessionScoped
+public class ModelElementUnmarshaller implements ModelUnmarshaller
 {
    static final String ABORT_ACTIVITY_NAME = "Abort Activity";
 
@@ -147,9 +155,18 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private Map<Class<? >, String[]> propertiesMap;
 
-   protected abstract ModelManagementStrategy modelManagementStrategy();
+   protected ModelManagementStrategy modelManagementStrategy()
+   {
+      return modelingSession.modelManagementStrategy();
+   }
 
-   protected abstract ModelingSession modelingSession();
+   protected ModelingSession modelingSession()
+   {
+      return modelingSession;
+   }
+
+   @Resource
+   private ModelingSession modelingSession;
 
    // TODO For documentation creation
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
@@ -166,9 +183,6 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private static final Logger logger = LogManager.getLogger(ModelElementUnmarshaller.class);
 
-   /**
-   *
-   */
    public ModelElementUnmarshaller()
    {
       propertiesMap = newHashMap();

@@ -12,6 +12,17 @@
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.modeler" />
 
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+		<property name="scopes">
+			<map>
+				<entry key="modelingSession">
+					<bean class="org.eclipse.stardust.ui.web.modeler.integration.spring.scope.ModelingSessionScopeProvider"
+						autowire="constructor" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
 	<bean name="bpmModelerCmdHandlerRegistry" class="org.eclipse.stardust.ui.web.modeler.edit.CommandHandlerRegistry"
 		scope="singleton" />
 

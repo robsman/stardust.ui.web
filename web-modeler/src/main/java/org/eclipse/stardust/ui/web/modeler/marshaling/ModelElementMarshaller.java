@@ -17,6 +17,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
@@ -44,7 +45,12 @@ import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+
 import org.eclipse.xsd.XSDSchema;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -57,19 +63,38 @@ import com.google.gson.JsonPrimitive;
  * @author Marc.Gille
  * @author Robert Sauer
  */
-public abstract class ModelElementMarshaller implements ModelMarshaller
+@Service
+@ModelingSessionScoped
+public class ModelElementMarshaller implements ModelMarshaller
 {
-   protected abstract EObjectUUIDMapper eObjectUUIDMapper();
+   protected EObjectUUIDMapper eObjectUUIDMapper()
+   {
+      return modelingSession.uuidMapper();
+   }
 
-   protected abstract ModelManagementStrategy modelManagementStrategy();
+   protected ModelManagementStrategy modelManagementStrategy()
+   {
+      return modelingSession.modelManagementStrategy();
+   }
 
-   protected abstract ModelingSession modelingSession();
+   protected ModelingSession modelingSession()
+   {
+      return modelingSession;
+   }
+
+   private final ModelingSession modelingSession;
 
    private ModelBuilderFacade modelBuilderFacade;
 
-   private JsonMarshaller jsonIo = new JsonMarshaller();
+   private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    private static final Logger logger = LogManager.getLogger(ModelElementMarshaller.class);
+
+   @Autowired
+   public ModelElementMarshaller(ModelingSession modelingSession)
+   {
+      this.modelingSession = modelingSession;
+   }
 
    /**
     *

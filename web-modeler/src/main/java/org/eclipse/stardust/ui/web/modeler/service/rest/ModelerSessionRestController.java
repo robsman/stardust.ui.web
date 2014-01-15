@@ -42,6 +42,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
+import org.eclipse.stardust.ui.web.modeler.common.ModelingSessionLocator;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -53,7 +54,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
-import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeJto.UiStateJto;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
@@ -74,7 +74,7 @@ public class ModelerSessionRestController
    private JsonMarshaller jsonIo;
 
    @Resource
-   private ModelService modelService;
+   private ModelingSessionLocator sessionLocator;
 
    private static CommandJto CommandJto;
 
@@ -121,7 +121,7 @@ public class ModelerSessionRestController
       ModelMarshaller marshaller;
       if (!isEmpty(jto.modelId))
       {
-         ModelingSession currentSession = modelService.currentSession();
+         ModelingSession currentSession = currentSession();
          ModelRepository modelRepository = currentSession.modelRepository();
          EObject model = modelRepository.findModel(jto.modelId);
          ModelBinding<EObject> modelBinding = modelRepository.getModelBinding(model);
@@ -129,7 +129,7 @@ public class ModelerSessionRestController
       }
       else
       {
-         marshaller = modelService.modelElementMarshaller();
+         marshaller = currentSession().modelElementMarshaller();
       }
 
       try
@@ -212,7 +212,7 @@ public class ModelerSessionRestController
    {
       List<ModelLockJto> modelLocksJto = newArrayList();
 
-      ModelingSession session = modelService.currentSession();
+      ModelingSession session = currentSession();
       for (EObject model : session.modelRepository().getAllModels())
       {
          modelLocksJto.add(toModelLockJto(session, model));
@@ -269,7 +269,7 @@ public class ModelerSessionRestController
 
    public StreamingOutput getCurrentModelState(String modelId, final ModelFormat modelFormat)
    {
-      ModelRepository modelRepository = modelService.currentSession().modelRepository();
+      ModelRepository modelRepository = currentSession().modelRepository();
 
       final EObject model = modelRepository.findModel(modelId);
       if (null != model)
@@ -320,7 +320,7 @@ public class ModelerSessionRestController
    public String showCurrentChange()
    {
       JsonObject result = new JsonObject();
-      EditingSession editingSession = modelService.currentSession().getSession();
+      EditingSession editingSession = currentSession().getSession();
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
@@ -345,7 +345,7 @@ public class ModelerSessionRestController
       if ("undoMostCurrent".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = modelService.currentSession().getSession();
+         EditingSession editingSession = currentSession().getSession();
          if (editingSession.canUndo())
          {
             Modification undoneChange = editingSession.undoLast();
@@ -385,7 +385,7 @@ public class ModelerSessionRestController
       else if ("redoLastUndo".equals(action))
       {
          JsonObject result = new JsonObject();
-         EditingSession editingSession = modelService.currentSession().getSession();
+         EditingSession editingSession = currentSession().getSession();
          if (editingSession.canRedo())
          {
             Modification redoneChange = editingSession.redoNext();
@@ -445,7 +445,7 @@ public class ModelerSessionRestController
    @Produces(MediaType.APPLICATION_JSON)
    public String getEditLockStatus(@PathParam("modelId") final String modelId)
    {
-      ModelingSession session = modelService.currentSession();
+      ModelingSession session = currentSession();
 
       EObject model = session.modelRepository().findModel(modelId);
       if (null == model)
@@ -462,7 +462,7 @@ public class ModelerSessionRestController
    @Produces(MediaType.APPLICATION_JSON)
    public String breakEditLockForModel(@PathParam("modelId") final String modelId)
    {
-      ModelingSession session = modelService.currentSession();
+      ModelingSession session = currentSession();
 
       EObject model = session.modelRepository().findModel(modelId);
       if (null == model)
@@ -502,15 +502,15 @@ public class ModelerSessionRestController
       String commandId = commandJto.commandId;
       String modelId = commandJto.modelId;
 
-      ModelRepository modelRepository = modelService.currentSession().modelRepository();
+      ModelRepository modelRepository = currentSession().modelRepository();
       EObject model = modelRepository.findModel(modelId);
 
       try
       {
          // obtain session to ensure we hold an edit lock for the model
          EditingSession editingSession = (null != model) //
-               ? modelService.currentSession().getEditSession(model)
-               : modelService.currentSession().getSession();
+               ? currentSession().getEditSession(model)
+               : currentSession().getSession();
 
          if (commandId.startsWith("model."))
          {
@@ -552,7 +552,7 @@ public class ModelerSessionRestController
             if (null != changeDescrJto.uuid)
             {
                String uuid = changeDescrJto.uuid;
-               targetElement = modelService.uuidMapper().getEObject(uuid);
+               targetElement = currentSession().uuidMapper().getEObject(uuid);
             }
             else
             {
@@ -563,7 +563,7 @@ public class ModelerSessionRestController
             String modelFormat;
             if (null != model)
             {
-               modelFormat = modelService.currentSession().modelRepository()
+               modelFormat = currentSession().modelRepository()
                      .getModelFormat(model);
             }
             else
@@ -605,7 +605,7 @@ public class ModelerSessionRestController
       List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
 
       // pre-process change descriptions
-      ModelBinding<EObject> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
+      ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
       try
       {
          for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
@@ -669,7 +669,7 @@ public class ModelerSessionRestController
       }
       else
       {
-         ModelBinding<EObject> modelBinding = modelService.currentSession().modelRepository().getModelBinding(model);
+         ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
          ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
          if ( !isEmpty(changeDescrJto.uuid))
          {
@@ -702,7 +702,7 @@ public class ModelerSessionRestController
       if (null != changeDescrJto.uuid)
       {
          String uuid = changeDescrJto.uuid;
-         targetElement = modelService.uuidMapper().getEObject(uuid);
+         targetElement = currentSession().uuidMapper().getEObject(uuid);
 
          if (null == targetElement)
          {
@@ -805,6 +805,11 @@ public class ModelerSessionRestController
             }
          }
       };
+   }
+
+   private ModelingSession currentSession()
+   {
+      return sessionLocator.currentModelingSession();
    }
 
    public static class ChangeJto

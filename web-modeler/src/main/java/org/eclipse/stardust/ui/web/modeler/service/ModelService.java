@@ -653,7 +653,7 @@ public class ModelService
             {
                JsonObject failedModel = new JsonObject();
                failedModel.addProperty("id", modelRepository.getModelBinding(model).getModelId(model));
-               failedModel.addProperty("uuid",  uuidMapper().getUUID(model));
+               failedModel.addProperty("uuid",  currentSession().uuidMapper().getUUID(model));
                failedModel.addProperty("error", e.getMessage());
                failed.add(failedModel);
                e.printStackTrace();
@@ -1343,7 +1343,7 @@ public class ModelService
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
-      uuidMapper().map(processDefinition);
+      currentSession().uuidMapper().map(processDefinition);
 
       // TODO Correct flags
 
@@ -1668,7 +1668,7 @@ public class ModelService
       ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
-      uuidMapper().map(processDefinition);
+      currentSession().uuidMapper().map(processDefinition);
 
       ModelBuilderFacade.setBooleanAttribute(processDefinition, PredefinedConstants.PROCESS_IS_AUXILIARY_ATT, true);
 

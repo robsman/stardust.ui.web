@@ -13,7 +13,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -25,10 +25,12 @@ import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
 @Component
-@Scope("prototype")
-public class ModelingSession
+@Primary
+@ModelingSessionScoped
+public final class ModelingSession
 {
    public static final String SUPERUSER = ModelingSession.class.getName() + ".Superuser";
 
@@ -64,43 +66,14 @@ public class ModelingSession
    @Resource
    private ModelPersistenceService modelPersistenceService;
 
+   @Resource
    private ModelRepository modelRepository;
 
-   private ModelElementMarshaller modelElementMarshaller = new ModelElementMarshaller()
-   {
-      @Override
-      protected EObjectUUIDMapper eObjectUUIDMapper()
-      {
-         return uuidMapper();
-      }
+   @Resource
+   private ModelElementMarshaller xpdlMarshaller;
 
-      @Override
-      protected ModelManagementStrategy modelManagementStrategy()
-      {
-         return ModelingSession.this.modelManagementStrategy();
-      }
-
-      @Override
-      protected ModelingSession modelingSession()
-      {
-         return ModelingSession.this;
-      }
-   };
-
-   private ModelElementUnmarshaller modelElementUnmarshaller = new ModelElementUnmarshaller()
-   {
-      @Override
-      protected ModelManagementStrategy modelManagementStrategy()
-      {
-         return ModelingSession.this.modelManagementStrategy();
-      }
-
-      @Override
-      protected ModelingSession modelingSession()
-      {
-         return ModelingSession.this;
-      }
-   };
+   @Resource
+   private ModelElementUnmarshaller xpdlUnmarshaller;
 
    public void reset()
    {
@@ -110,7 +83,7 @@ public class ModelingSession
 
    public String getId()
    {
-      return getSession().getId();
+      return editingSession.getId();
    }
 
    public String getOwnerId()
@@ -179,21 +152,17 @@ public class ModelingSession
 
    public ModelRepository modelRepository()
    {
-      if (null == modelRepository)
-      {
-         this.modelRepository = new ModelRepository(this);
-      }
       return modelRepository;
    }
 
    public ModelElementMarshaller modelElementMarshaller()
    {
-      return modelElementMarshaller;
+      return xpdlMarshaller;
    }
 
    public ModelElementUnmarshaller modelElementUnmarshaller()
    {
-      return modelElementUnmarshaller;
+      return xpdlUnmarshaller;
    }
 
    public EObjectUUIDMapper uuidMapper()
@@ -263,7 +232,7 @@ public class ModelingSession
      return color;
    }
 
-   public synchronized EditingSession getSession()
+   public EditingSession getSession()
    {
       return editingSession;
    }
@@ -314,7 +283,7 @@ public class ModelingSession
    public boolean canSaveModel(String modelId)
    {
       EObject model = modelRepository().findModel(modelId);
-      if (getSession().isTrackingModel(model))
+      if (editingSession.isTrackingModel(model))
       {
          return ensureEditLock(model, false);
       }

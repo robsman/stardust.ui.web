@@ -1,64 +1,40 @@
 package org.eclipse.stardust.ui.web.modeler.common;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.Functor;
 import org.eclipse.stardust.common.TransformingIterator;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
+@Service
+@ModelingSessionScoped
 public class ModelRepository
 {
    private static final Logger trace = LogManager.getLogger(ModelRepository.class);
 
    private final ModelingSession session;
 
-   private final List<ModelBinding<? extends EObject>> modelBindings;
+   @Resource
+   private List<ModelBinding<? extends EObject>> modelBindings;
 
+   @Autowired
    public ModelRepository(ModelingSession session)
    {
       this.session = session;
-
-      this.modelBindings = newArrayList();
-      modelBindings.add(new XpdlBinding(session, session.modelElementMarshaller(),
-            session.modelElementUnmarshaller()));
-
-      // TODO migrate to Spring based discovery?
-      // see also DefaultModelManagementStrategy
-      try
-      {
-         String fqcnBpmn2Binding = "org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Binding";
-         @SuppressWarnings("unchecked")
-         Class<? extends ModelBinding<?>> clsBpmn2Binding = Reflect.getClassFromClassName(fqcnBpmn2Binding, false);
-         if (null != clsBpmn2Binding)
-         {
-            modelBindings.add(clsBpmn2Binding.cast(Reflect.createInstance(
-                  clsBpmn2Binding, //
-                  new Class<?>[] {ModelingSession.class}, //
-                  new Object[] {session})));
-            trace.info("Registered BPMN2 model binding.");
-         }
-         else
-         {
-            trace.info("Could not load BPMN2 model binding, BPMN2 support will not be available.");
-         }
-      }
-      catch (Exception e)
-      {
-         trace.warn("Failed loading BPMN2 model binding.", e);
-      }
    }
 
    public EObject findModel(String modelId)

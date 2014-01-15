@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.edit;
 
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newLinkedList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -17,6 +18,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
+import org.eclipse.stardust.ui.web.modeler.integration.spring.scope.ModelingSessionScope;
+import org.eclipse.stardust.ui.web.modeler.integration.spring.scope.ModelingSessionScopeManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
 
 @Component
@@ -69,11 +72,8 @@ public class ModelingSessionManager
       if (null == session)
       {
          // no original session yet, start a new one
-         userSessions.putIfAbsent(userId, createSession(userId, userIdProvider.getCurrentUserDisplayName()));
+         createSession(userId, userIdProvider.getCurrentUserDisplayName());
          session = userSessions.get(userId);
-
-         // the real user session should be tracked by ID as well
-         sessions.putIfAbsent(session.getId(), session);
       }
 
       return session;
@@ -102,18 +102,54 @@ public class ModelingSessionManager
       }
    }
 
-   private ModelingSession createSession(String userId, String userName)
+   /**
+    * Creates a new modeling session for the given user.
+    * <p>
+    * The new session will not return directly but should be retrieved from the
+    * {@link #userSessions} map afterwards (to cater for concurrent creation attempts).
+    *
+    * @param userId
+    * @param userName
+    */
+   private void createSession(String userId, String userName)
    {
-      ModelingSession session = null;
-      // modeling
-      for (String beanName : context.getBeanNamesForType(ModelingSession.class))
+      String beanName = null;
+      for (String candidateName : context.getBeanNamesForType(ModelingSession.class))
       {
-         if (context.isPrototype(beanName))
+         if (context.getBeanDefinition(candidateName).isPrimary())
          {
-            session = context.getBean(beanName, ModelingSession.class);
+            beanName = candidateName;
+            break;
+         }
+      }
+
+      if (!isEmpty(beanName))
+      {
+         // manually creating a raw instance, to have a chance to establish a new
+         // modeling session scope
+         ModelingSession session = new ModelingSession();
+
+         // only proceed fully if this is the new primary session for the user
+         if (null == userSessions.putIfAbsent(userId, session))
+         {
+            // track session also by id
+            sessions.putIfAbsent(session.getId(), session);
+
+            // establish the associated Spring scope
+            ModelingSessionScopeManager sessionScopeProvider = context
+                  .getBean(ModelingSessionScopeManager.class);
+            ModelingSessionScope newScope = sessionScopeProvider
+                  .createNewSessionScope(session.getId());
+            newScope.putBean(beanName, session);
+
+            // now fully initialize the instance, which potentially involves other
+            // modeling sessions scoped beans
+            context.configureBean(session, beanName);
+
             session.setOwnerId(userId);
             session.setOwnerName(userName);
             session.setOwnerColor(session.generateColor());
+
             session.addStateListener(new ModelingSession.SessionStateListener()
             {
                @Override
@@ -138,15 +174,12 @@ public class ModelingSessionManager
                }
 
             });
-            break;
          }
       }
-      if (null == session)
+      else
       {
-         throw new UnsupportedOperationException("Missing ModelingSession prototype bean definition.");
+         throw new UnsupportedOperationException("Missing ModelingSession bean definition.");
       }
-
-      return session;
    }
 
    /**

@@ -3,7 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.bpmn2;
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.bpmn2.Bpmn2Utils.findContainingModel;
-import static org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils.setExtensionAttribute;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,19 +13,30 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
+@Service
+@ModelingSessionScoped
 public class Bpmn2Binding extends ModelBinding<Definitions>
 {
+   static
+   {
+      ModelBinding.trace.info("Loaded BPMN2 model binding.");
+   }
+
    private AtomicLong oidGenerator = new AtomicLong(1L);
 
    private final ConcurrentMap<Definitions, ConcurrentMap<EObject, String>> uuidRegistry = newConcurrentHashMap();
 
    private final ConcurrentMap<Definitions, ConcurrentMap<EObject, Long>> oidRegistry = newConcurrentHashMap();
 
+   @Autowired
    public Bpmn2Binding(ModelingSession session)
    {
       super(session, new Bpmn2Navigator(), new Bpmn2ModelMarshaller(),
@@ -85,12 +95,13 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
          modelUuids = uuidRegistry.get(model);
       }
 
-      if ( !modelUuids.containsKey(element))
+      if (!modelUuids.containsKey(element))
       {
          String uuid = null;
          if (element instanceof BaseElement)
          {
-            uuid = Bpmn2ExtensionUtils.getExtensionAttribute((BaseElement) element, "uuid");
+            uuid = Bpmn2ExtensionUtils.getExtensionAttribute((BaseElement) element,
+                  "uuid");
          }
 
          if (isEmpty(uuid))
@@ -130,7 +141,7 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    {
       ConcurrentMap<EObject, String> modelUuids = uuidRegistry.get(model);
       String uuid = modelUuids.get(oldElement);
-      if ( !isEmpty(uuid))
+      if (!isEmpty(uuid))
       {
          modelUuids.putIfAbsent(newElement, uuid);
          modelUuids.remove(oldElement, uuid);
@@ -172,7 +183,7 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
          oidRegistry.putIfAbsent(model, new ConcurrentHashMap<EObject, Long>());
          modelOids = oidRegistry.get(model);
       }
-      if ( !modelOids.containsKey(element))
+      if (!modelOids.containsKey(element))
       {
          modelOids.putIfAbsent(element, oidGenerator.getAndIncrement());
       }
