@@ -1486,6 +1486,12 @@ if (!window["BridgeUtils"].FrameManager) {
 				var contentPanelAnchor = viewFrameData.doc.getElementById(viewFrameData.anchor);
 				if (contentPanelAnchor) {
 					var pos = findPosition(contentPanelAnchor);
+					var posAnchor = {}
+					if (pos) {
+						posAnchor.x = pos.x;
+						posAnchor.y = pos.y;
+					}
+
 					var posFrame = findPosition(viewFrameData.win);
 
 					// Sometimes frame position comes as zero
@@ -1505,7 +1511,8 @@ if (!window["BridgeUtils"].FrameManager) {
 						var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
 						var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
 						if (iFrameHeight == 0) {
-							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - 31;
+							var delta = posAnchor.y > 0 ? posAnchor.y : 41;
+							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - delta;
 						}
 	
 						iFrameWith = iFrameWith + widthAdjustment;
