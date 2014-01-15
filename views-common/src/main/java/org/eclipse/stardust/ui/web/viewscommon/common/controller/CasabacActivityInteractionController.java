@@ -110,4 +110,10 @@ public class CasabacActivityInteractionController implements IActivityInteractio
       return false;
    }
 
+   @Override
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      return false;
+   }
+
 }

@@ -69,4 +69,10 @@ public class ActivityInteractionHandler2Adapter implements IActivityInteractionC
       return false;
    }
 
+   @Override
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      return false;
+   }
+
 }

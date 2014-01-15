@@ -81,7 +81,14 @@ public class JspActivityInteractionController
 
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      // TODO any preconditions to check?
+      try
+      {
+         unregisterInteraction(ai);
+      }
+      catch (Exception e)
+      {
+         trace.error(e);
+      }
       return true;
    }
 
@@ -101,10 +108,32 @@ public class JspActivityInteractionController
          DataMapping mapping = (DataMapping) iterator.next();
          String mappingID = mapping.getId();
          outData.put(mappingID, webSession.getAttribute(mappingID));
-         webSession.removeAttribute(mappingID);
       }         
 
       return outData;
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#unregisterInteraction(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
+    */
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      HttpSession webSession = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+
+      ApplicationContext applicationContext = ai.getActivity().getApplicationContext(PredefinedConstants.JSP_CONTEXT);
+
+      if (applicationContext == null || webSession == null)
+      {
+         return false;
+      }
+      
+      for (Iterator iterator = applicationContext.getAllOutDataMappings().iterator(); iterator.hasNext();)
+      {
+         DataMapping mapping = (DataMapping) iterator.next();
+         webSession.removeAttribute(mapping.getId());
+      }
+
+      return true;
    }
 
    @Override

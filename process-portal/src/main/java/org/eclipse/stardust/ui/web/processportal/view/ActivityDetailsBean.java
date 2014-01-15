@@ -2095,6 +2095,10 @@ public class ActivityDetailsBean extends UIComponentBean
       else
       {
          outDataValues = interactionController.getOutDataValues(ai);
+         if (releaseInteraction)
+         {
+            interactionController.unregisterInteraction(ai);
+         }
       }
 
       if (dataAvailable)

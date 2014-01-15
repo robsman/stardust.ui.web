@@ -73,4 +73,10 @@ public class ManualActivityInteractionController implements IActivityInteraction
       return false;
    }
 
+   @Override
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      return false;
+   }
+
 }

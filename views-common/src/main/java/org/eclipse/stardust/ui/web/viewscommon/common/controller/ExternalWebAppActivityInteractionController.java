@@ -365,14 +365,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    {
       if ((ClosePanelScenario.SUSPEND == scenario) || (ClosePanelScenario.ABORT == scenario))
       {
-         // no out data will be retrieved
-
-         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
-         if (null != registry)
-         {
-            // destroy interaction resource
-            registry.unregisterInteraction(getInteractionId(ai));
-         }
+        unregisterInteraction(ai);
       }
 
       return true;
@@ -421,9 +414,6 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                   }
                }
             }
-
-            // destroy interaction resource
-            registry.unregisterInteraction(interaction.getId());
          }
          else
          {
@@ -434,6 +424,19 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return outData;
    }
 
+   @Override
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+      if (registry != null)
+      {
+         // destroy interaction resource
+         registry.unregisterInteraction(getInteractionId(ai));
+         return true;
+      }
+      return false;
+   }
+   
    @Override
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {

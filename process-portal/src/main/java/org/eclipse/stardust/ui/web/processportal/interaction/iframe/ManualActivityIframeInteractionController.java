@@ -183,15 +183,8 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       else
       {
          // destroy interaction
-         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
-               InteractionRegistry.BEAN_ID);
-
-         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
-         if (null != interaction)
-         {
-            registry.unregisterInteraction(interaction.getId());
-         }
-
+         unregisterInteraction(ai);
+         
          // synchronously close panel as no custom post processing needs to occur
          return true;
       }
@@ -238,8 +231,6 @@ public class ManualActivityIframeInteractionController implements IActivityInter
             trace.debug("converting file system documents to JCR documents. - finished");
             outData = interaction.getOutDataValues();
          }
-
-         registry.unregisterInteraction(interaction.getId());
       }
       return outData;
    }
@@ -359,6 +350,21 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    {      
    }
   
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#unregisterInteraction(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
+    */
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+      if (registry != null)
+      {
+         // destroy interaction resource
+         registry.unregisterInteraction(getInteractionId(ai));
+         return true;
+      }
+      return false;
+   }
+
    /*
     * (non-Javadoc)
     * 
