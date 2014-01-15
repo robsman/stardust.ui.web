@@ -924,8 +924,7 @@ define(
 
 					// set content type
 					route += "<setHeader headerName=\"contentType\">\n";
-					route += "   <constant>" + this.mailFormatSelect.val()
-							+ "</constant>\n";
+					route += "   <constant>" + this.mailFormatSelect.val()+ "</constant>\n";
 					route += "</setHeader>";
 
 					// set processed response to body
@@ -936,10 +935,10 @@ define(
 					// execute smpt endpoint
 					route += "<to uri=\"smtp://" + this.serverInput.val()
 					if(!m_utils.isEmptyString(this.userInput.val()) && !m_utils.isEmptyString(this.passwordInput.val())){
-						+ "?username=" + this.userInput.val()
-						+ "&amp;password=" + this.passwordInput.val();
+						route += "?username=" + this.userInput.val()
+						route += "&amp;password=" + this.passwordInput.val();
 					}else if(!m_utils.isEmptyString(this.userInput.val()) ){
-						+ "?username=" + this.userInput.val()
+						route += "?username=" + this.userInput.val()
 					}
 					route += "\"/>";
 
