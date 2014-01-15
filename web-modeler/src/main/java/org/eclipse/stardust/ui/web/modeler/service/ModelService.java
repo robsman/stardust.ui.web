@@ -128,6 +128,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.xsd.XSDSchema;
@@ -399,11 +400,6 @@ public class ModelService
    {
       getServiceFactory();
       return currentSession().modelManagementStrategy();
-   }
-
-   public ModelElementMarshaller modelElementMarshaller()
-   {
-      return currentSession().modelElementMarshaller();
    }
 
    /**
@@ -1266,10 +1262,7 @@ public class ModelService
          xpdlModel = getModelManagementStrategy().attachModel(modelId);
       }
 
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            xpdlModel, processId);
-
-      return modelElementMarshaller().toProcessDefinitionDiagram(processDefinition)
+      return currentSession().xpdlMarshaller().toProcessDiagramJson(xpdlModel, processId)
             .toString();
    }
 

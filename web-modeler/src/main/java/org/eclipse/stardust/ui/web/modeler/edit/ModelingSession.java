@@ -23,8 +23,9 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
 @Component
@@ -70,10 +71,12 @@ public final class ModelingSession
    private ModelRepository modelRepository;
 
    @Resource
-   private ModelElementMarshaller xpdlMarshaller;
+   @ModelFormat(ModelFormat.XPDL)
+   private ModelMarshaller xpdlMarshaller;
 
    @Resource
-   private ModelElementUnmarshaller xpdlUnmarshaller;
+   @ModelFormat(ModelFormat.XPDL)
+   private ModelUnmarshaller xpdlUnmarshaller;
 
    public void reset()
    {
@@ -155,12 +158,12 @@ public final class ModelingSession
       return modelRepository;
    }
 
-   public ModelElementMarshaller modelElementMarshaller()
+   public ModelMarshaller xpdlMarshaller()
    {
       return xpdlMarshaller;
    }
 
-   public ModelElementUnmarshaller modelElementUnmarshaller()
+   public ModelUnmarshaller xpdlUnmarshaller()
    {
       return xpdlUnmarshaller;
    }

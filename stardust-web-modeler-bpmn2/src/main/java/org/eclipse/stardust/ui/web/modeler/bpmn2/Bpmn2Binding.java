@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
 @Service
+@ModelFormat(ModelFormat.BPMN2)
 @ModelingSessionScoped
 public class Bpmn2Binding extends ModelBinding<Definitions>
 {
@@ -36,15 +38,20 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
 
    private final ConcurrentMap<Definitions, ConcurrentMap<EObject, Long>> oidRegistry = newConcurrentHashMap();
 
+   private final Bpmn2Navigator navigator;
+
+   private final Bpmn2ModelMarshaller marshaller;
+
+   private final Bpmn2ModelUnmarshaller unmarshaller;
+
    @Autowired
    public Bpmn2Binding(ModelingSession session)
    {
-      super(session, new Bpmn2Navigator(), new Bpmn2ModelMarshaller(),
-            new Bpmn2ModelUnmarshaller());
+      super(session);
 
-      ((Bpmn2Navigator) navigator).setBinding(this);
-      ((Bpmn2ModelMarshaller) marshaller).setBinding(this);
-      ((Bpmn2ModelUnmarshaller) unmarshaller).setBinding(this);
+      this.navigator = new Bpmn2Navigator(this);
+      this.marshaller = new Bpmn2ModelMarshaller(this);
+      this.unmarshaller = new Bpmn2ModelUnmarshaller(this);
    }
 
    @Override
@@ -63,6 +70,24 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    public String getModelId(Definitions model)
    {
       return Bpmn2Utils.getModelUuid(model);
+   }
+
+   @Override
+   public Bpmn2Navigator getNavigator()
+   {
+      return navigator;
+   }
+
+   @Override
+   public Bpmn2ModelMarshaller getMarshaller()
+   {
+      return marshaller;
+   }
+
+   @Override
+   public Bpmn2ModelUnmarshaller getUnmarshaller()
+   {
+      return unmarshaller;
    }
 
    public String getModelFileName(Definitions model)

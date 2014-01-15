@@ -16,18 +16,9 @@ public class Bpmn2Navigator implements ModelNavigator<Definitions>
 {
    private static final Bpmn2Package PKG_BPMN2 = Bpmn2Package.eINSTANCE;
 
-   private Bpmn2Binding bpmn2Binding;
-
-   public Bpmn2Navigator()
-   {
-   }
+   private final Bpmn2Binding bpmn2Binding;
 
    public Bpmn2Navigator(Bpmn2Binding bpmn2Binding)
-   {
-      setBinding(bpmn2Binding);
-   }
-
-   void setBinding(Bpmn2Binding bpmn2Binding)
    {
       this.bpmn2Binding = bpmn2Binding;
    }

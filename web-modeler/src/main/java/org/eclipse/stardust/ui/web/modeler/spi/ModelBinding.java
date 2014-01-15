@@ -17,21 +17,11 @@ public abstract class ModelBinding<M extends EObject>
 {
    public static final Logger trace = LogManager.getLogger(ModelBinding.class);
 
-   protected final ModelingSession session;
+   private final ModelingSession session;
 
-   protected final ModelNavigator<M> navigator;
-
-   protected final ModelMarshaller marshaller;
-
-   protected final ModelUnmarshaller unmarshaller;
-
-   protected ModelBinding(ModelingSession session, ModelNavigator<M> navigator,
-         ModelMarshaller marshaller, ModelUnmarshaller unmarshaller)
+   protected ModelBinding(ModelingSession session)
    {
       this.session = session;
-      this.navigator = navigator;
-      this.marshaller = marshaller;
-      this.unmarshaller = unmarshaller;
    }
 
    public abstract boolean isCompatible(EObject model);
@@ -45,10 +35,11 @@ public abstract class ModelBinding<M extends EObject>
       return session;
    }
 
-   public ModelNavigator<M> getNavigator()
-   {
-      return navigator;
-   }
+   public abstract ModelNavigator<M> getNavigator();
+
+   public abstract ModelMarshaller getMarshaller();
+
+   public abstract ModelUnmarshaller getUnmarshaller();
 
    public ModelPersistenceHandler<M> getPersistenceHandler(M model)
    {
@@ -58,14 +49,8 @@ public abstract class ModelBinding<M extends EObject>
 
    public void updateModelElement(EObject modelElement, JsonObject jto)
    {
-      unmarshaller.populateFromJson(modelElement, jto);
+      getUnmarshaller().populateFromJson(modelElement, jto);
    }
-
-   public ModelMarshaller getMarshaller()
-   {
-      return marshaller;
-   }
-
 
    public void serializeModel(M model, OutputStream oStream,
          Map<String, String> options)

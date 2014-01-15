@@ -129,7 +129,7 @@ public class ModelerSessionRestController
       }
       else
       {
-         marshaller = currentSession().modelElementMarshaller();
+         marshaller = currentSession().xpdlMarshaller();
       }
 
       try

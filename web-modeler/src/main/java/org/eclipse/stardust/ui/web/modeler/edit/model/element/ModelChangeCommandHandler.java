@@ -15,8 +15,6 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.util.Date;
-
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
@@ -125,7 +123,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       model.eResource().eAdapters().add(new SchemaLocatorAdapter());
 
       ModificationDescriptor changes = new ModificationDescriptor();
-      changes.added.add(modelService.modelElementMarshaller().toModelJson(model));
+      changes.added.add(modelService.currentSession().xpdlMarshaller().toModelJson(model));
       return changes;
    }
 
@@ -168,8 +166,8 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
                .getModelManagementStrategy();
          modelMgtStrategy.deleteModel(model);
 
-         changes.removed
-               .add(modelService.modelElementMarshaller().toModelOnlyJson(model));
+         changes.removed.add(modelService.currentSession().xpdlMarshaller()
+               .toModelJson(model));
       }
       return changes;
    }

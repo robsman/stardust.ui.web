@@ -183,7 +183,7 @@ public class DataChangeCommandHandler
          xsdElementDeclaration.setTypeDefinition(xsdTypeDefinition);
          xsdSchema.getContents().add(xsdElementDeclaration);
 
-         modelService().currentSession().modelElementUnmarshaller()
+         modelService().currentSession().xpdlUnmarshaller()
                .populateFromJson(declaration, request);
       }
 

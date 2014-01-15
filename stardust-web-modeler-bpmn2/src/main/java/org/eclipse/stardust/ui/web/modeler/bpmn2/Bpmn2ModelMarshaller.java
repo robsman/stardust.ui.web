@@ -117,14 +117,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
 {
    private static final Logger trace = LogManager.getLogger(Bpmn2ModelMarshaller.class);
 
-   private Bpmn2Binding bpmn2Binding;
+   private final Bpmn2Binding bpmn2Binding;
 
-   private final JsonMarshaller jsonIo = new JsonMarshaller();
+   private JsonMarshaller jsonIo = new JsonMarshaller();
 
    // TODO wire to Spring bean
    private final ExternalXmlSchemaManager externalXmlSchemaManager = new ExternalXmlSchemaManager();
 
-   void setBinding(Bpmn2Binding bpmn2Binding)
+   public Bpmn2ModelMarshaller(Bpmn2Binding bpmn2Binding)
    {
       this.bpmn2Binding = bpmn2Binding;
    }

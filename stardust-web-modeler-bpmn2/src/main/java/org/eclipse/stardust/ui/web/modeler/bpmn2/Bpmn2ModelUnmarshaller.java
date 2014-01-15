@@ -74,11 +74,11 @@ public class Bpmn2ModelUnmarshaller implements ModelUnmarshaller
 {
    private static final Logger trace = LogManager.getLogger(Bpmn2ModelUnmarshaller.class);
 
-   private Bpmn2Binding bpmn2Binding;
+   private final Bpmn2Binding bpmn2Binding;
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
-   void setBinding(Bpmn2Binding bpmn2Binding)
+   public Bpmn2ModelUnmarshaller(Bpmn2Binding bpmn2Binding)
    {
       this.bpmn2Binding = bpmn2Binding;
    }

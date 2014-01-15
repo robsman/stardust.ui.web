@@ -39,7 +39,6 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
@@ -59,7 +58,6 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
@@ -137,6 +135,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -146,6 +145,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
  *
  */
 @Service
+@ModelFormat(ModelFormat.XPDL)
 @ModelingSessionScoped
 public class ModelElementUnmarshaller implements ModelUnmarshaller
 {
@@ -154,16 +154,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    static final String COMPLETE_ACTIVITY_NAME = "Complete Activity";
 
    private Map<Class<? >, String[]> propertiesMap;
-
-   protected ModelManagementStrategy modelManagementStrategy()
-   {
-      return modelingSession.modelManagementStrategy();
-   }
-
-   protected ModelingSession modelingSession()
-   {
-      return modelingSession;
-   }
 
    @Resource
    private ModelingSession modelingSession;
@@ -179,7 +169,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private ModelBuilderFacade modelBuilderFacade;
 
-   private JsonMarshaller jsonIo = new JsonMarshaller();
+   @Resource
+   private JsonMarshaller jsonIo;
 
    private static final Logger logger = LogManager.getLogger(ModelElementUnmarshaller.class);
 
@@ -2168,7 +2159,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       // (fh) must update before changing the attributes so we can compare with old values.
       if (WebServiceApplicationUtils.isWebServiceApplication(application))
       {
-         WebServiceApplicationUtils.updateWebServiceApplication(modelingSession().uuidMapper(),
+         WebServiceApplicationUtils.updateWebServiceApplication(modelingSession.uuidMapper(),
                application, applicationJson);
       }
 
@@ -2739,7 +2730,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          Class< ? > clsTarget = null;
          try
          {
-            clsTarget = modelingSession().classLoaderProvider().classLoader().loadClass(className);
+            clsTarget = modelingSession.classLoaderProvider().classLoader().loadClass(className);
             if (null != clsTarget)
             {
                Object[] consts = clsTarget.getEnumConstants();
@@ -3060,7 +3051,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       if (modelBuilderFacade == null)
       {
-         modelBuilderFacade = new ModelBuilderFacade(modelManagementStrategy());
+         modelBuilderFacade = new ModelBuilderFacade(modelingSession.modelManagementStrategy());
       }
 
       return modelBuilderFacade;

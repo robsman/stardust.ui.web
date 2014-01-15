@@ -24,6 +24,6 @@ public class UpdateModelElementCommandHandler
    @OnCommand(commandId = "modelElement.update")
    public void updateElement(ModelType model, EObject targetElement, JsonObject request)
    {
-      modelService.currentSession().modelElementUnmarshaller().populateFromJson(targetElement, request);
+      modelService.currentSession().xpdlUnmarshaller().populateFromJson(targetElement, request);
    }
 }
