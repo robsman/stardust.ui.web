@@ -97,8 +97,10 @@ public class Bpmn2TestUtils
 
       BPMNDiagram diagram = DI_BUILDER.createDiagram(process, jto);
 
-      DI_BUILDER.attachDiagram(findContainingModel(process), diagram);
-
+      if (null == diagram.eContainer())
+      {
+         DI_BUILDER.attachDiagram(findContainingModel(process), diagram);
+      }
       return diagram;
    }
 
