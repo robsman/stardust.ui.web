@@ -44,7 +44,7 @@
 									actionListener="#{rulesFileUploadDialog.uploadFile}"
 									progressListener="#{rulesFileUploadDialog.measureProgress}"
 									submitOnUpload="preUpload"
-									label="Upload">
+									label="#{common_msgPropsBean['common.upload']}">
 								</ice:inputFile>
 							</ice:panelGroup>
 							<ice:panelGroup styleClass="msgError">
@@ -91,17 +91,17 @@
 					<ice:panelGroup>
 						<ice:panelGroup rendered="#{rulesFileUploadDialog.uploadMode}">
 							<ice:commandButton
-								value="Close"
+								value="#{common_msgPropsBean['common.close']}"
 								action="#{rulesFileUploadDialog.closePopup}" immediate="true"
 								styleClass="button secondary" />
 						</ice:panelGroup>
 						<ice:panelGroup rendered="#{!rulesFileUploadDialog.uploadMode}">
 							<ice:commandButton
-								value="Continue"
+								value="#{common_msgPropsBean['common.continue']}"
 								actionListener="#{rulesFileUploadDialog.createNewVersion}"
 								styleClass="button secondary" />
 							<ice:commandButton
-								value="Cancel"
+								value="#{common_msgPropsBean['common.cancel']}"
 								action="#{rulesFileUploadDialog.closePopup}" immediate="true"
 								styleClass="button secondary" />
 						</ice:panelGroup>
