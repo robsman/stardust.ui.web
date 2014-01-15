@@ -475,18 +475,11 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						} else if (isDatePath(arrPaths[key])) {
 							marshalDateTimesValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
 						}else if ("boolean" == arrPaths[key].typeName || "java.lang.Boolean" == arrPaths[key].typeName) {
-							if (binding == null || binding == "") {
-								marshalBooleanValue(bindingInfo.binding, bindingInfo.lastPart);	
-							}
+							marshalBooleanValue(bindingInfo.binding, bindingInfo.lastPart);	
 						}
 
 						if (arrPaths[key].isEnum) {
-							if (binding == null || binding == "") {
-								// Defaulting Enum Value to 1st in List
-								if (arrPaths[key].enumValues && arrPaths[key].enumValues.length >= 1) {
-									bindingInfo.binding[bindingInfo.lastPart] = arrPaths[key].enumValues[0];
-								}
-							}
+							marshalEnumValue(arrPaths[key], bindingInfo.binding, bindingInfo.lastPart);
 						}
 						
 					} else if (arrPaths[key].children) {
@@ -557,13 +550,25 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function marshalBooleanValue(binding, lastPart) {
-		try {
+			if (binding == null || binding == "") {
 				binding[lastPart] = false;
-			} catch(e) {
-				// TODO
 			}
 		}
-		
+
+		/*
+		 * 
+		 */
+		function marshalEnumValue(path, binding, lastPart) {
+			if (binding != null && binding != "" && lastPart != null && lastPart != "") {
+				// If Enum value is blank then default it to 1st in List
+				if (binding[lastPart] == null || binding[lastPart] == "") {
+					if (path.enumValues && path.enumValues.length >= 1) {
+						binding[lastPart] = path.enumValues[0];
+					}
+				}
+			}
+		}
+			
 		/*
 		 * 
 		 */
