@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+#sdWebModelerRecordings {
+}
+
+#sdWebModelerRecordings #recordingsTablePanel {
+	height: 100px;
+	width: 250px;
+	overflow: auto;
+}
+#recordingsTable tbody tr:hover {
+	background-color: #e8e8e8;
+}
+#recordingDetailsTable tbody tr:hover {
+	background-color: #e8e8e8;
+}
+#recordingDetailsTable tbody tr td.controls a img {
+	visibility: hidden;
+}
+#recordingDetailsTable tbody tr:hover td.controls a img {
+	visibility: visible;
+}
+</style>
+<script type="text/javascript" data-main="../js/modelerRecordingsMain"
+	src="../js/libs/require/2.0.5/require.js"></script>
+</head>
+<body>
+	<div id="sdWebModelerRecordings">
+		<table width="100%">
+			<tr>
+				<td><label for="recordingsPanel">Recordings</label></td>
+				<td style="text-align: right;"><a id="startRecording"><img src="../images/icons/add.png"></a></td>
+			</tr>
+			<tr>
+				<td colspan="2" valign="top"><div id="recordingsTablePanel" style="width: 100%">
+						<table id="recordingsTable" width="100%">
+						<thead><tr><th>ID</th><th>Affected Models</th><th width="32"></th></tr></thead>
+						</table>
+				</div></td>
+			</tr>
+			<tr>
+				<td colspan="2"><label for="recordingsDetailsPanel">Recording Details</label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><div id="recordingDetailsPanel" style="width: 100%">
+						<table id="recordingDetailsTable" width="100%">
+						<thead><tr><th width="15%">Step #</th><th>Details</th><th width="32"></th><th width="32"></tr></thead>
+						</table>
+				</div></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
