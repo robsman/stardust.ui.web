@@ -680,14 +680,13 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		function addToList(list, xPath) {
 			var path = getPath(xPath);
 			if (path != null && list != undefined) {
+				var value = {};
 				if (path.isPrimitive) {
-					var value = {$value: ""};
+					value.$value = "";
 					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
 						marshalBooleanValue(value, "$value");
 					}
-					list.push(value);
 				} else {
-					var value = {};
 					for (var i in path.children) {
 						if (path.children[i].isPrimitive && !path.children[i].isList) {
 							var key = path.children[i].id;
@@ -701,8 +700,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							}
 						}
 					}
-					list.push(value);
 				}
+				list.push(value);
 			}
 		}
 
