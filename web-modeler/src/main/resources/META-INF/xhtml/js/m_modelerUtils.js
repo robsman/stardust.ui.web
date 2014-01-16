@@ -30,7 +30,9 @@ define(
 
 				enableToolbarControl : enableToolbarControl,
 
-				getUniqueNameForElement : getUniqueNameForElement
+				getUniqueNameForElement : getUniqueNameForElement,
+
+				fixDivTop : fixDivTop
 			};
 
 			function getScrollpaneScrollPosition() {
@@ -48,7 +50,7 @@ define(
 			 * modeler related views will be closed.
 			 */
 			function closeAllModelerViews() {
-				
+
 				var models = m_model.getModels();
 				for (var i in models) {
 					viewManager.closeViewsForElement(models[i].uuid);
@@ -87,5 +89,16 @@ define(
 				}
 
 				return name;
+			}
+
+			function fixDivTop(jDiv) {
+				$(window).scroll(function() {
+				    if ($(window).scrollTop() > jDiv[0].scrollTop) {
+				    	jDiv.css({'position': 'fixed', 'top': '0', 'width': '100%'});
+				    }
+				    else {
+				    	jDiv.css({'position': 'static', 'top': 'auto', 'width': '100%'});
+				    }
+				});
 			}
 		});

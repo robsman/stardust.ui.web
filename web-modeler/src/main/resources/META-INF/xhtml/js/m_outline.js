@@ -79,10 +79,10 @@ define(
         var self = this;
         	modelTreeType="model",
         	isLocked=this.model.isReadonly(),
-        	isEditLocked=this.model.isReadonly() && 
-				         this.model.editLock && 
+        	isEditLocked=this.model.isReadonly() &&
+				         this.model.editLock &&
 				         ("lockedByOther" === this.model.editLock.lockStatus);
-        
+
         if(isLocked){
         	modelTreeType="lockedModel";
         	if(isEditLocked){
@@ -170,7 +170,7 @@ define(
         if (data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
           return undefined;
         }
-        
+
         var showAsPrimitive = null;
         if (data.structuredDataTypeFullId) {
         	var typeDeclaration = m_model.findModel(m_model
@@ -178,7 +178,7 @@ define(
 					.stripElementId(data.structuredDataTypeFullId)];
         	showAsPrimitive = typeDeclaration ? typeDeclaration.isEnumeration():false;
 		}
-        
+
         return this.nodeBuilder.buildNode({
           attr : {
             "id" : data.uuid,
@@ -287,7 +287,7 @@ define(
 
         if (model.isReadonly() && model.editLock
             && ("lockedByOther" === model.editLock.lockStatus)) {
-        	
+
         	modelNode.attr("rel", model.isReadonly() ? "lockedModelForEdit" : "model");
           modelNode.attr("title", m_i18nUtils
               .getProperty("modeler.outline.model.statusLocked")
@@ -2473,7 +2473,7 @@ define(
 										contentType : "application/json",
 										data : JSON.stringify(parameter)
 									});
-							
+
 							m_commandsController.submitCommand(m_command
 									.createCreateWrapperServiceCommand(model.id,
 											model.id, {
@@ -2754,6 +2754,8 @@ define(
 
 					setupEventHandling();
 
+					m_modelerUtils.fixDivTop(jQuery(".outlineFixedTop"));
+
 					outline = new Outline();
 
 					outline.initialize();
@@ -2909,7 +2911,7 @@ define(
 												.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
 												.stripElementId(modelElement.structuredDataTypeFullId)];
 										if(typeDeclaration.isEnumeration()){
-											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);	
+											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
 										}else{
 											node.attr("rel",
 													obj.changes.modified[i].dataType);
