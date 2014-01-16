@@ -550,8 +550,10 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function marshalBooleanValue(binding, lastPart) {
-			if (binding == null || binding == "") {
-				binding[lastPart] = false;
+			if (binding != null && binding != "" && lastPart != null && lastPart != "") {
+				if (binding[lastPart] == null || binding[lastPart] == "") {
+					binding[lastPart] = false;
+				}
 			}
 		}
 
@@ -1051,7 +1053,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			for (var key in data.binding) {
 				if (binding[key] == undefined) {
 					jQuery.extend(binding, data.binding);
-					// marshalInData(scope[BINDING_PREFIX]);
+					marshalRecursively(path.children, binding[key], parentXPath + "/" + key);
 					break;
 				} else {
 					break;
