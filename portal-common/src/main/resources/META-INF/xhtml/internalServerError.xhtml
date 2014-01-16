@@ -1,0 +1,26 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:form>
+		<ice:panelGroup>
+			<ice:panelGrid columns="2" style="text-align: left">
+				<ice:graphicImage
+					url="/plugins/common/images/icons/dialog-icon-error.jpg" />
+				<ice:outputText
+					value="#{common_msgPropsBean['common.internalServerError']}"></ice:outputText>
+			</ice:panelGrid>
+
+			<ice:panelGroup style="text-align: left">
+				<ice:commandLink value="#{common_msgPropsBean['common.goToLogin']}"
+					styleClass="link" onclick="parent.BridgeUtils.logout(true);">
+				</ice:commandLink>
+			</ice:panelGroup>
+
+		</ice:panelGroup>
+	</ice:form>
+</f:view>
