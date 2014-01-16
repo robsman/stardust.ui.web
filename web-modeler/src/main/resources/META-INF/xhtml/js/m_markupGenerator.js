@@ -277,43 +277,52 @@ define(
 					jsonRet.isEnum = false;
 					jsonRet.children = [];
 					jsonRet.properties = {};
-					
-					jQuery.each(typeDeclaration.getElements(), function(i, element) {
-						var jsonChild = {};
-						var type = element.type;
-						// Strip prefix
-						if (element.type.indexOf(':') !== -1) {
-							type = element.type.split(":")[1];
-						}
-						var childTypeDeclaration = model.findTypeDeclarationBySchemaName(type);
 
-						if (childTypeDeclaration == null || childTypeDeclaration.isEnumeration()) { // Primitive
-							jsonChild.id = element.name;
-							jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
-							jsonChild.readonly = readonly;
-							jsonChild.typeName = type;
-							jsonChild.isPrimitive = true;
-							jsonChild.isList = element.cardinality === "many" ? true : false;
-							jsonChild.isEnum = false;
-							jsonChild.properties = {};
-							
-							if (childTypeDeclaration != null && childTypeDeclaration.isEnumeration()) {
-								jsonChild.isEnum = true;
-								jsonChild.enumValues = [];
-								jQuery.each(childTypeDeclaration.getElements(), function(i, enumElem) {
-									jsonChild.enumValues.push(enumElem.name);
-								});
+					if (typeDeclaration.isEnumeration()) {
+						jsonRet.isPrimitive = true;
+						jsonRet.isEnum = true;
+						jsonRet.enumValues = [];
+						jQuery.each(typeDeclaration.getElements(), function(i, enumElem) {
+							jsonRet.enumValues.push(enumElem.name);
+						});
+					} else {
+						jQuery.each(typeDeclaration.getElements(), function(i, element) {
+							var jsonChild = {};
+							var type = element.type;
+							// Strip prefix
+							if (element.type.indexOf(':') !== -1) {
+								type = element.type.split(":")[1];
 							}
-						} else { // XSD
-							if (element.cardinality === "required") {
-								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
-							} else { // element.cardinality === "many"
-								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
-								jsonChild.isList = true;
+							var childTypeDeclaration = model.findTypeDeclarationBySchemaName(type);
+	
+							if (childTypeDeclaration == null || childTypeDeclaration.isEnumeration()) { // Primitive
+								jsonChild.id = element.name;
+								jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
+								jsonChild.readonly = readonly;
+								jsonChild.typeName = type;
+								jsonChild.isPrimitive = true;
+								jsonChild.isList = element.cardinality === "many" ? true : false;
+								jsonChild.isEnum = false;
+								jsonChild.properties = {};
+								
+								if (childTypeDeclaration != null && childTypeDeclaration.isEnumeration()) {
+									jsonChild.isEnum = true;
+									jsonChild.enumValues = [];
+									jQuery.each(childTypeDeclaration.getElements(), function(i, enumElem) {
+										jsonChild.enumValues.push(enumElem.name);
+									});
+								}
+							} else { // XSD
+								if (element.cardinality === "required") {
+									jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
+								} else { // element.cardinality === "many"
+									jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
+									jsonChild.isList = true;
+								}
 							}
-						}
-						jsonRet.children.push(jsonChild);
-					});
+							jsonRet.children.push(jsonChild);
+						});
+					}
 					
 					return jsonRet;
 				}
