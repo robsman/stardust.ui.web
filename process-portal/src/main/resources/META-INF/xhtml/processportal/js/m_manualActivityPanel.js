@@ -681,11 +681,11 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var path = getPath(xPath);
 			if (path != null && list != undefined) {
 				if (path.isPrimitive) {
-					var defValue = "";
+					var value = {$value: ""};
 					if ("boolean" === path.typeName || "java.lang.Boolean" === path.typeName) {
-						defValue = false;
+						marshalBooleanValue(value, "$value");
 					}
-					list.push({$value: defValue});
+					list.push(value);
 				} else {
 					var value = {};
 					for (var i in path.children) {
@@ -693,7 +693,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 							var key = path.children[i].id;
 
 							if ("boolean" === path.children[i].typeName || "java.lang.Boolean" === path.children[i].typeName) {
-								value[key] = false;
+								marshalBooleanValue(value, key);
 							}
 
 							if (path.children[i].isEnum) {
