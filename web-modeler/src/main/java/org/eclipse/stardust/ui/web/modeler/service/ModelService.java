@@ -127,8 +127,6 @@ import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.xsd.XSDSchema;
@@ -489,94 +487,6 @@ public class ModelService
       UserQuery userQuery = UserQuery.findActive();
 
       return getQueryService().getAllUsers(userQuery);
-   }
-
-   public String getAllCollaborators(String account)
-   {
-      UserService userService = getUserService();
-      User sessionOwner = userService.getUser(account);
-
-      JsonObject allInvitedUsers = new JsonObject();
-      allInvitedUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
-      allInvitedUsers.addProperty("account", account);
-      allInvitedUsers.addProperty("timestamp", System.currentTimeMillis());
-      allInvitedUsers.addProperty("path", "users");
-      allInvitedUsers.addProperty("operation", "updateCollaborators");
-
-      JsonObject old = new JsonObject();
-
-      JsonArray allUsers = new JsonArray();
-      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
-      if (null != currentSession)
-      {
-         allInvitedUsers.addProperty("ownerColor",
-               Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
-         for (User user : currentSession.getAllCollaborators())
-         {
-            JsonObject userJson = new JsonObject();
-            userJson.addProperty("account", user.getAccount());
-            userJson.addProperty("firstName", user.getFirstName());
-            userJson.addProperty("lastName", user.getLastName());
-            userJson.addProperty("email", user.getEMail());
-            userJson.addProperty("imageUrl", "");
-            trace.info(">>>>>>>>>>>>>>>> usercolour: "
-                  + Integer.toHexString(currentSession.getColor(user).getRGB()));
-            userJson.addProperty("color", Integer.toHexString(currentSession.getColor(
-                  user).getRGB() & 0x00ffffff));
-
-            allUsers.add(userJson);
-         }
-      }
-      old.add("users", allUsers);
-      allInvitedUsers.add("oldObject", old);
-      allInvitedUsers.add("newObject", new JsonObject());
-      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "
-            + allInvitedUsers.toString());
-      return allInvitedUsers.toString();
-   }
-
-   /**
-    *
-    * @param account
-    * @return
-    */
-   public String getAllProspects(String account)
-   {
-      UserService userService = getUserService();
-      User sessionOwner = userService.getUser(account);
-
-      JsonObject allProspectUsers = new JsonObject();
-      allProspectUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
-      allProspectUsers.addProperty("account", account);
-      allProspectUsers.addProperty("timestamp", System.currentTimeMillis());
-      allProspectUsers.addProperty("path", "users");
-      allProspectUsers.addProperty("operation", "updateProspects");
-
-      JsonObject old = new JsonObject();
-      JsonArray allUsers = new JsonArray();
-
-      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
-      if (null != currentSession)
-      {
-         for (User user : currentSession.getAllProspects())
-         {
-            JsonObject userJson = new JsonObject();
-            userJson.addProperty("account", user.getAccount());
-            userJson.addProperty("firstName", user.getFirstName());
-            userJson.addProperty("lastName", user.getLastName());
-            userJson.addProperty("email", user.getEMail());
-            userJson.addProperty("imageUrl", "");
-
-            allUsers.add(userJson);
-         }
-      }
-      old.add("users", allUsers);
-      allProspectUsers.add("oldObject", old);
-      allProspectUsers.add("newObject", new JsonObject());
-      trace.info(">>>>>>>>>>>>>>>> following Json Object will be send: "
-            + allProspectUsers.toString());
-      return allProspectUsers.toString();
-
    }
 
    public String getLoggedInUser()

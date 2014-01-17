@@ -36,12 +36,14 @@ import com.google.gson.JsonPrimitive;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.modeler.collaboration.CollaborationService;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 
 @Path("/modeler/{randomPostFix}")
 public class ModelerResource
@@ -156,12 +158,12 @@ public class ModelerResource
       {
          fileName = fileName + ".xpdl";
       }
-      
+
       return Response.ok(docStream, MediaType.APPLICATION_OCTET_STREAM)
             .header("content-disposition", "attachment; filename = \"" + fileName + "\"")
             .build();
    }
-   
+
    /**
     * Used to push models loaded on the client (e.g. from Orion) into a server-side cache.
     * Switches the model management strategy to <code>clientModelManagementStrategy</code>
@@ -340,7 +342,8 @@ public class ModelerResource
       try
       {
          JsonObject userJson = jsonIo.readJsonObject(postedData);
-         String result = modelService.getAllProspects(
+         CollaborationService collaborationService = springContext.getBean(CollaborationService.class);
+         String result = collaborationService.getAllProspects(
                userJson.getAsJsonObject("oldObject").get("account").getAsString());
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
@@ -359,9 +362,10 @@ public class ModelerResource
    {
       try
       {
-         JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
+         JsonObject userJson = jsonIo.readJsonObject(postedData);
          // utlity methode gson utils
-         String result = modelService.getAllCollaborators(
+         CollaborationService collaborationService = springContext.getBean(CollaborationService.class);
+         String result = collaborationService.getAllCollaborators(
                userJson.getAsJsonObject("oldObject").get("account").getAsString());
 
          return Response.ok(result, APPLICATION_JSON_TYPE).build();

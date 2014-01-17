@@ -1,11 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.edit;
 
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
-import static org.eclipse.stardust.common.CollectionUtils.newLinkedList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.Resource;
@@ -16,11 +13,9 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.integration.spring.scope.ModelingSessionScope;
 import org.eclipse.stardust.ui.web.modeler.integration.spring.scope.ModelingSessionScopeManager;
-import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
 
 @Component
 @Scope("singleton")
@@ -39,11 +34,6 @@ public class ModelingSessionManager
 
    // collaboration session per user (at most one per user)
    private ConcurrentMap<String, ModelingSession> collaborations = newConcurrentHashMap();
-
-   public static String getUniqueId(User user)
-   {
-      return IppUserProvider.wrapUser(user).getUID();
-   }
 
    public ModelingSession findById(String sessionId)
    {
@@ -148,27 +138,26 @@ public class ModelingSessionManager
 
             session.setOwnerId(userId);
             session.setOwnerName(userName);
-            session.setOwnerColor(session.generateColor());
 
             session.addStateListener(new ModelingSession.SessionStateListener()
             {
                @Override
-               public void addedCollaborator(ModelingSession session, User collaborator)
+               public void addedCollaborator(ModelingSession session, String userId)
                {
-                  if (null != collaborations.putIfAbsent(getUniqueId(collaborator), session))
+                  if (null != collaborations.putIfAbsent(userId, session))
                   {
-                     trace.warn("User " + collaborator
+                     trace.warn("User " + userId
                            + " must not collaborate in more than one modeling session.");
                   }
                }
 
                @Override
-               public void removedCollaborator(ModelingSession session, User collaborator)
+               public void removedCollaborator(ModelingSession session, String userId)
                {
-                  if ( !collaborations.remove(getUniqueId(collaborator), session))
+                  if ( !collaborations.remove(userId, session))
                   {
                      trace.warn("User "
-                           + collaborator
+                           + userId
                            + " is currently collaborating in a separate modeling session.");
                   }
                }
@@ -180,31 +169,5 @@ public class ModelingSessionManager
       {
          throw new UnsupportedOperationException("Missing ModelingSession bean definition.");
       }
-   }
-
-   /**
-    * Checks if a given user was invited to a session yet. Is a possibility to
-    * check when the user logs in if he has pending invites.
-    *
-    * @param user
-    *            The username of the user who logged into the portal just
-    *            recently
-    * @return a list of session owners who have invited him to join their
-    *         modeling session
-    */
-   public List<String> getUserInvitedToSession(User user)
-   {
-      List<String> whoseSessions = newLinkedList();
-      if ( !userSessions.isEmpty())
-      {
-         for (Entry<String, ModelingSession> entry : userSessions.entrySet())
-         {
-            if (entry.getValue().invitedContainsUser(user))
-            {
-               whoseSessions.add(entry.getKey());
-            }
-         }
-      }
-      return whoseSessions;
    }
 }
