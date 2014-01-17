@@ -12,7 +12,6 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
@@ -22,7 +21,6 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -61,7 +59,6 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
@@ -119,11 +116,9 @@ import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelE
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
-import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
@@ -491,13 +486,11 @@ public class ModelService
 
    public String getLoggedInUser()
    {
-      PortalApplication app = context.getBean(PortalApplication.class);
-      org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
       JsonObject currentUserJson = new JsonObject();
       currentUserJson.addProperty(TYPE_PROPERTY, "WHO_AM_I");
-      currentUserJson.addProperty("firstName", currentUser.getFirstName());
-      currentUserJson.addProperty("lastName", currentUser.getLastName());
-      currentUserJson.addProperty("account", currentUser.getLoginName());
+      currentUserJson.addProperty("firstName", me.getFirstName());
+      currentUserJson.addProperty("lastName", me.getLastName());
+      currentUserJson.addProperty("account", me.getLoginName());
       return currentUserJson.toString();
    }
 
@@ -2657,57 +2650,6 @@ public class ModelService
    public ModelBuilderFacade getModelBuilderFacade()
    {
       return new ModelBuilderFacade(getModelManagementStrategy());
-   }
-
-   /**
-    *
-    * @return
-    */
-   public JsonObject getPreferences()
-   {
-      String defaultProfile = null;
-      String showTechnologyPreview = null;
-
-      try
-      {
-         Map<String, Serializable> props = getServiceFactory().getAdministrationService()
-               .getPreferences(PreferenceScope.USER, UserPreferencesEntries.M_MODULE,
-                     UserPreferencesEntries.REFERENCE_ID)
-               .getPreferences();
-
-         // Default Profile
-         String defaultProfileKey = UserPreferencesEntries.M_MODULE + "."
-               + UserPreferencesEntries.V_MODELER + "."
-               + UserPreferencesEntries.F_DEFAULT_PROFILE;
-         defaultProfile = (String) props.get(defaultProfileKey);
-
-         // Show Technology Preview
-         String showTechnologyPreviewKey = UserPreferencesEntries.M_MODULE + "."
-               + UserPreferencesEntries.V_MODELER + "."
-               + UserPreferencesEntries.F_TECH_PREVIEW;
-         showTechnologyPreview = (String) props.get(showTechnologyPreviewKey);
-      }
-      catch (Exception e)
-      {
-         trace.error("Error occurred while fetching preferences", e);
-      }
-
-      if (isEmpty(defaultProfile))
-      {
-         defaultProfile = UserPreferencesEntries.PROFILE_BA;
-      }
-
-      if (isEmpty(showTechnologyPreview))
-      {
-         showTechnologyPreview = "false";
-      }
-
-      JsonObject preferencesJson = new JsonObject();
-      preferencesJson.addProperty("defaultProfile", defaultProfile);
-      preferencesJson.addProperty("showTechnologyPreview",
-            Boolean.parseBoolean(showTechnologyPreview));
-
-      return preferencesJson;
    }
 
    /*

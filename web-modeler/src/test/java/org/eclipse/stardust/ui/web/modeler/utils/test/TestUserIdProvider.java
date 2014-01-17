@@ -38,6 +38,24 @@ public class TestUserIdProvider implements UserIdProvider
    }
 
    @Override
+   public String getLoginName()
+   {
+      return userId;
+   }
+
+   @Override
+   public String getFirstName()
+   {
+      return "";
+   }
+
+   @Override
+   public String getLastName()
+   {
+      return isEmpty(displayName) ? userId : displayName;
+   }
+
+   @Override
    public String getCurrentUserDisplayName()
    {
       return isEmpty(displayName) ? userId : displayName;
