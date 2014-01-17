@@ -33,8 +33,6 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
 {
    private static final Logger logger = LogManager.getLogger(PortalD2DFaceletViewHandler.class);
 
-   private int flag = 0;
-
    public PortalD2DFaceletViewHandler()
    {
       super();
@@ -45,19 +43,7 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
    {
       try
       {
-         if (flag == 3 || flag == 6)
-         {
-            throw new NullPointerException();
-         }
-         else
-         {
-            super.renderView(context, viewToRender);
-            flag++;
-            if (flag > 7)
-            {
-               flag = 0;
-            }
-         }
+         super.renderView(context, viewToRender);
       }
       catch (Exception e)
       {
@@ -77,7 +63,6 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
          {
             logger.error("Internal Server Error has occurred. Please contact your Administrator", e);
             res.sendRedirect(res.encodeRedirectURL(req.getContextPath() + "/plugins/common/internalServerError.iface"));
-            flag++;
          }
          else
          {
