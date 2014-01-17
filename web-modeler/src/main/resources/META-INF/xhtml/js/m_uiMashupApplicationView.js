@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -29,7 +29,7 @@ define(
 
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
-					
+
 					var view = new UiMashupApplicationView();
 					i18uimashupproperties();
 					// TODO Unregister!
@@ -41,9 +41,9 @@ define(
 					m_utils.hideWaitCursor();
 				}
 			};
-			
+
 			/**
-			 * 
+			 *
 			 */
 			function initViewCollapseClickHandlers() {
 				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
@@ -88,13 +88,13 @@ define(
 			} ];
 
 			function i18uimashupproperties() {
-				
+
 				m_utils.jQuerySelect("#hideGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-		
+
 				m_utils.jQuerySelect("#showGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-			
+
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -204,33 +204,33 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-				
+
 				m_utils.jQuerySelect("#addParameterDefinitionButton")
 					.attr("title",m_i18nUtils.getProperty("modeler.element.properties.commonProperties.add"));
-				
+
 				m_utils.jQuerySelect("label[for='generateCompleteButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateCompleteButton"));
-				
+
 				m_utils.jQuerySelect("label[for='generateSuspendButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateSuspendButton"));
-				
+
 				m_utils.jQuerySelect("label[for='generateAbortButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateAbortButton"));
-				
+
 				m_utils.jQuerySelect("label[for='generateQaPassButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateQASuccessButton"));
-				
+
 				m_utils.jQuerySelect("label[for='generateQaFailButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateQAFailButoon"));
-				
+
 				m_utils.jQuerySelect("label[for='numberOfLabelInputPairsInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.numberOfColumnsUsed"));
-				
+
 				m_utils.jQuerySelect("a#generateMarkupForAngularLink")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateMarkup"));
 			}
 			/**
-			 * 
+			 *
 			 */
 			function UiMashupApplicationView() {
 				var view = m_modelElementView.create();
@@ -239,7 +239,7 @@ define(
 				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.initialize = function(
 						application) {
@@ -285,24 +285,19 @@ define(
 					this.editorTextArea.id = "markupTextarea" + rdmNo;
 					var self = this;
 
-					// TODO - the timout is only needed of Chrome and needs to
-					// be analyzed and removed with a proper solution
 					var self = this;
-					setTimeout(function() {
-						CKEDITOR.replace(self.editorTextArea.id, {
-							toolbarGroups : editorToolbarGroups,
-							allowedContent : true
-						});
+					CKEDITOR.replace(self.editorTextArea.id, {
+						toolbarGroups : editorToolbarGroups,
+						allowedContent : true
+					});
 
-						CKEDITOR.instances[self.editorTextArea.id].on('blur',
-								function(e) {
-									if (!self.validate()) {
-										return;
-									}
-									self.submitEmbeddedModeChanges();
-								});
-
-					}, 0);
+					CKEDITOR.instances[self.editorTextArea.id].on('blur',
+							function(e) {
+								if (!self.validate()) {
+									return;
+								}
+								self.submitEmbeddedModeChanges();
+							});
 
 					this.urlInput
 							.change(
@@ -386,6 +381,16 @@ define(
 										}
 									});
 
+					/**
+					 * This is a workaround for the Chrome browser.
+					 * In Chrome, at times, the contents of the CKEditor are not loaded correctly. This on-click handler
+					 * ensures that data is set when one switches to the configuration tab.
+					 */
+					m_utils.jQuerySelect("#configuration").click(function() {
+						CKEDITOR.instances[self.editorTextArea.id]
+							.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+					});
+
 					this.initializeModelElementView(application);
 
 					this.view.css("visibility", "visible");
@@ -397,12 +402,12 @@ define(
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
 								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
-										
+
 							});
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.isEmbeddedConfiguration = function() {
 					m_utils
@@ -416,7 +421,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.submitExternalWebAppContextAttributesChange = function(
 						attributes) {
@@ -431,7 +436,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.setViaUri = function(uri) {
 					this.viaUriInput.prop("checked", true);
@@ -442,7 +447,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.setEmbedded = function() {
 					this.viaUriInput.prop("checked", false);
@@ -453,21 +458,21 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.getApplication = function() {
 					return this.application;
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.getContext = function() {
 					return this.application.contexts["externalWebApp"];
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.setModelElement = function(
 						application) {
@@ -499,13 +504,7 @@ define(
 					if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
 						var self = this;
-						// TODO - the timout is only needed of Chrome and needs to
-						// be analyzed and removed with a proper solution
-						setTimeout(
-								function() {
-									CKEDITOR.instances[self.editorTextArea.id]
-											.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
-								}, 100);
+						CKEDITOR.instances[self.editorTextArea.id].setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
 					} else {
 						this.setViaUri();
 						this.urlInput
@@ -531,14 +530,14 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.toString = function() {
 					return "Lightdust.UiMashupApplicationView";
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.validate = function() {
 					this.clearErrorMessages();
@@ -560,7 +559,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.submitParameterDefinitionsChanges = function(
 						parameterDefinitionsChanges) {
@@ -578,7 +577,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				UiMashupApplicationView.prototype.generateMarkup = function() {
 					var generator = m_markupGenerator
