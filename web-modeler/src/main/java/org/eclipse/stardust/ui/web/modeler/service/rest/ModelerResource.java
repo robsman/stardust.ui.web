@@ -43,7 +43,7 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
+import org.eclipse.stardust.ui.web.modeler.ui.ModelerConfigurationService;
 
 @Path("/modeler/{randomPostFix}")
 public class ModelerResource
@@ -114,7 +114,8 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(modelService.getPreferences().toString(),
+         ModelerConfigurationService modelerConfigurationService = springContext.getBean(ModelerConfigurationService.class);
+         return Response.ok(modelerConfigurationService.getPreferences().toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
