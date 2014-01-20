@@ -1,9 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;
@@ -11,7 +7,8 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ChangeJto;
 
 public class BeanInvocationExecutor extends RequestExecutor
 {
@@ -19,15 +16,15 @@ public class BeanInvocationExecutor extends RequestExecutor
 
    private final ModelService modelService;
 
-   private final ModelerSessionRestController modelerSessionRestController;
+   private final ModelerSessionController modelerSessionController;
 
    @Autowired
    public BeanInvocationExecutor(JsonMarshaller jsonIo, ModelService modelService,
-         ModelerSessionRestController modelerSessionRestController)
+         ModelerSessionController modelerSessionController)
    {
       this.jsonIo = jsonIo;
       this.modelService = modelService;
-      this.modelerSessionRestController = modelerSessionRestController;
+      this.modelerSessionController = modelerSessionController;
    }
 
    @Override
@@ -49,20 +46,10 @@ public class BeanInvocationExecutor extends RequestExecutor
    @Override
    public JsonObject applyChange(JsonObject cmdJson)
    {
-      Response response = modelerSessionRestController.applyChange(jsonIo.gson()
+      ChangeJto response = modelerSessionController.applyChange(jsonIo.gson()
             .fromJson(cmdJson, CommandJto.class));
 
-      if (Status.CREATED.getStatusCode() == response.getStatus()
-            || Status.OK.getStatusCode() == response.getStatus())
-      {
-         JsonObject responseJson = jsonIo.readJsonObject((String) response.getEntity());
-
-         return responseJson;
-      }
-      else
-      {
-         throw new WebApplicationException(response);
-      }
+      return jsonIo.gson().toJsonTree(response).getAsJsonObject();
    }
 
 }

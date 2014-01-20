@@ -1,16 +1,8 @@
 package org.eclipse.stardust.ui.web.modeler.service.rest;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBean;
-import static org.eclipse.stardust.ui.web.modeler.service.rest.RestControllerUtils.resolveSpringBeans;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -28,36 +20,26 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
-import org.eclipse.emf.ecore.EObject;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
+import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
+import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
+import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
 import org.eclipse.stardust.ui.web.modeler.common.ModelingSessionLocator;
-import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
-import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
-import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
-import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
-import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetPostprocessingService;
-import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
-import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeJto.UiStateJto;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
-import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ChangeJto;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ContentProvider;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ModelFormat;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ModelLockJto;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
@@ -76,14 +58,10 @@ public class ModelerSessionRestController
    @Resource
    private ModelingSessionLocator sessionLocator;
 
-   private static CommandJto CommandJto;
+   @Resource
+   private ModelerSessionController controller;
 
    private static final Logger logger = LogManager.getLogger(ModelerSessionRestController.class);
-
-   public static CommandJto getCommandJto()
-   {
-      return CommandJto;
-   }
 
    public ModelerSessionRestController()
    {}
@@ -93,151 +71,9 @@ public class ModelerSessionRestController
       this.uriInfo = uriInfo;
    }
 
-   public String toChangeUri(Modification change)
+   public String toChangeUri(String changeId)
    {
-      return uriInfo.getAbsolutePath().toString() + "/changes/" + change.getId();
-   }
-
-   public ChangeJto toJto(Modification change)
-   {
-      ChangeJto jto = new ChangeJto();
-
-      jto.id= change.getId();
-      jto.timestamp = System.currentTimeMillis();
-
-      if (change.getMetadata().containsKey("commandId"))
-      {
-          jto.commandId = change.getMetadata().get("commandId");
-      }
-      if (change.getMetadata().containsKey("modelId"))
-      {
-          jto.modelId= change.getMetadata().get("modelId");
-      }
-      if (change.getMetadata().containsKey("account"))
-      {
-          jto.account = change.getMetadata().get("account");
-      }
-
-      ModelMarshaller marshaller;
-      if (!isEmpty(jto.modelId))
-      {
-         ModelingSession currentSession = currentSession();
-         ModelRepository modelRepository = currentSession.modelRepository();
-         EObject model = modelRepository.findModel(jto.modelId);
-         ModelBinding<EObject> modelBinding = modelRepository.getModelBinding(model);
-         marshaller = modelBinding.getMarshaller();
-      }
-      else
-      {
-         marshaller = currentSession().xpdlMarshaller();
-      }
-
-      try
-      {
-         marshaller.init();
-         for (EObject changedObject : change.getModifiedElements())
-         {
-            jto.changes.modified.add(marshaller.toJson(changedObject));
-         }
-         for (EObject addedObject : change.getAddedElements())
-         {
-            jto.changes.added.add(marshaller.toJson(addedObject));
-         }
-         for (EObject removedObject : change.getRemovedElements())
-         {
-            jto.changes.removed.add(marshaller.toJson(removedObject));
-         }
-      }
-      finally
-      {
-         marshaller.done();
-      }
-
-      if (change.wasFailure())
-      {
-         ChangeJto.ProblemJto failureJto = new ChangeJto.ProblemJto();
-         failureJto.severity = "error";
-         failureJto.message = change.getFailure().getMessage();
-
-         jto.problems = newArrayList();
-         jto.problems.add(failureJto);
-      }
-
-      jto.uiState = toUiStateJto();
-
-      return jto;
-   }
-
-   public ChangeJto toJto(CommandJto command, ModelCommandsHandler.ModificationDescriptor changes)
-   {
-      ChangeJto jto = new ChangeJto();
-
-      jto.id= changes.getId();
-      jto.timestamp = System.currentTimeMillis();
-
-      jto.commandId = command.commandId;
-      jto.modelId= command.modelId;
-      jto.account = command.account;
-
-      jto.changes.modified.addAll(changes.modified);
-      jto.changes.added.addAll(changes.added);
-      jto.changes.removed.addAll(changes.removed);
-
-      if (changes.wasFailure())
-      {
-         ChangeJto.ProblemJto failureJto = new ChangeJto.ProblemJto();
-         failureJto.severity = "error";
-         failureJto.message = changes.getFailure().getMessage();
-
-         jto.problems = newArrayList();
-         jto.problems.add(failureJto);
-      }
-
-      jto.uiState = toUiStateJto();
-
-      return jto;
-   }
-
-   private UiStateJto toUiStateJto()
-   {
-      UiStateJto uiStateJto = new UiStateJto();
-
-      // TODO consider only pushing the delta since last ui-state update
-      uiStateJto.modelLocks = toModelLocksJto();
-
-      return uiStateJto;
-   }
-
-   private List<ModelLockJto> toModelLocksJto()
-   {
-      List<ModelLockJto> modelLocksJto = newArrayList();
-
-      ModelingSession session = currentSession();
-      for (EObject model : session.modelRepository().getAllModels())
-      {
-         modelLocksJto.add(toModelLockJto(session, model));
-      }
-
-      return modelLocksJto;
-   }
-
-   private ModelLockJto toModelLockJto(ModelingSession session, EObject model)
-   {
-      ModelLockJto lockInfoJto = new ModelLockJto();
-      lockInfoJto.modelId = session.modelRepository().getModelBinding(model).getModelId(model);
-
-      LockInfo lockInfo = session.getEditLockInfo(model);
-      if (null != lockInfo)
-      {
-         lockInfoJto.lockStatus = lockInfo.isLockedBySession(session)
-               ? ModelLockJto.STATUS_LOCKED_BY_ME
-               : ModelLockJto.STATUS_LOCKED_BY_OTHER;
-         // TODO full name of edit lock owner
-         lockInfoJto.ownerId = lockInfo.ownerId;
-         lockInfoJto.ownerName = lockInfo.ownerName;
-         lockInfoJto.canBreakEditLock = lockInfo.canBreakEditLock(session);
-      }
-      return lockInfoJto;
+      return uriInfo.getAbsolutePath().toString() + "/changes/" + changeId;
    }
 
    public JsonObject toJson(ChangeJto changeJto)
@@ -261,57 +97,18 @@ public class ModelerSessionRestController
       return getCurrentModelState(modelId, ModelFormat.Xpdl);
    }
 
-   public enum ModelFormat
+   private StreamingOutput getCurrentModelState(String modelId, ModelFormat modelFormat)
    {
-      Native,
-      Xpdl,
-   }
-
-   public StreamingOutput getCurrentModelState(String modelId, final ModelFormat modelFormat)
-   {
-      ModelRepository modelRepository = currentSession().modelRepository();
-
-      final EObject model = modelRepository.findModel(modelId);
-      if (null != model)
+      // TODO exception transformation
+      final ContentProvider contentProvider = controller.getCurrentModelState(modelId, ModelFormat.Xpdl);
+      return new StreamingOutput()
       {
-         final ModelPersistenceHandler<EObject> persistenceHandler = modelRepository.getModelBinding(
-               model)
-               .getPersistenceHandler(model);
-         if (null != persistenceHandler)
+         @Override
+         public void write(OutputStream output) throws IOException, WebApplicationException
          {
-            return new StreamingOutput()
-            {
-               @Override
-               public void write(OutputStream output) throws IOException, WebApplicationException
-               {
-                  switch (modelFormat)
-                  {
-                  case Native:
-                     persistenceHandler.saveModel(model, output);
-                     break;
-
-                  case Xpdl:
-                     persistenceHandler.saveDeployableModel(model, output);
-                     break;
-
-                  default:
-                     throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-                  }
-                  output.flush();
-               }
-            };
+            contentProvider.writeContent(output);
          }
-         else
-         {
-            // no suitable persistence handler
-            throw new WebApplicationException(Status.BAD_REQUEST);
-         }
-      }
-      else
-      {
-         // invalid model ID
-         throw new WebApplicationException(Status.NOT_FOUND);
-      }
+      };
    }
 
    @GET
@@ -324,15 +121,16 @@ public class ModelerSessionRestController
       if (editingSession.canUndo())
       {
          Modification pendingUndo = editingSession.getPendingUndo();
-         ChangeJto jto = toJto(pendingUndo);
+         ChangeJto jto = controller.toJto(pendingUndo);
 
-         jto.pendingUndo = toChangeUri(pendingUndo);
+         jto.pendingUndo = toChangeUri(pendingUndo.getId());
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            jto.pendingRedo = toChangeUri(pendingRedo);
+            jto.pendingRedo = toChangeUri(pendingRedo.getId());
          }
-         result = toJson(toJto(pendingUndo));
+         // TODO this ignores the previously prepared jto, is this wanted?
+         result = toJson(controller.toJto(pendingUndo));
       }
 
       return jsonIo.writeJsonObject(result);
@@ -342,90 +140,44 @@ public class ModelerSessionRestController
    @Path("/changes/mostCurrent/navigation")
    public Response adjustMostCurrentChange(String action)
    {
-      if ("undoMostCurrent".equals(action))
+      ChangeJto jto;
+      try
       {
-         JsonObject result = new JsonObject();
-         EditingSession editingSession = currentSession().getSession();
-         if (editingSession.canUndo())
+         if ("undoMostCurrent".equals(action))
          {
-            Modification undoneChange = editingSession.undoLast();
-            postprocessChange(undoneChange);
-            ChangeJto jto = toJto(undoneChange);
-
-            if (editingSession.canUndo())
-            {
-               Modification pendingUndo = editingSession.getPendingUndo();
-               postprocessChange(pendingUndo);
-               jto.pendingUndoableChange = toJto(pendingUndo);
-               jto.pendingUndo = toChangeUri(pendingUndo);
-            }
-            if (editingSession.canRedo())
-            {
-               Modification pendingRedo = editingSession.getPendingRedo();
-               postprocessChange(pendingRedo);
-               jto.pendingRedoableChange = toJto(pendingRedo);
-               jto.pendingRedo = toChangeUri(pendingRedo);
-            }
-
-            jto.isUndo = true;
-            result = toJson(jto);
-
-            // TODO include full command?
-            commandHandlingMediator().broadcastChange(undoneChange.getSession(), null, result);
-
-            return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+            jto = controller.undoMostCurrentChange();
+         }
+         else if ("redoLastUndo".equals(action))
+         {
+            jto = controller.redoMostCurrentlyUndoneChange();
          }
          else
          {
-            return Response.status(Status.CONFLICT) //
-                  .entity("Nothing to be undone")
+            return Response //
+                  .status(Status.BAD_REQUEST) //
+                  .entity("Invalid navigation action: " + action) //
                   .build();
          }
-      }
-      else if ("redoLastUndo".equals(action))
-      {
-         JsonObject result = new JsonObject();
-         EditingSession editingSession = currentSession().getSession();
-         if (editingSession.canRedo())
+
+         if (null != jto.pendingUndoableChange)
          {
-            Modification redoneChange = editingSession.redoNext();
-            postprocessChange(redoneChange);
-            ChangeJto jto = toJto(redoneChange);
-
-            if (editingSession.canUndo())
-            {
-               Modification pendingUndo = editingSession.getPendingUndo();
-               postprocessChange(pendingUndo);
-               jto.pendingUndoableChange = toJto(pendingUndo);
-               jto.pendingUndo = toChangeUri(pendingUndo);
-            }
-            if (editingSession.canRedo())
-            {
-               Modification pendingRedo = editingSession.getPendingRedo();
-               postprocessChange(pendingRedo);
-               jto.pendingRedoableChange = toJto(pendingRedo);
-               jto.pendingRedo = toChangeUri(pendingRedo);
-            }
-
-            jto.isRedo = true;
-            result = toJson(jto);
-
-            // TODO include full command?
-            commandHandlingMediator().broadcastChange(redoneChange.getSession(), null, result);
-
-            return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
+            jto.pendingUndo = toChangeUri(jto.pendingUndoableChange.id);
          }
-         else
+
+         if (null != jto.pendingRedoableChange)
          {
-            return Response.status(Status.CONFLICT) //
-                  .entity("Nothing to be redone")
-                  .build();
+            jto.pendingRedo = toChangeUri(jto.pendingRedoableChange.id);
          }
+
+         return Response //
+               .ok(jsonIo.writeJsonObject(toJson(jto)), MediaType.APPLICATION_JSON_TYPE) //
+               .build();
       }
-      else
+      catch (ConflictingRequestException cre)
       {
-         return Response.status(Status.BAD_REQUEST) //
-               .entity("Invalid navigation action: " + action)
+         return Response //
+               .status(Status.CONFLICT) //
+               .entity(cre.getMessage()) //
                .build();
       }
    }
@@ -435,7 +187,7 @@ public class ModelerSessionRestController
    @Produces(MediaType.APPLICATION_JSON)
    public String getEditLocksStatus()
    {
-      List<ModelLockJto> jtos = toModelLocksJto();
+      List<ModelLockJto> jtos = controller.getEditLocksStatus();
 
       return jsonIo.gson().toJson(jtos);
    }
@@ -445,15 +197,7 @@ public class ModelerSessionRestController
    @Produces(MediaType.APPLICATION_JSON)
    public String getEditLockStatus(@PathParam("modelId") final String modelId)
    {
-      ModelingSession session = currentSession();
-
-      EObject model = session.modelRepository().findModel(modelId);
-      if (null == model)
-      {
-         throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
-      }
-
-      ModelLockJto jto = toModelLockJto(session, model);
+      ModelLockJto jto = controller.getEditLockStatus(modelId);
       return jsonIo.gson().toJson(jto);
    }
 
@@ -462,20 +206,8 @@ public class ModelerSessionRestController
    @Produces(MediaType.APPLICATION_JSON)
    public String breakEditLockForModel(@PathParam("modelId") final String modelId)
    {
-      ModelingSession session = currentSession();
-
-      EObject model = session.modelRepository().findModel(modelId);
-      if (null == model)
-      {
-         throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
-      }
-
-      if ( !session.breakEditLock(model))
-      {
-         throw new WebApplicationException(Response.status(Status.BAD_REQUEST).build());
-      }
-
-      return getEditLockStatus(modelId);
+      ModelLockJto jto = controller.breakEditLockForModel(modelId);
+      return jsonIo.gson().toJson(jto);
    }
 
    @POST
@@ -486,9 +218,23 @@ public class ModelerSessionRestController
       try
       {
          CommandJto commandJto = jsonIo.gson().fromJson(postedData, CommandJto.class);
-         Response outcome = applyChange(commandJto);
+         ChangeJto outcome = controller.applyChange(commandJto);
 
-         return outcome;
+         return Response.created(URI.create(toChangeUri(outcome.id))) //
+               .entity(jsonIo.gson().toJson(outcome)) //
+               .build();
+      }
+      catch (BadRequestException bre)
+      {
+         return Response.status(Status.BAD_REQUEST).entity(bre.getMessage()).build();
+      }
+      catch (ConflictingRequestException cre)
+      {
+         return Response.status(Status.CONFLICT).entity(cre.getMessage()).build();
+      }
+      catch (ItemNotFoundException infe)
+      {
+         return Response.status(Status.NOT_FOUND).entity(infe.getMessage()).build();
       }
       catch (Exception e)
       {
@@ -497,381 +243,8 @@ public class ModelerSessionRestController
       }
    }
 
-   public Response applyChange(CommandJto commandJto)
-   {
-      String commandId = commandJto.commandId;
-      String modelId = commandJto.modelId;
-
-      ModelRepository modelRepository = currentSession().modelRepository();
-      EObject model = modelRepository.findModel(modelId);
-
-      try
-      {
-         // obtain session to ensure we hold an edit lock for the model
-         EditingSession editingSession = (null != model) //
-               ? currentSession().getEditSession(model)
-               : currentSession().getSession();
-
-         if (commandId.startsWith("model."))
-         {
-            return applyGlobalChange(editingSession, commandId, model, commandJto);
-         }
-         else
-         {
-            // change to be interpreted in context of a model
-            if (null == model)
-            {
-               return Response.status(Status.BAD_REQUEST) //
-                     .entity("Unknown model: " + modelId)
-                     .build();
-            }
-
-            return applyModelElementChange(editingSession, commandId, model, commandJto);
-         }
-      }
-      catch (MissingWritePermissionException mwpe)
-      {
-         return Response.status(Status.CONFLICT) //
-               .entity("Missing write permission: " + mwpe.getMessage()).build();
-      }
-   }
-
-   /**
-    * @param editingSession TODO
-    * @param commandId
-    * @param commandJto
-    * @return
-    */
-   private Response applyGlobalChange(EditingSession editingSession, String commandId, EObject model, CommandJto commandJto)
-   {
-      List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
-
-      for (ChangeDescriptionJto changeDescrJto : changesJson) {
-         if (null != changeDescrJto) {
-            EObject targetElement = null;
-            if (null != changeDescrJto.uuid)
-            {
-               String uuid = changeDescrJto.uuid;
-               targetElement = currentSession().uuidMapper().getEObject(uuid);
-            }
-            else
-            {
-               targetElement = model;
-            }
-
-            JsonObject changeJson = changeDescrJto.changes;
-            String modelFormat;
-            if (null != model)
-            {
-               modelFormat = currentSession().modelRepository()
-                     .getModelFormat(model);
-            }
-            else
-            {
-               modelFormat = extractString(changeJson, "modelFormat");
-            }
-
-            ModelCommandsHandler.ModificationDescriptor changes = null;
-            for (ModelCommandsHandler handler : resolveSpringBeans(
-                  ModelCommandsHandler.class, springContext))
-            {
-               // TODO make this a regular modification
-               if (handler.handlesModel(modelFormat))
-               {
-                  changes = handler.handleCommand(commandId, targetElement, changeJson);
-                  break;
-               }
-            }
-            if (null != changes)
-            {
-               JsonObject changeJto = toJson(toJto(commandJto, changes));
-               return Response.ok(jsonIo.writeJsonObject(changeJto))
-                     .type(APPLICATION_JSON_TYPE).build();
-            }
-            else
-            {
-               return Response.status(Status.BAD_REQUEST) //
-                     .entity("Unsupported modelFormat: " + modelFormat).build();
-            }
-         }
-      }
-
-      return null;
-   }
-
-
-   private Response applyModelElementChange(EditingSession editingSession, String commandId, EObject model, CommandJto commandJto)
-   {
-      List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
-
-      // pre-process change descriptions
-      ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
-      try
-      {
-         for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
-         {
-            EObject targetElement = findTargetElement(model, changeDescrJto);
-
-            changeDescriptors.add(new CommandHandlingMediator.ChangeRequest(model,
-                  targetElement, changeDescrJto.changes));
-         }
-      }
-      catch (WebApplicationException wae)
-      {
-         return wae.getResponse();
-      }
-
-      ModelerSessionRestController.CommandJto = commandJto;
-
-      // dispatch to actual command handler
-      Modification change = commandHandlingMediator().handleCommand(editingSession,
-            commandId, changeDescriptors);
-      if (null != change)
-      {
-         postprocessChange(change);
-
-         change.getMetadata().put("commandId", commandId);
-         change.getMetadata().put("modelId", modelBinding.getModelId(model));
-         if (null != commandJto.account)
-         {
-            change.getMetadata().put("account", commandJto.account);
-         }
-
-         ChangeJto jto = toJto(change);
-         JsonObject changeJto = toJson(jto);
-
-         commandHandlingMediator().broadcastChange(change.getSession(), commandJto,
-               changeJto);
-
-         ModelerSessionRestController.CommandJto = null;
-
-         Object payload = jsonIo.writeJsonObject(changeJto);
-         return Response.created(URI.create(toChangeUri(change))) //
-               .entity(payload)
-               .type(MediaType.APPLICATION_JSON_TYPE)
-               .build();
-      }
-      else
-      {
-         return Response.status(Status.BAD_REQUEST) //
-               .entity("Unsupported change request: " + commandId //
-                     + " [" + commandJto.changeDescriptions + "]")
-               .build();
-      }
-   }
-
-   private EObject findTargetElement(EObject model, ChangeDescriptionJto changeDescrJto)
-         throws WebApplicationException
-   {
-      if (model instanceof ModelType)
-      {
-         return findTargetElement((ModelType) model, changeDescrJto);
-      }
-      else
-      {
-         ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
-         ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
-         if ( !isEmpty(changeDescrJto.uuid))
-         {
-            return modelNavigator.findElementByUuid(model, changeDescrJto.uuid);
-         }
-         else if ( !isEmpty(changeDescrJto.oid))
-         {
-            // HACK sometimes the modelId is passed in the oid field
-            if (modelBinding.getModelId(model).equals(changeDescrJto.oid))
-            {
-               return model;
-            }
-
-            return modelNavigator.findElementByOid(model, Long.valueOf(changeDescrJto.oid));
-         }
-         else
-         {
-            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
-                  .entity("Missing context element identifier: " + changeDescrJto)
-                  .build());
-         }
-      }
-   }
-
-   private EObject findTargetElement(ModelType model, ChangeDescriptionJto changeDescrJto)
-         throws WebApplicationException
-   {
-      EObject targetElement = null;
-      // existing target, identified by uuid
-      if (null != changeDescrJto.uuid)
-      {
-         String uuid = changeDescrJto.uuid;
-         targetElement = currentSession().uuidMapper().getEObject(uuid);
-
-         if (null == targetElement)
-         {
-            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
-                  .entity("Unknown target element for element UUID " + uuid)
-                  .build());
-         }
-      }
-      else if (null != changeDescrJto.oid)
-      {
-         // existing target, identified by oid
-         String oid = changeDescrJto.oid;
-         if (model.getId().equals(oid))
-         {
-            targetElement = model;
-         }
-         else
-         {
-            long parsedOid = Long.parseLong(oid);
-            // deep search for model element by OID
-            // TODO can lookup faster as oid is declared the XML index
-            // field?
-            for (Iterator<? > i = model.eAllContents(); i.hasNext();)
-            {
-               Object element = i.next();
-               if ((element instanceof IModelElement)
-                     && ((((IModelElement) element).getElementOid() == parsedOid)))
-               {
-                  targetElement = (IModelElement) element;
-                  break;
-               }
-            }
-         }
-
-         if (null == targetElement)
-         {
-            throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
-                  .entity(
-                        "Unknown target element for element OID " + oid
-                              + " within model " + model.getId())
-                  .build());
-         }
-      }
-      else
-      {
-         throw new WebApplicationException(Response.status(Status.BAD_REQUEST) //
-               .entity("Missing target element identifier: " + changeDescrJto)
-               .build());
-      }
-
-      return targetElement;
-   }
-
-   private void postprocessChange(Modification change)
-   {
-      ChangesetPostprocessingService postprocessingService = resolveSpringBean(
-            ChangesetPostprocessingService.class, springContext);
-
-      postprocessingService.postprocessChangeset(change);
-   }
-
-   private CommandHandlingMediator commandHandlingMediator()
-   {
-      try
-      {
-         CommandHandlingMediator twophaseMediator = resolveSpringBean(CommandHandlingMediator.class, springContext);
-         if (null != twophaseMediator)
-         {
-            trace.info("Using two-phase command handling.");
-            return twophaseMediator;
-         }
-      }
-      catch (BeansException be)
-      {
-         // failed resolving twophase mediator, fall back to simple mediator
-      }
-
-      final SimpleCommandHandlingMediator mediator = resolveSpringBean(SimpleCommandHandlingMediator.class, springContext);
-      return new CommandHandlingMediator()
-      {
-         @Override
-         public void broadcastChange(EditingSession session, org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto commandJto, JsonObject changeJson)
-         {
-            mediator.broadcastChange(session, commandJto, changeJson);
-         }
-
-         @Override
-         public Modification handleCommand(EditingSession editingSession,
-               String commandId, List<ChangeRequest> changes)
-         {
-            try
-            {
-               return mediator.handleCommand(editingSession, commandId, changes);
-            }
-            catch (Exception e)
-            {
-               trace.warn("Failed handling command '" + commandId + "'", e);
-
-               return new Modification(editingSession, e);
-            }
-         }
-      };
-   }
-
    private ModelingSession currentSession()
    {
       return sessionLocator.currentModelingSession();
-   }
-
-   public static class ChangeJto
-   {
-      public String id;
-      public long timestamp;
-      public String commandId;
-      public String modelId;
-      public String account;
-
-      public ChangesJto changes = new ChangesJto();
-
-      public List<ProblemJto> problems = null;
-
-      public String pendingUndo;
-      public String pendingRedo;
-
-      //TODO pendingUndoableChange / pendingRedoableChange is a temporary addition
-      //will be replaced with something concrete once requirement is clear
-      public ChangeJto pendingUndoableChange;
-      public ChangeJto pendingRedoableChange;
-
-      public Boolean isUndo;
-      public Boolean isRedo;
-
-      public UiStateJto uiState;
-
-      public static class ChangesJto
-      {
-         public JsonArray modified = new JsonArray();
-         public JsonArray added = new JsonArray();
-         public JsonArray removed = new JsonArray();
-      };
-
-      public static class ProblemJto
-      {
-         public String severity;
-         public String message;
-      }
-
-      public static class UiStateJto
-      {
-         public List<ModelLockJto> modelLocks;
-      }
-   };
-
-   public static class ModelLockJto
-   {
-      public static final String STATUS_NOT_LOCKED = "";
-
-      public static final String STATUS_LOCKED_BY_ME = "lockedByMe";
-
-      public static final String STATUS_LOCKED_BY_OTHER = "lockedByOther";
-
-      public String modelId;
-
-      public String lockStatus = STATUS_NOT_LOCKED;
-
-      public String ownerId;
-
-      public String ownerName;
-
-      public boolean canBreakEditLock = false;
    }
 }

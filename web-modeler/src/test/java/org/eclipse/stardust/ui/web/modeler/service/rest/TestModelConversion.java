@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecut
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,7 +53,7 @@ public class TestModelConversion
    ModelService modelService;
 
    @Resource
-   private ModelerSessionRestController restController;
+   private ModelerSessionController restController;
 
    @Before
    public void initServiceFactory()

@@ -3,9 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +22,7 @@ import com.google.gson.JsonSerializer;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
 
 @Component
 @Scope("singleton")
@@ -52,7 +50,6 @@ public class JsonMarshaller
    }
 
    public JsonObject readJsonObject(String jsonText)
-         throws javax.ws.rs.WebApplicationException
    {
       try
       {
@@ -63,14 +60,18 @@ public class JsonMarshaller
          }
          else
          {
-            trace.warn("Expected a JSON object, but received something else.");
-            throw new WebApplicationException(Status.BAD_REQUEST);
+            BadRequestException bre = new BadRequestException(
+                  "Expected a JSON object, but received something else.");
+            trace.warn(bre.getMessage(), bre);
+            throw bre;
          }
       }
       catch (JsonParseException jpe)
       {
-         trace.warn("Expected a JSON object, but received no valid JSON at all.", jpe);
-         throw new WebApplicationException(jpe, Status.BAD_REQUEST);
+         BadRequestException bre = new BadRequestException(
+               "Expected a JSON object, but received no valid JSON at all.", jpe);
+         trace.warn(bre.getMessage(), bre);
+         throw bre;
       }
    }
 

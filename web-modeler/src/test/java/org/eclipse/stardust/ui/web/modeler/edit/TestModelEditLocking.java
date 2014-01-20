@@ -41,11 +41,13 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecutor;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
+import org.eclipse.stardust.ui.web.modeler.rest.RestFacadeInvocationExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ModelLockJto;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ModelLockJto;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 
@@ -71,7 +73,10 @@ public class TestModelEditLocking
    ModelService modelService;
 
    @Resource
-   private ModelerSessionRestController restController;
+   private ModelerSessionController restController;
+
+   @Resource
+   private ModelerSessionRestController modelerSessionRestController;
 
    @Resource
    private ModelingSessionManager modelingSessionManager;
@@ -93,8 +98,8 @@ public class TestModelEditLocking
       assertThat(restController, is(not(nullValue())));
       assertThat(modelLockManager, is(not(nullValue())));
 
-      RequestExecutor requestExecutor = new BeanInvocationExecutor(jsonIo, modelService,
-            restController);
+      RequestExecutor requestExecutor = new RestFacadeInvocationExecutor(jsonIo, modelService,
+            modelerSessionRestController);
       this.changeApiDriver = new ChangeApiDriver(requestExecutor, jsonIo);
 
       mockServiceFactoryLocator.init();
@@ -662,9 +667,7 @@ public class TestModelEditLocking
          }
 
 
-         ModelLockJto lockJto = jsonIo.gson().fromJson(
-               restController.getEditLockStatus(modelId),
-               ModelerSessionRestController.ModelLockJto.class);
+         ModelLockJto lockJto = restController.getEditLockStatus(modelId);
          assertThat(lockJto, is(not(nullValue())));
          assertThat(lockJto.modelId, is(modelId));
          assertThat(lockJto.lockStatus, is(""));
@@ -687,9 +690,7 @@ public class TestModelEditLocking
             assertThat(modelLockManager.isLockedByOther(otherSession, modelId), is(true));
          }
 
-         ModelLockJto lockJto = jsonIo.gson().fromJson(
-               restController.getEditLockStatus(modelId),
-               ModelerSessionRestController.ModelLockJto.class);
+         ModelLockJto lockJto = restController.getEditLockStatus(modelId);
          assertThat(lockJto, is(not(nullValue())));
          assertThat(lockJto.modelId, is(modelId));
          assertThat(lockJto.lockStatus, is("lockedByMe"));
@@ -712,9 +713,7 @@ public class TestModelEditLocking
             assertThat(modelLockManager.isLockedByOther(mySession, modelId), is(true));
          }
 
-         ModelLockJto lockJto = jsonIo.gson().fromJson(
-               restController.getEditLockStatus(modelId),
-               ModelerSessionRestController.ModelLockJto.class);
+         ModelLockJto lockJto = restController.getEditLockStatus(modelId);
          assertThat(lockJto, is(not(nullValue())));
          assertThat(lockJto.modelId, is(modelId));
          assertThat(lockJto.lockStatus, is("lockedByOther"));

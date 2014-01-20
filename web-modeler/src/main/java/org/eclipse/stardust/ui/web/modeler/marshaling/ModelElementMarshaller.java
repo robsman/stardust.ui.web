@@ -111,8 +111,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 
@@ -295,7 +295,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toProcessDefinitionJson(ProcessDefinitionType processDefinition)
    {
       List<ChangeDescriptionJto> changeDescriptions = null;
-      CommandJto commandJto = ModelerSessionRestController.getCommandJto();
+      CommandJto commandJto = ModelerSessionController.getCommandJto();
       if (commandJto != null)
       {
          changeDescriptions = commandJto.changeDescriptions;

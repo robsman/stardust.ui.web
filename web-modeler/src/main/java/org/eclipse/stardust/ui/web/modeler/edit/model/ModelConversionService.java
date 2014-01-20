@@ -12,7 +12,7 @@ import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecut
 import org.eclipse.stardust.ui.web.modeler.model.conversion.ModelConverter;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 
 @Service
 @Scope("prototype")
@@ -25,7 +25,7 @@ public class ModelConversionService
    private ModelService modelService;
 
    @Resource
-   private ModelerSessionRestController modelerSessionRestController;
+   private ModelerSessionController modelerSessionRestController;
 
    public EObject convertModel(EObject srcModel, String targetFormat)
    {

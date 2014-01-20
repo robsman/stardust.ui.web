@@ -16,7 +16,6 @@ import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -43,8 +42,8 @@ import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecut
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 
@@ -68,7 +67,7 @@ public class TestModelCommands
    ModelService modelService;
 
    @Resource
-   private ModelerSessionRestController restController;
+   private ModelerSessionController restController;
 
    @Resource
    private ModelingSessionManager modelingSessionManager;

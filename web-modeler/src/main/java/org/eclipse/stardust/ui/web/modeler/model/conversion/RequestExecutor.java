@@ -1,7 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
-import javax.ws.rs.WebApplicationException;
-
 import com.google.gson.JsonObject;
 
 public abstract class RequestExecutor
@@ -10,5 +8,5 @@ public abstract class RequestExecutor
 
    public abstract JsonObject loadProcessDiagram(String modelId, String processId);
 
-   public abstract JsonObject applyChange(JsonObject cmdJson) throws WebApplicationException;
+   public abstract JsonObject applyChange(JsonObject cmdJson);
 }

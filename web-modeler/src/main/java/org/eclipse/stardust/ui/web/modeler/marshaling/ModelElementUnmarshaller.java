@@ -39,6 +39,7 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
@@ -137,7 +138,6 @@ import org.eclipse.stardust.ui.web.modeler.service.WebServiceApplicationUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
  *
@@ -3087,7 +3087,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       documentInfo.setOwner(getServiceFactory().getWorkflowService()
             .getUser()
             .getAccount());
-      documentInfo.setContentType(MimeTypesHelper.HTML.getType());
+      documentInfo.setContentType(MediaType.TEXT_HTML_VALUE);
       Document document = getDocumentManagementService().getDocument(
             MODELING_DOCUMENTS_DIR + fileName);
 
