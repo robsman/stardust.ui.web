@@ -222,6 +222,7 @@ public class ModelerSessionRestController
 
          return Response.created(URI.create(toChangeUri(outcome.id))) //
                .entity(jsonIo.gson().toJson(outcome)) //
+               .type(MediaType.APPLICATION_JSON_TYPE) //
                .build();
       }
       catch (BadRequestException bre)
