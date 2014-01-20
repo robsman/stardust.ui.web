@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
-import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 @Service

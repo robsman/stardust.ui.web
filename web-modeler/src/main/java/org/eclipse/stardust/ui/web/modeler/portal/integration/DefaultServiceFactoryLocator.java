@@ -9,11 +9,12 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.modeler.common;
+package org.eclipse.stardust.ui.web.modeler.portal.integration;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
 public class DefaultServiceFactoryLocator implements ServiceFactoryLocator

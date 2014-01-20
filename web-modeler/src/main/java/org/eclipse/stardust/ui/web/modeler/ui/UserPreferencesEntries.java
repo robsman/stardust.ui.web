@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.modeler.common;
+package org.eclipse.stardust.ui.web.modeler.ui;
 
 /**
  * @author Subodh.Godbole

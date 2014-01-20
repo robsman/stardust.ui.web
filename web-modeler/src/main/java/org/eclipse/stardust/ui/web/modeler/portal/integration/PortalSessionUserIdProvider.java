@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.common;
+package org.eclipse.stardust.ui.web.modeler.portal.integration;
 
 import javax.annotation.Resource;
 
@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 
 @Component
 @Scope("session")

@@ -37,12 +37,12 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.collaboration.CollaborationService;
-import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
+import org.eclipse.stardust.ui.web.modeler.service.rest.utils.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.ui.ModelerConfigurationService;
 
 @Path("/modeler/{randomPostFix}")

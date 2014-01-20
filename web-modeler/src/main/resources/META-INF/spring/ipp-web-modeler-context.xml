@@ -39,7 +39,7 @@
 
 	<bean name="defaultClassLoaderProvider" class="org.eclipse.stardust.ui.web.modeler.marshaling.DefaultClassLoaderProvider" scope="prototype" />
 
-	<bean class="org.eclipse.stardust.ui.web.modeler.common.DefaultServiceFactoryLocator" scope="session">
+	<bean class="org.eclipse.stardust.ui.web.modeler.portal.integration.DefaultServiceFactoryLocator" scope="session">
 		<qualifier value="default" />
 	</bean>
 
