@@ -41,6 +41,8 @@ public abstract class ModelBinding<M extends EObject>
 
    public abstract ModelUnmarshaller getUnmarshaller();
 
+   public abstract boolean isReadOnly(M model);
+
    public ModelPersistenceHandler<M> getPersistenceHandler(M model)
    {
       return getModelingSession().modelPersistenceService().findPersistenceHandler(

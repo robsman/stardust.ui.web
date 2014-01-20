@@ -90,6 +90,13 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
       return unmarshaller;
    }
 
+   @Override
+   public boolean isReadOnly(Definitions model)
+   {
+      // no BPMN2 specific read-only flag (for teh time being)
+      return false;
+   }
+
    public String getModelFileName(Definitions model)
    {
       return getModelingSession().modelRepository().getModelFileName(model);

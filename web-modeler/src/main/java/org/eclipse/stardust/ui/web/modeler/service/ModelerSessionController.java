@@ -394,6 +394,15 @@ public class ModelerSessionController
                ? currentSession().getEditSession(model)
                : currentSession().getSession();
 
+         ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
+         if (modelBinding.isReadOnly(model)
+               && !(commandId.equalsIgnoreCase("modelLockStatus.update")))
+         {
+            trace.error("Failed handling command: '" + commandId
+                  + "' - Request tried to modify a locked model!");
+            throw new MissingWritePermissionException("Request tried to modify a locked model!");
+         }
+
          if (commandId.startsWith("model."))
          {
             return applyGlobalChange(editingSession, commandId, model, commandJto);

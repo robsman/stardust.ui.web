@@ -6,7 +6,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
@@ -73,5 +75,21 @@ public class XpdlBinding extends ModelBinding<ModelType>
    public ModelElementUnmarshaller getUnmarshaller()
    {
       return unmarshaller;
+   }
+
+   @Override
+   public boolean isReadOnly(ModelType model)
+   {
+      if (null != model)
+      {
+         AttributeType attribute = AttributeUtil.getAttribute(model,
+               "stardust:security:hash");
+         if ((attribute != null) && (attribute.getValue() != null)
+               && (attribute.getValue().length() > 0))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }
