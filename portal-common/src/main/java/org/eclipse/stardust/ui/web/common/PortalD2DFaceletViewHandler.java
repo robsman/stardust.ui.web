@@ -23,6 +23,7 @@ import com.icesoft.faces.facelets.D2DFaceletViewHandler;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.app.InternalErrorHandler;
 
 /**
  * @author Subodh.Godbole
@@ -62,6 +63,19 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
          if (session != null)
          {
             logger.error("Internal Server Error has occurred. Please contact your Administrator", e);
+
+            InternalErrorHandler errorHandler = InternalErrorHandler.getInstance();
+            errorHandler.setException(e);
+
+            if (viewToRender.getViewId().contains("/plugins/common/portalSingleViewLaunchPanelsOnly.xhtml"))
+            {
+               errorHandler.setDisplayLoginUrl(true);
+            }
+            else
+            {
+               errorHandler.setDisplayLoginUrl(false);
+            }
+
             res.sendRedirect(res.encodeRedirectURL(req.getContextPath() + "/plugins/common/internalServerError.iface"));
          }
          else

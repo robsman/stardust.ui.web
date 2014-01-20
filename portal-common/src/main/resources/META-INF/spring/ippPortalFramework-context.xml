@@ -55,7 +55,8 @@
 
    <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
       scope="singleton">   </bean>
-   <bean name="ippInternalErrorHandler" class="org.eclipse.stardust.ui.web.common.app.InternalErrorHandler"      scope="session">   </bean>   
+   
+   <bean name="ippInternalErrorHandler" class="org.eclipse.stardust.ui.web.common.app.InternalErrorHandler"      scope="session">   </bean>   
    <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
       scope="session">
    </bean>
