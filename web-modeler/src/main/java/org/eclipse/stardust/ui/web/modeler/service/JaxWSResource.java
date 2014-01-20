@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.modeler.portal;
+package org.eclipse.stardust.ui.web.modeler.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;

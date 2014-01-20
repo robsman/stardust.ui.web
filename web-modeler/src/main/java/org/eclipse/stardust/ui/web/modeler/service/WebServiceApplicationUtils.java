@@ -37,7 +37,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
-import org.eclipse.stardust.ui.web.modeler.portal.JaxWSResource;
+
 import org.eclipse.xsd.XSDNamedComponent;
 
 import com.google.gson.JsonObject;
