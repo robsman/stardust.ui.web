@@ -15,10 +15,7 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -64,46 +61,30 @@ import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.ElementCopier;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
-import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.spi.SpiExtensionRegistry;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
-import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
@@ -112,8 +93,6 @@ import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
-import org.eclipse.stardust.modeling.repository.common.SimpleImportStrategy;
-import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
@@ -133,7 +112,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
@@ -144,21 +122,7 @@ import com.google.gson.JsonObject;
  */
 public class ModelService
 {
-   public static final String NULL_VALUE = "null";
-
-   public static final String DIRECTORY_MODE = "DIRECTORY_MODE";
-
-   public static final String SINGLE_FILE_MODE = "SINGLE_FILE_MODE";
-
    public static final String TYPE_PROPERTY = "type";
-
-   public static final String ATTRIBUTES_PROPERTY = "attributes";
-
-   public static final String OID_PROPERTY = "oid";
-
-   public static final String NEW_OBJECT_PROPERTY = "newObject";
-
-   public static final String OLD_OBJECT_PROPERTY = "oldObject";
 
    public static final String X_PROPERTY = "x";
 
@@ -170,145 +134,9 @@ public class ModelService
 
    public static final String DESCRIPTION_PROPERTY = "description";
 
-   public static final String MODEL_ID_PROPERTY = "modelId";
-
-   public static final String PARENT_SYMBOL_ID_PROPERTY = "parentSymbolId";
-
-   public static final String ACTIVITIES_PROPERTY = "activities";
-
-   public static final String GATEWAYS_PROPERTY = "gateways";
-
-   public static final String EVENTS_PROPERTY = "events";
-
-   public static final String ACTIVITY_KEY = "activity";
-
-   public static final String ACTIVITY_SYMBOLS = "activitySymbols";
-
-   public static final String GATEWAY_SYMBOLS = "gatewaySymbols";
-
-   public static final String APPLICATION_TYPE_PROPERTY = "applicationType";
-
-   public static final String IN_ACCESS_POINT_KEY = "IN_ACCESS_POINT";
-
-   public static final String OUT_ACCESS_POINT_KEY = "OUT_ACCESS_POINT";
-
-   public static final String INOUT_ACCESS_POINT_KEY = "INOUT_ACCESS_POINT";
-
-   public static final String ACCESS_POINT_TYPE_PROPERTY = "accessPointType";
-
-   public static final String PRIMITIVE_ACCESS_POINT_KEY = "PRIMITIVE_ACCESS_POINT";
-
-   public static final String DATA_STRUCTURE_ACCESS_POINT_KEY = "DATA_STRUCTURE_ACCESS_POINT";
-
-   public static final String JAVA_CLASS_ACCESS_POINT_KEY = "JAVA_CLASS_ACCESS_POINT";
-
-   public static final String ANY_ACCESS_POINT_KEY = "ANY_ACCESS_POINT";
-
-   public static final String CONNECTION = "connection";
-
-   public static final String DIRECTION_PROPERTY = "direction";
-
-   public static final String CONTROL_FLOW_LITERAL = "controlFlow";
-
-   public static final String DATA_FLOW_LITERAL = "dataFlow";
-
-   public static final String FROM_ANCHOR_POINT_ORIENTATION_PROPERTY = "fromAnchorPointOrientation";
-
-   public static final String TO_ANCHOR_POINT_ORIENTATION_PROPERTY = "toAnchorPointOrientation";
-
-   public static final int UNDEFINED_ORIENTATION_KEY = -1;
-
-   public static final int NORTH_KEY = 0;
-
-   public static final int EAST_KEY = 1;
-
-   public static final int SOUTH_KEY = 2;
-
-   public static final int WEST_KEY = 3;
-
-   public static final String GATEWAY = "gateway";
-
-   public static final String GATEWAY_ACTIVITY = "Gateway";
-
-   public static final String GATEWAY_TYPE_PROPERTY = "gatewayType";
-
-   public static final String AND_GATEWAY_TYPE = "and";
-
-   public static final String XOR_GATEWAY_TYPE = "xor";
-
-   public static final String OR_GATEWAY_TYPE = "or";
-
-   public static final String EVENT_KEY = "event";
-
-   public static final String EVENT_SYMBOLS = "eventSymbols";
-
    public static final String EVENT_TYPE_PROPERTY = "eventType";
 
    public static final String START_EVENT = "startEvent";
-
-   public static final String STOP_EVENT = "stopEvent";
-
-   public static final String DATA = "data";
-
-   public static final String DATA_SYMBOLS = "dataSymbols";
-
-   public static final String STRUCTURED_DATA_TYPE_FULL_ID = "structuredDataTypeFullId";
-
-   public static final String TYPE_DECLARATION_PROPERTY = "typeDeclaration";
-
-   public static final String CONNECTIONS_PROPERTY = "connections";
-
-   public static final String CONTROL_FLOWS_PROPERTY = "controlFlows";
-
-   public static final String DATA_FLOWS_PROPERTY = "dataFlows";
-
-   public static final String CONDITION_EXPRESSION_PROPERTY = "conditionExpression";
-
-   public static final String IN_DATA_MAPPING_PROPERTY = "inDataMapping";
-
-   public static final String OUT_DATA_MAPPING_PROPERTY = "outDataMapping";
-
-   public static final String DATA_PATH_PROPERTY = "dataPath";
-
-   public static final String APPLICATION_PATH_PROPERTY = "applicationPath";
-
-   public static final String OTHERWISE_PROPERTY = "otherwise";
-
-   public static final String CONDITION_KEY = "CONDITION";
-
-   public static final String OTHERWISE_KEY = "OTHERWISE";
-
-   public static final String POOL_SYMBOLS = "poolSymbols";
-
-   public static final String LANE_SYMBOLS = "laneSymbols";
-
-   public static final String FROM_MODEL_ELEMENT_OID = "fromModelElementOid";
-
-   public static final String FROM_MODEL_ELEMENT_TYPE = "fromModelElementType";
-
-   public static final String TO_MODEL_ELEMENT_OID = "toModelElementOid";
-
-   public static final String TO_MODEL_ELEMENT_TYPE = "toModelElementType";
-
-   public static final String WEB_SERVICE_APPLICATION_TYPE_ID = "webservice";
-
-   public static final String MESSAGE_TRANSFORMATION_APPLICATION_TYPE_ID = "messageTransformationBean";
-
-   public static final String CAMEL_APPLICATION_TYPE_ID = "camelBean";
-
-   public static final String MAIL_APPLICATION_TYPE_ID = "mailBean";
-
-   public static final String INTERACTIVE_APPLICATION_TYPE_KEY = "interactive";
-
-   public static final String CONTEXTS_PROPERTY = "contexts";
-
-   public static final String JSF_CONTEXT_TYPE_KEY = "jsf";
-
-   public static final String EXTERNAL_WEB_APP_CONTEXT_TYPE_KEY = "externalWebApp";
-
-   public static final int POOL_LANE_MARGIN = 5;
-
-   public static final int POOL_SWIMLANE_TOP_BOX_HEIGHT = 20;
 
    private static final Logger trace = LogManager.getLogger(ModelService.class);
 
@@ -409,69 +237,6 @@ public class ModelService
    public EObjectUUIDMapper uuidMapper()
    {
       return currentSession().uuidMapper();
-   }
-
-   /**
-    *
-    * @param attrs
-    * @param attrType
-    */
-   private void removeIfExists(List<AttributeType> attrs, AttributeType attrType)
-   {
-      Iterator<AttributeType> iter = attrs.iterator();
-      while (iter.hasNext())
-      {
-         if (iter.next().getName().equals(attrType.getName()))
-         {
-            iter.remove();
-         }
-      }
-   }
-
-   /**
-    *
-    * @param json
-    * @param element
-    * @throws JSONException
-    */
-   private void storeAttributes(JsonObject json, IIdentifiableModelElement element)
-   {
-      if ( !hasNotJsonNull(json, ATTRIBUTES_PROPERTY))
-      {
-         return;
-      }
-
-      JsonObject attributes = json.getAsJsonObject(ATTRIBUTES_PROPERTY);
-
-      if (attributes != null)
-      {
-         for (Map.Entry<String, ? > entry : attributes.entrySet())
-         {
-            String key = entry.getKey();
-            JsonElement value = attributes.get(key);
-
-            System.out.println("Storing attribute " + key + " " + value);
-
-            if (value instanceof JsonObject)
-            {
-            }
-            else
-            {
-               AttributeUtil.setAttribute(element, key, value.toString());
-            }
-         }
-      }
-   }
-
-   /**
-    *
-    * @param model
-    * @param processDefinition
-    * @return
-    */
-   private EditingSession getEditingSession(ModelType model)
-   {
-      return currentSession().getEditSession(model);
    }
 
    /**
@@ -652,113 +417,6 @@ public class ModelService
    }
 
    /**
-    *
-    * @param modelId
-    * @param id
-    * @param postedData
-    * @return
-    */
-   public JsonObject createProcessJson(String modelId, JsonObject postedData)
-   {
-      ModelType model = findModel(modelId);
-      String name = extractString(postedData, NEW_OBJECT_PROPERTY,
-            ModelerConstants.NAME_PROPERTY);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().createProcess(
-            model, name, null);
-
-      JsonObject processDefinitionJson = new JsonObject();
-
-      processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
-      processDefinitionJson.addProperty(ModelerConstants.ID_PROPERTY,
-            processDefinition.getId());
-      processDefinitionJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
-      processDefinitionJson.addProperty(MODEL_ID_PROPERTY, modelId);
-      processDefinitionJson.addProperty(TYPE_PROPERTY, "process");
-      processDefinitionJson.add(ATTRIBUTES_PROPERTY, new JsonObject());
-      processDefinitionJson.add(ACTIVITIES_PROPERTY, new JsonObject());
-      processDefinitionJson.add(GATEWAYS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(EVENTS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(DATA_FLOWS_PROPERTY, new JsonObject());
-      processDefinitionJson.add(CONTROL_FLOWS_PROPERTY, new JsonObject());
-
-      postedData.add(NEW_OBJECT_PROPERTY, processDefinitionJson);
-
-      return postedData;
-   }
-
-   /**
-    *
-    * @param modelId
-    * @param processId
-    * @param activityId
-    * @param postedData
-    * @return
-    */
-   public String renameActivity(String modelId, String processId, String activityId,
-         JsonObject commandJson)
-   {
-      ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, processId);
-      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition,
-            activityId);
-      EditingSession editingSession = getEditingSession(model);
-
-      synchronized (model)
-      {
-         editingSession.beginEdit();
-
-         JsonObject newNameJson = commandJson.getAsJsonObject(NEW_OBJECT_PROPERTY);
-
-         // TODO Auto-generate ID
-         activity.setId(extractString(newNameJson, ModelerConstants.NAME_PROPERTY));
-         activity.setName(extractString(newNameJson, ModelerConstants.NAME_PROPERTY));
-         newNameJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-
-         editingSession.endEdit();
-      }
-
-      return commandJson.toString();
-   }
-
-   /**
-    *
-    * @param gatewaySymbol
-    * @param gatewaySymbolJson
-    * @return
-    * @throws JSONException
-    */
-   private JsonObject updateGateway(ActivitySymbolType gatewaySymbol,
-         LaneSymbol laneSymbol, JsonObject gatewaySymbolJson)
-   {
-      ActivityType gateway = gatewaySymbol.getActivity();
-
-      if (gatewaySymbolJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
-      {
-         gateway.setName(extractString(gatewaySymbolJson,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY));
-         setDescription(gateway,
-               gatewaySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
-      }
-
-      gatewaySymbol.setXPos(extractInt(gatewaySymbolJson, X_PROPERTY)
-            - laneSymbol.getXPos());
-      gatewaySymbol.setYPos(extractInt(gatewaySymbolJson, Y_PROPERTY)
-            - laneSymbol.getYPos());
-
-      if (hasNotJsonNull(gatewaySymbolJson, WIDTH_PROPERTY))
-      {
-         gatewaySymbol.setWidth(extractInt(gatewaySymbolJson, WIDTH_PROPERTY));
-      }
-      if (hasNotJsonNull(gatewaySymbolJson, HEIGHT_PROPERTY))
-      {
-         gatewaySymbol.setHeight(extractInt(gatewaySymbolJson, HEIGHT_PROPERTY));
-      }
-
-      return gatewaySymbolJson;
-   }
-
-   /**
     * @param element
     * @param description
     * @throws JSONException
@@ -778,367 +436,6 @@ public class ModelService
          dt.getMixed().add(FeatureMapUtil.createRawTextEntry(description));
          element.setDescription(dt);
       }
-   }
-
-   /**
-    *
-    * @param modelElementJson
-    * @param element
-    */
-   private void loadDescription(JsonObject modelElementJson,
-         IIdentifiableModelElement element)
-   {
-      if (null != element.getDescription())
-      {
-         modelElementJson.addProperty(DESCRIPTION_PROPERTY,
-               (String) element.getDescription().getMixed().get(0).getValue());
-      }
-      else
-      {
-         modelElementJson.addProperty(DESCRIPTION_PROPERTY, "");
-      }
-   }
-
-   /**
-    *
-    * @param orientation
-    * @return
-    */
-   private String mapAnchorOrientation(int orientation)
-   {
-      if (orientation == NORTH_KEY)
-      {
-         return "top";
-      }
-      else if (orientation == EAST_KEY)
-      {
-         return "right";
-      }
-      else if (orientation == SOUTH_KEY)
-      {
-         return "bottom";
-      }
-      else if (orientation == WEST_KEY)
-      {
-         return "left";
-      }
-
-      throw new IllegalArgumentException("Illegal orientation key " + orientation + ".");
-   }
-
-   /**
-    *
-    * TODO From DynamicConnectionCommand. Refactor?
-    *
-    * @param activity
-    * @return
-    */
-   private String getDefaultDataMappingContext(ActivityType activity)
-   {
-      if (ActivityImplementationType.ROUTE_LITERAL == activity.getImplementation())
-      {
-         return PredefinedConstants.DEFAULT_CONTEXT;
-      }
-      if (ActivityImplementationType.MANUAL_LITERAL == activity.getImplementation())
-      {
-         return PredefinedConstants.DEFAULT_CONTEXT;
-      }
-      if (ActivityImplementationType.APPLICATION_LITERAL == activity.getImplementation()
-            && activity.getApplication() != null)
-      {
-         ApplicationType application = activity.getApplication();
-         if (application.isInteractive())
-         {
-            if (application.getContext().size() > 0)
-            {
-               ContextType context = (ContextType) application.getContext().get(0);
-               return context.getType().getId();
-            }
-            return PredefinedConstants.DEFAULT_CONTEXT;
-         }
-         return PredefinedConstants.APPLICATION_CONTEXT;
-      }
-      if (ActivityImplementationType.SUBPROCESS_LITERAL == activity.getImplementation()
-            && activity.getImplementationProcess() != null)
-      {
-         ProcessDefinitionType process = activity.getImplementationProcess();
-         if (process.getFormalParameters() != null)
-         {
-            return PredefinedConstants.PROCESSINTERFACE_CONTEXT;
-         }
-      }
-      return PredefinedConstants.ENGINE_CONTEXT;
-   }
-
-   /**
-    *
-    * @param modelId
-    * @param processId
-    * @param connectionId
-    * @param postedData
-    * @return
-    */
-   public String updateConnection(String modelId, String processId, long connectionOid,
-         JsonObject connectionJson)
-   {
-      // TODO - Not used, ModelElementUnmarshaller contains relevant code to update
-      // connections , can be removed from here
-      JsonObject modelElementJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-      ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, processId);
-      EditingSession editSession = getEditingSession(model);
-
-      synchronized (model)
-      {
-         editSession.beginEdit();
-
-         System.out.println("Updateing Connection " + connectionOid + " "
-               + connectionJson.toString());
-
-         if (extractString(modelElementJson, TYPE_PROPERTY).equals(CONTROL_FLOW_LITERAL))
-         {
-            TransitionConnectionType transitionConnection = getModelBuilderFacade().findTransitionConnectionByModelOid(
-                  processDefinition, connectionOid);
-            transitionConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-                  connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-            transitionConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-                  connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-
-            if (transitionConnection.getTransition() != null)
-            {
-
-               if (extractBoolean(modelElementJson, OTHERWISE_PROPERTY))
-               {
-                  transitionConnection.getTransition().setCondition(OTHERWISE_KEY);
-               }
-               else
-               {
-                  transitionConnection.getTransition().setCondition(CONDITION_KEY);
-
-                  XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
-
-                  ModelUtils.setCDataString(expression.getMixed(),
-                        extractString(modelElementJson, CONDITION_EXPRESSION_PROPERTY),
-                        true);
-
-                  transitionConnection.getTransition().setExpression(expression);
-               }
-
-               setDescription(transitionConnection.getTransition(), modelElementJson);
-               storeAttributes(modelElementJson, transitionConnection.getTransition());
-            }
-         }
-         else
-         {
-            DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
-                  processDefinition, connectionOid);
-
-            dataMappingConnection.setSourceAnchor(mapAnchorOrientation(extractInt(
-                  connectionJson, FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-            dataMappingConnection.setTargetAnchor(mapAnchorOrientation(extractInt(
-                  connectionJson, TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-         }
-
-         editSession.endEdit();
-      }
-
-      return connectionJson.toString();
-   }
-
-   /**
-    *
-    * @param poolSymbol
-    * @param poolSymbolJson
-    * @return
-    */
-   public JsonObject updatePool(ModelType model, PoolSymbol poolSymbol,
-         JsonObject poolSymbolJson)
-   {
-      poolSymbol.setXPos(extractInt(poolSymbolJson, X_PROPERTY));
-      poolSymbol.setYPos(extractInt(poolSymbolJson, Y_PROPERTY));
-      poolSymbol.setWidth(extractInt(poolSymbolJson, WIDTH_PROPERTY));
-      poolSymbol.setHeight(extractInt(poolSymbolJson, HEIGHT_PROPERTY));
-      poolSymbol.setName(extractString(poolSymbolJson, ModelerConstants.NAME_PROPERTY));
-
-      // TODO is array
-      // JSONObject laneSymbolsJson =
-      // poolSymbolJson.getJSONObject(LANE_SYMBOLS);
-      JsonArray laneSymbolsJson = poolSymbolJson.getAsJsonArray(LANE_SYMBOLS);
-
-      for (int n = 0; n < laneSymbolsJson.size(); ++n)
-      {
-         // for (Iterator iterator = laneSymbolsJson.keys();
-         // iterator.hasNext();) {
-         // String key = (String)iterator.next();
-         // JSONObject laneSymbolJson = laneSymbolsJson.getJSONObject(key);
-         JsonObject laneSymbolJson = laneSymbolsJson.get(n).getAsJsonObject();
-         LaneSymbol laneSymbol = getModelBuilderFacade().findLaneSymbolByElementOid(
-               poolSymbol, extractLong(laneSymbolJson, OID_PROPERTY));
-
-         updateLane(model, laneSymbol, laneSymbolJson);
-      }
-
-      return poolSymbolJson;
-   }
-
-   /**
-    *
-    * @param modelId
-    * @param processId
-    * @param postedData
-    * @return
-    */
-   public String updateLane(String modelId, String processId, String laneId,
-         JsonObject laneSymbolJson)
-   {
-      ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, processId);
-      LaneSymbol laneSymbol = getModelBuilderFacade().findLaneSymbolById(
-            processDefinition, laneId);
-
-      EditingSession editingSession = getEditingSession(model);
-
-      synchronized (model)
-      {
-         editingSession.beginEdit();
-
-         laneSymbolJson = updateLane(model, laneSymbol, laneSymbolJson);
-
-         editingSession.endEdit();
-
-         return laneSymbolJson.toString();
-      }
-   }
-
-   /**
-    *
-    * @param laneSymbol
-    * @param laneSymbolJson
-    * @return
-    * @throws JSONException
-    */
-   public JsonObject updateLane(ModelType model, LaneSymbol laneSymbol,
-         JsonObject laneSymbolJson)
-   {
-      laneSymbol.setName(extractString(laneSymbolJson, ModelerConstants.NAME_PROPERTY));
-      laneSymbol.setXPos(extractInt(laneSymbolJson, X_PROPERTY));
-      laneSymbol.setYPos(extractInt(laneSymbolJson, Y_PROPERTY));
-      laneSymbol.setWidth(extractInt(laneSymbolJson, WIDTH_PROPERTY));
-      laneSymbol.setHeight(extractInt(laneSymbolJson, HEIGHT_PROPERTY));
-
-      // TODO Deal with full Ids
-
-      if (hasNotJsonNull(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID))
-      {
-         System.out.println("Participant Full ID"
-               + extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
-         System.out.println("Participant "
-               + getModelBuilderFacade().findParticipant(
-                     model,
-                     getModelBuilderFacade().stripFullId(
-                           extractString(laneSymbolJson,
-                                 ModelerConstants.PARTICIPANT_FULL_ID))));
-
-         String participantModelID = getModelBuilderFacade().getModelId(
-               extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
-         if (StringUtils.isEmpty(participantModelID))
-         {
-            participantModelID = model.getId();
-         }
-
-         ModelType participantModel = model;
-         if ( !participantModelID.equals(model.getId()))
-         {
-            participantModel = findModel(participantModelID);
-         }
-
-         String participantId = getModelBuilderFacade().stripFullId(
-               extractString(laneSymbolJson, ModelerConstants.PARTICIPANT_FULL_ID));
-
-         IModelParticipant modelParticipant = getModelBuilderFacade().findParticipant(
-               findModel(participantModelID), participantId);
-
-         if ( !participantModelID.equals(model.getId()))
-         {
-            String fileConnectionId = WebModelerConnectionManager.createFileConnection(
-                  model, participantModel);
-
-            String bundleId = CarnotConstants.DIAGRAM_PLUGIN_ID;
-            URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
-
-            ModelType loadModel = getModelManagementStrategy().loadModel(
-                  participantModelID);
-            IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
-                  loadModel, participantId);
-            if (participantCopy == null)
-            {
-               ElementCopier copier = new ElementCopier(loadModel, null);
-               participantCopy = (IModelParticipant) copier.copy(modelParticipant);
-            }
-
-            ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
-                  uri, participantCopy, bundleId, null, true);
-            descriptor.importElements(model, new SimpleImportStrategy(true));
-            modelParticipant = getModelBuilderFacade().findParticipant(model,
-                  participantId);
-         }
-         LaneParticipantUtil.setParticipant(laneSymbol, modelParticipant);
-      }
-
-      JsonObject activitySymbolsJson = laneSymbolJson.getAsJsonObject(ACTIVITY_SYMBOLS);
-      for (Map.Entry<String, JsonElement> entry : activitySymbolsJson.entrySet())
-      {
-         JsonObject activitySymbolJson = entry.getValue().getAsJsonObject();
-
-         ActivitySymbolType activitySymbol = getModelBuilderFacade().findActivitySymbol(
-               laneSymbol, extractLong(activitySymbolJson, OID_PROPERTY));
-
-         // updateActivity(activitySymbol, laneSymbol, activitySymbolJson);
-
-      }
-
-      JsonObject gatewaySymbolsJson = laneSymbolJson.getAsJsonObject(GATEWAY_SYMBOLS);
-      for (Map.Entry<String, JsonElement> entry : gatewaySymbolsJson.entrySet())
-      {
-         JsonObject gatewaySymbolJson = entry.getValue().getAsJsonObject();
-
-         ActivitySymbolType gatewaySymbol = getModelBuilderFacade().findActivitySymbol(
-               laneSymbol, extractLong(gatewaySymbolJson, OID_PROPERTY));
-
-         updateGateway(gatewaySymbol, laneSymbol, gatewaySymbolJson);
-      }
-
-      JsonObject eventSymbolsJson = laneSymbolJson.getAsJsonObject(EVENT_SYMBOLS);
-      for (Map.Entry<String, JsonElement> entry : eventSymbolsJson.entrySet())
-      {
-         JsonObject eventSymbolJson = entry.getValue().getAsJsonObject();
-
-         AbstractEventSymbol eventSymbol = getModelBuilderFacade().findStartEventSymbol(
-               laneSymbol, extractLong(eventSymbolJson, OID_PROPERTY));
-
-         if (eventSymbol == null)
-         {
-            eventSymbol = getModelBuilderFacade().findEndEventSymbol(laneSymbol,
-                  extractLong(eventSymbolJson, OID_PROPERTY));
-         }
-
-         // updateEvent(eventSymbol, laneSymbol, eventSymbolJson);
-      }
-
-      JsonObject dataSymbolsJson = laneSymbolJson.getAsJsonObject(DATA_SYMBOLS);
-      for (Map.Entry<String, JsonElement> entry : dataSymbolsJson.entrySet())
-      {
-         JsonObject dataSymbolJson = entry.getValue().getAsJsonObject();
-
-         DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(
-               laneSymbol, extractLong(dataSymbolJson, OID_PROPERTY));
-
-         // updateData(dataSymbol, dataSymbolJson);
-      }
-
-      return laneSymbolJson;
    }
 
    /**
@@ -1170,61 +467,6 @@ public class ModelService
             .toString();
    }
 
-   /**
-    * @return
-    */
-   public String updateProcessDiagram(String modelId, String processId, String diagramId,
-         JsonObject diagramJson)
-   {
-      ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, processId);
-      DiagramType diagram = processDefinition.getDiagram().get(0);
-      EditingSession editSession = getEditingSession(model);
-
-      editSession.beginEdit();
-
-      JsonObject poolSymbolsJson = diagramJson.getAsJsonObject(POOL_SYMBOLS);
-
-      for (Map.Entry<String, JsonElement> entry : poolSymbolsJson.entrySet())
-      {
-         JsonObject poolSymbolJson = entry.getValue().getAsJsonObject();
-
-         PoolSymbol poolSymbol = getModelBuilderFacade().findPoolSymbolByElementOid(
-               processDefinition, extractLong(poolSymbolJson, OID_PROPERTY));
-
-         updatePool(model, poolSymbol, poolSymbolJson);
-      }
-
-      editSession.endEdit();
-
-      return diagramJson.toString();
-   }
-
-   /**
-    *
-    * @param modelId
-    * @param processId
-    * @param postedData
-    * @return
-    */
-   public String dropDataSymbol(String modelId, String processId,
-         JsonObject dataSymbolJson)
-   {
-      ModelType model = findModel(modelId);
-      ProcessDefinitionType processDefinition = getModelBuilderFacade().findProcessDefinition(
-            model, processId);
-      EditingSession editSession = getEditingSession(model);
-
-      synchronized (model)
-      {
-         editSession.beginEdit();
-         editSession.endEdit();
-      }
-
-      return dataSymbolJson.toString();
-   }
-
    // ======================== TODO Put in separate resource as we are not
    // going to share this with Eclipse =====================
 
@@ -1248,13 +490,13 @@ public class ModelService
       {
          if (extractBoolean(json, "createRestService"))
          {
-            getModelBuilderFacade().setAttribute(processDefinition,
+            ModelBuilderFacade.setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
                   PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH);
          }
          else
          {
-            getModelBuilderFacade().setAttribute(processDefinition,
+            ModelBuilderFacade.setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
                   PredefinedConstants.PROCESSINTERFACE_INVOCATION_SOAP);
          }
@@ -1263,7 +505,7 @@ public class ModelService
       {
          if (extractBoolean(json, "createRestService"))
          {
-            getModelBuilderFacade().setAttribute(processDefinition,
+            ModelBuilderFacade.setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
                   PredefinedConstants.PROCESSINTERFACE_INVOCATION_REST);
          }
@@ -1271,7 +513,7 @@ public class ModelService
 
       if (extractBoolean(json, "transientProcess"))
       {
-         getModelBuilderFacade().setAttribute(processDefinition,
+         ModelBuilderFacade.setAttribute(processDefinition,
                "carnot:engine:auditTrailPersistence", "TRANSIENT"); // Values are
                                                                     // TRANSIENT|DEFERRED|IMMEDIATE
       }
@@ -1865,19 +1107,9 @@ public class ModelService
       return queryService;
    }
 
-   public ProcessDefinitionType findProcessDefinition(ModelType model, String id)
-   {
-      return getModelBuilderFacade().findProcessDefinition(model, id);
-   }
-
    public ModelType findModel(String modelId)
    {
       return getModelManagementStrategy().getModels().get(modelId);
-   }
-
-   public ModelType refreshAndFindModel(String modelId)
-   {
-      return getModelManagementStrategy().loadModel(modelId);
    }
 
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
@@ -1892,7 +1124,7 @@ public class ModelService
     */
    public JsonArray validateModel(String modelId)
    {
-      System.out.println("Validating model " + modelId);
+      trace.debug("Validating model " + modelId);
 
       ModelType model = findModel(modelId);
       VariableContextHelper instance = VariableContextHelper.getInstance();
@@ -2362,192 +1594,6 @@ public class ModelService
       return json;
    }
 
-   /*public static void loadSchemaInfo(JsonObject json, XSDSchema schema)
-   {
-      XsdContentProvider cp = new XsdContentProvider(true);
-      XsdTextProvider lp = new XsdTextProvider();
-      XsdIconProvider ip = new XsdIconProvider();
-
-      json.addProperty("targetNamespace", schema.getTargetNamespace());
-      json.addProperty("icon", ip.doSwitch(schema).getSimpleName());
-      JsonObject nsMappings = new JsonObject();
-      for (Map.Entry<String, String> mapping : schema.getQNamePrefixToNamespaceMap()
-            .entrySet())
-      {
-         if ( !isEmpty(mapping.getKey()))
-         {
-            nsMappings.addProperty(mapping.getKey(), mapping.getValue());
-         }
-      }
-      json.add("nsMappings", nsMappings);
-
-      JsonArray elements = new JsonArray();
-      addChildren(elements, schema, cp, lp, ip, new Predicate<EObject>()
-      {
-         @Override
-         public boolean accept(EObject arg)
-         {
-            return arg instanceof XSDElementDeclaration;
-         }
-      });
-      if (0 < elements.size())
-      {
-         json.add("elements", elements);
-      }
-
-      JsonArray types = new JsonArray();
-      addChildren(types, schema, cp, lp, ip, new Predicate<EObject>()
-      {
-         @Override
-         public boolean accept(EObject arg)
-         {
-            return arg instanceof XSDTypeDefinition;
-         }
-      });
-      if (0 < types.size())
-      {
-         json.add("types", types);
-      }
-   }*/
-
-   /*private static void addChildren(JsonElement parentNodeJs, EObject component,
-         XsdContentProvider cp, XsdTextProvider lp, XsdIconProvider ip,
-         Predicate<EObject> filter)
-   {
-      EObject[] children = cp.doSwitch(component);
-      if (children.length > 0)
-      {
-         JsonObject attributesJs = null;
-         for (EObject child : children)
-         {
-            JsonElement childrenJs = null;
-            if (filter == null || filter.accept(child))
-            {
-               JsonObject childJs = new JsonObject();
-               lp.setColumn(0);
-               String name = lp.doSwitch(child);
-               childJs.addProperty("name", name);
-               childJs.addProperty("icon", ip.doSwitch(child).getSimpleName());
-               lp.setColumn(1);
-               String type = lp.doSwitch(child);
-               if ( !type.isEmpty())
-               {
-                  childJs.addProperty("type", type);
-               }
-               lp.setColumn(2);
-               String cardinality = lp.doSwitch(child);
-               if ( !cardinality.isEmpty())
-               {
-                  childJs.addProperty("cardinality", cardinality);
-               }
-
-               XSDTypeDefinition typeDef = null;
-               if (child instanceof XSDTypeDefinition)
-               {
-                  typeDef = (XSDTypeDefinition) child;
-               }
-               else if (child instanceof XSDElementDeclaration)
-               {
-                  typeDef = ((XSDElementDeclaration) child).getResolvedElementDeclaration()
-                        .getType();
-               }
-               if (typeDef instanceof XSDSimpleTypeDefinition)
-               {
-                  addNamedChild(childJs, "facets", new JsonArray());
-
-                  if (null != ((XSDSimpleTypeDefinition) typeDef).getMinLengthFacet())
-                  {
-                     childJs.addProperty("minLength",
-                           ((XSDSimpleTypeDefinition) typeDef).getMinLengthFacet()
-                                 .getValue());
-                  }
-                  if (null != ((XSDSimpleTypeDefinition) typeDef).getMaxLengthFacet())
-                  {
-                     childJs.addProperty("maxLength",
-                           ((XSDSimpleTypeDefinition) typeDef).getMaxLengthFacet()
-                                 .getValue());
-                  }
-               }
-
-               if (child instanceof XSDFacet)
-               {
-                  if ((child instanceof XSDMinLengthFacet)
-                        || (child instanceof XSDMaxLengthFacet))
-                  {
-                     childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
-                  }
-                  childJs.addProperty("classifier", ((XSDFacet) child).getFacetName());
-                  if (parentNodeJs.isJsonObject())
-                  {
-                     JsonArray enumFacetsJs = parentNodeJs.getAsJsonObject()
-                           .getAsJsonArray("facets");
-                     enumFacetsJs.add(childJs);
-                  }
-               }
-               else if (child instanceof XSDAttributeDeclaration)
-               {
-                  if (attributesJs == null)
-                  {
-                     attributesJs = new JsonObject();
-                     addNamedChild(parentNodeJs, "attributes", attributesJs);
-                  }
-                  attributesJs.add(name, childJs);
-               }
-               else if (child instanceof XSDModelGroup)
-               {
-                  childJs.addProperty("classifier",
-                        ((XSDModelGroup) child).getCompositor().getLiteral());
-                  addChild(parentNodeJs, "body", childJs);
-
-                  JsonArray elementsJs = new JsonArray();
-                  childJs.add("elements", elementsJs);
-
-                  // append any children as sub-elements
-                  childrenJs = elementsJs;
-               }
-               else
-               {
-                  addChild(parentNodeJs, name, childJs);
-                  childrenJs = childJs;
-               }
-               addChildren((null != childrenJs) ? childrenJs : parentNodeJs, child, cp,
-                     lp, ip, null);
-            }
-         }
-      }
-   }*/
-
-   /*private static void addNamedChild(JsonElement parentNodeJs, String childName,
-         JsonElement childJs)
-   {
-      if (parentNodeJs instanceof JsonObject)
-      {
-         ((JsonObject) parentNodeJs).add(childName, childJs);
-      }
-      else
-      {
-         throw new IllegalArgumentException("Expected an object, but got " + parentNodeJs);
-      }
-   }*/
-
-   /*private static void addChild(JsonElement parentNodeJs, String childName,
-         JsonElement childJs)
-   {
-      if (parentNodeJs instanceof JsonObject)
-      {
-         addNamedChild(parentNodeJs, childName, childJs);
-      }
-      else if (parentNodeJs instanceof JsonArray)
-      {
-         ((JsonArray) parentNodeJs).add(childJs);
-      }
-      else
-      {
-         throw new IllegalArgumentException("Expected an array or object, but got "
-               + parentNodeJs);
-      }
-   }*/
-
    /* remove */private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
 
    /* remove */private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
@@ -2653,126 +1699,6 @@ public class ModelService
       return new ModelBuilderFacade(getModelManagementStrategy());
    }
 
-   /*
-    * public static void main(String[] args) { JsonObject postedData = new JsonObject();
-    * postedData.addProperty("wsdlUrl",
-    * "file:/development/wks/trunk/runtime-blank/testprj/src/wsdl/hello_world_wssec.wsdl"
-    * ); postedData.addProperty("url",
-    * "file:/development/wks/trunk/runtime-blank/testprj/src/xsd/anf/security_master_update.xsd"
-    * );
-    *
-    * //ModelService ms = new ModelService(); JsonMarshaller m = new JsonMarshaller();
-    * //System.out.println(m.writeJsonObject(ms.getWebServiceStructure(postedData)));
-    * //System.out.println(m.writeJsonObject(ms.getXsdStructure(postedData)));
-    *
-    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
-    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
-    * wmm.load(new java.io.File(
-    * "C:\\development\\wks\\trunk\\runtime-blank\\testprj\\models\\Provider.xpdl")); }
-    * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    * ModelElementMarshaller mem = new ModelElementMarshaller() { EObjectUUIDMapper mapper
-    * = new EObjectUUIDMapper();
-    *
-    * @Override protected EObjectUUIDMapper eObjectUUIDMapper() { return mapper; }
-    *
-    * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
-    * Auto-generated method stub return null; } };
-    *
-    * System.out.println(m.writeJsonObject(mem.toJson(model.getTypeDeclarations().
-    * getTypeDeclaration("Pattern1"))));
-    *
-    * TypeDeclarationType typeDeclaration =
-    * model.getTypeDeclarations().getTypeDeclaration("Composite1"); JsonObject json =
-    * mem.toJson(typeDeclaration); System.out.println(m.writeJsonObject(json));
-    *
-    * //typeDeclaration = model.getTypeDeclarations().getTypeDeclaration("Enumeration1");
-    * //json = mem.toJson(typeDeclaration); //System.out.println(m.writeJsonObject(json));
-    *
-    * modifyComplexType(json); //modifyEnumType(json);
-    *
-    * ModelElementUnmarshaller um = new ModelElementUnmarshaller() {
-    *
-    * @Override protected ModelManagementStrategy modelManagementStrategy() { // TODO
-    * Auto-generated method stub return null; } }; um.populateFromJson(typeDeclaration,
-    * json); System.out.println(typeDeclaration); }
-    */
-
-   /*
-    * private static void modifyEnumType(JsonObject json) { JsonObject tds =
-    * json.getAsJsonObject("typeDeclaration"); JsonObject ss =
-    * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
-    * JsonObject cs = ts.getAsJsonObject("Enumeration1"); JsonObject es =
-    * cs.getAsJsonObject("facets");
-    *
-    * JsonObject d = new JsonObject(); d.addProperty("name", "4"); d.addProperty("icon",
-    * "XSDEnumerationFacet.gif"); d.addProperty("classifier", "enumeration"); es.add("4",
-    * d); }
-    */
-
-   /*
-    * private static void modifyComplexType(JsonObject json) { JsonObject tds =
-    * json.getAsJsonObject("typeDeclaration"); JsonObject ss =
-    * tds.getAsJsonObject("schema"); JsonObject ts = ss.getAsJsonObject("types");
-    * JsonObject cs = ts.getAsJsonObject("Composite1"); JsonObject bs =
-    * cs.getAsJsonObject("body"); JsonObject es = bs.getAsJsonObject("elements");
-    *
-    * es.remove("b");
-    *
-    * JsonObject c = es.getAsJsonObject("c"); c.addProperty("name", "NewC");
-    *
-    * JsonObject d = new JsonObject(); d.addProperty("name", "NewD");
-    * d.addProperty("icon", "XSDElementDeclaration.gif"); d.addProperty("type",
-    * "xsd:string"); d.addProperty("cardinality", "required"); es.add("NewD", d); }
-    */
-
-   /*
-    * public static void testTD() { DataChangeCommandHandler handler = new
-    * DataChangeCommandHandler();
-    *
-    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager wmm = new
-    * org.eclipse.stardust.model.xpdl.carnot.util.WorkflowModelManager(); try {
-    * wmm.load(new
-    * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl")); }
-    * catch (IOException e) { e.printStackTrace(); } ModelType model = wmm.getModel();
-    *
-    * String structId = "Composite3", structName = "Composite3";
-    *
-    * JsonObject structJson = new JsonObject();
-    * structJson.addProperty(ModelerConstants.ID_PROPERTY, structId);
-    * structJson.addProperty(ModelerConstants.NAME_PROPERTY, structName); JsonObject
-    * typeDeclarationJson = new JsonObject();
-    * structJson.add(ModelerConstants.TYPE_DECLARATION_PROPERTY, typeDeclarationJson);
-    *
-    * JsonObject type = new JsonObject(); typeDeclarationJson.add("type", type);
-    * type.addProperty("classifier", "SchemaType"); JsonObject schema = new JsonObject();
-    * typeDeclarationJson.add("schema", schema); JsonObject types = new JsonObject();
-    * schema.add("types", types); JsonObject typesType = new JsonObject();
-    * types.add(structId, typesType); typesType.addProperty("name", structId);
-    *
-    * JsonObject facets = new JsonObject(); typesType.add("facets", facets); JsonObject
-    * facet = new JsonObject(); facet.addProperty("name", "abceee");
-    * facet.addProperty("classifier", "enumeration"); facets.add("facet", facet);
-    */
-   /*
-    * JsonObject body = new JsonObject(); body.addProperty("classifier", "sequence");
-    * typesType.add("body", body); JsonObject elements = new JsonObject();
-    * body.add("elements", elements); JsonObject element = new JsonObject();
-    * element.addProperty("type", "xsd:string"); element.addProperty("name", "abceee");
-    * element.addProperty("cardinality", "at least one"); elements.add("element",
-    * element); element = new JsonObject(); element.addProperty("type", "xsd:int");
-    * element.addProperty("name", "integer_test"); element.addProperty("cardinality",
-    * "at least one");
-    */
-   /*
-    *
-    * handler.createTypeDeclaration(model, structJson);
-    *
-    * try { wmm.save(URI.createFileURI(new
-    * java.io.File("C:\\development\\New_configuration_TRUNK\\portal5\\Test.xpdl"
-    * ).getAbsolutePath())); } catch (IOException e) { // TODO Auto-generated catch block
-    * e.printStackTrace(); } }
-    */
-
    /**
     *
     */
@@ -2816,8 +1742,6 @@ public class ModelService
                JsonObject referenceJson = new JsonObject();
 
                referencesJson.add(referenceJson);
-
-               String info = "";
 
                if (reference instanceof AttributeType)
                {
