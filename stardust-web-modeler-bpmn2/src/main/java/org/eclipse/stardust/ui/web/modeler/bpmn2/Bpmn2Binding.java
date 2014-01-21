@@ -16,6 +16,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
+
 import org.eclipse.stardust.ui.web.modeler.bpmn2.utils.Bpmn2ExtensionUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
@@ -95,6 +97,15 @@ public class Bpmn2Binding extends ModelBinding<Definitions>
    {
       // no BPMN2 specific read-only flag (for teh time being)
       return false;
+   }
+
+   @Override
+   public JsonArray validateModel(Definitions model)
+   {
+      // TODO implement validation
+      trace.debug("Validation of BPMN2 models is not yet implemented, skipping validation of " + getModelId(model));
+
+      return new JsonArray();
    }
 
    public String getModelFileName(Definitions model)

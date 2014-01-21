@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
@@ -42,6 +43,15 @@ public abstract class ModelBinding<M extends EObject>
    public abstract ModelUnmarshaller getUnmarshaller();
 
    public abstract boolean isReadOnly(M model);
+
+   /**
+    *
+    * @param model
+    * @return
+    *
+    * TODO use JTO as return type
+    */
+   public abstract JsonArray validateModel(M model);
 
    public ModelPersistenceHandler<M> getPersistenceHandler(M model)
    {
