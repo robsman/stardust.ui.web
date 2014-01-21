@@ -2877,6 +2877,105 @@ public class ModelElementMarshaller implements ModelMarshaller
             ((ModelType) model).getProcessDefinition(), processId));
    }
 
+   @Override
+   public JsonArray retrieveConfigurationVariables(EObject untypedModel)
+   {
+      ModelType model = (ModelType) untypedModel;
+
+      JsonArray variablesJson = new JsonArray();
+
+      VariableContext variableContext = new VariableContext();
+
+      variableContext.initializeVariables(model);
+      variableContext.refreshVariables(model);
+      variableContext.saveVariables();
+
+      for (Iterator<ModelVariable> i = variableContext.getVariables().iterator(); i.hasNext();)
+      {
+         ModelVariable modelVariable = i.next();
+         JsonObject variableJson = new JsonObject();
+
+         variablesJson.add(variableJson);
+
+         String cleanName = getModelVariableName(modelVariable.getName());
+         variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
+         variableJson.addProperty("name", modelVariable.getName());
+         variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
+         variableJson.addProperty("description", modelVariable.getDescription());
+         List<EObject> refList = variableContext.getReferences(modelVariable);
+
+         JsonArray referencesJson = new JsonArray();
+
+         variableJson.add("references", referencesJson);
+
+         // TODO Why is there no empty list
+
+         if (refList != null)
+         {
+            for (Iterator<EObject> j = refList.iterator(); j.hasNext();)
+            {
+               Object reference = j.next();
+               JsonObject referenceJson = new JsonObject();
+
+               referencesJson.add(referenceJson);
+
+               if (reference instanceof AttributeType)
+               {
+                  AttributeType attribute = (AttributeType) reference;
+
+                  referenceJson.addProperty("elementName", attribute.getName());
+                  referenceJson.addProperty("elementType", "attribute");
+
+                  if (attribute.eContainer() instanceof IIdentifiableModelElement)
+                  {
+                     referenceJson.addProperty("scopeName",
+                           ((IIdentifiableModelElement) attribute.eContainer()).getName());
+                     referenceJson.addProperty("scopeType", "modelElement");
+                  }
+                  else if (attribute.eContainer() instanceof ModelType)
+                  {
+                     referenceJson.addProperty("scopeName", model.getName());
+                     referenceJson.addProperty("scopeType", "model");
+                  }
+                  else
+                  {
+                     referenceJson.addProperty("scopeType", "other");
+                  }
+               }
+               else if (reference instanceof DescriptionType)
+               {
+                  DescriptionType description = (DescriptionType) reference;
+
+                  referenceJson.addProperty("elementType", "description");
+
+                  if (description.eContainer() instanceof IIdentifiableModelElement)
+                  {
+                     referenceJson.addProperty(
+                           "scopeName",
+                           ((IIdentifiableModelElement) description.eContainer()).getName());
+                     referenceJson.addProperty("scopeType", "modelElement");
+                  }
+                  else if (description.eContainer() instanceof ModelType)
+                  {
+                     referenceJson.addProperty("scopeName", model.getName());
+                     referenceJson.addProperty("scopeType", "model");
+                  }
+                  else
+                  {
+                     referenceJson.addProperty("scopeType", "other");
+                  }
+               }
+               else
+               {
+                  referenceJson.addProperty("elementType", "other");
+               }
+            }
+         }
+      }
+
+      return variablesJson;
+   }
+
    /**
     * @param dataMapping
     * @return

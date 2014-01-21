@@ -17,7 +17,6 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,15 +46,11 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.spi.SpiExtensionRegistry;
-import org.eclipse.stardust.model.xpdl.carnot.util.ModelVariable;
-import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
-import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
@@ -701,100 +696,10 @@ public class ModelService
     */
    public JsonArray getConfigurationVariables(String modelId)
    {
-      JsonArray variablesJson = new JsonArray();
+      ModelRepository modelRepository = currentSession().modelRepository();
+      EObject model = modelRepository.findModel(modelId);
 
-      ModelType model = findModel(modelId);
-
-      VariableContext variableContext = new VariableContext();
-
-      variableContext.initializeVariables(model);
-      variableContext.refreshVariables(model);
-      variableContext.saveVariables();
-
-      for (Iterator<ModelVariable> i = variableContext.getVariables().iterator(); i.hasNext();)
-      {
-         ModelVariable modelVariable = i.next();
-         JsonObject variableJson = new JsonObject();
-
-         variablesJson.add(variableJson);
-
-         String cleanName = getModelVariableName(modelVariable.getName());
-         variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
-         variableJson.addProperty("name", modelVariable.getName());
-         variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
-         variableJson.addProperty("description", modelVariable.getDescription());
-         List<EObject> refList = variableContext.getReferences(modelVariable);
-
-         JsonArray referencesJson = new JsonArray();
-
-         variableJson.add("references", referencesJson);
-
-         // TODO Why is there no empty list
-
-         if (refList != null)
-         {
-            for (Iterator<EObject> j = refList.iterator(); j.hasNext();)
-            {
-               Object reference = j.next();
-               JsonObject referenceJson = new JsonObject();
-
-               referencesJson.add(referenceJson);
-
-               if (reference instanceof AttributeType)
-               {
-                  AttributeType attribute = (AttributeType) reference;
-
-                  referenceJson.addProperty("elementName", attribute.getName());
-                  referenceJson.addProperty("elementType", "attribute");
-
-                  if (attribute.eContainer() instanceof IIdentifiableModelElement)
-                  {
-                     referenceJson.addProperty("scopeName",
-                           ((IIdentifiableModelElement) attribute.eContainer()).getName());
-                     referenceJson.addProperty("scopeType", "modelElement");
-                  }
-                  else if (attribute.eContainer() instanceof ModelType)
-                  {
-                     referenceJson.addProperty("scopeName", model.getName());
-                     referenceJson.addProperty("scopeType", "model");
-                  }
-                  else
-                  {
-                     referenceJson.addProperty("scopeType", "other");
-                  }
-               }
-               else if (reference instanceof DescriptionType)
-               {
-                  DescriptionType description = (DescriptionType) reference;
-
-                  referenceJson.addProperty("elementType", "description");
-
-                  if (description.eContainer() instanceof IIdentifiableModelElement)
-                  {
-                     referenceJson.addProperty(
-                           "scopeName",
-                           ((IIdentifiableModelElement) description.eContainer()).getName());
-                     referenceJson.addProperty("scopeType", "modelElement");
-                  }
-                  else if (description.eContainer() instanceof ModelType)
-                  {
-                     referenceJson.addProperty("scopeName", model.getName());
-                     referenceJson.addProperty("scopeType", "model");
-                  }
-                  else
-                  {
-                     referenceJson.addProperty("scopeType", "other");
-                  }
-               }
-               else
-               {
-                  referenceJson.addProperty("elementType", "other");
-               }
-            }
-         }
-      }
-
-      return variablesJson;
+      return findModelBinding(model).getMarshaller().retrieveConfigurationVariables(model);
    }
 
    /**
@@ -823,14 +728,5 @@ public class ModelService
       // TODO I18N
 
       return "Embedded Web Application is not configured.";
-   }
-
-   private String getModelVariableName(String name)
-   {
-      if (name.startsWith("${")) //$NON-NLS-1$
-      {
-         name = name.substring(2, name.length() - 1);
-      }
-      return name;
    }
 }

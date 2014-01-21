@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -12,6 +13,8 @@ public interface ModelMarshaller
    JsonObject toModelJson(EObject model);
 
    JsonObject  toProcessDiagramJson(EObject model, String processId);
+
+   JsonArray retrieveConfigurationVariables(EObject model);
 
    /**
     * Invoked before the client starts marshaling a set of elements sequentially.

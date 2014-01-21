@@ -80,6 +80,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.util.XSDConstants;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -393,6 +394,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          }
       }
       return new JsonObject();
+   }
+
+   @Override
+   public JsonArray retrieveConfigurationVariables(EObject model)
+   {
+      // TODO support config variables
+      trace.warn("Configuration variable support is not yet implemented for BPMN2.");
+      return new JsonArray();
    }
 
    public ProcessDiagramJto toProcessDiagramJto(BPMNDiagram diagram, Process process)
