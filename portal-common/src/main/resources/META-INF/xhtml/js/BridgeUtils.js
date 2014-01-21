@@ -1511,7 +1511,10 @@ if (!window["BridgeUtils"].FrameManager) {
 						var iFrameWith = (width == undefined) ? getOffsetWidth(contentPanelAnchor) : width;
 						var iFrameHeight = (height == undefined) ? contentPanelAnchor.offsetHeight : height;
 						if (iFrameHeight == 0) {
-							var delta = posAnchor.y > 0 ? posAnchor.y : 41;
+							var delta = 31;
+							if (posAnchor.y > 0 && heightAdjustment == 0) {
+								delta = posAnchor.y;
+							}
 							iFrameHeight = BridgeUtils.getAbsoluteSize(viewFrameData.win.style.height) - delta;
 						}
 	
