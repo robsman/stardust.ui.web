@@ -17,7 +17,7 @@
 
 <faces-config>
    <application>
-      <view-handler>com.icesoft.faces.facelets.D2DFaceletViewHandler</view-handler>
+      <view-handler>org.eclipse.stardust.ui.web.common.PortalD2DFaceletViewHandler</view-handler>
       <state-manager>com.icesoft.faces.application.ViewRootStateManagerImpl</state-manager>
    </application>
    

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 package org.eclipse.stardust.ui.web.common;
 
 import java.io.IOException;
@@ -13,6 +23,7 @@ import com.icesoft.faces.facelets.D2DFaceletViewHandler;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.app.InternalErrorHandler;
 
 /**
  * @author Subodh.Godbole
@@ -22,8 +33,6 @@ import org.eclipse.stardust.common.log.Logger;
 public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
 {
    private static final Logger logger = LogManager.getLogger(PortalD2DFaceletViewHandler.class);
-
-   private int flag = 0;
 
    public PortalD2DFaceletViewHandler()
    {
@@ -35,19 +44,7 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
    {
       try
       {
-         if (flag == 3 || flag == 6)
-         {
-            throw new NullPointerException();
-         }
-         else
-         {
-            super.renderView(context, viewToRender);
-            flag++;
-            if (flag > 7)
-            {
-               flag = 0;
-            }
-         }
+         super.renderView(context, viewToRender);
       }
       catch (Exception e)
       {
@@ -66,8 +63,20 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
          if (session != null)
          {
             logger.error("Internal Server Error has occurred. Please contact your Administrator", e);
+
+            InternalErrorHandler errorHandler = InternalErrorHandler.getInstance();
+            errorHandler.setException(e);
+
+            if (viewToRender.getViewId().contains("/plugins/common/portalSingleViewLaunchPanelsOnly.xhtml"))
+            {
+               errorHandler.setDisplayLoginUrl(true);
+            }
+            else
+            {
+               errorHandler.setDisplayLoginUrl(false);
+            }
+
             res.sendRedirect(res.encodeRedirectURL(req.getContextPath() + "/plugins/common/internalServerError.iface"));
-            flag++;
          }
          else
          {
