@@ -41,6 +41,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.WebServicesSupport;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
 import org.eclipse.stardust.ui.web.modeler.service.rest.utils.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.ui.ModelerConfigurationService;
@@ -677,8 +678,10 @@ public class ModelerResource
    {
       try
       {
+         WebServicesSupport webServicesSupport = springContext.getBean(WebServicesSupport.class);
+
          return Response.ok(
-               modelService.getWebServiceStructure(jsonIo.readJsonObject(postedData))
+               webServicesSupport.getWebServiceStructure(jsonIo.readJsonObject(postedData))
                      .toString(), APPLICATION_JSON_TYPE)
                .build();
       }

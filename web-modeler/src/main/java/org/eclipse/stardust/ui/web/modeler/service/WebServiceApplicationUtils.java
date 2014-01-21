@@ -330,7 +330,7 @@ public final class WebServiceApplicationUtils
          else
          {
             Message message = input.getMessage();
-            attributes.addProperty(WSConstants.WS_INPUT_ORDER_ATT, ModelService.getPartsOrder(message));
+            attributes.addProperty(WSConstants.WS_INPUT_ORDER_ATT, WebServicesSupport.getPartsOrder(message));
             if (message != null)
             {
                createAccessPoints(mapper, application, message, DirectionType.IN_LITERAL, wsdlUrl);
@@ -344,7 +344,7 @@ public final class WebServiceApplicationUtils
          else
          {
             Message message = output.getMessage();
-            attributes.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, ModelService.getPartsOrder(message));
+            attributes.addProperty(WSConstants.WS_OUTPUT_ORDER_ATT, WebServicesSupport.getPartsOrder(message));
             if (message != null)
             {
                createAccessPoints(mapper, application, message, DirectionType.OUT_LITERAL, wsdlUrl);
