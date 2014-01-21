@@ -16,6 +16,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -26,6 +27,7 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.xsd.XSDSchema;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
@@ -42,6 +44,8 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.WebServicesSupport;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSupport;
 import org.eclipse.stardust.ui.web.modeler.service.rest.drl.DrlParser;
 import org.eclipse.stardust.ui.web.modeler.service.rest.utils.LanguageUtil;
 import org.eclipse.stardust.ui.web.modeler.ui.ModelerConfigurationService;
@@ -419,13 +423,35 @@ public class ModelerResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("typeDeclarations/loadFromUrl")
    public Response loadStructuredDataTypeFromUrl(@PathParam("modelId") String modelId,
-         String postedData)
+         String requestParams)
    {
       try
       {
-         return Response.ok(
-               modelService.getXsdStructure(jsonIo.readJsonObject(postedData))
-                     .toString(), APPLICATION_JSON_TYPE).build();
+         JsonObject postedData = jsonIo.readJsonObject(requestParams);
+
+         String xsdUrl = postedData.get("url").getAsString();
+
+         trace.debug("===> Get XSD Structure for URL " + xsdUrl);
+
+         JsonObject xsdInfo = null;
+         try
+         {
+            XsdSupport xsdSupport = springContext.getBean(XsdSupport.class);
+            XSDSchema schema = xsdSupport.loadSchema(xsdUrl);
+
+            xsdInfo = XsdSchemaUtils.toSchemaJson(schema);
+         }
+         catch (IOException ioex)
+         {
+            throw new RuntimeException(ioex);
+         }
+
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("===> Result " + xsdInfo);
+         }
+
+         return Response.ok(xsdInfo.toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {

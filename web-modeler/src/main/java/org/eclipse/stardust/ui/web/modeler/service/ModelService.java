@@ -14,23 +14,15 @@ package org.eclipse.stardust.ui.web.modeler.service;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -39,7 +31,6 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
@@ -60,10 +51,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSchemaContent;
-import org.eclipse.xsd.impl.XSDImportImpl;
-import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 
@@ -490,106 +477,6 @@ public class ModelService
       return findModelBinding(model).validateModel(model);
    }
 
-   /**
-    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL.
-    * <p>
-    * <b>Members:</b>
-    * <ul>
-    * <li><code>targetNamespace</code> the schema namespace.</li>
-    * <li><code>elements</code> a list of elements declared in the schema.</li>
-    * <li><code>types</code> a list of types declared in the schema.</li>
-    * </ul>
-    * <p>
-    * Each <b>element</b> declaration has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the name of the item (for display
-    * purposes).</li>
-    * <li><code>type</code> the xsd type of the element (optional).</li>
-    * <li><code>attributes</code> a list of attributes (optional).</li>
-    * <li><code>body</code> the body of the element (optional).</li>
-    * </ul>
-    * <p>
-    * Each <b>type</b> declaration has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the name of the item (for display
-    * purposes).</li>
-    * <li><code>attributes</code> a list of attributes (optional).</li>
-    * <li><code>facets</code> the constraining facets if the type is a simple type
-    * (optional).</li>
-    * <li><code>body</code> the body of the type (optional).</li>
-    * </ul>
-    * <p>
-    * Each <b>attribute</b> declaration has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the name of the item (for display
-    * purposes).</li>
-    * <li><code>type</code> the xsd type of the attribute.</li>
-    * <li><code>cardinality</code> the cardinality of the attribute (<code>required</code>
-    * | <code>optional</code>).</li>
-    * </ul>
-    * <p>
-    * Each <b>body</b> declaration has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the name of the item (for display
-    * purposes).</li>
-    * <li><code>classifier</code> a string identifying the category of the item (
-    * <code>sequence</code> | <code>choice</code> | <code>all</code>).</li>
-    * <li><code>elements</code> a list containing element references.</li>
-    * </ul>
-    * <p>
-    * Each <b>element</b> reference has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the name of the item (for display
-    * purposes).</li>
-    * <li><code>type</code> the xsd type of the element reference.</li>
-    * <li><code>cardinality</code> the cardinality of the element reference (
-    * <code>required</code> | <code>optional</code> | <code>many</code> |
-    * <code>at least one</code>).</li>
-    * <li><code>body</code> the body of the element reference (optional).</li>
-    * </ul>
-    * Each <b>facet</b> has the following structure:
-    * <ul>
-    * <li><code>name</code> a string containing the value of the facet.</li>
-    * <li><code>classifier</code> a string identifying the type of the facet, i.e.
-    * <code>enumeration</code>, <code>pattern</code>, etc.</li>
-    * </ul>
-    *
-    * Each item described above has a member <code>icon</code> that specifies the
-    * corresponding icon.
-    *
-    * @param postedData
-    *           a JsonObject that contains a primitive (String) member with the name "url"
-    *           that specifies the URL from where the XSD should be loaded.
-    * @return the JsonObject containing the representation of the element and type
-    *         declarations.
-    */
-   public JsonObject getXsdStructure(JsonObject postedData)
-   {
-      String xsdUrl = postedData.get("url").getAsString();
-      System.out.println("===> Get XSD Structure for URL " + xsdUrl);
-
-      JsonObject json = null;
-
-      try
-      {
-         XSDSchema schema = loadSchema(xsdUrl);
-
-         json = XsdSchemaUtils.toSchemaJson(schema);
-      }
-      catch (IOException ioex)
-      {
-         throw new RuntimeException(ioex);
-      }
-
-      System.out.println("===> Result " + json);
-
-      return json;
-   }
-
-   /* remove */private static final String EXTERNAL_SCHEMA_MAP = "com.infinity.bpm.rt.data.structured.ExternalSchemaMap";
-
-   /* remove */private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
-
    private WebModelerUriConverter uriConverter;
 
    public WebModelerUriConverter getClasspathUriConverter()
@@ -600,90 +487,6 @@ public class ModelService
          uriConverter.setModelService(this);
       }
       return uriConverter;
-   }
-
-   /**
-    * Duplicate of StructuredTypeRtUtils.getSchema(String, String).
-    * <p>
-    * Should be removed after repackaging of XSDSchema for runtime is dropped.
-    */
-   public XSDSchema loadSchema(String location) throws IOException
-   {
-      Parameters parameters = Parameters.instance();
-      Map<String, Object> loadedSchemas = null;
-      synchronized (StructuredTypeRtUtils.class)
-      {
-         loadedSchemas = parameters.getObject(EXTERNAL_SCHEMA_MAP);
-         if (loadedSchemas == null)
-         {
-            // (fh) using Hashtable to avoid concurrency problems.
-            loadedSchemas = new Hashtable<String, Object>();
-            parameters.set(EXTERNAL_SCHEMA_MAP, loadedSchemas);
-         }
-      }
-      Object o = loadedSchemas.get(location);
-      if (o != null)
-      {
-         return o instanceof XSDSchema ? (XSDSchema) o : null;
-      }
-
-      ResourceSetImpl resourceSet = new ResourceSetImpl();
-      URI uri = URI.createURI(location);
-      if (uri.scheme() == null)
-      {
-         resourceSet.setURIConverter(getClasspathUriConverter());
-         if (location.startsWith("/"))
-         {
-            location = location.substring(1);
-         }
-         uri = URI.createURI(WebModelerUriConverter.CLASSPATH_SCHEME + ":/" + location);
-      }
-      // (fh) register the resource factory directly with the resource set and do not
-      // tamper with the global registry.
-      resourceSet.getResourceFactoryRegistry()
-            .getProtocolToFactoryMap()
-            .put(uri.scheme(), XSD_RESOURCE_FACTORY);
-      resourceSet.getResourceFactoryRegistry()
-            .getExtensionToFactoryMap()
-            .put("xsd", XSD_RESOURCE_FACTORY);
-      org.eclipse.emf.ecore.resource.Resource resource = resourceSet.createResource(uri);
-      Map<Object, Object> options = new HashMap<Object, Object>();
-      options.put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
-      resource.load(options);
-
-      for (EObject eObject : resource.getContents())
-      {
-         if (eObject instanceof XSDSchema)
-         {
-            XSDSchema schema = (XSDSchema) eObject;
-            resolveImports(schema);
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Found schema for namespace: " + schema.getTargetNamespace()
-                     + " at location: " + uri.toString());
-            }
-            loadedSchemas.put(location, schema);
-            return schema;
-         }
-      }
-      loadedSchemas.put(location, "NULL");
-      return null;
-   }
-
-   /**
-    * Should be removed together with loadSchema
-    */
-   private static void resolveImports(XSDSchema schema)
-   {
-      for (XSDSchemaContent item : schema.getContents())
-      {
-         if (item instanceof XSDImportImpl)
-         {
-            // force schema resolving.
-            // it's a noop if the schema is already resolved.
-            ((XSDImportImpl) item).importSchema();
-         }
-      }
    }
 
    public ModelBuilderFacade getModelBuilderFacade()

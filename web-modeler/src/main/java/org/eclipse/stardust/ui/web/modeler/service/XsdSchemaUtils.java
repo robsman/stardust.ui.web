@@ -106,6 +106,79 @@ public final class XsdSchemaUtils
       }
    };
 
+   /**
+    * Loads a JSON representation of a type hierarchy loaded from an XSD or WSDL URL.
+    * <p>
+    * <b>Members:</b>
+    * <ul>
+    * <li><code>targetNamespace</code> the schema namespace.</li>
+    * <li><code>elements</code> a list of elements declared in the schema.</li>
+    * <li><code>types</code> a list of types declared in the schema.</li>
+    * </ul>
+    * <p>
+    * Each <b>element</b> declaration has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the element (optional).</li>
+    * <li><code>attributes</code> a list of attributes (optional).</li>
+    * <li><code>body</code> the body of the element (optional).</li>
+    * </ul>
+    * <p>
+    * Each <b>type</b> declaration has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>attributes</code> a list of attributes (optional).</li>
+    * <li><code>facets</code> the constraining facets if the type is a simple type
+    * (optional).</li>
+    * <li><code>body</code> the body of the type (optional).</li>
+    * </ul>
+    * <p>
+    * Each <b>attribute</b> declaration has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the attribute.</li>
+    * <li><code>cardinality</code> the cardinality of the attribute (<code>required</code>
+    * | <code>optional</code>).</li>
+    * </ul>
+    * <p>
+    * Each <b>body</b> declaration has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>classifier</code> a string identifying the category of the item (
+    * <code>sequence</code> | <code>choice</code> | <code>all</code>).</li>
+    * <li><code>elements</code> a list containing element references.</li>
+    * </ul>
+    * <p>
+    * Each <b>element</b> reference has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the name of the item (for display
+    * purposes).</li>
+    * <li><code>type</code> the xsd type of the element reference.</li>
+    * <li><code>cardinality</code> the cardinality of the element reference (
+    * <code>required</code> | <code>optional</code> | <code>many</code> |
+    * <code>at least one</code>).</li>
+    * <li><code>body</code> the body of the element reference (optional).</li>
+    * </ul>
+    * Each <b>facet</b> has the following structure:
+    * <ul>
+    * <li><code>name</code> a string containing the value of the facet.</li>
+    * <li><code>classifier</code> a string identifying the type of the facet, i.e.
+    * <code>enumeration</code>, <code>pattern</code>, etc.</li>
+    * </ul>
+    *
+    * Each item described above has a member <code>icon</code> that specifies the
+    * corresponding icon.
+    *
+    * @param postedData
+    *           a JsonObject that contains a primitive (String) member with the name "url"
+    *           that specifies the URL from where the XSD should be loaded.
+    * @return the JsonObject containing the representation of the element and type
+    *         declarations.
+    */
    public static JsonObject toSchemaJson(XSDSchema schema)
    {
       JsonObject json = new Xsd2Json(null).doSwitch(schema);
