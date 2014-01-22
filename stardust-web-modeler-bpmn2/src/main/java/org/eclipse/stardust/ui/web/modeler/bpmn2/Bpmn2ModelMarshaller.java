@@ -404,6 +404,14 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       return new JsonArray();
    }
 
+   @Override
+   public String retrieveEmbeddedMarkup(EObject model, String applicationId)
+   {
+      // TODO support embedded markup
+      trace.warn("Embedded amrkup support is not yet implemented for BPMN2.");
+      return null;
+   }
+
    public ProcessDiagramJto toProcessDiagramJto(BPMNDiagram diagram, Process process)
    {
       BPMNPlane plane = (BPMNPlane) diagram.getRootElement();

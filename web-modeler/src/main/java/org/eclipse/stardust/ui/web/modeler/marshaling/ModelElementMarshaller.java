@@ -2976,6 +2976,28 @@ public class ModelElementMarshaller implements ModelMarshaller
       return variablesJson;
    }
 
+   @Override
+   public String retrieveEmbeddedMarkup(EObject model, String applicationId)
+   {
+      ApplicationType application = getModelBuilderFacade().findApplication(
+            (ModelType) model, applicationId);
+
+      // TODO Improper coding - need better ways to find context
+
+      for (ContextType context : application.getContext())
+      {
+         Object attribute = getModelBuilderFacade().getAttribute(context,
+               "carnot:engine:ui:externalWebApp:markup");
+
+         if (attribute != null)
+         {
+            return getModelBuilderFacade().getAttributeValue(attribute);
+         }
+      }
+
+      return null;
+   }
+
    /**
     * @param dataMapping
     * @return

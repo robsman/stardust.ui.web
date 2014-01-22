@@ -36,8 +36,6 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -512,24 +510,13 @@ public class ModelService
    public String retrieveEmbeddedExternalWebApplicationMarkup(String modelId,
          String applicationId)
    {
-      ApplicationType application = getModelBuilderFacade().findApplication(
-            modelId + ":" + applicationId);
+      ModelRepository modelRepository = currentSession().modelRepository();
+      EObject model = modelRepository.findModel(modelId);
 
-      // TODO Improper coding - need better ways to find context
-
-      for (ContextType context : application.getContext())
-      {
-         Object attribute = getModelBuilderFacade().getAttribute(context,
-               "carnot:engine:ui:externalWebApp:markup");
-
-         if (attribute != null)
-         {
-            return getModelBuilderFacade().getAttributeValue(attribute);
-         }
-      }
+      String markup = findModelBinding(model).getMarshaller().retrieveEmbeddedMarkup(model, applicationId);
 
       // TODO I18N
 
-      return "Embedded Web Application is not configured.";
-   }
+      return (null != markup) ? markup : "Embedded Web Application is not configured.";
+  }
 }

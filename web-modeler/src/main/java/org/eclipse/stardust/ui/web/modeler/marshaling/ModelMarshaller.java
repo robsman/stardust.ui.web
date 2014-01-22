@@ -16,6 +16,11 @@ public interface ModelMarshaller
 
    JsonArray retrieveConfigurationVariables(EObject model);
 
+   /*
+    * TODO refactor into a more general thing, maybe to extract a given extension attribute value from a model element
+    */
+   String retrieveEmbeddedMarkup(EObject model, String applicationId);
+
    /**
     * Invoked before the client starts marshaling a set of elements sequentially.
     * Useful to set up caches.
