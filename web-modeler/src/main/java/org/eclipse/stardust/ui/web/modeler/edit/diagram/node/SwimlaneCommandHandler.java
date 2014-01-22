@@ -13,10 +13,6 @@ package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
 import java.util.Iterator;
 
@@ -57,10 +53,10 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneName = extractString(request, ModelerConstants.NAME_PROPERTY);
-      int xPos = extractInt(request, X_PROPERTY);
-      int yPos = extractInt(request, Y_PROPERTY);
-      int width = extractInt(request, WIDTH_PROPERTY);
-      int height = extractInt(request, HEIGHT_PROPERTY);
+      int xPos = extractInt(request, ModelerConstants.X_PROPERTY);
+      int yPos = extractInt(request, ModelerConstants.Y_PROPERTY);
+      int width = extractInt(request, ModelerConstants.WIDTH_PROPERTY);
+      int height = extractInt(request, ModelerConstants.HEIGHT_PROPERTY);
       String orientation = extractString(request, ModelerConstants.ORIENTATION_PROPERTY);
       String participantFullID = extractString(request,
             ModelerConstants.PARTICIPANT_FULL_ID);

@@ -3,7 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.collaboration;
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 import static org.eclipse.stardust.common.CollectionUtils.newLinkedList;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.TYPE_PROPERTY;
+import static org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants.TYPE_PROPERTY;
 
 import java.awt.Color;
 import java.util.Collection;

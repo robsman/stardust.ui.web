@@ -56,22 +56,6 @@ import com.google.gson.JsonObject;
  */
 public class ModelService
 {
-   public static final String TYPE_PROPERTY = "type";
-
-   public static final String X_PROPERTY = "x";
-
-   public static final String Y_PROPERTY = "y";
-
-   public static final String WIDTH_PROPERTY = "width";
-
-   public static final String HEIGHT_PROPERTY = "height";
-
-   public static final String DESCRIPTION_PROPERTY = "description";
-
-   public static final String EVENT_TYPE_PROPERTY = "eventType";
-
-   public static final String START_EVENT = "startEvent";
-
    private static final Logger trace = LogManager.getLogger(ModelService.class);
 
    /*
@@ -194,7 +178,7 @@ public class ModelService
    public String getLoggedInUser()
    {
       JsonObject currentUserJson = new JsonObject();
-      currentUserJson.addProperty(TYPE_PROPERTY, "WHO_AM_I");
+      currentUserJson.addProperty(ModelerConstants.TYPE_PROPERTY, "WHO_AM_I");
       currentUserJson.addProperty("firstName", me.getFirstName());
       currentUserJson.addProperty("lastName", me.getLastName());
       currentUserJson.addProperty("account", me.getLoginName());
@@ -207,7 +191,7 @@ public class ModelService
       User currentUser = getUserService().getUser(
             unwrapUsername(currentSession.getOwnerId()));
       JsonObject currentUserJson = new JsonObject();
-      currentUserJson.addProperty(TYPE_PROPERTY, "UPDATE_OWNER");
+      currentUserJson.addProperty(ModelerConstants.TYPE_PROPERTY, "UPDATE_OWNER");
       currentUserJson.addProperty("firstName", currentUser.getFirstName());
       currentUserJson.addProperty("lastName", currentUser.getLastName());
       currentUserJson.addProperty("account", currentUser.getAccount());

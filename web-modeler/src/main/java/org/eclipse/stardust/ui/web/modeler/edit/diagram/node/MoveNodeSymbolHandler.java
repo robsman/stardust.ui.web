@@ -3,10 +3,6 @@ package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
 import javax.annotation.Resource;
 
@@ -59,16 +55,16 @@ public class MoveNodeSymbolHandler
 
       }
 
-      nodeSymbol.setXPos(extractInt(request, X_PROPERTY) - laneOffsetX);
-      nodeSymbol.setYPos(extractInt(request, Y_PROPERTY) - laneOffsetY);
+      nodeSymbol.setXPos(extractInt(request, ModelerConstants.X_PROPERTY) - laneOffsetX);
+      nodeSymbol.setYPos(extractInt(request, ModelerConstants.Y_PROPERTY) - laneOffsetY);
 
-      if (hasNotJsonNull(request, WIDTH_PROPERTY))
+      if (hasNotJsonNull(request, ModelerConstants.WIDTH_PROPERTY))
       {
-         nodeSymbol.setWidth(extractInt(request, WIDTH_PROPERTY));
+         nodeSymbol.setWidth(extractInt(request, ModelerConstants.WIDTH_PROPERTY));
       }
-      if (hasNotJsonNull(request, HEIGHT_PROPERTY))
+      if (hasNotJsonNull(request, ModelerConstants.HEIGHT_PROPERTY))
       {
-         nodeSymbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+         nodeSymbol.setHeight(extractInt(request, ModelerConstants.HEIGHT_PROPERTY));
       }
 
       // Type property is used to identify the symbol type, used while changing

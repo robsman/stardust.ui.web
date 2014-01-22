@@ -13,10 +13,6 @@ package org.eclipse.stardust.ui.web.modeler.edit.diagram.node;
 
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
 import javax.annotation.Resource;
 
@@ -69,10 +65,10 @@ public class ActivityCommandHandler
       String subProcessID = extractString(request,
             ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.SUBPROCESS_ID);
       // TODO -Remove the adjustment and pass correct co-ordinates for symbols.
-      int xProperty = extractInt(request, X_PROPERTY);
-      int yProperty = extractInt(request, Y_PROPERTY);
-      int widthProperty = extractInt(request, WIDTH_PROPERTY);
-      int heightProperty = extractInt(request, HEIGHT_PROPERTY);
+      int xProperty = extractInt(request, ModelerConstants.X_PROPERTY);
+      int yProperty = extractInt(request, ModelerConstants.Y_PROPERTY);
+      int widthProperty = extractInt(request, ModelerConstants.WIDTH_PROPERTY);
+      int heightProperty = extractInt(request, ModelerConstants.HEIGHT_PROPERTY);
       synchronized (model)
       {
          EObjectUUIDMapper mapper = modelService().uuidMapper();
@@ -83,9 +79,9 @@ public class ActivityCommandHandler
          mapper.map(activity);
 
          JsonObject json = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-         if (json.has(ModelService.DESCRIPTION_PROPERTY))
+         if (json.has(ModelerConstants.DESCRIPTION_PROPERTY))
          {
-            ModelBuilderFacade.setDescription(activity, extractString(json, ModelService.DESCRIPTION_PROPERTY));
+            ModelBuilderFacade.setDescription(activity, extractString(json, ModelerConstants.DESCRIPTION_PROPERTY));
          }
 
          ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(

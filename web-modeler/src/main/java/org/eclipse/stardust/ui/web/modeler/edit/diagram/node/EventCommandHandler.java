@@ -17,12 +17,6 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAs
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLong;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.EVENT_TYPE_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.HEIGHT_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.START_EVENT;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.WIDTH_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.X_PROPERTY;
-import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +59,8 @@ public class EventCommandHandler
       synchronized (model)
       {
          String eventType = extractString(request,
-               ModelerConstants.MODEL_ELEMENT_PROPERTY, EVENT_TYPE_PROPERTY);
-         if (START_EVENT.equals(eventType))
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.EVENT_TYPE_PROPERTY);
+         if (ModelerConstants.START_EVENT.equals(eventType))
          {
             StartEventSymbol startEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
                   AbstractElementBuilder.F_CWM.createStartEventSymbol());
@@ -146,12 +140,12 @@ public class EventCommandHandler
    {
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       // TODO - Pass correct x,y co-ordinates rather than adjustment at server
-      symbol.setXPos(extractInt(request, X_PROPERTY)
+      symbol.setXPos(extractInt(request, ModelerConstants.X_PROPERTY)
             - parentLaneSymbol.getXPos());
-      symbol.setYPos(extractInt(request, Y_PROPERTY)
+      symbol.setYPos(extractInt(request, ModelerConstants.Y_PROPERTY)
             - parentLaneSymbol.getYPos());
-      symbol.setWidth(extractInt(request, WIDTH_PROPERTY));
-      symbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
+      symbol.setWidth(extractInt(request, ModelerConstants.WIDTH_PROPERTY));
+      symbol.setHeight(extractInt(request, ModelerConstants.HEIGHT_PROPERTY));
       
       mapper.map(symbol);
       addSymbol(ModelUtils.findContainingProcess(parentLaneSymbol).getDiagram().get(0), symbol);
@@ -183,10 +177,10 @@ public class EventCommandHandler
 
       Long eventOId = extractLong(request, ModelerConstants.OID_PROPERTY);
       String eventType = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
-            EVENT_TYPE_PROPERTY);
+            ModelerConstants.EVENT_TYPE_PROPERTY);
       synchronized (model)
       {
-         if (START_EVENT.equals(eventType))
+         if (ModelerConstants.START_EVENT.equals(eventType))
          {
             StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
                   parentLaneSymbol, eventOId);
