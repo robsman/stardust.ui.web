@@ -39,7 +39,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.spi.SpiExtensionRegistry;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
@@ -116,7 +115,6 @@ public class ModelService
       if (serviceFactory == null)
       {
          serviceFactory = serviceFactoryLocator.get();
-         SpiExtensionRegistry.instance().setExtensionRegistry(StardustExtensionRegistry.instance());
       }
 
       return serviceFactory;

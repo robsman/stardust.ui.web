@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.spi.SpiExtensionRegistry;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
@@ -35,9 +38,15 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 @ModelingSessionScoped
 public class XpdlBinding extends ModelBinding<ModelType>
 {
+   private static final Logger trace = LogManager.getLogger(XpdlBinding.class);
+
    static
    {
       ModelBinding.trace.info("Loaded XPDL model binding.");
+
+      trace.info("Bootstrapping SPI extension registry ...");
+      SpiExtensionRegistry.instance().setExtensionRegistry(StardustExtensionRegistry.instance());
+      trace.info("Successfully bootstrapped SPI extension registry");
    }
 
    @Resource
