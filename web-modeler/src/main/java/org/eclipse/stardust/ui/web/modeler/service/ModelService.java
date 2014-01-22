@@ -39,7 +39,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
@@ -47,6 +46,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.spi.ThreadInitializer;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -110,6 +110,9 @@ public class ModelService
    @Resource
    private ModelingSessionManager sessionManager;
 
+   @Resource
+   private ThreadInitializer[] threadInitializers;
+
    public ServiceFactory getServiceFactory()
    {
       if (serviceFactory == null)
@@ -122,7 +125,12 @@ public class ModelService
 
    public ModelingSession currentSession()
    {
-      TypeDeclarationUtils.defaultURIConverter.set(getClasspathUriConverter());
+      // TODO perform this only once per request handling
+      for (ThreadInitializer initializer : threadInitializers)
+      {
+         initializer.initialize();
+      }
+
       boolean wasNull = currentUserId == null;
       currentUserId = me.getCurrentUserId();
       if (wasNull) // (fh) workaround for ejb case where the destroyModelingSession does not get invoked.
