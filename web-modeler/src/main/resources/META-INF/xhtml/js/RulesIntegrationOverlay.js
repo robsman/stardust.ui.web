@@ -53,7 +53,10 @@ define(
 							that.ruleSetEditor.addCompleter(sessionCompleter);
 						}
 					});
-					this.ruleSetEditor.loadLanguageTools();
+					this.ruleSetEditor.loadLanguageTools({
+							"enableSnippets": true,
+							"enableBasicAutocompletion": true
+					});
 					
 					var self = this;
 
