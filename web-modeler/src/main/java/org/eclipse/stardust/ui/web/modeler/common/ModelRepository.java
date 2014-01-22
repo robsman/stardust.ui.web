@@ -83,6 +83,18 @@ public class ModelRepository
       return null;
    }
 
+   public String getModelFilePath(EObject model)
+   {
+      for (ModelType xpdlModel : session.modelManagementStrategy().getModels().values())
+      {
+         if (model == getNativeModel(xpdlModel))
+         {
+            return session.modelManagementStrategy().getModelFilePath(xpdlModel);
+         }
+      }
+      return null;
+   }
+
    protected EObject getNativeModel(ModelType xpdlModel)
    {
       return findModel(xpdlModel.getId());

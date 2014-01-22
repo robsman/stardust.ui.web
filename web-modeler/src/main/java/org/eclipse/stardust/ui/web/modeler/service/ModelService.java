@@ -58,12 +58,6 @@ public class ModelService
 {
    private static final Logger trace = LogManager.getLogger(ModelService.class);
 
-   /*
-    * Half the size of the review why this adjustment is needed start event symbol used in
-    * Pepper TODO - may need to be handled on the client side down the line.
-    */
-   public static final int START_END_SYMBOL_LEFT_OFFSET = 12;
-
    @Resource
    private ApplicationContext context;
 
@@ -326,7 +320,8 @@ public class ModelService
     */
    public String getModelFileName(String id)
    {
-      return getModelManagementStrategy().getModelFileName(findModel(id));
+      EObject model = currentSession().modelRepository().findModel(id);
+      return currentSession().modelRepository().getModelFileName(model);
    }
 
    /**
@@ -337,7 +332,9 @@ public class ModelService
     */
    public byte[] getModelFile(String id)
    {
-      String jcrFilePath = getModelManagementStrategy().getModelFilePath(findModel(id));
+      EObject model = currentSession().modelRepository().findModel(id);
+      String jcrFilePath = currentSession().modelRepository().getModelFilePath(model);
+
       return getDocumentManagementService().retrieveDocumentContent(jcrFilePath);
    }
 
