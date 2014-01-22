@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
+import org.eclipse.stardust.ui.web.modeler.service.XsdSupport;
 
 public class XSDInheritanceTest
 {
@@ -497,8 +498,8 @@ public class XSDInheritanceTest
       URL location = XsdSchemaUtils.class.getResource(path);
       try
       {
-         ModelService service = new ModelService();
-         return service.loadSchema(location.toString());
+         XsdSupport xsdSupport = new XsdSupport(new ModelService());
+         return xsdSupport.loadSchema(location.toString());
       }
       catch (IOException e)
       {

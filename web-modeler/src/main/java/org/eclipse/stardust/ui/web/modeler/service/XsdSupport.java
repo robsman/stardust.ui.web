@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -15,6 +13,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.eclipse.stardust.common.config.Parameters;
@@ -35,8 +34,13 @@ public class XsdSupport
    /* TODO remove */
    private static final XSDResourceFactoryImpl XSD_RESOURCE_FACTORY = new XSDResourceFactoryImpl();
 
-   @Resource
-   private ModelService modelService;
+   private final ModelService modelService;
+
+   @Autowired
+   public XsdSupport(ModelService modelService)
+   {
+      this.modelService = modelService;
+   }
 
    /**
     * Duplicate of StructuredTypeRtUtils.getSchema(String, String).
