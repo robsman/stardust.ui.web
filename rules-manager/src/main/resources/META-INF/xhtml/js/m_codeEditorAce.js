@@ -114,14 +114,12 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(JQuery,m_utils) {
 		CodeEditor.prototype.loadLanguageTools=function(options){
 			var langModule="ace/ext/language_tools";
 			var defOptions={
-					"enableSnippets": true,
+					"enableSnippets": false,
 					"enableBasicAutocompletion": true
             };
 			if(options){
-				defOptions.enableSnippets=options.enableSnippets || 
-				                          defOptions.enableSnippets;
-				defOptions.enableBasicAutocompletion=options.enableBasicAutocompletion || 
-													defOptions.enableBasicAutocompletion;
+				defOptions.enableSnippets=options.enableSnippets;
+				defOptions.enableBasicAutocompletion=options.enableBasicAutocompletion;
 			}
 			if(ace.define.modules.hasOwnProperty(langModule)===false){
 				this.loadModule(langModule, function(aceExt) {

@@ -69,7 +69,7 @@ define([ "jquery","bpm-modeler/js/m_utils" ], function(jquery,m_utils) {
 		/*Wrap our loadModule function to support easy loading of language tools*/
 		CodeEditor.prototype.loadLanguageTools=function(options){
 			var defOptions={
-					"enableSnippets": true,
+					"enableSnippets": false,
 					"enableBasicAutocompletion": true
             };
 			options=$.extend(defOptions,options);

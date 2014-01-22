@@ -149,7 +149,10 @@ define(
 					/*Now, load our language tools extension. This will enable snippets and autocomplete.
 					 *This will generate a moduleLoaded event for ace/ext/language_tools 
 					 *even if the module is already loaded.*/
-					uiElements.drlEditor.loadLanguageTools();
+					uiElements.drlEditor.loadLanguageTools({
+						"enableSnippets": true,
+						"enableBasicAutocompletion": true}
+					);
 					
 					/*****Menu Building Section for our DRL editors associated toolbar*****/
 					
