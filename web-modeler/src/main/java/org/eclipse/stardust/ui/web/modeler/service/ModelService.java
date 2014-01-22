@@ -20,9 +20,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -31,13 +29,10 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
@@ -360,28 +355,6 @@ public class ModelService
    {
       String jcrFilePath = getModelManagementStrategy().getModelFilePath(findModel(id));
       return getDocumentManagementService().retrieveDocumentContent(jcrFilePath);
-   }
-
-   /**
-    * @param element
-    * @param description
-    * @throws JSONException
-    */
-   public static void setDescription(IIdentifiableModelElement element, JsonObject json)
-   {
-      String description = null;
-
-      if (json.has(DESCRIPTION_PROPERTY))
-      {
-         description = extractString(json, DESCRIPTION_PROPERTY);
-      }
-
-      if (StringUtils.isNotEmpty(description))
-      {
-         DescriptionType dt = AbstractElementBuilder.F_CWM.createDescriptionType();
-         dt.getMixed().add(FeatureMapUtil.createRawTextEntry(description));
-         element.setDescription(dt);
-      }
    }
 
    /**

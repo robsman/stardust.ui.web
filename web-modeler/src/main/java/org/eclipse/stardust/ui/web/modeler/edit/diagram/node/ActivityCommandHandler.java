@@ -82,8 +82,11 @@ public class ActivityCommandHandler
 
          mapper.map(activity);
 
-         ModelService.setDescription(activity,
-               request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
+         JsonObject json = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+         if (json.has(ModelService.DESCRIPTION_PROPERTY))
+         {
+            ModelBuilderFacade.setDescription(activity, extractString(json, ModelService.DESCRIPTION_PROPERTY));
+         }
 
          ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(
                model, activity, processDefinition, parentLaneSymbol.getId(), xProperty,
