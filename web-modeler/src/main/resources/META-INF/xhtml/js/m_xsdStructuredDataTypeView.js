@@ -443,6 +443,22 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
+					
+					m_utils.jQuerySelect("label[for='bindJavaClassCheckbox']")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava"));
+					
+					m_utils.jQuerySelect("tr#minimumLength td:eq(0)")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minLength"));
+					
+					m_utils.jQuerySelect("tr#maximumLength td:eq(0)")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.enumeration.maxLength"));			
+					
+					m_utils.jQuerySelect("#fieldPropertiesTableDiv th#property")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.property"));
+					
+					m_utils.jQuerySelect("#fieldPropertiesTableDiv th#propertyVal")
+						.text(m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.value"));
+
 					m_utils.jQuerySelect("#hideGeneralProperties label")
 						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
 			

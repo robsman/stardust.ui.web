@@ -105,15 +105,11 @@ define(
 								if (control.disabled !== undefined) {
 									// Exclude links marked specifically
 									if(control.className.indexOf("noDataChange") == -1) {
-										control.disabled = true;
-										control.style.opacity = 0.5;
-										control.style.cursor = "default";
+									  markControlReadonly(control, true);
 									}
 								}
 							} else {
-								control.disabled = false;
-								control.style.opacity = 1;
-								control.style.cursor = "auto";
+							  markControlReadonly(control, false);
 							}
 						});
 					});
@@ -128,6 +124,8 @@ define(
 
 					return false;
 				},
+
+        markControlReadonly : markControlReadonly,
 
 				prettyDateTime : prettyDateTime,
 
@@ -163,6 +161,19 @@ define(
 				
 			};
 			
+      function markControlReadonly(control, readonly) {
+        if (readonly == undefined || readonly == true) {
+          jQuery(control).prop("disabled", true);
+          jQuery(control).css("opacity", "0.5");
+          jQuery(control).css("cursor", "default");
+        } else {
+          jQuery(control).prop("disabled", false);
+          jQuery(control).css("opacity", "1");
+          jQuery(control).css("cursor", "auto");
+        }
+      };
+
+
 			/**
 			 * A utility function to execute a <fn> function, after a delay of
 			 * <delay> milliseconds, for a maximum of <reps> repetitions,

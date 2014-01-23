@@ -433,12 +433,28 @@ public class FacesUtils implements Constants
    }
 
    /**
-    * 
+    * Navigation happens on relative path as refresh/redirect is to same page
     */
    public static void handleNavigation(String navigationRuleId)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      facesContext.getApplication().getNavigationHandler().handleNavigation(facesContext, null, navigationRuleId);
+      ExternalContext externalContext = facesContext.getExternalContext();
+      try
+      {
+         String requestURI = ((HttpServletRequest) externalContext.getRequest()).getRequestURI();
+         if (requestURI.endsWith("portalMain.iface"))
+         {
+            externalContext.redirect("portalMain.iface");
+         }
+         else if (requestURI.endsWith("main.iface"))
+         {
+            externalContext.redirect("main.iface");
+         }
+      }
+      catch (IOException e)
+      {
+         trace.error("Failed navigation for request URI", e);
+      }
    }
 
    /**

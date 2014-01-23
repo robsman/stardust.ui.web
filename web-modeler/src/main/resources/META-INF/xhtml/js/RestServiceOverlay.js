@@ -664,23 +664,23 @@ define(
 						}
 
 						if (this.uriInput.val().indexOf(
-								"{" + accessPoint.id + "}") >= 0)
-						{
+								"{" + accessPoint.id + "}") >= 0) 
+						{	
 							uri = uri.replace("{" + accessPoint.id + "}",
 									"$simple{header." + accessPoint.id + "}");
-
+							
 							route += "<setHeader headerName='" + accessPoint.id + "'>";
 							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
-							route += "</setHeader>";
-						}
-						else
+							route += "</setHeader>";	
+						} 
+						else 
 						{
-							if (start)
+							if (start) 
 							{
 								uri += "?";
 								start = false;
-							}
-							else
+							} 
+							else 
 							{
 								uri += "&";
 							}
@@ -688,7 +688,7 @@ define(
 							uri += accessPoint.id;
 							uri += "=";
 							uri += "$simple{header." + accessPoint.id + "}";
-
+							
 							route += "<setHeader headerName='" + accessPoint.id + "'>";
 							route += "<javaScript>encodeURIComponent(request.headers.get('" + accessPoint.id + "'))</javaScript>";
 							route += "</setHeader>";
@@ -737,7 +737,7 @@ define(
 					
 
 					if (uri.indexOf("?") > 0)
-					{
+					{  
 						var index = uri.indexOf("?");
 						httpUri = uri.substring(0, index);
                         httpQuery = uri.substring(index + 1); 						
@@ -1001,35 +1001,45 @@ define(
 				};
 				
 				RestServiceOverlay.prototype.validateParameterDefinitionsChanges = function(parameterDefinitionsChanges) {
-					if(parameterDefinitionsChanges){
-					this.view.errorMessages=[];
-					this.view.errorMessagesList.empty();
-					m_dialog.makeInvisible(this.view.errorMessagesList);
 					
-					this.parameterDefinitionsPanel.parameterDefinitionNameInput.removeClass("error");
-					for ( var n = 0; n < parameterDefinitionsChanges.length; ++n) {
-						var parameterDefinition = parameterDefinitionsChanges[n];
+					if(parameterDefinitionsChanges)
+					{
+					
+						this.view.errorMessages=[];
+						this.view.errorMessagesList.empty();
+						m_dialog.makeInvisible(this.view.errorMessagesList);
+					
+						this.parameterDefinitionsPanel.parameterDefinitionNameInput.removeClass("error");
+						
+						for ( var n = 0; n < parameterDefinitionsChanges.length; ++n) 
+						{
+						
+							var parameterDefinition = parameterDefinitionsChanges[n];
 
-						if (parameterDefinition.name.indexOf("-") != -1 ) {
-							this.view.errorMessages.push(parameterDefinition.name+" is not a valid name."); 
-							this.parameterDefinitionsPanel.parameterDefinitionNameInput.addClass("error");
-						//	return false;
+							if (parameterDefinition.name.indexOf("-") != -1 ) 
+							{
+								this.view.errorMessages.push(parameterDefinition.name+" is not a valid name."); 
+								this.parameterDefinitionsPanel.parameterDefinitionNameInput.addClass("error");
+							}
 						}
-
-
-					}
 					}
 					
-					if (this.view.errorMessages.length != 0){
+					if (this.view.errorMessages.length != 0)
+					{
 						this.view.showErrorMessages();
 						return false;
 					}
+					else
+					{
+						return true;
+					}
 				}
+				
 				/**
 				 * 
 				 */
 				RestServiceOverlay.prototype.validate = function() {
-
+					
 					this.uriInput.removeClass("error");
 					this.parameterDefinitionsPanel.parameterDefinitionNameInput.removeClass("error");
 					this.httpBasicAuthUserInput.removeClass("error");
@@ -1038,7 +1048,7 @@ define(
 					this.customSecurityTokenKeyInput.removeClass("error");
 					this.customSecurityTokenValueInput.removeClass("error");
 					this.customSecurityTokenValueInput.removeClass("warn");
-
+					
 					if (m_utils.isEmptyString(this.uriInput.val())) 
 					{
 						this.view.errorMessages.push("URI must not be empty."); // TODO I18N

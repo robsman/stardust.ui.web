@@ -12,7 +12,8 @@
 		col*= Instance of ColumnPreference
 		bean*=Instance of table bean class 
 	 -->
-
+	<script>
+	</script>
 	<ice:panelGroup rendered="#{col.columnName == 'pageRange'}" style="text-align: center;" >
 		<ice:inputText partialSubmit="true" value="#{row.pageRange}" style="width: 75px;height: 10px;" valueChangeListener="#{bean.pageRangeChange}" onclick="Event.stop(event);">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-PageRange" standAlone="false"/>
@@ -26,6 +27,13 @@
 				<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-StartableProc" standAlone="false"/>
 				<f:selectItems value="#{bean.processItems}"/>			
 			<f:attribute name="row" value="#{row}" />
+		</ice:selectOneMenu>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{col.columnName == 'processType'}" style="text-align: center;">
+		<ice:selectOneMenu partialSubmit="true" onclick="Event.stop(event);" value="#{row.processType}">
+				<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-ProcessType" standAlone="false"/>
+				<f:selectItems value="#{bean.processTypes}"/>			
 		</ice:selectOneMenu>
 	</ice:panelGroup>
 

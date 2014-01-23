@@ -20,8 +20,11 @@ require
 				        'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
 				        '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min'],
 				'i18n' : 'common/InfinityBPMI18N',
-				'Handsontable': ['rules-manager/js/libs/Handsontable/jquery.handsontable.full.0917'],
-				'jstree': ['rules-manager/js/libs/jstree/jstree1.0.3/jquery.jstree']
+				'Handsontable': [
+		                'rules-manager/js/libs/jquery/plugins/jquery.handsontable.full.0917',
+		                '//raw.github.com/warpech/jquery-handsontable/v0.9.17/dist/jquery.handsontable.full.js'],
+				'jstree': ['rules-manager/js/libs/jquery/plugins/jquery.jstree',
+				           'https://jstree.googlecode.com/svn-history/r191/trunk/jquery.jstree']
 			},
 			shim : {
 				'json' : {exports : "JSON"},
@@ -36,11 +39,11 @@ require([ "require",
           "jquery", 
           "jquery-ui", 
 		  "i18n", 
-		  "rules-manager/js/DecisionTableView",
+		  "rules-manager/js/m_decisionTableView",
 		  "Handsontable",
 		  "jstree"], 
 		function(require) {
-		var decisionTblView=require("rules-manager/js/DecisionTableView");
+		var decisionTblView=require("rules-manager/js/m_decisionTableView");
 		var options={
 				selectors: {
 					id: "#DecisionTableView", /*ID of our main view container*/
@@ -66,7 +69,11 @@ require([ "require",
 					importData: "#importData",
 					descriptionTextarea: "#descriptionTextarea",
 					addRow: "#addRow",
-					decTableNameLbl: "#decTableNameLbl"
+					decTableNameLbl: "#decTableNameLbl",
+					alertPanel: "#alertPanel",
+					alertPanelMsg: "#alertPanelMsg",
+					tableSearchLbl: "#tableSearchLbl",
+					tableSearch: "#tableSearch"
 				},
 				i18nMaps:{
 					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},
@@ -79,7 +86,8 @@ require([ "require",
 					importData: {path:"rules.propertyView.decisiontableview.toolbar.tooltip.import",defaultText:"NA",attr:"title"},
 					columnTreeButton:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addColumn",defaultText:"NA",attr:"title"},
 					addRow:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addRow",defaultText:"NA",attr:"title"},
-					decTableNameLbl:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"}
+					decTableNameLbl:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
+					tableSearchLbl: {path:"rules.outline.toolbar.label.search",defaultText:"NA",attr:"text"}
 				}
 		};
 		

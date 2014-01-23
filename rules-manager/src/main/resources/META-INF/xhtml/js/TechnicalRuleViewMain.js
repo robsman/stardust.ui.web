@@ -17,7 +17,7 @@ require
 				        'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
 				        '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min'],
 				'common-plugins' : '../services/rest/bpm-modeler/config/ui/plugins/common-plugins',
-				'ace': ['rules-manager/js/libs/ACE/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
+				'ace': ['rules-manager/js/libs/ace/ace', 'https://github.com/ajaxorg/ace-builds/blob/master/src/ace'],
 				'i18n' : 'common/InfinityBPMI18N'
 			},
 			shim : {
@@ -28,9 +28,9 @@ require
 			}
 		});
 
-require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView","i18n","rules-manager/js/libs/ACE/ace",], function(require) {
+require([ "require", "jquery", "jquery-ui","rules-manager/js/m_technicalRuleView","i18n","rules-manager/js/libs/ace/ace",], function(require) {
 	
-	var techRuleView=require("rules-manager/js/TechnicalRuleView");
+	var techRuleView=require("rules-manager/js/m_technicalRuleView");
 	/*pass in our selectors the view will bind its functionality to*/
 	var options={
 			selectors:{
@@ -63,8 +63,7 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/TechnicalRuleView",
 				uuidLabel:"#uuidLabel", /* label for our rule UUID*/
 				descriptionLabel:"#descriptionLabel", /*label for rule description textarea*/
 				nameLabel:"#nameLabel", /*label for rule name*/
-				descriptionTextarea: "#descriptionTextarea", /*text area for our technical Rule description*/
-				stringifyParamDefs: "#stringifyParamDefs" /*dump drl typeDefs into our editor*/
+				descriptionTextarea: "#descriptionTextarea" /*text area for our technical Rule description*/
 			},
 			i18nMaps:{
 				codeTab: {path:"rules.propertyView.technicalruleview.ruleeditor.tab",defaultText:"NA",attr:"text"},

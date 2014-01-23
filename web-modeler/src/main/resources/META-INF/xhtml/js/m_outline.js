@@ -2542,7 +2542,8 @@ define(
 			 */
 			function addCamelOverlayMenuOptions(options, nodeType) {
 				var applicationIntegrationOverlayExtensions = m_extensionManager
-						.findExtensions("applicationIntegrationOverlay");
+						.findExtensions("applicationIntegrationOverlay"),
+				    createTxt=m_i18nUtils.getProperty("modeler.element.properties.commonProperties.create");
 
 				for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
 					var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
@@ -2553,8 +2554,9 @@ define(
 					}
 
 					options[applicationIntegrationOverlayExtension.id] = {
-						label : "Create "
-								+ applicationIntegrationOverlayExtension.name, // I18N
+						label : createTxt + " " +
+								m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
+								applicationIntegrationOverlayExtension.id), 
 
 						// This code requires the following patch in
 						// jquery.jstree

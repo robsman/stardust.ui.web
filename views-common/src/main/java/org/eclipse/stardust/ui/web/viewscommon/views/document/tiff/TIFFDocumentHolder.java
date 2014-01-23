@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -28,6 +29,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -37,9 +39,12 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.TIFFDocumentWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.ExtractPageDialog;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.TiffImageInfo;
 
 
 /**
@@ -451,6 +456,140 @@ public class TIFFDocumentHolder
    /**
     * @param event
     */
+   public void movePageAction(ActionEvent event)
+   {
+      MovePagesDialog movePageDialog = MovePagesDialog.getCurrent();
+      movePageDialog.setMaxPageIndex(maxPageIndex);
+      movePageDialog.setDocHolder(this);
+      movePageDialog.openPopup();
+   }
+
+   /**
+    * 
+    * @param pageRange
+    * @param targetPageIndex
+    * @param startingPageIndex
+    * @param lastPageIndex
+    * @param movePagesUp
+    */
+   public void movePagesInRange(Set<Integer> pageRange, Integer targetPageIndex, Integer startingPageIndex,
+         Integer lastPageIndex, boolean movePagesUp)
+   {
+      Iterator<Integer> rangeIterator = pageRange.iterator();
+      List<TIFFThumbnail> pagesToRearrange = CollectionUtils.newArrayList();
+      int size = pageOrder.size();
+      List<TIFFThumbnail> pageOrderArranged = CollectionUtils.newArrayList();
+      int tempIndex = 0;
+      // Create a list of pages which needs to be moved
+      while (rangeIterator.hasNext())
+      {
+         int pageIndex = rangeIterator.next();
+         TIFFThumbnail destPage = pageOrder.get(pageIndex);
+         pagesToRearrange.add(destPage);
+      }
+
+      // Identify the nos of pages to be actually moved
+      // e.x if moving 2,3,6,7 after 5 , actually only 2,3 is moved below
+      for (TIFFThumbnail page : pagesToRearrange)
+      {
+         if (page.getCurrentPageIndex() < targetPageIndex)
+         {
+            tempIndex++;
+         }
+      }
+      // Re-assign targetPageIndex
+      targetPageIndex = targetPageIndex - tempIndex - 1;
+      // Remove the pages from actual list
+      pageOrder.removeAll(pagesToRearrange);
+
+      int index = targetPageIndex + 1;
+      for (int i = 0; i < pageOrder.size(); i++)
+      {
+         TIFFThumbnail page = pageOrder.get(i);
+         // For pages, already in range (say 1), just add to new array
+         if (i < targetPageIndex)
+         {
+            page.setCurrentPageIndex(i + 1);
+            pageOrderArranged.add(page);
+         }
+         else if (i == targetPageIndex)
+         {
+            // When we are moving Up, elements are added befor targetPage
+            // Add all pages from pagesToRearrage to new Array at new pos
+            if (movePagesUp)
+            {
+               int j = 0;
+               for (TIFFThumbnail pageToAdd : pagesToRearrange)
+               {
+                  pageToAdd.setCurrentPageIndex(index);
+                  pageOrderArranged.add(pageToAdd);
+                  j++;
+                  index++;
+               }
+               page.setCurrentPageIndex(index);
+               pageOrderArranged.add(page);
+               index++;
+            }
+            else
+            {
+               // When moving down , elements are added after targetPage, so just add
+               // targetPage
+               // element to new array
+               page.setCurrentPageIndex(i + 1);
+               pageOrderArranged.add(page);
+               // If elements are added after last element, just add pagesToRearrage after
+               // targetPage
+               if (pageOrder.size() == i + 1)
+               {
+                  int j = 0;
+                  for (TIFFThumbnail pageToAdd : pagesToRearrange)
+                  {
+                     index = index + 1;
+                     pageToAdd.setCurrentPageIndex(index);
+                     pageOrderArranged.add(pageToAdd);
+                     j++;
+                  }
+               }
+            }
+         }
+         // Add all pages from pagesToRearrage to new Array after targetPage
+         else if (i == (targetPageIndex + 1) && !movePagesUp)
+         {
+            int j = 0;
+            for (TIFFThumbnail pageToAdd : pagesToRearrange)
+            {
+               index = index + 1;
+               pageToAdd.setCurrentPageIndex(index);
+               pageOrderArranged.add(pageToAdd);
+               j++;
+            }
+            index++;
+            page.setCurrentPageIndex(index);
+            pageOrderArranged.add(page);
+            index++;
+         }
+         else
+         {
+            page.setCurrentPageIndex(index);
+            index++;
+            pageOrderArranged.add(page);
+         }
+      }
+      pageOrder.clear();
+
+      pageOrder.addAll(pageOrderArranged);
+      PortalApplication.getInstance().addEventScript(
+            "window.parent.EventHub.events.publish('page_sequence_change_event', 'moveUp', " + pageRange + ");");
+      selectedPageNumber--;
+      ((Map<String, TIFFDocumentWrapper>) SessionSharedObjectsMap.getCurrent().getObject("DOC_ID_VS_DOC_MAP")).get(
+            getDocId()).setPageSequenceChanged(true);
+
+      setDocumentAnnotationPageIndex();
+   }
+
+   /**
+    * @param event
+    */
    public void copyPage(ActionEvent event)
    {
       int pageNo = 0;
@@ -478,6 +617,26 @@ public class TIFFDocumentHolder
       }
    }
 
+   /**
+    * 
+    * @param event
+    */
+   public void openExtractPageDialog(ActionEvent event)
+   {
+      try
+      {
+         ExtractPageDialog dialog = ExtractPageDialog.getCurrent();
+         TiffImageInfo imageInfo = new TiffImageInfo(getDocId(),processInstance, documentContent,null, maxPageIndex);         
+         dialog.setImageInfo(imageInfo);
+         dialog.openPopup();
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+
+   }
+   
    /**
     * @param event
     */

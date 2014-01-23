@@ -22,6 +22,7 @@ import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
@@ -3262,8 +3263,7 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
          typeDeclarationJson.add("schema", schemaJson);
       }
 
-      structJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.TYPE_DECLARATION_PROPERTY);
+      structJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.TYPE_DECLARATION_PROPERTY);
 
       return structJson;
    }
@@ -3595,6 +3595,19 @@ public abstract class ModelElementMarshaller implements ModelMarshaller
       }
    }
 
+/*   private String createEnumTypeForPrimitive(String primitiveType, JsonObject jsonObj)
+   {
+      if (jsonObj.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+      {
+         String dataType = jsonObj.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString();
+         if (null != dataType)
+         {
+            String enumPrimitiveType = primitiveType + "-" + dataType;
+            return enumPrimitiveType;
+         }
+      }
+      return primitiveType;
+   }*/
    
    /**
     * @param name

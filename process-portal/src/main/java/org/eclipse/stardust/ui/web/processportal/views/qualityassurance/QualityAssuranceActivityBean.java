@@ -124,7 +124,7 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
                "qaCodeId");
       }
 
-      if (validationMessageBean.isContainMessages())
+      if (validationMessageBean.isContainErrorMessages())
       {
          return;
       }

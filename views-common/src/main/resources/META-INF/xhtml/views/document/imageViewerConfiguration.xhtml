@@ -244,6 +244,17 @@
 			</ice:selectOneMenu>
 		</ice:panelGrid>
 		<ice:panelGroup style="clearing" />
+		<ice:panelGrid columns="2">
+			<ice:outputText value="#{views_common_msgPropsBean['views.imageViewerConfig.extractPages.spawnProcessType']}" 
+				escape="false" styleClass="label-form"/>
+			<ice:selectOneMenu partialSubmit="true"
+				value="#{imageViewerConfigurationBean.spawnProcessType}"
+				disabled="#{!ippPortalApp.loggedInUser.administrator or !imageViewerConfigurationBean.enableExtractPage}">
+				<f:selectItems
+					value="#{imageViewerConfigurationBean.spawnProcessTypeList}" />
+			</ice:selectOneMenu>
+		</ice:panelGrid>
+		<ice:panelGroup style="clearing" />
 
 		<!-- Temporary Commented following code as part of JIRA CRNT-21779 
 		<ice:panelGroup styleClass="heading" style="width: 100%">

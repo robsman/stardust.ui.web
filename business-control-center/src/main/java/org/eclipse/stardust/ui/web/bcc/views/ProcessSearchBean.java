@@ -505,7 +505,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             getFilterAttributes().setUser(null);
          }
          
-         if (validationMessageBean.isContainMessages())
+         if (validationMessageBean.isContainErrorMessages())
          {
             return;
          }
@@ -554,7 +554,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             getActivityFilterAttributes().setUser(null);
          }
          
-         if (validationMessageBean.isContainMessages())
+         if (validationMessageBean.isContainErrorMessages())
          {
             return;
          }

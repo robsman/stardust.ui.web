@@ -99,6 +99,11 @@
 		scope="portalTab">
 	</bean>
 
+	<bean name="movePagesDialog"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.MovePagesDialog"
+		scope="portalTab">
+	</bean>
+	
 	<bean name="renameDocumentExtensionDialog"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.doctree.RenameDocumentExtensionDialog"
 		scope="portalTab">
