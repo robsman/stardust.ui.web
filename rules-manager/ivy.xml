@@ -43,13 +43,13 @@
 
    <dependencies>
       
-      <dependency org="com.infinity.bpm" name="stardust-engine-base" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-base" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->stardust-engine-base-compile" />
       <dependency org="wsdl4j" name="wsdl4j" rev="${wsdl4j.version}"
          conf="stardust-rules-manager-compile->default" />
-      <dependency org="com.infinity.bpm" name="ipp-portal-common" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->ipp-portal-common-compile" />
-      <dependency org="com.infinity.bpm" name="ipp-views-common" rev="${ipp.version.full}"
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->ipp-views-common-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
          conf="stardust-rules-manager-provided->default"/>      
