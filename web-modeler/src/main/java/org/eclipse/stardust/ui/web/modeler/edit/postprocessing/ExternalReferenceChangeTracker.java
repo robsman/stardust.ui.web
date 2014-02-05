@@ -136,7 +136,7 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
             {
                QName qname = QName.valueOf(location.substring(StructuredDataConstants.URN_INTERNAL_PREFIX.length()));
                String namespace = qname.getNamespaceURI();
-               if (XMLConstants.NULL_NS_URI != namespace && !namespace.equals(model.getId()))
+               if (!XMLConstants.NULL_NS_URI.equals(namespace) && !namespace.equals(model.getId()))
                {
                   ExternalPackages packs = model.getExternalPackages();
                   if (packs != null)
