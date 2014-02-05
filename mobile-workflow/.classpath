@@ -21,7 +21,6 @@
 	<classpathentry kind="var" path="CARNOT_J2EE_LIBS/lib/servlet-api.jar"/>
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-context-support.jar"/>
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-web.jar"/>
-	<classpathentry kind="lib" path="/server/WebContent/WEB-INF/lib/dynamic-runtime-core-api-0.4.0-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="STARDUST_CXF_LIBS/lib/stardust-engine-ws-cxf.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/slf4j-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
