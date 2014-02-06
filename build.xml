@@ -55,6 +55,8 @@
            <property name="build.lib" value="${build.lib}"/>
            <property name="ipp.default.ivy.settings.file" value="${ipp.default.ivy.settings.file}"/>
            <property name="common.ivy.version" value="${common.ivy.version}" />
+           <property name="maven.localRepository" value="${maven.localRepository}" />
+           <property name="mvn.settings" value="${mvn.settings}" />
            <additional-properties />
          </ant>
       </sequential>
@@ -167,6 +169,12 @@
    <target name="dist" description="distribute all Jars">
 	   <antcall target="package">
          <param name="subtarget" value="dist"/>
+      </antcall>
+   </target>
+
+   <target name="install" description="Install the artifacts into the local Maven cache">
+      <antcall target="package">
+         <param name="subtarget" value="install"/>
       </antcall>
    </target>
 </project>
