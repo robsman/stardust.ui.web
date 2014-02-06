@@ -259,7 +259,7 @@ public class JaxWSResource {
 	 *
 	 * @param args
 	 */
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		Definition definition = JaxWSResource.getDefinition("http://www.restfulwebservices.net/wcf/CurrencyService.svc?wsdl");
 
 		System.out.println("Definition: " + definition.getDocumentBaseURI());
@@ -277,5 +277,5 @@ public class JaxWSResource {
 				System.out.println("\tPort: " + port.getName());
 			}
 		}
-	}
+	}*/
 }
