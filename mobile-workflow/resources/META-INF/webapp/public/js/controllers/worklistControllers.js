@@ -1,12 +1,21 @@
 /*Controllers Related to worklists...*/
 define([],function(){
 	
+	/*TODO: ZZM- Move utils to a service/factory and inject as a dependency*/
 	var utils={
-			navigateTo : function(root,target,data){
+			
+			/* Indicate a navigation request outside of the JQM
+			 * hash handlers.*/
+			"navigateTo" : function(root,target,data){
 				$(root).trigger("navigateRequest",{
 					"target": target,
 					"payload" : data
 				});
+			},
+			
+			/*Generic event trigger function*/
+			"trigger" : function(root,eventName,data){
+				$(root).trigger(eventName,data);
 			}
 	};
 	
@@ -130,18 +139,32 @@ define([],function(){
 				};
 			},
 			
-			"detailCtrl" : function($scope,$rootScope){
+			"detailCtrl" : function($scope,$rootScope,utilService,workflowService){
 				
-				/*declare our model(s)*/
+				/*Initialization*/
+				$scope.activeTab='activityTab';
+				
+				$scope.test = workflowService.test;
+				$scope.addNote2 = workflowService.addNote;
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();
 				$scope.formModel = new mashupModel();
 				$scope.documentModel = new documentModel();
-				
+
 				/*Signal JQuery universe that we need to add a note via REST*/
 				$scope.addNote = function(id,newNote){
 					newNote.processoid=id;
 					$scope.notesModel.addNote($scope,$rootScope,newNote);
+				};
+				
+				/*Generic trigger handler for anyone who wishes to trigger an event
+				 * to any listeners on $rootScope. Designed for communication with 
+				 * the JQuery universe
+				 * */
+				$scope.trigger= function(eventName,data){
+					console.log("trigger request");
+					console.log(eventName + " , " + data);
+					utils.trigger($rootScope,eventName,data);
 				};
 				
 				/*Signal JQM to perform a manual navigation to a target page,

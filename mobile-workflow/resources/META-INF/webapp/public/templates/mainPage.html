@@ -1,68 +1,74 @@
 <div href="#login" ng-show="!appData.isAuthorized">You are not Authorized to View this Page</div>
 
-  <ul data-role="listview" ng-show="!appData.isAuthorized">
-       <li>
-        <a href="#login">
-        	You are not authorized to view this page.
-        	Click to return to the login page.
-        </a>
-       </li>
-   </ul>
+<ul data-role="listview" ng-show="!appData.isAuthorized">
+     <li>
+      <a href="#login">
+      	You are not authorized to view this page.
+      	Click to return to the login page.
+      </a>
+     </li>
+ </ul>
    
- 		<div>
+
  		
-	<div class="sub-header">
- 				<div class="ui-grid-b">
-		    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
-			    <div class="ui-bar ui-bar-a ipp-grid-subheader">
-			    	<a href="#" data-rel="back" class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">
-			    	</a>
-			    </div>
-			</div>
-		    <div class="ui-block-b" style="width:50%;">
-		    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Welcome, {{appData.user.lastName}}</div>
-		    </div>
-		    <div class="ui-block-c" style="width:25%;">
-		    	<div class="ui-bar ui-bar-a ipp-grid-subheader"></div>
+<div class="sub-header">
+				<div class="ui-grid-b">
+	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
+		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
+		    	<a href="#" data-rel="back" class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">
+		    	</a>
 		    </div>
 		</div>
+	    <div class="ui-block-b" style="width:50%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Welcome, {{appData.user.lastName}}</div>
+	    </div>
+	    <div class="ui-block-c" style="width:25%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader"></div>
+	    </div>
 	</div>
+</div>
 	
-	<div id="mainPContent" data-role="content" data-iscroll>
-		<ul data-role="listview">
+<div id="mainPContent" data-role="content" data-iscroll>
+	<ul data-role="listview">
+	
+		<li>
+			<a href="#worklistListViewPage">
+				<i class="fa fa-tasks ipp-icon-pad-r"></i>
+				Worklist
+				<span class="ui-li-count">{{appData.worklistItems.length}}</span>
+			</a>
+		</li>
+		<li>
+			<a href="#startableProcessesPage">
+				<i class="fa fa-gears ipp-icon-pad-r"></i>
+				Start Work
+			</a>
+		</li>
+		<li>
+			<a href="#search">
+				<i class="fa fa-search ipp-icon-pad-r"></i>
+				Search (Not Implemented)
+			</a>
+		</li>
+		<li>
+			<a href="#reports">
+			<i class="fa fa-bar-chart-o ipp-icon-pad-r"></i>
+			Reports (Not Implemented)
+			</a>
+		</li>
+		<li>
+			<a href="#documents">
+			<i class="fa fa-files-o ipp-icon-pad-r"></i>
+			Documents (Not Implemented)
+			</a>
+		</li>
 		
-			<li>
-				<a href="#worklistListViewPage">
-					<i class="fa fa-tasks ipp-icon-pad-r"></i>
-					Worklist
-					<span class="ui-li-count">{{appData.worklistItems.length}}</span>
-				</a>
-			</li>
-			<li>
-				<a href="#startableProcessesPage">
-					<i class="fa fa-gears ipp-icon-pad-r"></i>
-					Start Work
-				</a>
-			</li>
-			<li>
-				<a href="#search">
-					<i class="fa fa-search ipp-icon-pad-r"></i>
-					Search (Not Implemented)
-				</a>
-			</li>
-			<li>
-				<a href="#reports">
-				<i class="fa fa-bar-chart-o ipp-icon-pad-r"></i>
-				Reports (Not Implemented)
-				</a>
-			</li>
-			<li>
-				<a href="#documents">
-				<i class="fa fa-files-o ipp-icon-pad-r"></i>
-				Documents (Not Implemented)
-				</a>
-			</li>
-			
-		</ul>
-	</div>
+	</ul>
+</div>
+
+<div data-position="fixed" data-role="footer" data-theme="a" 
+		 ng-controller="footerCtrl"
+		 data-jqm-template 
+		 data-jqm-widgets="" 
+		 data-template-url="templates/baseFooter.html">
 </div>

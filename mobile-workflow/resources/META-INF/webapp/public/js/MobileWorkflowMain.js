@@ -14,20 +14,22 @@ require
 		.config({
 			baseUrl : "./",
 			paths : {
-				'jquery' : [ 'js/libs/jquery/jquery-1.7.2.min',
-						'//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min' ],
-				'jquery-ui' : [
-						'js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min',
-						'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min' ],
-				'jquery-mobile' : [ 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min' ],
+				'jquery' 		: [ 'js/libs/jquery/jquery-1.7.2.min',
+				         		    '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
+				'jquery-router' : [ 'js/libs/jquery/plugins/jquery.mobile.router',
+				                    '//raw.github.com/azicchetti/jquerymobile-router/master/js/jquery.mobile.router.min'],
+				'jquery-mobile' : [ 'js/libs/jquery/plugins/jquery.mobile-1.4.0.min',
+				                    '//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0'],
+				'jquery-iscroll': [ 'js/libs/jquery/plugins/jquery.mobile.iscrollview'],
 				'jquery.base64' : [ 'js/libs/jquery/plugins/jquery.base64', '' ],
-				'angularjs' : [ 'js/libs/angular/angular-1.0.2',
-						'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
-				'xml2json' : [ 'js/libs/misc/xml2js' ]
+				'angularjs' 	: [ 'js/libs/angular/angular.1.2.11.min',
+				            	    '//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ]
 			},
 			shim : {
-				'jquery-ui' : [ 'jquery' ],
-				'jquery.base64' : [ 'jquery' ],
+				'jquery-router' : ['jquery'],
+				'jquery-mobile' : [ 'jquery','jquery-router' ],
+				'jquery-iscroll': ['jquery','jquery-mobile'],
+				'jquery.base64' : ['jquery'],
 				'angularjs' : {
 					require : "jquery",
 					exports : "angular"
@@ -36,118 +38,28 @@ require
 		});
 
 require(
-		[ "require", "jquery", "angularjs", "jquery-ui", "jquery-mobile",
-				"jquery.base64", "xml2json", "js/Utils",
-				"js/TestWorkflowService", "js/WorkflowService", "js/Deck" ],
-		function(require, jquery, angularjs, jqueryUi, jqueryMobile,
-				jqueryBase64, xml2json, Utils, TestWorkflowService,
-				WorkflowService, Deck) {
-			jQuery(document)
-					.ready(
-							function() {
-								var module = angular.module(
-										'mobileWorkflowApplication', []);
-
-								module.controller('deck', function($scope) {
-									// Inherit methods from Deck
-
-									Utils.inherit($scope, Deck.create());
-
-									console.log("Scope");
-									console.log($scope);
-
-									// Initialize
-
-									$scope.initialize();
-								});
-
-								module
-										.directive(
-												'sdDeck',
-												function() {
-													return {
-														restrict : "A",
-														compile : function(
-																element, attrs) {
-															return {
-																post : function(
-																		scope,
-																		element,
-																		attributes,
-																		controller) {
-																	scope
-																			.$watch(
-																					"getTopPage()",
-																					function(
-																							value) {
-																						console
-																								.log("Top Page ID changed to "
-																										+ scope
-																												.getTopPage().id);
-
-																						if (scope
-																								.getTopPage().role
-																								&& scope
-																										.getTopPage().role == "dialog") {
-																							$.mobile
-																									.changePage(
-																											"#"
-																													+ scope
-																															.getTopPage().id,
-																											{
-																												transition : "slideup",
-																												role : "dialog"
-																											});
-																						} else {
-																							$.mobile
-																									.changePage(
-																											"#"
-																													+ scope
-																															.getTopPage().id,
-																											{
-																												transition : "slideup"
-																											});
-																						}
-																					});
-																}
-															};
-														}
-													};
-												});
-
-								module
-										.directive(
-												'sdList',
-												function() {
-													return {
-														restrict : "A",
-														compile : function(
-																element, attrs) {
-															return {
-																post : function(
-																		scope,
-																		element,
-																		attributes,
-																		controller) {
-																	scope
-																			.$watch(
-																					attributes.sdList,
-																					function(
-																							value) {
-																						if (value) {
-																							jQuery(
-																									element)
-																									.listview(
-																											"refresh");
-																						}
-																					});
-																}
-															};
-														}
-													};
-												});
-
-								angular.bootstrap(document,
-										[ "mobileWorkflowApplication" ]);
-							});
+		
+		[ "require", 
+		  "jquery", 
+		  "angularjs", 
+		  "jquery-mobile",
+		  "js/app","js/jqmRouteProvider","js/jqmWidgets","jquery-iscroll","js/libs/misc/iscroll"],
+		  
+		function(require, jquery, angularjs, jqueryMobile, app, jqmRouteProvider,jqmWidgets,jqueryIscroll,iscroll) {
+			console.log(jqmRouteProvider);
+			
+			/*Specify our jquery mappings - all apps utilizing the back-end must supply a front-end with
+			 *an element corresponding to each entry.*/
+			var options={ selectors: { 
+							inptLogin : "#inptLogin",   /*login submission button*/
+							loginPage : "#login",       /*JQM data-role page, login*/
+							mainPage  : "#mainPage",    /*JQM data-role page, Main*/
+							worklistListViewPage : "#worklistListViewPage",  /*JQM data-role page, worklist*/
+							popup_activityMenu : "#popup-activityMenu",		 /*Popup menu for worklistListViewPage*/
+							btnAddNote : "#btnAddNote", /*button which submits a new note bound to a process*/
+							notesPage :  "#notesPage"   /*JQM data-role page, Notes*/
+						}
+			};
+			
+			app.init(options);
 		});

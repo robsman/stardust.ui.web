@@ -1,31 +1,4 @@
 <div class="sub-header">
-	<!--div class="ui-grid-b">
-				
-	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
-		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
-		    	<a href="#mainPage"  class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">No text</a>
-		    </div>
-		</div>
-		
-	    <div class="ui-block-b" style="width:50%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Worklist Items</div>
-	    </div>
-	    
-	    <div class="ui-block-c ipp-grid-icon-container" style="width:25%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="margin-right:-30px;">
-	    		<div style="float:right;text-align:right;position:relative;top:-12px;'">
-	    			<span class="ui-li-count ui-body-inherit" style="position:relative;left:-1px;top:1px;">
-	    				{{appData.worklistItems.length}}
-	    			</span>
-	    			<button  
-	    				ng-click="ascending=!ascending"
-	    		   		ng-class="{'ui-icon-arrow-d': ascending, 'ui-icon-arrow-u': !ascending}" 
-	    				class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext">Icon only</button>
-	    		</div>
-	    	</div>
-	    </div>
-	    
-	</div-->
 	<div class="ui-grid-b">
 		<div class="ui-block-a" style="width:33.33%;">
 				<a href="#" data-rel="back" style="float:left" class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
@@ -76,3 +49,10 @@
 		</a>
 	</li>
 </ul>
+
+<div data-position="fixed" data-role="footer" data-theme="a" 
+		 ng-controller="footerCtrl"
+		 data-jqm-template 
+		 data-jqm-widgets="" 
+		 data-template-url="templates/baseFooter.html">
+</div>

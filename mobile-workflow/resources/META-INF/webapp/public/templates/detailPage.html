@@ -1,32 +1,32 @@
 
 <div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}</h1>
+	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}{{test}}</h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a href="#" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+    <a href="#" ng-click="activeTab=''" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
 
 <div data-role="tabs" id="tabs" style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
-		<li>
+		<li ng-click="activeTab='activityTab';addNote2()" >
 			<a href="#activityTab" class="ui-btn-active">
 				<i style="display:block;" class="fa fa-info fa-2x jqm-icon-block"></i>
 				Activity
 			</a>		
 		</li>
-		<li>
+		<li ng-click="activeTab='formTab'" >
 			<a href="#formTab">
 				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block"></i>
 				Form	
 			</a>
 		</li>
-		<li>
+		<li ng-click="activeTab='docsTab'" >
 			<a href="#docsTab">
 				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
 				Docs ({{documentModel.docs.length}})
 			</a>
 		</li>
-		<li>
+		<li ng-click="activeTab='notesTab'">
 		 	<a href="#notesTabContent" >
 				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
 				Notes ({{notesModel.notes.length}})
@@ -40,6 +40,33 @@
 		</li>
 	</ul>
   </div>
+  
+  <div class="ui-mini" ng-show="activeTab=='activityTab'">
+	  <div ng-click="trigger('activateActivity',activityModel.item.processInstanceOid)"  style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
+	  	<i class="fa fa-bolt"></i> Activate
+	  </div>
+	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-user"></i> Delegate
+	  </div>
+  </div>  
+  
+  <div class="ui-mini" ng-show="activeTab=='formTab'">
+	  <div ng-click="trigger('completeActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
+	  	<i class="fa fa-bolt"></i> Complete
+	  </div>
+	  <div ng-click="trigger('cancelActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-times"></i> Cancel
+	  </div>
+	  <div ng-click="trigger('saveActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-save"></i> Save
+	  </div>
+	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-user"></i> Delegate
+	  </div>
+  </div> 
+ 
+
+  
   <div id="activityTab" class="ui-body-d ui-content">
 		<div data-theme="a" 
 			 data-jqm-template data-jqm-widgets="" 
@@ -72,3 +99,22 @@
   </div>
 </div><!-- Tabs End  -->
 
+<div data-role="footer" data-theme="a" ng-controller="footerCtrl">
+	<div class="ui-grid-b ui-mini" style="height:1.75em;">
+
+	    <div class="ui-block-a" style="width:45%;">
+	    	<div class="ui-bar ui-bar-a" style="height:1.75em;border-style:none;">XXX-{{title}}</div>
+	    </div>
+	
+	    <div class="ui-block-b" style="width:10%;">
+	    	<div class="ui-bar ui-bar-a" style="height:1.75em;border-style:none;position:relative;top:-0.5em;">
+	    		<input type="button" data-icon="delete" data-iconpos="notext" value="Icon only"/>
+	    	</div>
+	    </div>
+	    
+	    <div class="ui-block-c" style="width:45%;">
+	    	<div class="ui-bar ui-bar-a" style="height:1.75em;float:right;border-style:none;">{{version}}</div>
+	    </div>
+    
+	</div>
+</div>

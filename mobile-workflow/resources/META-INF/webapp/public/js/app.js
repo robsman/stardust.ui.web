@@ -5,10 +5,12 @@ define(function(require){
 	 *and create an Angular module representing our application.*/
 	var angular=require('angularjs'),
 		workflowService=require("js/WorkflowService").instance(),
+		angWorkflow = require("js/services/workflowService"),
 		baseControllers = require('js/controllers/baseControllers'),
 		worklistControllers = require('js/controllers/worklistControllers'),
 		baseFilters = require("js/filters/baseFilters"),
 		jqmDirectives = require("js/directives/jqmDirectives"),
+		utilService = require("js/services/utils"),
 		app=angular.module('phoneApp',[]),/*create angular application*/
 		rootScope;  /*Angular rootScope within a JQuery context*/
 
@@ -30,6 +32,8 @@ define(function(require){
 	app.filter( "serializeObject",   baseFilters.serializeObject);
 	app.directive( "jqmTemplate",    jqmDirectives.jqmTemplate);
 	app.directive( "testTemplate",   jqmDirectives.testTemplate);
+	app.factory("utilService",utilService);
+	app.factory("workflowService",angWorkflow);
 	
 	/* 1. bootstrap our document against our angular application
 	 * 2. tie in any handlers we need to for our events */
