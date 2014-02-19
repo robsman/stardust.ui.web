@@ -136,9 +136,7 @@ public class MobileWorkflowService {
 	public JsonObject login(JsonObject credentialsJson) {
 		Map<String, String> credentials = new HashMap<String, String>();
 
-		String partition = "default";
-
-		// TODO Obtain partition from call
+		String partition = credentialsJson.get("partition").getAsString();
 
 		credentials.put(SecurityProperties.PARTITION, partition);
 
@@ -210,6 +208,12 @@ public class MobileWorkflowService {
 			worklistJson.add(activityInstanceJson);
 
 			activityInstanceJson.addProperty("oid", activityInstance.getOID());
+			activityInstanceJson.addProperty("criticality", activityInstance.getCriticality());
+			activityInstanceJson.addProperty("status", "TODO");
+			activityInstanceJson.addProperty("lastPerformer", "TODO DOE");
+			activityInstanceJson.addProperty("assignedTo", "TODO DOE");
+			activityInstanceJson.addProperty("startedBy", "TODO DOE");
+			activityInstanceJson.addProperty("duration", "TODO - Calculate");
 			activityInstanceJson.addProperty("activityId", activityInstance
 					.getActivity().getId());
 			activityInstanceJson.addProperty("activityName", activityInstance
@@ -228,9 +232,10 @@ public class MobileWorkflowService {
 			JsonObject descriptorsJson = new JsonObject();
 
 			activityInstanceJson.add("descriptors", descriptorsJson);
-
+			
 			for (DataPath dataPath : activityInstance
 					.getDescriptorDefinitions()) {
+				
 				descriptorsJson.addProperty(dataPath.getId(),
 						(String) activityInstance.getDescriptorValue(dataPath
 								.getId()));

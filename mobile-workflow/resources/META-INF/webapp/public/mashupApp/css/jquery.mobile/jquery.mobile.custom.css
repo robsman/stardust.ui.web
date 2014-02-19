@@ -1,0 +1,123 @@
+.external-header{
+	background-image: url('../images/spr-main.png');
+	background-repeat:repeat-x;
+}
+
+.external-header [data-role=button]{
+	margin-top : 5px;
+}
+
+.sub-header{
+	text-align:center;
+}
+
+.external-footer h5{
+		display:inline !important;
+}
+
+.external-footer span{
+	float: right;
+	padding-right: 10px;
+}
+
+.ipp-overflowEllipsis {
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
+	width:75%;
+}
+
+.ipp-overflowShow {
+	overflow:inherit;
+	white-space:inherit;
+	width:90%;
+}
+
+.ipp-icon-activate:after {
+    background-image: url("../css-images/activity_state.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-note:after {
+    background-image: url("../css-images/notes-filled.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-notesEmpty:after {
+    background-image: url("../css-images/notes-blank.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-abort:after {
+    background-image: url("../css-images/abort.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-delegate:after {
+    background-image: url("../css-images/delegate.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-cog:after {
+    background-image: url("../css-images/cog.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-documents:after {
+    background-image: url("../css-images/documents.png");
+    background-size: 18px 18px;
+}
+
+.ipp-icon-pad-r {
+	padding-right:1.5em;
+}
+
+a.ipp-minimal:link{
+	color:#FFF !important;
+	text-decoration:none;
+}
+
+a.ipp-minimal:hover{
+	color:#FFF !important;
+	text-decoration:none;
+}
+
+a.ipp-minimal:active{
+	color:#FFF !important;
+	text-decoration:none;
+}
+
+a.ipp-minimal:visited{
+	color:#FFF !important;
+	text-decoration:none;
+}
+
+.ipp-logo-sungard{
+	background-image:url('../css-images/SG_156X24_dithered.png');
+	background-repeat:no-repeat;
+	background-position-y:6px;
+}
+
+.ipp-grid-subheader {
+	border-width: 0px !important;
+	border-style: none !important;
+	background-color: transparent !important;
+}
+
+.ipp-grid-icon-container  {
+	height:35px !important;
+	width:25% !important;
+	margin-left:-10px !important;
+}
+
+.ipp-grid-icon-container a.ui-btn-icon-notext{
+	top:-12px;
+}
+
+.ipp-grid-icon-container + div{
+	margin-left:10px;
+}
+
+
+.ui-grid-a > .ui-block-a.major { width: 75% }
+.ui-grid-a > .ui-block-b.minor { width: 25%; } 

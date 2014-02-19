@@ -1,0 +1,126 @@
+<!-- 
+* Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ -->
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile-1.4.0.min.css" />
+		<link rel="stylesheet" href="./css/jquery.mobile/jqm.custom.widgets.css" />
+		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.iscrollview.css" />
+		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.custom.css" />
+		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
+	</head>
+	
+	<body>
+	
+		<!-- EXTERNAL HEADER -->
+		<div data-role="header" data-position="fixed"  
+			 data-theme="a"  style="float:left;text-align;"
+			 class="external-header" 
+			 ng-controller="headerCtrl"
+			 data-jqm-template data-jqm-widgets="toolbar" 
+			 data-template-url="templates/externalHeader.html">
+		</div>
+		
+		<!--  EXTERNAL FOOTER -->
+		<div class="external-footer" data-role="footer" data-theme="a" 
+			 data-add-back-btn="true"
+			 ng-controller="footerCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/externalFooter.html">
+		</div>
+
+		<!-- EXTERNAL PANEL RIGHT -->
+		<div data-role="panel" id="main-panel" data-position="right" data-display="overlay" data-theme="a"
+			 data-jqm-template data-jqm-widgets="panel" 
+			 data-template-url="templates/externalPanelRight.html">
+		</div>
+		
+		<!--LOGIN PAGE -->
+		<div id="login" data-role="page" data-theme="a" 
+			 ng-controller="loginCtrl" 
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/loginPage.html" >
+		</div>
+		
+		<!-- MAIN PAGE -->
+		<div id="mainPage" data-role="page" data-theme="a" 
+			 ng-controller="worklistCtrl" 
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/mainPage.html">
+		</div>
+
+		<!-- WORKLIST LISTVIEW PAGE -->
+		<div id="worklistListViewPage" data-theme="a" data-role="page"
+			 ng-controller="worklistCtrl" 
+			 data-jqm-template data-jqm-widgets="listview" 
+			 data-template-url="templates/worklistListViewPage.html">
+		</div>
+		
+		<!-- STARTABLE PROCESSES PAGE -->
+		<div id="startableProcessesPage" data-role="page" data-theme="a" 
+			 ng-controller="startableProcessesCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/startableProcessesPage.html">
+		</div>
+		
+		
+		<!-- NOTES PAGE -->
+		<div id="notesPage" data-role="page" data-theme="a" 
+			 ng-controller="notesListCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="notes"
+			 data-template-url="templates/notesPage.html">
+		</div><!-- Data-Role Page end... -->
+		
+		<!-- ACTIVITY PANEL PAGE -->
+		<div id="activityPage" data-role="page" data-theme="a" 
+			 ng-controller="activityCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/activityPanelPage.html">
+		</div>
+		
+		<!-- ACTIVITY PANEL SUBPAGE NOTES -->
+		<div id="activityPanelSubpageNotes" data-role="page" data-theme="a" 
+			 ng-controller="notesListCtrl"
+			 data-jqm-template data-jqm-widgets="listview" 
+			 data-bind-to="notes"
+			 data-template-url="templates/activityPanelSubpageNotes.html">
+		</div>
+		
+		<!-- DETAIL PAGE -->
+		<div id="detailPage" data-role="page" data-theme="a" 
+			 ng-controller="detailCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/detailPage.html">
+		</div> <!-- DETAIL PAGE END -->
+		
+		<!-- FORM PAGE -->
+		<div id="formPage" data-role="page" data-theme="a"
+			 ng-controller="formCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/formPage.html">
+			
+		</div>
+		
+		<!-- PROCESS PAGE -->
+		<div id="processPage" data-role="page" data-theme="a"
+			 ng-controller="processCtrl"
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/processPage.html">
+		</div>
+		
+		
+		<script type="text/javascript" data-main="js/MobileWorkflowMain2" src="./js/libs/require/2.0.5/require.js"></script>
+		
+	</body>
+</html>

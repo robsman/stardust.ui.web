@@ -1,0 +1,78 @@
+<div class="sub-header">
+	<!--div class="ui-grid-b">
+				
+	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
+		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
+		    	<a href="#mainPage"  class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">No text</a>
+		    </div>
+		</div>
+		
+	    <div class="ui-block-b" style="width:50%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Worklist Items</div>
+	    </div>
+	    
+	    <div class="ui-block-c ipp-grid-icon-container" style="width:25%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="margin-right:-30px;">
+	    		<div style="float:right;text-align:right;position:relative;top:-12px;'">
+	    			<span class="ui-li-count ui-body-inherit" style="position:relative;left:-1px;top:1px;">
+	    				{{appData.worklistItems.length}}
+	    			</span>
+	    			<button  
+	    				ng-click="ascending=!ascending"
+	    		   		ng-class="{'ui-icon-arrow-d': ascending, 'ui-icon-arrow-u': !ascending}" 
+	    				class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext">Icon only</button>
+	    		</div>
+	    	</div>
+	    </div>
+	    
+	</div-->
+	<div class="ui-grid-b">
+		<div class="ui-block-a" style="width:33.33%;">
+				<a href="#" data-rel="back" style="float:left" class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
+		</div>
+		<div class="ui-block-b" style="width:33.33%;">
+			<strong>Worklist Items</strong>
+		</div>
+		<div class="ui-block-c" style="width:33.33%;">
+			<div style="float:right;">
+				<!-- 
+				<span>{{appData.worklistItems.length}}</span>
+				<a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext"></a>
+				-->
+				<a href="#noteFilterPopup" data-rel="popup" data-transition="slide" 
+				   class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-arrow-d ui-btn-icon-right ui-btn-a">
+					{{appData.worklistItems.length}}
+				</a>
+				<div data-role="popup" id="noteFilterPopup" data-theme="a">
+				        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
+				            <li data-role="list-divider">Sort by...</li>
+				            <li data-icon="arrow-d" ng-click="predicate='startTime'"><a href="#">Newest</a></li>
+				            <li data-icon="arrow-d" ng-click="predicate='-startTime'"><a href="#">Oldest</a></li>
+				            <li data-icon="arrow-d" ng-click="predicate='criticality'"><a href="#">Criticality</a></li>
+				            <li data-icon="arrow-d" ng-click="predicate='lastModificationTime'"><a href="#">Modified</a></li>
+				        </ul>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+	
+</div>
+
+<ul data-role="listview">
+	<li ng-repeat="item in appData.worklistItems | orderBy:predicate:asc">
+		<a href="#detailPage?id={{item.processInstanceOid}}">
+			<h3>{{item.activityName}}</h3>
+			<p>
+				<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">
+          			{{key}} : {{value}}
+          			<span ng-if="!$last">,</span>
+          		</span>
+         		</p>
+         		<p class="ui-li-aside">
+         			<strong>{{item.startTime | date:'yyyy-MM-dd' | humaneDate }}</strong>
+         		</p>
+		</a>
+	</li>
+</ul>

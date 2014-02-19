@@ -1,0 +1,73 @@
+.jqm-cstm-inlineAlert{
+	display : block;
+	position: relative;
+	background-color :#ed9c28;
+	padding-left: 5px;
+	padding-top:15px;
+	width : 100%;
+	font-family:verdana;
+	test-shadow : none;
+	color : white;
+	height:35px;
+	text-vertical:center;
+}
+
+.jqm-cstm-inlineAlert:after{
+  display:inline;
+  float:right;
+  content :"X";
+  padding-right: 5px;
+}
+
+.jqm-cstm-show {
+	height: 35px;
+	transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	-ms-transition: all 0.25s ease-in-out;
+	-o-transition: all 0.25s ease-in-out;
+	-webkit-transition: all 0.25s ease-in-out;
+}
+
+.jqm-cstm-hide {
+	height: 0px;
+	padding-top:0px;
+	transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	-ms-transition: all 0.25s ease-in-out;
+	-o-transition: all 0.25s ease-in-out;
+	-webkit-transition: all 0.25s ease-in-out;
+}
+
+.jqm-cstm-warning{
+	background-color :#ed9c28;
+	border-color: #eea236;
+}
+
+.jqm-cstm-danger{
+	background-color :#d9534f;
+	border-color: #d43f3a;
+}
+
+.jqm-cstm-info{
+	background-color :#5bc0de;
+	border-color: #46b8da;
+}
+
+.jqm-cstm-success{
+	background-color :#47a447;
+	border-color: #4cae4c;
+}
+
+.jqm-cstm-primary{
+	background-color :#428bca;
+	border-color: #357ebd;
+}
+
+.jqm-cstm-default{
+	background-color :#fff;
+	color: #ccc;
+}
+
+.jqm-icon-block{
+	display:block;
+}

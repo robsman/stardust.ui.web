@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "js/Utils" ],
+		[ "js/Utils","jquery.base64" ],
 		function(Utils) {
 			return {
 				instance : function() {
@@ -27,7 +27,7 @@ define(
 				/**
 				 * 
 				 */
-				WorkflowService.prototype.login = function(account, password) {
+				WorkflowService.prototype.login = function(account, password,partition) {
 					var deferred = jQuery.Deferred();
 					var self = this;
 
@@ -39,15 +39,16 @@ define(
 								contentType : "application/json",
 								data : JSON.stringify({
 									account : account,
-									password : password
+									password : password,
+									"partition" : partition
 								})
 							}).done(function(user) {
 						console.debug("User:");
 						console.debug(user);
 
 						deferred.resolve(user);
-					}).fail(function() {
-						deferred.reject();
+					}).fail(function(err) {
+						deferred.reject(err);
 					});
 
 					return deferred.promise();
@@ -318,7 +319,57 @@ define(
 
 					return deferred.promise();
 				};
-
+				
+				/*GET-PARTICIPANTS stubbed*/
+				WorkflowService.prototype.getParticipants=function(processOid){
+					var deferred = jQuery.Deferred(),
+						parts=[];
+					
+					parts.push({ id:1, 
+								name: {first: "John" , last: "Doe"}, 
+								email: "jdoe@nosuch.org", 
+								phone : "123-456-7890"});
+					
+					parts.push({ id:2, 
+								name: {first: "Jane" , last: "McCDoe"}, 
+								email: "jMccDoe@nosuch.net", 
+								phone : "098-765-4321"});
+					
+					parts.push({ id:3, 
+								name: {first: "Jennifer" , last: "Doe-Doeington"}, 
+								email: "jenD_D78@nosuch.mil", 
+								phone : "564-738-2910"});
+					
+					/*Give a random delay between 0.5 and 1.5 seconds.*/
+					setTimeout(function(){
+						deferred.resolve(parts);
+					},(Math.random()*1000)+500);
+					
+					return deferred.promise();
+				};
+				
+				/*GET-DOCUMENTS stubbed*/
+				WorkflowService.prototype.getDocuments=function(processOid){
+					var deferred = jQuery.Deferred(),
+						docs=[];
+					
+					docs.push({id:1, name: "fooDocument1.pdf", mimeType: "application/pdf"});
+					docs.push({id:1, name: "fooDocument2.jpg", mimeType: "image/jpg"});
+					docs.push({id:1, name: "fooDocument3.png", mimeType: "image/png"});
+					docs.push({id:1, name: "fooDocument4.doc", mimeType: "application/msword"});
+					docs.push({id:1, name: "fooDocument5.xls", mimeType: "application/vnd.ms-excel"});
+					docs.push({id:1, name: "fooDocument6.txt", mimeType: "text/plain"});
+					docs.push({id:1, name: "fooDocument7.pdf", mimeType: "application/pdf"});
+					docs.push({id:1, name: "fooDocument9.png", mimeType: "image/png"});
+					
+					/*Give a random delay between 0.5 and 1.5 seconds.*/
+					setTimeout(function(){
+						deferred.resolve(docs);
+					},(Math.random()*1000)+500);
+					
+					return deferred.promise();
+				};
+				
 				/**
 				 * 
 				 */

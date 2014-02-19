@@ -1,0 +1,76 @@
+<div data-role="header" style="overflow:hidden;">
+	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}</h1>
+    <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
+    <a href="#" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+</div>
+
+<div data-role="tabs" id="processTabs" style="padding-top:0em;border-top:0em;">
+  <div data-role="navbar">
+	<ul>
+		<li>
+			<a href="#overviewTab" class="ui-btn-active">
+				<i style="display:block;" class="fa fa-info-circle fa-2x jqm-icon-block"></i>
+				Overview
+			</a>		
+		</li>
+		<li>
+			<a href="#descriptorsTab">
+				<i style="display:block;" class="fa fa-tags fa-2x jqm-icon-block"></i>
+				Descriptors	
+			</a>
+		</li>
+		<li>
+			<a href="#docsProcessTab">
+				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
+				Docs
+			</a>
+		</li>
+		<li>
+		 	<a href="#notesProcessTab" >
+				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
+				Notes
+			</a>
+		</li>
+		<li>
+			<a  href="#participantsTab" >
+				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block"></i>
+				Participants
+			</a>
+		</li>
+	</ul>
+  </div>
+  <div id="overviewTab" class="ui-body-d ui-content">
+		<div data-theme="a" 
+			 data-jqm-template data-jqm-widgets="" 
+			 data-template-url="templates/activityDetails.html">
+		</div>
+  </div>
+  <div id="descriptorsTab" class="ui-body-d ui-content">
+    	<div data-jqm-template 
+			 data-jqm-widgets=""
+			 data-bind-to=""
+			 data-template-url="templates/descriptorsPage.html">
+		</div>
+  </div>
+   <div id="docsProcessTab" class="ui-body-d ui-content">
+    	<div data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="documentModel.docs"
+			 data-template-url="templates/documentPage.html">
+		</div>
+  </div>
+   <div id="notesProcessTab" class="ui-body-d ui-content">
+   		<div data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="notesModel.notes"
+			 data-template-url="templates/notesPage.html">
+		</div>
+  </div>
+   <div id="participantsTab"  class="ui-body-d ui-content">
+    	<div data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="participantModel.participants"
+			 data-template-url="templates/participantPage.html">
+		</div>
+  </div>
+</div><!-- Tabs End  -->

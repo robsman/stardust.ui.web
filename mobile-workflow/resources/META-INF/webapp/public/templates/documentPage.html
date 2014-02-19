@@ -1,0 +1,18 @@
+
+<div>
+	<label for="file">File:</label>
+	<input type="file" name="file" id="file" value="">
+</div>
+
+<div>
+	<ul data-role="listview" style="margin:0em;">
+		<li ng-repeat="doc in documentModel.docs">
+			<a href="#?id={{doc.id}}">
+				<h3>{{doc.name}}</h3>
+	       		<p class="ui-li-aside">
+	       			<strong>{{doc.mimeType}}</strong>
+	       		</p>
+			</a>
+		</li>
+	</ul>
+</div>

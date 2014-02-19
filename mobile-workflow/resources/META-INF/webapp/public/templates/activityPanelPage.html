@@ -1,0 +1,39 @@
+<div class="sub-header">
+	<span>I'm a header</span>
+    <div data-role="navbar">
+        <ul>
+            <li><a data-icon="custom" class="ipp-icon-cog" href="#">Form</a></li>
+            <li><a data-icon="custom" class="ipp-icon-documents" href="#">Documents</a></li>
+            <li><a data-icon="custom" class="ipp-icon-note" href="#notesPage?id={{activityID}}">Notes</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+<div data-role="tabs">
+    <div data-role="navbar">
+        <ul>
+          <li><a href="#one" data-theme="a" data-ajax="false">one</a></li>
+          <li><a href="#two" data-theme="a" data-ajax="false">two</a></li>
+        </ul>
+    </div>
+    <div id="one"  class="ui-content">
+    	<h1>First tab contents</h1>
+    	<!-- WORKLIST LISTVIEW PAGE -->
+		<div ng-controller="worklistCtrl" 
+			 data-jqm-template data-jqm-widgets="listview"
+			 data-bind-to="appData.worklistItems"
+			 data-template-url="templates/worklistListViewPage.html">
+		</div>
+    </div>
+    <div id="two" class="ui-content">
+        	Second Tab Contents!
+        	<!-- NOTES PAGE -->
+        	<div data-theme="a" 
+			 ng-controller="notesListCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="notes"
+			 data-template-url="templates/notesPage.html">
+		</div><!-- Data-Role Page end... -->
+		
+    </div>
+</div>

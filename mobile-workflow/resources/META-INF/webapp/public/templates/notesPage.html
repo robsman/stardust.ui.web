@@ -1,0 +1,58 @@
+<div class="sub-header">			
+				<div class="ui-grid-b">
+				
+	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
+		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
+		    </div>
+		</div>
+		
+	    <div class="ui-block-b" style="width:50%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Notes</div>
+	    </div>
+	    
+	    <div class="ui-block-c ipp-grid-icon-container" style="width:25%;">
+	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="margin-right:-30px;">
+	    		<div style="float:right;text-align:right;position:relative;top:-12px;'">
+	    			<span class="ui-li-count ui-body-inherit" style="position:relative;left:-1px;top:1px;">
+	    				{{notesModel.notes.length}}
+	    			</span>
+	    			<button  
+	    				ng-click="ascending=!ascending;notes.reverse();"
+	    		   		ng-class="{'ui-icon-arrow-d': ascending, 'ui-icon-arrow-u': !ascending}" 
+	    				class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext">Icon only</button>
+	    		</div>
+	    	</div>
+	    </div>
+	    
+	</div>
+</div>
+
+<div data-role="content">
+				
+	<ul data-role="listview" data-split-icon="plus" data-theme="a" data-split-theme="a" data-inset="true">
+      <li>
+        <a href="#">
+          <textarea id="txtareaAddNote" ng-model="notesModel.newNote.content" placeholder="Add Notes"></textarea>
+        </a>
+        <a ng-click="addNote(activityModel.item.processInstanceOid,notesModel.newNote)" href="#">Save Note</a>
+      </li>
+    </ul>
+	
+	<div class="ui-body ui-body-a ui-corner-all" ng-repeat="note in notesModel.notes | orderBy:timestamp">
+        <span>{{note.user.firstName}} , {{note.user.lastName}}</span>
+       	<span style="font-size:8pt;float:right;padding-right:30px;">
+       		{{note.timestamp | date:'yyyy-MM-dd' | humaneDate}}
+       	</span>
+        
+       	<div ng-click="showContent=!showContent" 
+       		 ng-class="{'ui-icon-minus': showContent, 'ui-icon-plus' : !showContent}"
+       		 class="ui-btn ui-btn-right ui-btn-icon-notext ui-corner-all">
+       	</div>
+       	<div data-inset="false">
+         	<div ng-class="{'ipp-overflowEllipsis': !showContent, 'ipp-overflowShow': showContent}">
+           		{{note.content}}
+         	</div>
+       	</div>        	
+    </div><!-- NOTE data tiles end... -->
+    
+</div><!-- Data-Role Content end... -->
