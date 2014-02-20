@@ -11,11 +11,21 @@
 
 package org.eclipse.stardust.ui.mobile.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.common.Direction;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
@@ -29,7 +39,11 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
@@ -38,12 +52,18 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
-import org.eclipse.stardust.engine.core.compatibility.gui.Person;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.mobile.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -207,13 +227,31 @@ public class MobileWorkflowService {
 
 			worklistJson.add(activityInstanceJson);
 
+			long timeInMillis = Calendar.getInstance().getTimeInMillis();
+			if (activityInstance.getState() == ActivityInstanceState.Completed
+					|| activityInstance.getState() == ActivityInstanceState.Aborted) {
+				timeInMillis = activityInstance.getLastModificationTime().getTime();
+			}
+			long duration = timeInMillis - activityInstance.getStartTime().getTime();
+			
+			String lastPerformer;
+			UserInfo userInfo = activityInstance.getPerformedBy();
+			if (null != userInfo) {
+			     User user = UserUtils.getUser(userInfo.getId());
+			     lastPerformer = I18nUtils.getUserLabel(user);
+			}
+			else {
+				lastPerformer = activityInstance.getPerformedByName();
+			}
+
 			activityInstanceJson.addProperty("oid", activityInstance.getOID());
 			activityInstanceJson.addProperty("criticality", activityInstance.getCriticality());
-			activityInstanceJson.addProperty("status", "TODO");
-			activityInstanceJson.addProperty("lastPerformer", "TODO DOE");
-			activityInstanceJson.addProperty("assignedTo", "TODO DOE");
+			activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO: i18n
+			
+			activityInstanceJson.addProperty("lastPerformer", lastPerformer);
+			activityInstanceJson.addProperty("assignedTo", ActivityInstanceUtils.getAssignedToLabel(activityInstance));
 			activityInstanceJson.addProperty("startedBy", "TODO DOE");
-			activityInstanceJson.addProperty("duration", "TODO - Calculate");
+			activityInstanceJson.addProperty("duration", duration);
 			activityInstanceJson.addProperty("activityId", activityInstance
 					.getActivity().getId());
 			activityInstanceJson.addProperty("activityName", activityInstance
@@ -390,6 +428,14 @@ public class MobileWorkflowService {
 			historicalEventJson.addProperty("type", historicalEvent
 					.getEventType().getName());
 		}
+		
+		JsonArray documentsJson = new JsonArray();
+		processInstanceJson.add("documents", documentsJson);
+		List<Document> processAttachments = fetchProcessAttachments(processInstance);
+//      List<TypedDocument> typedDocuments = TypedDocumentsUtil.getTypeDocuments(processInstance);
+		for (Document document : processAttachments) {
+			documentsJson.add(marshalDocument(document));
+		}
 
 		JsonArray notesJson = new JsonArray();
 
@@ -443,6 +489,27 @@ public class MobileWorkflowService {
 
 		for (Note note : processInstance.getAttributes().getNotes()) {
 			notesJson.add(marshalNote(note));
+		}
+
+		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JsonObject getDocuments(long processInstanceOid) {
+		ProcessInstance processInstance = getWorkflowService()
+				.getProcessInstance(processInstanceOid);
+		JsonObject resultJson = new JsonObject();
+		JsonArray documentsJson = new JsonArray();
+
+		List<Document> processAttachments = fetchProcessAttachments(processInstance);
+//        List<TypedDocument> typedDocuments = TypedDocumentsUtil.getTypeDocuments(processInstance);
+		resultJson.add("documents", documentsJson);
+
+		for (Document document : processAttachments) {
+			documentsJson.add(marshalDocument(document));
 		}
 
 		return resultJson;
@@ -613,5 +680,145 @@ public class MobileWorkflowService {
 
 		return noteJson;
 	}
+
+	/**
+	 * 
+	 * @param request
+	 */
+	private JsonObject marshalDocument(Document document) {
+		JsonObject documentJson = new JsonObject();
+
+		documentJson.addProperty("id", document.getId());
+		documentJson.addProperty("name", document.getName());
+		documentJson.addProperty("contentType", document.getContentType());
+		documentJson.addProperty("lastModifiedTimestamp", document.getDateLastModified().getTime());
+		documentJson.addProperty("size", document.getSize());
+		
+		/*JsonObject userJson = new JsonObject();
+
+		documentJson.add("user", userJson);
+
+		documentJson.addProperty("id", note.getUser().getId());
+		documentJson.addProperty("firstName", note.getUser().getFirstName());
+		documentJson.addProperty("lastName", note.getUser().getLastName());
+		documentJson.addProperty("eMail", note.getUser().getEMail());
+		documentJson.addProperty("description", note.getUser().getDescription());*/
+
+		return documentJson;
+	}
+
+   /**
+    * @param pi
+    * @return
+    */
+   private List<Document> fetchProcessAttachments(ProcessInstance processInstance)
+   {
+      List<Document> processAttachments = new ArrayList<Document>();
+
+      DeployedModel model = getQueryService().getModel(processInstance.getModelOID());
+      ProcessDefinition processDefinition = model.getProcessDefinition(processInstance.getProcessID()) ;
+      List dataPaths = processDefinition.getAllDataPaths();
+      
+      for (int n = 0; n < dataPaths.size(); ++n)
+      {
+         DataPath dataPath = (DataPath) dataPaths.get(n);
+
+         if (!dataPath.getDirection().equals(Direction.IN))
+         {
+            continue;
+         }
+
+         try
+         {
+            if (dataPath.getId().equals(CommonProperties.PROCESS_ATTACHMENTS))
+            {
+               Object object = getWorkflowService().getInDataPath(processInstance.getOID(), dataPath.getId());
+
+               if (object != null)
+               {
+                  processAttachments.addAll((Collection) object);
+                  break;
+               }
+            }
+         }
+         catch (Exception e)
+         {
+            System.out.println("Error fetching Process Attachments: " + e.getMessage());
+         }
+      }
+      
+      return processAttachments;
+   }
+
+	public void addProcessAttachment(long processOid, File uploadedFile) {
+		  ProcessInstance processInstance = getWorkflowService().getProcessInstance(processOid);
+	      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+
+	        FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(uploadedFile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        //System.out.println(file.exists() + "!!");
+	        //InputStream in = resource.openStream();
+	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	        byte[] buf = new byte[1024];
+	        try {
+	            for (int readNum; (readNum = fis.read(buf)) != -1;) {
+	                bos.write(buf, 0, readNum); //no doubt here is 0
+	                //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
+	                System.out.println("read " + readNum + " bytes,");
+	            }
+	        } catch (IOException ex) {
+	            System.out.println(ex);
+	        }
+	        byte[] bytes = bos.toByteArray();	      
+	        
+	      DocumentInfo docInfo = DmsUtils.createDocumentInfo(uploadedFile.getName());
+	      String folderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
+	      createFolderIfNotExists(folderPath);
+	      Document document = getDocumentManagementService().createDocument(folderPath, docInfo, bytes, "");
+	      
+	      processAttachments.add(document);
+	      getWorkflowService().setOutDataPath(processInstance.getOID(),
+	              CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
+	}
+	
+	   /**
+	    * Returns the folder if exist otherwise create new folder
+	    * 
+	    * @param folderPath
+	    * @return
+	    */
+	   private Folder createFolderIfNotExists(String folderPath)
+	   {
+	      Folder folder = getDocumentManagementService().getFolder(folderPath, Folder.LOD_NO_MEMBERS);
+	    
+	         if (null == folder)
+	         {
+	            // folder does not exist yet, create it
+	            String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+	            String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+
+	            if (StringUtils.isEmpty(parentPath))
+	            {
+	               // top-level reached
+	               return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
+	            }
+	            else
+	            {
+	               Folder parentFolder = createFolderIfNotExists(parentPath);
+	               return getDocumentManagementService().createFolder(parentFolder.getId(),
+	                     DmsUtils.createFolderInfo(childName));
+	            }
+	         }
+	         else
+	         {
+	            return folder;
+	         }
+	   }
+
 
 }

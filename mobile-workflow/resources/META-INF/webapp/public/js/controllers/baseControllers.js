@@ -31,7 +31,7 @@ define([],function(){
 			
 			/*simple binding for our persistent footer*/
 			"footerCtrl" : function($scope,$rootScope){
-				$scope.title = "Copyright " + 
+				$scope.title = "&#169;" + 
 							   (new Date()).getFullYear() +
 							   " SunGard";
 				

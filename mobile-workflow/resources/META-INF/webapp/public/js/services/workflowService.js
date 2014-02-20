@@ -17,6 +17,8 @@ define([],function(){
 				return "Hello From Workflow Service";
 			},
 			
+			"baseHref" : baseServiceUrl,
+			
 			"getNotes" : function(processInstanceOid){
 				var deferred = $q.defer();
 				

@@ -141,6 +141,59 @@ define([],function(){
 			
 			"detailCtrl" : function($scope,$rootScope,utilService,workflowService){
 				
+				$scope.baseHref = workflowService.baseHref;
+				$scope.progress = 0;
+				$scope.showMsg = false;
+				$scope.alertMessage = "";
+				$scope.uploadSuccesful = false;
+				
+				/**File Handling************/
+				$scope.setFiles = function(element) {
+				    $scope.$apply(function(scope) {
+				      console.log('files:', element.files);
+				      // Turn the FileList object into an Array
+				        $scope.files = [];
+				        for (var i = 0; i < element.files.length; i++) {
+				          $scope.files.push(element.files[i]);
+				        }
+				      scope.progressVisible = false;
+				      });
+				    };
+				    
+			    $scope.uploadFile = function() {
+			        var fd = new FormData();
+			        for (var i in $scope.files) {
+			            fd.append("uploadedFile", $scope.files[i]);
+			        }
+			        var xhr = new XMLHttpRequest();
+			        xhr.upload.addEventListener("progress", function(e){
+			        	$scope.$apply(function(){
+			        		$scope.progress = Math.round(e.loaded * 100 / e.total);
+			        	});		        	 
+			        }, false);
+			        xhr.addEventListener("load", function(e){
+			        	$scope.$apply(function(){
+			        		$scope.showMsg=true;
+			        		$scope.alertMessage = "File succesfully uploaded.";
+			        		$scope.isUploading=false;
+			        		$scope.uploadSuccesful=true;
+			        	});
+			        }, false);
+			        xhr.addEventListener("error", function(e){
+			        	$scope.$apply(function(){
+			        		$scope.isUploading=false;
+			        		$scope.showMsg=true;
+			        		$scope.alertMessage = "Error occured uploading file.";
+			        		$scope.uploadSuccesful=false;
+			        	});
+			        }, false);
+			        //xhr.addEventListener("abort", uploadCanceled, false);
+			        xhr.open("POST", "http://localhost:8080/pepper-test/services/rest/mobile-workflow/process-instances/17/documents");
+			        $scope.progressVisible = true;
+			        xhr.send(fd);
+			    };
+				/***************************/
+				
 				/*Initialization*/
 				$scope.activeTab='activityTab';
 				
@@ -168,7 +221,9 @@ define([],function(){
 				$scope.activityModel = new worklistItem();
 				$scope.formModel = new mashupModel();
 				$scope.documentModel = new documentModel();
-
+				
+				
+				
 				/*Signal JQuery universe that we need to add a note via REST*/
 				$scope.addNote = function(id,newNote){
 					newNote.processoid=id;

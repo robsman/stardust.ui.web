@@ -6,6 +6,7 @@
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-portal-common.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
 	<classpathentry kind="var" path="STARDUST_JAXWS_CXF_LIBS/lib/gson.jar"/>
+	<classpathentry kind="var" path="STARDUST_JAXWS_CXF_LIBS/lib/cxf-rt-frontend-jaxrs.jar"/>
 	<classpathentry kind="var" path="CARNOT_ENGINE_BASE_LIBS/lib/carnot-base.jar"/>
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-context.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1.jar"/>

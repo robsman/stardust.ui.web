@@ -35,6 +35,14 @@ define(function(require){
 	app.factory("utilService",utilService);
 	app.factory("workflowService",angWorkflow);
 	
+	app.run(function($rootScope,workflowService){
+		$rootScope.appData={
+				"isAuthorized" : false,
+				"user" :{},
+				"worklistItems":[]
+		};
+	});
+	
 	/* 1. bootstrap our document against our angular application
 	 * 2. tie in any handlers we need to for our events */
 	app.init=function(options){
@@ -114,11 +122,6 @@ define(function(require){
 			/*As we can't nest controllers due to the structure of our JQM pages in the DOM (completely flat)
 			 *we will utilize rootScope to hold data common to the entire app, controllers will have rootscope
 			 *injected as needed.*/
-			rootScope.appData={
-					"isAuthorized" : false,
-					"user" :{},
-					"worklistItems":[]
-			};
 			
 			/*leverage the login function from our workflow service to transition
 			 * to the mainPage on success or to show an inline error message on fail.*/
