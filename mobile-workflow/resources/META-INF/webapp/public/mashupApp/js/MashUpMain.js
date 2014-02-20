@@ -42,7 +42,5 @@ require(
 		  "jquery-ui"],
 		  
 		function(require, jquery, angularjs, jqueryMobile,app,jqueryui) {
-			console.log(app);
-			debugger;
 			app.init();
 		});

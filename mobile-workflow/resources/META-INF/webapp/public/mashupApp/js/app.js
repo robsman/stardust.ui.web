@@ -4,22 +4,44 @@ define(function(require){
 	/*reference our angular dependency, reference our controllers etc, 
 	 *and create an Angular module representing our application.*/
 	var angular=require('angularjs'),
+		angWorkflow = require("js/services/workflowService"),
 		app=angular.module('mashupApp',[]),/*create angular application*/
 		rootScope;  /*Angular rootScope within a JQuery context*/
 	
-	app.controller("main",function($scope){
+	app.factory("workflowService",angWorkflow);
+	app.controller("main",function($scope,workflowService){
+		
+		$scope.submitModel = function(){
+			console.log($scope.model);
+		},
+		
 		$scope.model={
-				title: "Test Mashup Application"
+				"title": "Accident Information Form v2.0",
+				"accident":{
+					"date" : "",
+					"location" : "",
+					"numVehicles" : "",
+					"vehicleTowed" : false,
+					"damageLocs" : {
+						"front" : false,
+						"rear" : false,
+						"passSide" : false,
+						"driverSide" : false,
+						"hood"  : false,
+						"underCarriage" :  false
+					}
+				}
 		};
 	});
 	
 	var jsApp = {};
 	
-	/* 1. bootstrap our document against our angular application*/
+	/* 1. bootstrap our document against our angular application, on init function invoke*/
 	jsApp.init=function(){
 		/*bootstrapping - after this point we have an angular application tied to our html*/
 		angular.bootstrap(document,['mashupApp']);
 		return app;
 	};
+	
 	return jsApp;
 });

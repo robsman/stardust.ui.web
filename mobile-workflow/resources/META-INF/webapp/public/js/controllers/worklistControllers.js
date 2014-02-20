@@ -144,7 +144,25 @@ define([],function(){
 				/*Initialization*/
 				$scope.activeTab='activityTab';
 				
-				$scope.test = workflowService.test;
+				$scope.createNote = function(oid,content){
+					workflowService.createNote(oid,content);
+				}; 
+				
+				$scope.getNotes = function(oid){
+					var success = function(data){
+							console.log("success");
+							console.log(data);
+							$scope.notesModel.notes=data;
+						},
+						fail = function(status){
+							console.log("failed");
+						};
+						
+					workflowService.getNotes(oid)
+						.then(success,fail);
+					
+				};
+				
 				$scope.addNote2 = workflowService.addNote;
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();

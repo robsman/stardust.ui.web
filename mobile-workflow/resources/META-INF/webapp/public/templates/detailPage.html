@@ -1,6 +1,6 @@
 
 <div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}{{test}}</h1>
+	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}</h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
     <a href="#" ng-click="activeTab=''" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
@@ -8,7 +8,7 @@
 <div data-role="tabs" id="tabs" style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
-		<li ng-click="activeTab='activityTab';addNote2()" >
+		<li ng-click="activeTab='activityTab';getNotes(activityModel.item.processInstanceOid)" >
 			<a href="#activityTab" class="ui-btn-active">
 				<i style="display:block;" class="fa fa-info fa-2x jqm-icon-block"></i>
 				Activity
